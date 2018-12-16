@@ -1,0 +1,33 @@
+﻿.pq-container {
+    position: fixed;
+    bottom: 3px;
+    /*top: 45px;*/
+    width: 200px;
+    left: 3px;
+    /*right: 3px;*/
+    /*margin-left: -100px;*/
+    z-index: 10000;
+    -moz-border-radius: 1px;
+    -webkit-border-radius: 1px;
+    border-radius: 1px;
+    background: rgba(128, 128, 128, 0.7);
+}
+
+.pq-container .pq-timer {
+    height: 5px;
+    background: #666;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.pq-container .pq-progress {
+    height: 5px;
+    background: #66F;
+    overflow: hidden;
+}
+
+.pq-container .pq-info {
+    padding: 3px 15px;
+    color: #FFF;
+}

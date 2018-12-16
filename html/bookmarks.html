@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link href="/css/general.css" rel="stylesheet" type="text/css" />
+    <link href="/css/custombuttons.css" rel="stylesheet" type="text/css" />
+    <title>Bookmarks categories</title>
+</head>
+<body class="dark">
+    <div class="content-block">
+        <h1 class="block-title" data-i18n="bookmarks.manage">Manage bookmarks</h1>
+        <h3 data-i18n="bookmarks.categorieslist">List of categories</h3>
+        <div class="custom-buttons row">
+            <div class="existing"></div>
+        </div>
+
+        <h3 class="block-title" data-i18n="bookmarks.addcategory">Add categories</h3>
+        <div class="row">
+            <div class="left" data-i18n="bookmarks.categoryname">Category's name</div>
+            <div class="right">
+                <input type="text" id="txtName" />
+                &nbsp;
+                <button class="green" id="btAdd" data-i18n="bookmarks.add" />Add</button>
+            </div>
+        </div>
+    </div>
+    <script src="/js/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <script src="/js/json2.js" type="text/javascript"></script>
+    <script src="/js/pages/bookmarks.js" type="text/javascript"></script>
+    <script src="/bundle/js/common.js" type="text/javascript"></script>
+    <script src="/bundle/js/localization.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+﻿{
+  "langcode": "pl",
+  "about": {
+    "title": "O nas"
+  },
+  "bookmarks": {
+    "title": "Zakładki"
+  },
+  "faq": {
+    "title": "FAQ"
+  },
+  "settings": {
+    "title": "Ustawienia",
+    "inventory": {
+      "buyset": "Przycisk \"Kupno zestawu\"",
+      "quicksell": "Przycisk \"Szybka sprzedaż\"",
+      "quickselldif": "Różnica \"Szybka sprzedaż\"",
+      "listdelay": "Opóźnienia pomiędzy ofertami",
+      "simpify": "Łatwiejszy interfejs graficzny",
+      "tradableinfo": "Pokaż podsumowanie niewymienialnych przedmiotów"
+    },
+    "listingmarket": {
+      "quickbuy": "Przycisk \"Szybki zakup\"",
+      "no_listings": "Liczba ofert",
+      "no_history": "Wielkość strony historii",
+      "totalrow": "Wszystkich wierszy",
+      "highlight": "Podświetl zbyt drogie"
+    },
+    "tradeoffer": {
+      "autodecline": "Odrzucaj niedostępne oferty",
+      "offerdelay": "Opóźnienie kontroli cen",
+      "autocheckofferprice": "Automatycznie ładuj ceny podczas wymiany",
+      "custombuttons": "Własne przyciski"
+    },
+    "friends": {
+      "ignoreinvites": "Ignoruj zaproszenia poniżej",
+      "blockinvites": "Blokuj zaproszenia poniżej"
+    },
+    "general": {
+      "currency": "Waluta",
+      "displaynof": "Pokaż powiadomienia",
+      "displayvector": "Pokaż wykres cen",
+      "language": "Język",
+      "nofsound": "Powiadomienia dzwiękowe",
+      "nofsound_vol": "Głośność powiadomienia",
+      "showsteamrep": "Pokaż panel SteamRep"
+    },
+    "autoreply": "Automatyczna odpowiedź",
+    "note": "Musisz otworzyć na nowo tę podstronę aby zastosować zmiany"
+  },
+  "tradeoffers": {
+    "signedout": "Steam: Zostałeś wylogowany z konta. Proszę <a href='https://steamcommunity.com/login/' target='_blank'>zaloguj sie</a> lub ustaw <b>klucz SteamAPI</b> w ustawieniach",
+    "nooffers": "Póki co nie masz żadnych ofert wymiany",
+    "countoffers": "Masz {{NUMBERS}} ofert(ę)"
+  }
+}

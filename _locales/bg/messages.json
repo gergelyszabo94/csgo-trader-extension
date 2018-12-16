@@ -1,0 +1,10 @@
+{
+   "extension_description": {
+      "description": "Extension's description",
+      "message": "Предлага много функции за общността и маркета (известия при оферти,бързо продаване, купуване, предлагане на размяна, проверяване на цените...)"
+   },
+   "langcode": {
+      "description": "",
+      "message": "bg"
+   }
+}

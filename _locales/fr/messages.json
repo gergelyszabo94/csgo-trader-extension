@@ -1,0 +1,10 @@
+{
+   "extension_description": {
+      "description": "Description de l'extension",
+      "message": "Vous offre beaucoup de possibilitées pour votre inventaire steam et le marché (notification d'échange, vente rapide, acheter, proposer des échanges, vérifier les prix)"
+   },
+   "langcode": {
+      "description": "",
+      "message": "fr"
+   }
+}

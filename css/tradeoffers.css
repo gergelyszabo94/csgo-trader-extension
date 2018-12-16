@@ -1,0 +1,93 @@
+﻿.tradeoffer {
+    margin: 5px;
+    padding: 5px;
+    clear: both;
+    background: #606060;
+    color: #FFF;
+    cursor: pointer;
+    border: #818181;
+}
+
+.tradeoffer a {
+    float: left;
+    margin-right: 10px;
+}
+
+.tradeoffer div {
+    float: left;
+    width: 100%;
+    margin-left: -90px;
+    padding-left: 90px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.tradeoffer div img {
+    margin-right: 5px;
+}
+
+.tradeoffer div.clearer {
+    clear: both;
+    float: none;
+    height: 1px;
+}
+
+a.decline-bt,
+a.accept-bt {
+    color: #FF0;
+}
+
+a.decline-bt:hover,
+a.accept-bt:hover {
+    color: #aaa;
+}
+
+.sponsor {
+    float: right;
+    max-width: 50%;
+    padding-bottom: 5px;
+    padding-right: 5px;
+    min-width: 50%;
+    min-height: 35px;
+}
+
+.sponsor img {
+    max-width: 100%;
+    display: none;
+}
+
+.offer-price {
+    float: right !important;
+    margin-left: 15px;
+}
+
+.offer-price span {
+    color: #a4d007;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.pq-container {
+    bottom: 3px;
+    right: 3px;
+    left: auto;
+}
+
+.tradeoffer-container {
+  position: relative;
+  padding-bottom: 20px !important;
+  min-height: 52px;
+}
+
+.sponsor-link {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  padding: 7px 7px 0 7px;;
+}
+
+.sponsor-link a {
+  margin-left: 10px;
+}

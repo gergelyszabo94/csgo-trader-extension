@@ -1,0 +1,10 @@
+{
+   "extension_description": {
+      "description": "Extension's description",
+      "message": "Improving Steam. Items auto-selling. Lowest prices for games and items. Prices from different sources. And a lot more"
+   },
+   "langcode": {
+      "description": "",
+      "message": "en"
+   }
+}

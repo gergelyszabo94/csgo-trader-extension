@@ -1,0 +1,13 @@
+﻿{
+    "440":{
+	    "Keys":{ "Type" : "TF_T" },
+        "Craft items":{ "Type": "Craft Item" }
+    },
+	"570":{
+        "Rares":{ "Quality": "unique", "Rarity": "Rarity_Rare", "Type": "DOTA_WearableType_Wearable" },
+        "Keys":{"Quality":"unique","Rarity":"Rarity_Common","Type":"key"}
+    },
+    "730":{
+	    "Keys": {"Type": "CSGO_Tool_WeaponCase_KeyTag"}
+    }
+}

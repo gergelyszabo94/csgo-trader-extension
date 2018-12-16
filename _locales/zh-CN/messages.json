@@ -1,0 +1,10 @@
+﻿{
+  "extension_description": {
+    "description": "Extension's description",
+    "message": "集合多种 Steam 库存以及市场的实用工具 (报价通知、快速出售、快速购买、交易报价、检查价格……)"
+  },
+  "langcode": {
+    "description": "",
+    "message": "zh"
+  }
+}

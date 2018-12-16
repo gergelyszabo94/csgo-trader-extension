@@ -1,0 +1,553 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <title>Steam inventory helper options</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="/css/general.css" rel="stylesheet" type="text/css" />
+    <link href="/css/popup.css" rel="stylesheet" type="text/css" />
+    <link href="/css/fam-flags.css" rel="stylesheet" type="text/css" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+</head>
+<body class="dark">
+    <div class="main-panel">
+        <div class="tabs">
+            <a href="tradeoffers.html" class="tab" data-i18n="tradeoffers.title">Trade offers</a>
+            <a href="bookmarkeditems.html" class="tab" data-i18n="bookmarks.title">Bookmarks</a>
+            <a href="#" class="tab active" data-i18n="settings.title">Settings</a>
+            <a href="graph.html" target="_blank" class="tab" data-i18n="marketgraph.title">Market graph</a>
+            <a href="faq.html" class="tab" data-i18n="faq.title">FAQ</a>
+            <a href="about.html" class="tab" data-i18n="about.title">About</a>
+        </div>
+        <div class="content">
+            <div class="content-block">
+                <h4 class="block-title" data-i18n="">Steam API</h4>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.general.apikey">SteamAPI key</span>:</div>
+                    <div class="right">
+                        <input type="text" name="txt_apikey" id="txt_apikey" data-i18n="[placeholder]settings.general.txt_apikey" placeholder="Blank for default key"
+                        />
+                        <a href="https://steamcommunity.com/dev/apikey" target="_blank"><span data-i18n="settings.general.get_apikey">Get your key</span></a>
+                    </div>
+                </div>
+            </div>
+            <div class="content-block">
+                <h4 class="block-title" data-i18n="settings.inventory.title">Inventory</h4>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.inventory.buyset">"Buy set" buttons</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_buySet" id="ck_buySet" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.inventory.quicksell">"Quick sell" button</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_quickSell" id="ck_quickSell" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.inventory.instantsell">"Instant sell" button</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_instantSell" id="ck_instantSell" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.inventory.selectall">"Select all" button</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_selectAll" id="ck_selectAll" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.inventory.getprice">"Inventory value" button</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_inventoryPrice" id="ck_inventoryPrice" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.inventory.quickselldif">Quick sell dif</span>:</div>
+                    <div class="right">
+                        <input type="number" step="0.01" id="txt_fastsell" class="align-right" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.inventory.listdelay">Delay between listings</span>:</div>
+                    <div class="right">
+                        <input type="number" step="100" id="txt_delay" class="align-right" style="width: 60px" />
+                        ms
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.inventory.hidedefaultprice">Hide default price info</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_hidedefaultprice" id="ck_hidedefaultprice" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.inventory.simpify">Simplify UI</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_simpify" id="ck_simpify" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.inventory.show_float_value">Show float value</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_floatValue" id="ck_floatValue" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.inventory.tradableinfo">Show summary of non tradable items</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_tradableinfo" id="ck_tradableinfo" />
+                    </div>
+                </div>
+            </div>
+            <div class="content-block">
+                <h4 class="block-title" data-i18n="settings.storeprices.title">Store prices</h4>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.storeprices.show_historical_price">Show lowest price of all time</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_historicalPrice" id="ck_historicalPrice">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.storeprices.show_current_price">Show lowest price currently</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_currentPrice" id="ck_currentPrice">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.storeprices.show_all_stores">Get prices from all stores</span></div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_allStores" id="ck_allStores">
+                        <div id="stores_list" class="stores-list"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.storeprices.show_regional_price">Show regional price</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_regionalPrice" id="ck_regionalPrice">
+                        <div id="region_selects">
+                          <div style="margin-top: 10px; margin-left: 20px;"><button id="add_another_region" data-i18n="settings.storeprices.add_another_region" class="btn">Add</button><button id="reset_countries" class="btn" data-i18n="settings.default">Default</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="content-block">
+                <h4 class="block-title" data-i18n="settings.highlight.title">Highlight Store items</h4>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.highlight.wishlist_items">Highlight items in wishlist</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_hlWishlisted" id="ck_hlWishlisted">
+                        <span>
+                          <input type="color" id="wishlisted_bgcolor" value="#29B6F6" style="margin: 0 5px; width: 60%;">
+                          <button id="reset_wishlist_bgcolor" class="btn" data-i18n="settings.default">Default</button>
+                        </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.highlight.owned_items">Highlight owned items</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_hlOwned" id="ck_hlOwned">
+                        <span>
+                          <input type="color" id="owned_bgcolor" value="#9CCC65" style="margin: 0 5px; width: 60%;">
+                          <button id="reset_owned_bgcolor" class="btn" data-i18n="settings.default">Default</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="content-block">
+                <h4 class="block-title" data-i18n="settings.listingmarket.title">Listing &amp; market</h4>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.listingmarket.quickbuy">"Quick buy" buttons</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_quickBuy" id="ck_quickBuy" />
+                    </div>
+                </div>
+                <!--<div class="row">
+                    <div class="left"><span data-i18n="settings.listingmarket.no_mylistings">Number of my sell listings</span>:</div>
+                    <div class="right">
+                        <input type="range" min="10" max="500" name="txt_mylistingspagesize" id="txt_mylistingspagesize" class="number" />
+                        <span id="lb_mylistingspagesize">10</span>
+                    </div>
+                </div>-->
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.listingmarket.no_listings">Number of listings</span>:</div>
+                    <div class="right">
+                        <input type="range" min="5" max="100" name="txt_resultnumber" id="txt_resultnumber" class="number" />
+                        <span id="lb_resultnumber">10</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.listingmarket.no_history">History page size</span>:</div>
+                    <div class="right">
+                        <input type="range" min="5" max="100" name="txt_historypagesize" id="txt_historypagesize" class="number" />
+                        <span id="lb_historypagesize">10</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.listingmarket.totalrow">Total row</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_totalrow" id="ck_totalrow" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.listingmarket.overallsum">Total row (all pages)</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_overallsum" id="ck_overallsum" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.listingmarket.highlight">Highlight overpriced</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_highlight" id="ck_highlight" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.listingmarket.show_get_float">Show "Get Float" function</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_floatValueListings" id="ck_floatValueListings" />
+                    </div>
+                </div>
+            </div>
+            <div class="content-block">
+                <h4 class="block-title" data-i18n="settings.tradeoffer.title">Trade offer</h4>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.tradeoffer.autocheckofferprice">Auto get prices when offer</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_autocheckofferprice" id="ck_autocheckofferprice" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.tradeoffer.autodecline">Decline unavailable offers</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_autodecline" id="ck_autodecline" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.tradeoffer.offerdelay">Offer price check delay</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_offerdelay" id="ck_offerdelay" />
+                        <input type="text" id="txt_offerdelay" class="align-right" style="width: 40px" />
+                        ms
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.tradeoffer.quickaccept">Quick accept</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_quickoffer" id="ck_quickoffer" />
+                        <span data-i18n="settings.tradeoffer.delay">Delay</span>
+                        <input type="number" step="5" min="0" max="30" id="txt_qodelay" class="align-right" style="width: 40px" />
+                        s
+                        <label>
+                            <input type="checkbox" name="ck_quickofferprompt" id="ck_quickofferprompt" />
+                            <span data-i18n="settings.tradeoffer.confirm">show confirm dialog</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.tradeoffer.quickrefuse">Quick refuse</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_quickrefuse" id="ck_quickrefuse" />
+                        <span data-i18n="settings.tradeoffer.delay">Delay</span>
+                        <input type="number" step="5" min="0" max="30" id="txt_qrdelay" class="align-right" style="width: 40px" />
+                        s
+                        <label>
+                            <input type="checkbox" name="ck_quickrefuseprompt" id="ck_quickrefuseprompt" />
+                            <span data-i18n="settings.tradeoffer.confirm">show confirm dialog</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.tradeoffer.totalprice">Show offer total price</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_offertotalprice" id="ck_offertotalprice" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.tradeoffer.custombuttons">Custom buttons</span>:</div>
+                    <div class="right">
+                        <a href="custombuttons.html" target="_blank" data-i18n="settings.tradeoffer.manage">Manage</a>
+                    </div>
+                </div>
+            </div>
+            <div class="content-block">
+                <h4 class="block-title" data-i18n="settings.friends.title">Friend requests (0 = off)</h4>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.friends.ignoreinvites">Ignore invites below</span>:</div>
+                    <div class="right">
+                        <input type="number" min="0" step="1" id="txt_ignore" class="align-right" style="width: 60px" />
+                        <span data-i18n="settings.friends.steamlevel">Steam level or</span>
+                        <label for="ck_privateignore">
+                            <input type="checkbox" name="ck_privateignore" id="ck_privateignore" />
+                            <span data-i18n="settings.friends.private">private</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.friends.blockinvites">Block invites below</span>:</div>
+                    <div class="right">
+                        <input type="number" min="0" step="1" id="txt_block" class="align-right" style="width: 60px" />
+                        <span data-i18n="settings.friends.steamlevel">Steam level or</span>
+                        <label for="ck_privateblock">
+                            <input type="checkbox" name="ck_privateblock" id="ck_privateblock" />
+                            <span data-i18n="settings.friends.private">private</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.friends.total">Total</span>:</div>
+                    <div class="right">
+                        <span id="sp_friendrequests"></span>
+                        <a href="#" id="bt_resetrq" data-i18n="settings.friends.reset">Reset</a>
+                    </div>
+                </div>
+            </div>
+            <div class="content-block">
+                <h4 class="block-title" data-i18n="settings.extprice.title">External prices</h4>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.extprice.showprice">Show external price</span>:</div>
+                    <div class="right">
+                        <label>
+                            <input type="checkbox" name="extprice" id="extprice" />
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.extprice.masslisting">Use for mass listing</span>:</div>
+                    <div class="right">
+                        <label>
+                            <input type="checkbox" name="extmasslisting" id="extmasslisting" />
+                        </label>
+                    </div>
+                </div>
+                <!-- <div class="row">
+                    <div class="left"><span data-i18n="settings.extprice.bgcolor">Background color</span>:</div>
+                    <div class="right">
+                        <label>
+                            <input type="color" id="extbgcolor" value="#0000ff" style="width:85%;">
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.extprice.textcolor">Text color</span>:</div>
+                    <div class="right">
+                        <label>
+                            <input type="color" id="exttextcolor" value="#FFFFFF" style="width:85%;">
+                        </label>
+                    </div>
+                </div> -->
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.extprice.customprovider">Custom price provider</span>:</div>
+                    <div class="right">
+                        <label>
+                            <input type="url" id="extcustom" value="" style="width:50%;">
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="content-block">
+                <h4 class="block-title" data-i18n="settings.general.title">General</h4>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.general.autogetprice">Auto get prices</span>:</div>
+                    <div class="right">
+                        <label>
+                            <input type="checkbox" name="ck_agp_hover" id="ck_agp_hover" />
+                            <span data-i18n="settings.general.on_hover">On hover</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" name="ck_agp_gem" id="ck_agp_gem" />
+                            Dota 2 gems
+                        </label>
+                        <label>
+                            <input type="checkbox" name="ck_agp_sticker" id="ck_agp_sticker" />
+                            CS:GO stickers
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.general.pricedelay">Get price delay (ms)</span>:</div>
+                    <div class="right">
+                        <span data-i18n="settings.general.success">Success</span>
+                        <input type="number" step="500" id="txt_gpdelayscc" style="width: 60px" class="align-right" />
+                        <span data-i18n="settings.general.error">Error</span>
+                        <input type="number" step="500" id="txt_gpdelayerr" style="width: 60px" class="align-right" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.general.displaynof">Display notifications</span>:</div>
+                    <div class="right">
+                        <label>
+                            <input type="checkbox" name="ck_nof" id="ck_nof" />
+                            <span data-i18n="settings.general.offers">Trade offers</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" name="ck_nof_friend" id="ck_nof_friend" />
+                            <span data-i18n="settings.general.friends">Friend requests</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" name="ck_nof_comment" id="ck_nof_comment" />
+                            <span data-i18n="settings.general.comments">Comments</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.general.nofsound">Notification sound</span>:</div>
+                    <div class="right">
+                        <select id="cb_sound">
+                            <option value="">none</option>
+                            <option value="coins.ogg">Dota 2 coin</option>
+                            <option value="offersound.ogg">Chime 1</option>
+                            <option value="nof.ogg">Chime 2</option>
+                            <option value="Communication-channel.ogg">Communication</option>
+                            <option value="Gets-in-the-way.ogg">Get in the way</option>
+                            <option value="Just-like-magic.ogg">Just like magic</option>
+                            <option value="Isnt-it.ogg">Isn't it</option>
+                            <option value="System-fault.ogg">System fault</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                        <input type="text" placeholder="Url to custom sound" id="txt_custom" data-i18n="[placeholder]settings.general.txt_custom"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.general.nofsound_vol">Sound volume</span>:</div>
+                    <div class="right">
+                        <input type="range" min="0" max="100" name="txt_volumn" id="txt_volumn" class="number" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.general.displayvector">Show vector price</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_nof" id="ck_medium" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.general.showsteamrep">Show Steamrep</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_steamrep" id="ck_steamrep" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.general.show_permalink">Show profile permalink</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_permalink" id="ck_permalink" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.general.show_streamlink">Show links on Youtube and Twitch</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_streamlink" id="ck_streamlink" />
+                    </div>
+                </div>
+                <!-- <div class="row">
+                    <div class="left"><span data-i18n="settings.general.hidebanner">Hide sponsor's banners</span>:</div>
+                    <div class="right">
+                        <input type="checkbox" name="ck_hidebanner" id="ck_hidebanner" />
+                    </div>
+                </div> -->
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.general.bookmarks">Bookmarks</span>:</div>
+                    <div class="right">
+                        <label>
+                            <input type="checkbox" name="ck_bookmarks" id="ck_bookmarks" />
+                            <span data-i18n="settings.general.ck_show">show</span>
+                        </label>
+                        <a href="bookmarks.html" target="_blank"><span data-i18n="settings.general.manage">Manage categories</span></a> |
+                        <a href="#" id="lnk_clearbookmarks"><span data-i18n="settings.general.clear">Clear bookmarks</span></a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.general.currency">Currency</span>:</div>
+                    <div class="right">
+                        <select id="cb_currency">
+                            <option value="" data-code="" data-i18n="settings.general.auto_currency">Auto (use wallet currency)</option>
+                            <option value="1" data-code="USD">$ (USD)</option>
+                            <option value="2" data-code="GBP">£ (GBP)</option>
+                            <option value="3" data-code="EUR">€ (EUR)</option>
+                            <option value="4" data-code="CHF">CHF (CHF)</option>
+                            <option value="5" data-code="RUB">pуб. (RUB)</option>
+                            <option value="6" data-code="PLN">zł (PLN)</option>
+                            <option value="7" data-code="BRL">R$ (BRL)</option>
+                            <option value="8" data-code="JPY">¥ (JPY)</option>
+                            <option value="9" data-code="NOK">kr (NOK)</option>
+                            <option value="10" data-code="IDR">Rp (IDR)</option>
+                            <option value="11" data-code="MYR">RM (MYR)</option>
+                            <option value="12" data-code="PHP">P (PHP)</option>
+                            <option value="13" data-code="SGD">S$ (SGD)</option>
+                            <option value="14" data-code="THB">฿ (THB)</option>
+                            <option value="15" data-code="VND">₫ (VND)</option>
+                            <option value="16" data-code="KRW">₩ (KRW)</option>
+                            <option value="17" data-code="TRY">TL (TRY)</option>
+                            <option value="18" data-code="UAH">₴ (UAH)</option>
+                            <option value="19" data-code="MXN">Mex$ (MXN)</option>
+                            <option value="20" data-code="CAD">CDN$ (CAD)</option>
+                            <option value="21" data-code="AUD">A$ (AUD)</option>
+                            <option value="22" data-code="NZD">NZ$ (NZD)</option>
+                            <option value="23" data-code="CNY">¥ (CNY)</option>
+                            <option value="24" data-code="INR">₹ (INR)</option>
+                            <option value="25" data-code="CLP">CLP$ (CLP)</option>
+                            <option value="26" data-code="PEN">S/. (PEN)</option>
+                            <option value="27" data-code="COP">COL$ (COP)</option>
+                            <option value="28" data-code="ZAR">R (ZAR)</option>
+                            <option value="29" data-code="HKD">HK$ (HKD)</option>
+                            <option value="30" data-code="TWD">NT$ (TWD)</option>
+                            <option value="31" data-code="SAR">SR (SAR)</option>
+                            <option value="32" data-code="AED">AED (AED)</option>
+                            <option value="34" data-code="ARS">ARS$ (ARS)</option>
+                            <option value="35" data-code="ILS">₪ (ILS)</option>
+                            <option value="36" data-code="BYN">Br (BYN)</option>
+                            <option value="37" data-code="KZT">₸ (KZT)</option>
+                            <option value="38" data-code="KWD">KD (KWD)</option>
+                            <option value="39" data-code="QAR">QR (QAR)</option>
+                            <option value="40" data-code="CRC">₡ (CRC)</option>
+                            <option value="41" data-code="UYU">$U (UYU)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left"><span data-i18n="settings.general.language">Language</span>:</div>
+                    <div class="right">
+                        <select id="cb_lang">
+                            <option value="" data-i18n="settings.general.auto_language">Auto (use browser locale)</option>
+                            <option value="bg">български език</option>
+                            <option value="cs">čeština</option>
+                            <option value="de">Deutsch</option>
+                            <option value="en">English</option>
+                            <option value="es">Español</option>
+                            <option value="fr">Français</option>
+                            <option value="it">Italiano</option>
+                            <option value="ka">ქართული</option>
+                            <option value="lv">Latviešu valoda</option>
+                            <option value="no">Norsk</option>
+                            <option value="pl">Polski</option>
+                            <option value="pt">Português-Brasil</option>
+                            <option value="ro">Română</option>
+                            <option value="ru">Русский</option>
+                            <option value="sv">Svenska</option>
+                            <option value="tr">Türkçe</option>
+                            <option value="vi">Tiếng Việt</option>
+                            <option value="uk">Українська</option>
+                            <option value="zh-CN">简体中文</option>   <!--simplified-->
+                            <option value="zh-TW">繁體中文</option>   <!--traditional-->
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="right">
+                        <a href="#" id="lnk_reset"><span data-i18n="settings.defaultreset">Reset to defaults</span></a>
+                    </div>
+                </div>
+                <div class="row">
+                    <i data-i18n="settings.note">You need to refresh current pages for changes to take effect</i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/js/jquery/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <script src="/bundle/js/common.js" type="text/javascript"></script>
+    <script src="/bundle/js/localization.js" type="text/javascript"></script>
+    <script src="/bundle/js/regions.js" type="text/javascript"></script>
+    <script src="/bundle/js/stores.js" type="text/javascript"></script>
+    <!-- <script src="../js/lang/_gen.js" type="text/javascript"></script> -->
+    <!-- <script src="../js/lang/common.js" type="text/javascript"></script> -->
+    <script src="/js/pages/popup.js" type="text/javascript"></script>
+</body>
+</html>

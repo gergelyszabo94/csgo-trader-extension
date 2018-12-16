@@ -1,0 +1,55 @@
+SIHLang = {
+    noreload: "Không reload khi bán item",
+    quickbuy: "Mua nhanh",
+    reloadinvent: "Reload rương (alt + R)",
+    selectitem: "Chọn items",
+    selectall: "Select all",
+    cancel: "Hủy",
+    sell1item: "Bán item này",
+    sellnitem: "Bán $1 items",
+    quicksell: "Bán nhanh giá $1",
+    buymissing: "Mua các phần còn lại",
+    autoaccept: "tự check accept",
+    autoadjust: "tự điều chỉnh giá",
+    historynoselect: "Select item",
+    queue: {
+        removeitem: "Loại bỏ items",
+        removelower: "Bỏ giá thấp hơn",
+        removehigher: "Bỏ giá cao hơn",
+        removeintrade: "Đang trade",
+        removeequipped: "Đang trang bị",
+        takelower: "Lấy giá cao hơn",
+        takehigher: "Lấy giá thấp hơn",
+        emptyprice: "Remove no price"
+    },
+    sort: {
+        sortitem: "Sắp xếp",
+        price: "Theo giá"
+    },
+    tradingcards: {
+        buyall: "Mua tất cả",
+        reload: "Reload danh sách",
+        dialogtitle: "Mua trading cards",
+        showpopup: "Hiện hộp thoại mua nhanh"
+    },
+    tradeoffers: {
+        removeall: "Lấy lại tất cả",
+        takeall: "Pick tất cả",
+        totalprice: "Tính tổng",
+        notrash: "Không rác",
+        skipintrade: "Bỏ qua item đang trade",
+        noduplicate: "Không trùng",
+        noofitems: "Số lượng",
+        recount: "Đếm lại",
+        youritems: "Item trade đi",
+        theiritem: "Item nhận lại"
+    },
+    nontradable: {
+        counter: "items not tradable yet",
+        startdate: "First ones at",
+        lastdate: "Last ones at",
+        totalprice: "Total price"
+    },
+    contributedby: ''
+};
+ReloadLang();

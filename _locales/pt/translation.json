@@ -1,0 +1,28 @@
+{
+  "langcode": "pt",
+  "settings": {
+    "title": "Configurações",
+    "inventory": {
+      "buyset": "Botões de \"Buy set\"",
+      "quicksell": "Botões de \"Quick sell\"",
+      "quickselldif": "Diferencial na venda rápida",
+      "simpify": "Simplifique UI"
+    },
+    "listingmarket": {
+      "quickbuy": "Botões de \"Quick buy\"",
+      "no_listings": "Número na listagem",
+      "totalrow": "Total row"
+    },
+    "tradeoffer": {
+      "autocheckofferprice": "Obter automaticamente os preços quando oferecer",
+      "offerdelay": "Atraso ao checar o preço da oferta"
+    },
+    "general": {
+      "currency": "Moeda",
+      "displaynof": "Exibir notificações",
+      "language": "Linguagem",
+      "nofsound": "Som de notificação"
+    },
+    "note": "Você precisa atualizar a página atual para que as mudanças tenham efeito"
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "langcode": "tr",
+  "about": {
+    "title": "Hakkında"
+  },
+  "tradeoffers": {
+    "title": "Takas Teklifleri",
+    "signedout": "Steam: Hesabınızdan çıkış yaptınız. Lütfen şu bağlantı adresinden <a href='https://steamcommunity.com/login/' target='_blank'>giriş yapın</a> veya Ayarlar'dan <b>Steam API</b> anahtarı ekleyin",
+    "nooffers": "Bekleyen takas teklifi yok",
+    "countoffers": "{{NUMBERS}} adet takas teklifiniz var",
+    "offerfrom": "{{USERNAME}} size bir teklifte bulundu",
+    "offernoname": "Takas teklifiniz var",
+    "confirmation": "Emin misiniz?",
+    "yourprice": "Sizin eşyalarınızın fiyatı",
+    "theirprice": "Karşı tarafın eşyalarının fiyatı",
+    "cancel": "İptal",
+    "openall": "Hepsini göster",
+    "open": "Açık",
+    "declineall": "Hepsini reddet",
+    "decline": "Reddet",
+    "quickaccept": "Hızlı kabul et",
+    "quickrefuse": "Hızlı reddet",
+    "payskins": "Silah kaplamaları(Skin) ile öde",
+    "buyskins": "Silah kaplamaları(Skin) satın al",
+    "sellskins": "Silah kaplamaları(Skin) sat",
+    "giveaway": "Çekiliş"
+  },
+  "marketgraph": {
+    "title": "Market Grafiği"
+  },
+  "bookmarks": {
+    "title": "Yer İşaretleri"
+  },
+  "faq": {
+    "title": "S.S.S"
+  },
+  "stores": {
+    "title": "Mağaza ayarları",
+    "prices": {
+      "title": "Mağaza fiyat",
+      "show_historical_price": "Tüm zamanların en düşük fiyatı",
+      "show_current_price": "En düşük gerçek fiyatı",
+      "show_regional_price": "Bölgesel fiyatlar",
+      "show_all_stores": "Tüm mağazaların fiyatları (mağazaları seçmek için işareti kaldır)",
+      "add_another_region": "Ekle"
+    },
+    "highlight": {
+      "title": "Mağaza öğelerini vurgula",
+      "wishlist_items": "İstek listesindeki öğeleri vurgula",
+      "owned_items": "Kütüphanedeki öğeleri vurgula"
+    }
+  },
+  "settings": {
+    "title": "Envanter & Market Ayarları",
+    "inventory": {
+      "title": "Envanter",
+      "buyset": "\"Satın al\" düğmesi",
+      "quicksell": "\"Hızlı sat\" düğmesi",
+      "instantsell": "\"Anında sat\" düğmesi",
+      "selectall": "\"Tümünü seç\" düğmesi",
+      "getprice": "\"Fiyatı hesapla\" envanter düğmesi",
+      "quickselldif": "Hızlı sat dif",
+      "listdelay": "Listelemeler arasındaki gecikme",
+      "hidedefaultprice": "Varsayılan fiyat bilgisini gizle",
+      "simpify": "Basitleştirilmiş Arayüz",
+      "show_float_value": "Float değerini göster",
+      "tradableinfo": "Takas edilemez öğelerin özetini göster"
+    },
+    "listingmarket": {
+      "title": "Listeleme & Pazar",
+      "quickbuy": "\"Hızlı satın al\" düğmesi",
+      "no_mylistings": "Satılan listelerin sayısı",
+      "no_listings": "Liste sayısı",
+      "no_history": "Geçmiş sayfası boyutu",
+      "totalrow": "Toplam sıra",
+      "overallsum": "Öğelerin özet fiyatını (tüm sayfalarda) göster",
+      "highlight": "Aşırı fiyatlı öğeleri vurgula",
+      "show_get_float": "\"Float\" fonksiyonunu göster"
+    },
+    "tradeoffer": {
+      "title": "Takas Teklifi",
+      "autocheckofferprice": "Teklif penceresi açıldığında fiyatları hesapla",
+      "autodecline": "Geçersiz teklifleri otomatik reddet",
+      "offerdelay": "Teklif fiyatını kontrol etme gecikmesi",
+      "quickaccept": "Hızlı kabul et",
+      "delay": "Gecikme",
+      "confirm": "Onay diyaloğunu göster",
+      "quickrefuse": "Hızlı reddet",
+      "totalprice": "Toplam teklif fiyatını göster",
+      "custombuttons": "Özel butonlar",
+      "manage": "Yönet"
+    },
+    "friends": {
+      "title": "Arkadaşlık İstekleri",
+      "ignoreinvites": "Şundan aşağı olan davetleri reddet",
+      "blockinvites": "Şundan aşağı olan davetleri engelle",
+      "steamlevel": "Steam seviyesi veya",
+      "private": "Gizli",
+      "total": "Toplam",
+      "reset": "Sıfırla"
+    },
+    "extprice": {
+      "title": "Dışarıdan gelen fiyatlar",
+      "showprice": "Dışarıdan gelen fiyatları göster",
+      "masslisting": "Toplu listeleme için kullan",
+      "bgcolor": "Arkaplan rengi",
+      "textcolor": "Yazı rengi",
+      "customprovider": "Özel fiyat sağlayıcı"
+    },
+    "general": {
+      "title": "Genel",
+      "txt_apikey": "API anahtarınızı girin",
+      "txt_custom": "Özel ses için bağlantı adresi",
+      "auto_currency": "Otomatik (Steam cüzdanı birimini kullan)",
+      "auto_language": "Otomatik (Tarayıcı konumunu kullan)",
+      "autogetprice": "Fiyatları otomatik al",
+      "on_hover": "İmleç üzerine getirildğinde",
+      "pricedelay": "Fiyat hesaplama geciklemesi (ms)",
+      "success": "Başarılı",
+      "error": "Hata",
+      "displaynof": "Ekran bildirimleri",
+      "offers": "Takas teklifleri",
+      "friends": "Arkadaşlık istekleri",
+      "comments": "Yorumlar",
+      "nofsound": "Bildirim sesi",
+      "nofsound_vol": "Bildirim sesi seviyesi",
+      "displayvector": "Vektörel fiyatı göster",
+      "showsteamrep": "Steamrep'i göster",
+      "hidebanner": "Sponsor afişlerini gizle",
+      "bookmarks": "Yer İşaretleri",
+      "ck_show": "göster",
+      "manage": "Kategorileri yönet",
+      "clear": "Yer işaretlerini temizle",
+      "apikey": "Steam API anahtarı",
+      "get_apikey": "API anahtarınızı alın",
+      "currency": "Para Birimi",
+      "language": "Dil"
+    },
+    "default": "Varsayılan",
+    "defaultreset": "Varsayılanlara sıfırla",
+    "note": "Değişikliklerin etkinleşmesi için geçerli sayfaları yenilemeniz gerekiyor"
+  },
+  "newupdate": {
+    "updated_to": "Bu sürüme güncellendi",
+    "last_changes": "Son değişiklikler",
+    "view_changes": "Güncelleme geçmişini görmek için buraya tıkla",
+    "skip": "Bunu geç",
+    "or": "veya"
+  }
+}

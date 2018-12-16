@@ -1,0 +1,144 @@
+{
+  "langcode": "no",
+  "about": {
+    "title": "Om oss"
+  },
+  "tradeoffers": {
+    "title": "Byttehandel",
+    "signedout": "Steam: Du har blitt logget ut av brukeren din. Vennligst <a href='https://steamcommunity.com/login/' target='_blank'>logg inn</a> eller sett <b>SteamAPI key</b> i instillinger",
+    "nooffers": "Du har ingen byttetilbud",
+    "countoffers": "du har {{NUMBERS}} byttetilbud(er)",
+    "offerfrom": "Du har et tilbud fra {{USERNAME}}",
+    "offernoname": "Du har et tilbud",
+    "confirmation": "Er du sikker?",
+    "yourprice": "Din pris",
+    "theirprice": "Deres pris",
+    "cancel": "Kanseller",
+    "openall": "Åpne alle",
+    "open": "Åpen",
+    "declineall": "Avslå alle",
+    "decline": "Avslå",
+    "quickaccept": "Hurtig godta",
+    "quickrefuse": "Hurtig avslå",
+    "payskins": "Betal med skins",
+    "buyskins": "Kjøp skins",
+    "sellskins": "Selg skins",
+    "giveaway": "Giveaway"
+  },
+  "marketgraph": {
+    "title": "Marked graf"
+  },
+  "bookmarks": {
+    "title": "Bokmerker"
+  },
+  "faq": {
+    "title": "FAQ"
+  },
+  "stores": {
+    "prices": {
+      "title": "Marked priser",
+      "show_historical_price": "Vis laveste pris",
+      "show_current_price": "Vis laveste pris nåværende",
+      "show_regional_price": "Vis regional pris",
+      "add_another_region": "Legg til"
+    },
+    "highlight": {
+      "title": "Marker marked artikler",
+      "wishlist_items": "marker artikkelen i ønskelisten",
+      "owned_items": "Marker dine artikler"
+    }
+  },
+  "settings": {
+    "title": "Instillinger",
+    "inventory": {
+      "title": "Lager",
+      "buyset": "\"Kjøp sett\" button",
+      "quicksell": "\"Hurtig selg\" button",
+      "instantsell": "\"Instant selg\" button",
+      "selectall": "\"Velg alt\" button",
+      "getprice": "\"Få pris\" inventory button",
+      "quickselldif": "Hurtig selg dif",
+      "listdelay": "Forsinkelse mellom oppføringer",
+      "hidedefaultprice": "Skjul vanlig pris",
+      "simpify": "Forenkle UI",
+      "tradableinfo": "Vis oppsummering av ikke tradeable artikler"
+    },
+    "listingmarket": {
+      "title": "Oversikt & marked",
+      "quickbuy": "\"Hurtig kjøp\" button",
+      "no_listings": "Antall oppføringer",
+      "no_history": "Historie side",
+      "totalrow": "Total row",
+      "highlight": "Marker overpriset"
+    },
+    "tradeoffer": {
+      "title": "Byttehandel",
+      "autocheckofferprice": "Få prisen automatisk når du får en byttehandel",
+      "autodecline": "Avslå utilgjengelige byttehandler",
+      "offerdelay": "Handel pris sjekk er forsinket",
+      "quickaccept": "Hurtig godta",
+      "delay": "Forsink",
+      "confirm": "Vis godta dialog",
+      "quickrefuse": "Hurtig avslå",
+      "totalprice": "Få total pris",
+      "custombuttons": "definerte knapper",
+      "manage": "Velg"
+    },
+    "friends": {
+      "title": "Venneforespørsel",
+      "ignoreinvites": "Ignorer invitasjoner under",
+      "blockinvites": "Blokker invitasjoner under",
+      "steamlevel": "Steam level or",
+      "private": "privat",
+      "total": "Total",
+      "reset": "Tilbakestill"
+    },
+    "extprice": {
+      "title": "Eksterne priser",
+      "showprice": "Vis eksterne priser",
+      "masslisting": "Bruk for masse oppføringer",
+      "bgcolor": "Bakgrunnsfarge",
+      "textcolor": "Tekstfarge",
+      "customprovider": "Tilpasset pris leverandør"
+    },
+    "general": {
+      "title": "Generell",
+      "txt_apikey": "Skriv inn din API-key",
+      "txt_custom": "Lenke til egendefinert lyd ",
+      "auto_currency": "Auto (bruk lommebok valuta)",
+      "auto_language": "Auto (Bruk nettleserens lokale)",
+      "autogetprice": "Få pris automatisk",
+      "on_hover": "On hover",
+      "pricedelay": "Få pris forsinkelse (ms)",
+      "success": "Suksess",
+      "error": "Feil",
+      "displaynof": "Vis varsler",
+      "offers": "Byttehandler",
+      "friends": "Venneforespørsler",
+      "comments": "Kommentarer",
+      "nofsound": "Varsel lyd",
+      "nofsound_vol": "Lyd volum",
+      "displayvector": "Vis vector pris",
+      "showsteamrep": "Vis Steamrep",
+      "hidebanner": "Skjul reklame bannere",
+      "bookmarks": "Bokmerker",
+      "ck_show": "Vis",
+      "manage": "Bestem kategorier",
+      "clear": "Slett bokmerker",
+      "apikey": "Steam API key",
+      "get_apikey": "Skaff din API key",
+      "currency": "Valuta",
+      "language": "Språk"
+    },
+    "default": "Standard",
+    "defaultreset": "Tilbakestill til standard",
+    "note": "Du må oppdatere nåværende side for at endringene skal tre i kraft"
+  },
+  "newupdate": {
+    "updated_to": "Har blitt oppdatert til versjon",
+    "last_changes": "Siste endringer",
+    "view_changes": "Klikk her for å se endringene",
+    "skip": "Hopp over dette",
+    "or": "eller"
+  }
+}

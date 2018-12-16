@@ -1,0 +1,10 @@
+{
+   "extension_description": {
+      "description": "Descripción de la extensión",
+      "message": "Da acceso a muchas utilidades para el inventario de steam y el mercado(Ofrece notificaciones, ventas rápida, compras, ofrecer intercambios, revisar precios...)"
+   },
+   "langcode": {
+      "description": "",
+      "message": "es"
+   }
+}

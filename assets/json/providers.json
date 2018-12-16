@@ -1,0 +1,77 @@
+[
+  {
+    "id": "steam",
+    "title": "Steam (by SIH)",
+    "color": "#9f3afc"
+  },
+  {
+    "id": "backpacktf",
+    "title": "BackpackTF",
+    "color": "#b41919"
+  },
+  {
+    "id": "bitskins",
+    "title": "BitSkins",
+    "color": "#9ffc3a"
+  },
+  {
+    "id": "bpoints",
+    "title": "BPoints",
+    "color": "#f6931c"
+  },
+  {
+    "id": "csgobackpack",
+    "title": "CSGOBackpack",
+    "color": "#fc5d5d"
+  },
+  {
+    "id": "csgofast",
+    "title": "CSGOFast",
+    "color": "#c63f62"
+  },
+  {
+    "id": "csgotm",
+    "title": "CSGOTM",
+    "color": "#f6a740"
+  },
+  {
+    "id": "csmoney",
+    "title": "CSMoney",
+    "color": "#fcc588"
+  },
+  {
+    "id": "d2droulette",
+    "title": "D2D Roulette",
+    "color": "#b4191a"
+  },
+  {
+    "id": "dmarket",
+    "title": "DMarket",
+    "color": "#b41967"
+  },
+  {
+    "id": "dota247",
+    "title": "Dota247",
+    "color": "#f29e15"
+  },
+  {
+    "id": "dota2net",
+    "title": "Dota2Net",
+    "color": "#f22f15"
+  },
+  {
+    "id": "lootfarm",
+    "title": "LootFarm",
+    "color": "#f16421"
+  },
+  {
+    "id": "steamlvlup",
+    "title": "SteamLvlUp",
+    "color": "#fcf83a"
+  },
+  {
+    "id": "steamlvlupgems",
+    "title": "SteamLvlUp (Gems)",
+    "color": "#9ffc3a"
+  }
+]

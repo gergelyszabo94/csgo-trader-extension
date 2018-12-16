@@ -1,0 +1,21 @@
+﻿.question {
+    margin-bottom: 5px;
+}
+
+.answer {
+    margin-bottom: 10px;
+}
+
+.detail-content {
+    display: none;
+}
+
+.separator {
+    border-bottom: 1px solid #161616;
+    -webkit-box-shadow: 0 1px 1px 0 rgba(84, 84, 84, 0.4);
+    -moz-box-shadow: 0 1px 1px 0 rgba(84, 84, 84, 0.4);
+    box-shadow: 0 1px 1px 0 rgba(84, 84, 84, 0.4);
+    text-align: center;
+    margin: 10px 0;
+    height: 1px;
+}

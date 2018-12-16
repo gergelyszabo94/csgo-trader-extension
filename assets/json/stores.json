@@ -1,0 +1,142 @@
+[
+  {
+    "id": "steam",
+    "title": "Steam",
+    "color": "#9ffc3a"
+  },
+  {
+    "id": "gamersgate",
+    "title": "GamersGate",
+    "color": "#fc5d5d"
+  },
+  {
+    "id": "impulse",
+    "title": "GameStop PC",
+    "color": "#c63f62"
+  },
+  {
+    "id": "gamesplanet",
+    "title": "GamesPlanet UK",
+    "color": "#f6a740"
+  },
+  {
+    "id": "gamesplanetfr",
+    "title": "GamesPlanet FR",
+    "color": "#f6a740"
+  },
+  {
+    "id": "gamesplanetde",
+    "title": "GamesPlanet DE",
+    "color": "#f6a740"
+  },
+  {
+    "id": "gog",
+    "title": "GOG",
+    "color": "#f16421"
+  },
+  {
+    "id": "dotemu",
+    "title": "DotEmu",
+    "color": "#f6931c"
+  },
+  {
+    "id": "amazonus",
+    "title": "Amazon",
+    "color": "#fcc588"
+  },
+  {
+    "id": "indiegalastore",
+    "title": "IndieGala Store",
+    "color": "#ffb4e0"
+  },
+  {
+    "id": "dlgamer",
+    "title": "DLGamer",
+    "color": "#f5fe94"
+  },
+  {
+    "id": "direct2drive",
+    "title": "Direct2Drive",
+    "color": "#1df884"
+  },
+  {
+    "id": "origin",
+    "title": "Origin PC",
+    "color": "#ddff1c"
+  },
+  {
+    "id": "uplay",
+    "title": "Uplay PC",
+    "color": "#01657a"
+  },
+  {
+    "id": "humblewidgets",
+    "title": "Humble Widgets",
+    "color": "#f8300c"
+  },
+  {
+    "id": "humblestore",
+    "title": "Humble Store",
+    "color": "#ff3e1b"
+  },
+  {
+    "id": "indiegamestand",
+    "title": "IndieGameStand",
+    "color": "#73c175"
+  },
+  {
+    "id": "squenix",
+    "title": "Square Enix",
+    "color": "#b41919"
+  },
+  {
+    "id": "bundlestars",
+    "title": "Bundle Stars",
+    "color": "#d0fe00"
+  },
+  {
+    "id": "fireflower",
+    "title": "FireFlower",
+    "color": "#29698c"
+  },
+  {
+    "id": "newegg",
+    "title": "Newegg",
+    "color": "#f79328"
+  },
+  {
+    "id": "coinplay",
+    "title": "Coinplay.io",
+    "color": "#1b4284"
+  },
+  {
+    "id": "wingamestore",
+    "title": "WinGameStore",
+    "color": "#0b3e65"
+  },
+  {
+    "id": "macgamestore",
+    "title": "MacGameStore",
+    "color": "#0b3e65"
+  },
+  {
+    "id": "gamebillet",
+    "title": "GameBillet",
+    "color": "#f22f15"
+  },
+  {
+    "id": "silagames",
+    "title": "SilaGames",
+    "color": "#f9cf6b"
+  },
+  {
+    "id": "imperialgames",
+    "title": "Imperial Games",
+    "color": "#16a085"
+  },
+  {
+    "id": "battlenet",
+    "title": "Battle.net",
+    "color": "#00cbe6"
+  }
+]

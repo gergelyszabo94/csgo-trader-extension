@@ -1,0 +1,10 @@
+{
+   "extension_description": {
+      "description": "Popis rozšíøení",
+      "message": "Poskytuje mnoho pomocných programú pro steam inventory a obchod (Trade notifikace, rychlé prodávání, buying, ponouknutí tradu, price check...)"
+   },
+   "langcode": {
+      "description": "",
+      "message": "cs"
+   }
+}

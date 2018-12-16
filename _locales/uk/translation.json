@@ -1,0 +1,49 @@
+﻿{
+  "langcode": "uk",
+  "about": {
+    "title": "Про"
+  },
+  "bookmarks": {
+    "title": "Закладки"
+  },
+  "faq": {
+    "title": "ЧаПи"
+  },
+  "settings": {
+    "title": "Налаштування",
+    "inventory": {
+      "buyset": "\"Встановити купівлю\" кнопки",
+      "quicksell": "\"Швидка продажа\" кнопка",
+      "quickselldif": "Різниця швидкої продажі",
+      "listdelay": "Затримка між оновленнями"
+    },
+    "listingmarket": {
+      "quickbuy": "\"Швидка купівля\" кнопки",
+      "no_listings": "Кількість лотів",
+      "no_history": "Розмір сторінки історії",
+      "totalrow": "Всього рядків",
+      "highlight": "Виділити зависоку ціну"
+    },
+    "tradeoffer": {
+      "autocheckofferprice": "Автоматично отривувати ціну коли є обмін",
+      "autodecline": "Відхиляти неактивні обміни",
+      "offerdelay": "Затримка між перевіркою ціни в обміні",
+      "custombuttons": "Користувацькі кнопки"
+    },
+    "friends": {
+      "ignoreinvites": "Ігнорувати запрошення нижче",
+      "blockinvites": "Заблокувати запрошення нижче"
+    },
+    "general": {
+      "currency": "Валюта",
+      "displaynof": "Показувати сповіщення",
+      "displayvector": "Показати вектор ціни",
+      "language": "Мова",
+      "nofsound": "Звук сповіщення",
+      "nofsound_vol": "Гучність звуку",
+      "showsteamrep": "Показувати Steamrep"
+    },
+    "autoreply": "Автоматична відповідь",
+    "note": "Оновіть поточну сторінку, щоб зміни набули чинності"
+  }
+}

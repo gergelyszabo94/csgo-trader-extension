@@ -1,0 +1,1688 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8" />
+  <title>SIH Changelogs</title>
+  <link href="/css/changelogs.css" rel="stylesheet" type="text/css" />
+  <link href="/css/general.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body class="dark">
+  <h1>Steam Inventory Helper (SIH)</h1>
+  <h2>Release Notes and Changelog</h2>
+  <div class="note">
+    <h3>Version 1.17.0</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: "Buy cards dialog". Our function to automatically buy cards for badges.</li>
+        <li>Added: Function to leave groups by 1 click.</li>
+        <li>Added: Ability to calculate the Steam inventory value by Steam & SteamLvlUp prices.</li>
+        <li>Added: Function to extend the listing buy orders list.</li>
+        <li>Added: Function to change the currency in the buy orders window.</li>
+        <li>Fixed: Function to sort friend invites. (wasn't working due to the Steam re-design)</li>
+        <li>Fixed: When inventory is changed, the external price providers were saved from the previous inventory selected.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.16.0</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Auto-accept “gift” trade offers (empty from your side) function.</li>
+        <li>Added: dota247 com external prices for DOTA2.</li>
+        <li>Added: Setting to ON/OFF the "function for displaying information about the funds spent on your account".</li>
+        <li>Removed: The old "Show buy cards dialog" function due to the Steam added its to their basic functionality.</li>
+        <li>Cosmetics: Steam basic button "Buy remaining cards on the Market" is cloned to the badge top menu for greater convenience.</li>
+        <li>And other minor fixes and improvements.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.15.0</h3>
+    <div class="cnt">
+        <ul>
+            <li>Added: Profile Level Up feature now checks your completed badges. It will not offer you the card sets for the badges that are already completed.</li>
+            <li>Added: Bitskins prices for the following games:
+              <ul>
+                <li>CS:GO</li>
+                <li>Dota 2</li>
+                <li>PUBG</li>
+                <li>H1Z1</li>
+                <li>TF2</li>
+                <li>RUST</li>
+                <li>PAYDAY 2</li>
+                <li>Just Survive</li>
+                <li>Unturned</li>
+                <li>Killing Floor 2</li>
+                <li>BATTALION 1944</li>
+                <li>Depth</li>
+                <li>Black Squad</li>
+              </ul>
+            </li>
+            <li>Added: SteamLvlUp.com prices for the Steam inventory trading cards. (1)</li>
+            <li>Added: DMARKET.com prices for Dota 2 and CS:GO.</li>
+            <li>Added: "Steam (by SIH)" prices for the Steam inventory trading cards. (2)</li>
+            <li>Added: The more quickest function to help you remove your marketplace listings much faster. Its much faster now!</li>
+            <li>Added: Buttons to show/hide your "pending confirmation" listings and "buy order" requests.</li>
+            <li>Fixed: Overpriced items highlighting. Now it will highlight your listings just like it did earlier. The only change here is that the "lowest market price" column added.</li>
+            <li>Fixed: Some stickers may not have a price because of the special symbols in their name (like & or ' or ,).</li>
+            <li>Fixed: Gen. expression function now displays a proper info.</li>
+            <li>And other minor fixes and improvements.</li>
+          </ul>
+
+          <p>(1) SteamLvlUp (Gems) - prices in the main website currency called "Gems" / SteamLvlUp - prices in your selected currency.</p>
+          <p>(2) These prices are being collected from the Steam marketplace in USD currency and converted to your selected currency. They may differ from the real price because all regional prices are different, but its still close to the market prices. (Its hard to collect ~116000 prices from every regional marketplace, thats why its a kind of placeholder, please use that to compare prices, but not as a standard-etalon price, we are still looking into the ability to get all regional prices).</p>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.14.0</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Profile LEVEL-UP service! *</li>
+        <li>Added: PUBG Battle Points (BP) currency as items pricing method. **</li>
+        <li>Added: PUBG Battle Points (BP) currency to the description of the item on its market page. ***</li>
+        <li>Added: "Highlight overpriced items" function now shows the lowest listing value on the market and marks green or red if your listing is lower or higher than the lowest one.</li>
+        <li>Added: Steam profile permalink feature now contains full profile link and copy with 1 click button.</li>
+        <li>Added: Chinese Simplified translation. Thanks to iFu Studio.</li>
+        <li>Fixed: "Inventory Value" button and function still being displayed after disabling that in the settings.</li>
+        <li>Fixed: Your wishlist games highlight function not working in some cases when user is switching pages in Steam store.</li>
+        <li>Removed: CSGOFAST prices for the following games - H1Z1, Rust, Just Survive, Team Fortress 2. Items from these games are temporarily not acceptable on this website.</li>
+        <li>Removed: OPSKINS prices (for all the games) due to their recent conflict with Valve after which OPSKINS prices are not real and actual anymore.</li>
+      </ul>
+
+      <p>* This BETA service is located on the "Badges" page. The purpose of the function is to level up you profile with just a few clicks with the level you would choose by searching the cheapest card sets on the market.
+        <ol>
+          <li>Select the desired level.</li>
+          <li>Check how much sets you need to level up.</li>
+          <li>Press "LEVEL UP!" button.</li>
+          <li>Check how much it will cost you with the lowest priced card sets on the market.</li>
+          <li>BAM! You got the cheapest items to level up your profile and all that was made just by few clicks.</li>
+        </ol>
+        <p>Please consider that this function is in BETA testing mode and will contain more cool stuff later.</p>
+        <p>Please consider that Steam allows us to display and use only 100 card order on 1 page. So, for example, if you will need a 1000 card order to level up your profile, this feature will open 10 browser windows with all of the cards (sets).</p>
+      </p>
+      <p>** It will be displayed on the same spot where you can see the Float from CS:GO.</p>
+      <p>*** Now you will be able to check how much your item worth in BP before buying and trade your items for the PUBG crates much easier by searching the cheapest ones on market.</p>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.13.5</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: External prices from CSGOFAST for the following games:</li>
+        <ul>
+          <li>H1Z1</li>
+          <li>RUST</li>
+          <li>JUST SURVIVE</li>
+          <li>TEAM FORTRESS 2</li>
+        </ul>
+        <li>Removed: External prices from DAPUBG for the PUBG game.</li>
+        <li>And other minor fixes and improvements.</li>
+
+        <li>
+          <p>Cooperation with the trading platform market csgo com (ex. csgo tm).</p>
+          <p>Users who use this marketplace will be able to send trades with sold / purchased items directly to other users via Steam
+            Inventory Helper, without the participation of additional intermediaries. The process will be generated automatically
+            at the request of the user who uses this marketplace and only after the confirmation and the will to use this method.</p>
+          <p>Users who do not use this service will not be affected in any way by this update.</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.13.4</h3>
+    <div class="cnt">
+      <ul>
+        <li>Fixed: "Total" in Buy Orders now counts properly (considering the amount).</li>
+        <li>Fixed: Sometimes, when you trying to list the item which is already listed on the market, price was autoadjusted for the items that are next in the sell queue (steam cards).</li>
+        <li>Cosmetics: API key will be hidden after you've entered it in the settings so nobody can see it while you screensharing etc.</li>
+        <li>Added: Old market graph is available in the SIH main window.</li>
+        <li>And also some minor fixes and improvements.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.13.2</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Setting to ON/OFF stickers on the CS:GO items on market.</li>
+        <li>Added: Possibility to see your own country in the "Regional prices" in Steam store to compare prices.</li>
+        <li>Added: Old checkboxes were replaced with new ON/OFF sliders.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.13.1</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: New settings section called "Profile". From now it will contain all profile-related settings. Setting for
+          SteamRep and profile permalink are moved there.</li>
+        <li>Added: Ability to select Steam-related services quicklinks that need to be displayed on your profile.</li>
+        <li>Added: Button to 1-click select/deselect all Steam-related services quicklinks.</li>
+        <li>Added: Button to 1-click select/deselect all external stores quicklinks for the Steam store.</li>
+        <li>Added: completionist_me quick profile link.</li>
+        <li>Added: steamladder_com quick profile link.</li>
+        <li>Fixed: External prices in the inventory are not displayed in some cases.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.13.0</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Ability to choose the country which currency prices you would like to see on the page of a Game or DLC in
+          Steam store. To change the currency just go to the "Store settings" / "Store prices" / "External stores prices
+          (country)" and choose the one you like.</li>
+        <li>Added: Possibility to store the user bookmarks on the Steam Inventory Helper's server. From now all your bookmarks
+          will be available in your SIH even if you will reinstall it!</li>
+        <li>Added: External links (on the profile page) on:
+          <ul>
+            <li>CSGOBackpack</li>
+            <li>SteamRep</li>
+            <li>SteamDB</li>
+            <li>SteamTrades</li>
+            <li>Achievment Stats</li>
+            <li>Backpack.tf</li>
+            <li>AStats.nl</li>
+          </ul>
+        </li>
+        <li>New settings design and location: Design contains more conveniently structured settings. From now settings will be
+          located in the external window for their more convenient use, and also for the future development. We have also
+          added the Control button in the old SIH window in order that it was more convenient to you to get used to a new
+          arrangement and visit a settings in 1 click.</li>
+        <li>Now it is possible to get to settings page as a new way (on pressing of the right button of a mouse and transition
+          to "Options") and an old way, by pressing the left button of a mouse directly on the extension and pressing the
+          "Settings" button.</li>
+        <li>In an old and habitual window there will be all most important for fast access: "Trade Offer" page, "Bookmarks page",
+          and also "About Us" page, these pages will also be available in more convenient look on the new settings page.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.12.0</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Dota2net external prices for Dota2.</li>
+        <li>Added: Hiding the "Buy all" button. Loading spinner after you have pressed the "Buy all" button when using a function
+          to buy all cards for the badge craft. This feature was added for the avoid purpose of repeatedly pressing on the
+          button "Buy all" at which Steam could receive more buy requests than it should.</li>
+        <li>Fixed: Dissapearing of the "Total" function on the market.</li>
+        <li>Fixed: Problem when some of the functions were not displayed when you are using old Chrome version.</li>
+        <li>Fixed: Problem with using SIH via HTTPS protocol when you was not able to switch the pages on the market listings.</li>
+      </ul>
+
+      <p>And also some more minor changes for the flawless SIH work.</p>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.11.9</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Steam Market price labels in the CSGO & PUBG inventory "Steam (by SIH)". (1)</li>
+        <li>Added: Ability to count your PUBG inventory summary via Steam market prices.</li>
+        <li>Added: From now CS:GO cases will have quick-links on the each item case can drop. (Links to market in the case description)
+        </li>
+        <li>Added: Info from the GLWS. After "Get Float" button is pressed, you will also recieve the detailed info of the selected
+          item like GLWS previously had. Just hover your mouse on the item and the menu with the information will pop out.
+          (2)
+        </li>
+        <li>Added: Mini icons of the external price providers in the selector under the inventory.</li>
+        <li>Fixed: Inventory price is not being calculated when you are logged off from Steam. </li>
+        <li>Fixed: When turning items into gems (Steam inventory), after closing the menu some functions vere still displaying
+          over the inventory.</li>
+        <li>Fixed: A bug when SIH was skipping items in market price checking & mass listing. </li>
+        <li>New currencies added: Argentine Peso (ARS), Uruguayan Peso (UYU), Costa Rican Colón (CRC), Qatari Riyal (QAR), Kazakhstani
+          Tenge (KZT), Belarus Rubles (BYN), United Arab Emirates Dirham (AED), Israeli New Shekel (ILS).</li>
+      </ul>
+
+      <p>(1) These prices are gathered from our cache of steam requests and are quite accurate. However, they may differ from
+        the "requested" prices a bit. This feature was made to lower the requests amount made to Steam and its being informative
+        only so you can compare prices with the different sites & Steam. Don't worry about the freshness of the prices which
+        are being requested in the mass listing function. They will be fresh and new anyways.</p>
+      <p>(2) P.S. Please let us know if you want us to make an external service with this kind of info (if it was more comfortable
+        to use).</p>
+      <p>DEFINDEX, PAINTINDEX, PAINTSEED, RARITY, QUIALITY, INVENTORY, ORIGIN, ITEMID - all of this info will be available from
+        this moment directly in SIH.</p>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.11.8</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: New design for the inventory functions and buttons.</li>
+        <li>Added: Sliders to turn off Steam Inventory Helper functions for the selected pages (Market, Listings, Inventory,
+          Trade Offer)</li>
+        <li>Added: A button to select external prices providers, its located under your inventory.</li>
+        <li>Added: Function to count the inventory price by the external price provider (can be selected from the drop-down list
+          directly in the inventory).</li>
+        <li>Added: External prices in metal for the TF2 (backpack.tf)</li>
+        <li>Added: Origin info of the item. You can check it by pressing "Get Float" button on the market listings.</li>
+        <li>Corrected: Sort button now allows you to sort items by price, float and name.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.11.7</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: DAPUBG.COM external prices for PUBG.</li>
+        <li>Added: Get Float button added to the inventory. Go get all floats in the inventory easily with 1 click!</li>
+        <li>Removed: GLWS link. (All GLWS features will be available in our app in the next update)</li>
+        <li>Added: The "Origin" info display near the "Float". Available on the market and in the inventory.</li>
+        <li>Added: Possibility to display up to 5 external prices providers at once on the items avatar. Compare, find the best
+          price and get your profits!</li>
+        <li>Redesigned: External prices display. The displaying of these prices will be more useful and comfortable located to
+          the "tags" and float value.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.11.6</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: CSGOTM external prices.</li>
+        <li>Added: CSMONEY external prices.</li>
+        <li>Added: BitSkins external prices.</li>
+        <li>Added: LootFarm external prices.</li>
+        <li>Fixed: Notifications popping out even if the trade was accepted/declined some days ago.</li>
+        <li>Fixed: "Get Float" button duplicating itself in some cases.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.11.5</h3>
+    <div class="cnt">
+      <ul>
+        <li>Design: SIH got a new re-design!</li>
+        <li>Design. Added:</li>
+        <ul>
+          <li>Market page re-design</li>
+          <li>Item market page re-design</li>
+          <li>Store page games prices re-design</li>
+          <li>Mass-listing function re-design</li>
+          <li>Trade offers page re-design</li>
+        </ul>
+        <li>Added: Button to get all floats in the trade offers page.</li>
+        <li>Added: Button to sort by float in the trade offers page.</li>
+        <li>Edited: Items tags (In-trade, equipped, bookmarked). They will look much cooler now and more recognizable.</li>
+        <li>Edited: Bookmarks. You will be able to add an item to the main directory just by clicking the "add to bookmarks"
+          button. If you want to add it to the special list, you need to hover on the button and select that or add a new
+          list. Also we have fixed some minor bugs with this function.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.11.4</h3>
+    <div class="cnt">
+      <ul>
+        <li>Fixed: Mass listing not working.</li>
+        <li>Added: PLAYERUNKNOWN'S BATTLEGROUNDS external prices (OPSKINS).</li>
+        <li>Added: Steam Community items external prices (OPSKINS).</li>
+        <li>Added: Bookmarks "evolved". You will be able to create a lists with the bookmarks, to manage them as you wish. (This
+          function is in beta and will be corrected a bit in the next update).</li>
+        <li>Corrected: Steam API key enter field is moved to the top in the settings.</li>
+        <li>Added: Updated Turkish translations.</li>
+        <li>Corrected: Inventory total price calculation function.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.11.3</h3>
+    <div class="cnt">
+      <ul>
+        <li>Fixed: Missing "In trade" tag in the trade offers.</li>
+        <li>Fixed: Missing items prices, trade info in the trade offers page.</li>
+        <li>Added: Updated translations strings (in the FAQ section).
+          <i>If you wish to translate SIH to your language - You are welcome :) Send a message with the edited strings to our
+            email.
+          </i>
+        </li>
+        <li>Added: Updated Russian translations.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.11.2</h3>
+    <div class="cnt">
+      <ul>
+        <li>Fixed: GLWS links.</li>
+        <li>Fixed: Russian translations in all extension.</li>
+        <li>Fixed: Nothing happening when you have two or more same cards selected in the mass listing function and trying to
+          sell them.</li>
+        <li>Fixed: Bug when you have selected cards that are not available to sell currently with the items that are available
+          to sell and trying to sell them all via mass listing function. Normal items (available to sell) were trying to
+          be sold with the "autoadjust" checkbox.</li>
+        <li>Fixed: Function to show "Not tradable items" accuring some errors and not showing items that are not available to
+          sell and got sell couldown.</li>
+        <li>Fixed: Prices on the weapon icons in the mass listing queue are dissapeared.</li>
+        <li>Fixed: Bug when gifted items with the description in DOTA2 inventory could run a html code with the external sound.
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.11.1</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Sticker prices on the weapons (optional). Warning: You may have experience steam requests cooldown for some
+          minutes with this function, because 1 gun with the 4 stickers sends 5 steam requests instead of 1. However, a lot
+          of users asked us to bring this back. Function will be set to off at the 1st app install, you can enable it on
+          your own risk.</li>
+        <li>Added: "Buy missing parts" (Buy set) function! Hopefully we are able to bring that back. You can buy the missing
+          parts of the set from the inventory button now, you will be able to refresh the lots, see the refresh time of the
+          cheapest lots and see all of the missing items with the chepest price available.</li>
+        <li>Fixed: Some "Market graph" fixes, the graph will work normally now. You can collect the data and filter it to see
+          the spent and profit money on the marketplace.</li>
+        <li>Fixed: "Quick sell" button is now showing up when you have hidden the default price info.</li>
+        <li>Fixed: " ' " - symbol bug in the item search. Links were cut off if the selected item has " ' " in its name.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.11.0</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: "Sort by Float" function.</li>
+        <li>Added: Setting to off "Get float" function.</li>
+        <li>Fixed: External price providers icons are dropping down in the inventory and causing a visual bug.</li>
+        <li>Fixed: External price providers on-hover hint with the provider name are not displaying.</li>
+        <li>Fixed: "Hide listings" button are displayed on the market when you are logged off and no active listings are visible.</li>
+        <li>Fixed: Some market translations to Russian.</li>
+        <li>Some minor fixes and improvements.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.10.9</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: FLOAT bots! Float function is back! You are now able to check items float on the market page and in the inventory.</li>
+        <li>Added: Function to open all selected booster packs with the 1 click.</li>
+        <li>Added: Function to count all market item pages summary, not only the page total. You will be able to see page total
+          and all listings total now.</li>
+        <li>Fixed: Wrong item positions in the "Buy orders" after the sorting applied.</li>
+        <li>Some minor fixes and improvements.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.10.8</h3>
+    <div class="cnt">
+      <ul>
+        <li>Fixed: Imposing Steam Market price labels on the price of an external price provider in a trade offer window after
+          moving an item from the active trade to the inventory.</li>
+        <li>Added: Possibility to sort items by external prices not only in the CS:GO inventory but in the other popular games
+          too.
+        </li>
+        <li>Fixed: Sort items by price error on the Steam Market page in the "My buy orders" directory.</li>
+        <li>Fixed: Visual bug with the OFF tag displaying on the SIH icon in the browser when extension is working.</li>
+        <li>And also other minor fixes and improvements.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.10.7</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Icons/logos of the external prices providers that may help you to understand what prices are displaying at
+          this moment.</li>
+        <li>Corrected: External prices display position in the inventory/in the trade offer window.</li>
+        <li>Added: Possibility to extend market listings amount up to the 500 positions.</li>
+        <li>Fixed: Market sorting function by Name/Price (you will be able to sort anything of the market listings categories
+          now: active listings, buy orders and also listings, awaiting confirmation).</li>
+        <li>Fixed: The total price/sorting functions are not dissapearing from the market page after you have deleted all the
+          listings.
+        </li>
+        <li>Fixed: Bug when all external prices on the inventory page are dissapearing after you have refreshed your items by
+          ALT+R function.</li>
+        <li>Fixed: Wrong price history median in the mass selling queue.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.10.6</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Sorting functions (by Name or Price) on the Steam Market.</li>
+        <li>Added: Possibility to skip items that don't have a market price. (Items without price will be deleted from the queue
+          so you can setup the price manually)</li>
+        <li>Fixed: Simplified Chinese and Traditional Chinese translation errors.</li>
+        <li>Fixed: Coupons price checking issue. SIH won't count coupons in the price checking function anymore.</li>
+        <li>Updated: Czech translations.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.10.5</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Button to hide active market listings.</li>
+        <li>Added: Button to hide/display detailed info about the incoming friend requests.</li>
+        <li>Added: "Quick info" icons that display (VAC/Trade/Community ban status) of the incoming friend request.</li>
+        <li>Added: Button to ON/OFF Twitch and YouTube links on the store page.</li>
+        <li>Corrected: Small visual corrections to the trade offer total value function in the trade offer window. The prices
+          in the trade offer window are more user friendly now.</li>
+        <li>Fixed: 0.03$ listings in the multi-selling queue will no longer bug the selling process. If the item price is subtracted
+          by any value or percentage, 0.03$ items will no longer bug the selling process (steam politics are not allowing
+          to subtract any value from the 0.03$ item).</li>
+        <li>Fixed: Changing the external price provider in the trade offer window now will take affect on the change of the total
+          trade offer value (it was not changing earlier).</li>
+        <li>Fixed: Quick Buy button on the Marketplace was not working.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.10.4</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: OPSKINS external prices for the CS:GO, Dota 2, TF2, H1Z1, Rust, Unturned, Payday 2, Killing Floor 2 inventories.</li>
+        <li>Added: Buttons on the game store page to search it on YouTube, Twitch.</li>
+        <li>Added: Button to sort inventory items in the trade offer window.</li>
+        <li>Fixed: Quick sell error in the mass listing window.</li>
+        <li>Fixed: Permalink error (the link was set to your profile, not the users profile you are checking).</li>
+        <li>Fixed: Buttons translations in the trade offer window.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.10.3</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: External prices for Team Fortress 2 (backpack.tf).</li>
+        <li>Added: External prices for CS:GO (csgobackpack.net).</li>
+        <li>Added: Total inventory value button (now it loads way more faster and you can also check the total inventory value
+          of any user you want by visiting their inventory).</li>
+        <li>Added: Button to show/not show float value.</li>
+        <li>Added: Button to show/not show user permalink (permament ID) on the profile page.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.10.2</h3>
+    <div class="cnt">
+      <ul>
+        <p>We are happy to introduce you our brand new site!
+          <a href="http://34.gs/steaminventoryhelpercom" target="_blank">Steam Inventory Helper</a>
+        </p>
+        <li>Report a bug, suggest a feature, ask a question through our feedback form.</li>
+        <li>Check the latest updates or news in our BLOG section.</li>
+        <li>Check the FAQ section with all of the common questions of SIH.</li>
+        <p>Other updates:</p>
+        <li>Added: Norwegian translation (Thanks to Nazhad Chawshin).</li>
+        <li>Added: Selection setting of stores prices that you want to see in the Steam Store.</li>
+        <li>Removed: "Sort items" button in the inventory (this button is causing alot of bugs, removed for the further inspection).
+        </li>
+        <li>Removed: TF 2 external prices (provider has ceased to provide prices).</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.10.1</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Traditional Chinese translation (Thanks to Kyonko Li).</li>
+        <li>Added: Showing money spent total in Steam (on the account page).</li>
+        <li>Fixed: Highlighting wishlist and owned items fucntion title corrected.</li>
+        <li>Fixed: Turkish translation corrected (Thanks to Onur Tura).</li>
+        <li>Fixed: Wishlist and owned items highlighting colors are looking more softly now.</li>
+        <li>Fixed: Improper display of inventory items when switching to another game inventory.</li>
+        <li>Fixed: Improper profit calculation if the game price on Steam and other game-stores are in different currencies.</li>
+        <li>Fixed: Not displaying external item prices in the opponents inventory (When someone sends you a trade).</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.10.0</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Displaying lowest price of games and DLC's in Steam Store (and external game stores).</li>
+        <li>Added: Displaying historical lowest price of games and DLC's in Steam Store (and external game stores).</li>
+        <li>Added: Displaying regional prices of games and DLC's in Steam Store.</li>
+        <li>Added: Highlighting your wishlist and games or DLC's you already own.</li>
+        <li>Added: Turkish translation.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.9.12</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: "Instant sell" button on Inventory page.</li>
+        <li>Added: "Sort items" button on Inventory page to sortitems by price.</li>
+        <li>Added: New (in-browser) notification about declined offers (Only if you add API key in Settings).</li>
+        <li>Fixed: Czech translation (thanks to PapuleX).</li>
+        <li>Fixed: Function of ignoring and blocking friend requests from users with private profiles if you have set-up "Ignore
+          invites" or "Block invites".</li>
+        <li>Fixed: "Quick Buy" feature is disabled by default in Settings.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.9.11</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Link to the profile page with Steamrep.</li>
+        <li>Added: Ability to change the language of the extension interface from the Settings spot.</li>
+        <li>Changed: Proposal check interval up to 5 minutes to prevent blockage of Trade Offers page for frequent polling (CAPTCHA
+          will be displayed in the case of blocking).</li>
+        <li>Fixed: Query bug and display information from Steamrep for private profiles.</li>
+        <li>Fixed: Error of calculating the external price of items for mass listing function.</li>
+        <li>Fixed: Displaying external prices without setting "Show external prices".</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.9.10</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Displaying SteamRep.com reputation and status on the user's profile page.</li>
+        <li>Fixed: Tradable gifts sending problem.</li>
+        <li>Fixed: Error in calculating of total price of the items in trade offer with Settings «Show offer total price».</li>
+        <li>Fixed: Prices in some national currencies displayed wrong.</li>
+        <li>Fixed: Missing value of notification sound.</li>
+        <li>Fixed: Polish translations (thanks to Miłosz Skaza).</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.9.9</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Option of checking a list of trades through Steam API, if users Steam API key is set in plugin options (recommended).
+        </li>
+        <li>Added: Check users Steam authorization. If user is not logged in, "OFF" is displayed on the icon of extension.</li>
+        <li>Added: The extension can be installed in Opera browser. Install "Download Chrome Extension" in Opera, if you need
+          to install extensions from Chrome Web Store.</li>
+        <li>Fixed: Steam: 429 Too Many Requests.</li>
+        <li>Fixed: Trade offer sound notifications.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.9.8</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Show summary of non tradable items.</li>
+        <li>Added: Possibilities to select all transactions by item.</li>
+        <li>Added: Skip already sent gifts when sending gifts in bulk.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.9.7.1</h3>
+    <div class="cnt">
+      <ul>
+        <li>Fixed: Broken translation.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.9.7</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Show user ban info on the users profile from steamrep and trade offer page.</li>
+        <li>Added: Show offer price on the trade offer page.</li>
+        <li>Fixed: Inventory UI in "Simplify UI" mode.</li>
+        <li>Added: Possibility to disable button "Select all".</li>
+        <li>Fixed: Loading price for bookmarks.</li>
+        <li>Added: Trade counters and date of last trade on the trade offer page.</li>
+        <li>Added: Button for quickly remove items has no price.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.9.6</h3>
+    <div class="cnt">
+      <ul>
+        <li>Fixed: Can't show up price "on hover" in the Trade Offers page.</li>
+        <li>Added: Possible to calculate price of the tab inventory (Experimental feature, can work incorrect).</li>
+        <li>Fixed: External price for CS:GO and TF2.</li>
+        <li>Fixed: Incorrect select all with advanced filters.</li>
+        <li>Added: Step line graph for the market graph.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.9.5</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Button 'Select all' to select all items on current inventory page.</li>
+        <li>Added: Button for checking current price in market history.</li>
+        <li>Added: Quick refuse link similar to button 'Quick accept'.</li>
+        <li>Fixed: Crash functionality in inventory when TF2 tab is getting opened.</li>
+        <li>Update: Flexible protocol (previous can broke some functionality).</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.9.4.1</h3>
+    <div class="cnt">
+      <ul>
+        <li>Fixed: Quick accept.</li>
+        <li>Fixed: Showing items in trade.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.9.4</h3>
+    <div class="cnt">
+      <ul>
+        <li>Fixed: Trade offers notifications.</li>
+        <li>Fixed: Trade offers page error 429 Unknown.</li>
+        <li>Added: Trade counters. (Steam API key is required).</li>
+        <li>Fixed: Broken html in description.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.9.3.1</h3>
+    <div class="cnt">
+      <ul>
+        <li>Fixed: External prices.</li>
+        <li>Fixed: Popup trade offers notifications.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.9.3</h3>
+    <div class="cnt">
+      <ul>
+        <li>Updated: Possibility to remove bookmarks.</li>
+        <li>Fixed: 'View on glws' repeats.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.9.2</h3>
+    <div class="cnt">
+      <ul>
+        <li>Fixed: In trade marks.</li>
+        <li>Fixed: Comments notifications.</li>
+        <li>Fixed: Invites notifications.</li>
+        <li>Fixed: Trade offers notifications.</li>
+        <li>Fixed: Extension's trade offers tab.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.9.1</h3>
+    <div class="cnt">
+      <ul>
+        <li>Updated: New design.</li>
+        <li>Fixed: Market graph was crashed if data was empty.</li>
+        <li>Fixed: Some trade offers bugs.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.9.0</h3>
+    <div class="cnt">
+      <ul>
+        <li>Fixed: Trade offers notifications.</li>
+        <li>Fixed: Extension's trade offers tab.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.8.9</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: Quick link to view CSGO skin float value on market via glws.org.
+          <br />
+          <i>This link will replace the old "Inspect in game" link after game name, and a new inspect link will be added to
+            skin image when hover on it.</i>
+        </li>
+        <li>Added: Clickable stickers, the stickers' market listing pages will open when you click on them.</li>
+        <li>Added: Option to change external prices provider in inventory page.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.8.8</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: TF2BP prices for Unusual and Genuine items.
+          <br />
+          <i>Your SteamAPI have to work for this.</i>
+        </li>
+        <li>Added: total in keys/metal for TF2 trades.</li>
+        <li>Added: Ability to change buying order prices on buy trading cards dialog.</li>
+        <li>Fixed: the total of buying order.</li>
+        <li>Added: Chart type for market graph.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.8.7</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: TF2BP prices.
+          <br />
+          <i>I have to build a proxy to get it works, don't know if it could handle all the users. Some of the prices are not
+            100% exact, as some information need to get through SteamAPI to pinpoint TF2BP prices, and that thing is too
+            unstable
+          </i>
+        </li>
+        <li>Fixed: Some minor bugs.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.8.6</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: CSGO stickers on skin on listing page.</li>
+        <li>
+          Added: Option to add custom price API.
+          <br />
+          <i>I have setup a
+            <a href="http://steaminventoryhelper.com/SteamPrices">sample API</a> for those who want to make their own price API for their users.
+            <br /> Note: as I mentioned, this is just a sample for the prices providers, don't use it for trading. And for users,
+            don't add unknown sources.
+          </i>
+        </li>
+        <li>
+          Modified: Warning tag on items on listing page, change to the actual warning messages instead of the general warning.
+          <br />
+          <i>This may clear those misunderstanding about the warning sign.</i>
+        </li>
+        <li>Fixed: Some minor bugs.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.8.5</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Show total external prices in trade offers, and selling queue.</li>
+        <li>Added: Buttons to take items by prices in trade offers.</li>
+        <li>Added: Option to hide sponsor's banner.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.8.4</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: Currency options for external prices.
+          <br />
+          <i>
+            This function works by using exchange rates from api.fixer.io, if they don't have the rates, it won't work. And the prices
+            can't not match exactly what Steam provide as they have their own exchange rates.
+          </i>
+        </li>
+        <li>
+          Added: Options to use external prices for mass listing.
+          <br />
+          <i>
+            Please use this with caution. As you should have known external prices are cached, and some expensive items are manual input.
+          </i>
+        </li>
+        <li>
+          Added: Sort / remove items base on external prices.
+        </li>
+        <li>
+          Added: custom colors for external prices.
+          <br />
+          <i>
+            Because I can't satisfy everyone with a static color. This way, you guys can pick the fabulous pink color for price tags.
+          </i>
+        </li>
+        <li>
+          Updated: Prices on pages will update right when you change the currency in settings.
+          <br />
+          <i>Again, this affects only external prices, as I don't want to force the exchange rates upon the "offical" prices
+            from Steam. The prices get after the change will use the updated currency though.</i>
+        </li>
+        <li>Updated: Romania translations - credit to Stefan3D #NiP HyperX.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.8.3.1</h3>
+    <div class="cnt">
+      <ul>
+        <li>Fixed: Items' images on wrong trade in Extension's trade offers tab.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.8.3</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Custom tag for bookmarked items in trade offers.</li>
+        <li>Added: Option to switch external prices providers in trade offers.</li>
+        <li>Added: CSGOFast.com prices provider.</li>
+        <li>Fixed: Trade offers notifications.</li>
+        <li>Fixed: Extension's trade offers tab.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.8.2</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: External prices for inventory and trade offers.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.8.1</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: Options for get prices.
+          <ul>
+            <li>Get prices on hover</li>
+            <li>Get Dota 2 gems prices</li>
+            <li>Get CS:GO stickers prices</li>
+          </ul>
+        </li>
+        <li>Added: Filering for buy orders list.</li>
+        <li>Added: Add all pending gifts to Steam Gift Inventory.</li>
+        <li>
+          Changed: No duplicate option in trade offer from checkbox to a textbox.
+          <br />
+          <i>So you can input the maximum number of duplicates, ex: 5, and the extension only pick maximum 5 copies of every
+            items. 1 is equivalent to the old checkbox. Leave blank to ignore this function</i>
+        </li>
+        <li>Updated: Latvian translations - credit to Niklāvs Radovics.</li>
+        <li>Updated: Ukrainian translations - credit to Юрій Мацелюх.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.8.0</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: Getting prices monitor.
+          <br />
+          <i>So you can tell if the extension is running or not, and how much Steam hate you.</i>
+        </li>
+        <li>
+          Added: Getting prices with different providers.
+          <br />
+          <i>
+            Every price fetchings will be managed with a queue. If a provider fail to get, the extension will try again with another
+            provider. If every provider fail, well...
+            <br /> Currently, there are only 2 provider, there will be more if I can get my hand on any.
+          </i>
+        </li>
+        <li>Fixed: Hover container on trade offers page.</li>
+        <li>Updated: French translations - credit to tchitchi317.</li>
+        <li>Updated: Czech translations - credit to Michal Tar.</li>
+        <li>
+          Temp removed: Gems prices (Dota 2), and Stickers prices (CS:GO) on items
+          <br />
+          <i>To reduce total calls to price API, they will come back as options.</i>
+        </li>
+        <li>
+          <strong>Side note</strong>: This is a major change, some functions may be buggy. I will try to patch them with the limit
+          time that I have daily.
+          <br /> Oh my fallout 4, I haven't even reached 30h yet.
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.7.7</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Remove equipped items (Dota 2) from listing queue button.</li>
+        <li>Added: Remove in-trade / equipped items (Dota 2) buttons in trade offer windows.</li>
+        <li>Added: Remove items by price buttons in trade offer windows.</li>
+        <li>Added: Option to disable confirm dialog for quick accept.</li>
+        <li>Added: Quick accept buttons in trade offers tab of extension popup.</li>
+        <li>
+          Added: Stickers' prices for CSGO items.
+          <i>I haven't test this through, it might have some bugs.</i>
+        </li>
+        <li>Updated: German translations - credit to Octo Ossi.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.7.6</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Show in-trade tag in inventory.</li>
+        <li>Added: Remove in-trade items from listing queue button.</li>
+        <li>Added: Clear bookmarks link in settings.</li>
+        <li>Added: Option to skip in-trade items in trade offer window.</li>
+        <li>
+          Added: Quick accept link on trade offers page.
+          <br />
+          <i>The link will start a 10s countdown when you click on it, when the count down reach 0, it will open the trade offer
+            window and accept it. You can cancel the trade by click on the link again before the count down reach 0, or just
+            close the trade offer windows before it load complete.</i>
+        </li>
+        <li>Changed: Relocate some buttons in trade offer window.</li>
+        <li>
+          Removed: No trash option in trade window.
+          <br />
+          <i>This term is obsolete for a long time.</i>
+        </li>
+        <li>
+          Fixed: Some strange bug with bookmarks items.
+          <i>I can't reproduce the error, just try to isolate the buggy data. In case it is not fixed, clearing all bookmarks
+            is recommended.</i>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.7.5</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: Automatic update prices of bookmarked items every 10s.
+          <br />
+          <i>There will be a highlight blink when the prices change. And the time when the prices are get will be display on
+            the bookmark header</i>
+        </li>
+        <li>Added: Custom tag in trade offer window for items in other sent trade offers.</li>
+        <li>Added: Quick action links for items on listings page (Inspect CSGO, TF2 skins).</li>
+        <li>
+          Added: Reset options button.
+          <br />
+          <i>This button will reset all your settings, including bookmarks categories and custom buttons.</i>
+        </li>
+        <li>Fixed: A bug when buying trading cards with number sign (#) in name.</li>
+        <li>Fixed: Market graph functions.</li>
+        <li>Fixed: Some UI bugs with market main page.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.7.4</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Bookmarked items tab on extension popup.</li>
+        <li>Added: Seller prices for bookmarked items.</li>
+        <li>
+          Added: Doppler phases for CS:GO knives.
+          <br />
+          <i>This function based on Steam WebApi, it may be laggy if the services is not stable.</i>
+        </li>
+        <li>Added: Decline all link on trade offers tab.</li>
+        <li>
+          Changed: The Steam WebAPI calls will retries maximum 10 times if it can not get the data.
+          <br />
+          <i>This may improve the function a little.</i>
+        </li>
+        <li>
+          Changed: Bookmark items using local storage instead of sync storage.
+          <br />
+          <i>This will increase the limit of storage for bookmarked items, but it can not be synced across your computers. And
+            you have to add them back if you reinstall the extension.</i>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.7.3</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: Categories for bookmarks.
+          <br />
+          <i>You can manage bookmarks categories in the settings.</i>
+        </li>
+        <li>Added: Option to show/hide bookmark link and tab.</li>
+        <li>Added: Sort bookmarked items by name, volume and lowest price.</li>
+        <li>Added: Warning on trade offers with not marketable items or items that can't get prices.</li>
+        <li>Added: Open all trade offers in trade offer tab.</li>
+        <li>Added: Volume (number of sales in 24h) in hover popup.</li>
+        <li>
+          Added: Option to auto adjust price by value or percentage when listing items.
+          <br />
+          <i>All the calculation will be done with seller price (the value you will recieve after the items sold.)</i>
+        </li>
+        <li>Added: Spanish language.</li>
+        <li>Changed: Save the last tab opened as default popup when clicking on SIH icon.</li>
+        <li>Changed: Clicking on trade offers in trade offer tab to open them will not make the tab lose focus.</li>
+        <li>Fixed: Dismissing sell items dialog will close the queue and the sort panel.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.7.2</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: Bookmarks tab to market main pages.
+          <br />
+          <i>You can add items to this tab by go to their listing page and click on the new "Add to bookmarks" link. The prices
+            will be get when you click on the tab.</i>
+        </li>
+        <li>
+          Added: Select all duplicate items link.
+          <br />
+          <i>You can also select all similar items with ctrl + click in select mode</i>
+        </li>
+        <li>
+          Added: Ctrl + click on item in trade offer windows will pick move/remove similar items from the trade.
+          <br />
+          <i>It still uses the same counting function as custom buttons, if you don't assign the total number, it only take
+            similar items on the same page.</i>
+        </li>
+        <li>Changed: Enable buy card dialog on complete badges.</li>
+        <li>Changed: Allow turning not-marketable into gems.</li>
+        <li>Fixed: Some UI bugs.</li>
+        <li>Fixed: Recalculate total price when remove item in trade offer window.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.7.1</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Show number of duplicated items in inventories and trade offer window.</li>
+        <li>Fixed: Trade offers tab.</li>
+        <li>Fixed: Default custom buttons can be deleted.</li>
+        <li>
+          Removed: "No reload inventory" checkbox.
+          <br />
+          <i>I think it is not needed anymore.</i>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.7.0</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: Send multiple gifts function (beta).
+          <br />
+          <i>It can only work if you send it directy to friend or a gmail, if you using other email services, you have to change
+            the emails for each gifts. Tutorial will be available soon on
+            <a href="https://www.youtube.com/user/vplghost/videos">youtube channel</a>.</i>
+        </li>
+        <li>Added: Enable sending gifts to friend who already have the games.</li>
+        <li>Added: Allow creating buy orders for owned trading cards in buy cards dialog.</li>
+        <li>Fixed: Some diaglogs (listings, grinding, buy cards...) due to Valve recently updating their dialog.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.6.3</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Accumulated lines for market graph.</li>
+        <li>Added: Time range buttons for market graph.</li>
+        <li>Added: Swedish language.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.6.2</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Custom Steam WebAPI key option.</li>
+        <li>
+          Added: Fix data button for market graph.
+          <i>This button only fix those errors caused by disorder market transactions (like a 'Jul 17' record after those 'Jun
+            18' records) for now.</i>
+        </li>
+        <li>Added: "Show datatable" button to show collected data in a table.</li>
+        <li>Fixed: US date format for Market graph.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.6.1</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Games tabs scroll for those with more than 10 games tabs in inventory when using simplified UI.</li>
+        <li>Fixed: Steam API for http protocol.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.6.0</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: CS:GO skins' float value in inventory and trade offer windows.
+          <br />
+          <i>This function based on Steam WebApi, it may be laggy if the services is not stable.</i>
+        </li>
+        <li>Fixed: Some translation related bugs.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.5.16</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Options to ignore/block private profiles' invites.</li>
+        <li>Fixed: Card buying orders sometimes don't create orders.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.5.15</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: Highlight overpriced option.
+          <br />
+          <i>Highlight overpriced items in the my listings tab on market main page, and add a new button to select them all.</i>
+        </li>
+        <li>Added: Number of items in trade offers list page.</li>
+        <li>Fixed: Some bugs on the trade offers list page.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.5.14</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Volume option for notification sound.</li>
+        <li>Added: Option to change market history page size.</li>
+        <li>Added: Checkboxes for buying order list to remove multi orders at once.</li>
+        <li>Added: Number of cards for buy cards dialog.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.5.13</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: Auto decline unavailable trade offers.
+          <br />
+          <i>You have to enable both "decline unavailable offers" and "Display trade offers notifications" options for this
+            function to work.</i>
+        </li>
+        <li>Added: Decline buttons on the popup windows.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.5.12</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: Auto ignore / block friend invites with Steam level below threshold.
+          <br />
+          <i>Threshold can be set in settings page, default to 0 (off)</i>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.5.11</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: number of trade offers on extension badge.</li>
+        <li>Added: trade offers tab.</li>
+        <li>
+          Added: custom sound for notifications.
+          <i>It only accepts online URL because I don't want to change the permissions of the extension.</i>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.5.10</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Dota 2 item preview on DotaHattery.</li>
+        <li>Fixed: Steam API error on inventory page.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.5.9</h3>
+    <div class="cnt">
+      <ul>
+        <li>Modified: Change the way get total price of trade offers in the offers list page.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.5.8</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: Description label for items in trade offers.
+          <br />
+          <i>It is just CSGO weapons exterior for now, as for other games I need some suggestions.</i>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.5.7</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: Option to adjust delay between listings (multi sell) in milliseconds.
+          <br />
+          <i>As a user suggests, you can set it to 60000ms (1 minute) if you want, although it can take hours to sell like 500
+            cards.
+          </i>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.5.6</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Grind multi items into gems dialog, similar to multi sell.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.5.5</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: "Remove all" button for trade offer, as someone doesn't know that the little "x" beside every item category count
+          can remove all that category's items from the active trade content.
+        </li>
+        <li>
+          Fixed: a bug where it is allowed to add/remove items in trade offer counter mode without clicking counter trade button.
+        </li>
+        <li>Fixed: Quick buy functions.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.5.4</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: separate options for notifications.</li>
+        <li>Fixed: price bug of BattleBlock items.</li>
+        <li>
+          Fixed: items hover function.
+          <br />
+          <i>This is due to Steam recent updates, they get rid of some funcions that cause errors even in vanilla state, hope
+            they will fix it soon.</i>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.5.3</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: desktop notifications for new invites and comments.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.5.2</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: display warnings, gems (dota 2), stickers (CS:GO) of items on selling queue.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.5.1</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: sort function in trade offers.</li>
+        <li>
+          Added: simplify inventory.
+          <br />
+          <i>
+            Credit to Alystair for the idea and a clean design. You have 10+ tabs in your inventory? This option will tidy it up. Check
+            the option in settings to check it out.
+          </i>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.5.0</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: custom price vector.
+          <br />
+          <i>
+            For those who always have a calculator opened to do "(item price / treasure key price) = number of keys needed" kind of math.
+          </i>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.4.9</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: Steam community market graph.
+          <br />
+          <i>
+            <a href="graph.html">this function</a> will collect data from Steam market main page, do a little math and visualize then them. This
+            function don't run in background, so you have to keep the page opened while collecting data. All the data will
+            be stored locally so you can close the page, and continue collecting by open it again and click start collecting
+            data again. But don't run more than 1 collecting page.
+          </i>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.4.8</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Removed: AddonJet ads.
+          <br />
+          <i>
+            due to lately negative feedbacks, they stressed me out bit, so I've decided to remove the ads. And I will not try to monetize
+            extensions anymore. The permissions needed will change back to the 4 sites like before. But please check the
+            changelog whenever an update occures, future features may need access to some other sites.
+          </i>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.4.7</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: quick remove items belongs to a category in trade offer windows.
+          <br />
+          <i>it's the little "x" character beside every categories items counts.</i>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.4.6</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: AddonJet ads. This will need to change the permissions from Steam sites only to all sites to function.
+          <br />
+          <i>
+            Sorry about this, but I have chose the least annoying ads out there, it even doesn't show up on any Valve's sites. You can
+            check it out here
+            <a href="http://addonjet.com/">AddonJet</a>. And you can always disable it in the options anyway.
+          </i>
+        </li>
+        <li>Added: more language support.</li>
+        <li>Fixed: some errors caused by thousands delimiter.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.4.5</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: SteamRep info in invites page.
+          <br />
+          <i>You can disable this funtion on settings page.</i>
+        </li>
+        <li>Added: ignore all level 0 invites.</li>
+        <li>
+          Added: warning message on empty trade offers.
+          <br />
+          <i>I don't know if this could be any help but a suggestion is a suggestion.</i>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.4.4</h3>
+    <div class="cnt">
+      <ul>
+        <li>
+          Added: custom buttons for trade offer window and more.
+          <br /> Check this video to know how to config it:
+          <a href="https://www.youtube.com/watch?v=oz3pV0BO700" target="_blank">Youtube</a>.
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.4.3</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: reload listings button (market home page).</li>
+        <li>Added: hotkeys for some functions.</li>
+        <li>Changed: items count in trade offer windows in a more general way.</li>
+        <li>
+          <span style="text-decoration: line-through">Added: Steam community market income / outcome graphs.</span>
+          <br />
+          <i>This takes a lot of bandwidth for someone with like 100k market transactions and I haven't found a solution to
+            track and cache past transactions</i>
+        </li>
+        <li>Fixed: some funny bugs</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.4.2</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: sort items on selling queue.</li>
+        <li>Added: remove items on selling queue with specific price.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.4.1</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: quick buying Steam trading card set.</li>
+        <li>Fixed: some price bugs on trader offer windows.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.4.0</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: price check currencies supported.</li>
+        <li>
+          Experiment: multi languages support.
+          <br /> All the translations are done by using Google translate. If you want to correct the translations or add new language
+          supports, feel free to email us your translation files at csinvhelp@gmail.com
+          <br /> Sample files:
+          <a href="../js/lang/en.js">funtions strings</a>,
+          <a href="../_locales/en/messages.json">extension strings</a>.
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.23</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: custom border color for items in selling queue.</li>
+        <li>Added: hover information on selling queue.</li>
+        <li>Added: scrollbars for long selling list.</li>
+        <li>Added: highlight similar items on selected.</li>
+        <li>Added: sort funtions for sell listing at market home page.</li>
+        <li>Changed: price backgound and text color on selling queue for easy reading.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.22</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: show item market price in trade offer windows.</li>
+        <li>Added: show items total price (with and without fees).</li>
+        <li>Added: button to recalculate total price in trade offer windows.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.21</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: options to show/hide "Quick sell", "Buy missing parts" buttons.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.20</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: show gem price in listing pages when hover on items.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.19</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: https protocol supported.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.18</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Option to enable/disable quick buy buttons.</li>
+        <li>Added: Option to enable/disable desktop notifications.</li>
+        <li>Added: Option to change fast sell price adjusment.</li>
+        <li>Added: Number of rows display on listing page option.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.17</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Display equipped items in inventory and trade offer windows (Dota 2 items only - no more mistrade in-use items).</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.16</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Buying set dialog in inventory.</li>
+        <li>Added: Display item infomation when hover on quick buy buttons.</li>
+        <li>Fixed some minor bugs.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.15</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Port fraud warning and quick buy functions to newly listed tab on market main page.</li>
+        <li>Added: Filtering items in my sell listings tab.</li>
+        <li>Added: Quick remove listing items with checkboxes.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.14</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: Reload button on listing page.</li>
+        <li>Added: Display fraud warning message on items with custom description and (or) custom name on listing page.</li>
+        <li>Added: Quick buy button on listing page.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.13</h3>
+    <div class="cnt">
+      <ul>
+        <li>Added: No duplicate option in trade offers.</li>
+        <li>Added: Fast selling item button (at market base price - 0.01).</li>
+        <li>Changed: Unify the two sell button to the same function.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.12</h3>
+    <div class="cnt">
+      <ul>
+        <li>Show item lowest price of each item on selling queue.</li>
+        <li>Show sum prices (with and without fee).</li>
+        <li>Added: option to auto adjust listing price relative to market lowest price (can be negative for fast selling).</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.11</h3>
+    <div class="cnt">
+      <ul>
+        <li>Show items set price.</li>
+        <li>Add market link to each parts.</li>
+        <li>Minor bugs fixed.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.10</h3>
+    <div class="cnt">
+      <ul>
+        <li>Shift select through many pages bug fixed.</li>
+        <li>Rearrange buttons in offer window.</li>
+        <li>Remake count function in offer window.</li>
+        <li>Changelogs added.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.9</h3>
+    <div class="cnt">
+      <ul>
+        <li>Shift select support for selling multi items.</li>
+        <li>Minor bugs fixed.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.8</h3>
+    <div class="cnt">
+      <ul>
+        <li>Update Foulfell Shard price check.</li>
+        <li>Show total items in queue, and allow removing items from selling queue.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.5</h3>
+    <div class="cnt">
+      <ul>
+        <li>Display a queue when selling multi items.</li>
+        <li>Fixe bug when dismissing a listing queue.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.1</h3>
+    <div class="cnt">
+      <ul>
+        <li>Change Steam avatars link.</li>
+        <li>Add more notification sounds.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    <h3>Version 1.3.0</h3>
+    <div class="cnt">
+      <ul>
+        <li>Initial version on chrome store.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+
+</html>

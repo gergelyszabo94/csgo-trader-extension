@@ -1,0 +1,10 @@
+{
+   "extension_description": {
+      "description": "Extension's description",
+      "message": "Provides many utilities for steam inventory and market (offers notification, quick selling, buying, offering trades, price check...)"
+   },
+   "langcode": {
+      "description": "",
+      "message": "ro"
+   }
+}

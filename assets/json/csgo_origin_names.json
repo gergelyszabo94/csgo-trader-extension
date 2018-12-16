@@ -1,0 +1,102 @@
+[
+  {
+    "origin": 0,
+    "name": "Timed Drop"
+  },
+  {
+    "origin": 1,
+    "name": "Achievement"
+  },
+  {
+    "origin": 2,
+    "name": "Purchased"
+  },
+  {
+    "origin": 3,
+    "name": "Traded"
+  },
+  {
+    "origin": 4,
+    "name": "Crafted"
+  },
+  {
+    "origin": 5,
+    "name": "Store Promotion"
+  },
+  {
+    "origin": 6,
+    "name": "Gifted"
+  },
+  {
+    "origin": 7,
+    "name": "Support Granted"
+  },
+  {
+    "origin": 8,
+    "name": "Found in Crate"
+  },
+  {
+    "origin": 9,
+    "name": "Earned"
+  },
+  {
+    "origin": 10,
+    "name": "Third-Party Promotion"
+  },
+  {
+    "origin": 11,
+    "name": "Wrapped Gift"
+  },
+  {
+    "origin": 12,
+    "name": "Halloween Drop"
+  },
+  {
+    "origin": 13,
+    "name": "Steam Purchase"
+  },
+  {
+    "origin": 14,
+    "name": "Foreign Item"
+  },
+  {
+    "origin": 15,
+    "name": "CD Key"
+  },
+  {
+    "origin": 16,
+    "name": "Collection Reward"
+  },
+  {
+    "origin": 17,
+    "name": "Preview Item"
+  },
+  {
+    "origin": 18,
+    "name": "Steam Workshop Contribution"
+  },
+  {
+    "origin": 19,
+    "name": "Periodic Score Reward"
+  },
+  {
+    "origin": 20,
+    "name": "Recycling"
+  },
+  {
+    "origin": 21,
+    "name": "Tournament Drop"
+  },
+  {
+    "origin": 22,
+    "name": "Stock Item"
+  },
+  {
+    "origin": 23,
+    "name": "Quest Reward"
+  },
+  {
+    "origin": 24,
+    "name": "Level Up Reward"
+  }
+]

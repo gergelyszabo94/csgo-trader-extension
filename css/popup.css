@@ -1,0 +1,25 @@
+#region_selects {
+  padding-top: 10px;
+}
+
+#region_selection {
+  padding-bottom: 5px;
+}
+
+#region_selection .remove_region {
+  padding-left: 5px;
+  cursor: pointer;
+}
+
+.stores-list {
+  display: flex;
+  height: 220px;
+  flex-flow: column wrap;
+  border: solid 1px;
+  margin-top: 10px;
+  padding: 5px 0;
+}
+
+.stores-list .store-item {
+  min-width: 135px;
+}
