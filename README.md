@@ -1,0 +1,1 @@
+csgo-trader-extension
