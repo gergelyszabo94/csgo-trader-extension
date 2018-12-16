@@ -87,20 +87,19 @@
    "externally_connectable": {
       "matches": [ "https://market.csgo.com/*", "https://market.dota2.net/*", "https://csgo.tm/*", "https://gifts.tm/*", "https://pubg.tm/*", "https://tf2.tm/*", "*://*.steampowered.com/*", "*://steamcommunity.com/*" ]
    },
-   "homepage_url": "https://chrome.google.com/webstore/detail/steam-inventory-helper/cmeakgjggjdlcpncigglobpjbkabhmjl",
+   "homepage_url": "https://gitlab.com/gergelyszabo/csgo-trader-extension",
    "icons": {
       "128": "assets/icon128.png"
    },
-   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1VtB6075FEgL7ORPBwcfR2hXhOXZ92Wg/s87+Odt4ix+NSzKTcnZ9/ln6YIV7sVO/7B8kkL1j5zFUpUGrxTv/+dhs9Vprz1iziulktdLhPHpwoRE8PgmSz5sItmqsArNFEFm4zEkZRjNgZaIG0bL/5BmkE2CjAPUjhYBiVQyFPYaFjGjd077ZMkbmiVCVdyk+8GiUjOlroX6cE9jO04CZW+VikuAU5jLoNzd50WOHDVeMQoukFUtVAIYv1IWvbUYfaseo8t/Z47jF2KivXoggAXFrV/uJiTvMot13XstxpR5yG8xnmZHnh42Q6nY7Ke/HYzTYnB9ftftAFpMBVAj6wIDAQAB",
    "manifest_version": 2,
    "name": "CSGO Trader",
    "options_ui": {
       "open_in_tab": true,
       "page": "dist/index.html"
    },
-   "permissions": [ "notifications", "alarms", "storage", "background", "webRequest", "webRequestBlocking", "activeTab", "\u003Call_urls>" ],
-   "short_name": "SIH",
-   "update_url": "https://clients2.google.com/service/update2/crx",
-   "version": "1.17.5",
+   "permissions": [ "notifications", "alarms", "storage", "background", "webRequest", "webRequestBlocking", "*://steamcommunity.com/*", "*://*.steampowered.com/*", "http://*.steamstatic.com/*", "*://steamrep.com/*", "*://steamcdn-a.akamaihd.net/*" ],
+   "short_name": "CSGOT",
+   "update_url": "https://localhost",
+   "version": "0.0.1",
    "web_accessible_resources": [ "_locales/*", "font/*", "js/lang/*", "assets/*", "bundle/js/*.js", "js/*.js", "js/jquery/*.js", "js/lang/*.js", "css/*.css" ]
 }
