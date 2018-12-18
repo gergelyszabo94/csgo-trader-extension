@@ -5,9 +5,16 @@
   "permissions": ["activeTab", "declarativeContent", "storage"],
   "options_page": "html/options.html",
   "background": {
-    "scripts": ["js/background.js"],
+    "scripts": ["js/thirdparty/jquery-3.3.1.min.js", "js/background.js"],
     "persistent": false
   },
+  "content_scripts": [
+    {
+      "matches": ["*://steamcommunity.com/*/inventory*"],
+      "run_at" : "document_idle",
+      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/inventory.js"]
+    }
+  ],
   "page_action": {
     "default_popup": "html/popup.html",
     "default_icon": {
