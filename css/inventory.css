@@ -1,0 +1,13 @@
+.tradability{
+    text-align: center;
+    margin: 0.5rem;
+    font-size: 1rem;
+}
+
+.tradable{
+    color: green;
+}
+
+.not_tradable{
+    color: red;
+}

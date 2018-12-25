@@ -1,8 +1,8 @@
 {
   "name": "CSGO Trader",
   "version": "1.0",
-  "description": "Chrome Extension to help me with trading and to learn wiring an extension",
-  "permissions": ["activeTab", "declarativeContent", "storage"],
+  "description": "Chrome Extension to help me with trading and learning to create an extension",
+  "permissions": ["activeTab", "declarativeContent", "storage", "*://steamcommunity.com/*"],
   "options_page": "html/options.html",
   "background": {
     "scripts": ["js/thirdparty/jquery-3.3.1.min.js", "js/background.js"],
@@ -12,7 +12,8 @@
     {
       "matches": ["*://steamcommunity.com/*/inventory*"],
       "run_at" : "document_idle",
-      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/inventory.js"]
+      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/inventory.js"],
+      "css": ["/css/inventory.css"]
     }
   ],
   "page_action": {
