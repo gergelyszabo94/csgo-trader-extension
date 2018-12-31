@@ -78,14 +78,7 @@ function addElements(){
         if(item){
             let tradableAt = new Date(item.tradability);
             $("#iteminfo1_tradability").html(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
-            if(!countingDown){
-                countingDown = true;
-                countDown(tradableAt)
-            }
-            else{
-                clearInterval(countDownID);
-                countDown(tradableAt);
-            }
+            countDown(tradableAt);
         }
         else{
             $("#iteminfo1_tradability").html(notTradable);
@@ -100,14 +93,7 @@ function addElements(){
         if(item){
             let tradableAt = new Date(item.tradability);
             $("#iteminfo0_tradability").html(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
-            if(!countingDown){
-                countingDown = true;
-                countDown(tradableAt)
-            }
-            else{
-                clearInterval(countDownID);
-                countDown(tradableAt);
-            }
+            countDown(tradableAt);
         }
         else{
             $("#iteminfo0_tradability").html(notTradable);
@@ -138,33 +124,34 @@ function getItemByAssetID(assetidToFind){
     return $.grep(items, function(e){ return e.assetid === assetidToFind; })[0];
 }
 
+//manages the trade lock countdown
 function countDown(dateToCountDownTo){
-    let countDownDate =  new Date(dateToCountDownTo);
+    if(!countingDown){
+        countingDown = true;
+        countDownID = setInterval(function() {
+            $(".countdown").each(function () {
+                let $this = $(this);
 
-    // if(!(x==undefined||x=="0")){
-    //     clearInterval(x);
-    // }
-    // clearInterval(x);
+                let now = new Date().getTime();
+                let distance = new Date(dateToCountDownTo) - now;
+                let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-    countDownID = setInterval(function() {
-        $(".countdown").each(function () {
-            let $this = $(this);
+                $this.text(days + "d " + hours + "h "
+                    + minutes + "m " + seconds + "s " + "remains");
 
-            let now = new Date().getTime();
-            let distance = countDownDate - now;
-
-            let days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            let seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            $this.text(days + "d " + hours + "h "
-                + minutes + "m " + seconds + "s " + "remains");
-
-            if (distance < 0) {
-                clearInterval(x);
-                $this.text("Tradable");
-            }
-        }, 1000);
-    });
+                if (distance < 0) {
+                    clearInterval(countDownID);
+                    $this.text("Tradable");
+                }
+            }, 1000);
+        });
+    }
+    else{
+        clearInterval(countDownID);
+        countingDown = false;
+        countDown(dateToCountDownTo);
+    }
 }
