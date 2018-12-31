@@ -11,3 +11,9 @@
 .not_tradable{
     color: red;
 }
+
+.countdown{
+    text-align: center;
+    color: red;
+    font-size: 1.5rem;
+}
