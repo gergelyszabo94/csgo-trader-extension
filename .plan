@@ -1,10 +1,6 @@
 inventory:
 -probe for better mutation target for efficiency
--fix multiple countdown issue
--figure out a better way of dealing with _0 and _1 elements
--execute after api call completion
 -bunch of error handling everywhere
--spinner
 
 back:
 -implement settings menu

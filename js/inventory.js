@@ -37,7 +37,7 @@ chrome.runtime.sendMessage({alias: getProfileAlias()}, function(response) {
     addElements();
 });
 
-
+//variables for the countdown recursive logic
 var countingDown = false;
 var countDownID = "";
 
@@ -73,38 +73,48 @@ function addElements(){
         $iteminfo0.after(module0);
     }
 
+    //tradability logic and countdown initiation
+    $tradability1 =  $("#iteminfo1_tradability");
     if(/Not Tradable/.test($("#iteminfo1_item_tags_content").html())){
-
-        if(item){
-            let tradableAt = new Date(item.tradability);
-            $("#iteminfo1_tradability").html(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
-            countDown(tradableAt);
+        if(/Not Marketable/.test($("#iteminfo1_item_tags_content").html())){
+            $tradability1.html(notTradable);
         }
         else{
-            $("#iteminfo1_tradability").html(notTradable);
+            if(item){
+                let tradableAt = new Date(item.tradability);
+                $tradability1.html(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
+                countDown(tradableAt);
+            }
+            else{
+                $tradability1.html(notTradable);
+            }
         }
     }
     else{
-        $("#iteminfo1_tradability").html(tradable);
+        $tradability1.html(tradable);
     }
-
-
+    $tradability0 = $("#iteminfo0_tradability");
     if(/Not Tradable/.test($("#iteminfo0_item_tags_content").html())){
-        if(item){
-            let tradableAt = new Date(item.tradability);
-            $("#iteminfo0_tradability").html(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
-            countDown(tradableAt);
+        if(/Not Marketable/.test($("#iteminfo0_item_tags_content").html())){
+            $tradability0.html(notTradable);
         }
         else{
-            $("#iteminfo0_tradability").html(notTradable);
+            if(item){
+                let tradableAt = new Date(item.tradability);
+                $tradability0.html(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
+                countDown(tradableAt);
+            }
+            else{
+                $tradability0.html(notTradable);
+            }
         }
-
     }
     else{
-        $("#iteminfo0_tradability").html(tradable);
+        $tradability0.html(tradable);
     }
 }
 
+//gets steam account alias that is passed for api call
 function getProfileAlias(){
     let alias = window.location.href;
     if(/\/id\//.test(window.location.href)){
