@@ -45,7 +45,9 @@ function addElements(){
     let activeID = $(".activeInfo")[0].id.split("730_2_")[1]; // gets the asset id of the item that is currently selected.
     let item = getItemByAssetID(activeID);
 
-    $(".item_desc_descriptors").hide(); //hides "tradable after" in one's own inventory and also hides "tags"
+    //hides "tradable after" in one's own inventory
+    $("#iteminfo1_item_owner_descriptors").hide();
+    $("#iteminfo0_item_owner_descriptors").hide();
 
 
     //adds inspect on cs.deals buttons

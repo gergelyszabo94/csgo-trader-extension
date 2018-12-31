@@ -10,7 +10,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://steamcommunity.com/*/inventory*"],
+      "matches": ["*://steamcommunity.com/*/inventory", "*://steamcommunity.com/*/inventory/*"],
       "run_at" : "document_idle",
       "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/inventory.js"],
       "css": ["/css/inventory.css"]
