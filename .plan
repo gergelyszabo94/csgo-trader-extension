@@ -3,9 +3,13 @@ inventory:
 -bunch of error handling everywhere
 -modify id getting logic to eliminate need for api key
 
+tradeoffer:
+-add inspect on csdeals
+
 back:
 -implement settings menu
 -remove api key
 
 idea:
-bookmark and notification
+-bookmark and notification
+-hacked analysis
