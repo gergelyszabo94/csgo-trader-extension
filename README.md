@@ -11,3 +11,5 @@ Current Features:
 - Shows a countdown that counts down to the date when the items will become tradable
 
 Feel free to contribute (even with ideas)
+
+You can now install it from the <a target="_blank" href="https://chrome.google.com/webstore/detail/csgo-trader/kaibcgikagnkfgjnibflebpldakfhfih/">Chrome Web Store</a>.

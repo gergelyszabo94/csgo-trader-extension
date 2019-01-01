@@ -4,6 +4,8 @@ inventory:
 
 tradeoffer:
 -add inspect on csdeals
+-select x amount of keys option
+-add tf2 keys and refs as currency
 
 back:
 -implement settings menu
