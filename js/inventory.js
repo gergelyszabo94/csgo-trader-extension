@@ -33,8 +33,13 @@ observer.observe(document.getElementById("iteminfo0"), {
 var items = [];
 
 chrome.runtime.sendMessage({alias: getProfileAlias()}, function(response) {
-    items = response.inventory;
-    addElements();
+    if(!(response.inventory===undefined||response.inventory==="")){
+        items = response.inventory;
+        addElements();
+    }
+    else{
+        console.log(response.inventory);
+    }
 });
 
 //variables for the countdown recursive logic
