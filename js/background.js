@@ -4,12 +4,15 @@ let steamID = "";
 chrome.webRequest.onBeforeRequest.addListener(
     function(details) {
         steamID =   details.url.split("steamcommunity.com/inventory/")[1].split("/730")[0];
-        if(/count=5000/.test(details.url)){
-            return {redirectUrl : details.url};
-        }
-        else{
-            return {redirectUrl : details.url.split("count=75")[0]+"count=5000"};
-        }
+
+        //make this an option, let the user decide what to compromise, sih does it anyways
+        // if(/count=5000/.test(details.url)){
+        //     return {redirectUrl : details.url};
+        // }
+        // else{
+        //     return {redirectUrl : details.url.split("count=75")[0]+"count=5000"};
+        // }
+        return {redirectUrl : details.url};
     },
     {urls: ["*://steamcommunity.com/inventory/*"]},
     ["blocking"]);

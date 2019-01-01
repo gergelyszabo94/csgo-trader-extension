@@ -1,7 +1,10 @@
 {
+  "manifest_version": 2,
   "name": "CSGO Trader",
+  "short_name": "CST",
   "version": "1.0",
-  "description": "Chrome Extension to help me with trading and learning to create an extension",
+  "description": "Chrome Extension to help with CS:GO trading",
+  "homepage_url": "https://github.com/bladegery/csgo-trader-extension",
   "permissions": ["activeTab", "declarativeContent", "storage", "*://steamcommunity.com/*", "webRequest", "webRequestBlocking", "tabs"],
   "options_page": "html/options.html",
   "background": {
@@ -19,17 +22,16 @@
   "page_action": {
     "default_popup": "html/popup.html",
     "default_icon": {
-      "16": "images/get_started16.png",
-      "32": "images/get_started32.png",
-      "48": "images/get_started48.png",
-      "128": "images/get_started128.png"
+      "16": "images/cstlogo16.png",
+      "32": "images/cstlogo32.png",
+      "48": "images/cstlogo48.png",
+      "128": "images/cstlogo128.png"
     }
   },
   "icons": {
-    "16": "images/get_started16.png",
-    "32": "images/get_started32.png",
-    "48": "images/get_started48.png",
-    "128": "images/get_started128.png"
-  },
-  "manifest_version": 2
+    "16": "images/cstlogo16.png",
+    "32": "images/cstlogo32.png",
+    "48": "images/cstlogo48.png",
+    "128": "images/cstlogo128.png"
+  }
 }
