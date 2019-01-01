@@ -1,6 +1,6 @@
 inventory:
 -probe for better mutation target for efficiency
--bunch of error handling everywhere
+-small indicator for each item of how long they are on trade lock
 
 tradeoffer:
 -add inspect on csdeals
@@ -11,3 +11,4 @@ back:
 idea:
 -bookmark and notification
 -hacked analysis
+-chat quick-replies

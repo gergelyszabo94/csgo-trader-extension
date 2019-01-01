@@ -30,21 +30,29 @@ observer.observe(document.getElementById("iteminfo0"), {
 
 //sends a message to the "back end" to request inventory contents
 
-var items = [];
+let items = [];
 
-chrome.runtime.sendMessage({alias: getProfileAlias()}, function(response) {
-    if(!(response.inventory===undefined||response.inventory==="")){
-        items = response.inventory;
-        addElements();
-    }
-    else{
-        console.log(response.inventory);
-    }
-});
+function requestInventory(){
+    chrome.runtime.sendMessage({inventory: "get"}, function(response) {
+        if(!(response.inventory===undefined||response.inventory===""||response.inventory==="error")){
+            items = response.inventory;
+            addElements();
+        }
+        else{
+            console.log("Wasn't able to get the inventory, it's most likely steam not working properly or you loading inventory pages at the same time");
+            console.log("Retrying in 30 seconds");
+            setTimeout(function () {
+                requestInventory();
+            }, 30000);
+
+        }
+    });
+}
+requestInventory();
 
 //variables for the countdown recursive logic
-var countingDown = false;
-var countDownID = "";
+let countingDown = false;
+let countDownID = "";
 
 function addElements(){
     let activeID = $(".activeInfo")[0].id.split("730_2_")[1]; // gets the asset id of the item that is currently selected.
