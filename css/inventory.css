@@ -17,3 +17,11 @@
     color: red;
     font-size: 1.5rem;
 }
+.perItemDate{
+    color:red;
+    width: 16px;
+    height: 16px;
+    position: relative;
+    left: 5%;
+    bottom: 95%;
+}

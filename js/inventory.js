@@ -14,6 +14,8 @@ let module1 = `<div>
 let tradable = "<span class='tradable'>Tradable</span>";
 let notTradable = "<span class='not_tradable'>Not Tradable</span>";
 
+let dateOnEachItem = "<div class='perItemDate'><span>remains</span></div>";
+
 //mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
 
 MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
@@ -37,6 +39,7 @@ function requestInventory(){
         if(!(response.inventory===undefined||response.inventory===""||response.inventory==="error")){
             items = response.inventory;
             addElements();
+            addDateOnEachItem();
         }
         else{
             console.log("Wasn't able to get the inventory, it's most likely steam not working properly or you loading inventory pages at the same time");
@@ -49,6 +52,26 @@ function requestInventory(){
     });
 }
 requestInventory();
+
+function addDateOnEachItem(){
+    $items = $(".item.app730.context2");
+    if($items.length!==0){
+        $($items.append(dateOnEachItem));
+        $items.each(function () {
+            let assetID = $(this).attr('id').split("730_2_")[1];
+            let item = getItemByAssetID(assetID);
+            console.log($(".perItemDate span", this));
+            console.log($(this).children("span"));
+            $(".perItemDate span", this).text=item.tradability;
+        });
+    }
+    else{
+        console.log("else");
+        setTimeout(function () {
+            addDateOnEachItem();
+        }, 1000);
+    }
+}
 
 //variables for the countdown recursive logic
 let countingDown = false;
@@ -133,18 +156,6 @@ function addElements(){
         $tradability0.html(tradable);
         $("#iteminfo0_countdown").hide();
     }
-}
-
-//gets steam account alias that is passed for api call
-function getProfileAlias(){
-    let alias = window.location.href;
-    if(/\/id\//.test(window.location.href)){
-        alias = window.location.href.split("/id/")[1].split("/inventory")[0];
-    }
-    else{
-        alias = window.location.href.split("/profiles/")[1].split("/inventory")[0];
-    }
-    return alias;
 }
 
 //gets the details of an item by matching the passed asset id with the ones from the api call

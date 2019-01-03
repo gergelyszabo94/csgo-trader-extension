@@ -1,6 +1,7 @@
 inventory:
 -probe for better mutation target for efficiency
 -small indicator for each item of how long they are on trade lock
+-sorting
 
 tradeoffer:
 -add inspect on csdeals
