@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "CSGO Trader",
   "short_name": "CST",
-  "version": "1.0",
+  "version": "1.1",
   "description": "Chrome Extension to help with CS:GO trading",
   "homepage_url": "https://github.com/bladegery/csgo-trader-extension",
   "permissions": ["activeTab", "declarativeContent", "storage", "*://steamcommunity.com/*", "webRequest", "webRequestBlocking", "tabs"],
