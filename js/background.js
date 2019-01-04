@@ -41,12 +41,15 @@ chrome.runtime.onMessage.addListener(
                             let classid = items[item].classid;
                             let instanceid = items[item].instanceid;
                             let tradability = "Tradable";
+                            let tradabilityShort = "T";
 
                             if (items[item].tradable === 0) {
                                 tradability = items[item].cache_expiration;
+                                tradabilityShort = getShortDate(tradability);
                             }
                             if (items[item].marketable === 0) {
-                                tradability = "Not Tradable"
+                                tradability = "Not Tradable";
+                                tradabilityShort = "";
                             }
                             itemsPropertiesToReturn.push({
                                 name: name,
@@ -55,7 +58,8 @@ chrome.runtime.onMessage.addListener(
                                 instanceid: instanceid,
                                 assetid: assetid,
                                 position: position,
-                                tradability: tradability
+                                tradability: tradability,
+                                tradabilityShort: tradabilityShort
                             })
                         }
                     }
@@ -78,3 +82,33 @@ chrome.runtime.onMessage.addListener(
             return true; //async return to signal that it will return later
         }
     });
+
+function getShortDate(tradabibilityDate){
+    let now = new Date().getTime();
+    let distance = new Date(tradabibilityDate) - now;
+    let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    if(days===0){
+        if(hours===0){
+            if(minutes===0){
+                if(seconds===0){
+                    return "";
+                }
+                else{
+                    return seconds + "s";
+                }
+            }
+            else{
+                return minutes + "m";
+            }
+        }
+        else {
+            return hours + "h";
+        }
+    }
+    else{
+        return days + "d";
+    }
+}

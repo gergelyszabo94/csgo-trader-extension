@@ -30,6 +30,10 @@ observer.observe(document.getElementById("iteminfo0"), {
 });
 
 
+$("#pagebtn_next").on("click", function () {
+   addDateOnEachItem();
+});
+
 //sends a message to the "back end" to request inventory contents
 
 let items = [];
@@ -53,16 +57,27 @@ function requestInventory(){
 }
 requestInventory();
 
+//adds a short trade lock indicator to each item
 function addDateOnEachItem(){
     $items = $(".item.app730.context2");
     if($items.length!==0){
-        $($items.append(dateOnEachItem));
         $items.each(function () {
-            let assetID = $(this).attr('id').split("730_2_")[1];
-            let item = getItemByAssetID(assetID);
-            console.log($(".perItemDate span", this));
-            console.log($(this).children("span"));
-            $(".perItemDate span", this).text=item.tradability;
+            if($(this).find(".perItemDate").length===0){
+                $(this).append(dateOnEachItem);
+            }
+            if($(this).attr('id')===undefined){
+                setTimeout(function () {
+                    addDateOnEachItem();
+                }, 1000);
+            }
+            else{
+                let assetID = $(this).attr('id').split("730_2_")[1];
+                let item = getItemByAssetID(assetID);
+                if(item.tradabilityShort==="T"){
+                    $(this).find("span")[0].classList.add("tradable");
+                }
+                $(this).find("span")[0].innerText=item.tradabilityShort;
+            }
         });
     }
     else{

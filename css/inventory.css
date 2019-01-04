@@ -5,7 +5,7 @@
 }
 
 .tradable{
-    color: green;
+    color: #39FF41;
 }
 
 .not_tradable{
@@ -19,8 +19,6 @@
 }
 .perItemDate{
     color:red;
-    width: 16px;
-    height: 16px;
     position: relative;
     left: 5%;
     bottom: 95%;
