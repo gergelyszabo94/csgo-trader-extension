@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "CSGO Trader",
   "short_name": "CST",
-  "version": "1.1",
+  "version": "1.2",
   "description": "Chrome Extension to help with CS:GO trading",
   "homepage_url": "https://github.com/bladegery/csgo-trader-extension",
   "permissions": ["activeTab", "declarativeContent", "storage", "*://steamcommunity.com/*", "webRequest", "webRequestBlocking", "tabs"],
@@ -16,7 +16,13 @@
       "matches": ["*://steamcommunity.com/*/inventory", "*://steamcommunity.com/*/inventory/*"],
       "run_at" : "document_idle",
       "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/inventory.js"],
-      "css": ["/css/inventory.css"]
+      "css": ["/css/generalCSTStyle.css"]
+    },
+    {
+      "matches": ["*://steamcommunity.com/tradeoffer/*"],
+      "run_at" : "document_idle",
+      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/tradeoffer.js"],
+      "css": ["/css/generalCSTStyle.css"]
     }
   ],
   "page_action": {

@@ -1,6 +1,7 @@
 inventory:
 -probe for better mutation target for efficiency
 -bookmark and notification
+-phases on dopplers
 
 tradeoffer:
 -add inspect on csdeals
@@ -22,4 +23,5 @@ misc:
 -settings menu
 -analytics: https://developer.chrome.com/apps/analytics
 -analyse account/activity for suspicious activity
+-show floats everywhere
 
