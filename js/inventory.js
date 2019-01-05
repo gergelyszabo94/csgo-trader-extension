@@ -14,7 +14,7 @@ let module1 = `<div>
 let tradable = "<span class='tradable'>Tradable</span>";
 let notTradable = "<span class='not_tradable'>Not Tradable</span>";
 
-let dateOnEachItem = "<div class='perItemDate'><span>remains</span></div>";
+let dateOnEachItem = "<div class='perItemDate'><span></span></div>";
 
 //mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
 
@@ -29,9 +29,13 @@ observer.observe(document.getElementById("iteminfo0"), {
     attributes: true
 });
 
+let observer2 = new MutationObserver(function(mutations, observer) {
+    addDateOnEachItem();
+});
 
-$("#pagebtn_next").on("click", function () {
-   addDateOnEachItem();
+observer2.observe(document.getElementById("inventories"),{
+    subtree: false,
+    attributes: true
 });
 
 //sends a message to the "back end" to request inventory contents
@@ -57,6 +61,11 @@ function requestInventory(){
 }
 requestInventory();
 
+//to refresh the trade lock remaining indicators
+setInterval(function () {
+    addDateOnEachItem();
+}, 60000);
+
 //adds a short trade lock indicator to each item
 function addDateOnEachItem(){
     $items = $(".item.app730.context2");
@@ -69,6 +78,7 @@ function addDateOnEachItem(){
                 setTimeout(function () {
                     addDateOnEachItem();
                 }, 1000);
+                return false;
             }
             else{
                 let assetID = $(this).attr('id').split("730_2_")[1];

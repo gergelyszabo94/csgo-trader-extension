@@ -1,18 +1,25 @@
 inventory:
 -probe for better mutation target for efficiency
--small indicator for each item of how long they are on trade lock
--sorting
+-bookmark and notification
 
 tradeoffer:
 -add inspect on csdeals
 -select x amount of keys option
 -add tf2 keys and refs as currency
 
-back:
--implement settings menu
+market:
+-link to different exteriors
 
-idea:
--bookmark and notification
--hacked analysis
--chat quick-replies
--https://developer.chrome.com/apps/analytics
+profile:
+-+rep button
+-reoccuring message button on own profile
+-scammer likelihood analysis
+
+chat:
+-configurable quickreplies
+
+misc:
+-settings menu
+-analytics: https://developer.chrome.com/apps/analytics
+-analyse account/activity for suspicious activity
+
