@@ -138,48 +138,29 @@ function addElements(){
 
     //tradability logic and countdown initiation
     $tradability1 =  $("#iteminfo1_tradability");
-    if(/Not Tradable/.test($("#iteminfo1_item_tags_content").html())){
-        if(/Not Marketable/.test($("#iteminfo1_item_tags_content").html())){
-            $tradability1.html(notTradable);
-            $("#iteminfo1_countdown").hide();
-        }
-        else{
-            if(item){
-                let tradableAt = new Date(item.tradability);
-                $tradability1.html(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
-                countDown(tradableAt);
-                $("#iteminfo1_countdown").show();
-            }
-            else{
-                $tradability1.html(notTradable);
-            }
-        }
-    }
-    else{
-        $tradability1.html(tradable);
-        $("#iteminfo1_countdown").hide();
-    }
     $tradability0 = $("#iteminfo0_tradability");
-    if(/Not Tradable/.test($("#iteminfo0_item_tags_content").html())){
-        if(/Not Marketable/.test($("#iteminfo0_item_tags_content").html())){
+
+    if(item){
+        if(item.tradability==="Tradable"){
+            $tradability1.html(tradable);
+            $tradability0.html(tradable);
+            $("#iteminfo1_countdown").hide();
+            $("#iteminfo0_countdown").hide();
+        }
+        else if(item.tradability==="Not Tradable"){
+            $tradability1.html(notTradable);
             $tradability0.html(notTradable);
+            $("#iteminfo1_countdown").hide();
             $("#iteminfo0_countdown").hide();
         }
         else{
-            if(item){
-                let tradableAt = new Date(item.tradability);
-                $tradability0.html(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
-                countDown(tradableAt);
-                $("#iteminfo0_countdown").show();
-            }
-            else{
-                $tradability0.html(notTradable);
-            }
+            let tradableAt = new Date(item.tradability);
+            $tradability1.html(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
+            $tradability0.html(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
+            countDown(tradableAt);
+            $("#iteminfo1_countdown").show();
+            $("#iteminfo0_countdown").show();
         }
-    }
-    else{
-        $tradability0.html(tradable);
-        $("#iteminfo0_countdown").hide();
     }
 }
 
