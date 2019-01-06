@@ -2,11 +2,15 @@ inventory:
 -probe for better mutation target for efficiency
 -bookmark and notification
 -phases on dopplers
+-small exterior indicator
+-notes on specific items: hydra keys, patterned item
+-generate list of items for posting on trade forums, etc.
 
 tradeoffer:
 -add inspect on csdeals
 -select x amount of keys option
 -add tf2 keys and refs as currency
+-small exterior indicator
 
 market:
 -link to different exteriors
@@ -24,4 +28,16 @@ misc:
 -analytics: https://developer.chrome.com/apps/analytics
 -analyse account/activity for suspicious activity
 -show floats everywhere
+-lounge bump
+-only show info in csgo inventory
 
+dagger from inventory right:
+https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfw-bbeQJD4eOym5Cbm_LmDKvZl3hUu_p9g-7J4bP5iUazrl06NWihJY6WdFA3MFmF_VW8wu27hMfvuJ6fn3Q37yIl43neyRfkgh0acKUx0jswQogI/330x192
+without link:
+-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfw-bbeQJD4eOym5Cbm_LmDKvZl3hUu_p9g-7J4bP5iUazrl06NWihJY6WdFA3MFmF_VW8wu27hMfvuJ6fn3Q37yIl43neyRfkgh0acKUx0jswQogI/330x192
+
+dagger from inventory left(small):
+-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfw-bbeQJD4eOym5Cbm_LmDKvZl3hUu_p9g-7J4cLzjgW2-ktvZT_6dYfAdQI8YluE-wDtxe2505Do6Z_Oz3Rg7CJx5nqLgVXp1nwmojSb/96fx96f
+
+one of the dopplers from back:
+-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1ObcTjxP09i5hJCHkuXLI7PQhW4A18l4jeHVu9703Azs-hA_MTuncNWWIVU-aF7Z_1a7k-bo0cW_v8_OyXVqvyAqsy3D30vgdDGy9vw

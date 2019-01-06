@@ -1,3 +1,14 @@
+:root {
+    --steam-nametag-red: #bd4847;
+    --steam-ingame-green: #90ba3c;
+    --steam-online-blue: #57cbde;
+    --steam-offline-gray: #898989;
+    --steam-stattrak-orange: rgb(207, 106, 50);
+    --steam-note-blue: rgb(153, 204, 255);
+    --steam-knife-purple: rgb(134, 80, 172);
+}
+
+
 .tradability{
     text-align: center;
     margin: 0.5rem;
@@ -5,21 +16,35 @@
 }
 
 .tradable{
-    color: #39FF41;
+    color: var(--steam-ingame-green);
 }
 
 .not_tradable{
-    color: red;
+    color: var(--steam-nametag-red);
 }
 
 .countdown{
     text-align: center;
-    color: red;
+    color: var(--steam-nametag-red);
     font-size: 1.5rem;
+    margin-bottom: 0.5rem;
 }
 .perItemDate{
-    color:red;
+    color: var(--steam-nametag-red);
     position: relative;
     left: 5%;
     bottom: 95%;
+}
+
+.dopplerPhase{
+    color: white;
+    position: relative;
+    left: 42%;
+    bottom: 110%;
+    font-size: 0.8rem;
+}
+
+.note{
+    color: var(--steam-note-blue);
+    margin-bottom: 1rem;
 }

@@ -11,10 +11,16 @@ let module1 = `<div>
     <div class="descriptor countdown" id="iteminfo1_countdown"><span></span></div>
 </div>`;
 
+let note0 = `<div class="descriptor note" id="note0">Note:</div>`;
+let note1 = `<div class="descriptor note" id="note1">Note:</div>`;
+
+
 let tradable = "<span class='tradable'>Tradable</span>";
 let notTradable = "<span class='not_tradable'>Not Tradable</span>";
 
 let dateOnEachItem = "<div class='perItemDate'><span></span></div>";
+let dopplerPhase = "<div class='dopplerPhase'><span>P1</span></div>";
+
 
 //mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
 
@@ -30,7 +36,7 @@ observer.observe(document.getElementById("iteminfo0"), {
 });
 
 let observer2 = new MutationObserver(function(mutations, observer) {
-    addDateOnEachItem();
+    addSmallIndicators();
 });
 
 observer2.observe(document.getElementById("inventories"),{
@@ -47,7 +53,7 @@ function requestInventory(){
         if(!(response.inventory===undefined||response.inventory===""||response.inventory==="error")){
             items = response.inventory;
             addElements();
-            addDateOnEachItem();
+            addSmallIndicators();
         }
         else{
             console.log("Wasn't able to get the inventory, it's most likely steam not working properly or you loading inventory pages at the same time");
@@ -63,20 +69,22 @@ requestInventory();
 
 //to refresh the trade lock remaining indicators
 setInterval(function () {
-    addDateOnEachItem();
+    addSmallIndicators();
 }, 60000);
 
+
 //adds a short trade lock indicator to each item
-function addDateOnEachItem(){
+function addSmallIndicators(){
     $items = $(".item.app730.context2");
     if($items.length!==0){
         $items.each(function () {
             if($(this).find(".perItemDate").length===0){
                 $(this).append(dateOnEachItem);
+                $(this).append(dopplerPhase);
             }
             if($(this).attr('id')===undefined){
                 setTimeout(function () {
-                    addDateOnEachItem();
+                    addSmallIndicators();
                 }, 1000);
                 return false;
             }
@@ -87,13 +95,19 @@ function addDateOnEachItem(){
                     $(this).find("span")[0].classList.add("tradable");
                 }
                 $(this).find("span")[0].innerText=item.tradabilityShort;
+
+                if(item.dopplerPhase!==""){
+                    $(this).find("span")[1].innerText=item.dopplerPhase;
+                }
+                else{
+                    $(this).find(".dopplerPhase").hide();
+                }
             }
         });
     }
     else{
-        console.log("else");
         setTimeout(function () {
-            addDateOnEachItem();
+            addSmallIndicators();
         }, 1000);
     }
 }
@@ -103,64 +117,78 @@ let countingDown = false;
 let countDownID = "";
 
 function addElements(){
-    let activeID = $(".activeInfo")[0].id.split("730_2_")[1]; // gets the asset id of the item that is currently selected.
-    let item = getItemByAssetID(activeID);
+    if($(".games_list_tab.active").first().attr("href")==="#730"){
+        let activeID = $(".activeInfo")[0].id.split("730_2_")[1]; // gets the asset id of the item that is currently selected.
+        let item = getItemByAssetID(activeID);
 
-    //hides "tradable after" in one's own inventory
-    $("#iteminfo1_item_owner_descriptors").hide();
-    $("#iteminfo0_item_owner_descriptors").hide();
-
-
-    //adds inspect on cs.deals buttons
-    $iteminfo1 = $("#iteminfo1_item_actions");
-    if(!$("#csdeals_inspect1").length){
-        $iteminfo1.append(csDealsButton1)
-    }
-    $iteminfo0 = $("#iteminfo0_item_actions");
-    if(!$("#csdeals_inspect0").length){
-        $iteminfo0.append(csDealsButton0)
-    }
-
-    //adds the correct url to the inspect buttons
-    inspectLink = $("#iteminfo1_item_actions .btn_small").first().attr("href");
-    $("#csdeals_inspect1").attr("href", "http://csgo.gallery/" + inspectLink);
-    inspectLink = $("#iteminfo0_item_actions .btn_small").first().attr("href");
-    $("#csdeals_inspect0").attr("href", "http://csgo.gallery/" + inspectLink);
-
-
-    //adds tradability and countdown elements
-    if(!$("#iteminfo1_tradability").length){
-        $iteminfo1.after(module1);
-    }
-    if(!$("#iteminfo0_tradability").length){
-        $iteminfo0.after(module0);
-    }
-
-    //tradability logic and countdown initiation
-    $tradability1 =  $("#iteminfo1_tradability");
-    $tradability0 = $("#iteminfo0_tradability");
-
-    if(item){
-        if(item.tradability==="Tradable"){
-            $tradability1.html(tradable);
-            $tradability0.html(tradable);
-            $("#iteminfo1_countdown").hide();
-            $("#iteminfo0_countdown").hide();
+        //adds "notes" element
+        if(!$("#note1").length) {
+            $("#iteminfo1_item_descriptors").prepend(note1);
         }
-        else if(item.tradability==="Not Tradable"){
-            $tradability1.html(notTradable);
-            $tradability0.html(notTradable);
-            $("#iteminfo1_countdown").hide();
-            $("#iteminfo0_countdown").hide();
+        if(!$("#note0").length) {
+            $("#iteminfo0_item_descriptors").prepend(note0);
         }
-        else{
-            let tradableAt = new Date(item.tradability);
-            $tradability1.html(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
-            $tradability0.html(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
-            countDown(tradableAt);
-            $("#iteminfo1_countdown").show();
-            $("#iteminfo0_countdown").show();
+
+        //hides "tradable after" in one's own inventory
+        $("#iteminfo1_item_owner_descriptors").hide();
+        $("#iteminfo0_item_owner_descriptors").hide();
+
+
+        //adds inspect on cs.deals buttons
+        $iteminfo1 = $("#iteminfo1_item_actions");
+        if(!$("#csdeals_inspect1").length){
+            $iteminfo1.append(csDealsButton1)
         }
+        $iteminfo0 = $("#iteminfo0_item_actions");
+        if(!$("#csdeals_inspect0").length){
+            $iteminfo0.append(csDealsButton0)
+        }
+
+        //adds the correct url to the inspect buttons
+        inspectLink = $("#iteminfo1_item_actions .btn_small").first().attr("href");
+        $("#csdeals_inspect1").attr("href", "http://csgo.gallery/" + inspectLink);
+        inspectLink = $("#iteminfo0_item_actions .btn_small").first().attr("href");
+        $("#csdeals_inspect0").attr("href", "http://csgo.gallery/" + inspectLink);
+
+
+        //adds tradability and countdown elements
+        if(!$("#iteminfo1_tradability").length){
+            $iteminfo1.after(module1);
+        }
+        if(!$("#iteminfo0_tradability").length){
+            $iteminfo0.after(module0);
+        }
+
+        //tradability logic and countdown initiation
+        $tradability1 =  $("#iteminfo1_tradability");
+        $tradability0 = $("#iteminfo0_tradability");
+
+        if(item){
+            if(item.tradability==="Tradable"){
+                $tradability1.html(tradable);
+                $tradability0.html(tradable);
+                $("#iteminfo1_countdown").hide();
+                $("#iteminfo0_countdown").hide();
+            }
+            else if(item.tradability==="Not Tradable"){
+                $tradability1.html(notTradable);
+                $tradability0.html(notTradable);
+                $("#iteminfo1_countdown").hide();
+                $("#iteminfo0_countdown").hide();
+            }
+            else{
+                let tradableAt = new Date(item.tradability);
+                $tradability1.html(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
+                $tradability0.html(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
+                countDown(tradableAt);
+                $("#iteminfo1_countdown").show();
+                $("#iteminfo0_countdown").show();
+            }
+        }
+    }
+    else{
+        $("#iteminfo1_countdown").hide();
+        $("#iteminfo0_countdown").hide();
     }
 }
 
