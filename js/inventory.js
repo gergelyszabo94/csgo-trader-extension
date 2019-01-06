@@ -19,7 +19,11 @@ let tradable = "<span class='tradable'>Tradable</span>";
 let notTradable = "<span class='not_tradable'>Not Tradable</span>";
 
 let dateOnEachItem = "<div class='perItemDate'><span></span></div>";
-let dopplerPhase = "<div class='dopplerPhase'><span>P1</span></div>";
+let dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
+
+let ruby = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/red_jewel" alt=":red_jewel:" class="gemIcon">';
+let sapphire = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/blue_jewel" alt=":blue_jewel:" class="gemIcon">';
+let emerald = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/green_jewel" alt=":green_jewel:" class="gemIcon">';
 
 
 //mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
@@ -97,7 +101,20 @@ function addSmallIndicators(){
                 $(this).find("span")[0].innerText=item.tradabilityShort;
 
                 if(item.dopplerPhase!==""){
-                    $(this).find("span")[1].innerText=item.dopplerPhase;
+                    if($(this).find(".dopplerPhase").find(".gemIcon").length===0){
+                        if(item.dopplerPhase==="SH"){
+                            $(this).find(".dopplerPhase").append(sapphire);
+                        }
+                        else if(item.dopplerPhase==="RB"){
+                            $(this).find(".dopplerPhase").append(ruby);
+                        }
+                        else if(item.dopplerPhase==="EM"){
+                            $(this).find(".dopplerPhase").append(emerald);
+                        }
+                        else{
+                            $(this).find("span")[1].innerText=item.dopplerPhase;
+                        }
+                    }
                 }
                 else{
                     $(this).find(".dopplerPhase").hide();

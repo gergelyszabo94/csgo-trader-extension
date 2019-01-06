@@ -48,3 +48,8 @@
     color: var(--steam-note-blue);
     margin-bottom: 1rem;
 }
+
+.gemIcon{
+    width: 18px !important;
+    height: 18px !important;
+}
