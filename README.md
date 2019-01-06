@@ -10,6 +10,7 @@ Current Features:
 - Shows when an item's tradelock will expire in the browser's timezone
 - Shows a countdown that counts down to the date when the items will become tradable
 - Puts a small indicator to each item in the inventory of when they will become tradable
+- Shows Doppler knives' phases in inventories
 
 Feel free to contribute (even with ideas)
 

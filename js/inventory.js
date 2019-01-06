@@ -11,8 +11,8 @@ let module1 = `<div>
     <div class="descriptor countdown" id="iteminfo1_countdown"><span></span></div>
 </div>`;
 
-let note0 = `<div class="descriptor note" id="note0">Note:</div>`;
-let note1 = `<div class="descriptor note" id="note1">Note:</div>`;
+let note0 = `<div class="descriptor note" id="note0"></div>`;
+let note1 = `<div class="descriptor note" id="note1"></div>`;
 
 
 let tradable = "<span class='tradable'>Tradable</span>";
@@ -21,9 +21,10 @@ let notTradable = "<span class='not_tradable'>Not Tradable</span>";
 let dateOnEachItem = "<div class='perItemDate'><span></span></div>";
 let dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
 
-let ruby = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/red_jewel" alt=":red_jewel:" class="gemIcon">';
-let sapphire = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/blue_jewel" alt=":blue_jewel:" class="gemIcon">';
-let emerald = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/green_jewel" alt=":green_jewel:" class="gemIcon">';
+let ruby = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/redjewel" class="gemIcon">';
+let sapphire = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/bluejewel" class="gemIcon">';
+let emerald = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/greenjewel" class="gemIcon">';
+let blackPearl = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/lltqjewel" class="gemIcon">';
 
 
 //mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
@@ -110,6 +111,9 @@ function addSmallIndicators(){
                         }
                         else if(item.dopplerPhase==="EM"){
                             $(this).find(".dopplerPhase").append(emerald);
+                        }
+                        else if(item.dopplerPhase==="BP"){
+                            $(this).find(".dopplerPhase").append(blackPearl);
                         }
                         else{
                             $(this).find("span")[1].innerText=item.dopplerPhase;
@@ -201,6 +205,19 @@ function addElements(){
                 $("#iteminfo1_countdown").show();
                 $("#iteminfo0_countdown").show();
             }
+
+            if(item.dopplerPhase!==""){
+                switch (item.dopplerPhase) {
+                    case "P1": addNote("Phase 1");break;
+                    case "P2": addNote("Phase 2");break;
+                    case "P3": addNote("Phase 3");break;
+                    case "P4": addNote("Phase 4");break;
+                    case "SH": addNote("Sapphire");break;
+                    case "RB": addNote("Ruby");break;
+                    case "BP": addNote("Black Pearl");break;
+                    case "EM": addNote("Emerald");break;
+                }
+            }
         }
     }
     else{
@@ -247,4 +264,9 @@ function countDown(dateToCountDownTo){
         countingDown = false;
         countDown(dateToCountDownTo);
     }
+}
+
+function addNote(note){
+        $("#note1").text("Note: " + note);
+        $("#note0").text("Note: " + note);
 }
