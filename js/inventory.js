@@ -20,6 +20,7 @@ let notTradable = "<span class='not_tradable'>Not Tradable</span>";
 
 let dateOnEachItem = "<div class='perItemDate'><span></span></div>";
 let dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
+let exterior = "<div class='exteriorIndicator'><span></span></div>";
 
 let ruby = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/redjewel" class="gemIcon">';
 let sapphire = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/bluejewel" class="gemIcon">';
@@ -122,6 +123,13 @@ function addSmallIndicators(){
                 }
                 else{
                     $(this).find(".dopplerPhase").hide();
+                }
+
+                if(item.shortExterior!==""){
+                    if($(this).find(".exteriorIndicator").length===0){
+                        $(this).append(exterior);
+                        $(this).find(".exteriorIndicator").text(item.shortExterior);
+                    }
                 }
             }
         });
@@ -267,6 +275,6 @@ function countDown(dateToCountDownTo){
 }
 
 function addNote(note){
-        $("#note1").text("Note: " + note);
-        $("#note0").text("Note: " + note);
+    $("#note1").text("Note: " + note);
+    $("#note0").text("Note: " + note);
 }

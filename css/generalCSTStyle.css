@@ -53,3 +53,11 @@
     width: 18px !important;
     height: 18px !important;
 }
+
+.exteriorIndicator{
+    color: var(--steam-note-blue);
+    position: relative;
+    left: 73%;
+    bottom: 110%;
+    font-size: 0.8rem;
+}

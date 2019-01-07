@@ -17,6 +17,13 @@ chrome.webRequest.onBeforeRequest.addListener(
     {urls: ["*://steamcommunity.com/inventory/*"]},
     ["blocking"]);
 
+//captures the api request made when tradeoffers are
+// chrome.webRequest.onCompleted.addListener(
+//     function(details) {
+//         console.log(details);
+//     },
+//     {urls: ["*://steamcommunity.com/id/gergelyszabo/inventory/json/730/2/?trading=1*"]});
+
 //loads inventory and extract information
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
@@ -40,6 +47,9 @@ chrome.runtime.onMessage.addListener(
                             let marketlink = "https://steamcommunity.com/market/listings/730/" + items[item].market_hash_name;
                             let classid = items[item].classid;
                             let instanceid = items[item].instanceid;
+                            let exterior = items[item].descriptions[0].value.split('Exterior: ')[1];
+                            exterior = exterior === undefined ? "" : exterior;
+                            let shortExterior = shortenExterior(exterior);
                             let tradability = "Tradable";
                             let tradabilityShort = "T";
                             let dopplerPhase = "";
@@ -66,6 +76,8 @@ chrome.runtime.onMessage.addListener(
                                 tradability: tradability,
                                 tradabilityShort: tradabilityShort,
                                 dopplerPhase: dopplerPhase,
+                                exterior: exterior,
+                                shortExterior: shortExterior
                             })
                         }
                     }
@@ -341,5 +353,16 @@ function getDopplerPhase(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlY20kvrxIbrdklRc6ddzhuzI74nxt1i9rBsofT-ld9LDJgVsY1nX-QLtlejqg5bu7Zydm3Q1uSVzsXmOmUe3ghFKauBxxavJdWR7Gog":
             return "EM";
         default: return "UN";
+    }
+}
+
+function shortenExterior(exterior){
+    switch(exterior){
+        case "Factory New": return "FN";
+        case "Minimal Wear": return "MW";
+        case "Field-Tested": return "FT";
+        case "Well-Worn": return "WW";
+        case "Battle-Scarred": return "BS";
+        default: return "";
     }
 }

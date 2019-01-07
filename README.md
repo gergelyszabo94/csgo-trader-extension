@@ -11,6 +11,7 @@ Current Features:
 - Shows a countdown that counts down to the date when the items will become tradable
 - Puts a small indicator to each item in the inventory of when they will become tradable
 - Shows Doppler knives' phases in inventories
+- Shows exterior on each item
 
 Feel free to contribute (even with ideas)
 
