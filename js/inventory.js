@@ -1,3 +1,36 @@
+
+//the hack i was looking for ages
+// https://stackoverflow.com/questions/3955803/page-variables-in-content-script
+function retrieveWindowVariables(variables) {
+    var ret = {};
+
+    var scriptContent = "";
+    for (var i = 0; i < variables.length; i++) {
+        var currVariable = variables[i];
+        //scriptContent += "if (typeof " + currVariable + " !== 'undefined') $('body').attr('tmp_" + currVariable + "', JSON.stringify(" + currVariable + "));\n"
+        scriptContent += "if (typeof " + currVariable + " !== 'undefined') document.getElementsByTagName('body')[0].setAttribute('tmp_" + currVariable + "', JSON.stringify(" + currVariable + "));\n";
+    }
+
+    var script = document.createElement('script');
+    script.id = 'tmpScript';
+    script.appendChild(document.createTextNode(scriptContent));
+    (document.body || document.head || document.documentElement).appendChild(script);
+
+    for (var i = 0; i < variables.length; i++) {
+        var currVariable = variables[i];
+        ret[currVariable] = $.parseJSON($("body").attr("tmp_" + currVariable));
+        $("body").removeAttr("tmp_" + currVariable);
+    }
+
+    $("#tmpScript").remove();
+
+    return ret;
+}
+
+console.log(retrieveWindowVariables(["g_steamID", "g_sessionID"]));
+
+
+
 let csDealsButton0 ='<a class="btn_small btn_grey_white_innerfade" id="csdeals_inspect0" href="http://csgo.gallery/" target="_blank"><span>Inspect on CS.DEALS...</span></a>';
 let csDealsButton1 ='<a class="btn_small btn_grey_white_innerfade" id="csdeals_inspect1" href="http://csgo.gallery/" target="_blank"><span>Inspect on CS.DEALS...</span></a>';
 

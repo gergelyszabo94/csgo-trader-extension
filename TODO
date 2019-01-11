@@ -27,3 +27,7 @@ misc:
 -analyse account/activity for suspicious activity
 -show floats everywhere
 -lounge bump
+-block ascii art
+-nsfw mode
+-data saving mode, disable profile art, background, etc.
+-notify on good offer (trading suite replacement)
