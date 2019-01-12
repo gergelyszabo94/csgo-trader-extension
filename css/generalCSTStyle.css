@@ -62,8 +62,12 @@
     font-size: 0.8rem;
 }
 
-#otherExteriors{
+.otherExteriors{
     color: var(--steam-note-blue);
-    margin-top: 1rem;
+    margin-top: 0.5rem;
     margin-bottom: 1rem;
+}
+
+.stattrakOrange{
+    color: var(--steam-stattrak-orange) !important;
 }

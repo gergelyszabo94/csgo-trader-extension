@@ -1,23 +1,23 @@
-function executeInPageContext(codeString) {
-    let script = document.createElement('script');
-    script.id = 'tmpScript';
-    script.appendChild(document.createTextNode(codeString));
-    (document.body || document.head || document.documentElement).appendChild(script);
-}
-
-setTimeout(function () {
-    executeInPageContext(`
-        let = yourInventory=UserYou.getInventory(730,2);
-        let = theirInventory=UserThem.getInventory(730,2);
-        console.log(UserYou.GetAllLoadedInventories());
-        setTimeout(function () {
-            console.log(yourInventory.m_rgAssets);
-            console.log(yourInventory.m_rgDescriptions);
-            console.log(theirInventory.m_rgAssets);
-            console.log(theirInventory.m_rgDescriptions);
-            console.log(UserYou.GetAllLoadedInventories());
-        }, 5000);`);
-}, 5000);
+// function executeInPageContext(codeString) {
+//     let script = document.createElement('script');
+//     script.id = 'tmpScript';
+//     script.appendChild(document.createTextNode(codeString));
+//     (document.body || document.head || document.documentElement).appendChild(script);
+// }
+//
+// setTimeout(function () {
+//     executeInPageContext(`
+//         let = yourInventory=UserYou.getInventory(730,2);
+//         let = theirInventory=UserThem.getInventory(730,2);
+//         console.log(UserYou.GetAllLoadedInventories());
+//         setTimeout(function () {
+//             console.log(yourInventory.m_rgAssets);
+//             console.log(yourInventory.m_rgDescriptions);
+//             console.log(theirInventory.m_rgAssets);
+//             console.log(theirInventory.m_rgDescriptions);
+//             console.log(UserYou.GetAllLoadedInventories());
+//         }, 5000);`);
+// }, 5000);
 
 
 

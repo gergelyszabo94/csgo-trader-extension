@@ -5,13 +5,11 @@ inventory:
 -generate list of items for posting on trade forums, etc.
 
 tradeoffer:
--select x amount of keys option
 -add tf2 keys and refs as currency
 -small exterior indicator
 -phases on dopplers
 
 market:
-csdeals inspect
 
 profile:
 -+rep button

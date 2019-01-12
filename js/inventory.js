@@ -1,43 +1,44 @@
 
 //the hack i was looking for ages
 // https://stackoverflow.com/questions/3955803/page-variables-in-content-script
-function retrieveWindowVariables(variables) {
-    let ret = {};
 
-    let scriptContent = "";
-    for (let i = 0; i < variables.length; i++) {
-        let currVariable = variables[i];
-        //scriptContent += "if (typeof " + currVariable + " !== 'undefined') $('body').attr('tmp_" + currVariable + "', JSON.stringify(" + currVariable + "));\n"
-        scriptContent += "if (typeof " + currVariable + " !== 'undefined') document.getElementsByTagName('body')[0].setAttribute('tmp_" + currVariable + "', JSON.stringify(" + currVariable + "));\n";
-    }
-
-    let script = document.createElement('script');
-    script.id = 'tmpScript';
-    script.appendChild(document.createTextNode(scriptContent));
-    (document.body || document.head || document.documentElement).appendChild(script);
-
-    for (let i = 0; i < variables.length; i++) {
-        let currVariable = variables[i];
-        ret[currVariable] = $.parseJSON($("body").attr("tmp_" + currVariable));
-        $("body").removeAttr("tmp_" + currVariable);
-    }
-
-    $("#tmpScript").remove();
-
-    return ret;
-}
+// function retrieveWindowVariables(variables) {
+//     let ret = {};
+//
+//     let scriptContent = "";
+//     for (let i = 0; i < variables.length; i++) {
+//         let currVariable = variables[i];
+//         //scriptContent += "if (typeof " + currVariable + " !== 'undefined') $('body').attr('tmp_" + currVariable + "', JSON.stringify(" + currVariable + "));\n"
+//         scriptContent += "if (typeof " + currVariable + " !== 'undefined') document.getElementsByTagName('body')[0].setAttribute('tmp_" + currVariable + "', JSON.stringify(" + currVariable + "));\n";
+//     }
+//
+//     let script = document.createElement('script');
+//     script.id = 'tmpScript';
+//     script.appendChild(document.createTextNode(scriptContent));
+//     (document.body || document.head || document.documentElement).appendChild(script);
+//
+//     for (let i = 0; i < variables.length; i++) {
+//         let currVariable = variables[i];
+//         ret[currVariable] = $.parseJSON($("body").attr("tmp_" + currVariable));
+//         $("body").removeAttr("tmp_" + currVariable);
+//     }
+//
+//     $("#tmpScript").remove();
+//
+//     return ret;
+// }
 
 //console.log(retrieveWindowVariables(["g_steamID", "g_sessionID"]));
 
 
 //
 
-function executeInPageContext(codeString) {
-    let script = document.createElement('script');
-    script.id = 'tmpScript';
-    script.appendChild(document.createTextNode(codeString));
-    (document.body || document.head || document.documentElement).appendChild(script);
-}
+// function executeInPageContext(codeString) {
+//     let script = document.createElement('script');
+//     script.id = 'tmpScript';
+//     script.appendChild(document.createTextNode(codeString));
+//     (document.body || document.head || document.documentElement).appendChild(script);
+// }
 
 // executeInPageContext(`
 //         let = yourInventory=UserYou.getInventory(730,2);
@@ -77,6 +78,32 @@ let ruby = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/red
 let sapphire = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/bluejewel" class="gemIcon">';
 let emerald = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/greenjewel" class="gemIcon">';
 let blackPearl = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/lltqjewel" class="gemIcon">';
+
+let exteriors1 = `
+    <div class="descriptor otherExteriors" id="otherExteriors1">
+        <span>Links to other exteriors:</span>
+        <ul>
+            <li><a href="" target="_blank" id="fnLink1">Factory New</a> - <a href="" target="_blank" id="fnSTLink1"><span class="stattrakOrange">StatTrak™ Factory New</span></a></li>
+            <li><a href="" target="_blank" id="mwLink1">Minimal Wear</a> - <a href="" target="_blank" id="mwSTLink1"><span class="stattrakOrange">StatTrak™ Minimal Wear</span></a></li>
+            <li><a href="" target="_blank" id="ftLink1">Field-Tested</a> - <a href="" target="_blank" id="ftSTLink1"><span class="stattrakOrange">StatTrak™ Field-Tested</span></a></li>
+            <li><a href="" target="_blank" id="wwLink1">Well-Worn</a> - <a href="" target="_blank" id="wwSTLink1"><span class="stattrakOrange">StatTrak™ Well-Worn</span></a></li>
+            <li><a href="" target="_blank" id="bsLink1">Battle-Scarred</a> - <a href="" target="_blank" id="bsSTLink1"><span class="stattrakOrange">StatTrak™ Battle-Scarred</span></a></li>
+        </ul>
+        <span>Not every item is available in every exterior</span>
+    </div>`;
+
+let exteriors0 = `
+    <div class="descriptor otherExteriors" id="otherExteriors0">
+        <span>Links to other exteriors:</span>
+        <ul>
+            <li><a href="" target="_blank" id="fnLink0">Factory New</a> - <a href="" target="_blank" id="fnSTLink0"><span class="stattrakOrange">StatTrak™ Factory New</span></a></li>
+            <li><a href="" target="_blank" id="mwLink0">Minimal Wear</a> - <a href="" target="_blank" id="mwSTLink0"><span class="stattrakOrange">StatTrak™ Minimal Wear</span></a></li>
+            <li><a href="" target="_blank" id="ftLink0">Field-Tested</a> - <a href="" target="_blank" id="ftSTLink0"><span class="stattrakOrange">StatTrak™ Field-Tested</span></a></li>
+            <li><a href="" target="_blank" id="wwLink0">Well-Worn</a> - <a href="" target="_blank" id="wwSTLink0"><span class="stattrakOrange">StatTrak™ Well-Worn</span></a></li>
+            <li><a href="" target="_blank" id="bsLink0">Battle-Scarred</a> - <a href="" target="_blank" id="bsSTLink0"><span class="stattrakOrange">StatTrak™ Battle-Scarred</span></a></li>
+        </ul>
+        <span>Not every item is available in every exterior</span>
+    </div>`;
 
 
 //mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
@@ -201,12 +228,20 @@ function addElements(){
         let activeID = $(".activeInfo")[0].id.split("730_2_")[1]; // gets the asset id of the item that is currently selected.
         let item = getItemByAssetID(activeID);
 
+        //add "other exteriors" links module
+        if(!$("#otherExteriors1").length) {
+            $("#iteminfo1_item_descriptors").after(exteriors1);
+        }
+        if(!$("#otherExteriors0").length) {
+            $("#iteminfo0_item_descriptors").after(exteriors0);
+        }
+
         //adds "notes" element
         if(!$("#note1").length) {
-            $("#iteminfo1_item_descriptors").prepend(note1);
+            $("#iteminfo1_item_descriptors").before(note1);
         }
         if(!$("#note0").length) {
-            $("#iteminfo0_item_descriptors").prepend(note0);
+            $("#iteminfo0_item_descriptors").before(note0);
         }
 
         //hides "tradable after" in one's own inventory
@@ -276,6 +311,46 @@ function addElements(){
                     case "BP": addNote("Black Pearl");break;
                     case "EM": addNote("Emerald");break;
                 }
+            }
+
+            let genericMarketLink = "https://steamcommunity.com/market/listings/730/";
+            let weaponName = "";
+            let stattrak = "StatTrak%E2%84%A2%20";
+
+            if(/StatTrak™/.test(item.marketlink)){
+                weaponName = item.marketlink.split("/730/")[1].split("StatTrak™")[1].split("(")[0];
+            }
+            else{
+                weaponName = item.marketlink.split("/730/")[1].split("(")[0];
+            }
+
+            $("#fnLink1").attr("href", genericMarketLink + weaponName + "%28Factory%20New%29");
+            $("#mwLink1").attr("href", genericMarketLink + weaponName + "%28Minimal%20Wear%29");
+            $("#ftLink1").attr("href", genericMarketLink + weaponName + "%28Field-Tested%29");
+            $("#wwLink1").attr("href", genericMarketLink + weaponName + "%28Well-Worn%29");
+            $("#bsLink1").attr("href", genericMarketLink + weaponName + "%28Battle-Scarred%29");
+
+            $("#fnSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Factory%20New%29");
+            $("#mwSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Minimal%20Wear%29");
+            $("#ftSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Field-Tested%29");
+            $("#wwSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Well-Worn%29");
+            $("#bsSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Battle-Scarred%29");
+
+            $("#fnLink0").attr("href", genericMarketLink + weaponName + "%28Factory%20New%29");
+            $("#mwLink0").attr("href", genericMarketLink + weaponName + "%28Minimal%20Wear%29");
+            $("#ftLink0").attr("href", genericMarketLink + weaponName + "%28Field-Tested%29");
+            $("#wwLink0").attr("href", genericMarketLink + weaponName + "%28Well-Worn%29");
+            $("#bsLink0").attr("href", genericMarketLink + weaponName + "%28Battle-Scarred%29");
+
+            $("#fnSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Factory%20New%29");
+            $("#mwSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Minimal%20Wear%29");
+            $("#ftSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Field-Tested%29");
+            $("#wwSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Well-Worn%29");
+            $("#bsSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Battle-Scarred%29");
+
+            if(item.marketlink.split("(")[1]===undefined){
+                $("#otherExteriors1").hide();
+                $("#otherExteriors0").hide();
             }
         }
     }
