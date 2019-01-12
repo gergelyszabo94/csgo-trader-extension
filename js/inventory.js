@@ -2,22 +2,22 @@
 //the hack i was looking for ages
 // https://stackoverflow.com/questions/3955803/page-variables-in-content-script
 function retrieveWindowVariables(variables) {
-    var ret = {};
+    let ret = {};
 
-    var scriptContent = "";
-    for (var i = 0; i < variables.length; i++) {
-        var currVariable = variables[i];
+    let scriptContent = "";
+    for (let i = 0; i < variables.length; i++) {
+        let currVariable = variables[i];
         //scriptContent += "if (typeof " + currVariable + " !== 'undefined') $('body').attr('tmp_" + currVariable + "', JSON.stringify(" + currVariable + "));\n"
         scriptContent += "if (typeof " + currVariable + " !== 'undefined') document.getElementsByTagName('body')[0].setAttribute('tmp_" + currVariable + "', JSON.stringify(" + currVariable + "));\n";
     }
 
-    var script = document.createElement('script');
+    let script = document.createElement('script');
     script.id = 'tmpScript';
     script.appendChild(document.createTextNode(scriptContent));
     (document.body || document.head || document.documentElement).appendChild(script);
 
-    for (var i = 0; i < variables.length; i++) {
-        var currVariable = variables[i];
+    for (let i = 0; i < variables.length; i++) {
+        let currVariable = variables[i];
         ret[currVariable] = $.parseJSON($("body").attr("tmp_" + currVariable));
         $("body").removeAttr("tmp_" + currVariable);
     }
@@ -27,7 +27,25 @@ function retrieveWindowVariables(variables) {
     return ret;
 }
 
-console.log(retrieveWindowVariables(["g_steamID", "g_sessionID"]));
+//console.log(retrieveWindowVariables(["g_steamID", "g_sessionID"]));
+
+
+//
+
+function executeInPageContext(codeString) {
+    let script = document.createElement('script');
+    script.id = 'tmpScript';
+    script.appendChild(document.createTextNode(codeString));
+    (document.body || document.head || document.documentElement).appendChild(script);
+}
+
+// executeInPageContext(`
+//         let = yourInventory=UserYou.getInventory(730,2);
+//         let = theirInventory=UserYou.getInventory(730,2);
+//         console.log(yourInventory.m_rgAssets);
+//         console.log(yourInventory.m_rgDescriptions);
+//         console.log(theirInventory.m_rgAssets);
+//         console.log(theirInventory.m_rgDescriptions);`);
 
 
 
