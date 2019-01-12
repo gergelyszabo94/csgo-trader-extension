@@ -18,8 +18,6 @@ baseLink = window.location.href.split("%28")[0];
 if(baseLink===window.location.href){
     baseLink = window.location.href.split("(")[0];
 }
-console.log("0:" + window.location.href.split("(")[0]);
-console.log("1:" + window.location.href.split("(")[1]);
 if(window.location.href.split("%28")[1]===undefined&&window.location.href.split("(")[1]===undefined){
     $("#otherExteriors").hide();
 }
@@ -29,3 +27,14 @@ $("#mwLink").attr("href", baseLink+"%28Minimal%20Wear%29");
 $("#ftLink").attr("href", baseLink+"%28Field-Tested%29");
 $("#wwLink").attr("href", baseLink+"%28Well-Worn%29");
 $("#bsLink").attr("href", baseLink+"%28Battle-Scarred%29");
+
+
+
+let csdealsButton = '<a class="popup_menu_item" id="csdeals_inspect_button" href="http://csgo.gallery/" target="_blank">Inspect in Browser...</a>';
+
+$("#market_action_popup_itemactions").after(csdealsButton);
+
+$(".market_actionmenu_button").on("click", function () {
+    let inspectLink = $("#market_action_popup_itemactions").find("a.popup_menu_item").first().attr("href");
+    $("#csdeals_inspect_button").attr("href", "http://csgo.gallery/" + inspectLink);
+});

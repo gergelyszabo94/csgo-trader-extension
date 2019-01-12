@@ -22,7 +22,7 @@ setTimeout(function () {
 
 
 
-let csdealsButton = '<a class="popup_menu_item" id="csdeals_inspect_button" href="http://csgo.gallery/" target="_blank">Inspect on CS.DEALS...</a>';
+let csdealsButton = '<a class="popup_menu_item" id="csdeals_inspect_button" href="http://csgo.gallery/" target="_blank">Inspect in Browser...</a>';
 
 $("#trade_action_popup_itemactions").after(csdealsButton);
 
