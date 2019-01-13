@@ -2,36 +2,37 @@
 //the hack i was looking for ages
 // https://stackoverflow.com/questions/3955803/page-variables-in-content-script
 
-// function retrieveWindowVariables(variables) {
-//     let ret = {};
-//
-//     let scriptContent = "";
-//     for (let i = 0; i < variables.length; i++) {
-//         let currVariable = variables[i];
-//         //scriptContent += "if (typeof " + currVariable + " !== 'undefined') $('body').attr('tmp_" + currVariable + "', JSON.stringify(" + currVariable + "));\n"
-//         scriptContent += "if (typeof " + currVariable + " !== 'undefined') document.getElementsByTagName('body')[0].setAttribute('tmp_" + currVariable + "', JSON.stringify(" + currVariable + "));\n";
-//     }
-//
-//     let script = document.createElement('script');
-//     script.id = 'tmpScript';
-//     script.appendChild(document.createTextNode(scriptContent));
-//     (document.body || document.head || document.documentElement).appendChild(script);
-//
-//     for (let i = 0; i < variables.length; i++) {
-//         let currVariable = variables[i];
-//         ret[currVariable] = $.parseJSON($("body").attr("tmp_" + currVariable));
-//         $("body").removeAttr("tmp_" + currVariable);
-//     }
-//
-//     $("#tmpScript").remove();
-//
-//     return ret;
-// }
+function retrieveWindowVariables(variables) {
+    let ret = {};
 
-//console.log(retrieveWindowVariables(["g_steamID", "g_sessionID"]));
+    let scriptContent = "";
+    for (let i = 0; i < variables.length; i++) {
+        let currVariable = variables[i];
+        //scriptContent += "if (typeof " + currVariable + " !== 'undefined') $('body').attr('tmp_" + currVariable + "', JSON.stringify(" + currVariable + "));\n"
+        scriptContent += "if (typeof " + currVariable + " !== 'undefined') document.getElementsByTagName('body')[0].setAttribute('tmp_" + currVariable + "', JSON.stringify(" + currVariable + "));\n";
+    }
 
+    let script = document.createElement('script');
+    script.id = 'tmpScript';
+    script.appendChild(document.createTextNode(scriptContent));
+    (document.body || document.head || document.documentElement).appendChild(script);
 
-//
+    for (let i = 0; i < variables.length; i++) {
+        let currVariable = variables[i];
+        ret[currVariable] = $.parseJSON($("body").attr("tmp_" + currVariable));
+        $("body").removeAttr("tmp_" + currVariable);
+    }
+
+    $("#tmpScript").remove();
+
+    return ret;
+}
+
+//console.log(retrieveWindowVariables(["UserYou"]));
+//let user = retrieveWindowVariables(["UserYou"]);
+
+// UserYou.loadInventory(730,2, {"appid":730,"name":"Counter-Strike: Global Offensive","icon":"https:\/\/steamcdn-a.akamaihd.net\/steamcommunity\/public\/images\/apps\/730\/69f7ebe2735c366c65c0b33dae00e12dc40edbe4.jpg","link":"https:\/\/steamcommunity.com\/app\/730","asset_count":927,"inventory_logo":"https:\/\/steamcdn-a.akamaihd.net\/steamcommunity\/public\/images\/apps\/730\/3ab6e87a04994b900881f694284a75150e640536.png","trade_permissions":"FULL","load_failed":0,"store_vetted":"1","rgContexts":{"2":{"asset_count":927,"id":"2","name":"Backpack"}}});
+
 
 // function executeInPageContext(codeString) {
 //     let script = document.createElement('script');
@@ -39,7 +40,7 @@
 //     script.appendChild(document.createTextNode(codeString));
 //     (document.body || document.head || document.documentElement).appendChild(script);
 // }
-
+//
 // executeInPageContext(`
 //         let = yourInventory=UserYou.getInventory(730,2);
 //         let = theirInventory=UserYou.getInventory(730,2);
@@ -47,6 +48,122 @@
 //         console.log(yourInventory.m_rgDescriptions);
 //         console.log(theirInventory.m_rgAssets);
 //         console.log(theirInventory.m_rgDescriptions);`);
+
+
+// getInventory("UserYou", 730, 2, function (result) {
+//     console.log(result);
+// });
+//
+// function getInventory(user, appid, contextid, callback) {
+//     fetchGlobal(user, function(data) {
+//         callback(data);
+//     }, function(input, param) {
+//         input = input[Object.keys(input)[0]];
+//
+//         console.log(input);
+//
+//         var output = {};
+//
+//         var inventory = input.getInventory(param.appid, param.contextid);
+//         output.appid = param.appid;
+//         output.steamid = input.strSteamId;
+//         output.contextid = param.contextid;
+//         output.initialized = inventory.initialized;
+//         output.elInventoryId = inventory.elInventory.id;
+//
+//         if(!inventory.rgInventory)
+//             return output;
+//
+//         var keys = Object.keys(inventory.rgInventory);
+//
+//         for (var j = 0; j < keys.length; j++) {
+//             var assetid = keys[j];
+//             var description = inventory.rgInventory[assetid];
+//
+//             output[assetid] = {};
+//             output[assetid].markethashname = description.market_hash_name;
+//             output[assetid].image = 'https://steamcommunity-a.akamaihd.net/economy/image/' + description.icon_url + '/150x150f';
+//
+//             if (description.actions) {
+//                 for (var k = 0; k < description.actions.length; k++) {
+//                     var action = description.actions[k];
+//                     if (action.name && action.link) {
+//                         output[assetid].inspect = action.link
+//                             .replace("%assetid%", assetid)
+//                             .replace("%owner_steamid%", input.strSteamId);
+//                         break;
+//                     }
+//                 }
+//             }
+//         }
+//
+//         return output;
+//     }, {appid: appid, contextid: contextid});
+// }
+//
+// function fetchGlobal(variable, callback, processor, param) {
+//     var interval = null;
+//
+//     var id = 'SteamWizard_Message_' + Date.now() + "_" + Math.floor(Math.random() * 100000);
+//     var $element = $('<div>').attr('id', id);
+//     $element.appendTo(document.body);
+//
+//     // Event listener
+//     document.addEventListener(id, function listener(e) {
+//         if(callback && e.detail) {
+//             callback(e.detail);
+//             clearInterval(interval);
+//
+//             /* remove event listener */
+//             document.removeEventListener(id, listener);
+//
+//             /* remove element from dom */
+//             $element.remove();
+//         }
+//     });
+//
+//     // inject code into "the other side" to talk back to this side;
+//     var script = document.createElement('script');
+//     //appending text to a function to convert it's src to string only works in Chrome
+//     script.textContent = '(' +
+//         function(classname, processor, param) {
+//             document.getElementById(classname).onclick = function() {
+//                 var var_name = this.getAttribute('variable').split(',');
+//
+//                 var result = {};
+//
+//                 for(var i=0; i < var_name.length; i++)
+//                     result[var_name[i]] = window[var_name[i]];
+//
+//                 if(processor)
+//                     result = processor(result, param);
+//
+//                 document.dispatchEvent(new CustomEvent(classname, {
+//                     detail: result
+//                 }));
+//             };
+//         }
+//         + ')("{0}", {1}, {2});'.format(id, processor ? processor : 'undefined', param ? JSON.stringify(param) : 'undefined');
+//
+//     //cram that sucker in
+//     (document.head || document.documentElement).appendChild(script);
+//
+//     script.remove();
+//     $element.attr('variable', variable);
+//
+//     clearInterval(interval);
+//     var counter = 50;
+//
+//     interval = setInterval(function () {
+//         $('#'+id)[0].click();
+//
+//         if ((counter--) < 1)
+//             clearInterval(interval);
+//     }, 100);
+//
+//     $('#'+id)[0].click();
+// };
+
 
 
 
@@ -134,7 +251,7 @@ let items = [];
 
 function requestInventory(){
     chrome.runtime.sendMessage({inventory: "get"}, function(response) {
-        if(!(response.inventory===undefined||response.inventory===""||response.inventory==="error")){
+        if(!(response===undefined||response.inventory===undefined||response.inventory===""||response.inventory==="error")){
             items = response.inventory;
             addElements();
             addSmallIndicators();
@@ -316,13 +433,20 @@ function addElements(){
             let genericMarketLink = "https://steamcommunity.com/market/listings/730/";
             let weaponName = "";
             let stattrak = "StatTrak%E2%84%A2%20";
+            let souvenir = "Souvenir";
+            let isSouvenir = false;
 
             if(/StatTrak™/.test(item.marketlink)){
                 weaponName = item.marketlink.split("/730/")[1].split("StatTrak™")[1].split("(")[0];
             }
+            else if(/Souvenir/.test(item.marketlink)){
+                isSouvenir = true;
+                    weaponName = item.marketlink.split("/730/")[1].split("Souvenir")[1].split("(")[0];
+            }
             else{
                 weaponName = item.marketlink.split("/730/")[1].split("(")[0];
             }
+
 
             $("#fnLink1").attr("href", genericMarketLink + weaponName + "%28Factory%20New%29");
             $("#mwLink1").attr("href", genericMarketLink + weaponName + "%28Minimal%20Wear%29");
@@ -330,23 +454,75 @@ function addElements(){
             $("#wwLink1").attr("href", genericMarketLink + weaponName + "%28Well-Worn%29");
             $("#bsLink1").attr("href", genericMarketLink + weaponName + "%28Battle-Scarred%29");
 
-            $("#fnSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Factory%20New%29");
-            $("#mwSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Minimal%20Wear%29");
-            $("#ftSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Field-Tested%29");
-            $("#wwSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Well-Worn%29");
-            $("#bsSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Battle-Scarred%29");
-
             $("#fnLink0").attr("href", genericMarketLink + weaponName + "%28Factory%20New%29");
             $("#mwLink0").attr("href", genericMarketLink + weaponName + "%28Minimal%20Wear%29");
             $("#ftLink0").attr("href", genericMarketLink + weaponName + "%28Field-Tested%29");
             $("#wwLink0").attr("href", genericMarketLink + weaponName + "%28Well-Worn%29");
             $("#bsLink0").attr("href", genericMarketLink + weaponName + "%28Battle-Scarred%29");
 
-            $("#fnSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Factory%20New%29");
-            $("#mwSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Minimal%20Wear%29");
-            $("#ftSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Field-Tested%29");
-            $("#wwSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Well-Worn%29");
-            $("#bsSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Battle-Scarred%29");
+            if(isSouvenir){
+                $st = $(".stattrakOrange");
+                $st.addClass("souvenirYellow");
+                $st.removeClass("stattrakOrange");
+
+                $fnst1=$("#fnSTLink1");
+                $fnst1.attr("href", genericMarketLink + souvenir + weaponName + "%28Factory%20New%29");
+                $fnst1.find("span").text("Souvenir Factory New");
+
+                $mwst1=$("#mwSTLink1");
+                $mwst1.attr("href", genericMarketLink + souvenir + weaponName + "%28Minimal%20Wear%29");
+                $mwst1.find("span").text("Souvenir Minimal Wear");
+
+                $ftst1=$("#ftSTLink1");
+                $ftst1.attr("href", genericMarketLink + souvenir + weaponName + "%28Field-Tested%29");
+                $ftst1.find("span").text("Souvenir Field-Tested");
+
+                $wwst1=$("#wwSTLink1");
+                $wwst1.attr("href", genericMarketLink + souvenir + weaponName + "%28Well-Worn%29");
+                $wwst1.find("span").text("Souvenir Well-Worn");
+
+                $bsst1=$("#bsSTLink1");
+                $bsst1.attr("href", genericMarketLink + souvenir + weaponName + "%28Battle-Scarred%29");
+                $bsst1.find("span").text("Souvenir Battle-Scarred");
+
+                $fnst0=$("#fnSTLink0");
+                $fnst0.attr("href", genericMarketLink + souvenir + weaponName + "%28Factory%20New%29");
+                $fnst0.find("span").text("Souvenir Factory New");
+
+                $mwst0=$("#mwSTLink0");
+                $mwst0.attr("href", genericMarketLink + souvenir + weaponName + "%28Minimal%20Wear%29");
+                $mwst0.find("span").text("Souvenir Minimal Wear");
+
+                $ftst0=$("#ftSTLink0");
+                $ftst0.attr("href", genericMarketLink + souvenir + weaponName + "%28Field-Tested%29");
+                $ftst0.find("span").text("Souvenir Field-Tested");
+
+                $wwst0=$("#wwSTLink0");
+                $wwst0.attr("href", genericMarketLink + souvenir + weaponName + "%28Well-Worn%29");
+                $wwst0.find("span").text("Souvenir Well-Worn");
+
+                $bsst0=$("#bsSTLink0");
+                $bsst0.attr("href", genericMarketLink + souvenir + weaponName + "%28Battle-Scarred%29");
+                $bsst0.find("span").text("Souvenir Battle-Scarred");
+            }
+            else{
+                if( $(".souvenirYellow").length!==0){
+                    $sv = $(".souvenirYellow");
+                    $sv.addClass("stattrakOrange");
+                    $sv.removeClass("souvenirYellow");
+                }
+                $("#fnSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Factory%20New%29");
+                $("#mwSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Minimal%20Wear%29");
+                $("#ftSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Field-Tested%29");
+                $("#wwSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Well-Worn%29");
+                $("#bsSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Battle-Scarred%29");
+
+                $("#fnSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Factory%20New%29");
+                $("#mwSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Minimal%20Wear%29");
+                $("#ftSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Field-Tested%29");
+                $("#wwSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Well-Worn%29");
+                $("#bsSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Battle-Scarred%29");
+            }
 
             if(item.marketlink.split("(")[1]===undefined){
                 $("#otherExteriors1").hide();

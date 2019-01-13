@@ -1,10 +1,25 @@
+chrome.runtime.onInstalled.addListener(function() {
+});
+
+
 let steamID = "";
 
 //sets steamid for the future api request and redirect the inventory call to load full inventory
 chrome.webRequest.onBeforeRequest.addListener(
     function(details) {
-        steamID =   details.url.split("steamcommunity.com/inventory/")[1].split("/")[0];
+        // steamID =   details.url.split("steamcommunity.com/inventory/")[1].split("/")[0];
 
+        if(details.url.split("steamcommunity.com/inventory/")[1]===undefined){
+            if(details.url.split("steamcommunity.com/id/")[1]===undefined){
+                steamID = details.url.split("steamcommunity.com/profiles/")[1].split("/")[0];
+            }
+            else{
+                steamID = details.url.split("steamcommunity.com/id/")[1].split("/")[0];
+            }
+        }
+        else{
+            steamID =   details.url.split("steamcommunity.com/inventory/")[1].split("/")[0];
+        }
         //make this an option, let the user decide what to compromise, sih does it anyways
         // if(/count=5000/.test(details.url)){
         //     return {redirectUrl : details.url};
@@ -14,15 +29,9 @@ chrome.webRequest.onBeforeRequest.addListener(
         // }
         return {redirectUrl : details.url};
     },
-    {urls: ["*://steamcommunity.com/inventory/*"]},
+    {urls: ["https://steamcommunity.com/inventory/*", "https://steamcommunity.com/*/inventory/json/730/2/*"]},
     ["blocking"]);
 
-//captures the api request made when tradeoffers are
-// chrome.webRequest.onCompleted.addListener(
-//     function(details) {
-//         console.log(details);
-//     },
-//     {urls: ["*://steamcommunity.com/id/gergelyszabo/inventory/json/730/2/?trading=1*"]});
 
 //loads inventory and extract information
 chrome.runtime.onMessage.addListener(

@@ -19,7 +19,31 @@
 //         }, 5000);`);
 // }, 5000);
 
-
+// let items = [];
+// function requestInventory(){
+//     chrome.runtime.sendMessage({inventory: "get"}, function(response) {
+//         if(!(response===undefined||response.inventory===undefined||response.inventory===""||response.inventory==="error")){
+//             items = response.inventory;
+//             //addElements();
+//             //addSmallIndicators();
+//         }
+//         else{
+//             console.log("Wasn't able to get the inventory, it's most likely steam not working properly or you loading inventory pages at the same time");
+//             console.log("Retrying in 30 seconds");
+//             setTimeout(function () {
+//                 requestInventory();
+//             }, 30000);
+//
+//         }
+//     });
+// }
+// requestInventory();
+//
+// console.log(items);
+//
+// setTimeout(function () {
+//     console.log(items);
+// },10000);
 
 
 let csdealsButton = '<a class="popup_menu_item" id="csdeals_inspect_button" href="http://csgo.gallery/" target="_blank">Inspect in Browser...</a>';
