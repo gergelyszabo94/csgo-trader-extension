@@ -7,4 +7,8 @@ function DeclineTradeOffer( tradeOfferID )
 }
 </script>`;
 
-$("body").append(overRideDeclineOffer);
+chrome.storage.sync.get(['quickDeclineOffer'], function(result) {
+    if(result.quickDeclineOffer){
+        $("body").append(overRideDeclineOffer);
+    }
+});
