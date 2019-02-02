@@ -1,11 +1,10 @@
 chrome.runtime.onInstalled.addListener(function(details) {
     if(details.reason === "install"){
         chrome.storage.sync.set({quickDeclineOffer: true}, function() {
-            console.log("storage set");
         });
     }else if(details.reason === "update"){
         var thisVersion = chrome.runtime.getManifest().version;
-        console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
+        //console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
     }
 });
 
