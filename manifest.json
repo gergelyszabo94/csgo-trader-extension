@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "CSGO Trader - Steam Trading Enhancer",
   "short_name": "CSGO Trader",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Extension to help with CS:GO trading, trade-lock countdown, in-browser inspect, doppler phases, etc.",
   "homepage_url": "https://github.com/bladegery/csgo-trader-extension",
   "permissions": ["activeTab", "declarativeContent", "storage", "*://steamcommunity.com/*", "webRequest", "webRequestBlocking"],
@@ -22,6 +22,12 @@
       "matches": ["*://steamcommunity.com/tradeoffer/*"],
       "run_at" : "document_idle",
       "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/tradeoffer.js"],
+      "css": ["/css/generalCSTStyle.css"]
+    },
+    {
+      "matches": ["*://steamcommunity.com/*/tradeoffers*"],
+      "run_at" : "document_idle",
+      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/tradeoffers.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
