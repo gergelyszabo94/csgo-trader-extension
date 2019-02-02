@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <title>Options</title>
     <link rel="stylesheet" href="/css/thirdparty/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/thirdparty/bootstrap-toggle.min.css">
     <link rel="stylesheet" href="/css/generalCSTStyle.css">
 </head>
 <body>
+<script src="/js/thirdparty/jquery-3.3.1.min.js"></script>
+<script src="/js/thirdparty/bootstrap.min.js"></script>
+<script src="/js/thirdparty/bootstrap-toggle.min.js"></script>
 <div class="col-lg-8 col-md-10 mx-auto" id="settings">
     <h1>CSGO Trader Options</h1>
     <br>
@@ -22,7 +26,7 @@
         <tbody>
             <tr>
                 <td>Quick decline offers</td>
-                <td>bool</td>
+                <td style="text-align:center;"><input id="quickDeclineOffers" type="checkbox" checked data-toggle="toggle" data-size="mini"></td>
                 <td>Clicking "decline trade" on the tradeoffers page declines the trade offer without the confirmation dialog popping up</td>
             </tr>
         </tbody>
