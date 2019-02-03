@@ -1,7 +1,8 @@
 
 function overrideShowTradeOffer(){
+    $("#ShowTradeOfferScript").remove();
     let overRideShowTradeOfferText = `
-<script>
+<script id="ShowTradeOfferScript">
 function ShowTradeOffer( tradeOfferID, rgParams )
 {
 	var strParams = '';
@@ -25,8 +26,9 @@ function ShowTradeOffer( tradeOfferID, rgParams )
 }
 
 function overrideDecline(){
+    $("#DeclineTradeOfferScript").remove();
     let overRideDeclineOffer = `
-<script>
+<script id="DeclineTradeOfferScript">
 function DeclineTradeOffer( tradeOfferID )
 {
 	ActOnTradeOffer( tradeOfferID, 'decline', 'Trade Declined', 'Decline Trade' );
