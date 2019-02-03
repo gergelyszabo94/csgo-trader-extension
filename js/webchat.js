@@ -1,0 +1,3 @@
+overrideShowTradeOffer();
+
+console.log("webchat");
