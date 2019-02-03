@@ -34,3 +34,5 @@ misc:
 -notify on good offer (trading suite replacement)
 -hide spam comments
 -notify on extension update, create changelog page
+-block someone from sending an offer
+-fix steam chat status on profile
