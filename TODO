@@ -25,7 +25,7 @@ chat:
 misc:
 -settings menu
 -analytics: https://developer.chrome.com/apps/analytics
--analyse account/activity for suspicious activity
+-analyze account/activity for suspicious activity
 -show floats everywhere
 -lounge bump
 -block ascii art
