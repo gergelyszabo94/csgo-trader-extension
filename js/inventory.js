@@ -228,7 +228,12 @@ let exteriors0 = `
 MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 
 let observer = new MutationObserver(function(mutations, observer) {
-    addElements();
+    if($(".games_list_tab.active").first().attr("href")==="#730"){
+        addElements();
+    }
+    else{
+        removeElements();
+    }
 });
 
 observer.observe(document.getElementById("iteminfo0"), {
@@ -534,6 +539,17 @@ function addElements(){
         $("#iteminfo1_countdown").hide();
         $("#iteminfo0_countdown").hide();
     }
+}
+
+function removeElements() {
+    $("#iteminfo1_countdown").hide();
+    $("#iteminfo0_countdown").hide();
+    $("#otherExteriors1").hide();
+    $("#otherExteriors0").hide();
+    $("#iteminfo1_tradability").hide();
+    $("#iteminfo0_tradability").hide();
+    $("#note1").hide();
+    $("#note0").hide();
 }
 
 //gets the details of an item by matching the passed asset id with the ones from the api call
