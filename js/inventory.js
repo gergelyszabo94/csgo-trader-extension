@@ -564,7 +564,13 @@ function countDown(dateToCountDownTo){
 
                 if (distance < 0) {
                     clearInterval(countDownID);
-                    $this.text("Tradable");
+                    $this.hide();
+                    $tradability1 = $("#iteminfo1_tradability");
+                    $tradability1.text("Tradable");
+                    $tradability1.addClass("tradable");
+                    $tradability0 = $("#iteminfo0_tradability");
+                    $tradability0.text("Tradable");
+                    $tradability0.addClass("tradable");
                 }
             }, 1000);
         });
