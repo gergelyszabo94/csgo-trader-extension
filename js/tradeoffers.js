@@ -15,7 +15,6 @@ let thisManyTimes = 15;
             clearInterval(id);
         }
         thisManyTimes--;
-        console.log(thisManyTimes + " executed");
     }, 1000);
 })();
 
