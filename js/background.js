@@ -25,6 +25,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
             }
         });
 
+        chrome.browserAction.setBadgeText({text: "1"});
+
         let thisVersion = chrome.runtime.getManifest().version;
         chrome.notifications.create(thisVersion+"changelog", {
             type: 'basic',
@@ -34,11 +36,16 @@ chrome.runtime.onInstalled.addListener(function(details) {
         }, function(notificationId) {});
 
         chrome.notifications.onClicked.addListener(function() {
+            chrome.browserAction.setBadgeText({text: ""});
             let newURL = "/html/changelog.html";
             chrome.tabs.create({ url: newURL });
         });
 
     }
+});
+
+chrome.browserAction.onClicked.addListener(function(){
+    chrome.browserAction.setBadgeText({text: ""});
 });
 
 
@@ -148,6 +155,10 @@ chrome.runtime.onMessage.addListener(
             }
             return true; //async return to signal that it will return later
         }
+        else if (request.badgetext!==undefined){
+            chrome.browserAction.setBadgeText({text: request.badgetext});
+        }
+
     });
 
 function getShortDate(tradabibilityDate){
