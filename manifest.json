@@ -37,7 +37,7 @@
       "css": ["/css/generalCSTStyle.css"]
     },
     {
-      "matches": ["*://steamcommunity.com/id/*/*","*://steamcommunity.com/id/*"],
+      "matches": ["*://steamcommunity.com/id/*/*","*://steamcommunity.com/id/*", "*://steamcommunity.com/profiles/*/*","*://steamcommunity.com/profiles/*"],
       "run_at" : "document_idle",
       "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/steamFunctionOverride.js", "js/profile.js"],
       "css": ["/css/generalCSTStyle.css"]
