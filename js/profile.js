@@ -11,7 +11,7 @@ if($("body").hasClass("profile_page")){
         $("#repper").click(function () {
             $(".commentthread_textarea").val(repText);
             setTimeout(function(){
-                $(".btn_green_white_innerfade")[1].click();
+                $(".btn_green_white_innerfade.btn_small")[1].click();
             }, 500);
         });
     });
