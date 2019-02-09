@@ -11,9 +11,8 @@
 <script src="/js/thirdparty/bootstrap.min.js"></script>
 
 <div class="col-lg-8 col-md-10 mx-auto" id="settings">
-    <h1>CSGO Trader Options</h1>
-    <br>
-    <h2>Trade Offer Options</h2>
+    <h1 style="margin-top: 30px; margin-bottom: 30px">CSGO Trader Options</h1>
+    <h2>Trade Offer</h2>
     <table class="table table-striped">
         <thead>
         <tr>
@@ -32,6 +31,28 @@
             <td>Open trade window as a tab</td>
             <td style="text-align:center;"><input type="checkbox" id="openOfferInTab"></td>
             <td>The trade window opens in a neat new tab instead of the annoying separate small window, especially useful when there is no mouse to middle-click (when on laptop or mobile)</td>
+        </tr>
+        </tbody>
+    </table>
+    <h2>Profiles</h2>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Value</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Show "+rep" button</td>
+            <td><input type="checkbox" id="showPlusRepButton"></td>
+            <td>Puts a "+rep" button on profiles which when pressed comments your reputation message</td>
+        </tr>
+        <tr>
+            <td>Reputation message</td>
+            <td><input type="text" id="reputationMessage"></td>
+            <td>The content of the comment you want posted on someone's profile when the "+rep" button is pressed, defaults to simply "+rep"</td>
         </tr>
         </tbody>
     </table>

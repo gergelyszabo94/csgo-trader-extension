@@ -16,7 +16,6 @@ market:
 -doppler phases
 
 profile:
--+rep button
 -reoccuring message button on own profile
 -scammer likelihood analysis
 
@@ -37,3 +36,4 @@ misc:
 -notify on extension update, create changelog page
 -block someone from sending an offer
 -fix steam chat status on profile
+-easter egg that highlights my profile (golden class)

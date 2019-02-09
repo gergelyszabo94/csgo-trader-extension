@@ -2,7 +2,10 @@ chrome.runtime.onInstalled.addListener(function(details) {
     if(details.reason === "install"){
         chrome.storage.sync.set(
             {quickDeclineOffer: true,
-                openOfferInTab: true}, function() {
+                openOfferInTab: true,
+                showPlusRepButton: true,
+                reputationMessage: "+rep"
+            }, function() {
         });
     }else if(details.reason === "update"){
         var thisVersion = chrome.runtime.getManifest().version;
