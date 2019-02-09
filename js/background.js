@@ -1,5 +1,6 @@
 chrome.runtime.onInstalled.addListener(function(details) {
     if(details.reason === "install"){
+        //setting default options
         chrome.storage.sync.set(
             {quickDeclineOffer: true,
                 openOfferInTab: true,
@@ -10,6 +11,22 @@ chrome.runtime.onInstalled.addListener(function(details) {
     }else if(details.reason === "update"){
         var thisVersion = chrome.runtime.getManifest().version;
         //console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
+
+        //setting defaults options for new options that haven't been set yet
+        chrome.storage.sync.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage'], function(result) {
+            if(result.quickDeclineOffer===undefined){
+                chrome.storage.sync.set({quickDeclineOffer: true}, function() {});
+            }
+            if(result.openOfferInTab===undefined){
+                chrome.storage.sync.set({openOfferInTab: true}, function() {});
+            }
+            if(result.showPlusRepButton===undefined){
+                chrome.storage.sync.set({showPlusRepButton: true}, function() {});
+            }
+            if(result.reputationMessage===undefined){
+                chrome.storage.sync.set({reputationMessage: "+rep"}, function() {});
+            }
+        });
     }
 });
 
