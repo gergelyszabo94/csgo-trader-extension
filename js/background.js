@@ -9,9 +9,6 @@ chrome.runtime.onInstalled.addListener(function(details) {
             }, function() {
         });
     }else if(details.reason === "update"){
-        var thisVersion = chrome.runtime.getManifest().version;
-        //console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
-
         //setting defaults options for new options that haven't been set yet
         chrome.storage.sync.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage'], function(result) {
             if(result.quickDeclineOffer===undefined){
@@ -27,6 +24,20 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 chrome.storage.sync.set({reputationMessage: "+rep"}, function() {});
             }
         });
+
+        let thisVersion = chrome.runtime.getManifest().version;
+        chrome.notifications.create(thisVersion+"changelog", {
+            type: 'basic',
+            iconUrl: '/images/cstlogo128.png',
+            title: 'Extension updated to ' + thisVersion + "!",
+            message: 'You can check the changelog by clicking here!'
+        }, function(notificationId) {});
+
+        chrome.notifications.onClicked.addListener(function() {
+            let newURL = "/html/changelog.html";
+            chrome.tabs.create({ url: newURL });
+        });
+
     }
 });
 
