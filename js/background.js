@@ -8,6 +8,19 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 reputationMessage: "+rep"
             }, function() {
         });
+
+        chrome.notifications.create("installed", {
+            type: 'basic',
+            iconUrl: '/images/cstlogo128.png',
+            title: 'Extension installed!',
+            message: 'You can check the options by clicking here'
+        }, function(notificationId) {});
+
+        chrome.notifications.onClicked.addListener(function(notificationId) {
+            if(notificationId==="installed"){
+                chrome.tabs.create({ url: "/html/options.html" });
+            }
+        });
     }else if(details.reason === "update"){
         //setting defaults options for new options that haven't been set yet
         chrome.storage.sync.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage'], function(result) {
@@ -43,11 +56,6 @@ chrome.runtime.onInstalled.addListener(function(details) {
 
     }
 });
-
-chrome.browserAction.onClicked.addListener(function(){
-    chrome.browserAction.setBadgeText({text: ""});
-});
-
 
 let steamID = "";
 
