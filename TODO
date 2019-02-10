@@ -5,6 +5,7 @@ inventory:
 -generate list of items for posting on trade forums, etc.
 -link to market listings of stickers on weapons
 -copy item link button
+-fix private inventory error handling
 
 tradeoffer:
 -add tf2 keys and refs as currency
@@ -23,7 +24,6 @@ chat:
 -configurable quickreplies
 
 misc:
--settings menu
 -analytics: https://developer.chrome.com/apps/analytics
 -analyze account/activity for suspicious activity
 -show floats everywhere
@@ -33,7 +33,6 @@ misc:
 -data saving mode, disable profile art, background, etc.
 -notify on good offer (trading suite replacement)
 -hide spam comments
--notify on extension update, create changelog page
 -block someone from sending an offer
 -fix steam chat status on profile
 -easter egg that highlights my profile (golden class)
