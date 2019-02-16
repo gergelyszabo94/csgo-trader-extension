@@ -126,7 +126,7 @@ chrome.storage.sync.get(['nsfwFilter'], function(result) {
     }
 });
 
-$showreoccbutton.click(function() {
+$nsfw.click(function() {
     if(this.checked) {
         chrome.storage.sync.set({nsfwFilter: true}, function() {
         });

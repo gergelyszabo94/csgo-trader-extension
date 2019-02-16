@@ -26,7 +26,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
         });
     }else if(details.reason === "update"){
         //setting defaults options for new options that haven't been set yet
-        chrome.storage.sync.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'reoccuringMessage'], function(result) {
+        chrome.storage.sync.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'reoccuringMessage', 'nsfwFilter'], function(result) {
             if(result.quickDeclineOffer===undefined){
                 chrome.storage.sync.set({quickDeclineOffer: true}, function() {});
             }
