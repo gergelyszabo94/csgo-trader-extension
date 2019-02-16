@@ -11,12 +11,16 @@ if($("body").hasClass("profile_page")){
             $commentthreadentrybox.after(reooccButton);
 
             $("#reocc").click(function () {
-                $("")
-
+                $(".commentthread_comment.responsive_body_text").each(function(){
+                    $commentthread = $(this);
+                    if($commentthread.find(".commentthread_comment_text").text().replace(/\s/g,'')===result.reoccuringMessage.replace(/\s/g,'')){
+                        $commentthread.find("img")[1].click();
+                    }
+                });
                 $(".commentthread_textarea").val(reooccText);
                 setTimeout(function(){
                     $(".btn_green_white_innerfade.btn_small")[1].click();
-                }, 1000);
+                }, 2000);
             });
         });
     }
