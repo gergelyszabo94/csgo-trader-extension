@@ -19,7 +19,6 @@ market:
 -fix souvenir error
 
 profile:
--reoccuring message button on own profile
 -scammer likelihood analysis
 
 chat:
@@ -31,7 +30,6 @@ misc:
 -show floats everywhere
 -lounge bump
 -block ascii art
--nsfw mode
 -data saving mode, disable profile art, background, etc.
 -notify on good offer (trading suite replacement)
 -hide spam comments

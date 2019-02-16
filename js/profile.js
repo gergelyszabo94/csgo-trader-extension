@@ -55,7 +55,8 @@ if($("body").hasClass("profile_page")){
             $("body").removeClass("has_profile_background ");
             $(".profile_background_holder_content").remove();
 
-            //hides artwork showcase
+            //hides artwork and screenshot showcases
+            $(".screenshot_showcase").hide();
         }
     });
     overrideShowTradeOffer();
