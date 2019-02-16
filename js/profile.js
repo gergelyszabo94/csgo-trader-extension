@@ -2,52 +2,62 @@
 if($("body").hasClass("profile_page")){
 
     if(getUserSteamID()===getProfileOwnerSteamID()){ //when on the logged in user's own profile
-        chrome.storage.sync.get(['reoccuringMessage'], function(result) {
-            let reooccText = result.reoccuringMessage;
-            let reooccButton = `<div style="float: right; text-align: center; margin-top: 6px;" class="commentthread_user_avatar playerAvatar"><span class="btn_green_white_innerfade btn_small" id="reocc" style="padding: 5px;">Reocc<span></div>`;
+        chrome.storage.sync.get(['reoccuringMessage', 'showReoccButton'], function(result) {
+            if(result.showReoccButton){
+                let reooccText = result.reoccuringMessage;
+                let reooccButton = `<div style="float: right; text-align: center; margin-top: 6px;" class="commentthread_user_avatar playerAvatar"><span class="btn_green_white_innerfade btn_small" id="reocc" style="padding: 5px;">Reocc<span></div>`;
 
-            $commentthreadentrybox = $(".commentthread_entry_quotebox");
-            $commentthreadentrybox.css({"width": "83%", "display":"inline-block"});
-            $commentthreadentrybox.after(reooccButton);
+                $commentthreadentrybox = $(".commentthread_entry_quotebox");
+                $commentthreadentrybox.css({"width": "83%", "display":"inline-block"});
+                $commentthreadentrybox.after(reooccButton);
 
-            $("#reocc").click(function () {
-                $(".commentthread_comment.responsive_body_text").each(function(){
-                    $commentthread = $(this);
-                    if($commentthread.find(".commentthread_comment_text").text().replace(/\s/g,'')===result.reoccuringMessage.replace(/\s/g,'')){
-                        $commentthread.find("img")[1].click();
-                    }
+                $("#reocc").click(function () {
+                    $(".commentthread_comment.responsive_body_text").each(function(){
+                        $commentthread = $(this);
+                        if($commentthread.find(".commentthread_comment_text").text().replace(/\s/g,'')===result.reoccuringMessage.replace(/\s/g,'')){
+                            $commentthread.find("img")[1].click();
+                        }
+                    });
+                    $(".commentthread_textarea").val(reooccText);
+                    setTimeout(function(){
+                        $(".btn_green_white_innerfade.btn_small")[1].click();
+                    }, 2000);
                 });
-                $(".commentthread_textarea").val(reooccText);
-                setTimeout(function(){
-                    $(".btn_green_white_innerfade.btn_small")[1].click();
-                }, 2000);
-            });
+            }
         });
     }
     else{ //when on someone else's profile
-        chrome.storage.sync.get(['reputationMessage'], function(result) {
-            let repText =result.reputationMessage;
-            let repButton = `<div style="float: right; text-align: center; margin-top: 6px;" class="commentthread_user_avatar playerAvatar"><span class="btn_green_white_innerfade btn_small" id="repper" style="padding: 5px;">+rep<span></div>`;
+        chrome.storage.sync.get(['reputationMessage', 'showPlusRepButton'], function(result) {
+            if(result.showPlusRepButton){
+                let repText =result.reputationMessage;
+                let repButton = `<div style="float: right; text-align: center; margin-top: 6px;" class="commentthread_user_avatar playerAvatar"><span class="btn_green_white_innerfade btn_small" id="repper" style="padding: 5px;">+rep<span></div>`;
 
-            $commentthreadentrybox = $(".commentthread_entry_quotebox");
-            $commentthreadentrybox.css({"width": "83%", "display":"inline-block"});
-            $commentthreadentrybox.after(repButton);
+                $commentthreadentrybox = $(".commentthread_entry_quotebox");
+                $commentthreadentrybox.css({"width": "83%", "display":"inline-block"});
+                $commentthreadentrybox.after(repButton);
 
-            $("#repper").click(function () {
-                $(".commentthread_textarea").val(repText);
-                setTimeout(function(){
-                    $(".btn_green_white_innerfade.btn_small")[1].click();
-                }, 500);
-            });
+                $("#repper").click(function () {
+                    $(".commentthread_textarea").val(repText);
+                    setTimeout(function(){
+                        $(".btn_green_white_innerfade.btn_small")[1].click();
+                    }, 500);
+                });
+            }
         });
     }
 
-    $(".no_header.profile_page").css({"background-image": "url(https://steamcommunity-a.akamaihd.net/public/images/profile/profile_bg.jpg)", "background-repeat": "repeat-x", "background-color": "#262627"});
-    $(".no_header.profile_page").removeClass("has_profile_background ");
-    $(".profile_content").removeClass("has_profile_background ");
-    $("body").removeClass("has_profile_background ");
-    $(".profile_background_holder_content").remove();
+    chrome.storage.sync.get(['nsfwFilter'], function(result) {
+        if(result.nsfwFilter){
+            //makes the profile background the same as the default one
+            $(".no_header.profile_page").css({"background-image": "url(https://steamcommunity-a.akamaihd.net/public/images/profile/profile_bg.jpg)", "background-repeat": "repeat-x", "background-color": "#262627"});
+            $(".no_header.profile_page").removeClass("has_profile_background ");
+            $(".profile_content").removeClass("has_profile_background ");
+            $("body").removeClass("has_profile_background ");
+            $(".profile_background_holder_content").remove();
 
+            //hides artwork showcase
+        }
+    });
     overrideShowTradeOffer();
 }
 
