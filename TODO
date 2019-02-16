@@ -12,9 +12,11 @@ tradeoffer:
 -small exterior indicator
 -phases on dopplers
 -key price calculator
+-switch to the other party's item by default
 
 market:
 -doppler phases
+-fix souvenir error
 
 profile:
 -reoccuring message button on own profile
@@ -36,3 +38,9 @@ misc:
 -block someone from sending an offer
 -fix steam chat status on profile
 -easter egg that highlights my profile (golden class)
+-hide and remove spam comments
+-"lock" items, mark items as locked in inventory, make them stand out in trade windows and throw big scary warning when trading the item
+-warn about possible impersonators
+-custom tags, or "marks" to users
+-user uninstall feedback as google form
+-pimp chrome webstore page

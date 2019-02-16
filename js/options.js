@@ -78,3 +78,42 @@ $repmessage.on("change keyup paste", function(){
     chrome.storage.sync.set({reputationMessage: newmessage}, function() {
     });
 });
+
+
+$showreoccbutton = $("#showReoccButton");
+
+chrome.storage.sync.get(['showReoccButton'], function(result) {
+    if(result.showReoccButton){
+        $showreoccbutton.click();
+    }
+});
+
+$showreoccbutton.click(function() {
+    if(this.checked) {
+        chrome.storage.sync.set({showReoccButton: true}, function() {
+        });
+    }
+    else{
+        chrome.storage.sync.set({showReoccButton: false}, function() {
+        });
+    }
+});
+
+
+$reoccmessage = $("#reoccuringMessage");
+
+chrome.storage.sync.get(['reoccuringMessage'], function(result) {
+    if(result.reoccuringMessage!==""){
+        $reoccmessage.val(result.reoccuringMessage);
+    }
+    else{
+        $reoccmessage.val("I don't have other accounts. If someone adds you with my name and picture they are scammers.");
+    }
+});
+
+
+$reoccmessage.on("change keyup paste", function(){
+    let newmessage = $reoccmessage.val();
+    chrome.storage.sync.set({reoccuringMessage: newmessage}, function() {
+    });
+});

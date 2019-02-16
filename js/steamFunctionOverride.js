@@ -41,3 +41,26 @@ function DeclineTradeOffer( tradeOfferID )
         }
     });
 }
+
+//gets the steam id of the user that's profile this script is run on
+function getProfileOwnerSteamID(){
+    let scriptToInject = `
+    <script>
+    document.querySelector("body").setAttribute("steamidOfProfileOwner", g_rgProfileData.steamid);
+</script>`;
+    $("body").append(scriptToInject);
+    return $("body").attr("steamidOfProfileOwner");
+
+}
+
+
+//gets steamid of the user logged into steam
+function getUserSteamID(){
+    let scriptToInject = `
+    <script>
+    document.querySelector("body").setAttribute("steamidOfLoggedinUser", g_steamID);
+</script>`;
+    $("body").append(scriptToInject);
+    return $("body").attr("steamidOfLoggedinUser");
+
+}

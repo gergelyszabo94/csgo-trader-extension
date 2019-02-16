@@ -5,7 +5,9 @@ chrome.runtime.onInstalled.addListener(function(details) {
             {quickDeclineOffer: true,
                 openOfferInTab: true,
                 showPlusRepButton: true,
-                reputationMessage: "+rep"
+                reputationMessage: "+rep",
+                showReoccButton: true,
+                reoccuringMessage: "I don't have other accounts. If someone adds you with my name and picture they are scammers."
             }, function() {
         });
 
@@ -23,7 +25,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
         });
     }else if(details.reason === "update"){
         //setting defaults options for new options that haven't been set yet
-        chrome.storage.sync.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage'], function(result) {
+        chrome.storage.sync.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'reoccuringMessage'], function(result) {
             if(result.quickDeclineOffer===undefined){
                 chrome.storage.sync.set({quickDeclineOffer: true}, function() {});
             }
@@ -35,6 +37,12 @@ chrome.runtime.onInstalled.addListener(function(details) {
             }
             if(result.reputationMessage===undefined){
                 chrome.storage.sync.set({reputationMessage: "+rep"}, function() {});
+            }
+            if(result.showReoccButton===undefined){
+                chrome.storage.sync.set({showReoccButton: true}, function() {});
+            }
+            if(result.reoccuringMessage===undefined){
+                chrome.storage.sync.set({reoccuringMessage: "I don't have other accounts. If someone adds you with my name and picture they are scammers."}, function() {});
             }
         });
 
