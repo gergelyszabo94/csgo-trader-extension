@@ -117,3 +117,22 @@ $reoccmessage.on("change keyup paste", function(){
     chrome.storage.sync.set({reoccuringMessage: newmessage}, function() {
     });
 });
+
+$nsfw = $("#nsfw");
+
+chrome.storage.sync.get(['nsfwFilter'], function(result) {
+    if(result.nsfwFilter){
+        $nsfw.click();
+    }
+});
+
+$showreoccbutton.click(function() {
+    if(this.checked) {
+        chrome.storage.sync.set({nsfwFilter: true}, function() {
+        });
+    }
+    else{
+        chrome.storage.sync.set({nsfwFilter: false}, function() {
+        });
+    }
+});

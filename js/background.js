@@ -7,7 +7,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 showPlusRepButton: true,
                 reputationMessage: "+rep",
                 showReoccButton: true,
-                reoccuringMessage: "I don't have other accounts. If someone adds you with my name and picture they are scammers."
+                reoccuringMessage: "I don't have other accounts. If someone adds you with my name and picture they are scammers.",
+                nsfwFilter: false
             }, function() {
         });
 
@@ -43,6 +44,9 @@ chrome.runtime.onInstalled.addListener(function(details) {
             }
             if(result.reoccuringMessage===undefined){
                 chrome.storage.sync.set({reoccuringMessage: "I don't have other accounts. If someone adds you with my name and picture they are scammers."}, function() {});
+            }
+            if(result.nsfwFilter===undefined){
+                chrome.storage.sync.set({nsfwFilter: false}, function() {});
             }
         });
 
