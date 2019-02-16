@@ -42,6 +42,12 @@ if($("body").hasClass("profile_page")){
         });
     }
 
+    $(".no_header.profile_page").css({"background-image": "url(https://steamcommunity-a.akamaihd.net/public/images/profile/profile_bg.jpg)", "background-repeat": "repeat-x", "background-color": "#262627"});
+    $(".no_header.profile_page").removeClass("has_profile_background ");
+    $(".profile_content").removeClass("has_profile_background ");
+    $("body").removeClass("has_profile_background ");
+    $(".profile_background_holder_content").remove();
+
     overrideShowTradeOffer();
 }
 
