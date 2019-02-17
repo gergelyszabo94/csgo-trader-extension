@@ -30,7 +30,7 @@ if(/StatTrak%E2%84%A2%20/.test(window.location.href)){
 else if(/Souvenir/.test(window.location.href)){
     isSouvenir = true;
     if(window.location.href.split("/730/")[1].split(souvenir)[1]===window.location.href.split("/730/")[1].split(souvenir)[1].split("%28")[0]){
-        weaponName = window.location.href.split("/730/")[1].split("souvenir")[1].split("(")[0]; //stupid sih inconsistency fix
+        weaponName = window.location.href.split("/730/")[1].split(souvenir)[1].split("(")[0]; //stupid sih inconsistency fix
     }
     else{
         weaponName = window.location.href.split("/730/")[1].split(souvenir)[1].split("%28")[0];
