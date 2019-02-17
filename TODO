@@ -19,6 +19,7 @@ market:
 
 profile:
 -scammer likelihood analysis
+-block ascii art
 
 chat:
 -configurable quickreplies
@@ -28,18 +29,13 @@ misc:
 -analyze account/activity for suspicious activity
 -show floats everywhere
 -lounge bump
--block ascii art
--data saving mode, disable profile art, background, etc.
 -notify on good offer (trading suite replacement)
--hide spam comments
 -block someone from sending an offer
 -fix steam chat status on profile
 -easter egg that highlights my profile (golden class)
--hide and remove spam comments
 -"lock" items, mark items as locked in inventory, make them stand out in trade windows and throw big scary warning when trading the item
 -warn about possible impersonators
 -custom tags, or "marks" to users
 -user uninstall feedback as google form
--pimp chrome webstore page
 -mark if we traded with the user before
 -auto +rep

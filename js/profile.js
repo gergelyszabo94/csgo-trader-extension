@@ -1,6 +1,5 @@
 //ensures that we are on a profile page, it's not possible with simple regex
 if($("body").hasClass("profile_page")){
-
     if(getUserSteamID()===getProfileOwnerSteamID()){ //when on the logged in user's own profile
         chrome.storage.sync.get(['reoccuringMessage', 'showReoccButton'], function(result) {
             if(result.showReoccButton){
@@ -43,6 +42,31 @@ if($("body").hasClass("profile_page")){
                     }, 500);
                 });
             }
+
+            //flags scam comments that include one of these strings
+            chrome.storage.sync.get(['flagScamComments'], function(result) {
+                if(result.flagScamComments) {
+                    let commentsToReport = [
+                        'free skins CS:GO(100$)',
+                        'for all of your csgo graffitties',
+                        'CS:GO Cases For Keys',
+                        'the amount depends on hours in csgo',
+                        'promocode',
+                        'gives its users FREE',
+                        'for all your graffities and cases',
+                        'Your SteamID is selected as winner'
+                    ];
+
+                    let spamTExtCheck = new RegExp(commentsToReport.join("|"), "i");
+
+                    $(".commentthread_comment.responsive_body_text").each(function () {
+                        $commentthread = $(this);
+                        if (spamTExtCheck.test($commentthread.find(".commentthread_comment_text").text()) && !$commentthread.hasClass("hidden_post")) {
+                            $commentthread.find("img")[1].click();
+                        }
+                    });
+                }
+            });
         });
     }
 
@@ -64,31 +88,3 @@ if($("body").hasClass("profile_page")){
     });
     overrideShowTradeOffer();
 }
-
-//scam comments to report:
-/*Join in! Free skins CS:GO(100$) for you. Watch this video and enjoy!
-https://www.youtube.com/watch?v=-1lr6qNjcQ8*/
-
-/*Hi, I can give my Tiger Tooth M9 bayonet for all of your csgo graffitties (Im collecting them) so if it's ok send me trade offer please. Trade link in my profile bio*/
-
-/*Do you want free skins CS:GO(100$)? Then watch this video and enjoy!
-https://www.youtube.com/watch?v=STJUNvCnCRE*/
-
-/*Trade Your CS:GO Cases For Keys! 4 Cases = 1 key!*/
-
-/*Hello bro, join csmoney and take part at promo action there! Take your 50$ or more on balance(the amount depends on hours in csgo) to our users with promocode! Promo limited , do not miss your chance to take free skins! Link to csmoney at my profile*/
-
-// name: csmoney promo bot
-// BOT#1 GIVEAWAY
-
-/*The legendary {LINK REMOVED} gives its users FREE a Bayonet doppler! Deposit is not needed! Simply enter a promotional code PROMOFREEDOPPLER and pick up your knife. Do not miss your luck*/
-
-/*Hello, I want to trade all your inventory (without cases and trash) for my Stattrak AK-47 Vulcan. Its around 300$ so I think it's a good offer for you. Send me trade offer please if you agree, AK and trade link are in the profile description. I don't add friends for safety so just send offer in my main profile*/
-
-/*Hi, I will to trade my AK-47 | Redline for all your graffities and cases so if you dont need them send me trade offer please. Trade link and m4a1-s are in my main profile - http://steamcommunity.com/profiles/76561197989034852 . pls dont add to friends, just send offer*/
-
-/*Dear winner
-Your SteamID is selected as winner of Weekly giveaway.
-Get your ★ Butterfly Knife | Doppler Phase 2 on http://csfast.pro
-Use GIVEAWAY CODE:
-2OFx0aGkYm*/

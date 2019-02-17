@@ -8,7 +8,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 reputationMessage: "+rep",
                 showReoccButton: true,
                 reoccuringMessage: "I don't have other accounts. If someone adds you with my name and picture they are scammers.",
-                nsfwFilter: false
+                nsfwFilter: false,
+                flagScamComments: true
             }, function() {
         });
 
@@ -26,7 +27,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
         });
     }else if(details.reason === "update"){
         //setting defaults options for new options that haven't been set yet
-        chrome.storage.sync.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'reoccuringMessage', 'nsfwFilter'], function(result) {
+        chrome.storage.sync.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments'], function(result) {
             if(result.quickDeclineOffer===undefined){
                 chrome.storage.sync.set({quickDeclineOffer: true}, function() {});
             }
@@ -47,6 +48,9 @@ chrome.runtime.onInstalled.addListener(function(details) {
             }
             if(result.nsfwFilter===undefined){
                 chrome.storage.sync.set({nsfwFilter: false}, function() {});
+            }
+            if(result.flagScamComments===undefined){
+                chrome.storage.sync.set({flagScamComments: true}, function() {});
             }
         });
 

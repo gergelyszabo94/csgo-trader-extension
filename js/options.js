@@ -136,3 +136,23 @@ $nsfw.click(function() {
         });
     }
 });
+
+
+$flagcomments = $("#flagScamComments");
+
+chrome.storage.sync.get(['flagScamComments'], function(result) {
+    if(result.flagScamComments){
+        $flagcomments.click();
+    }
+});
+
+$flagcomments.click(function() {
+    if(this.checked) {
+        chrome.storage.sync.set({flagScamComments: true}, function() {
+        });
+    }
+    else{
+        chrome.storage.sync.set({flagScamComments: false}, function() {
+        });
+    }
+});
