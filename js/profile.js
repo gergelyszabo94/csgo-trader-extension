@@ -57,6 +57,9 @@ if($("body").hasClass("profile_page")){
 
             //hides artwork and screenshot showcases
             $(".screenshot_showcase").hide();
+
+            //changes avatar to the default one
+            $(".playerAvatarAutoSizeInner").find("img").attr("src", "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg");
         }
     });
     overrideShowTradeOffer();
