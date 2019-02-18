@@ -191,11 +191,6 @@ let dateOnEachItem = "<div class='perItemDate'><span></span></div>";
 let dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
 let exterior = "<div class='exteriorIndicator'><span></span></div>";
 
-let ruby = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/redjewel" class="gemIcon">';
-let sapphire = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/bluejewel" class="gemIcon">';
-let emerald = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/greenjewel" class="gemIcon">';
-let blackPearl = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/lltqjewel" class="gemIcon">';
-
 let exteriors1 = `
     <div class="descriptor otherExteriors" id="otherExteriors1">
         <span>Links to other exteriors:</span>

@@ -46,7 +46,8 @@
 // },10000);
 
 
-let csdealsButton = '<a class="popup_menu_item" id="csdeals_inspect_button" href="http://csgo.gallery/" target="_blank">Inspect in Browser...</a>';
+const csdealsButton = '<a class="popup_menu_item" id="csdeals_inspect_button" href="http://csgo.gallery/" target="_blank">Inspect in Browser...</a>';
+const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
 
 $("#trade_action_popup_itemactions").after(csdealsButton);
 
@@ -58,10 +59,14 @@ let observer = new MutationObserver(function(mutations, observer) {
     }
 });
 
-observer.observe(document.getElementById("inventories"), {
-    subtree: true,
-    attributes: true
-});
+let inventoriesElement = document.getElementById("inventories");
+
+if(inventoriesElement!==undefined||inventoriesElement!==""){
+    observer.observe(inventoriesElement, {
+        subtree: true,
+        attributes: true
+    });
+}
 
 function addClickListener(){
     $(".slot_actionmenu_button").on("click", function () {
