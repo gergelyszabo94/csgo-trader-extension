@@ -46,6 +46,13 @@
     font-size: 0.8rem;
 }
 
+.dopplerPhaseMarket{
+    color: white;
+    position: relative;
+    left: -60%;
+    top: 10%;
+}
+
 .note{
     color: var(--steam-note-blue);
     margin-bottom: 1rem;
@@ -76,38 +83,4 @@
 
 .souvenirYellow{
     color: var(--steam-souvenir-yellow) !important;
-}
-
-.orangeBackground{
-    background-color: darkorange;
-}
-
-body{
-    background-color: #1d2124;
-}
-
-p, b, th, tr, ul, li,a{
-    color: #e1e1e1
-}
-
-a{
-    color: var(--steam-sale-golden);
-}
-
-a:hover {
-    color: #e1e1e1;
-    text-decoration: underline;
-}
-
-h1, h2, h3, h4, h5{
-    color: darkorange;
-}
-
-h1{
-    margin: 1rem;
-}
-.buildingBlock{
-    background-color: #23272b;
-    margin: 1rem;
-    padding: 1rem;
 }
