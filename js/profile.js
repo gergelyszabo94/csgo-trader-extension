@@ -54,7 +54,8 @@ if($("body").hasClass("profile_page")){
                         'promocode',
                         'gives its users FREE',
                         'for all your graffities and cases',
-                        'Your SteamID is selected as winner'
+                        'Your SteamID is selected as winner',
+                        'CS:GO CASES = 1 CS:GO KEY'
                     ];
 
                     let spamTExtCheck = new RegExp(commentsToReport.join("|"), "i");

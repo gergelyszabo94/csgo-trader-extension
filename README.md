@@ -6,12 +6,12 @@ The features I develop will be complementary to Steam Inventory Helper for now.
 
 Current Features:
 --------------
-- Adds an "Inspect in Browser..." button beside the default inspect button in inventories, in trade offers and on the market
-- Shows when an item's tradelock will expire in the browser's timezone
-- Shows a countdown that counts down to the date when the items will become tradable
-- Puts a small indicator to each item in the inventory of when they will become tradable
-- Shows Doppler knives' phases in inventories
+- Adds an "Inspect in Browser..." button beside the default inspect button
+- Shows when an item's tradelock will expire and adds a countdown
+- Shows Doppler knives' phases
 - Shows exterior on each item and adds links to other version to inventory and market pages
+- NSFW filter mode to avoid showing anime boobs to your colleagues
+- Other small automations, conveniences
 
 Feel free to contribute (even with ideas)
 

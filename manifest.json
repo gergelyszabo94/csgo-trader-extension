@@ -2,26 +2,26 @@
   "manifest_version": 2,
   "name": "CSGO Trader - Steam Trading Enhancer",
   "short_name": "CSGO Trader",
-  "version": "1.6.0",
-  "description": "Extension to help with CS:GO trading, trade-lock countdown, in-browser inspect, doppler phases, etc.",
+  "version": "1.7.0",
+  "description": "Extension to help with CS:GO trading, trade-lock countdown, in-browser inspect, doppler phases, Steam NSFW filter mode, etc.",
   "homepage_url": "https://github.com/bladegery/csgo-trader-extension",
   "permissions": ["activeTab", "declarativeContent", "storage", "*://steamcommunity.com/*", "webRequest", "webRequestBlocking", "notifications"],
   "options_page": "html/options.html",
   "background": {
-    "scripts": ["js/thirdparty/jquery-3.3.1.min.js", "js/thirdparty/bootstrap.min.js", "js/background.js"],
+    "scripts": ["js/thirdparty/jquery-3.3.1.min.js", "js/thirdparty/bootstrap.min.js", "js/utils.js", "js/background.js"],
     "persistent": true
   },
   "content_scripts": [
     {
       "matches": ["*://steamcommunity.com/*/inventory", "*://steamcommunity.com/*/inventory/*"],
       "run_at" : "document_idle",
-      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/steamFunctionOverride.js", "js/inventory.js"],
+      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/steamFunctionOverride.js", "js/utils.js", "js/inventory.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
       "matches": ["*://steamcommunity.com/tradeoffer/*"],
       "run_at" : "document_idle",
-      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/steamFunctionOverride.js", "js/tradeoffer.js"],
+      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/steamFunctionOverride.js", "js/utils.js", "js/tradeoffer.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
@@ -33,14 +33,13 @@
     {
       "matches": ["*://steamcommunity.com/market/listings/730/*"],
       "run_at" : "document_idle",
-      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/steamFunctionOverride.js", "js/marketListing.js"],
+      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/steamFunctionOverride.js", "js/utils.js", "js/marketListing.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
       "matches": ["*://steamcommunity.com/id/*/*","*://steamcommunity.com/id/*", "*://steamcommunity.com/profiles/*/*","*://steamcommunity.com/profiles/*"],
       "run_at" : "document_idle",
-      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/steamFunctionOverride.js", "js/profile.js"],
-      "css": ["/css/generalCSTStyle.css"]
+      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/steamFunctionOverride.js", "js/profile.js"]
     },
     {
       "matches": ["*://steamcommunity.com/chat/*"],
