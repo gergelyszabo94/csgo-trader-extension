@@ -55,7 +55,13 @@ if($("body").hasClass("profile_page")){
                         'gives its users FREE',
                         'for all your graffities and cases',
                         'Your SteamID is selected as winner',
-                        'CS:GO CASES = 1 CS:GO KEY'
+                        'CS:GO CASES = 1 CS:GO KEY',
+                        'You are winner on weekly giveaway',
+                        'Do you want free skins',
+                        'Free skins CS:GO',
+                        'replenish your inventory with good skins',
+                        'gives its users a Karambit Fade',
+                        'this guy in my profile gives his skins'
                     ];
 
                     let spamTExtCheck = new RegExp(commentsToReport.join("|"), "i");

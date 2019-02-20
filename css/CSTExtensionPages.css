@@ -7,7 +7,7 @@ p, b, th, tr, ul, li,a{
 }
 
 a{
-    color: rgb(255, 215, 0);;
+    color: rgb(255, 215, 0);
 }
 
 a:hover {
@@ -22,8 +22,20 @@ h1, h2, h3, h4, h5{
 h1{
     margin: 1rem;
 }
+
+nav{
+    background-color: #23272b;
+}
 .buildingBlock{
     background-color: #23272b;
     margin: 1rem;
     padding: 1rem;
+}
+
+.orange{
+    color: darkorange;
+}
+
+.active{
+    color: rgb(255, 215, 0);
 }

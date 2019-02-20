@@ -13,6 +13,9 @@ tradeoffer:
 -switch to the other party's item by default
 -ready without warning
 
+tradeoffers page:
+-mark sender friend status, ignore friend request option
+
 market:
 
 profile:
@@ -20,6 +23,7 @@ profile:
 -block ascii art
 -block swastikas - https://steamcommunity.com/id/rogerioxy
 -fix steam chat status
+-schedule nsfw
 
 chat:
 -configurable quickreplies
