@@ -167,8 +167,11 @@ function retrieveWindowVariables(variables) {
 
 
 
-let csDealsButton0 ='<a class="btn_small btn_grey_white_innerfade" id="csdeals_inspect0" href="http://csgo.gallery/" target="_blank"><span>Inspect in Browser...</span></a>';
-let csDealsButton1 ='<a class="btn_small btn_grey_white_innerfade" id="csdeals_inspect1" href="http://csgo.gallery/" target="_blank"><span>Inspect in Browser...</span></a>';
+let inBrowserInspectButton0 ='<a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect0" href="http://csgo.gallery/" target="_blank"><span>Inspect in Browser...</span></a>';
+let inBrowserInspectButton1 ='<a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect1" href="http://csgo.gallery/" target="_blank"><span>Inspect in Browser...</span></a>';
+
+let bookmark0 = '<a class="btn_small btn_grey_white_innerfade" id="bookmark0" href="http://csgo.gallery/" target="_blank"><span>Bookmark and notify</span></a>';
+let bookmark1 = '<a class="btn_small btn_grey_white_innerfade" id="bookmark1" href="http://csgo.gallery/" target="_blank"><span>Bookmark and notify</span></a>';
 
 let module0 = `<div>
     <div class="descriptor tradability" id="iteminfo0_tradability"><span></span></div>
@@ -216,6 +219,7 @@ let exteriors0 = `
         </ul>
         <span>Not every item is available in every exterior</span>
     </div>`;
+
 
 
 //mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
@@ -366,29 +370,36 @@ function addElements(){
         $("#iteminfo0_item_owner_descriptors").hide();
 
 
-        //adds inspect on cs.deals buttons
+        //adds inspect in-browser inspect buttons
         $iteminfo1 = $("#iteminfo1_item_actions");
-        if(!$("#csdeals_inspect1").length){
-            $iteminfo1.append(csDealsButton1)
+        if(!$("#inbrowser_inspect1").length){
+            $iteminfo1.append(inBrowserInspectButton1)
         }
         $iteminfo0 = $("#iteminfo0_item_actions");
-        if(!$("#csdeals_inspect0").length){
-            $iteminfo0.append(csDealsButton0)
+        if(!$("#inbrowser_inspect0").length){
+            $iteminfo0.append(inBrowserInspectButton0)
         }
 
         //adds the correct url to the inspect buttons
         inspectLink = $("#iteminfo1_item_actions .btn_small").first().attr("href");
-        $("#csdeals_inspect1").attr("href", "http://csgo.gallery/" + inspectLink);
+        $("#inbrowser_inspect1").attr("href", "http://csgo.gallery/" + inspectLink);
         inspectLink = $("#iteminfo0_item_actions .btn_small").first().attr("href");
-        $("#csdeals_inspect0").attr("href", "http://csgo.gallery/" + inspectLink);
+        $("#inbrowser_inspect0").attr("href", "http://csgo.gallery/" + inspectLink);
 
+        //adds the bookmark buttons
+        if(!$("#bookmark1").length){
+            $iteminfo1.after(bookmark1)
+        }
+        if(!$("#bookmark0").length){
+            $iteminfo0.after(bookmark0)
+        }
 
         //adds tradability and countdown elements
         if(!$("#iteminfo1_tradability").length){
-            $iteminfo1.after(module1);
+            $("#bookmark1").after(module1);
         }
         if(!$("#iteminfo0_tradability").length){
-            $iteminfo0.after(module0);
+            $("#bookmark0").after(module0);
         }
 
         //tradability logic and countdown initiation
