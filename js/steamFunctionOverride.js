@@ -64,3 +64,12 @@ function getUserSteamID(){
     return $("body").attr("steamidOfLoggedinUser");
 
 }
+
+function getInventoryOwnerID(){
+    let scriptToInject = `
+    <script>
+    document.querySelector("body").setAttribute("inventoryOwnerID", UserYou.GetSteamId());
+</script>`;
+    $("body").append(scriptToInject);
+    return $("body").attr("inventoryOwnerID");
+}

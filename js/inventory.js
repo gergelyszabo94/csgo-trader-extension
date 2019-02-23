@@ -170,18 +170,17 @@ function retrieveWindowVariables(variables) {
 let inBrowserInspectButton0 ='<a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect0" href="http://csgo.gallery/" target="_blank"><span>Inspect in Browser...</span></a>';
 let inBrowserInspectButton1 ='<a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect1" href="http://csgo.gallery/" target="_blank"><span>Inspect in Browser...</span></a>';
 
-let bookmark0 = '<a class="btn_small btn_grey_white_innerfade" id="bookmark0" href="http://csgo.gallery/" target="_blank"><span>Bookmark and notify</span></a>';
-let bookmark1 = '<a class="btn_small btn_grey_white_innerfade" id="bookmark1" href="http://csgo.gallery/" target="_blank"><span>Bookmark and notify</span></a>';
+let module0 = `<a class="module">
+    <div class="descriptor tradability" id="iteminfo0_tradability"></div>
+    <div class="descriptor countdown" id="iteminfo0_countdown"></div>
+    <div class="descriptor tradability bookmark" id="iteminfo0_bookmark">Bookmark and Notify</div>
+</a>`;
 
-let module0 = `<div>
-    <div class="descriptor tradability" id="iteminfo0_tradability"><span></span></div>
-    <div class="descriptor countdown" id="iteminfo0_countdown"><span></span></div>
-</div>`;
-
-let module1 = `<div>
-    <div class="descriptor tradability" id="iteminfo1_tradability"><span></span></div>
-    <div class="descriptor countdown" id="iteminfo1_countdown"><span></span></div>
-</div>`;
+let module1 = `<a class="module">
+    <div class="descriptor tradability" id="iteminfo1_tradability"></div>
+    <div class="descriptor countdown" id="iteminfo1_countdown"></div>
+    <div class="descriptor tradability bookmark" id="iteminfo1_bookmark">Bookmark and Notify</div>
+</a>`;
 
 let note0 = `<div class="descriptor note" id="note0"></div>`;
 let note1 = `<div class="descriptor note" id="note1"></div>`;
@@ -259,6 +258,7 @@ function requestInventory(){
             items = response.inventory;
             addElements();
             addSmallIndicators();
+            addClickListener();
         }
         else{
             console.log("Wasn't able to get the inventory, it's most likely steam not working properly or you loading inventory pages at the same time");
@@ -346,7 +346,7 @@ let countDownID = "";
 
 function addElements(){
     if($(".games_list_tab.active").first().attr("href")==="#730"){
-        let activeID = $(".activeInfo")[0].id.split("730_2_")[1]; // gets the asset id of the item that is currently selected.
+        let activeID = getAssetIDofActive();
         let item = getItemByAssetID(activeID);
 
         //add "other exteriors" links module
@@ -386,20 +386,12 @@ function addElements(){
         inspectLink = $("#iteminfo0_item_actions .btn_small").first().attr("href");
         $("#inbrowser_inspect0").attr("href", "http://csgo.gallery/" + inspectLink);
 
-        //adds the bookmark buttons
-        if(!$("#bookmark1").length){
-            $iteminfo1.after(bookmark1)
-        }
-        if(!$("#bookmark0").length){
-            $iteminfo0.after(bookmark0)
-        }
-
         //adds tradability and countdown elements
         if(!$("#iteminfo1_tradability").length){
-            $("#bookmark1").after(module1);
+            $iteminfo1.after(module1);
         }
         if(!$("#iteminfo0_tradability").length){
-            $("#bookmark0").after(module0);
+            $iteminfo0.after(module0);
         }
 
         //tradability logic and countdown initiation
@@ -558,6 +550,11 @@ function removeElements() {
     $("#note0").hide();
 }
 
+// gets the asset id of the item that is currently selected
+function getAssetIDofActive() {
+   return  $(".activeInfo")[0].id.split("730_2_")[1];
+}
+
 //gets the details of an item by matching the passed asset id with the ones from the api call
 function getItemByAssetID(assetidToFind){
     if (items === undefined || items.length === 0) {
@@ -607,4 +604,19 @@ function countDown(dateToCountDownTo){
 function addNote(note){
     $("#note1").text("Note: " + note);
     $("#note0").text("Note: " + note);
+}
+
+function addClickListener(){
+    $(".module").click(function () {
+        let bookmark = {
+            itemInfo: getItemByAssetID(getAssetIDofActive()),
+            owner: getInventoryOwnerID(),
+            linkInInventory: window.location.href.split("#730")[0] + $(".activeInfo").find("a").attr("href")
+        };
+        chrome.storage.sync.get('bookmarks', function(result) {
+            let bookmarks = result.bookmarks;
+            bookmarks.push(bookmark);
+            chrome.storage.sync.set({'bookmarks': bookmarks}, function() {});
+        });
+    });
 }
