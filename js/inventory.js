@@ -616,7 +616,9 @@ function addClickListener(){
         chrome.storage.sync.get('bookmarks', function(result) {
             let bookmarks = result.bookmarks;
             bookmarks.push(bookmark);
-            chrome.storage.sync.set({'bookmarks': bookmarks}, function() {});
+            chrome.storage.sync.set({'bookmarks': bookmarks}, function() {
+                chrome.runtime.sendMessage({openInternalPage: "html/bookmarks.html"}, function(response) {});
+            });
         });
     });
 }

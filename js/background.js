@@ -186,7 +186,9 @@ chrome.runtime.onMessage.addListener(
         else if (request.badgetext!==undefined){
             chrome.browserAction.setBadgeText({text: request.badgetext});
         }
-
+        else if (request.openInternalPage!==undefined){
+            chrome.tabs.create({url: request.openInternalPage}, function(){});
+        }
     });
 
 function getShortDate(tradabibilityDate){
