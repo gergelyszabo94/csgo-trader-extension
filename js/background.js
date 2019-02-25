@@ -161,7 +161,8 @@ chrome.runtime.onMessage.addListener(
                                 tradabilityShort: tradabilityShort,
                                 dopplerPhase: dopplerPhase,
                                 exterior: exterior,
-                                shortExterior: shortExterior
+                                shortExterior: shortExterior,
+                                iconURL: icon
                             })
                         }
                     }
@@ -185,11 +186,48 @@ chrome.runtime.onMessage.addListener(
         }
         else if (request.badgetext!==undefined){
             chrome.browserAction.setBadgeText({text: request.badgetext});
+            sendResponse({badgetext: request.badgetext})
         }
         else if (request.openInternalPage!==undefined){
-            chrome.tabs.create({url: request.openInternalPage}, function(){});
+            chrome.tabs.create({url: request.openInternalPage}, function(){
+                sendResponse({openInternalPage: request.openInternalPage})
+            });
+        }
+        else if (request.setAlarm!==undefined){
+            chrome.alarms.create(request.setAlarm.name, {when: new Date(request.setAlarm.when).valueOf()});
+            chrome.alarms.getAll(function(alarms){
+                console.log(alarms);
+            });
+            sendResponse({setAlarm: request.setAlarm})
         }
     });
+
+chrome.alarms.onAlarm.addListener(function(alarm){
+    chrome.browserAction.getBadgeText({}, function (result) {
+        if(result===""){
+            chrome.browserAction.setBadgeText({text:"1"});
+        }
+        else{
+            chrome.browserAction.setBadgeText({text: (parseInt(result)+1).toString()});
+        }
+    });
+    chrome.storage.sync.get('bookmarks', function(result) {
+        let item = result.bookmarks.find(function(element) {
+            return element.itemInfo.assetid === alarm.name;
+        });
+        let iconFullURL= 'https://steamcommunity.com/economy/image/' + item.itemInfo.iconURL + '/128x128';
+        chrome.notifications.create(alarm.name, {
+            type: 'basic',
+            iconUrl: iconFullURL,
+            title: item.itemInfo.name + ' is tradable!',
+            message: 'Click here to see your bookmarks!'
+        }, function(notificationId) {});
+        chrome.notifications.onClicked.addListener(function() {
+            let newURL = "/html/bookmarks.html";
+            chrome.tabs.create({ url: newURL });
+        });
+    });
+});
 
 function getShortDate(tradabibilityDate){
     let now = new Date().getTime();

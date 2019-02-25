@@ -412,7 +412,7 @@ function addElements(){
                 $("#iteminfo0_countdown").hide();
             }
             else{
-                let tradableAt = new Date(item.tradability);
+                let tradableAt = new Date(item.tradability).toString().split("GMT")[0];
                 $tradability1.html(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
                 $tradability0.html(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
                 countDown(tradableAt);
@@ -611,12 +611,17 @@ function addClickListener(){
         let bookmark = {
             itemInfo: getItemByAssetID(getAssetIDofActive()),
             owner: getInventoryOwnerID(),
-            linkInInventory: window.location.href.split("#730")[0] + $(".activeInfo").find("a").attr("href")
+            linkInInventory: window.location.href.split("#730")[0] + $(".activeInfo").find("a").attr("href"),
+            comment: " ",
+            notify: true
         };
         chrome.storage.sync.get('bookmarks', function(result) {
             let bookmarks = result.bookmarks;
             bookmarks.push(bookmark);
             chrome.storage.sync.set({'bookmarks': bookmarks}, function() {
+                if(bookmark.itemInfo.tradability!=="Tradable"){
+                    chrome.runtime.sendMessage({setAlarm: {name:  bookmark.itemInfo.assetid, when: bookmark.itemInfo.tradability}}, function(response) {});
+                }
                 chrome.runtime.sendMessage({openInternalPage: "html/bookmarks.html"}, function(response) {});
             });
         });

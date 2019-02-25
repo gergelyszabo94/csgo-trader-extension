@@ -61,7 +61,8 @@ if($("body").hasClass("profile_page")){
                         'Free skins CS:GO',
                         'replenish your inventory with good skins',
                         'gives its users a Karambit Fade',
-                        'this guy in my profile gives his skins'
+                        'this guy in my profile gives his skins',
+                        'bot to trade your cases for keys'
                     ];
 
                     let spamTExtCheck = new RegExp(commentsToReport.join("|"), "i");

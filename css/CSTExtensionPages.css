@@ -1,13 +1,25 @@
+:root {
+    --steam-nametag-red: #bd4847;
+    --steam-ingame-green: #90ba3c;
+    --steam-online-blue: #57cbde;
+    --steam-offline-gray: #898989;
+    --steam-stattrak-orange: rgb(207, 106, 50);
+    --steam-note-blue: rgb(153, 204, 255);
+    --steam-knife-purple: rgb(134, 80, 172);
+    --steam-souvenir-yellow: rgb(255, 215, 0);
+    --steam-sale-golden: #e4ca63;
+}
+
 body{
     background-color: #1d2124;
 }
 
-p, b, th, tr, ul, li,a{
+p, b, th, tr, ul, li, a, span, div {
     color: #e1e1e1
 }
 
 a{
-    color: rgb(255, 215, 0);
+    color: var(--steam-souvenir-yellow);
 }
 
 a:hover {
@@ -32,10 +44,23 @@ nav{
     padding: 1rem;
 }
 
+.subBlock{
+    background-color: #313435;
+    margin: 2px;
+}
+
 .orange{
     color: darkorange;
 }
 
 .active{
-    color: rgb(255, 215, 0);
+    color: var(--steam-souvenir-yellow);
+}
+
+.tradability{
+    color: var(--steam-nametag-red);
+}
+
+.countdown{
+    color: var(--steam-nametag-red);
 }
