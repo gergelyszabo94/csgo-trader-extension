@@ -39,10 +39,12 @@ nav{
     background-color: #23272b;
 }
 
-textarea, input{
+textarea, input[type=text]{
     background-color: #23272b;
     color: #e1e1e1;
     border-color: darkorange;
+    width: 100%;
+    /*height: 100px;*/
 }
 
 input[type=checkbox]{
@@ -51,6 +53,10 @@ input[type=checkbox]{
 
 button.remove{
     /*background-color: darkorange;*/
+}
+
+i{
+    margin: 0.5rem;
 }
 
 .buildingBlock{
@@ -78,4 +84,21 @@ button.remove{
 
 .countdown{
     color: var(--steam-nametag-red);
+}
+
+.remove{
+    font-size: 2rem;
+    color: var(--steam-nametag-red);
+}
+.remove:hover{
+    /*color:white;*/
+    font-size: 2.1rem;
+}
+
+.owner{
+    color: white;
+    font-size: 2rem;
+}
+.owner:hover{
+    font-size: 2.1rem;
 }
