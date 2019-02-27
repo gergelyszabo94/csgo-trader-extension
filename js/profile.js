@@ -62,7 +62,11 @@ if($("body").hasClass("profile_page")){
                         'replenish your inventory with good skins',
                         'gives its users a Karambit Fade',
                         'this guy in my profile gives his skins',
-                        'bot to trade your cases for keys'
+                        'bot to trade your cases for keys',
+                        'join tradeit and take part at promo action there',
+                        'Do you want free items for',
+                        'Do you want some free skins?',
+                        'watch this video and enjoy'
                     ];
 
                     let spamTExtCheck = new RegExp(commentsToReport.join("|"), "i");

@@ -15,7 +15,7 @@ body{
 }
 
 p, b, th, tr, ul, li, a, span, div {
-    color: #e1e1e1
+    color: #e1e1e1;
 }
 
 a{
@@ -38,6 +38,21 @@ h1{
 nav{
     background-color: #23272b;
 }
+
+textarea, input{
+    background-color: #23272b;
+    color: #e1e1e1;
+    border-color: darkorange;
+}
+
+input[type=checkbox]{
+    color: #8842d5;
+}
+
+button.remove{
+    /*background-color: darkorange;*/
+}
+
 .buildingBlock{
     background-color: #23272b;
     margin: 1rem;

@@ -25,7 +25,7 @@ chrome.storage.sync.get('bookmarks', function(result) {
                 <a href="${element.linkInInventory}" target="_blank"><h4>Link to the item in the owner's inventory</h4></a>
             </div>
             <div class="col-2">
-            <button class="remove" data-index="${index}">Remove</button>
+            <i class="fas fa-trash remove" data-index="${index}"></i>
             <div class="notifyDiv" data-tradability="${element.itemInfo.tradability}">
                 Notify <input type="checkbox" class="notify" data-index="${index}" ${notify}>
             </div>
