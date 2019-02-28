@@ -22,7 +22,7 @@ chrome.storage.sync.get('bookmarks', function(result) {
             <div class="col-4">
                 <h4 class="tradability" data-tradability="${element.itemInfo.tradability}">Tradable after ${new Date(element.itemInfo.tradability).toString().split("GMT")[0]}</h4>
                 <h4 class="countdown" data-countdown="${element.itemInfo.tradability}"></h4>
-                <a href="${element.linkInInventory}" target="_blank"><h4>Link to the item in the owner's inventory</h4></a>
+                <a href="https://steamcommunity.com/profiles/${element.owner}/inventory/#730_2_${element.itemInfo.assetid}" target="_blank"><h4>Link to the item in the owner's inventory</h4></a>
             </div>
             <div class="col-3">
             <div style="text-align: right">

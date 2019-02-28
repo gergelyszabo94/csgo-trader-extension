@@ -611,7 +611,6 @@ function addClickListener(){
         let bookmark = {
             itemInfo: getItemByAssetID(getAssetIDofActive()),
             owner: getInventoryOwnerID(),
-            linkInInventory: window.location.href.split("#730")[0] + $(".activeInfo").find("a").attr("href"),
             comment: " ",
             notify: true
         };
