@@ -234,19 +234,22 @@ let observer = new MutationObserver(function(mutations, observer) {
     }
 });
 
-observer.observe(document.getElementById("iteminfo0"), {
-    subtree: false,
-    attributes: true
-});
-
 let observer2 = new MutationObserver(function(mutations, observer) {
     addSmallIndicators();
 });
 
-observer2.observe(document.getElementById("inventories"),{
-    subtree: false,
-    attributes: true
-});
+//does not execute if inventory is private or failed to load
+if($("#no_inventories").length!==1){
+    observer.observe(document.getElementById("iteminfo0"), {
+        subtree: false,
+        attributes: true
+    });
+
+    observer2.observe(document.getElementById("inventories"),{
+        subtree: false,
+        attributes: true
+    });
+}
 
 //sends a message to the "back end" to request inventory contents
 
