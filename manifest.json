@@ -5,7 +5,7 @@
   "version": "1.8.1",
   "description": "Extension to help with CS:GO trading, trade-lock countdown, in-browser inspect, doppler phases, Steam NSFW, bookmark and notify, etc",
   "homepage_url": "https://github.com/bladegery/csgo-trader-extension",
-  "permissions": ["activeTab", "declarativeContent", "storage", "*://steamcommunity.com/*", "webRequest", "webRequestBlocking", "notifications", "alarms"],
+  "permissions": ["activeTab", "declarativeContent", "storage", "*://steamcommunity.com/*", "notifications", "alarms"],
   "options_page": "html/options.html",
   "background": {
     "scripts": ["js/thirdparty/jquery-3.3.1.min.js", "js/thirdparty/bootstrap.min.js", "js/utils.js", "js/background.js"],

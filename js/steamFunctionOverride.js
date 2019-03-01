@@ -52,11 +52,10 @@ function getProfileOwnerSteamID(){
     let result = $("body").attr("steamidOfProfileOwner");
     $("#getProfileOwnerSteamID").remove();
     return result;
-
 }
 
 
-//gets steamid of the user logged into steam
+//gets steamid of the user logged into steam (on profile pages)
 function getUserSteamID(){
     let scriptToInject = `
     <script id="getUserSteamID">
@@ -66,7 +65,6 @@ function getUserSteamID(){
     let result =  $("body").attr("steamidOfLoggedinUser");
     $("#getUserSteamID").remove();
     return result;
-
 }
 
 function getInventoryOwnerID(){

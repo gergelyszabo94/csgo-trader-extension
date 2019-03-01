@@ -2,31 +2,31 @@
 //the hack i was looking for ages
 // https://stackoverflow.com/questions/3955803/page-variables-in-content-script
 
-function retrieveWindowVariables(variables) {
-    let ret = {};
-
-    let scriptContent = "";
-    for (let i = 0; i < variables.length; i++) {
-        let currVariable = variables[i];
-        //scriptContent += "if (typeof " + currVariable + " !== 'undefined') $('body').attr('tmp_" + currVariable + "', JSON.stringify(" + currVariable + "));\n"
-        scriptContent += "if (typeof " + currVariable + " !== 'undefined') document.getElementsByTagName('body')[0].setAttribute('tmp_" + currVariable + "', JSON.stringify(" + currVariable + "));\n";
-    }
-
-    let script = document.createElement('script');
-    script.id = 'tmpScript';
-    script.appendChild(document.createTextNode(scriptContent));
-    (document.body || document.head || document.documentElement).appendChild(script);
-
-    for (let i = 0; i < variables.length; i++) {
-        let currVariable = variables[i];
-        ret[currVariable] = $.parseJSON($("body").attr("tmp_" + currVariable));
-        $("body").removeAttr("tmp_" + currVariable);
-    }
-
-    $("#tmpScript").remove();
-
-    return ret;
-}
+// function retrieveWindowVariables(variables) {
+//     let ret = {};
+//
+//     let scriptContent = "";
+//     for (let i = 0; i < variables.length; i++) {
+//         let currVariable = variables[i];
+//         //scriptContent += "if (typeof " + currVariable + " !== 'undefined') $('body').attr('tmp_" + currVariable + "', JSON.stringify(" + currVariable + "));\n"
+//         scriptContent += "if (typeof " + currVariable + " !== 'undefined') document.getElementsByTagName('body')[0].setAttribute('tmp_" + currVariable + "', JSON.stringify(" + currVariable + "));\n";
+//     }
+//
+//     let script = document.createElement('script');
+//     script.id = 'tmpScript';
+//     script.appendChild(document.createTextNode(scriptContent));
+//     (document.body || document.head || document.documentElement).appendChild(script);
+//
+//     for (let i = 0; i < variables.length; i++) {
+//         let currVariable = variables[i];
+//         ret[currVariable] = $.parseJSON($("body").attr("tmp_" + currVariable));
+//         $("body").removeAttr("tmp_" + currVariable);
+//     }
+//
+//     $("#tmpScript").remove();
+//
+//     return ret;
+// }
 
 //console.log(retrieveWindowVariables(["UserYou"]));
 //let user = retrieveWindowVariables(["UserYou"]);
@@ -256,7 +256,7 @@ if($("#no_inventories").length!==1){
 let items = [];
 
 function requestInventory(){
-    chrome.runtime.sendMessage({inventory: "get"}, function(response) {
+    chrome.runtime.sendMessage({inventory: getInventoryOwnerID()}, function(response) {
         if(!(response===undefined||response.inventory===undefined||response.inventory===""||response.inventory==="error")){
             items = response.inventory;
             addElements();
