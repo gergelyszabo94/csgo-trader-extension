@@ -45,11 +45,13 @@ function DeclineTradeOffer( tradeOfferID )
 //gets the steam id of the user that's profile this script is run on
 function getProfileOwnerSteamID(){
     let scriptToInject = `
-    <script>
+    <script id="getProfileOwnerSteamID">
     document.querySelector("body").setAttribute("steamidOfProfileOwner", g_rgProfileData.steamid);
 </script>`;
     $("body").append(scriptToInject);
-    return $("body").attr("steamidOfProfileOwner");
+    let result = $("body").attr("steamidOfProfileOwner");
+    $("#getProfileOwnerSteamID").remove();
+    return result;
 
 }
 
@@ -57,19 +59,23 @@ function getProfileOwnerSteamID(){
 //gets steamid of the user logged into steam
 function getUserSteamID(){
     let scriptToInject = `
-    <script>
+    <script id="getUserSteamID">
     document.querySelector("body").setAttribute("steamidOfLoggedinUser", g_steamID);
 </script>`;
     $("body").append(scriptToInject);
-    return $("body").attr("steamidOfLoggedinUser");
+    let result =  $("body").attr("steamidOfLoggedinUser");
+    $("#getUserSteamID").remove();
+    return result;
 
 }
 
 function getInventoryOwnerID(){
     let scriptToInject = `
-    <script>
+    <script id="getInventoryOwnerID">
     document.querySelector("body").setAttribute("inventoryOwnerID", UserYou.GetSteamId());
 </script>`;
     $("body").append(scriptToInject);
-    return $("body").attr("inventoryOwnerID");
+    let result = $("body").attr("inventoryOwnerID");
+    $("#getInventoryOwnerID").remove();
+    return result;
 }
