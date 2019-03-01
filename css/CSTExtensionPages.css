@@ -44,12 +44,12 @@ textarea, input[type=text]{
     color: #e1e1e1;
     border-color: darkorange;
     width: 100%;
-    /*height: 100px;*/
+    height: 100px;
 }
 
-input[type=checkbox]{
-    color: #8842d5;
-}
+/*input[type=checkbox]{*/
+    /*color: #8842d5;*/
+/*}*/
 
 button.remove{
     /*background-color: darkorange;*/
