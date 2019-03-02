@@ -112,8 +112,7 @@ function addCountdowns(){
             let countDownDate =  new Date($this.attr("data-countdown"));
 
             let x = setInterval(function() {
-                let now = new Date().getTime();
-                let distance = countDownDate - now;
+                let distance = countDownDate - Date.now();
 
                 let days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));

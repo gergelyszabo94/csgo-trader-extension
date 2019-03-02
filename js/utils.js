@@ -268,3 +268,16 @@ function shortenExterior(exterior){
         default: return "";
     }
 }
+
+function goToInternalPage(targetURL) {
+    chrome.tabs.query({}, function(tabs) {
+        for (let i = 0, tab; tab = tabs[i]; i++) {
+            if (tab.url===("chrome-extension://"+ chrome.runtime.id + targetURL)) {
+                chrome.tabs.reload(tab.id, {}, function(){});
+                chrome.tabs.update(tab.id, {active: true});
+                return;
+            }
+        }
+        chrome.tabs.create({url: targetURL});
+    });
+}

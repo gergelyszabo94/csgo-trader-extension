@@ -14,20 +14,15 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 steamAPIKey: "not set"
             }, function() {
         });
-
+        chrome.browserAction.setBadgeText({text: "1"});
         chrome.notifications.create("installed", {
             type: 'basic',
             iconUrl: '/images/cstlogo128.png',
             title: 'Extension installed!',
             message: 'You can check the options by clicking here'
         }, function(notificationId) {});
-
-        chrome.notifications.onClicked.addListener(function(notificationId) {
-            if(notificationId==="installed"){
-                chrome.tabs.create({ url: "/html/options.html" });
-            }
-        });
-    }else if(details.reason === "update"){
+    }
+    else if(details.reason === "update"){
         //setting defaults options for new options that haven't been set yet
         chrome.storage.sync.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey'], function(result) {
             if(result.quickDeclineOffer===undefined){
@@ -57,7 +52,6 @@ chrome.runtime.onInstalled.addListener(function(details) {
             if(result.bookmarks===undefined){
                 chrome.storage.sync.set({bookmarks: []}, function() {});
             }
-            //console.log(steamAPIKey);
             if(result.steamAPIKey===undefined){
                 chrome.storage.sync.set({steamAPIKey: "not set"}, function() {});
             }
@@ -66,19 +60,12 @@ chrome.runtime.onInstalled.addListener(function(details) {
         chrome.browserAction.setBadgeText({text: "1"});
 
         let thisVersion = chrome.runtime.getManifest().version;
-        chrome.notifications.create(thisVersion+"changelog", {
+        chrome.notifications.create("updated", {
             type: 'basic',
             iconUrl: '/images/cstlogo128.png',
             title: 'Extension updated to ' + thisVersion + "!",
             message: 'You can check the changelog by clicking here!'
         }, function(notificationId) {});
-
-        chrome.notifications.onClicked.addListener(function() {
-            chrome.browserAction.setBadgeText({text: ""});
-            let newURL = "/html/changelog.html";
-            chrome.tabs.create({ url: newURL });
-        });
-
     }
 });
 
@@ -164,18 +151,29 @@ chrome.runtime.onMessage.addListener(
             sendResponse({badgetext: request.badgetext})
         }
         else if (request.openInternalPage!==undefined){
-            chrome.tabs.create({url: request.openInternalPage}, function(){
-                sendResponse({openInternalPage: request.openInternalPage})
-            });
+            goToInternalPage(request.openInternalPage);
+            sendResponse({openInternalPage: request.openInternalPage})
         }
         else if (request.setAlarm!==undefined){
             chrome.alarms.create(request.setAlarm.name, {when: new Date(request.setAlarm.when).valueOf()});
             chrome.alarms.getAll(function(alarms){
-                console.log(alarms);
             });
             sendResponse({setAlarm: request.setAlarm})
         }
     });
+
+chrome.notifications.onClicked.addListener(function(notificationID) {
+    chrome.browserAction.setBadgeText({text: ""});
+    if(notificationID==="installed"){
+        goToInternalPage("/html/options.html");
+    }
+    else if(notificationID==="updated"){
+        goToInternalPage("/html/changelog.html");
+    }
+    else{
+        goToInternalPage("/html/bookmarks.html");
+    }
+});
 
 chrome.alarms.onAlarm.addListener(function(alarm){
     chrome.browserAction.getBadgeText({}, function (result) {
@@ -197,9 +195,5 @@ chrome.alarms.onAlarm.addListener(function(alarm){
             title: item.itemInfo.name + ' is tradable!',
             message: 'Click here to see your bookmarks!'
         }, function(notificationId) {});
-        chrome.notifications.onClicked.addListener(function() {
-            let newURL = "/html/bookmarks.html";
-            chrome.tabs.create({ url: newURL });
-        });
     });
 });
