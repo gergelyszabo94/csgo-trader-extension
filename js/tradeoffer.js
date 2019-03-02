@@ -61,7 +61,7 @@ let observer = new MutationObserver(function(mutations, observer) {
 
 let inventoriesElement = document.getElementById("inventories");
 
-if(inventoriesElement!==undefined||inventoriesElement!==""){
+if(inventoriesElement!==undefined&&inventoriesElement!==""&&inventoriesElement!==null){
     observer.observe(inventoriesElement, {
         subtree: true,
         attributes: true
