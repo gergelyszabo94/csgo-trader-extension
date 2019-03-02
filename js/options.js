@@ -156,3 +156,17 @@ $flagcomments.click(function() {
         });
     }
 });
+
+$apikey = $("#steamAPIKeyValue");
+
+chrome.storage.sync.get(['steamAPIKey'], function(result) {
+    console.log(result.steamAPIKey);
+    $apikey.val(result.steamAPIKey);
+});
+
+
+$apikey.on("change keyup paste", function(){
+    let newapikey = $apikey.val();
+    chrome.storage.sync.set({steamAPIKey: newapikey}, function() {
+    });
+});

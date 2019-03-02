@@ -102,3 +102,8 @@ i{
 .owner:hover{
     font-size: 2.1rem;
 }
+
+.apiIcon{
+    font-size: 1.5rem;
+    color: var(--steam-nametag-red);
+}

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Options</title>
     <link rel="stylesheet" href="/css/thirdparty/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/thirdparty/all.css">
     <link rel="stylesheet" href="/css/CSTExtensionPages.css">
 </head>
 <body>
@@ -31,6 +32,27 @@
         </div>
     </nav>
     <h1>CSGO Trader Options</h1>
+    <div class="buildingBlock">
+        <h2>General</h2>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Value</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Steam API key</td>
+                <td><input type="text" id="steamAPIKeyValue"></td>
+                <td>Allows the extension to make API requests to the <a href="https://developer.valvesoftware.com/wiki/Steam_Web_API" target="_blank">Steam Web API</a>,
+                    functions that need an API key will be tagged with this icon: <i class="fas fa-code apiIcon"></i><br>
+                    You can get an API key by filling out <a href="https://steamcommunity.com/dev/apikey" target="_blank">this form</a> (you can put anything in as domain name)</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
     <div class="buildingBlock">
         <h2>Trade Offer</h2>
         <table class="table table-striped">
