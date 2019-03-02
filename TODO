@@ -48,5 +48,4 @@ misc:
 -validate steamapi key
 
 bookmarks:
--fix tradable items showing when they became tradable
 -fix multiple tabs opening when clicked on notification

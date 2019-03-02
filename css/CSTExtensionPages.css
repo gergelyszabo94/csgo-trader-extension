@@ -86,6 +86,10 @@ i{
     color: var(--steam-nametag-red);
 }
 
+.tradable{
+    color: var(--steam-ingame-green);
+}
+
 .remove{
     font-size: 2rem;
     color: var(--steam-nametag-red);

@@ -11,7 +11,6 @@ chrome.storage.sync.get('bookmarks', function(result) {
             else{
                 notify = "";
             }
-            console.log(notify);
             let bookmark = `<div class="buildingBlock">
          <div class="row">
             <div class="col-5">
@@ -19,18 +18,18 @@ chrome.storage.sync.get('bookmarks', function(result) {
                 <h4>${element.itemInfo.exterior}</h4>
                 <img src="${iconFullURL}">
             </div>
-            <div class="col-4">
+            <div class="col-4 mid-column" data-tradability="${element.itemInfo.tradability}">
                 <h4 class="tradability" data-tradability="${element.itemInfo.tradability}">Tradable after ${new Date(element.itemInfo.tradability).toString().split("GMT")[0]}</h4>
                 <h4 class="countdown" data-countdown="${element.itemInfo.tradability}"></h4>
                 <a href="https://steamcommunity.com/profiles/${element.owner}/inventory/#730_2_${element.itemInfo.assetid}" target="_blank"><h4>Link to the item in the owner's inventory</h4></a>
+                <div class="notifyDiv" data-tradability="${element.itemInfo.tradability}">
+                Notify <input type="checkbox" class="notify" data-index="${index}" ${notify}>
+            </div>
             </div>
             <div class="col-3">
             <div style="text-align: right">
             <a href="https://steamcommunity.com/profiles/${element.owner}/" target="_blank"><i class="fas fa-user owner"></i></a>
             <i class="fas fa-trash remove" data-index="${index}"></i>
-            </div>
-            <div class="notifyDiv" data-tradability="${element.itemInfo.tradability}">
-                Notify <input type="checkbox" class="notify" data-index="${index}" ${notify}>
             </div>
             <h4>Comment</h4>
                 <textarea class="comment" data-index="${index}">${element.comment}</textarea>
@@ -126,7 +125,7 @@ function addCountdowns(){
 
                 if (distance < 0) {
                     clearInterval(x);
-                    $this.text("Tradable");
+                    $this.hide();
                 }
             }, 1000);
         }
@@ -137,9 +136,11 @@ function addCountdowns(){
 }
 
 function cleanUpElementsOnTradableItems() {
-    $(".tradability, .notifyDiv").each(function(){
-        if($(this).attr("data-tradability")==="Tradable"){
-            $(this).hide();
+    $(".mid-column").each(function(){
+        let tradableElement = `<h4 class="tradable">Tradable</h4>`;
+        let tradableAt = new Date($(this).attr("data-tradability"));
+        if(tradableAt<Date.now()){
+            $(this).html(tradableElement);
         }
     });
 }
