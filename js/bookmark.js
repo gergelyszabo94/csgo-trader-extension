@@ -23,7 +23,11 @@ chrome.storage.sync.get('bookmarks', function(result) {
                 <h4 class="countdown" data-countdown="${element.itemInfo.tradability}"></h4>
                 <a href="https://steamcommunity.com/profiles/${element.owner}/inventory/#730_2_${element.itemInfo.assetid}" target="_blank"><h4>Link to the item in the owner's inventory</h4></a>
                 <div class="notifyDiv" data-tradability="${element.itemInfo.tradability}">
-                Notify <input type="checkbox" class="notify" data-index="${index}" ${notify}>
+                <h4>Notify</h4> 
+                <label class="switch">
+                    <input type="checkbox" class="notify" data-index="${index}" ${notify}>
+                    <span class="slider round"></span>
+                </label>
             </div>
             </div>
             <div class="col-3">

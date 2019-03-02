@@ -72,7 +72,8 @@ if($("body").hasClass("profile_page")){
                         'I want to collect as much graffities as possible',
                         'Hi you can take 50 coins with my promo',
                         'tastyskins',
-                        'gives to his users'
+                        'gives to his users',
+                        'I\'m a major csgo playe and I\'ll trade my'
                     ];
 
                     let spamTExtCheck = new RegExp(commentsToReport.join("|"), "i");

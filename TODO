@@ -48,4 +48,9 @@ misc:
 -validate steamapi key
 
 bookmarks:
--fix multiple tabs opening when clicked on notification
+-market link
+-more notification options, like when and how to notify
+-tooltips to icons
+-item quality indicator
+-doppler phases
+-popup comment textarea
