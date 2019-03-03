@@ -30,7 +30,7 @@ chrome.storage.sync.get('bookmarks', function(result) {
                     <span class="slider round"></span>
                 </label>
                 <div class="notifOptions" style="display: ${notifOptionsVisibility}" data-index="${index}">
-                    <span>text</span>
+                    <span></span>
                 </div>
             </div>
             </div>
@@ -89,14 +89,13 @@ function commentListener(){
 
 function setAlarms(){
     $(".notify").click(function() {
-        console.log("clicked");
         $notifSwitch = $(this);
         let index = $notifSwitch.attr("data-index");
-        $('.notifOptions[data-index=index]').toggle();
+        console.log($("[data-index=index]"));
+        // $(".notifOptions")[index].find("div").toggle();
         chrome.storage.sync.get('bookmarks', function(result) {
             let bookmarks = result.bookmarks;
-            console.log($notifSwitch.checked);
-            if($notifSwitch.checked) {
+            if($notifSwitch[0].checked) {
                 bookmarks[index].notify=true;
                 chrome.storage.sync.set({bookmarks: bookmarks}, function() {
                     if(bookmarks[index].itemInfo.tradability!=="Tradable"){
