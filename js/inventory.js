@@ -624,7 +624,7 @@ function addClickListener(){
                 if(bookmark.itemInfo.tradability!=="Tradable"){
                     chrome.runtime.sendMessage({setAlarm: {name:  bookmark.itemInfo.assetid, when: bookmark.itemInfo.tradability}}, function(response) {});
                 }
-                chrome.runtime.sendMessage({openInternalPage: "html/bookmarks.html"}, function(response) {});
+                chrome.runtime.sendMessage({openInternalPage: "/html/bookmarks.html"}, function(response) {});
             });
         });
     });
