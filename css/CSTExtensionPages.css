@@ -163,3 +163,58 @@ input:focus + .slider {
 input:checked + .slider:before {
     transform: translateX(25px);
 }
+
+.modal-content{
+    background-color: #23272b;
+
+}
+
+.modal-header, .modal-body, .modal-footer{
+    border-color: darkorange;
+}
+
+.btn-orange {
+    color: #000000;
+    background-color: #FF8C00;
+    border-color: #FF8C00;
+}
+
+.btn-orange:hover,
+.btn-orange:focus,
+.btn-orange:active,
+.btn-orange.active,
+.open .dropdown-toggle.btn-orange {
+    color: #000000;
+    background-color: #ffd700;
+    border-color: #ffd700;
+}
+
+.btn-orange:active,
+.btn-orange.active,
+.open .dropdown-toggle.btn-orange {
+    background-image: none;
+}
+
+.btn-orange.disabled,
+.btn-orange[disabled],
+fieldset[disabled] .btn-orange,
+.btn-orange.disabled:hover,
+.btn-orange[disabled]:hover,
+fieldset[disabled] .btn-orange:hover,
+.btn-orange.disabled:focus,
+.btn-orange[disabled]:focus,
+fieldset[disabled] .btn-orange:focus,
+.btn-orange.disabled:active,
+.btn-orange[disabled]:active,
+fieldset[disabled] .btn-orange:active,
+.btn-orange.disabled.active,
+.btn-orange[disabled].active,
+fieldset[disabled] .btn-orange.active {
+    background-color: #FF8C00;
+    border-color: #FF8C00;
+}
+
+.btn-orange .badge {
+    color: #FF8C00;
+    background-color: #000000;
+}

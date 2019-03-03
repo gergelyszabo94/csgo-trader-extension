@@ -45,7 +45,10 @@
             <tbody>
             <tr>
                 <td>Steam API key</td>
-                <td><input type="text" id="steamAPIKeyValue"></td>
+                <td>
+                    <span id="steamAPIKeyPrinted"></span>
+                    <a href="#" title="Edit" data-toggle="modal" data-target="#steamAPIkeyModal"><i class="fas fa-edit"></i></a>
+                </td>
                 <td>Allows the extension to make API requests to the <a href="https://developer.valvesoftware.com/wiki/Steam_Web_API" target="_blank">Steam Web API</a>,
                     functions that need an API key will be tagged with this icon: <i class="fas fa-code apiIcon"></i><br>
                     You can get an API key by filling out <a href="https://steamcommunity.com/dev/apikey" target="_blank">this form</a> (you can put anything in as domain name)</td>
@@ -110,7 +113,10 @@
             </tr>
             <tr>
                 <td>Reputation message</td>
-                <td><input type="text" id="reputationMessage"></td>
+                <td>
+                    <span id="reputationMessagePrinted"></span>
+                    <a href="#" title="Edit" data-toggle="modal" data-target="#reputationMessageModal"><i class="fas fa-edit"></i></a>
+                </td>
                 <td>The content of the comment you want posted on someone's profile when the "+rep" button is pressed, defaults to simply "+rep"</td>
             </tr>
             <tr>
@@ -125,7 +131,10 @@
             </tr>
             <tr>
                 <td>Reoccuring message</td>
-                <td><textarea id="reoccuringMessage" style="white-space: pre-wrap;"></textarea></td>
+                <td>
+                    <span id="reoccuringMessagePrinted"></span>
+                    <a href="#" title="Edit" data-toggle="modal" data-target="#reoccuringMessageModal"><i class="fas fa-edit"></i></a>
+                </td>
                 <td>The content of the comment you want posted on your profile when the "Reocc" button is pressed, defaults to "I don't have other accounts. If someone adds you with my name and picture they are scammers."</td>
             </tr>
             <tr>
@@ -152,6 +161,68 @@
         </table>
     </div>
 </div>
+
+<!--Modals for text editing-->
+<div class="modal fade" id="steamAPIkeyModal" tabindex="-1" role="dialog" aria-labelledby="steamAPIkeyModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="steamAPIkeyModalLabel">Enter your Steam API key here</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <textarea type="text" id="steamAPIKeyValue"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="steamAPIKeyValueSave" class="btn btn-orange" data-dismiss="modal">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="reputationMessageModal" tabindex="-1" role="dialog" aria-labelledby="reputationMessageModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reputationMessageModalLabel">Enter your reputation message key here</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <textarea type="text" id="reputationMessageValue"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="reputationMessageValueSave" class="btn btn-orange" data-dismiss="modal">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="reoccuringMessageModal" tabindex="-1" role="dialog" aria-labelledby="reoccuringMessageModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reoccuringMessageModalLabel">Enter your reoccuring message key here</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <textarea type="text" id="reoccuringMessageValue"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="reoccuringMessageValueSave" class="btn btn-orange" data-dismiss="modal">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script src="/js/options.js"></script>
 </body>

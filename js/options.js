@@ -61,20 +61,19 @@ $showrepbutton.click(function() {
 });
 
 
-$repmessage = $("#reputationMessage");
+
+$repmessage = $("#reputationMessageValue");
+$repmessageprint = $("#reputationMessagePrinted");
+$repmessagesave = $("#reputationMessageValueSave");
 
 chrome.storage.sync.get(['reputationMessage'], function(result) {
-    if(result.reputationMessage!==""){
-        $repmessage.val(result.reputationMessage);
-    }
-    else{
-        $repmessage.val("+rep");
-    }
+    $repmessageprint.text(result.reputationMessage.substring(0,8)+"...");
+    $repmessage.val(result.reputationMessage);
 });
 
-
-$repmessage.on("change keyup paste", function(){
+$repmessagesave.click(function(){
     let newmessage = $repmessage.val();
+    $repmessageprint.text(newmessage.substring(0,8)+"...");
     chrome.storage.sync.set({reputationMessage: newmessage}, function() {
     });
 });
@@ -99,21 +98,18 @@ $showreoccbutton.click(function() {
     }
 });
 
-
-$reoccmessage = $("#reoccuringMessage");
+$reoccmessage = $("#reoccuringMessageValue");
+$reoccmessageprint = $("#reoccuringMessagePrinted");
+$reoccmessagesave = $("#reoccuringMessageValueSave");
 
 chrome.storage.sync.get(['reoccuringMessage'], function(result) {
-    if(result.reoccuringMessage!==""){
-        $reoccmessage.val(result.reoccuringMessage);
-    }
-    else{
-        $reoccmessage.val("I don't have other accounts. If someone adds you with my name and picture they are scammers.");
-    }
+    $reoccmessageprint.text(result.reoccuringMessage.substring(0,8)+"...");
+    $reoccmessage.val(result.reoccuringMessage);
 });
 
-
-$reoccmessage.on("change keyup paste", function(){
+$reoccmessagesave.click(function(){
     let newmessage = $reoccmessage.val();
+    $reoccmessageprint.text(newmessage.substring(0,8)+"...");
     chrome.storage.sync.set({reoccuringMessage: newmessage}, function() {
     });
 });
@@ -158,14 +154,16 @@ $flagcomments.click(function() {
 });
 
 $apikey = $("#steamAPIKeyValue");
+$apikeyprint = $("#steamAPIKeyPrinted");
+$apikeysave = $("#steamAPIKeyValueSave");
 
 chrome.storage.sync.get(['steamAPIKey'], function(result) {
-    console.log(result.steamAPIKey);
+    $apikeyprint.text(result.steamAPIKey.substring(0,8)+"...");
     $apikey.val(result.steamAPIKey);
 });
 
 
-$apikey.on("change keyup paste", function(){
+$apikeysave.click(function(){
     let newapikey = $apikey.val();
     chrome.storage.sync.set({steamAPIKey: newapikey}, function() {
     });
