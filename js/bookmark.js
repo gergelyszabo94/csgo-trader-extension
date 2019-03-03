@@ -21,7 +21,7 @@ chrome.storage.sync.get('bookmarks', function(result) {
             <div class="col-4 mid-column" data-tradability="${element.itemInfo.tradability}">
                 <h4 class="tradability" data-tradability="${element.itemInfo.tradability}">Tradable after ${new Date(element.itemInfo.tradability).toString().split("GMT")[0]}</h4>
                 <h4 class="countdown" data-countdown="${element.itemInfo.tradability}"></h4>
-                <a href="https://steamcommunity.com/profiles/${element.owner}/inventory/#730_2_${element.itemInfo.assetid}" target="_blank"><h4>Link to the item in the owner's inventory</h4></a>
+                <a href="${element.itemInfo.marketlink}" target="_blank"><h4>Link to the item in the owner's inventory</h4></a>
                 <div class="notifyDiv" data-tradability="${element.itemInfo.tradability}">
                 <h4>Notify</h4> 
                 <label class="switch">
@@ -32,8 +32,9 @@ chrome.storage.sync.get('bookmarks', function(result) {
             </div>
             <div class="col-3">
             <div style="text-align: right">
-            <a href="https://steamcommunity.com/profiles/${element.owner}/" target="_blank"><i class="fas fa-user owner"></i></a>
-            <i class="fas fa-trash remove" data-index="${index}"></i>
+            <a href="https://steamcommunity.com/profiles/${element.owner}/" target="_blank"><i class="fas fa-chart-line whiteIcon" title="Open the item's Steam Market page"></i></a>
+            <a href="https://steamcommunity.com/profiles/${element.owner}/" target="_blank"><i class="fas fa-user whiteIcon" title="Open the item's owner's profile page"></i></a>
+            <i class="fas fa-trash remove" data-index="${index}" title="Remove the item from your bookmarks"></i>
             </div>
             <h4>Comment</h4>
                 <textarea class="comment" data-index="${index}">${element.comment}</textarea>

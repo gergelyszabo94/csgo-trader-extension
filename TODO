@@ -48,9 +48,5 @@ misc:
 -validate steamapi key
 
 bookmarks:
--market link
 -more notification options, like when and how to notify
--tooltips to icons
--item quality indicator
--doppler phases
 -popup comment textarea
