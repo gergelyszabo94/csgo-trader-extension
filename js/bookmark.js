@@ -7,9 +7,11 @@ chrome.storage.sync.get('bookmarks', function(result) {
             let notify = element.notify;
             if(notify){
                 notify = "checked";
+                notifOptionsVisibility = "block";
             }
             else{
                 notify = "";
+                notifOptionsVisibility = "none";
             }
             let bookmark = `<div class="buildingBlock">
          <div class="row">
@@ -21,18 +23,21 @@ chrome.storage.sync.get('bookmarks', function(result) {
             <div class="col-4 mid-column" data-tradability="${element.itemInfo.tradability}">
                 <h4 class="tradability" data-tradability="${element.itemInfo.tradability}">Tradable after ${new Date(element.itemInfo.tradability).toString().split("GMT")[0]}</h4>
                 <h4 class="countdown" data-countdown="${element.itemInfo.tradability}"></h4>
-                <a href="${element.itemInfo.marketlink}" target="_blank"><h4>Link to the item in the owner's inventory</h4></a>
                 <div class="notifyDiv" data-tradability="${element.itemInfo.tradability}">
                 <h4>Notify</h4> 
                 <label class="switch">
                     <input type="checkbox" class="notify" data-index="${index}" ${notify}>
                     <span class="slider round"></span>
                 </label>
+                <div class="notifOptions" style="display: ${notifOptionsVisibility}" data-index="${index}">
+                    <span></span>
+                </div>
             </div>
             </div>
             <div class="col-3">
             <div style="text-align: right">
             <a href="https://steamcommunity.com/profiles/${element.owner}/" target="_blank"><i class="fas fa-chart-line whiteIcon" title="Open the item's Steam Market page"></i></a>
+            <a href="https://steamcommunity.com/profiles/${element.itemInfo.marketlink}/" target="_blank"><i class="fas fa-link whiteIcon" title="Open the item in the owner's inventory"></i></a>
             <a href="https://steamcommunity.com/profiles/${element.owner}/" target="_blank"><i class="fas fa-user whiteIcon" title="Open the item's owner's profile page"></i></a>
             <i class="fas fa-trash remove" data-index="${index}" title="Remove the item from your bookmarks"></i>
             </div>
@@ -84,28 +89,27 @@ function commentListener(){
 
 function setAlarms(){
     $(".notify").click(function() {
-        if(this.checked) {
-            let index = $(this).attr("data-index");
-            chrome.storage.sync.get('bookmarks', function(result) {
-                let bookmarks = result.bookmarks;
+        $notifSwitch = $(this);
+        let index = $notifSwitch.attr("data-index");
+        console.log($("[data-index=index]"));
+        // $(".notifOptions")[index].find("div").toggle();
+        chrome.storage.sync.get('bookmarks', function(result) {
+            let bookmarks = result.bookmarks;
+            if($notifSwitch[0].checked) {
                 bookmarks[index].notify=true;
                 chrome.storage.sync.set({bookmarks: bookmarks}, function() {
                     if(bookmarks[index].itemInfo.tradability!=="Tradable"){
                         chrome.runtime.sendMessage({setAlarm: {name:  bookmarks[index].itemInfo.assetid, when: bookmarks[index].itemInfo.tradability}}, function(response) {});
                     }
                 });
-            });
-        }
-        else{
-            let index = $(this).attr("data-index");
-            chrome.storage.sync.get('bookmarks', function(result) {
-                let bookmarks = result.bookmarks;
+            }
+            else{
                 bookmarks[index].notify=false;
                 chrome.storage.sync.set({bookmarks: bookmarks}, function() {
                     chrome.alarms.clear(bookmarks[index].itemInfo.assetid, function(){})
                 });
-            });
-        }
+            }
+        });
     });
 }
 

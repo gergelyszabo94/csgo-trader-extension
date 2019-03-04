@@ -157,6 +157,7 @@ chrome.runtime.onMessage.addListener(
         else if (request.setAlarm!==undefined){
             chrome.alarms.create(request.setAlarm.name, {when: new Date(request.setAlarm.when).valueOf()});
             chrome.alarms.getAll(function(alarms){
+                console.log(alarms);
             });
             sendResponse({setAlarm: request.setAlarm})
         }
