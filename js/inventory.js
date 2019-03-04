@@ -615,7 +615,8 @@ function addClickListener(){
             itemInfo: getItemByAssetID(getAssetIDofActive()),
             owner: getInventoryOwnerID(),
             comment: " ",
-            notify: true
+            notify: true,
+            notifType: "chrome"
         };
         chrome.storage.sync.get('bookmarks', function(result) {
             let bookmarks = result.bookmarks;

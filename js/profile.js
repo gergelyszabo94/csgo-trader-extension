@@ -73,7 +73,8 @@ if($("body").hasClass("profile_page")){
                         'Hi you can take 50 coins with my promo',
                         'tastyskins',
                         'gives to his users',
-                        'I\'m a major csgo playe and I\'ll trade my'
+                        'I\'m a major csgo playe and I\'ll trade my',
+                        'join the GIVEAWAY on gabenskins.pro'
                     ];
 
                     let spamTExtCheck = new RegExp(commentsToReport.join("|"), "i");

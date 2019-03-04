@@ -30,7 +30,22 @@ chrome.storage.sync.get('bookmarks', function(result) {
                     <span class="slider round"></span>
                 </label>
                 <div class="notifOptions" style="display: ${notifOptionsVisibility}" data-index="${index}">
-                    <span></span>
+                    <h5>How do you want to get notified?:</h5>
+                    <select class="form-control" id="notifType">
+                      <option value="chrome">Chrome desktop notification</option>
+                      <option value="alert">Browser alert (to focus)</option>
+                    </select>
+                    <h5>When do you want to get notified?</h5>
+                    <input type="number" id="numberOfMinutesOrHours" value="0">
+                     <select class="form-control" id="minutesOrHours">
+                      <option value="minutes">minutes</option>
+                      <option value="hours">hours</option>
+                    </select>
+                    <select class="form-control" id="beforeOrAfter">
+                      <option value="before">before</option>
+                      <option value="after">after</option>
+                    </select>
+                    <span>the item becomes tradable</span>
                 </div>
             </div>
             </div>
@@ -91,8 +106,8 @@ function setAlarms(){
     $(".notify").click(function() {
         $notifSwitch = $(this);
         let index = $notifSwitch.attr("data-index");
-        console.log($("[data-index=index]"));
-        // $(".notifOptions")[index].find("div").toggle();
+        console.log($notifSwitch.parent().next());
+        $notifSwitch.parent().next().toggle();
         chrome.storage.sync.get('bookmarks', function(result) {
             let bookmarks = result.bookmarks;
             if($notifSwitch[0].checked) {
