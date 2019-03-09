@@ -13,7 +13,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 bookmarks: [],
                 steamAPIKey: "not set"
             }, function() {
-        });
+            });
         chrome.browserAction.setBadgeText({text: "1"});
         chrome.notifications.create("installed", {
             type: 'basic',
@@ -90,6 +90,7 @@ chrome.runtime.onMessage.addListener(
                     for (let item in items) {
                         if (ids[asset].classid === items[item].classid && ids[asset].instanceid === items[item].instanceid) {
                             let name = items[item].name;
+                            let market_hash_name = items[item].market_hash_name;
                             let marketlink = "https://steamcommunity.com/market/listings/730/" + items[item].market_hash_name;
                             let classid = items[item].classid;
                             let instanceid = items[item].instanceid;
@@ -114,6 +115,7 @@ chrome.runtime.onMessage.addListener(
                             }
                             itemsPropertiesToReturn.push({
                                 name: name,
+                                market_hash_name: market_hash_name,
                                 marketlink: marketlink,
                                 classid: classid,
                                 instanceid: instanceid,
@@ -189,12 +191,22 @@ chrome.alarms.onAlarm.addListener(function(alarm){
         let item = result.bookmarks.find(function(element) {
             return element.itemInfo.assetid === alarm.name;
         });
-        let iconFullURL= 'https://steamcommunity.com/economy/image/' + item.itemInfo.iconURL + '/128x128';
-        chrome.notifications.create(alarm.name, {
-            type: 'basic',
-            iconUrl: iconFullURL,
-            title: item.itemInfo.name + ' is tradable!',
-            message: 'Click here to see your bookmarks!'
-        }, function(notificationId) {});
+        if(item.notifType==="chrome"){
+            let iconFullURL= 'https://steamcommunity.com/economy/image/' + item.itemInfo.iconURL + '/128x128';
+            chrome.notifications.create(alarm.name, {
+                type: 'basic',
+                iconUrl: iconFullURL,
+                title: item.itemInfo.name + ' is tradable!',
+                message: 'Click here to see your bookmarks!'
+            }, function(notificationId) {});
+        }
+        else if(item.notifType==="alert"){
+            goToInternalPage("/html/bookmarks.html");
+            setTimeout(function () {
+                chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+                    chrome.tabs.sendMessage(tabs[0].id, {alert: item.itemInfo.name}, function(response) {});
+                });
+            }, 1000);
+        }
     });
 });

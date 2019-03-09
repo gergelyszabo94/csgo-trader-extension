@@ -1,3 +1,11 @@
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        if(request.alert !== undefined){
+            alert(request.alert + " is now tradable!");
+            sendResponse({alert: request.alert})
+        }
+    });
+
 chrome.storage.sync.get('bookmarks', function(result) {
     if(result.bookmarks.length!==0){
         console.log(result.bookmarks);
