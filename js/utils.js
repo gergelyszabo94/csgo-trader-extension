@@ -281,3 +281,18 @@ function goToInternalPage(targetURL) {
         chrome.tabs.create({url: targetURL});
     });
 }
+
+function determineNotificationDate(tradableDate, minutesOrHours, numberOfMinutesOrHours, beforeOrAfter){
+    let baseTimeUnit = 0;
+    if(minutesOrHours==="minutes"){
+        baseTimeUnit = 60;
+    }
+    else if(minutesOrHours==="hours"){
+        baseTimeUnit = 3600;
+    }
+    if(beforeOrAfter==="before"){
+        baseTimeUnit=baseTimeUnit*-1
+    }
+    let timeDifference = numberOfMinutesOrHours*baseTimeUnit;
+    return new Date((parseInt((new Date(tradableDate).getTime() / 1000).toFixed(0)) + timeDifference)*1000);
+}
