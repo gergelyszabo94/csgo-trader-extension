@@ -24,7 +24,6 @@ profile:
 -block ascii art
 -block swastikas - https://steamcommunity.com/id/rogerioxy
 -fix steam chat status
--schedule nsfw
 
 chat:
 -configurable quickreplies
@@ -47,6 +46,8 @@ misc:
 -mark fellow extension users
 -validate steamapi key
 -proper replies to comments
+-match people who want to trade (csgolounge that works)
+-currency converter in popup (currencies, btc, keys, percentage)
 
 bookmarks:
 -more notification options, like when and how to notify
