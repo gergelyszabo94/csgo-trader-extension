@@ -67,13 +67,15 @@ if($("body").hasClass("profile_page")){
                         'Do you want free items for',
                         'Do you want some free skins?',
                         'watch this video and enjoy',
-                        'Tradeit giveaway about',
+                        'tradeit giveaway about',
                         'Do you want to earn money?',
                         'I want to collect as much graffities as possible',
                         'Hi you can take 50 coins with my promo',
                         'tastyskins',
                         'gives to his users',
-                        'I\'m a major csgo playe and I\'ll trade my'
+                        'I\'m a major csgo playe and I\'ll trade my',
+                        'join the GIVEAWAY on gabenskins.pro',
+                        'Trade Your Cases For Keys'
                     ];
 
                     let spamTExtCheck = new RegExp(commentsToReport.join("|"), "i");

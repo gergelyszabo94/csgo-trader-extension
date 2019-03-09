@@ -47,17 +47,56 @@ textarea, input[type=text]{
     height: 100px;
 }
 
-/*input[type=checkbox]{*/
-    /*color: #8842d5;*/
-/*}*/
-
-button.remove{
-    /*background-color: darkorange;*/
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
 }
 
 i{
     margin: 0.5rem;
 }
+
+.select-theme {
+    --baseFg: #e1e1e1;
+    --baseBg: #23272b;
+    --accentFg: #23272b;
+    --accentBg: darkorange;
+}
+
+select {
+    -webkit-appearance: none;
+    color: var(--baseFg);
+    border-color: var(--accentBg);
+    line-height: 1;
+    outline: 0;
+    padding: 0.65em 2.5em 0.55em 0.75em;
+    background-color: var(--baseBg);
+    background-image: linear-gradient(var(--baseFg), var(--baseFg)),
+    linear-gradient(-135deg, transparent 50%, var(--accentBg) 50%),
+    linear-gradient(-225deg, transparent 50%, var(--accentBg) 50%),
+    linear-gradient(var(--accentBg) 42%, var(--accentFg) 42%);
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+    background-size: 1px 100%, 20px 22px, 20px 22px, 20px 100%;
+    background-position: right 20px center, right bottom, right bottom, right bottom;
+}
+
+select:hover {
+    background-image: linear-gradient(var(--accentFg), var(--accentFg)),
+    linear-gradient(-135deg, transparent 50%, var(--accentFg) 50%),
+    linear-gradient(-225deg, transparent 50%, var(--accentFg) 50%),
+    linear-gradient(var(--accentFg) 42%, var(--accentBg) 42%);
+}
+
+select:active {
+    background-image: linear-gradient(var(--accentFg), var(--accentFg)),
+    linear-gradient(-135deg, transparent 50%, var(--accentFg) 50%),
+    linear-gradient(-225deg, transparent 50%, var(--accentFg) 50%),
+    linear-gradient(var(--accentFg) 42%, var(--accentBg) 42%);
+    color: var(--accentBg);
+    border-color: var(--accentFg);
+    background-color: var(--accentFg);
+}
+
+/*Classes*/
 
 .buildingBlock{
     background-color: #23272b;
@@ -112,6 +151,26 @@ i{
     color: var(--steam-nametag-red);
 }
 
+.saveIcon{
+    display: inline-block;
+    float: right;
+    margin-right: 1rem;
+}
+
+.numberPicker{
+    padding-left: 0.25rem;
+    width: 2rem;
+    background-color: #23272b;
+    color: #e1e1e1;
+    border-color: darkorange;
+}
+
+.someSpaceBefore{
+    margin-top: 1rem;
+}
+
+/*Custom flip switch for checkbox*/
+
 /* The switch - the box around the slider */
 .switch {
     position: relative;
@@ -163,6 +222,8 @@ input:focus + .slider {
 input:checked + .slider:before {
     transform: translateX(25px);
 }
+
+/*Modal, button*/
 
 .modal-content{
     background-color: #23272b;

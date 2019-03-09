@@ -24,13 +24,28 @@ chrome.storage.sync.get('bookmarks', function(result) {
                 <h4 class="tradability" data-tradability="${element.itemInfo.tradability}">Tradable after ${new Date(element.itemInfo.tradability).toString().split("GMT")[0]}</h4>
                 <h4 class="countdown" data-countdown="${element.itemInfo.tradability}"></h4>
                 <div class="notifyDiv" data-tradability="${element.itemInfo.tradability}">
-                <h4>Notify</h4> 
+                <h4 class="notifOptions">Notify</h4> 
                 <label class="switch">
                     <input type="checkbox" class="notify" data-index="${index}" ${notify}>
                     <span class="slider round"></span>
                 </label>
                 <div class="notifOptions" style="display: ${notifOptionsVisibility}" data-index="${index}">
-                    <span></span>
+                    <h5 class="someSpaceBefore">How do you want to be notified?</h5>
+                    <select class="select-theme" id="notifType">
+                      <option value="chrome">Chrome desktop notification</option>
+                      <option value="alert">Browser alert (to focus)</option>
+                    </select>
+                    <h5 class="someSpaceBefore">When do you want to be notified?</h5>
+                    <input class="numberPicker" type="number" id="numberOfMinutesOrHours" value="0">
+                     <select class="select-theme" id="minutesOrHours">
+                      <option value="minutes">minutes</option>
+                      <option value="hours">hours</option>
+                    </select>
+                    <select class="select-theme" id="beforeOrAfter">
+                      <option value="before">before</option>
+                      <option value="after">after</option>
+                    </select>
+                    <div class="saveIcon"><i id="saveNotifDetails" class="fas fa-save whiteIcon" title="Save notification options"></i></div>
                 </div>
             </div>
             </div>
@@ -91,8 +106,8 @@ function setAlarms(){
     $(".notify").click(function() {
         $notifSwitch = $(this);
         let index = $notifSwitch.attr("data-index");
-        console.log($("[data-index=index]"));
-        // $(".notifOptions")[index].find("div").toggle();
+        console.log($notifSwitch.parent().next());
+        $notifSwitch.parent().next().toggle();
         chrome.storage.sync.get('bookmarks', function(result) {
             let bookmarks = result.bookmarks;
             if($notifSwitch[0].checked) {
