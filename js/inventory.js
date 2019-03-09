@@ -616,7 +616,7 @@ function addClickListener(){
             owner: getInventoryOwnerID(),
             comment: " ",
             notify: true,
-            notifTime: getItemByAssetID(getAssetIDofActive()).tradability,
+            notifTime: getItemByAssetID(getAssetIDofActive()).tradability.toString(),
             notifType: "chrome"
         };
         chrome.storage.sync.get('bookmarks', function(result) {

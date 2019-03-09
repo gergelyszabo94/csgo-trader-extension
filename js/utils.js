@@ -296,3 +296,30 @@ function determineNotificationDate(tradableDate, minutesOrHours, numberOfMinutes
     let timeDifference = numberOfMinutesOrHours*baseTimeUnit;
     return new Date((parseInt((new Date(tradableDate).getTime() / 1000).toFixed(0)) + timeDifference)*1000);
 }
+
+function reverseWhenNotifDetails(tradability, notifTime){
+    let beforeOrAfter =  "";
+    let difference = (parseInt(new Date(notifTime).getTime() / 1000).toFixed(0)) - (parseInt(new Date(tradability).getTime() / 1000).toFixed(0));
+    let differenceAbs =  Math.abs(difference);
+    if(difference>=0){
+        beforeOrAfter = "after";
+    }
+    else{
+        beforeOrAfter = "before";
+    }
+    let minutesOrHours = "";
+    let numberOfMinutesOrHours = 0;
+    if((differenceAbs)/60>=60){
+        minutesOrHours = "hours";
+        numberOfMinutesOrHours = (differenceAbs/60)/60;
+    }
+    else{
+        minutesOrHours = "minutes";
+        numberOfMinutesOrHours = differenceAbs/60;
+    }
+    return {
+        numberOfMinutesOrHours: numberOfMinutesOrHours,
+        minutesOrHours: minutesOrHours,
+        beforeOrAfter: beforeOrAfter
+    };
+}

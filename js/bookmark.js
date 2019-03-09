@@ -24,7 +24,7 @@ chrome.storage.sync.get('bookmarks', function(result) {
                 <h4 class="tradability" data-tradability="${element.itemInfo.tradability}">Tradable after ${new Date(element.itemInfo.tradability).toString().split("GMT")[0]}</h4>
                 <h4 class="countdown" data-countdown="${element.itemInfo.tradability}"></h4>
                 <div class="notifyDiv" data-tradability="${element.itemInfo.tradability}">
-                <h4 class="notifOptions">Notify</h4> 
+                <h4 class="notifySwitch">Notify</h4> 
                 <label class="switch">
                     <input type="checkbox" class="notify" data-index="${index}" ${notify}>
                     <span class="slider round"></span>
@@ -36,7 +36,7 @@ chrome.storage.sync.get('bookmarks', function(result) {
                       <option value="alert">Browser alert (to focus)</option>
                     </select>
                     <h5 class="someSpaceBefore">When do you want to be notified?</h5>
-                    <input class="numberPicker" type="number" id="numberOfMinutesOrHours" value="0">
+                    <input class="numberPicker" type="number" value="0" min="0" max="60">
                      <select class="select-theme minutesOrHours" data-index="${index}">
                       <option value="minutes">minutes</option>
                       <option value="hours">hours</option>
@@ -114,7 +114,7 @@ function setAlarms(){
             if($notifSwitch[0].checked) {
                 bookmarks[index].notify=true;
                 chrome.storage.sync.set({bookmarks: bookmarks}, function() {
-                        chrome.runtime.sendMessage({setAlarm: {name:  bookmarks[index].itemInfo.assetid, when: bookmarks[index].notifTime}}, function(response) {});
+                    chrome.runtime.sendMessage({setAlarm: {name:  bookmarks[index].itemInfo.assetid, when: bookmarks[index].notifTime}}, function(response) {});
                 });
             }
             else{
@@ -128,6 +128,19 @@ function setAlarms(){
 }
 
 function notificationOptions(){
+    chrome.storage.sync.get('bookmarks', function(result) {
+        $(".notifOptions").each(function () {
+            $this = $(this);
+            let index = $this.attr("data-index");
+            let notifType = result.bookmarks[index].notifType;
+            $this.find(".notifType").val(notifType);
+            let whenDetails = reverseWhenNotifDetails(result.bookmarks[index].itemInfo.tradability,result.bookmarks[index].notifTime);
+            $this.find(".numberPicker").val(whenDetails.numberOfMinutesOrHours);
+            $this.find(".minutesOrHours").val(whenDetails.minutesOrHours);
+            $this.find(".beforeOrAfter").val(whenDetails.beforeOrAfter);
+        });
+    });
+
     $(".saveNotifDetails").click(function() {
         $this = $(this);
         let index = $this.attr("data-index");
@@ -138,7 +151,7 @@ function notificationOptions(){
         chrome.storage.sync.get('bookmarks', function(result) {
             let bookmarks = result.bookmarks;
             let tradableDate = result.bookmarks[index].itemInfo.tradability;
-            bookmarks[index].notifTime = determineNotificationDate(tradableDate,minutesOrHours, numberOfMinutesOrHours, beforeOrAfter);
+            bookmarks[index].notifTime = determineNotificationDate(tradableDate,minutesOrHours, numberOfMinutesOrHours, beforeOrAfter).toString();
             bookmarks[index].notifType=notifType;
             chrome.storage.sync.set({bookmarks: bookmarks}, function() {
                 chrome.runtime.sendMessage({setAlarm: {name:  bookmarks[index].itemInfo.assetid, when: bookmarks[index].notifTime}}, function(response) {});
