@@ -327,3 +327,40 @@ function reverseWhenNotifDetails(tradability, notifTime){
 function getOfferStyleSteamID(steamID64){
     return Number(steamID64.split("7656")[1]) - Number(1197960265728);
 }
+
+
+//gets the steam id of the user that's profile this script is run on
+function getProfileOwnerSteamID(){
+    let scriptToInject = `
+    <script id="getProfileOwnerSteamID">
+    document.querySelector("body").setAttribute("steamidOfProfileOwner", g_rgProfileData.steamid);
+</script>`;
+    $("body").append(scriptToInject);
+    let result = $("body").attr("steamidOfProfileOwner");
+    $("#getProfileOwnerSteamID").remove();
+    return result;
+}
+
+
+//gets steamid of the user logged into steam (on profile pages)
+function getUserSteamID(){
+    let scriptToInject = `
+    <script id="getUserSteamID">
+    document.querySelector("body").setAttribute("steamidOfLoggedinUser", g_steamID);
+</script>`;
+    $("body").append(scriptToInject);
+    let result =  $("body").attr("steamidOfLoggedinUser");
+    $("#getUserSteamID").remove();
+    return result;
+}
+
+function getInventoryOwnerID(){
+    let scriptToInject = `
+    <script id="getInventoryOwnerID">
+    document.querySelector("body").setAttribute("inventoryOwnerID", UserYou.GetSteamId());
+</script>`;
+    $("body").append(scriptToInject);
+    let result = $("body").attr("inventoryOwnerID");
+    $("#getInventoryOwnerID").remove();
+    return result;
+}

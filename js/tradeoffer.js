@@ -46,31 +46,31 @@
 // },10000);
 
 
-const inBrowserInspectButton = '<a class="popup_menu_item" id="inbrowser_inspect_button" href="http://csgo.gallery/" target="_blank">Inspect in Browser...</a>';
 const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
 
-$("#trade_action_popup_itemactions").after(inBrowserInspectButton);
+overrideHandleTradeActionMenu();
 
 MutationObserver = window.MutationObserver;
 
 let observer = new MutationObserver(function(mutations, observer) {
-    if($("#inbrowser_inspect_button").attr("href")==="http://csgo.gallery/"){
-        addClickListener();
-    }
+    mutations.forEach((mutation)=> {
+        // console.log(mutation);
+        if(mutation.target.classList.contains('popup_block_new')){
+            // console.log(mutation.target);
+        }
+            if(mutation.target.classList.contains('inventory_ctn')||(mutation.type="childList"&&mutation.target.classList.contains('slot_actionmenu_button'))){
+            // console.log(mutation.target);
+
+        }
+    });
 });
 
 let inventoriesElement = document.getElementById("inventories");
 
 if(inventoriesElement!==undefined&&inventoriesElement!==""&&inventoriesElement!==null){
     observer.observe(inventoriesElement, {
+        childList: true,
         subtree: true,
         attributes: true
-    });
-}
-
-function addClickListener(){
-    $(".slot_actionmenu_button").on("click", function () {
-        let inspectLink = $("#trade_action_popup_itemactions").find("a.popup_menu_item").first().attr("href");
-        $("#inbrowser_inspect_button").attr("href", "http://csgo.gallery/" + inspectLink);
     });
 }

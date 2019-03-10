@@ -28,7 +28,7 @@
     {
       "matches": ["*://steamcommunity.com/*/tradeoffers*"],
       "run_at" : "document_idle",
-      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/steamFunctionOverride.js", "js/tradeoffers.js"],
+      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/steamFunctionOverride.js", "js/utils.js" ,  "js/tradeoffers.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
@@ -40,12 +40,12 @@
     {
       "matches": ["*://steamcommunity.com/id/*/*","*://steamcommunity.com/id/*", "*://steamcommunity.com/profiles/*/*","*://steamcommunity.com/profiles/*"],
       "run_at" : "document_idle",
-      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/steamFunctionOverride.js", "js/profile.js"]
+      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/steamFunctionOverride.js", "js/utils.js", "js/profile.js"]
     },
     {
       "matches": ["*://steamcommunity.com/chat/*"],
       "run_at" : "document_idle",
-      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/steamFunctionOverride.js", "js/webchat.js"],
+      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/steamFunctionOverride.js", "js/utils.js" , "js/webchat.js"],
       "css": ["/css/generalCSTStyle.css"]
     }
   ],
