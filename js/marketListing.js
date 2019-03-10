@@ -11,8 +11,8 @@ const exteriors = `
         <span>Not every item is available in every exterior</span>
     </div>`;
 
-const csDealsButton ='<a class="btn_small btn_grey_white_innerfade" id="csdeals_inspect_button" href="http://csgo.gallery/" target="_blank"><span>Inspect in Browser...</span></a>';
-const csdealsButtonPopupLink = '<a class="popup_menu_item" id="csdeals_inspect" href="http://csgo.gallery/" target="_blank">Inspect in Browser...</a>';
+const inBrowserInspectButton ='<a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect_button" href="http://csgo.gallery/" target="_blank"><span>Inspect in Browser...</span></a>';
+const inBrowserInspectButtonPopupLink = '<a class="popup_menu_item" id="inbrowser_inspect" href="http://csgo.gallery/" target="_blank">Inspect in Browser...</a>';
 
 const dopplerPhase = "<div class='dopplerPhaseMarket'><span></span></div>";
 
@@ -94,15 +94,15 @@ else{
     $("#bsSTLink").attr("href", genericMarketLink + stattrak + weaponName + "%28Battle-Scarred%29");
 }
 
-$("#largeiteminfo_item_actions").append(csDealsButton);
-$("#market_action_popup_itemactions").after(csdealsButtonPopupLink);
+$("#largeiteminfo_item_actions").append(inBrowserInspectButton);
+$("#market_action_popup_itemactions").after(inBrowserInspectButtonPopupLink);
 
 let inspectLink = $("#largeiteminfo_item_actions").find(".btn_small.btn_grey_white_innerfade").first().attr("href");
-$("#csdeals_inspect_button").attr("href", "http://csgo.gallery/" + inspectLink);
+$("#inbrowser_inspect_button").attr("href", "http://csgo.gallery/" + inspectLink);
 
 $(".market_actionmenu_button").on("click", function () {
     let inspectLink = $("#market_action_popup_itemactions").find("a.popup_menu_item").first().attr("href");
-    $("#csdeals_inspect").attr("href", "http://csgo.gallery/" + inspectLink);
+    $("#inbrowser_inspect").attr("href", "http://csgo.gallery/" + inspectLink);
 });
 
 if(/Doppler/.test(window.location.href)){

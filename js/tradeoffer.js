@@ -46,16 +46,15 @@
 // },10000);
 
 
-const csdealsButton = '<a class="popup_menu_item" id="csdeals_inspect_button" href="http://csgo.gallery/" target="_blank">Inspect in Browser...</a>';
+const inBrowserInspectButton = '<a class="popup_menu_item" id="inbrowser_inspect_button" href="http://csgo.gallery/" target="_blank">Inspect in Browser...</a>';
 const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
 
-$("#trade_action_popup_itemactions").after(csdealsButton);
+$("#trade_action_popup_itemactions").after(inBrowserInspectButton);
 
 MutationObserver = window.MutationObserver;
-console.log("updated");
 
 let observer = new MutationObserver(function(mutations, observer) {
-    if($("#csdeals_inspect_button").attr("href")==="http://csgo.gallery/"){
+    if($("#inbrowser_inspect_button").attr("href")==="http://csgo.gallery/"){
         addClickListener();
     }
 });
@@ -72,6 +71,6 @@ if(inventoriesElement!==undefined&&inventoriesElement!==""&&inventoriesElement!=
 function addClickListener(){
     $(".slot_actionmenu_button").on("click", function () {
         let inspectLink = $("#trade_action_popup_itemactions").find("a.popup_menu_item").first().attr("href");
-        $("#csdeals_inspect_button").attr("href", "http://csgo.gallery/" + inspectLink);
+        $("#inbrowser_inspect_button").attr("href", "http://csgo.gallery/" + inspectLink);
     });
 }
