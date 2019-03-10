@@ -323,3 +323,7 @@ function reverseWhenNotifDetails(tradability, notifTime){
         beforeOrAfter: beforeOrAfter
     };
 }
+
+function validateAPIKey(APIKEy){
+
+}

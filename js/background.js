@@ -11,7 +11,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 nsfwFilter: false,
                 flagScamComments: true,
                 bookmarks: [],
-                steamAPIKey: "not set"
+                steamAPIKey: "",
+                apiKeyValid: false
             }, function() {
             });
         chrome.browserAction.setBadgeText({text: "1"});
@@ -24,7 +25,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
     }
     else if(details.reason === "update"){
         //setting defaults options for new options that haven't been set yet
-        chrome.storage.sync.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey'], function(result) {
+        chrome.storage.sync.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid'], function(result) {
             if(result.quickDeclineOffer===undefined){
                 chrome.storage.sync.set({quickDeclineOffer: true}, function() {});
             }
@@ -53,7 +54,10 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 chrome.storage.sync.set({bookmarks: []}, function() {});
             }
             if(result.steamAPIKey===undefined){
-                chrome.storage.sync.set({steamAPIKey: "not set"}, function() {});
+                chrome.storage.sync.set({steamAPIKey: ""}, function() {});
+            }
+            if(result.apiKeyValid===undefined){
+                chrome.storage.sync.set({steamAPIKey: false}, function() {});
             }
         });
 
@@ -162,6 +166,34 @@ chrome.runtime.onMessage.addListener(
                 console.log(alarms);
             });
             sendResponse({setAlarm: request.setAlarm})
+        }
+        else if (request.apikeytovalidate !==undefined) {
+            let apiKey = request.apikeytovalidate;
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", 'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=' + apiKey + '&steamids=76561198036030455', true);
+            xhr.onload = function (e) {
+                try {
+                    let body = JSON.parse(xhr.responseText);
+                    if(body.response.players[0].steamid==="76561198036030455"){
+                        sendResponse({valid: true});
+                    }
+                    else{
+                        sendResponse({valid: false});
+                    }
+                }
+                catch (e) {
+                    console.log(e);
+                    sendResponse({valid: false});
+                }
+            };
+            try {
+                xhr.send();
+            }
+            catch (e) {
+                console.log(e);
+                sendResponse("error");
+            }
+            return true; //async return to signal that it will return later
         }
     });
 

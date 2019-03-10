@@ -169,6 +169,10 @@ select:active {
     margin-top: 1rem;
 }
 
+.warning{
+    color: var(--steam-nametag-red);
+}
+
 /*Custom flip switch for checkbox*/
 
 /* The switch - the box around the slider */
