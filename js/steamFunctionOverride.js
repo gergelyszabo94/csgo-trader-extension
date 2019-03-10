@@ -42,6 +42,7 @@ function DeclineTradeOffer( tradeOfferID )
     });
 }
 
+//adds In-browser inspect as action - in trade offers
 function overrideHandleTradeActionMenu(){
     $("#overrideHandleTradeActionMenuScript").remove();
     let overrideHandleTradeActionMenu = `
@@ -90,12 +91,9 @@ function HandleTradeActionMenu( elActionMenuButton, item, user )
 	{
 		var elItemActions = $J('#trade_action_popup_itemactions');
 		elItemActions.empty();
-		console.log(item.actions);
 		item.actions=item.actions.filter(element => element.id!=="inbrowser")
-		console.log(item.actions);
 		let inspectLink = item.actions[0].link;
 		item.actions.push({name: "Inspect in Browser...", link: "http://csgo.gallery/"+inspectLink, id: "inbrowser"});
-		console.log(item.actions);
 		for ( var action = 0; action < item.actions.length; action++ )
 		{
 			var rgAction = item.actions[action];
@@ -133,4 +131,64 @@ function HandleTradeActionMenu( elActionMenuButton, item, user )
 </script>`;
 
     $("body").append(overrideHandleTradeActionMenu);
+}
+
+
+//adds In-browser inspect as action in inventory
+function overridePopulateActions(){
+    $("#overridePopulateActionsScript").remove();
+    let overridePopulateActionsMenu = `
+<script id="overridePopulateActionsScript">
+function PopulateActions( prefix, elActions, rgActions, item, owner )
+{
+	elActions.update('');
+	if ( !rgActions )
+	{
+		elActions.hide();
+		return;
+	}
+	rgActions=rgActions.filter(element => element.id!=="inbrowser");
+		let inspectLink = rgActions[0].link;
+		rgActions.push({name: "Inspect in Browser...", link: "http://csgo.gallery/"+inspectLink, id: "inbrowser"});
+	for ( var i = 0; i < rgActions.length; i++ )
+	{
+		var action = rgActions[i];
+		if ( !action.link || !action.name )
+			continue;
+        
+		var strLink = action.link.replace( "%assetid%", item.assetid );
+		strLink = strLink.replace( "%contextid%", item.contextid );
+		if ( owner )
+		{
+			if ( typeof owner == 'string' )
+				strLink = strLink.replace( "%owner_steamid%", owner );
+			else
+				strLink = strLink.replace( "%owner_steamid%", owner.GetSteamId() );
+		}
+
+		// hack to handle "grind into goo" action
+		if ( strLink.match( /^javascript:GetGooValue/ ) )
+		{
+			HandleGetGooValueAction( prefix, item, strLink );
+			continue;
+		}
+
+		var elAction = new Element(
+			'a',
+			{
+				'class': 'btn_small btn_grey_white_innerfade',
+				href: strLink,
+				target: "_blank"
+			}
+		);
+		var elSpan = new Element( 'span' );
+		elSpan.update( action.name );
+		elAction.appendChild( elSpan );
+		elActions.appendChild( elAction );
+	}
+	elActions.show();
+}
+</script>`;
+
+    $("body").append(overridePopulateActionsMenu);
 }

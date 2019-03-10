@@ -164,11 +164,7 @@
 //     $('#'+id)[0].click();
 // };
 
-
-
-
-let inBrowserInspectButton0 ='<a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect0" href="http://csgo.gallery/" target="_blank"><span>Inspect in Browser...</span></a>';
-let inBrowserInspectButton1 ='<a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect1" href="http://csgo.gallery/" target="_blank"><span>Inspect in Browser...</span></a>';
+overridePopulateActions();
 
 let module0 = `<a class="module">
     <div class="descriptor tradability" id="iteminfo0_tradability"></div>
@@ -373,21 +369,8 @@ function addElements(){
         $("#iteminfo0_item_owner_descriptors").hide();
 
 
-        //adds inspect in-browser inspect buttons
         $iteminfo1 = $("#iteminfo1_item_actions");
-        if(!$("#inbrowser_inspect1").length){
-            $iteminfo1.append(inBrowserInspectButton1)
-        }
         $iteminfo0 = $("#iteminfo0_item_actions");
-        if(!$("#inbrowser_inspect0").length){
-            $iteminfo0.append(inBrowserInspectButton0)
-        }
-
-        //adds the correct url to the inspect buttons
-        inspectLink = $("#iteminfo1_item_actions .btn_small").first().attr("href");
-        $("#inbrowser_inspect1").attr("href", "http://csgo.gallery/" + inspectLink);
-        inspectLink = $("#iteminfo0_item_actions .btn_small").first().attr("href");
-        $("#inbrowser_inspect0").attr("href", "http://csgo.gallery/" + inspectLink);
 
         //adds tradability and countdown elements
         if(!$("#iteminfo1_tradability").length){
