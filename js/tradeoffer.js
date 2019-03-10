@@ -51,7 +51,8 @@ const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
 
 $("#trade_action_popup_itemactions").after(csdealsButton);
 
-MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+MutationObserver = window.MutationObserver;
+console.log("updated");
 
 let observer = new MutationObserver(function(mutations, observer) {
     if($("#csdeals_inspect_button").attr("href")==="http://csgo.gallery/"){

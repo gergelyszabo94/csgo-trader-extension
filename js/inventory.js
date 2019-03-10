@@ -223,7 +223,7 @@ let exteriors0 = `
 
 //mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
 
-MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+MutationObserver = window.MutationObserver;
 
 let observer = new MutationObserver(function(mutations, observer) {
     if($(".games_list_tab.active").first().attr("href")==="#730"){

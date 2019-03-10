@@ -133,7 +133,7 @@ if(/Doppler/.test(window.location.href)){
 
     addPhasesIndicator();
 
-    MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+    MutationObserver = window.MutationObserver;
 
     let observer = new MutationObserver(function(mutations, observer) {
         for(var mutation of mutations) {
