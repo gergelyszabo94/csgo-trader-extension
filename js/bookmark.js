@@ -8,7 +8,6 @@ chrome.runtime.onMessage.addListener(
 
 chrome.storage.sync.get('bookmarks', function(result) {
     if(result.bookmarks.length!==0){
-        console.log(result.bookmarks);
         let bookmarks = [];
         result.bookmarks.forEach(function (element, index) {
             let iconFullURL= 'https://steamcommunity.com/economy/image/' + element.itemInfo.iconURL + '/256x256';
@@ -59,6 +58,7 @@ chrome.storage.sync.get('bookmarks', function(result) {
             </div>
             <div class="col-3">
             <div style="text-align: right">
+            <a href="https://steamcommunity.com/tradeoffer/new/?partner=${getOfferStyleSteamID(element.owner)}" target="_blank"><i class="fas fa-exchange-alt whiteIcon" title="Send a trade to the owner (if friends)"></i></a>
             <a href="https://steamcommunity.com/profiles/${element.owner}/" target="_blank"><i class="fas fa-chart-line whiteIcon" title="Open the item's Steam Market page"></i></a>
             <a href="https://steamcommunity.com/profiles/${element.itemInfo.marketlink}/" target="_blank"><i class="fas fa-link whiteIcon" title="Open the item in the owner's inventory"></i></a>
             <a href="https://steamcommunity.com/profiles/${element.owner}/" target="_blank"><i class="fas fa-user whiteIcon" title="Open the item's owner's profile page"></i></a>

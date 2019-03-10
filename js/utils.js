@@ -324,6 +324,6 @@ function reverseWhenNotifDetails(tradability, notifTime){
     };
 }
 
-function validateAPIKey(APIKEy){
-
+function getOfferStyleSteamID(steamID64){
+    return Number(steamID64.split("7656")[1]) - Number(1197960265728);
 }
