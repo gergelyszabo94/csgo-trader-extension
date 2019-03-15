@@ -209,7 +209,6 @@ chrome.runtime.onMessage.addListener(
                     xhr.onload = function (e) {
                         try {
                             let body = JSON.parse(xhr.responseText);
-                            console.log(body.response.players[0].personastate);
                             sendResponse({personastate: body.response.players[0].personastate, apiKeyValid: true});
                         }
                         catch (e) {

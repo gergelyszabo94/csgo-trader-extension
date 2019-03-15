@@ -1,3 +1,0 @@
-// overrideShowTradeOffer();
-//
-// console.log("webchat");
