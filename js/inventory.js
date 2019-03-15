@@ -356,14 +356,6 @@ function addElements(){
             $("#iteminfo0_item_descriptors").after(exteriors0);
         }
 
-        //adds "notes" element
-        if(!$("#note1").length) {
-            $("#iteminfo1_item_descriptors").before(note1);
-        }
-        if(!$("#note0").length) {
-            $("#iteminfo0_item_descriptors").before(note0);
-        }
-
         //hides "tradable after" in one's own inventory
         $("#iteminfo1_item_owner_descriptors").hide();
         $("#iteminfo0_item_owner_descriptors").hide();
@@ -417,6 +409,9 @@ function addElements(){
                     case "BP": addNote("Black Pearl");break;
                     case "EM": addNote("Emerald");break;
                 }
+            }
+            else{
+                removeNote();
             }
 
             let genericMarketLink = "https://steamcommunity.com/market/listings/730/";
@@ -532,8 +527,7 @@ function removeElements() {
     $("#otherExteriors0").hide();
     $("#iteminfo1_tradability").hide();
     $("#iteminfo0_tradability").hide();
-    $("#note1").hide();
-    $("#note0").hide();
+    removeNote();
 }
 
 // gets the asset id of the item that is currently selected
@@ -588,8 +582,19 @@ function countDown(dateToCountDownTo){
 }
 
 function addNote(note){
+    if(!$("#note1").length) {
+        $("#iteminfo1_item_descriptors").before(note1);
+    }
+    if(!$("#note0").length) {
+        $("#iteminfo0_item_descriptors").before(note0);
+    }
     $("#note1").text("Note: " + note);
     $("#note0").text("Note: " + note);
+}
+
+function removeNote(){
+    $("#note1").remove();
+    $("#note0").remove();
 }
 
 function addClickListener(){
