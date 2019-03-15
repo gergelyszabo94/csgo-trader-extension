@@ -20,7 +20,6 @@ market:
 
 profile:
 -scammer likelihood analysis
--fix steam chat status
 
 chat:
 -configurable quickreplies
@@ -41,7 +40,6 @@ misc:
 -auto +rep
 -look into cs.money screenshotting
 -mark fellow extension users
--validate steamapi key
 -proper replies to comments
 -match people who want to trade (csgolounge that works)
 -currency converter in popup (currencies, btc, keys, percentage)

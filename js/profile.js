@@ -1,6 +1,8 @@
 //ensures that we are on a profile page, it's not possible with simple regex
 if($("body").hasClass("profile_page")){
-    if(getUserSteamID()===getProfileOwnerSteamID()){ //when on the logged in user's own profile
+    const profileOwnerSteamID = getProfileOwnerSteamID();
+
+    if(getUserSteamID()===profileOwnerSteamID){ //when on the logged in user's own profile
         chrome.storage.sync.get(['reoccuringMessage', 'showReoccButton'], function(result) {
             if(result.showReoccButton){
                 let reooccText = result.reoccuringMessage;
@@ -110,4 +112,25 @@ if($("body").hasClass("profile_page")){
         }
     });
     overrideShowTradeOffer();
+
+    chrome.storage.sync.get(['showRealStatus'], function(result) {
+        if(result.showRealStatus){
+            $statusDiv = $(".profile_in_game.persona");
+            if($statusDiv.hasClass("online")){
+                $textDiv = $statusDiv.children(".profile_in_game_header");
+                chrome.runtime.sendMessage({GetPlayerSummaries: profileOwnerSteamID}, function(response) {
+                    if(response.apiKeyValid){
+                        switch(response.personastate){
+                            case 1: break;
+                            case 2: $textDiv.text("Currently Busy"); break;
+                            case 3: $textDiv.text("Currently Away"); break; //It looks like the other ones might not really exist anymore
+                            case 4: $textDiv.text("Currently Snooze"); break;
+                            case 5: $textDiv.text("Currently Looking to Trade"); break;
+                            case 6: $textDiv.text("Currently Looking to Play"); break;
+                        }
+                    }
+                });
+            }
+        }
+    });
 }

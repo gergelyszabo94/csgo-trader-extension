@@ -187,3 +187,22 @@ $apikeysave.click(function(){
         }
     });
 });
+
+$showrealstatus = $("#showRealStatus");
+
+chrome.storage.sync.get(['showRealStatus'], function(result) {
+    if(result.showRealStatus){
+        $showrealstatus.click();
+    }
+});
+
+$showrealstatus.click(function() {
+    if(this.checked) {
+        chrome.storage.sync.set({showRealStatus: true}, function() {
+        });
+    }
+    else{
+        chrome.storage.sync.set({showRealStatus: false}, function() {
+        });
+    }
+});
