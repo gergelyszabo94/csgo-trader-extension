@@ -4,7 +4,6 @@ inventory:
 -link to market listings of stickers on weapons
 -fix other exteriors sometimes not showing
 -"whatstradelocked" style filters
--fix notes staying up when not needed
 
 tradeoffer:
 -add tf2 keys and refs as currency
@@ -21,8 +20,6 @@ market:
 
 profile:
 -scammer likelihood analysis
--block ascii art
--block swastikas - https://steamcommunity.com/id/rogerioxy
 -fix steam chat status
 
 chat:

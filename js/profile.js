@@ -75,7 +75,9 @@ if($("body").hasClass("profile_page")){
                         'gives to his users',
                         'I\'m a major csgo playe and I\'ll trade my',
                         'join the GIVEAWAY on gabenskins.pro',
-                        'Trade Your Cases For Keys'
+                        'Trade Your Cases For Keys',
+                        ' join bloodyskins',
+                        '🔴🔴🔴🔴🔴🔴⚪⚪⚪🔴' //emoticon swastika
                     ];
 
                     let spamTExtCheck = new RegExp(commentsToReport.join("|"), "i");
