@@ -4,6 +4,7 @@ inventory:
 -link to market listings of stickers on weapons
 -fix other exteriors sometimes not showing
 -"whatstradelocked" style filters
+-item border color based on rarity
 
 tradeoffer:
 -add tf2 keys and refs as currency
@@ -43,6 +44,8 @@ misc:
 -proper replies to comments
 -match people who want to trade (csgolounge that works)
 -currency converter in popup (currencies, btc, keys, percentage)
+-search in options
 
 bookmarks:
 -email, chat, sms notif?
+-add inspect link and float value

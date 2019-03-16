@@ -1,29 +1,31 @@
 overridePopulateActions();
 
-let module0 = `<a class="module">
+const module0 = `<a class="module">
     <div class="descriptor tradability" id="iteminfo0_tradability"></div>
     <div class="descriptor countdown" id="iteminfo0_countdown"></div>
     <div class="descriptor tradability bookmark" id="iteminfo0_bookmark">Bookmark and Notify</div>
 </a>`;
 
-let module1 = `<a class="module">
+const module1 = `<a class="module">
     <div class="descriptor tradability" id="iteminfo1_tradability"></div>
     <div class="descriptor countdown" id="iteminfo1_countdown"></div>
     <div class="descriptor tradability bookmark" id="iteminfo1_bookmark">Bookmark and Notify</div>
 </a>`;
 
-let note0 = `<div class="descriptor note" id="note0"></div>`;
-let note1 = `<div class="descriptor note" id="note1"></div>`;
+const float0 = `<div class="floatOverIcon" id="float0">Float: <span id="float0DropTarget">Waiting for csgofloat.com</span></div>`;
+const float1 = `<div class="floatOverIcon" id="float1">Float: <span id="float1DropTarget">Waiting for csgofloat.com</span></div>`;
 
+const note0 = `<div class="descriptor note" id="note0"></div>`;
+const note1 = `<div class="descriptor note" id="note1"></div>`;
 
-let tradable = "<span class='tradable'>Tradable</span>";
-let notTradable = "<span class='not_tradable'>Not Tradable</span>";
+const tradable = "<span class='tradable'>Tradable</span>";
+const notTradable = "<span class='not_tradable'>Not Tradable</span>";
 
-let dateOnEachItem = "<div class='perItemDate'><span></span></div>";
-let dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
-let exterior = "<div class='exteriorIndicator'><span></span></div>";
+const dateOnEachItem = "<div class='perItemDate'><span></span></div>";
+const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
+const exterior = "<div class='exteriorIndicator'><span></span></div>";
 
-let exteriors1 = `
+const exteriors1 = `
     <div class="descriptor otherExteriors" id="otherExteriors1">
         <span>Links to other exteriors:</span>
         <ul>
@@ -36,7 +38,7 @@ let exteriors1 = `
         <span>Not every item is available in every exterior</span>
     </div>`;
 
-let exteriors0 = `
+const exteriors0 = `
     <div class="descriptor otherExteriors" id="otherExteriors0">
         <span>Links to other exteriors:</span>
         <ul>
@@ -182,6 +184,18 @@ function addElements(){
         let activeID = getAssetIDofActive();
         let item = getItemByAssetID(activeID);
 
+        //removes "tags"
+        $("#iteminfo1_item_tags").remove();
+        $("#iteminfo0_item_tags").remove();
+
+        //adds float value info over the icon
+        if(!$("#float1").length) {
+            $("#iteminfo1_item_icon").after(float1);
+        }
+        if(!$("#float0").length) {
+            $("#iteminfo0_item_icon").after(float0);
+        }
+
         //add "other exteriors" links module
         if(!$("#otherExteriors1").length) {
             $("#iteminfo1_item_descriptors").after(exteriors1);
@@ -247,6 +261,28 @@ function addElements(){
             else{
                 removeNote();
             }
+
+
+            //removes sih "Get Float" button
+            $(".float_block").remove();
+
+            let inspectLink = item.inspectLink;
+
+            //text while floats load
+            let float ="Waiting for csgofloat.com";
+            $("#float0DropTarget").text(float);
+            $("#float1DropTarget").text(float);
+
+            chrome.runtime.sendMessage({getFloatInfo: inspectLink}, function(response) {
+                try{
+                    float = response.floatInfo.floatvalue;
+                }
+                catch{
+
+                }
+                $("#float0DropTarget").text(float.toFixed(4));
+                $("#float1DropTarget").text(float.toFixed(4));
+            });
 
             let genericMarketLink = "https://steamcommunity.com/market/listings/730/";
             let weaponName = "";

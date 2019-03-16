@@ -121,6 +121,17 @@ chrome.runtime.onMessage.addListener(
                             if(/Doppler/.test(name)){
                                 dopplerPhase = getDopplerPhase(icon);
                             }
+
+                            let inspectLink ="";
+                            try {
+                                if(items[item].actions!==undefined&&items[item].actions[0]!==undefined){
+                                    let beggining = items[item].actions[0].link.split('%20S')[0];
+                                    let end = items[item].actions[0].link.split('%assetid%')[1];
+                                    inspectLink = (beggining + "%20S"+steamID + "A"+ assetid + end);
+                                }
+                            }
+                            catch(error) {
+                            }
                             itemsPropertiesToReturn.push({
                                 name: name,
                                 market_hash_name: market_hash_name,
@@ -134,7 +145,8 @@ chrome.runtime.onMessage.addListener(
                                 dopplerPhase: dopplerPhase,
                                 exterior: exterior,
                                 shortExterior: shortExterior,
-                                iconURL: icon
+                                iconURL: icon,
+                                inspectLink: inspectLink
                             })
                         }
                     }
@@ -226,6 +238,27 @@ chrome.runtime.onMessage.addListener(
                     sendResponse({apiKeyValid: false});
                 }
             });
+            return true; //async return to signal that it will return later
+        }
+        else if (request.getFloatInfo !==undefined) {
+                    let inspectLink = request.getFloatInfo;
+                    let xhr = new XMLHttpRequest();
+                    xhr.open("GET", 'https://api.csgofloat.com/?url=' + inspectLink, true);
+                    xhr.onload = function (e) {
+                        try {
+                            let body = JSON.parse(xhr.responseText);
+                            sendResponse({floatInfo: body.iteminfo});
+                        }
+                        catch (e) {
+                            console.log(e);
+                        }
+                    };
+                    try {
+                        xhr.send();
+                    }
+                    catch (e) {
+                        console.log(e);
+                    }
             return true; //async return to signal that it will return later
         }
     });
