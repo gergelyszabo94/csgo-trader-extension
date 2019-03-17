@@ -95,9 +95,7 @@ function removeBookmarkListener(){
             result.bookmarks.splice(index, 1);
             chrome.storage.sync.set({'bookmarks': result.bookmarks}, function() {
                 chrome.alarms.clear(assetid, function(){});
-                chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                    chrome.tabs.reload(tabs[0].id);
-                });
+                location.reload();
             });
         });
     });

@@ -573,16 +573,16 @@ function addClickListener(){
                 if(bookmark.itemInfo.tradability!=="Tradable"){
                     chrome.runtime.sendMessage({setAlarm: {name:  bookmark.itemInfo.assetid, when: bookmark.itemInfo.tradability}}, function(response) {});
                 }
-                chrome.runtime.sendMessage({openInternalPage: "/html/bookmarks.html"}, function(response) {});
+                chrome.runtime.sendMessage({openInternalPage: "/html/bookmarks.html"}, function(response) {
+                    console.log(response);
+                });
             });
         });
     });
     $("#showTechnical1").click(function () {
-        console.log("1 clicked");
         $("#floatTechnical1").toggle();
     });
     $("#showTechnical0").click(function () {
-        console.log("0 clicked");
         $("#floatTechnical0").toggle();
     });
 }

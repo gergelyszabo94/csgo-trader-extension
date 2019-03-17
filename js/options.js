@@ -207,6 +207,37 @@ $showrealstatus.click(function() {
     }
 });
 
+$tabsAPI = $("#tabsAPI");
+
+chrome.permissions.contains({
+    permissions: ['tabs']
+}, function(result) {
+    if (result) {
+        $tabsAPI.prop("checked", true);
+    }
+    else{
+        $tabsAPI.prop("checked", false);
+    }
+});
+
+$tabsAPI.click(function() {
+    if(this.checked) {
+    chrome.permissions.request({
+        permissions: ['tabs']
+    }, function(granted) {
+        if (granted) {}
+        else {
+            $tabsAPI.prop("checked", false);
+        }
+    });
+    }
+    else{
+        chrome.permissions.remove({
+            permissions: ['tabs']
+        }, function(removed) {});
+    }
+});
+
 $(function () {
     $('[data-toggle="tooltip"]').tooltip()
 });

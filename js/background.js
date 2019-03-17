@@ -21,7 +21,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
             type: 'basic',
             iconUrl: '/images/cstlogo128.png',
             title: 'Extension installed!',
-            message: 'You can check the options by clicking here'
+            message: 'Go to the options to set your preferences and customize your experience!'
         }, function(notificationId) {});
     }
     else if(details.reason === "update"){
@@ -68,12 +68,20 @@ chrome.runtime.onInstalled.addListener(function(details) {
         chrome.browserAction.setBadgeText({text: "1"});
 
         let thisVersion = chrome.runtime.getManifest().version;
-        chrome.notifications.create("updated", {
-            type: 'basic',
-            iconUrl: '/images/cstlogo128.png',
-            title: 'Extension updated to ' + thisVersion + "!",
-            message: 'You can check the changelog by clicking here!'
-        }, function(notificationId) {});
+        chrome.permissions.contains({
+            permissions: ['tabs']
+        }, function(result) {
+            let message = 'Check the changelog for the hot new stuff!';
+            if (result) {
+                message = 'You can check the changelog by clicking here!';
+            }
+            chrome.notifications.create("updated", {
+                type: 'basic',
+                iconUrl: '/images/cstlogo128.png',
+                title: 'Extension updated to ' + thisVersion + "!",
+                message: message
+            }, function(notificationId) {});
+        });
     }
 });
 
@@ -173,8 +181,17 @@ chrome.runtime.onMessage.addListener(
             sendResponse({badgetext: request.badgetext})
         }
         else if (request.openInternalPage!==undefined){
-            goToInternalPage(request.openInternalPage);
-            sendResponse({openInternalPage: request.openInternalPage})
+            chrome.permissions.contains({
+                permissions: ['tabs']
+            }, function(result) {
+                if (result) {
+                    goToInternalPage(request.openInternalPage);
+                    sendResponse({openInternalPage: request.openInternalPage});
+                }
+                else{
+                    sendResponse({openInternalPage: "No permission"});
+                }
+            });
         }
         else if (request.setAlarm!==undefined){
             chrome.alarms.create(request.setAlarm.name, {when: new Date(request.setAlarm.when).valueOf()});
@@ -265,15 +282,21 @@ chrome.runtime.onMessage.addListener(
 
 chrome.notifications.onClicked.addListener(function(notificationID) {
     chrome.browserAction.setBadgeText({text: ""});
-    if(notificationID==="installed"){
-        goToInternalPage("/html/options.html");
-    }
-    else if(notificationID==="updated"){
-        goToInternalPage("/html/changelog.html");
-    }
-    else{
-        goToInternalPage("/html/bookmarks.html");
-    }
+    chrome.permissions.contains({
+        permissions: ['tabs']
+    }, function(result) {
+        if (result) {
+            if(notificationID==="installed"){
+                goToInternalPage("/html/options.html");
+            }
+            else if(notificationID==="updated"){
+                goToInternalPage("/html/changelog.html");
+            }
+            else{
+                goToInternalPage("/html/bookmarks.html");
+            }
+        }
+    });
 });
 
 chrome.alarms.onAlarm.addListener(function(alarm){
@@ -291,20 +314,34 @@ chrome.alarms.onAlarm.addListener(function(alarm){
         });
         if(item.notifType==="chrome"){
             let iconFullURL= 'https://steamcommunity.com/economy/image/' + item.itemInfo.iconURL + '/128x128';
-            chrome.notifications.create(alarm.name, {
-                type: 'basic',
-                iconUrl: iconFullURL,
-                title: item.itemInfo.name + ' is tradable!',
-                message: 'Click here to see your bookmarks!'
-            }, function(notificationId) {});
+            chrome.permissions.contains({
+                permissions: ['tabs']
+            }, function(result) {
+                let message = item.itemInfo.name + ' is tradable!';
+                if (result) {
+                    message = 'Click here to see your bookmarks!';
+                }
+                chrome.notifications.create(alarm.name, {
+                    type: 'basic',
+                    iconUrl: iconFullURL,
+                    title: item.itemInfo.name + ' is tradable!',
+                    message: message
+                }, function(notificationId) {});
+            });
         }
         else if(item.notifType==="alert"){
-            goToInternalPage("/html/bookmarks.html");
-            setTimeout(function () {
-                chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-                    chrome.tabs.sendMessage(tabs[0].id, {alert: item.itemInfo.name}, function(response) {});
-                });
-            }, 1000);
+            chrome.permissions.contains({
+                permissions: ['tabs']
+            }, function(result) {
+                if (result) {
+                    goToInternalPage("/html/bookmarks.html");
+                    setTimeout(function () {
+                        chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+                            chrome.tabs.sendMessage(tabs[0].id, {alert: item.itemInfo.name}, function(response) {});
+                        });
+                    }, 1000);
+                }
+            });
         }
     });
 });

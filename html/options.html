@@ -53,6 +53,18 @@
                     functions that need an API key will be tagged with this icon: <i class="fas fa-code apiIcon"></i><br>
                     You can get an API key by filling out <a href="https://steamcommunity.com/dev/apikey" target="_blank">this form</a> (you can put anything in as domain name).</td>
             </tr>
+            <tr>
+                <td>Tabs API access</td>
+                <td style="text-align:center;">
+                    <label class="switch">
+                        <input type="checkbox" id="tabsAPI">
+                        <span class="slider round"></span>
+                    </label>
+                </td>
+                <td>Grants the extension access to the <a href="https://developer.chrome.com/extensions/tabs" target="_blank">chrome.tabs API</a>.
+                    It - for example - allows the extension to open a tab and put it in focus, allows notifications to be clickable, opens the bookmarks page when an item is bookmarked, etc.
+                I am using it in this mode so it's also less likely to be buggy as well.</td>
+            </tr>
             </tbody>
         </table>
     </div>
