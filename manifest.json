@@ -9,14 +9,14 @@
     "*://csgobackpack.net/api/*", "*://cstapi.gergely-szabo.com/*", "*://steamrep.com/api/*", "*://api.csgofloat.com/*", "*://csgolounge.com/*", "*://csgotraders.net/*"],
   "options_page": "html/options.html",
   "background": {
-    "scripts": ["js/thirdparty/jquery-3.3.1.min.js", "js/thirdparty/bootstrap.min.js", "js/utils.js", "js/background.js"],
+    "scripts": ["js/thirdparty/jquery-3.3.1.min.js", "js/thirdparty/bootstrap.bundle.min.js", "js/utils.js", "js/background.js"],
     "persistent": true
   },
   "content_scripts": [
     {
       "matches": ["*://steamcommunity.com/*/inventory", "*://steamcommunity.com/*/inventory/*"],
       "run_at" : "document_idle",
-      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/steamFunctionOverride.js", "js/utils.js", "js/inventory.js"],
+      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/thirdparty/tooltip.js", "js/steamFunctionOverride.js", "js/utils.js", "js/inventory.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {

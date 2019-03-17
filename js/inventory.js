@@ -74,7 +74,6 @@ const exteriors0 = `
     </div>`;
 
 
-
 //mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
 
 MutationObserver = window.MutationObserver;
@@ -314,8 +313,6 @@ function addElements(){
 
                 }
                 let position = float.toFixed(2)*100-2;
-
-                console.log(position);
                 $("#floatPointer0").css("left", position + "%");
                 $("#floatPointer1").css("left", position + "%");
                 $("#float0DropTarget").text(float.toFixed(4));

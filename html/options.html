@@ -9,7 +9,7 @@
 </head>
 <body>
 <script src="/js/thirdparty/jquery-3.3.1.min.js"></script>
-<script src="/js/thirdparty/bootstrap.min.js"></script>
+<script src="/js/thirdparty/bootstrap.bundle.min.js"></script>
 
 <div class="col-lg-10 col-md-10 mx-auto" id="settings">
     <nav class="navbar navbar-expand-lg">
@@ -47,7 +47,7 @@
                 <td>Steam API key</td>
                 <td>
                     <span id="steamAPIKeyPrinted"></span>
-                    <a href="#" title="Edit" data-toggle="modal" data-target="#steamAPIkeyModal"><i class="fas fa-edit"></i></a>
+                    <a href="#" data-toggle="tooltip" data-placement="top" title="Edit" data-toggle="modal" data-target="#steamAPIkeyModal"><i class="fas fa-edit"></i></a>
                 </td>
                 <td>Allows the extension to make API requests to the <a href="https://developer.valvesoftware.com/wiki/Steam_Web_API" target="_blank">Steam Web API</a>,
                     functions that need an API key will be tagged with this icon: <i class="fas fa-code apiIcon"></i><br>
@@ -115,7 +115,7 @@
                 <td>Reputation message</td>
                 <td>
                     <span id="reputationMessagePrinted"></span>
-                    <a href="#" title="Edit" data-toggle="modal" data-target="#reputationMessageModal"><i class="fas fa-edit"></i></a>
+                    <a href="#" data-toggle="tooltip" data-placement="top" title="Edit" data-toggle="modal" data-target="#reputationMessageModal"><i class="fas fa-edit"></i></a>
                 </td>
                 <td>The content of the comment you want posted on someone's profile when the "+rep" button is pressed, defaults to simply "+rep"</td>
             </tr>
@@ -133,7 +133,7 @@
                 <td>Reoccuring message</td>
                 <td>
                     <span id="reoccuringMessagePrinted"></span>
-                    <a href="#" title="Edit" data-toggle="modal" data-target="#reoccuringMessageModal"><i class="fas fa-edit"></i></a>
+                    <a href="#" data-toggle="tooltip" data-placement="top" title="Edit" data-toggle="modal" data-target="#reoccuringMessageModal"><i class="fas fa-edit"></i></a>
                 </td>
                 <td>The content of the comment you want posted on your profile when the "Reocc" button is pressed, defaults to "I don't have other accounts. If someone adds you with my name and picture they are scammers."</td>
             </tr>
