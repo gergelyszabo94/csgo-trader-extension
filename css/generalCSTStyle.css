@@ -105,15 +105,14 @@ progress {
     top: 10%;
 }
 
-.floatOverIcon{
+.floatBar{
     position: relative;
-    left: 0;
-    bottom: 10%;
+    top: -35px;
 }
 
 .floatBarFN{
     width: 7%;
-    background-color: var(--steam-note-blue);
+    background-color: var(--steam-online-blue);
 }
 
 .floatBarMW{
@@ -136,15 +135,17 @@ progress {
     background-color: var(--steam-nametag-red);
 }
 
-.fa-chevron-down{
-    position: relative;
-    top: 7px;
-    /*left: -6px;*/
-    left: -2%;
-    color: white;
+.floatPointer{
     height: 15px;
     width: 15px;
     margin: 0;
+}
+
+.floatToolTip{
+    position: relative;
+    top: 7px;
+    left: -2%;
+    color: white;
 }
 
 .note{

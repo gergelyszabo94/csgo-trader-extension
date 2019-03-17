@@ -12,29 +12,33 @@ const module1 = `<a class="module">
     <div class="descriptor tradability bookmark" id="iteminfo1_bookmark">Bookmark and Notify</div>
 </a>`;
 
-const float0 = `<div class="floatOverIcon" id="float0">Float: <span id="float0DropTarget">Waiting for csgofloat.com</span></div>`;
-const float1 = `<div class="floatOverIcon" id="float1">Float: <span id="float1DropTarget">Waiting for csgofloat.com</span></div>`;
-
-const floatBar0 = `<div class="floatBar" id="floatBar0">
- <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-down" id="floatPointer0" class="svg-inline--fa fa-chevron-down fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path></svg>
-   <div class="progress">
-   <div class="progress-bar floatBarFN"></div>
-      <div class="progress-bar floatBarMW"></div>
-      <div class="progress-bar floatBarFT"></div>
-      <div class="progress-bar floatBarWW"></div>
-      <div class="progress-bar floatBarBS"></div>
-    </div>
+const floatBar0 = `
+<div class="floatBar" id="floatBar0">
+    <div class="floatToolTip" id="float0">
+        <div>Float: <span id="float0DropTarget">Waiting for csgofloat.com</span></div>
+        <svg id="floatPointer0" class="floatPointer" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path></svg>
+   </div>
+ <div class="progress">
+    <div class="progress-bar floatBarFN" title="Factory New"></div>
+    <div class="progress-bar floatBarMW" title="Minimal Wear"></div>
+    <div class="progress-bar floatBarFT" title="Field-Tested"></div>
+    <div class="progress-bar floatBarWW" title="Well-Worn"></div>
+     <div class="progress-bar floatBarBS" title="Battle-Scarred"></div>
+ </div>
 </div>`;
 const floatBar1 = `
 <div class="floatBar" id="floatBar1">
-<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-down" id="floatPointer1" class="svg-inline--fa fa-chevron-down fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path></svg>
-    <div class="progress">
-    <div class="progress-bar floatBarFN"></div>
-      <div class="progress-bar floatBarMW"></div>
-      <div class="progress-bar floatBarFT"></div>
-      <div class="progress-bar floatBarWW"></div>
-      <div class="progress-bar floatBarBS"></div>
-    </div>
+    <div class="floatToolTip" id="float1">
+        <div>Float: <span id="float1DropTarget">Waiting for csgofloat.com</span></div>
+        <svg id="floatPointer1" class="floatPointer" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path></svg>
+   </div>
+ <div class="progress">
+    <div class="progress-bar floatBarFN" title="Factory New"></div>
+    <div class="progress-bar floatBarMW" title="Minimal Wear"></div>
+    <div class="progress-bar floatBarFT" title="Field-Tested"></div>
+    <div class="progress-bar floatBarWW" title="Well-Worn"></div>
+     <div class="progress-bar floatBarBS" title="Battle-Scarred"></div>
+ </div>
 </div>`;
 
 const note0 = `<div class="descriptor note" id="note0"></div>`;
@@ -209,14 +213,6 @@ function addElements(){
         $("#iteminfo1_item_tags").remove();
         $("#iteminfo0_item_tags").remove();
 
-        //adds float value info over the icon
-        if(!$("#float1").length) {
-            $("#iteminfo1_item_icon").after(float1);
-        }
-        if(!$("#float0").length) {
-            $("#iteminfo0_item_icon").after(float0);
-        }
-
         //adds float bar
         if(!$("#floatBar1").length) {
             $("#iteminfo1_content").children().first().after(floatBar1);
@@ -313,8 +309,8 @@ function addElements(){
 
                 }
                 let position = float.toFixed(2)*100-2;
-                $("#floatPointer0").css("left", position + "%");
-                $("#floatPointer1").css("left", position + "%");
+                $("#float0").css("left", position + "%");
+                $("#float1").css("left", position + "%");
                 $("#float0DropTarget").text(float.toFixed(4));
                 $("#float1DropTarget").text(float.toFixed(4));
             });
@@ -330,7 +326,7 @@ function addElements(){
             }
             else if(/Souvenir/.test(item.marketlink)){
                 isSouvenir = true;
-                    weaponName = item.marketlink.split("/730/")[1].split("Souvenir")[1].split("(")[0];
+                weaponName = item.marketlink.split("/730/")[1].split("Souvenir")[1].split("(")[0];
             }
             else{
                 weaponName = item.marketlink.split("/730/")[1].split("(")[0];
@@ -437,7 +433,7 @@ function removeElements() {
 
 // gets the asset id of the item that is currently selected
 function getAssetIDofActive() {
-   return  $(".activeInfo")[0].id.split("730_2_")[1];
+    return  $(".activeInfo")[0].id.split("730_2_")[1];
 }
 
 //gets the details of an item by matching the passed asset id with the ones from the api call
