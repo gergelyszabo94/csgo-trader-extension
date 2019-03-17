@@ -16,7 +16,7 @@
     {
       "matches": ["*://steamcommunity.com/*/inventory", "*://steamcommunity.com/*/inventory/*"],
       "run_at" : "document_idle",
-      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/thirdparty/tooltip.js", "js/steamFunctionOverride.js", "js/utils.js", "js/inventory.js"],
+      "js": ["js/thirdparty/jquery-3.3.1.min.js", "js/steamFunctionOverride.js", "js/utils.js", "js/inventory.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
