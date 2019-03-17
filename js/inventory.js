@@ -25,6 +25,18 @@ const floatBar0 = `
     <div class="progress-bar floatBarWW" title="Well-Worn"></div>
      <div class="progress-bar floatBarBS" title="Battle-Scarred"></div>
  </div>
+ <div class="showTechnical" id="showTechnical0">Show Technical</div>
+ <div class="floatTechnical" id="floatTechnical0">
+        Technical:<br>
+        Float Value: <span id="fvDrop0"></span><br>
+        Paint Index: <span id="piDrop0"></span><br>
+        Paint Seed: <span id="psDrop0"></span><br>
+        Origin: <span id="origDrop0"></span><br>
+        Best Possible Float: <span id="minDrop0"></span><br>
+        Worst Possible Float: <span id="maxDrop0"></span><br>
+        <br>
+        Float info from <a href="https://csgofloat.com/" target="_blank">csgofloat.com</a>
+</div>
 </div>`;
 const floatBar1 = `
 <div class="floatBar" id="floatBar1">
@@ -39,6 +51,18 @@ const floatBar1 = `
     <div class="progress-bar floatBarWW" title="Well-Worn"></div>
      <div class="progress-bar floatBarBS" title="Battle-Scarred"></div>
  </div>
+  <div class="showTechnical" id="showTechnical1">Show Technical</div>
+ <div class="floatTechnical" id="floatTechnical1">
+        Technical:<br>
+        Float Value: <span id="fvDrop1"></span><br>
+        Paint Index: <span id="piDrop1"></span><br>
+        Paint Seed: <span id="psDrop1"></span><br>
+        Origin: <span id="origDrop1"></span><br>
+        Best Possible Float: <span id="minDrop1"></span><br>
+        Worst Possible Float: <span id="maxDrop1"></span><br>
+        <br>
+        Float info from <a href="https://csgofloat.com/" target="_blank">csgofloat.com</a>
+</div>
 </div>`;
 
 const note0 = `<div class="descriptor note" id="note0"></div>`;
@@ -221,6 +245,8 @@ function addElements(){
             $("#iteminfo0_content").children().first().after(floatBar0);
         }
 
+        $(".floatTechnical").hide();
+
         //removes background from the right side of the page
         $(".item_desc_content").css("background-image", 'url()');
 
@@ -300,20 +326,52 @@ function addElements(){
             let float ="Waiting for csgofloat.com";
             $("#float0DropTarget").text(float);
             $("#float1DropTarget").text(float);
+            let paintIndex = "";
+            let paintSeed = "";
+            let origin = "";
+            let min = "";
+            let max = "";
 
-            chrome.runtime.sendMessage({getFloatInfo: inspectLink}, function(response) {
-                try{
-                    float = response.floatInfo.floatvalue;
-                }
-                catch{
+            if(inspectLink!==""&&inspectLink!==undefined){
+                $(".floatBar").show();
+                chrome.runtime.sendMessage({getFloatInfo: inspectLink}, function(response) {
+                    try{
+                        float = response.floatInfo.floatvalue;
+                        paintIndex = response.floatInfo.paintindex;
+                        paintSeed = response.floatInfo.paintseed;
+                        origin = response.floatInfo.origin_name;
+                        min = response.floatInfo.min;
+                        max = response.floatInfo.max;
 
-                }
-                let position = float.toFixed(2)*100-2;
-                $("#float0").css("left", position + "%");
-                $("#float1").css("left", position + "%");
-                $("#float0DropTarget").text(float.toFixed(4));
-                $("#float1DropTarget").text(float.toFixed(4));
-            });
+                    }
+                    catch{
+
+                    }
+                    let position = float.toFixed(2)*100-2;
+                    $("#float0").css("left", position + "%");
+                    $("#float1").css("left", position + "%");
+                    $("#float0DropTarget").text(float.toFixed(4));
+                    $("#float1DropTarget").text(float.toFixed(4));
+                    $("#fvDrop0").text(float);
+                    $("#fvDrop1").text(float);
+                    $("#piDrop0").text(paintIndex);
+                    $("#piDrop1").text(paintIndex);
+                    $("#psDrop0").text(paintSeed);
+                    $("#psDrop1").text(paintSeed);
+                    $("#origDrop0").text(origin);
+                    $("#origDrop1").text(origin);
+                    $("#minDrop0").text(min);
+                    $("#minDrop1").text(min);
+                    $("#maxDrop0").text(max);
+                    $("#maxDrop1").text(max);
+                    if(float===0){
+                        $(".floatBar").hide();
+                    }
+                });
+            }
+            else{
+                $(".floatBar").hide();
+            }
 
             let genericMarketLink = "https://steamcommunity.com/market/listings/730/";
             let weaponName = "";
@@ -518,5 +576,13 @@ function addClickListener(){
                 chrome.runtime.sendMessage({openInternalPage: "/html/bookmarks.html"}, function(response) {});
             });
         });
+    });
+    $("#showTechnical1").click(function () {
+        console.log("1 clicked");
+        $("#floatTechnical1").toggle();
+    });
+    $("#showTechnical0").click(function () {
+        console.log("0 clicked");
+        $("#floatTechnical0").toggle();
     });
 }
