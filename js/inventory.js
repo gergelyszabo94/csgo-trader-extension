@@ -15,6 +15,28 @@ const module1 = `<a class="module">
 const float0 = `<div class="floatOverIcon" id="float0">Float: <span id="float0DropTarget">Waiting for csgofloat.com</span></div>`;
 const float1 = `<div class="floatOverIcon" id="float1">Float: <span id="float1DropTarget">Waiting for csgofloat.com</span></div>`;
 
+const floatBar0 = `<div class="floatBar" id="floatBar0">
+ <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-down" id="floatPointer0" class="svg-inline--fa fa-chevron-down fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path></svg>
+   <div class="progress">
+   <div class="progress-bar floatBarFN"></div>
+      <div class="progress-bar floatBarMW"></div>
+      <div class="progress-bar floatBarFT"></div>
+      <div class="progress-bar floatBarWW"></div>
+      <div class="progress-bar floatBarBS"></div>
+    </div>
+</div>`;
+const floatBar1 = `
+<div class="floatBar" id="floatBar1">
+<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-down" id="floatPointer1" class="svg-inline--fa fa-chevron-down fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path></svg>
+    <div class="progress">
+    <div class="progress-bar floatBarFN"></div>
+      <div class="progress-bar floatBarMW"></div>
+      <div class="progress-bar floatBarFT"></div>
+      <div class="progress-bar floatBarWW"></div>
+      <div class="progress-bar floatBarBS"></div>
+    </div>
+</div>`;
+
 const note0 = `<div class="descriptor note" id="note0"></div>`;
 const note1 = `<div class="descriptor note" id="note1"></div>`;
 
@@ -196,6 +218,17 @@ function addElements(){
             $("#iteminfo0_item_icon").after(float0);
         }
 
+        //adds float bar
+        if(!$("#floatBar1").length) {
+            $("#iteminfo1_content").children().first().after(floatBar1);
+        }
+        if(!$("#floatBar0").length) {
+            $("#iteminfo0_content").children().first().after(floatBar0);
+        }
+
+        //removes background from the right side of the page
+        $(".item_desc_content").css("background-image", 'url()');
+
         //add "other exteriors" links module
         if(!$("#otherExteriors1").length) {
             $("#iteminfo1_item_descriptors").after(exteriors1);
@@ -263,7 +296,7 @@ function addElements(){
             }
 
 
-            //removes sih "Get Float" button
+            //removes sih "Get Float" button - does not really work since it's loaded after this script..
             $(".float_block").remove();
 
             let inspectLink = item.inspectLink;
@@ -280,6 +313,11 @@ function addElements(){
                 catch{
 
                 }
+                let position = float.toFixed(2)*100-2;
+
+                console.log(position);
+                $("#floatPointer0").css("left", position + "%");
+                $("#floatPointer1").css("left", position + "%");
                 $("#float0DropTarget").text(float.toFixed(4));
                 $("#float1DropTarget").text(float.toFixed(4));
             });

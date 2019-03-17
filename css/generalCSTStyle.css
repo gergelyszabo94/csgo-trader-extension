@@ -10,6 +10,58 @@
     --steam-sale-golden: #e4ca63;
 }
 
+/*bootstrap progress bar*/
+progress {
+    vertical-align: baseline;
+}
+
+@-webkit-keyframes progress-bar-stripes {
+    from {
+        background-position: 1rem 0;
+    }
+    to {
+        background-position: 0 0;
+    }
+}
+
+@keyframes progress-bar-stripes {
+    from {
+        background-position: 1rem 0;
+    }
+    to {
+        background-position: 0 0;
+    }
+}
+
+.progress {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    height: 0.5rem;
+    overflow: hidden;
+    font-size: 0.75rem;
+    /*background-color: #e9ecef;*/
+    border-radius: 0.25rem;
+    margin: 0;
+}
+
+.progress-bar {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    color: #fff;
+    text-align: center;
+    background-color: #007bff;
+    transition: width 0.6s ease;
+    margin: 0;
+}
 
 .tradability{
     text-align: center;
@@ -51,6 +103,48 @@
     position: relative;
     left: -60%;
     top: 10%;
+}
+
+.floatOverIcon{
+    position: relative;
+    left: 0;
+    bottom: 10%;
+}
+
+.floatBarFN{
+    width: 7%;
+    background-color: var(--steam-note-blue);
+}
+
+.floatBarMW{
+    width: 8%;
+    background-color: var(--steam-ingame-green);
+}
+
+.floatBarFT{
+    width: 23%;
+    background-color: var(--steam-souvenir-yellow);
+}
+
+.floatBarWW{
+    width: 7%;
+    background-color: var(--steam-stattrak-orange);
+}
+
+.floatBarBS{
+    width: 55%;
+    background-color: var(--steam-nametag-red);
+}
+
+.fa-chevron-down{
+    position: relative;
+    top: 7px;
+    /*left: -6px;*/
+    left: -2%;
+    color: white;
+    height: 15px;
+    width: 15px;
+    margin: 0;
 }
 
 .note{
