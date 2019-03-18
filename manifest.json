@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "CSGO Trader - Steam Trading Enhancer",
   "short_name": "CSGO Trader",
-  "version": "1.10",
+  "version": "1.10.1",
   "description": "Extension to help with CS:GO trading, trade-lock countdown, in-browser inspect, doppler phases, Steam NSFW, float values, etc",
   "homepage_url": "https://github.com/bladegery/csgo-trader-extension",
   "permissions": ["activeTab", "declarativeContent", "storage", "notifications", "alarms", "*://steamcommunity.com/*", "*://api.steampowered.com/*",
