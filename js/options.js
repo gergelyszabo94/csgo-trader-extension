@@ -237,7 +237,3 @@ $tabsAPI.click(function() {
         }, function(removed) {});
     }
 });
-
-$(function () {
-    $('[data-toggle="tooltip"]').tooltip()
-});
