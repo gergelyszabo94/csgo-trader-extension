@@ -5,6 +5,7 @@ inventory:
 -fix other exteriors sometimes not showing
 -"whatstradelocked" style filters
 -item border color based on rarity
+-inventory history button (an icon opens it in new tab)
 
 tradeoffer:
 -add tf2 keys and refs as currency
@@ -45,6 +46,8 @@ misc:
 -match people who want to trade (csgolounge that works)
 -currency converter in popup (currencies, btc, keys, percentage)
 -search in options
+-warn when friend list is getting close to full
+-probe "run_at" changes for performance
 
 bookmarks:
 -email, chat, sms notif?

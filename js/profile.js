@@ -79,7 +79,9 @@ if($("body").hasClass("profile_page")){
                         'join the GIVEAWAY on gabenskins.pro',
                         'Trade Your Cases For Keys',
                         ' join bloodyskins',
-                        '🔴🔴🔴🔴🔴🔴⚪⚪⚪🔴' //emoticon swastika
+                        '🔴🔴🔴🔴🔴🔴⚪⚪⚪🔴', //emoticon swastika
+                        'asians are crazy',
+                        'asian_guy'
                     ];
 
                     let spamTExtCheck = new RegExp(commentsToReport.join("|"), "i");

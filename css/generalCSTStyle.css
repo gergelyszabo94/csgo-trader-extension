@@ -158,6 +158,16 @@ progress {
     text-align: center;
 }
 
+.floatIndicator{
+    color: white;
+    font-size: 0.7rem;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-top: 3px;
+    margin-right: 3px;
+}
+
 .note{
     color: var(--steam-note-blue);
     margin-bottom: 1rem;
