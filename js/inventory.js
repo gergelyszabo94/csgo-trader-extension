@@ -302,18 +302,26 @@ function addElements(){
 
             if(item.dopplerPhase!==""){
                 switch (item.dopplerPhase) {
-                    case "P1": addNote("Phase 1");break;
-                    case "P2": addNote("Phase 2");break;
-                    case "P3": addNote("Phase 3");break;
-                    case "P4": addNote("Phase 4");break;
-                    case "SH": addNote("Sapphire");break;
-                    case "RB": addNote("Ruby");break;
-                    case "BP": addNote("Black Pearl");break;
-                    case "EM": addNote("Emerald");break;
+                    // case "P1": addNote("Phase 1");break;
+                    // case "P2": addNote("Phase 2");break;
+                    // case "P3": addNote("Phase 3");break;
+                    // case "P4": addNote("Phase 4");break;
+                    // case "SH": addNote("Sapphire");break;
+                    // case "RB": addNote("Ruby");break;
+                    // case "BP": addNote("Black Pearl");break;
+                    // case "EM": addNote("Emerald");break;
+                    case "P1": changeName(item.name+" (Phase 1)",item.name_color,item.marketlink);break;
+                    case "P2": changeName(item.name+" (Phase 2)",item.name_color,item.marketlink);break;
+                    case "P3": changeName(item.name+" (Phase 3)",item.name_color,item.marketlink);break;
+                    case "P4": changeName(item.name+" (Phase 4)",item.name_color,item.marketlink);break;
+                    case "SH": changeName(item.name+" (Sapphire)",item.name_color,item.marketlink);break;
+                    case "BP": changeName(item.name+" (Black Pearl)",item.name_color,item.marketlink);break;
+                    case "EM": changeName(item.name+" (Emerald)",item.name_color,item.marketlink);break;
                 }
             }
             else{
-                removeNote();
+                changeName(item.name,item.name_color,item.marketlink);
+                //removeNote();
             }
 
 
@@ -486,7 +494,7 @@ function removeElements() {
     $("#otherExteriors0").hide();
     $("#iteminfo1_tradability").hide();
     $("#iteminfo0_tradability").hide();
-    removeNote();
+    //removeNote();
 }
 
 // gets the asset id of the item that is currently selected
@@ -540,21 +548,50 @@ function countDown(dateToCountDownTo){
     }
 }
 
-function addNote(note){
-    if(!$("#note1").length) {
-        $("#iteminfo1_item_descriptors").before(note1);
+// function addNote(note){
+//     if(!$("#note1").length) {
+//         $("#iteminfo1_item_descriptors").before(note1);
+//     }
+//     if(!$("#note0").length) {
+//         $("#iteminfo0_item_descriptors").before(note0);
+//     }
+//     $("#note1").text("Note: " + note);
+//     $("#note0").text("Note: " + note);
+// }
+//
+// function removeNote(){
+//     $("#note1").remove();
+//     $("#note0").remove();
+// }
+
+function changeName(name, color, link){
+    $itemName0 = $("#iteminfo0_item_name");
+    $itemName1 = $("#iteminfo1_item_name");
+    let newNameElement0 = `<a class="hover_item_name" id="item_name0" style="color: #${color}" href="${link}" target="_blank">${name}</a>`;
+    let newNameElement1 = `<a class="hover_item_name" id="item_name1" style="color: #${color}" href="${link}" target="_blank">${name}</a>`;
+
+    if($("#item_name0").length===0&&$("#item_name1").length===0){
+        $itemName0.after(newNameElement0);
+        $itemName1.after(newNameElement1);
     }
-    if(!$("#note0").length) {
-        $("#iteminfo0_item_descriptors").before(note0);
+    else{
+        $newItemname0 =  $("#item_name0");
+        $newItemname1 =  $("#item_name1");
+        $newItemname0.attr({
+            href: link,
+            style: `color: #${color}`
+        });
+        $newItemname0.text(name);
+        $newItemname1.attr({
+            href: link,
+            style: `color: #${color}`
+        });
+        $newItemname1.text(name);
     }
-    $("#note1").text("Note: " + note);
-    $("#note0").text("Note: " + note);
+    $itemName0.hide();
+    $itemName1.hide();
 }
 
-function removeNote(){
-    $("#note1").remove();
-    $("#note0").remove();
-}
 
 function addClickListener(){
     $(".module").click(function () {

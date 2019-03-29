@@ -48,6 +48,8 @@ misc:
 -search in options
 -warn when friend list is getting close to full
 -probe "run_at" changes for performance
+-find items in group members' inventories
+-find seller of item on the market
 
 bookmarks:
 -email, chat, sms notif?

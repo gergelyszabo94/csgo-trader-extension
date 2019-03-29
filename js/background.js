@@ -107,6 +107,7 @@ chrome.runtime.onMessage.addListener(
                         if (ids[asset].classid === items[item].classid && ids[asset].instanceid === items[item].instanceid) {
                             let name = items[item].name;
                             let market_hash_name = items[item].market_hash_name;
+                            let name_color = items[item].name_color;
                             let marketlink = "https://steamcommunity.com/market/listings/730/" + items[item].market_hash_name;
                             let classid = items[item].classid;
                             let instanceid = items[item].instanceid;
@@ -143,6 +144,7 @@ chrome.runtime.onMessage.addListener(
                             itemsPropertiesToReturn.push({
                                 name: name,
                                 market_hash_name: market_hash_name,
+                                name_color: name_color,
                                 marketlink: marketlink,
                                 classid: classid,
                                 instanceid: instanceid,
