@@ -85,23 +85,24 @@ progress {
 }
 .perItemDate{
     color: var(--steam-nametag-red);
-    position: relative;
-    left: 5%;
-    bottom: 95%;
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    font-size: 0.8rem;
 }
 
 .dopplerPhase{
     color: white;
-    position: relative;
+    position: absolute;
     left: 42%;
-    bottom: 110%;
+    top: 5px;
     font-size: 0.8rem;
 }
 
 .dopplerPhaseMarket{
     color: white;
-    position: relative;
-    left: -60%;
+    position: absolute;
+    left:40%;
     top: 10%;
 }
 
@@ -180,9 +181,9 @@ progress {
 
 .exteriorIndicator{
     color: var(--steam-note-blue);
-    position: relative;
-    left: 73%;
-    bottom: 110%;
+    position: absolute;
+    top: 5px;
+    right: 5px;
     font-size: 0.8rem;
 }
 
