@@ -4,6 +4,9 @@ const emerald = '<img src="https://steamcommunity-a.akamaihd.net/economy/emotico
 const blackPearl = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/lltqjewel" class="gemIcon">';
 
 function getShortDate(tradabibilityDate){
+    if(tradabibilityDate==="Tradable"){
+        return "T";
+    }
     let now = new Date().getTime();
     let distance = new Date(tradabibilityDate) - now;
     if(distance<=0){
