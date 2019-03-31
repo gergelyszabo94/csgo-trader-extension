@@ -4,7 +4,7 @@ const emerald = '<img src="https://steamcommunity-a.akamaihd.net/economy/emotico
 const blackPearl = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/lltqjewel" class="gemIcon">';
 
 function getShortDate(tradabibilityDate){
-    if(tradabibilityDate==="Tradable"){
+    if(tradabibilityDate==="Tradable"||tradabibilityDate===""){
         return "T";
     }
     let now = new Date().getTime();

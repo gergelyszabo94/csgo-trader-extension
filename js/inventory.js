@@ -201,7 +201,7 @@ function addPerItemInfo(updating){
 
                         addDopplerPhase($item, item.dopplerPhase);
 
-                        colorBorder($item, item.quality.color);
+                        $item.css({"border-color": item.quality.color, "background-image": "url()", "background-color": item.quality.color+"44"});
 
                         if(item.shortExterior!==""){
                             $item.append(`<div class='exteriorIndicator'>${item.shortExterior}</div>`);
@@ -585,10 +585,6 @@ function changeName(name, color, link){
     }
     $itemName0.hide();
     $itemName1.hide();
-}
-
-function colorBorder(item, color){
-    item.css("border-color", color);
 }
 
 function addDopplerPhase(item, phase){
