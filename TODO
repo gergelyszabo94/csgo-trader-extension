@@ -6,6 +6,7 @@ inventory:
 -"whatstradelocked" style filters
 -item border color based on rarity
 -inventory history button (an icon opens it in new tab)
+-show market charts without opening the market page?
 
 tradeoffer:
 -add tf2 keys and refs as currency

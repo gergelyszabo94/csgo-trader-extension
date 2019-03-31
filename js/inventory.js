@@ -116,7 +116,7 @@ let observer = new MutationObserver(function(mutations, observer) {
 });
 
 let observer2 = new MutationObserver(function(mutations, observer) {
-    addSmallIndicators();
+    addPerItemInfo();
 });
 
 //does not execute if inventory is private or failed to load the page (502 for example, mostly when steam is dead)
@@ -141,7 +141,7 @@ function requestInventory(){
         if(!(response===undefined||response.inventory===undefined||response.inventory===""||response.inventory==="error")){
             items = response.inventory;
             addElements();
-            addSmallIndicators();
+            addPerItemInfo();
             addClickListener();
         }
         else{
@@ -158,12 +158,12 @@ requestInventory();
 
 //to refresh the trade lock remaining indicators
 setInterval(function () {
-    addSmallIndicators();
+    addPerItemInfo();
 }, 60000);
 
 
-//adds a short trade lock indicator to each item
-function addSmallIndicators(){
+//adds everything that is per item, like trade lock, exterior, doppler phases, border colors
+function addPerItemInfo(){
     $items = $(".item.app730.context2");
     if($items.length!==0){
         $items.each(function () {
@@ -173,7 +173,7 @@ function addSmallIndicators(){
             }
             if($(this).attr('id')===undefined){
                 setTimeout(function () {
-                    addSmallIndicators();
+                    addPerItemInfo();
                 }, 1000);
                 return false;
             }
@@ -181,9 +181,12 @@ function addSmallIndicators(){
                 let assetID = $(this).attr('id').split("730_2_")[1];
                 let item = getItemByAssetID(assetID);
                 if(item.tradabilityShort==="T"){
-                    $(this).find("span")[0].classList.add("tradable");
+                    $(this).find("span").first().addClass("tradable");
                 }
-                $(this).find("span")[0].innerText=item.tradabilityShort;
+                $(this).find("span").first().text(item.tradabilityShort);
+
+                $(this).addClass(item.quality.name);
+                colorBorder($(this), item.quality.color);
 
                 if(item.dopplerPhase!==""){
                     if($(this).find(".dopplerPhase").find(".gemIcon").length===0){
@@ -219,7 +222,7 @@ function addSmallIndicators(){
     }
     else{
         setTimeout(function () {
-            addSmallIndicators();
+            addPerItemInfo();
         }, 1000);
     }
 }
@@ -592,6 +595,9 @@ function changeName(name, color, link){
     $itemName1.hide();
 }
 
+function colorBorder(item, color){
+    item.css("border-color", color);
+}
 
 function addClickListener(){
     $(".module").click(function () {

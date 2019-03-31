@@ -269,6 +269,100 @@ function shortenExterior(exterior){
     }
 }
 
+function getQuality(type){
+    let quality = {
+        name: "stock",
+        prettyName: "Stock",
+        color: "#6a6156"
+    };
+
+    if(/Base Grade/i.test(type)){
+        quality = {
+            name: "base_grade",
+            prettyName: "Base Grade",
+            color: "#FFFFFF"
+        };
+    }
+    else if(/Classified/i.test(type)){
+        quality = {
+            name: "classified",
+            prettyName: "Classified",
+            color: "#d32ce6"
+        };
+    }
+    else if(/Consumer Grade/i.test(type)){
+        quality = {
+            name: "consumer_grade",
+            prettyName: "Consumer Grade",
+            color: "#FFFFFF"
+        };
+    }
+    else if(/Contraband/i.test(type)){
+        quality = {
+            name: "contraband",
+            prettyName: "Contraband",
+            color: "#e4ae39"
+        };
+    }
+    else if(/Covert/i.test(type)){
+        quality = {
+            name: "covert",
+            prettyName: "Covert",
+            color: "#eb4b4b"
+        };
+    }
+    else if(/Exotic/i.test(type)){
+        quality = {
+            name: "exotic",
+            prettyName: "Exotic",
+            color: "#d32ce6"
+        };
+    }
+    else if(/Extraordinary/i.test(type)){
+        quality = {
+            name: "extraordinary",
+            prettyName: "Extraordinary",
+            color: "#eb4b4b"
+        };
+    }
+    else if(/High Grade/i.test(type)){
+        quality = {
+            name: "high_grade",
+            prettyName: "High Grade",
+            color: "#4b69ff"
+        };
+    }
+    else if(/Industrial Grade/i.test(type)){
+        quality = {
+            name: "industrial_grade",
+            prettyName: "Industrial",
+            color: "#5e98d9"
+        };
+    }
+    else if(/Mil-Spec Grade/i.test(type)){
+        quality = {
+            name: "milspec_grade",
+            prettyName: "Mil-Spec Grade",
+            color: "#4b69ff"
+        };
+    }
+    else if(/Remarkable/i.test(type)){
+        quality = {
+            name: "remarkable",
+            prettyName: "Remarkable",
+            color: "#8847ff"
+        };
+    }
+    else if(/Restricted/i.test(type)){
+        quality = {
+            name: "restricted",
+            prettyName: "Restricted",
+            color: "#8847ff"
+        };
+    }
+    return quality;
+}
+
 function goToInternalPage(targetURL) {
     chrome.tabs.query({}, function(tabs) {
         for (let i = 0, tab; tab = tabs[i]; i++) {

@@ -118,6 +118,7 @@ chrome.runtime.onMessage.addListener(
                             let tradabilityShort = "T";
                             let dopplerPhase = "";
                             let icon = items[item].icon_url;
+                            let quality = getQuality(items[item].type);
 
                             if (items[item].tradable === 0) {
                                 tradability = items[item].cache_expiration;
@@ -141,6 +142,7 @@ chrome.runtime.onMessage.addListener(
                             }
                             catch(error) {
                             }
+
                             itemsPropertiesToReturn.push({
                                 name: name,
                                 market_hash_name: market_hash_name,
@@ -156,7 +158,8 @@ chrome.runtime.onMessage.addListener(
                                 exterior: exterior,
                                 shortExterior: shortExterior,
                                 iconURL: icon,
-                                inspectLink: inspectLink
+                                inspectLink: inspectLink,
+                                quality: quality
                             })
                         }
                     }
