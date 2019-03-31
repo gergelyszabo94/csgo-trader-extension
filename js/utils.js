@@ -6,6 +6,9 @@ const blackPearl = '<img src="https://steamcommunity-a.akamaihd.net/economy/emot
 function getShortDate(tradabibilityDate){
     let now = new Date().getTime();
     let distance = new Date(tradabibilityDate) - now;
+    if(distance<=0){
+        return "T";
+    }
     let days = Math.floor(distance / (1000 * 60 * 60 * 24));
     let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));

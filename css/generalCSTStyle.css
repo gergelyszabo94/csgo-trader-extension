@@ -84,7 +84,6 @@ progress {
     margin-bottom: 0.5rem;
 }
 .perItemDate{
-    color: var(--steam-nametag-red);
     position: absolute;
     left: 5px;
     top: 5px;

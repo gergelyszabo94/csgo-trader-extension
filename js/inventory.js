@@ -71,7 +71,6 @@ const floatBar1 = `
 const tradable = "<span class='tradable'>Tradable</span>";
 const notTradable = "<span class='not_tradable'>Not Tradable</span>";
 
-const dateOnEachItem = "<div class='perItemDate'><span></span></div>";
 const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
 
 const exteriors1 = `
@@ -115,7 +114,7 @@ let observer = new MutationObserver(function(mutations, observer) {
 });
 
 let observer2 = new MutationObserver(function(mutations, observer) {
-    addPerItemInfo();
+    addPerItemInfo(false);
 });
 
 //does not execute if inventory is private or failed to load the page (502 for example, mostly when steam is dead)
@@ -157,50 +156,65 @@ requestInventory();
 
 //to refresh the trade lock remaining indicators
 setInterval(function () {
-    addPerItemInfo();
+    addPerItemInfo(true); //true means it's only for updating the time remaining indicators
 }, 60000);
 
 
 //adds everything that is per item, like trade lock, exterior, doppler phases, border colors
-function addPerItemInfo(){
+function addPerItemInfo(updating){
     $items = $(".item.app730.context2");
     if($items.length!==0){
         $items.each(function () {
-            if($(this).attr("data-processed")===undefined||$(this).attr("data-processed")===false){
-                if($(this).find(".perItemDate").length===0){
-                    $(this).append(dateOnEachItem);
-                }
-                if($(this).attr('id')===undefined){
+            $item = $(this);
+            if($item.attr("data-processed")===undefined||$(this).attr("data-processed")===false||updating){
+                if($item.attr('id')===undefined){ //in case the inventory is not loaded yet
                     setTimeout(function () {
-                        addPerItemInfo();
+                        addPerItemInfo(false);
                     }, 1000);
                     return false;
                 }
                 else{
-                    let assetID = $(this).attr('id').split("730_2_")[1];
-                    let item = getItemByAssetID(assetID);
+                    let assetID = $item.attr('id').split("730_2_")[1]; //gets the assetid of the item from the html
+                    let item = getItemByAssetID(assetID); //matches it with the info from the api call
 
-                    addDopplerPhase($(this), item.dopplerPhase);
-
-                    if(item.tradabilityShort==="T"){
-                        $(this).find("span").first().addClass("tradable");
+                    if(updating){
+                        $itemDate = $item.find($(".perItemDate"));
+                        let tradableShort = getShortDate(item.tradability);
+                        if(tradableShort==="T"){
+                            $itemDate.removeClass("not_tradable");
+                            $itemDate.addClass("tradable");
+                            $itemDate.text("T");
+                        }
+                        else{
+                            $itemDate.removeClass("tradable");
+                            $itemDate.addClass("not_tradable");
+                            $itemDate.text(tradableShort);
+                        }
                     }
-                    $(this).find("span").first().text(item.tradabilityShort);
+                    else{
+                        if(item.tradabilityShort==="T"){
+                            $item.append(`<div class='perItemDate tradable'>T</div>`);
+                        }
+                        else{
+                            $item.append(`<div class='perItemDate not_tradable'>${item.tradabilityShort}</div>`);
+                        }
 
-                    $(this).addClass(item.quality.name);
-                    colorBorder($(this), item.quality.color);
+                        addDopplerPhase($item, item.dopplerPhase);
 
-                    if(item.shortExterior!==""){
-                        $(this).append(`<div class='exteriorIndicator'>${item.shortExterior}</div>`);
+                        colorBorder($item, item.quality.color);
+
+                        if(item.shortExterior!==""){
+                            $item.append(`<div class='exteriorIndicator'>${item.shortExterior}</div>`);
+                        }
                     }
                 }
             }
             $(this).attr("data-processed", true);
         });
     }
-    else{
+    else{ //in case the inventory is not loaded yet
         setTimeout(function () {
-            addPerItemInfo();
+            addPerItemInfo(false);
         }, 1000);
     }
 }
