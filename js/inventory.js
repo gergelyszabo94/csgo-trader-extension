@@ -65,15 +65,14 @@ const floatBar1 = `
 </div>
 </div>`;
 
-const note0 = `<div class="descriptor note" id="note0"></div>`;
-const note1 = `<div class="descriptor note" id="note1"></div>`;
+// const note0 = `<div class="descriptor note" id="note0"></div>`;
+// const note1 = `<div class="descriptor note" id="note1"></div>`;
 
 const tradable = "<span class='tradable'>Tradable</span>";
 const notTradable = "<span class='not_tradable'>Not Tradable</span>";
 
 const dateOnEachItem = "<div class='perItemDate'><span></span></div>";
 const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
-const exterior = "<div class='exteriorIndicator'><span></span></div>";
 
 const exteriors1 = `
     <div class="descriptor otherExteriors" id="otherExteriors1">
@@ -191,12 +190,8 @@ function addPerItemInfo(){
                     $(this).addClass(item.quality.name);
                     colorBorder($(this), item.quality.color);
 
-
                     if(item.shortExterior!==""){
-                        if($(this).find(".exteriorIndicator").length===0){
-                            $(this).append(exterior);
-                            $(this).find(".exteriorIndicator").text(item.shortExterior);
-                        }
+                        $(this).append(`<div class='exteriorIndicator'>${item.shortExterior}</div>`);
                     }
                 }
             }
