@@ -167,57 +167,40 @@ function addPerItemInfo(){
     $items = $(".item.app730.context2");
     if($items.length!==0){
         $items.each(function () {
-            if($(this).find(".perItemDate").length===0){
-                $(this).append(dateOnEachItem);
-                $(this).append(dopplerPhase);
-            }
-            if($(this).attr('id')===undefined){
-                setTimeout(function () {
-                    addPerItemInfo();
-                }, 1000);
-                return false;
-            }
-            else{
-                let assetID = $(this).attr('id').split("730_2_")[1];
-                let item = getItemByAssetID(assetID);
-                if(item.tradabilityShort==="T"){
-                    $(this).find("span").first().addClass("tradable");
+            if($(this).attr("data-processed")===undefined||$(this).attr("data-processed")===false){
+                if($(this).find(".perItemDate").length===0){
+                    $(this).append(dateOnEachItem);
                 }
-                $(this).find("span").first().text(item.tradabilityShort);
-
-                $(this).addClass(item.quality.name);
-                colorBorder($(this), item.quality.color);
-
-                if(item.dopplerPhase!==""){
-                    if($(this).find(".dopplerPhase").find(".gemIcon").length===0){
-                        if(item.dopplerPhase==="SH"){
-                            $(this).find(".dopplerPhase").append(sapphire);
-                        }
-                        else if(item.dopplerPhase==="RB"){
-                            $(this).find(".dopplerPhase").append(ruby);
-                        }
-                        else if(item.dopplerPhase==="EM"){
-                            $(this).find(".dopplerPhase").append(emerald);
-                        }
-                        else if(item.dopplerPhase==="BP"){
-                            $(this).find(".dopplerPhase").append(blackPearl);
-                        }
-                        else{
-                            $(this).find("span")[1].innerText=item.dopplerPhase;
-                        }
-                    }
+                if($(this).attr('id')===undefined){
+                    setTimeout(function () {
+                        addPerItemInfo();
+                    }, 1000);
+                    return false;
                 }
                 else{
-                    $(this).find(".dopplerPhase").hide();
-                }
+                    let assetID = $(this).attr('id').split("730_2_")[1];
+                    let item = getItemByAssetID(assetID);
 
-                if(item.shortExterior!==""){
-                    if($(this).find(".exteriorIndicator").length===0){
-                        $(this).append(exterior);
-                        $(this).find(".exteriorIndicator").text(item.shortExterior);
+                    addDopplerPhase($(this), item.dopplerPhase);
+
+                    if(item.tradabilityShort==="T"){
+                        $(this).find("span").first().addClass("tradable");
+                    }
+                    $(this).find("span").first().text(item.tradabilityShort);
+
+                    $(this).addClass(item.quality.name);
+                    colorBorder($(this), item.quality.color);
+
+
+                    if(item.shortExterior!==""){
+                        if($(this).find(".exteriorIndicator").length===0){
+                            $(this).append(exterior);
+                            $(this).find(".exteriorIndicator").text(item.shortExterior);
+                        }
                     }
                 }
             }
+            $(this).attr("data-processed", true);
         });
     }
     else{
@@ -597,6 +580,19 @@ function changeName(name, color, link){
 
 function colorBorder(item, color){
     item.css("border-color", color);
+}
+
+function addDopplerPhase(item, phase){
+    if(phase!==""){
+        item.append(dopplerPhase);
+        switch (phase){
+            case "SH": item.find(".dopplerPhase").append(sapphire); break;
+            case "RB": item.find(".dopplerPhase").append(ruby); break;
+            case "EM": item.find(".dopplerPhase").append(emerald); break;
+            case "BP": item.find(".dopplerPhase").append(blackPearl); break;
+            default: item.find(".dopplerPhase").text(phase);
+        }
+    }
 }
 
 function addClickListener(){
