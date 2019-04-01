@@ -116,7 +116,7 @@ chrome.runtime.onMessage.addListener(
                             let shortExterior = shortenExterior(exterior);
                             let tradability = "Tradable";
                             let tradabilityShort = "T";
-                            let dopplerPhase = "";
+                            let dopplerInfo = undefined;
                             let icon = items[item].icon_url;
                             let quality = getQuality(items[item].type);
 
@@ -129,7 +129,7 @@ chrome.runtime.onMessage.addListener(
                                 tradabilityShort = "";
                             }
                             if(/Doppler/.test(name)){
-                                dopplerPhase = getDopplerPhase(icon);
+                                dopplerInfo = getDopplerInfo(icon);
                             }
 
                             let inspectLink ="";
@@ -154,7 +154,7 @@ chrome.runtime.onMessage.addListener(
                                 position: position,
                                 tradability: tradability,
                                 tradabilityShort: tradabilityShort,
-                                dopplerPhase: dopplerPhase,
+                                dopplerInfo: dopplerInfo,
                                 exterior: exterior,
                                 shortExterior: shortExterior,
                                 iconURL: icon,

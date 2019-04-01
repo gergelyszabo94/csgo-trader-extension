@@ -111,7 +111,7 @@ if(/Doppler/.test(window.location.href)){
             $container = $(this);
             $container.append(dopplerPhase);
 
-            let phase = getDopplerPhase($(this).find("img").attr("src").split("economy/image/")[1].split("/")[0]);
+            let phase = getDopplerInfo($(this).find("img").attr("src").split("economy/image/")[1].split("/")[0]);
 
             if(phase==="SH"){
                 $container.find(".dopplerPhaseMarket").append(sapphire);

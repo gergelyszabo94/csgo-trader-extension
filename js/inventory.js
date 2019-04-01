@@ -192,24 +192,30 @@ function addPerItemInfo(updating){
                         }
                     }
                     else{
-                        if(item.tradabilityShort==="T"){
+                        if(item.tradability==="Tradable"){
                             $item.append(`<div class='perItemDate tradable'>T</div>`);
                         }
-                        else if(!item.tradability==="Not Tradable"){
+                        else if(item.tradability!=="Not Tradable"){
                             $item.append(`<div class='perItemDate not_tradable'>${item.tradabilityShort}</div>`);
                         }
 
-                        addDopplerPhase($item, item.dopplerPhase);
+                        addDopplerPhase($item, item.dopplerInfo);
 
-                        $item.css({"border-color": item.quality.color, "background-image": "url()", "background-color": item.quality.color+"44"});
+                        if(item.dopplerInfo!==undefined){
+                            $item.css({"border-color": "#"+item.dopplerInfo.color, "background-image": "url()", "background-color": "#"+item.dopplerInfo.color});
+                        }
+                        else{
+                            $item.css({"border-color": item.quality.color, "background-image": "url()", "background-color": item.quality.color+"44"});
+                        }
+
 
                         if(item.shortExterior!==""){
                             $item.append(`<div class='exteriorIndicator'>${item.shortExterior}</div>`);
                         }
                     }
                 }
+                $(this).attr("data-processed", true);
             }
-            $(this).attr("data-processed", true);
         });
     }
     else{ //in case the inventory is not loaded yet
@@ -225,7 +231,13 @@ let countDownID = "";
 
 function addElements(){
     if($(".games_list_tab.active").first().attr("href")==="#730"){
-        let activeID = getAssetIDofActive();
+        let activeID = "";
+        try{
+            activeID = getAssetIDofActive();
+        }catch (e) {
+            console.log("Could not get assetID of active item");
+            return false
+        }
         let item = getItemByAssetID(activeID);
 
         //removes "tags"
@@ -295,8 +307,8 @@ function addElements(){
                 $("#iteminfo0_countdown").show();
             }
 
-            if(item.dopplerPhase!==""){
-                switch (item.dopplerPhase) {
+            if(item.dopplerInfo!==undefined){
+                switch (item.dopplerInfo.short) {
                     // case "P1": addNote("Phase 1");break;
                     // case "P2": addNote("Phase 2");break;
                     // case "P3": addNote("Phase 3");break;
@@ -562,8 +574,8 @@ function countDown(dateToCountDownTo){
 function changeName(name, color, link){
     $itemName0 = $("#iteminfo0_item_name");
     $itemName1 = $("#iteminfo1_item_name");
-    let newNameElement0 = `<a class="hover_item_name" id="item_name0" style="color: #${color}" href="${link}" target="_blank">${name}</a>`;
-    let newNameElement1 = `<a class="hover_item_name" id="item_name1" style="color: #${color}" href="${link}" target="_blank">${name}</a>`;
+    let newNameElement0 = `<a class="hover_item_name" id="item_name0" style="color: ${color}" href="${link}" target="_blank">${name}</a>`;
+    let newNameElement1 = `<a class="hover_item_name" id="item_name1" style="color: ${color}" href="${link}" target="_blank">${name}</a>`;
 
     if($("#item_name0").length===0&&$("#item_name1").length===0){
         $itemName0.after(newNameElement0);
@@ -587,15 +599,16 @@ function changeName(name, color, link){
     $itemName1.hide();
 }
 
-function addDopplerPhase(item, phase){
-    if(phase!==""){
+function addDopplerPhase(item, dopplerInfo){
+    if(dopplerInfo!==undefined){
         item.append(dopplerPhase);
-        switch (phase){
-            case "SH": item.find(".dopplerPhase").append(sapphire); break;
-            case "RB": item.find(".dopplerPhase").append(ruby); break;
-            case "EM": item.find(".dopplerPhase").append(emerald); break;
-            case "BP": item.find(".dopplerPhase").append(blackPearl); break;
-            default: item.find(".dopplerPhase").text(phase);
+        $dopplerPhase = item.find(".dopplerPhase");
+        switch (dopplerInfo.short){
+            case "SH": $dopplerPhase.append(sapphire); break;
+            case "RB": $dopplerPhase.append(ruby); break;
+            case "EM": $dopplerPhase.append(emerald); break;
+            case "BP": $dopplerPhase.append(blackPearl); break;
+            default: $dopplerPhase.text(dopplerInfo.short); //$dopplerPhase.css("color", "#"+dopplerInfo.color);
         }
     }
 }
@@ -617,9 +630,7 @@ function addClickListener(){
                 if(bookmark.itemInfo.tradability!=="Tradable"){
                     chrome.runtime.sendMessage({setAlarm: {name:  bookmark.itemInfo.assetid, when: bookmark.itemInfo.tradability}}, function(response) {});
                 }
-                chrome.runtime.sendMessage({openInternalPage: "/html/bookmarks.html"}, function(response) {
-                    console.log(response);
-                });
+                chrome.runtime.sendMessage({openInternalPage: "/html/bookmarks.html"}, function(response) {});
             });
         });
     });
@@ -628,5 +639,15 @@ function addClickListener(){
     });
     $("#showTechnical0").click(function () {
         $("#floatTechnical0").toggle();
+    });
+
+    //update items when searching
+    $("#filter_control").click(function () {
+        addPerItemInfo(false);
+    });
+
+    //sih sort
+    $("#Lnk_SortItems").click(function () {
+        addPerItemInfo(false);
     });
 }
