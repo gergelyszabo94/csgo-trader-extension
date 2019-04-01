@@ -14,6 +14,7 @@ Current Features:
 - Bookmark and notify when item is tradable
 - Shows floats in inventories
 - Real chat status on profiles
+- Colorful inventories
 - Other small automations, conveniences
 
 Feel free to contribute (even with ideas)

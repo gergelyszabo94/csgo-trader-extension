@@ -8,10 +8,10 @@ overrideHandleTradeActionMenu();
 //     mutations.forEach((mutation)=> {
 //         // console.log(mutation);
 //         if(mutation.target.classList.contains('popup_block_new')){
-//             // console.log(mutation.target);
+//             console.log(mutation.target);
 //         }
 //             if(mutation.target.classList.contains('inventory_ctn')||(mutation.type="childList"&&mutation.target.classList.contains('slot_actionmenu_button'))){
-//             // console.log(mutation.target);
+//             console.log("2" + mutation.target);
 //
 //         }
 //     });
@@ -62,3 +62,5 @@ function findElementByAssetID(assetid){
     let elementid = "item730_2_" + assetid;
     return $("#" + elementid);
 }
+
+// $(".item.app730.context2")
