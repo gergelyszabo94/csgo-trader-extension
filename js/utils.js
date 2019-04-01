@@ -366,6 +366,13 @@ function getQuality(type){
             color: "#8847ff"
         };
     }
+    else if(/Stock/i.test(type)){
+        quality = {
+            name: "stock",
+            prettyName: "Stock",
+            color: "#FFFFFF"
+        };
+    }
     return quality;
 }
 

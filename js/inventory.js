@@ -195,7 +195,7 @@ function addPerItemInfo(updating){
                         if(item.tradabilityShort==="T"){
                             $item.append(`<div class='perItemDate tradable'>T</div>`);
                         }
-                        else{
+                        else if(!item.tradability==="Not Tradable"){
                             $item.append(`<div class='perItemDate not_tradable'>${item.tradabilityShort}</div>`);
                         }
 
