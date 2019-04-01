@@ -2,7 +2,7 @@ $quckdecline = $("#quickDeclineOffers");
 
 chrome.storage.sync.get(['quickDeclineOffer'], function(result) {
     if(result.quickDeclineOffer){
-        $quckdecline.click();
+        $quckdecline.prop("checked", true);
     }
 });
 
@@ -23,7 +23,7 @@ $openintab = $("#openOfferInTab");
 
 chrome.storage.sync.get(['openOfferInTab'], function(result) {
     if(result.openOfferInTab){
-        $openintab.click();
+        $openintab.prop("checked", true);
     }
 });
 
@@ -45,7 +45,7 @@ $showrepbutton = $("#showPlusRepButton");
 
 chrome.storage.sync.get(['showPlusRepButton'], function(result) {
     if(result.showPlusRepButton){
-        $showrepbutton.click();
+        $showrepbutton.prop("checked", true);
     }
 });
 
@@ -83,7 +83,7 @@ $showreoccbutton = $("#showReoccButton");
 
 chrome.storage.sync.get(['showReoccButton'], function(result) {
     if(result.showReoccButton){
-        $showreoccbutton.click();
+        $showreoccbutton.prop("checked", true);
     }
 });
 
@@ -118,7 +118,7 @@ $nsfw = $("#nsfw");
 
 chrome.storage.sync.get(['nsfwFilter'], function(result) {
     if(result.nsfwFilter){
-        $nsfw.click();
+        $nsfw.prop("checked", true);
     }
 });
 
@@ -138,7 +138,7 @@ $flagcomments = $("#flagScamComments");
 
 chrome.storage.sync.get(['flagScamComments'], function(result) {
     if(result.flagScamComments){
-        $flagcomments.click();
+        $flagcomments.prop("checked", true);
     }
 });
 
@@ -192,7 +192,7 @@ $showrealstatus = $("#showRealStatus");
 
 chrome.storage.sync.get(['showRealStatus'], function(result) {
     if(result.showRealStatus){
-        $showrealstatus.click();
+        $showrealstatus.prop("checked", true);
     }
 });
 
@@ -235,5 +235,24 @@ $tabsAPI.click(function() {
         chrome.permissions.remove({
             permissions: ['tabs']
         }, function(removed) {});
+    }
+});
+
+$colorfulitems = $("#colorfulItems");
+
+chrome.storage.sync.get(['colorfulItems'], function(result) {
+    if(result.colorfulItems){
+        $colorfulitems.prop("checked", true);
+    }
+});
+
+$colorfulitems.click(function() {
+    if(this.checked) {
+        chrome.storage.sync.set({colorfulItems: true}, function() {
+        });
+    }
+    else{
+        chrome.storage.sync.set({colorfulItems: false}, function() {
+        });
     }
 });

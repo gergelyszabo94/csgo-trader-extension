@@ -164,58 +164,60 @@ setInterval(function () {
 function addPerItemInfo(updating){
     $items = $(".item.app730.context2");
     if($items.length!==0){
-        $items.each(function () {
-            $item = $(this);
-            if($item.attr("data-processed")===undefined||$(this).attr("data-processed")===false||updating){
-                if($item.attr('id')===undefined){ //in case the inventory is not loaded yet
-                    setTimeout(function () {
-                        addPerItemInfo(false);
-                    }, 1000);
-                    return false;
-                }
-                else{
-                    let assetID = $item.attr('id').split("730_2_")[1]; //gets the assetid of the item from the html
-                    let item = getItemByAssetID(assetID); //matches it with the info from the api call
-
-                    if(updating){
-                        $itemDate = $item.find($(".perItemDate"));
-                        let tradableShort = getShortDate(item.tradability);
-                        if(tradableShort==="T"){
-                            $itemDate.removeClass("not_tradable");
-                            $itemDate.addClass("tradable");
-                            $itemDate.text("T");
-                        }
-                        else{
-                            $itemDate.removeClass("tradable");
-                            $itemDate.addClass("not_tradable");
-                            $itemDate.text(tradableShort);
-                        }
+        chrome.storage.sync.get(['colorfulItems'], function(result) {
+            $items.each(function () {
+                $item = $(this);
+                if($item.attr("data-processed")===undefined||$(this).attr("data-processed")===false||updating){
+                    if($item.attr('id')===undefined){ //in case the inventory is not loaded yet
+                        setTimeout(function () {
+                            addPerItemInfo(false);
+                        }, 1000);
+                        return false;
                     }
                     else{
-                        if(item.tradability==="Tradable"){
-                            $item.append(`<div class='perItemDate tradable'>T</div>`);
-                        }
-                        else if(item.tradability!=="Not Tradable"){
-                            $item.append(`<div class='perItemDate not_tradable'>${item.tradabilityShort}</div>`);
-                        }
+                        let assetID = $item.attr('id').split("730_2_")[1]; //gets the assetid of the item from the html
+                        let item = getItemByAssetID(assetID); //matches it with the info from the api call
 
-                        addDopplerPhase($item, item.dopplerInfo);
-
-                        if(item.dopplerInfo!==undefined){
-                            $item.css({"border-color": "#"+item.dopplerInfo.color, "background-image": "url()", "background-color": "#"+item.dopplerInfo.color});
+                        if(updating){
+                            $itemDate = $item.find($(".perItemDate"));
+                            let tradableShort = getShortDate(item.tradability);
+                            if(tradableShort==="T"){
+                                $itemDate.removeClass("not_tradable");
+                                $itemDate.addClass("tradable");
+                                $itemDate.text("T");
+                            }
+                            else{
+                                $itemDate.removeClass("tradable");
+                                $itemDate.addClass("not_tradable");
+                                $itemDate.text(tradableShort);
+                            }
                         }
                         else{
-                            $item.css({"border-color": item.quality.color, "background-image": "url()", "background-color": item.quality.color+"44"});
-                        }
+                            if(item.tradability==="Tradable"){
+                                $item.append(`<div class='perItemDate tradable'>T</div>`);
+                            }
+                            else if(item.tradability!=="Not Tradable"){
+                                $item.append(`<div class='perItemDate not_tradable'>${item.tradabilityShort}</div>`);
+                            }
 
+                            addDopplerPhase($item, item.dopplerInfo);
+                            if(result.colorfulItems){
+                                if(item.dopplerInfo!==undefined){
+                                    $item.css({"border-color": "#"+item.dopplerInfo.color, "background-image": "url()", "background-color": "#"+item.dopplerInfo.color});
+                                }
+                                else{
+                                    $item.css({"border-color": item.quality.color, "background-image": "url()", "background-color": item.quality.color+"44"});
+                                }
+                            }
 
-                        if(item.shortExterior!==""){
-                            $item.append(`<div class='exteriorIndicator'>${item.shortExterior}</div>`);
+                            if(item.shortExterior!==""){
+                                $item.append(`<div class='exteriorIndicator'>${item.shortExterior}</div>`);
+                            }
                         }
                     }
+                    $(this).attr("data-processed", true);
                 }
-                $(this).attr("data-processed", true);
-            }
+            });
         });
     }
     else{ //in case the inventory is not loaded yet
@@ -608,7 +610,7 @@ function addDopplerPhase(item, dopplerInfo){
             case "RB": $dopplerPhase.append(ruby); break;
             case "EM": $dopplerPhase.append(emerald); break;
             case "BP": $dopplerPhase.append(blackPearl); break;
-            default: $dopplerPhase.text(dopplerInfo.short); //$dopplerPhase.css("color", "#"+dopplerInfo.color);
+            default: $dopplerPhase.text(dopplerInfo.short);
         }
     }
 }
