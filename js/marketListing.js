@@ -113,20 +113,20 @@ if(/Doppler/.test(window.location.href)){
 
             let phase = getDopplerInfo($(this).find("img").attr("src").split("economy/image/")[1].split("/")[0]);
 
-            if(phase==="SH"){
+            if(phase.short==="SH"){
                 $container.find(".dopplerPhaseMarket").append(sapphire);
             }
-            else if(phase==="RB"){
+            else if(phase.short==="RB"){
                 $container.find(".dopplerPhaseMarket").append(ruby);
             }
-            else if(phase==="EM"){
+            else if(phase.short==="EM"){
                 $container.find(".dopplerPhaseMarket").append(emerald);
             }
-            else if(phase==="BP"){
+            else if(phase.short==="BP"){
                 $container.find(".dopplerPhaseMarket").append(blackPearl);
             }
             else{
-                $container.find(".dopplerPhaseMarket").find("span").text(phase);
+                $container.find(".dopplerPhaseMarket").find("span").text(phase.short);
             }
         });
     }
