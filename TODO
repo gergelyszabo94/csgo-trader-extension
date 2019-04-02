@@ -8,6 +8,8 @@ inventory:
 -show market charts without opening the market page?
 -sticker float
 -fix high floats going out of visible area
+-indicate active item
+-add st indicator
 
 tradeoffer:
 -add tf2 keys and refs as currency

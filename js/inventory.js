@@ -213,9 +213,9 @@ function addPerItemInfo(updating){
                             if(item.shortExterior!==""){
                                 $item.append(`<div class='exteriorIndicator'>${item.shortExterior}</div>`);
                             }
+                            $(this).attr("data-processed", true);
                         }
                     }
-                    $(this).attr("data-processed", true);
                 }
             });
         });
@@ -641,11 +641,6 @@ function addClickListener(){
     });
     $("#showTechnical0").click(function () {
         $("#floatTechnical0").toggle();
-    });
-
-    //update items when searching
-    $("#filter_control").click(function () {
-        addPerItemInfo(false);
     });
 
     //sih sort
