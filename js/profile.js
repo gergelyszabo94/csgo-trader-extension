@@ -81,7 +81,8 @@ if($("body").hasClass("profile_page")){
                         ' join bloodyskins',
                         '🔴🔴🔴🔴🔴🔴⚪⚪⚪🔴', //emoticon swastika
                         'asians are crazy',
-                        'asian_guy'
+                        'asian_guy',
+                        'Your Steam ID is randomly selected'
                     ];
 
                     let spamTExtCheck = new RegExp(commentsToReport.join("|"), "i");
