@@ -256,6 +256,9 @@ function addElements(){
 
         $(".floatTechnical").hide();
 
+        //allows the float pointer's text to go outside the boundaries of the item - they would not be visible otherwise on high-float items
+        $(".item_desc_content.app730.context2").css("overflow", "visible");
+
         //removes background from the right side of the page
         $(".item_desc_content").css("background-image", 'url()');
 
