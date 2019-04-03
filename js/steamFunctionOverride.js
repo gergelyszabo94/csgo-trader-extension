@@ -157,7 +157,9 @@ function PopulateActions( prefix, elActions, rgActions, item, owner )
 	}
 	rgActions=rgActions.filter(element => element.id!=="inbrowser");
 		let inspectLink = rgActions[0].link;
-		rgActions.push({name: "Inspect in Browser...", link: "http://csgo.gallery/"+inspectLink, id: "inbrowser"});
+		if(inspectLink.substring(0,20)==="steam://rungame/730/"){ //makes sure it's a csgo inspect button
+		    rgActions.push({name: "Inspect in Browser...", link: "http://csgo.gallery/"+inspectLink, id: "inbrowser"});
+		}
 	for ( var i = 0; i < rgActions.length; i++ )
 	{
 		var action = rgActions[i];

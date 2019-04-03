@@ -506,6 +506,14 @@ function removeElements() {
     $("#otherExteriors0").hide();
     $("#iteminfo1_tradability").hide();
     $("#iteminfo0_tradability").hide();
+    $("#floatBar1").hide();
+    $("#floatBar0").hide();
+    $("#iteminfo0_bookmark").hide();
+    $("#iteminfo1_bookmark").hide();
+    $("#item_name0").hide();
+    $("#item_name1").hide();
+    $("#iteminfo0_item_name").show();
+    $("#iteminfo1_item_name").show();
     //removeNote();
 }
 
