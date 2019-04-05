@@ -1,7 +1,7 @@
 inventory:
 -notes on specific items: hydra keys, patterned item
 -generate list of items for posting on trade forums, etc.
--link to market listings of stickers on weapons
+-link to market listings of stickers on weapons, sih market style stickers (enlarge on hover and show name)
 -fix other exteriors sometimes not showing
 -"whatstradelocked" style filters
 -inventory history button (an icon opens it in new tab)
@@ -9,6 +9,8 @@ inventory:
 -sticker float
 -indicate active item
 -add st indicator
+-get total price of selected items
+-sell without popup?
 
 tradeoffer:
 -add tf2 keys and refs as currency
@@ -20,6 +22,7 @@ tradeoffer:
 
 tradeoffers page:
 -mark sender friend status, ignore friend request option
+-keep trade offers the same size when canceled
 
 market:
 
@@ -53,6 +56,9 @@ misc:
 -probe "run_at" changes for performance
 -find items in group members' inventories
 -find seller of item on the market
+-useful links/tools section
+-wish list of items - match people to items they want - notify when you have it
+-localization
 
 bookmarks:
 -email, chat, sms notif?

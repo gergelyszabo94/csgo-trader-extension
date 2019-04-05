@@ -1,0 +1,10 @@
+{
+  "application_title": {
+    "message": "CSGO Trader - Steam Trade Javito",
+    "description": "The title of the application, displayed in the web store."
+  },
+  "application_description": {
+    "message": "A CS:GOs cserék segítéséhez, trade-lock visszaszámlálás, böngészőből való megtekintés, doppler phasek, floatok, stb.",
+    "description": "The description of the application, displayed in the web store. It's character limited (I think 255)"
+  }
+}

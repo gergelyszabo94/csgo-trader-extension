@@ -1,0 +1,10 @@
+{
+  "application_title": {
+    "message": "CSGO Trader - Steam Trading Enhancer",
+    "description": "The title of the application, displayed in the web store."
+  },
+  "application_description": {
+    "message": "Extension to help with CS:GO trading, trade-lock countdown, in-browser inspect, doppler phases, Steam NSFW, float values, etc",
+    "description": "The description of the application, displayed in the web store. It's character limited (I think 255)"
+  }
+}
