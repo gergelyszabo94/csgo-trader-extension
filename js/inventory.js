@@ -77,11 +77,11 @@ const exteriors1 = `
     <div class="descriptor otherExteriors" id="otherExteriors1">
         <span>Links to other exteriors:</span>
         <ul>
-            <li><a href="" target="_blank" id="fnLink1">Factory New</a> - <a href="" target="_blank" id="fnSTLink1"><span class="stattrakOrange">StatTrak™ Factory New</span></a></li>
-            <li><a href="" target="_blank" id="mwLink1">Minimal Wear</a> - <a href="" target="_blank" id="mwSTLink1"><span class="stattrakOrange">StatTrak™ Minimal Wear</span></a></li>
-            <li><a href="" target="_blank" id="ftLink1">Field-Tested</a> - <a href="" target="_blank" id="ftSTLink1"><span class="stattrakOrange">StatTrak™ Field-Tested</span></a></li>
-            <li><a href="" target="_blank" id="wwLink1">Well-Worn</a> - <a href="" target="_blank" id="wwSTLink1"><span class="stattrakOrange">StatTrak™ Well-Worn</span></a></li>
-            <li><a href="" target="_blank" id="bsLink1">Battle-Scarred</a> - <a href="" target="_blank" id="bsSTLink1"><span class="stattrakOrange">StatTrak™ Battle-Scarred</span></a></li>
+            <li><a href="" target="_blank" id="fnLink1">Factory New</a> - <a href="" target="_blank" id="fnSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ Factory New</span></a></li>
+            <li><a href="" target="_blank" id="mwLink1">Minimal Wear</a> - <a href="" target="_blank" id="mwSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ Minimal Wear</span></a></li>
+            <li><a href="" target="_blank" id="ftLink1">Field-Tested</a> - <a href="" target="_blank" id="ftSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ Field-Tested</span></a></li>
+            <li><a href="" target="_blank" id="wwLink1">Well-Worn</a> - <a href="" target="_blank" id="wwSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ Well-Worn</span></a></li>
+            <li><a href="" target="_blank" id="bsLink1">Battle-Scarred</a> - <a href="" target="_blank" id="bsSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ Battle-Scarred</span></a></li>
         </ul>
         <span>Not every item is available in every exterior</span>
     </div>`;
@@ -90,11 +90,11 @@ const exteriors0 = `
     <div class="descriptor otherExteriors" id="otherExteriors0">
         <span>Links to other exteriors:</span>
         <ul>
-            <li><a href="" target="_blank" id="fnLink0">Factory New</a> - <a href="" target="_blank" id="fnSTLink0"><span class="stattrakOrange">StatTrak™ Factory New</span></a></li>
-            <li><a href="" target="_blank" id="mwLink0">Minimal Wear</a> - <a href="" target="_blank" id="mwSTLink0"><span class="stattrakOrange">StatTrak™ Minimal Wear</span></a></li>
-            <li><a href="" target="_blank" id="ftLink0">Field-Tested</a> - <a href="" target="_blank" id="ftSTLink0"><span class="stattrakOrange">StatTrak™ Field-Tested</span></a></li>
-            <li><a href="" target="_blank" id="wwLink0">Well-Worn</a> - <a href="" target="_blank" id="wwSTLink0"><span class="stattrakOrange">StatTrak™ Well-Worn</span></a></li>
-            <li><a href="" target="_blank" id="bsLink0">Battle-Scarred</a> - <a href="" target="_blank" id="bsSTLink0"><span class="stattrakOrange">StatTrak™ Battle-Scarred</span></a></li>
+            <li><a href="" target="_blank" id="fnLink0">Factory New</a> - <a href="" target="_blank" id="fnSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ Factory New</span></a></li>
+            <li><a href="" target="_blank" id="mwLink0">Minimal Wear</a> - <a href="" target="_blank" id="mwSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ Minimal Wear</span></a></li>
+            <li><a href="" target="_blank" id="ftLink0">Field-Tested</a> - <a href="" target="_blank" id="ftSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ Field-Tested</span></a></li>
+            <li><a href="" target="_blank" id="wwLink0">Well-Worn</a> - <a href="" target="_blank" id="wwSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ Well-Worn</span></a></li>
+            <li><a href="" target="_blank" id="bsLink0">Battle-Scarred</a> - <a href="" target="_blank" id="bsSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ Battle-Scarred</span></a></li>
         </ul>
         <span>Not every item is available in every exterior</span>
     </div>`;
@@ -210,9 +210,17 @@ function addPerItemInfo(updating){
                                 }
                             }
 
-                            if(item.shortExterior!==""){
-                                $item.append(`<div class='exteriorIndicator'>${item.shortExterior}</div>`);
+                            let stattrak = "";
+                            if(item.isStatrack){
+                                stattrak = "ST";
                             }
+                            let souvenir = "";
+                            if(item.isSouvenir){
+                                souvenir = "S";
+                            }
+
+                            $item.append(`<div class='exteriorSTInfo'><span class="souvenirYellow">${souvenir}</span><span class="stattrakOrange">${stattrak}</span><span class="exteriorIndicator">${item.shortExterior}</span></div>`);
+
                             $(this).attr("data-processed", true);
                         }
                     }
@@ -393,38 +401,46 @@ function addElements(){
                 $(".floatBar").hide();
             }
 
+            let thereSouvenirForThisItem = souvenirExists($(".descriptor").text());
+
             let genericMarketLink = "https://steamcommunity.com/market/listings/730/";
             let weaponName = "";
             let stattrak = "StatTrak%E2%84%A2%20";
-            let souvenir = "Souvenir";
-            let isSouvenir = false;
+            let souvenir = "Souvenir ";
+            let star = "";
 
-            if(/StatTrak™/.test(item.marketlink)){
-                weaponName = item.marketlink.split("/730/")[1].split("StatTrak™")[1].split("(")[0];
+            if(item.starInName){
+                star = "%E2%98%85%20";
             }
-            else if(/Souvenir/.test(item.marketlink)){
-                isSouvenir = true;
-                weaponName = item.marketlink.split("/730/")[1].split("Souvenir")[1].split("(")[0];
+
+            if(item.isStatrack){
+                weaponName = item.market_hash_name.split("StatTrak™ ")[1].split("(")[0];
+            }
+            else if(item.isSouvenir){
+                weaponName = item.market_hash_name.split("Souvenir ")[1].split("(")[0];
             }
             else{
-                weaponName = item.marketlink.split("/730/")[1].split("(")[0];
+                weaponName = item.market_hash_name.split("(")[0].split("★ ")[1];
+                if(weaponName===undefined){
+                    weaponName = item.market_hash_name.split("(")[0];
+                }
             }
 
 
-            $("#fnLink1").attr("href", genericMarketLink + weaponName + "%28Factory%20New%29");
-            $("#mwLink1").attr("href", genericMarketLink + weaponName + "%28Minimal%20Wear%29");
-            $("#ftLink1").attr("href", genericMarketLink + weaponName + "%28Field-Tested%29");
-            $("#wwLink1").attr("href", genericMarketLink + weaponName + "%28Well-Worn%29");
-            $("#bsLink1").attr("href", genericMarketLink + weaponName + "%28Battle-Scarred%29");
+            $("#fnLink1").attr("href", genericMarketLink + star + weaponName + "%28Factory%20New%29");
+            $("#mwLink1").attr("href", genericMarketLink + star + weaponName + "%28Minimal%20Wear%29");
+            $("#ftLink1").attr("href", genericMarketLink + star + weaponName + "%28Field-Tested%29");
+            $("#wwLink1").attr("href", genericMarketLink + star + weaponName + "%28Well-Worn%29");
+            $("#bsLink1").attr("href", genericMarketLink + star + weaponName + "%28Battle-Scarred%29");
 
-            $("#fnLink0").attr("href", genericMarketLink + weaponName + "%28Factory%20New%29");
-            $("#mwLink0").attr("href", genericMarketLink + weaponName + "%28Minimal%20Wear%29");
-            $("#ftLink0").attr("href", genericMarketLink + weaponName + "%28Field-Tested%29");
-            $("#wwLink0").attr("href", genericMarketLink + weaponName + "%28Well-Worn%29");
-            $("#bsLink0").attr("href", genericMarketLink + weaponName + "%28Battle-Scarred%29");
+            $("#fnLink0").attr("href", genericMarketLink + star + weaponName + "%28Factory%20New%29");
+            $("#mwLink0").attr("href", genericMarketLink + star + weaponName + "%28Minimal%20Wear%29");
+            $("#ftLink0").attr("href", genericMarketLink + star + weaponName + "%28Field-Tested%29");
+            $("#wwLink0").attr("href", genericMarketLink + star + weaponName + "%28Well-Worn%29");
+            $("#bsLink0").attr("href", genericMarketLink + star + weaponName + "%28Battle-Scarred%29");
 
-            if(isSouvenir){
-                $st = $(".stattrakOrange");
+            if(item.isSouvenir||thereSouvenirForThisItem){
+                $st = $(".stattrakOrange.exteriorsLink");
                 $st.addClass("souvenirYellow");
                 $st.removeClass("stattrakOrange");
 
@@ -469,25 +485,25 @@ function addElements(){
                 $bsst0.find("span").text("Souvenir Battle-Scarred");
             }
             else{
-                if( $(".souvenirYellow").length!==0){
-                    $sv = $(".souvenirYellow");
+                $sv = $(".souvenirYellow.exteriorsLink");
+                if($sv.length!==0){
                     $sv.addClass("stattrakOrange");
                     $sv.removeClass("souvenirYellow");
                 }
-                $("#fnSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Factory%20New%29");
-                $("#mwSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Minimal%20Wear%29");
-                $("#ftSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Field-Tested%29");
-                $("#wwSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Well-Worn%29");
-                $("#bsSTLink1").attr("href", genericMarketLink + stattrak + weaponName + "%28Battle-Scarred%29");
+                $("#fnSTLink1").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Factory%20New%29");
+                $("#mwSTLink1").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Minimal%20Wear%29");
+                $("#ftSTLink1").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Field-Tested%29");
+                $("#wwSTLink1").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Well-Worn%29");
+                $("#bsSTLink1").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Battle-Scarred%29");
 
-                $("#fnSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Factory%20New%29");
-                $("#mwSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Minimal%20Wear%29");
-                $("#ftSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Field-Tested%29");
-                $("#wwSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Well-Worn%29");
-                $("#bsSTLink0").attr("href", genericMarketLink + stattrak + weaponName + "%28Battle-Scarred%29");
+                $("#fnSTLink0").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Factory%20New%29");
+                $("#mwSTLink0").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Minimal%20Wear%29");
+                $("#ftSTLink0").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Field-Tested%29");
+                $("#wwSTLink0").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Well-Worn%29");
+                $("#bsSTLink0").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Battle-Scarred%29");
             }
 
-            if(item.marketlink.split("(")[1]===undefined){
+            if(item.exterior===""){
                 $("#otherExteriors1").hide();
                 $("#otherExteriors0").hide();
             }
@@ -498,6 +514,7 @@ function addElements(){
         $("#iteminfo0_countdown").hide();
     }
 }
+
 
 function removeElements() {
     $("#iteminfo1_countdown").hide();

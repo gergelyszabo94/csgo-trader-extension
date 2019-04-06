@@ -121,6 +121,9 @@ chrome.runtime.onMessage.addListener(
                             let tradability = "Tradable";
                             let tradabilityShort = "T";
                             let dopplerInfo = undefined;
+                            let isStatrack = false;
+                            let isSouvenir = false;
+                            let starInName = false;
                             let icon = items[item].icon_url;
                             let quality = getQuality(items[item].type);
 
@@ -134,6 +137,15 @@ chrome.runtime.onMessage.addListener(
                             }
                             if(/Doppler/.test(name)){
                                 dopplerInfo = getDopplerInfo(icon);
+                            }
+                            if(/StatTrak™/.test(name)){
+                                isStatrack = true;
+                            }
+                            if(/Souvenir/.test(name)){
+                                isSouvenir = true;
+                            }
+                            if(/★/.test(name)){
+                                starInName = true;
                             }
 
                             let inspectLink ="";
@@ -163,7 +175,10 @@ chrome.runtime.onMessage.addListener(
                                 shortExterior: shortExterior,
                                 iconURL: icon,
                                 inspectLink: inspectLink,
-                                quality: quality
+                                quality: quality,
+                                isStatrack: isStatrack,
+                                isSouvenir: isSouvenir,
+                                starInName: starInName
                             })
                         }
                     }

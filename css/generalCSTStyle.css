@@ -178,13 +178,20 @@ progress {
     height: 18px !important;
 }
 
-.exteriorIndicator{
-    color: var(--steam-note-blue);
+.exteriorSTInfo{
     position: absolute;
     top: 5px;
     right: 5px;
     font-size: 0.8rem;
 }
+
+.exteriorIndicator{
+    color: var(--steam-note-blue);
+}
+
+/*.stIndicator{*/
+    /*color: var(--steam-stattrak-orange);*/
+/*}*/
 
 .otherExteriors{
     color: var(--steam-note-blue);

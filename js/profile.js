@@ -48,7 +48,7 @@ if($("body").hasClass("profile_page")){
             //flags scam comments that include one of these strings
             chrome.storage.sync.get(['flagScamComments'], function(result) {
                 if(result.flagScamComments) {
-                    let commentsToReport = [
+                    const commentsToReport = [
                         'free skins CS:GO(100$)',
                         'for all of your csgo graffitties',
                         'CS:GO Cases For Keys',

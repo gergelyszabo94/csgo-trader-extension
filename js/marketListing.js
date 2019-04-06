@@ -16,52 +16,48 @@ const inBrowserInspectButtonPopupLink = '<a class="popup_menu_item" id="inbrowse
 
 const dopplerPhase = "<div class='dopplerPhaseMarket'><span></span></div>";
 
+let thereSouvenirForThisItem = souvenirExists($(".descriptor").text());
+
 $("#largeiteminfo_item_descriptors").append(exteriors);
 
 const genericMarketLink = "https://steamcommunity.com/market/listings/730/";
 const stattrak = "StatTrak%E2%84%A2%20";
 const souvenir = "Souvenir%20";
+const fullName = $(".market_listing_nav").children($("a")).last().text();
 let weaponName = "";
 let isSouvenir = false;
+let star = "";
 
-if(/StatTrak%E2%84%A2%20/.test(window.location.href)){
-    if(window.location.href.split("/730/")[1].split(stattrak)[1]===window.location.href.split("/730/")[1].split(stattrak)[1].split("%28")[0]){
-        weaponName = window.location.href.split("/730/")[1].split(stattrak)[1].split("(")[0]; //stupid sih inconsistency fix
-    }
-    else{
-        weaponName = window.location.href.split("/730/")[1].split(stattrak)[1].split("%28")[0];
-    }
+
+if(/★/.test(fullName)){
+    star = "★ ";
 }
-else if(/Souvenir/.test(window.location.href)){
-    isSouvenir = true;
-    if(window.location.href.split("/730/")[1].split(souvenir)[1]===window.location.href.split("/730/")[1].split(souvenir)[1].split("%28")[0]){
-        weaponName = window.location.href.split("/730/")[1].split(souvenir)[1].split("(")[0]; //stupid sih inconsistency fix
-    }
-    else{
-        weaponName = window.location.href.split("/730/")[1].split(souvenir)[1].split("%28")[0];
-    }
 
+if(/StatTrak™/.test(fullName)){
+    weaponName = fullName.split("StatTrak™ ")[1].split("(")[0];
+}
+else if(/Souvenir/.test(fullName)){
+    isSouvenir = true;
+    weaponName = fullName.split("Souvenir ")[1].split("(")[0];
 }
 else {
-    if(window.location.href.split("/730/")[1]===window.location.href.split("/730/")[1].split("%28")[0]){
-        weaponName = window.location.href.split("/730/")[1].split("(")[0]; ////stupid sih inconsistency fix
-    }
-    else {
-        weaponName = window.location.href.split("/730/")[1].split("%28")[0];
+    weaponName = fullName.split("(")[0].split("★ ")[1];
+    if(weaponName===undefined){
+        weaponName = fullName.split("(")[0];
     }
 }
 
-if(window.location.href.split("%28")[1]===undefined&&window.location.href.split("(")[1]===undefined){
+if(fullName.split("(")[1]===undefined){ // in case there is no exterior (vanilla)
     $("#otherExteriors").hide();
 }
 
-$("#fnLink").attr("href", genericMarketLink + weaponName + "%28Factory%20New%29");
-$("#mwLink").attr("href", genericMarketLink + weaponName + "%28Minimal%20Wear%29");
-$("#ftLink").attr("href", genericMarketLink + weaponName + "%28Field-Tested%29");
-$("#wwLink").attr("href", genericMarketLink + weaponName + "%28Well-Worn%29");
-$("#bsLink").attr("href", genericMarketLink + weaponName + "%28Battle-Scarred%29");
+$("#fnLink").attr("href", genericMarketLink + star + weaponName + "%28Factory%20New%29");
+$("#mwLink").attr("href", genericMarketLink + star + weaponName + "%28Minimal%20Wear%29");
+$("#ftLink").attr("href", genericMarketLink + star + weaponName + "%28Field-Tested%29");
+$("#wwLink").attr("href", genericMarketLink + star + weaponName + "%28Well-Worn%29");
+$("#bsLink").attr("href", genericMarketLink + star + weaponName + "%28Battle-Scarred%29");
 
-if(isSouvenir){
+if(isSouvenir||thereSouvenirForThisItem){
     $st = $(".stattrakOrange");
     $st.addClass("souvenirYellow");
     $st.removeClass("stattrakOrange");
@@ -87,11 +83,11 @@ if(isSouvenir){
     $bsst.find("span").text("Souvenir Battle-Scarred");
 }
 else{
-    $("#fnSTLink").attr("href", genericMarketLink + stattrak + weaponName + "%28Factory%20New%29");
-    $("#mwSTLink").attr("href", genericMarketLink + stattrak + weaponName + "%28Minimal%20Wear%29");
-    $("#ftSTLink").attr("href", genericMarketLink + stattrak + weaponName + "%28Field-Tested%29");
-    $("#wwSTLink").attr("href", genericMarketLink + stattrak + weaponName + "%28Well-Worn%29");
-    $("#bsSTLink").attr("href", genericMarketLink + stattrak + weaponName + "%28Battle-Scarred%29");
+    $("#fnSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Factory%20New%29");
+    $("#mwSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Minimal%20Wear%29");
+    $("#ftSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Field-Tested%29");
+    $("#wwSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Well-Worn%29");
+    $("#bsSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Battle-Scarred%29");
 }
 
 $("#largeiteminfo_item_actions").append(inBrowserInspectButton);
