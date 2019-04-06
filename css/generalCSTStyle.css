@@ -199,3 +199,7 @@ progress {
 .souvenirYellow{
     color: var(--steam-souvenir-yellow) !important;
 }
+
+.activeInfo{
+    border-color: white !important;
+}

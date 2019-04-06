@@ -167,7 +167,7 @@ function addPerItemInfo(updating){
         chrome.storage.sync.get(['colorfulItems'], function(result) {
             $items.each(function () {
                 $item = $(this);
-                if($item.attr("data-processed")===undefined||$(this).attr("data-processed")===false||updating){
+                if($item.attr("data-processed")===undefined||$item.attr("data-processed")==="false"||updating){
                     if($item.attr('id')===undefined){ //in case the inventory is not loaded yet
                         setTimeout(function () {
                             addPerItemInfo(false);
