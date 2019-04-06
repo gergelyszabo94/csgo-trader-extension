@@ -136,4 +136,10 @@ if($("body").hasClass("profile_page")){
             }
         }
     });
+
+    chrome.runtime.sendMessage({getSteamRepInfo: profileOwnerSteamID}, function(response) {
+        if(response.SteamRepInfo.reputation.summary==="SCAMMER"){
+            $("body").prepend(`<div style="background-color: red; color: white; padding: 5px; text-align: center;" class="scammerWarning"><span>Watch out, this user was banned on SteamRep for scamming! You can check the details of what they did on <a href='https://steamrep.com/profiles/${profileOwnerSteamID}'>steamrep.com</a></span></div>`)
+        }
+    });
 }

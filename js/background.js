@@ -302,6 +302,27 @@ chrome.runtime.onMessage.addListener(
                     }
             return true; //async return to signal that it will return later
         }
+        else if (request.getSteamRepInfo !==undefined) {
+            let steamID = request.getSteamRepInfo;
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", 'https://steamrep.com/api/beta4/reputation/' + steamID + "?json=1", true);
+            xhr.onload = function (e) {
+                try {
+                    let body = JSON.parse(xhr.responseText);
+                    sendResponse({SteamRepInfo: body.steamrep});
+                }
+                catch (e) {
+                    console.log(e);
+                }
+            };
+            try {
+                xhr.send();
+            }
+            catch (e) {
+                console.log(e);
+            }
+            return true; //async return to signal that it will return later
+        }
     });
 
 chrome.notifications.onClicked.addListener(function(notificationID) {

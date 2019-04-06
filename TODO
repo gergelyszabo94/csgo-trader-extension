@@ -22,9 +22,7 @@ tradeoffers page:
 -keep trade offers the same size when canceled
 
 market:
-
-profile:
--scammer likelihood analysis
+-float bar
 
 chat:
 -configurable quickreplies

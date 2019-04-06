@@ -189,10 +189,6 @@ progress {
     color: var(--steam-note-blue);
 }
 
-/*.stIndicator{*/
-    /*color: var(--steam-stattrak-orange);*/
-/*}*/
-
 .otherExteriors{
     color: var(--steam-note-blue);
     margin-top: 0.5rem;
