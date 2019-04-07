@@ -1,13 +1,17 @@
-setTimeout(function () { //ugly way to wait for the trades to load and become "bumpable"
-    bump();
-}, 5000);
+chrome.storage.sync.get(['loungeBump'], function(result) {
+    if(result.nsfwFilter){
+        setTimeout(function () { //ugly way to wait for the trades to load and become "bumpable"
+            bump();
+        }, 5000);
 
-let reloadInterval = Math.floor((Math.random() * 10) + 31);
+        let reloadInterval = Math.floor((Math.random() * 10) + 31);
 
-setTimeout(function () {
-    location.reload()
-}, reloadInterval*60*1000);
+        setTimeout(function () {
+            location.reload()
+        }, reloadInterval*60*1000);
 
-function bump(){
-    $(".btn-bump___1-VFc").click();
-}
+        function bump(){
+            $(".btn-bump___1-VFc").click();
+        }
+    }
+});
