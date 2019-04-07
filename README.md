@@ -20,6 +20,6 @@ Current Features:
 - CSGOTraders.net auto-bumping
 - Other small automations, conveniences
 
-Feel free to contribute (even with ideas)
+Feel free to contribute (with code, graphics, translations or even with ideas)
 
-You can now install it from the <a target="_blank" href="https://chrome.google.com/webstore/detail/csgo-trader/kaibcgikagnkfgjnibflebpldakfhfih/">Chrome Web Store</a>.
+You can install it from the <a target="_blank" href="https://chrome.google.com/webstore/detail/csgo-trader/kaibcgikagnkfgjnibflebpldakfhfih/">Chrome Web Store</a>.
