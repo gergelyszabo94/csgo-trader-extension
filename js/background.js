@@ -89,6 +89,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
     }
 });
 
+chrome.runtime.setUninstallURL("https://docs.google.com/forms/d/e/1FAIpQLSeOpZilYGr3JAPd7_GSh-tCJShVWHpNFoW8joxStzZf1PFq5A/viewform?usp=sf_link", function(){});
+
 //loads inventory and extract information
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
