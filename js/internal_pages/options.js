@@ -256,3 +256,22 @@ $colorfulitems.click(function() {
         });
     }
 });
+
+$loungebump = $("#loungeBump");
+
+chrome.storage.sync.get(['loungeBump'], function(result) {
+    if(result.loungeBump){
+        $loungebump.prop("checked", true);
+    }
+});
+
+$loungebump.click(function() {
+    if(this.checked) {
+        chrome.storage.sync.set({loungeBump: true}, function() {
+        });
+    }
+    else{
+        chrome.storage.sync.set({loungeBump: false}, function() {
+        });
+    }
+});
