@@ -275,3 +275,22 @@ $loungebump.click(function() {
         });
     }
 });
+
+$tradersbump = $("#tradersBump");
+
+chrome.storage.sync.get(['tradersBump'], function(result) {
+    if(result.tradersBump){
+        $tradersbump.prop("checked", true);
+    }
+});
+
+$tradersbump.click(function() {
+    if(this.checked) {
+        chrome.storage.sync.set({tradersBump: true}, function() {
+        });
+    }
+    else{
+        chrome.storage.sync.set({tradersBump: false}, function() {
+        });
+    }
+});

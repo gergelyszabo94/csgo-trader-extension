@@ -15,7 +15,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 apiKeyValid: false,
                 showRealStatus: true,
                 colorfulItems: true,
-                loungeBump: true
+                loungeBump: true,
+                tradersBump: true
             }, function() {
             });
         chrome.browserAction.setBadgeText({text: "1"});
@@ -28,7 +29,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
     }
     else if(details.reason === "update"){
         //setting defaults options for new options that haven't been set yet
-        chrome.storage.sync.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump'], function(result) {
+        chrome.storage.sync.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump'], function(result) {
             if(result.quickDeclineOffer===undefined){
                 chrome.storage.sync.set({quickDeclineOffer: true}, function() {});
             }
@@ -71,6 +72,11 @@ chrome.runtime.onInstalled.addListener(function(details) {
             if(result.loungeBump===undefined){
                 chrome.storage.sync.set({loungeBump: true}, function() {});
             }
+            if(result.tradersBump===undefined){
+                chrome.storage.sync.set({tradersBump: true}, function() {});
+            }
+
+
         });
 
         chrome.browserAction.setBadgeText({text: "1"});
