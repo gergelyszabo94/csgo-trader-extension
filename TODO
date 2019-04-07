@@ -24,6 +24,9 @@ tradeoffers page:
 market:
 -float bar
 
+profile:
+-permalink
+
 chat:
 -configurable quickreplies
 

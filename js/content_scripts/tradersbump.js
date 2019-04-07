@@ -11,10 +11,6 @@ chrome.storage.sync.get(['tradersBump'], function(result) {
         }, reloadInterval*60*1000);
 
         function bump(){
-            console.log($(".btn.btn-custom.btn-xs"));
-            var today = new Date();
-            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-            console.log(time);
             $(".btn.btn-custom.btn-xs").each(function () {
                 let link = $(this).attr("href");
                 let xhr = new XMLHttpRequest();
