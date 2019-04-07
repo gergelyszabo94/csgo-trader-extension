@@ -573,6 +573,18 @@ function getUserSteamID(){
     return result;
 }
 
+//gets the other party's steam id in a trade offer
+function getTradePartnerSteamID(){
+    let scriptToInject = `
+    <script id="getTradePartnerSteamID">
+    document.querySelector("body").setAttribute("TradePartnerSteamID", g_ulTradePartnerSteamID);
+</script>`;
+    $("body").append(scriptToInject);
+    let result =  $("body").attr("TradePartnerSteamID");
+    $("#getTradePartnerSteamID").remove();
+    return result;
+}
+
 function getInventoryOwnerID(){
     let scriptToInject = `
     <script id="getInventoryOwnerID">
@@ -582,4 +594,21 @@ function getInventoryOwnerID(){
     let result = $("body").attr("inventoryOwnerID");
     $("#getInventoryOwnerID").remove();
     return result;
+}
+
+function warnOfScammer(steamID, page) {
+    chrome.runtime.sendMessage({getSteamRepInfo: steamID}, function(response) {
+        if(response.SteamRepInfo.reputation.summary==="SCAMMER"){
+            let backgroundURL = chrome.runtime.getURL("images/scammerbackground.jpg");
+            $("body").prepend(`<div style="background-color: red; color: white; padding: 5px; text-align: center;" class="scammerWarning"><span>Watch out, this user was banned on SteamRep for scamming! You can check the details of what they did on <a style="color: black; font-weight: bold" href='https://steamrep.com/profiles/${steamID}'>steamrep.com</a></span></div>`)
+            if(page==="offer"){
+                $("body").css({"background-image": "url('" + backgroundURL + "')"});
+            }
+            else if(page==="profile"){
+                $(".no_header.profile_page").css({"background-image": "url('" + backgroundURL + "')"});
+            }
+
+        }
+    });
+
 }

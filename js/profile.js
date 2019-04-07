@@ -1,6 +1,7 @@
 //ensures that we are on a profile page, it's not possible with simple regex
 if($("body").hasClass("profile_page")){
     const profileOwnerSteamID = getProfileOwnerSteamID();
+    warnOfScammer(profileOwnerSteamID, "profile");
 
     if(getUserSteamID()===profileOwnerSteamID){ //when on the logged in user's own profile
         chrome.storage.sync.get(['reoccuringMessage', 'showReoccButton'], function(result) {
@@ -134,15 +135,6 @@ if($("body").hasClass("profile_page")){
                     }
                 });
             }
-        }
-    });
-
-    chrome.runtime.sendMessage({getSteamRepInfo: profileOwnerSteamID}, function(response) {
-        if(response.SteamRepInfo.reputation.summary==="SCAMMER"){
-            let backgroundURL = chrome.runtime.getURL("images/scammerbackground.jpg");
-            $("body").prepend(`<div style="background-color: red; color: white; padding: 5px; text-align: center;" class="scammerWarning"><span>Watch out, this user was banned on SteamRep for scamming! You can check the details of what they did on <a href='https://steamrep.com/profiles/${profileOwnerSteamID}'>steamrep.com</a></span></div>`)
-            $(".no_header.profile_page").css({"background-image": "url('" + backgroundURL + "')"});
-
         }
     });
 }

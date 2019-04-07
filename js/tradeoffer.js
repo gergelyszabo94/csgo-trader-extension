@@ -1,6 +1,7 @@
 // const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
 
 overrideHandleTradeActionMenu();
+warnOfScammer(getTradePartnerSteamID(), "offer");
 
 // MutationObserver = window.MutationObserver;
 //
