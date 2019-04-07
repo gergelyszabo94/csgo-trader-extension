@@ -343,6 +343,11 @@ chrome.notifications.onClicked.addListener(function(notificationID) {
                 goToInternalPage("/html/bookmarks.html");
             }
         }
+        else{
+            if (notificationID==="installed"){
+                chrome.runtime.openOptionsPage(function(){})
+            }
+        }
     });
 });
 
