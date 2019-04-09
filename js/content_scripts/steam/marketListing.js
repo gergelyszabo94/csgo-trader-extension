@@ -96,7 +96,8 @@ $("#market_action_popup_itemactions").after(inBrowserInspectButtonPopupLink);
 let inspectLink = $("#largeiteminfo_item_actions").find(".btn_small.btn_grey_white_innerfade").first().attr("href");
 $("#inbrowser_inspect_button").attr("href", "http://csgo.gallery/" + inspectLink);
 
-$(".market_actionmenu_button").on("click", function () {
+$("#inbrowser_inspect").hover(function () {
+    console.log("hovered");
     let inspectLink = $("#market_action_popup_itemactions").find("a.popup_menu_item").first().attr("href");
     $("#inbrowser_inspect").attr("href", "http://csgo.gallery/" + inspectLink);
 });
