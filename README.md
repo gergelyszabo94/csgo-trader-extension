@@ -16,7 +16,7 @@ Current Features:
 - Real chat status on profiles
 - Colorful inventories
 - Scammers are market on their profile and in trade offers (if they are SteamRep banned)
-- CSGOLouunge.com auto-bumping
+- CSGOLounge.com auto-bumping
 - CSGOTraders.net auto-bumping
 - Other small automations, conveniences
 

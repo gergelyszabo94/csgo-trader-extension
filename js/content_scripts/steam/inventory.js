@@ -250,6 +250,17 @@ function addElements(){
         }
         let item = getItemByAssetID(activeID);
 
+
+        // $stickerInfo = $("#sticker_info");
+        // $stickerIcons = $stickerInfo.find("img");
+        // if($stickerIcons.length!==0){
+        //     console.log($stickerIcons);
+        //     $stickerIcons.each(function () {
+        //         $stickerIcon  = $(this);
+        //     });
+        // }
+
+
         //removes "tags"
         $("#iteminfo1_item_tags").remove();
         $("#iteminfo0_item_tags").remove();
@@ -321,27 +332,10 @@ function addElements(){
             }
 
             if(item.dopplerInfo!==undefined){
-                switch (item.dopplerInfo.short) {
-                    // case "P1": addNote("Phase 1");break;
-                    // case "P2": addNote("Phase 2");break;
-                    // case "P3": addNote("Phase 3");break;
-                    // case "P4": addNote("Phase 4");break;
-                    // case "SH": addNote("Sapphire");break;
-                    // case "RB": addNote("Ruby");break;
-                    // case "BP": addNote("Black Pearl");break;
-                    // case "EM": addNote("Emerald");break;
-                    case "P1": changeName(item.name+" (Phase 1)",item.name_color,item.marketlink);break;
-                    case "P2": changeName(item.name+" (Phase 2)",item.name_color,item.marketlink);break;
-                    case "P3": changeName(item.name+" (Phase 3)",item.name_color,item.marketlink);break;
-                    case "P4": changeName(item.name+" (Phase 4)",item.name_color,item.marketlink);break;
-                    case "SH": changeName(item.name+" (Sapphire)",item.name_color,item.marketlink);break;
-                    case "BP": changeName(item.name+" (Black Pearl)",item.name_color,item.marketlink);break;
-                    case "EM": changeName(item.name+" (Emerald)",item.name_color,item.marketlink);break;
-                }
+                changeName(item.name+" ("+ item.dopplerInfo.name+")",item.name_color,item.marketlink);
             }
             else{
                 changeName(item.name,item.name_color,item.marketlink);
-                //removeNote();
             }
 
 
