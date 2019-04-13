@@ -6,5 +6,9 @@
   "application_description": {
     "message": "A CS:GOs cserék segítéséhez, trade-lock visszaszámlálás, böngészőből való megtekintés, doppler phasek, floatok, stb.",
     "description": "The description of the application, displayed in the web store. It's character limited (I think 255)"
+  },
+  "webstore_description": {
+    "message": "CSGO Trader Chrome Bővítmény A bővítményt a CS:GO-s cserék segítéséhez terveztem. Olyan funkciókat rakok bele amit a Steam Inventory Helper nem tud, legalábbis egyelőre. Amit most tud:- Berak egy \"Inspect in Browser...\" gombot amivel meg tudod nézni böngészőből hogy hogy néz ki a fegyver játékban- Mutatja mikor válnak cserélhetővé a különböző cuccok a raktárakban- Mutatja a skinek floatját (hogy mennyire kopott)- Mutatja a Doppler phasesket- A skinek más kopás-minőségű verziójára rak linkeket- NSFW módot bekapcsolva elrejti az anime csöcsöket a profilokról- Könyvjelzőzés és értesítés amikor cserélhető a cucc- A valós steam chat státusz a profilokon- Szép színes raktárak- A scammerek profiljai meg vannak jelölve (akik steamrep bannoltak)- CSGOLouunge.com auto-bump- CSGOTraders.net auto-bump- Más apróságokTámogathatod a fejlesztést többek között kóddal, grafikával, fordítással és akár ötletekkel is.https://github.com/bladegery/csgo-trader-extension",
+    "description": "The long description of the application as visible in it's Chrome Webstore page"
   }
 }
