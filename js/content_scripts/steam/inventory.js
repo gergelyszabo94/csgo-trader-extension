@@ -99,6 +99,14 @@ const exteriors0 = `
         <span>Not every item is available in every exterior</span>
     </div>`;
 
+const stickers1 = `
+    <div class="descriptor customStickers" id="stickers1">
+    </div>`;
+
+const stickers0 = `
+    <div class="descriptor customStickers" id="stickers0">
+    </img>`;
+
 
 //mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
 
@@ -250,17 +258,6 @@ function addElements(){
         }
         let item = getItemByAssetID(activeID);
 
-
-        // $stickerInfo = $("#sticker_info");
-        // $stickerIcons = $stickerInfo.find("img");
-        // if($stickerIcons.length!==0){
-        //     console.log($stickerIcons);
-        //     $stickerIcons.each(function () {
-        //         $stickerIcon  = $(this);
-        //     });
-        // }
-
-
         //removes "tags"
         $("#iteminfo1_item_tags").remove();
         $("#iteminfo0_item_tags").remove();
@@ -289,6 +286,14 @@ function addElements(){
             $("#iteminfo0_item_descriptors").after(exteriors0);
         }
 
+        //adds custom sticker info
+        if(!$("#stickers1").length) {
+            $("#floatBar1").before(stickers1);
+        }
+        if(!$("#stickers0").length) {
+            $("#floatBar0").before(stickers0);
+        }
+
         //hides "tradable after" in one's own inventory
         $("#iteminfo1_item_owner_descriptors").hide();
         $("#iteminfo0_item_owner_descriptors").hide();
@@ -310,6 +315,27 @@ function addElements(){
         $tradability0 = $("#iteminfo0_tradability");
 
         if(item){
+            //repositions stickers
+            if(item.stickers.length!==0){
+                $("#sticker_info").remove();
+
+                setTimeout(function () { //sometimes it is added slowly so it does not get removed by the first one..
+                    $("#sticker_info").remove();
+                }, 1000);
+
+                $( ".stickerSlot" ).remove();
+                $("#stickers1").show();
+                $("#stickers0").show();
+                item.stickers.forEach(function (stickerInfo) {
+                    $("#stickers1").append(`<div class="stickerSlot" data-tooltip="${stickerInfo.name}"><a href="${stickerInfo.marketURL}" target="_blank"><img src="${stickerInfo.iconURL}" class="stickerIcon"></a></div>`);
+                    $("#stickers0").append(`<div class="stickerSlot" data-tooltip="${stickerInfo.name}"><a href="${stickerInfo.marketURL}" target="_blank"><img src="${stickerInfo.iconURL}" class="stickerIcon"></a></div>`);
+                })
+            }
+            else{
+                $("#stickers1").hide();
+                $("#stickers0").hide();
+            }
+
             if(item.tradability==="Tradable"){
                 $tradability1.html(tradable);
                 $tradability0.html(tradable);
@@ -341,6 +367,9 @@ function addElements(){
 
             //removes sih "Get Float" button - does not really work since it's loaded after this script..
             $(".float_block").remove();
+            setTimeout(function () {
+                $(".float_block").remove();
+            }, 1000);
 
             let inspectLink = item.inspectLink;
 
@@ -353,6 +382,7 @@ function addElements(){
             let origin = "";
             let min = "";
             let max = "";
+            let stickers = [];
 
             if(inspectLink!==""&&inspectLink!==undefined){
                 $(".floatBar").show();
@@ -364,6 +394,7 @@ function addElements(){
                         origin = response.floatInfo.origin_name;
                         min = response.floatInfo.min;
                         max = response.floatInfo.max;
+                        stickers = response.floatInfo.stickers;
 
                     }
                     catch{
@@ -386,6 +417,21 @@ function addElements(){
                     $("#minDrop1").text(min);
                     $("#maxDrop0").text(max);
                     $("#maxDrop1").text(max);
+
+                    //sticker wear to sticker icon tooltip
+                    stickers.forEach(function (stickerInfo, index) {
+                        let wear = 100;
+                        if(stickerInfo.wear!==null){
+                            wear =  Math.trunc(stickerInfo.wear*100);
+                        }
+                        $currentSticker1 = $("#stickers1").find($(".stickerSlot")).eq(index);
+                        $currentSticker0 = $("#stickers0").find($(".stickerSlot")).eq(index);
+                        $currentSticker1.attr("data-tooltip", stickerInfo.name + " - Condition: " + wear + "%");
+                        $currentSticker0.attr("data-tooltip", stickerInfo.name + " - Condition: " + wear + "%");
+                        $currentSticker1.find("img").css("opacity", wear/100);
+                        $currentSticker0.find("img").css("opacity", wear/100);
+                    });
+
                     if(float===0){
                         $(".floatBar").hide();
                     }

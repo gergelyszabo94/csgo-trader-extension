@@ -34,6 +34,26 @@ chrome.runtime.onMessage.addListener(
                             let starInName = false;
                             let icon = items[item].icon_url;
                             let quality = getQuality(items[item].type);
+                            let stickers =  [];
+
+                            items[item].descriptions.forEach(function (description) {
+                                if(/sticker_info/.test(description.value)){
+                                    let names = description.value.split("Sticker: ")[1].split(", ");
+                                    names[names.length-1] = names[names.length-1].split("<")[0];
+                                    let iconURLs = description.value.split("src=\"");
+                                    iconURLs.shift();
+                                    iconURLs.forEach(function (iconURL, index) {
+                                        iconURLs[index] = iconURL.split("\"><")[0];
+                                    });
+                                    names.forEach(function (name, index) {
+                                        stickers.push({
+                                            name: name,
+                                            iconURL: iconURLs[index],
+                                            marketURL: "https://steamcommunity.com/market/listings/730/Sticker%20%7C%20" + name
+                                        });
+                                    });
+                                }
+                            });
 
                             if (items[item].tradable === 0) {
                                 tradability = items[item].cache_expiration;
@@ -86,7 +106,8 @@ chrome.runtime.onMessage.addListener(
                                 quality: quality,
                                 isStatrack: isStatrack,
                                 isSouvenir: isSouvenir,
-                                starInName: starInName
+                                starInName: starInName,
+                                stickers: stickers
                             })
                         }
                     }
