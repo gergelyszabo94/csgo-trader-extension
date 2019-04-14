@@ -3,7 +3,7 @@ chrome.runtime.onMessage.addListener(
         if (request.inventory !==undefined) {
             let steamID = request.inventory;
             let xhr = new XMLHttpRequest();
-            xhr.open("GET", 'https://steamcommunity.com/profiles/' + steamID + '/inventory/json/730/2', true);
+            xhr.open("GET", 'https://steamcommunity.com/profiles/' + steamID + '/inventory/json/730/2/?l=english', true);
             xhr.onload = function (e) {
                 let body = JSON.parse(xhr.responseText);
                 let items = body.rgDescriptions;
