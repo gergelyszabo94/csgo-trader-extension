@@ -66,5 +66,9 @@
   "souvenir": {
     "message": "Souvenir",
     "description": "Souvenir"
+  },
+  "get_float_info": {
+    "message": "Get Float Information...",
+    "description": "Get Float Information..."
   }
 }

@@ -28,7 +28,7 @@
     "description": "Field-Tested"
   },
   "ww_long": {
-    "message": "Viseltes",
+    "message": "Viseletes",
     "description": "Well-Worn"
   },
   "bs_long": {
@@ -66,5 +66,9 @@
   "souvenir": {
     "message": "Emléktárgy",
     "description": "Souvenir"
+  },
+  "get_float_info": {
+    "message": "Float Infó Betöltése...",
+    "description": "Get Float Information..."
   }
 }

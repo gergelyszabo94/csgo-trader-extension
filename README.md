@@ -12,7 +12,7 @@ Current Features:
 - Shows exterior on each item and adds links to other version to inventory and market pages
 - NSFW filter mode to avoid showing anime boobs to your colleagues
 - Bookmark and notify when item is tradable
-- Shows floats in inventories
+- Shows floats in inventories (for stickers as well) and on market
 - Real chat status on profiles
 - Colorful inventories
 - Scammers are market on their profile and in trade offers (if they are SteamRep banned)

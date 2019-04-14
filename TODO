@@ -6,7 +6,7 @@ inventory:
 -show market charts without opening the market page?
 -get total price of selected items
 -sell without popup?
--reposition nametag above image
+-show how many duplicates of the item the inventory owner has
 
 tradeoffer:
 -add tf2 keys and refs as currency
@@ -19,9 +19,6 @@ tradeoffer:
 tradeoffers page:
 -mark sender friend status, ignore friend request option
 -keep trade offers the same size when canceled
-
-market:
--float bar
 
 profile:
 -permalink
@@ -53,8 +50,9 @@ misc:
 -find seller of item on the market
 -useful links/tools section
 -wish list of items - match people to items they want - notify when you have it
--localization
+-further localization
 -make csgolounge and csgotraders permission optional, ask for it when bump turned on
+-float tiers (wta, bta, avg)
 
 bookmarks:
 -email, chat, sms notif?

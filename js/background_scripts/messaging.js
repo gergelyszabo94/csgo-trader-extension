@@ -35,6 +35,15 @@ chrome.runtime.onMessage.addListener(
                             let icon = items[item].icon_url;
                             let quality = getQuality(items[item].type);
                             let stickers =  [];
+                            let nametag =undefined;
+
+                            try {
+                                if(items[item].fraudwarnings!==undefined||items[item].fraudwarnings[0]!==undefined){
+                                    nametag = items[item].fraudwarnings[0].split('Name Tag: ')[1];
+                                }
+                            }
+                            catch(error) {
+                            }
 
                             items[item].descriptions.forEach(function (description) {
                                 if(/sticker_info/.test(description.value)){
@@ -107,7 +116,8 @@ chrome.runtime.onMessage.addListener(
                                 isStatrack: isStatrack,
                                 isSouvenir: isSouvenir,
                                 starInName: starInName,
-                                stickers: stickers
+                                stickers: stickers,
+                                nametag: nametag
                             })
                         }
                     }
