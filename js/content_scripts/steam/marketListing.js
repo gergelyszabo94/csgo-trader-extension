@@ -24,7 +24,7 @@ $("#largeiteminfo_item_descriptors").append(exteriors);
 const genericMarketLink = "https://steamcommunity.com/market/listings/730/";
 const stattrak = "StatTrak%E2%84%A2%20";
 const souvenir = "Souvenir%20";
-const fullName = $(".market_listing_nav").children($("a")).last().text();
+const fullName = decodeURIComponent(window.location.href).split("listings/730/")[1];
 let weaponName = "";
 let isSouvenir = false;
 let star = "";
@@ -52,11 +52,11 @@ if(fullName.split("(")[1]===undefined){ // in case there is no exterior (vanilla
     $("#otherExteriors").hide();
 }
 
-$("#fnLink").attr("href", genericMarketLink + star + weaponName + "%28Factory%20New%29");
-$("#mwLink").attr("href", genericMarketLink + star + weaponName + "%28Minimal%20Wear%29");
-$("#ftLink").attr("href", genericMarketLink + star + weaponName + "%28Field-Tested%29");
-$("#wwLink").attr("href", genericMarketLink + star + weaponName + "%28Well-Worn%29");
-$("#bsLink").attr("href", genericMarketLink + star + weaponName + "%28Battle-Scarred%29");
+$("#fnLink").attr("href", genericMarketLink + star + weaponName + "(Factory New)");
+$("#mwLink").attr("href", genericMarketLink + star + weaponName + "(Minimal Wear)");
+$("#ftLink").attr("href", genericMarketLink + star + weaponName + "(Field-Tested)");
+$("#wwLink").attr("href", genericMarketLink + star + weaponName + "(Well-Worn)");
+$("#bsLink").attr("href", genericMarketLink + star + weaponName + "(Battle-Scarred)");
 
 if(isSouvenir||thereSouvenirForThisItem){
     $st = $(".stattrakOrange");
@@ -64,31 +64,31 @@ if(isSouvenir||thereSouvenirForThisItem){
     $st.removeClass("stattrakOrange");
 
     $fnst=$("#fnSTLink");
-    $fnst.attr("href", genericMarketLink + souvenir + weaponName + "%28Factory%20New%29");
+    $fnst.attr("href", genericMarketLink + souvenir + weaponName + "(Factory New)");
     $fnst.find("span").text(chrome.i18n.getMessage("souvenir")+" " + chrome.i18n.getMessage("fn_long"));
 
     $mwst=$("#mwSTLink");
-    $mwst.attr("href", genericMarketLink + souvenir + weaponName + "%28Minimal%20Wear%29");
+    $mwst.attr("href", genericMarketLink + souvenir + weaponName + "(Minimal Wear)");
     $mwst.find("span").text(chrome.i18n.getMessage("souvenir")+" " + chrome.i18n.getMessage("mw_long"));
 
     $ftst=$("#ftSTLink");
-    $ftst.attr("href", genericMarketLink + souvenir + weaponName + "%28Field-Tested%29");
+    $ftst.attr("href", genericMarketLink + souvenir + weaponName + "(Field-Tested)");
     $ftst.find("span").text(chrome.i18n.getMessage("souvenir")+" " + chrome.i18n.getMessage("ft_long"));
 
     $wwst=$("#wwSTLink");
-    $wwst.attr("href", genericMarketLink + souvenir + weaponName + "%28Well-Worn%29");
+    $wwst.attr("href", genericMarketLink + souvenir + weaponName + "(Well-Worn)");
     $wwst.find("span").text(chrome.i18n.getMessage("souvenir")+" " + chrome.i18n.getMessage("ww_long"));
 
     $bsst=$("#bsSTLink");
-    $bsst.attr("href", genericMarketLink + souvenir + weaponName + "%28Battle-Scarred%29");
+    $bsst.attr("href", genericMarketLink + souvenir + weaponName + "(Battle-Scarred)");
     $bsst.find("span").text(chrome.i18n.getMessage("souvenir")+" " + chrome.i18n.getMessage("bs_long"));
 }
 else{
-    $("#fnSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Factory%20New%29");
-    $("#mwSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Minimal%20Wear%29");
-    $("#ftSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Field-Tested%29");
-    $("#wwSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Well-Worn%29");
-    $("#bsSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Battle-Scarred%29");
+    $("#fnSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "(Factory New)");
+    $("#mwSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "(Minimal Wear)");
+    $("#ftSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "(Field-Tested)");
+    $("#wwSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "(Well-Worn)");
+    $("#bsSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "(Battle-Scarred)");
 }
 
 $("#largeiteminfo_item_actions").append(inBrowserInspectButton);
