@@ -114,26 +114,29 @@ $("#get_float").click(function () {
     let listingID = $(this).attr("data-listing-id");
     let inspectLink = $(this).attr("inspect-link");
 
-    $(".popup_body.popup_menu").hide();
+    $parentElement= $("#listing_"+listingID+"_name").parent();
+    if($parentElement.attr("data-floatBar-added")){
 
-    chrome.runtime.sendMessage({getFloatInfo: inspectLink}, function(response) {
-        try{
-            float = response.floatInfo.floatvalue;
-            paintIndex = response.floatInfo.paintindex;
-            paintSeed = response.floatInfo.paintseed;
-            origin = response.floatInfo.origin_name;
-            min = response.floatInfo.min;
-            max = response.floatInfo.max;
-            stickers = response.floatInfo.stickers;
+    }
+    else{
+        chrome.runtime.sendMessage({getFloatInfo: inspectLink}, function(response) {
+            try{
+                float = response.floatInfo.floatvalue;
+                paintIndex = response.floatInfo.paintindex;
+                paintSeed = response.floatInfo.paintseed;
+                origin = response.floatInfo.origin_name;
+                min = response.floatInfo.min;
+                max = response.floatInfo.max;
+                stickers = response.floatInfo.stickers;
 
-        }
-        catch{
+            }
+            catch{
 
-        }
+            }
 
-        let position = float.toFixed(2)*100-2;
+            let position = float.toFixed(2)*100-2;
 
-        let floatBar = `
+            let floatBar = `
 <div class="floatBarMarket">
     <div class="floatToolTip" style="left: ${position}%">
         <div>Float: <span id="float1DropTarget">${float.toFixed(4)}</span></div>
@@ -160,34 +163,35 @@ $("#get_float").click(function () {
 </div>
 </div>`;
 
-        // //sticker wear to sticker icon tooltip
-        // stickers.forEach(function (stickerInfo, index) {
-        //     let wear = 100;
-        //     if(stickerInfo.wear!==null){
-        //         wear =  Math.trunc(stickerInfo.wear*100);
-        //     }
-        //     $currentSticker1 = $("#stickers1").find($(".stickerSlot")).eq(index);
-        //     $currentSticker0 = $("#stickers0").find($(".stickerSlot")).eq(index);
-        //     $currentSticker1.attr("data-tooltip", stickerInfo.name + " - Condition: " + wear + "%");
-        //     $currentSticker0.attr("data-tooltip", stickerInfo.name + " - Condition: " + wear + "%");
-        //     $currentSticker1.find("img").css("opacity", wear/100);
-        //     $currentSticker0.find("img").css("opacity", wear/100);
-        // });
-        //
+            // //sticker wear to sticker icon tooltip
+            // stickers.forEach(function (stickerInfo, index) {
+            //     let wear = 100;
+            //     if(stickerInfo.wear!==null){
+            //         wear =  Math.trunc(stickerInfo.wear*100);
+            //     }
+            //     $currentSticker1 = $("#stickers1").find($(".stickerSlot")).eq(index);
+            //     $currentSticker0 = $("#stickers0").find($(".stickerSlot")).eq(index);
+            //     $currentSticker1.attr("data-tooltip", stickerInfo.name + " - Condition: " + wear + "%");
+            //     $currentSticker0.attr("data-tooltip", stickerInfo.name + " - Condition: " + wear + "%");
+            //     $currentSticker1.find("img").css("opacity", wear/100);
+            //     $currentSticker0.find("img").css("opacity", wear/100);
+            // });
+            //
 
-        if(float===0){
-            $("#listing_"+listingID+"_name").parent().append("<div>Could not get Float from csgofloat.com</div>");
-        }
-        else{
-            $("#listing_"+listingID+"_name").parent().append(floatBar);
-        }
+            if(float===0){
+                $parentElement.append("<div>Could not get Float from csgofloat.com</div>");
+            }
+            else{
+                $parentElement.attr("data-floatBar-added", true);
+                $parentElement.append(floatBar);
+            }
 
 
-        $(".showTechnical").click(function () {
-            $(".floatTechnical").toggle();
+            $(".showTechnical").click(function () {
+                $(".floatTechnical").toggle();
+            });
         });
-    });
-
+    }
 });
 
 if(/Doppler/.test(window.location.href)){
