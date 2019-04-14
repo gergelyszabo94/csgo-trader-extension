@@ -107,6 +107,14 @@ const stickers0 = `
     <div class="descriptor customStickers" id="stickers0">
     </img>`;
 
+const nametag1 = `
+    <div class="nametag" id="nametag1"></div>
+    </img>`;
+
+const nametag0 = `
+    <div class="nametag" id="nametag0"></div>
+    </img>`;
+
 
 //mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
 
@@ -170,6 +178,7 @@ setInterval(function () {
 
 //adds everything that is per item, like trade lock, exterior, doppler phases, border colors
 function addPerItemInfo(updating){
+    $(".slot_app_fraudwarning").css({"top":"19px", "left":"75px"});
     $items = $(".item.app730.context2");
     if($items.length!==0){
         chrome.storage.sync.get(['colorfulItems'], function(result) {
@@ -262,12 +271,12 @@ function addElements(){
         $("#iteminfo1_item_tags").remove();
         $("#iteminfo0_item_tags").remove();
 
-        //adds float bar
+        //adds float bar, sticker info, nametag
         if(!$("#floatBar1").length) {
-            $("#iteminfo1_content").children().first().after(floatBar1);
+            $("#iteminfo1_content").children().first().after(nametag1, stickers1, floatBar1);
         }
         if(!$("#floatBar0").length) {
-            $("#iteminfo0_content").children().first().after(floatBar0);
+            $("#iteminfo0_content").children().first().after(nametag0, stickers0, floatBar0);
         }
 
         $(".floatTechnical").hide();
@@ -284,14 +293,6 @@ function addElements(){
         }
         if(!$("#otherExteriors0").length) {
             $("#iteminfo0_item_descriptors").after(exteriors0);
-        }
-
-        //adds custom sticker info
-        if(!$("#stickers1").length) {
-            $("#floatBar1").before(stickers1);
-        }
-        if(!$("#stickers0").length) {
-            $("#floatBar0").before(stickers0);
         }
 
         //hides "tradable after" in one's own inventory
@@ -315,6 +316,21 @@ function addElements(){
         $tradability0 = $("#iteminfo0_tradability");
 
         if(item){
+            //add nametag
+            $nametag0 = $("#nametag0");
+            $nametag1 = $("#nametag1");
+            if(item.nametag!==undefined){
+                $nametag0.show();
+                $nametag1.show();
+                $nametag0.text(item.nametag);
+                $nametag1.text(item.nametag);
+                $("#iteminfo1_fraud_warnings").remove();
+                $("#iteminfo0_fraud_warnings").remove();
+            }
+            else{
+                $nametag0.hide();
+                $nametag1.hide();
+            }
             //repositions stickers
             if(item.stickers.length!==0){
                 $("#sticker_info").remove();

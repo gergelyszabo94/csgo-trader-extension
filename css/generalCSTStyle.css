@@ -222,6 +222,14 @@ progress {
     border-color: white !important;
 }
 
+.nametag{
+    color: var(--steam-nametag-red);
+    font-size: 1.2rem;
+    position: absolute;
+    top: 10px;
+    right: 80px;
+}
+
 /**
  * Tooltip Styles
  */
