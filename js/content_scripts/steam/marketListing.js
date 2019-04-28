@@ -238,3 +238,45 @@ if(/Doppler/.test(window.location.href)){
         childList: true
     });
 }
+
+// the promise will be stored here temporarily
+let listingsPromise = undefined;
+
+//listens to the message events on the extension side of the communication
+window.addEventListener('message', e => {
+    if (e.data.type === 'listings') {
+        listingsPromise(e.data.listingInfo);
+        listingsPromise = undefined;
+    }
+});
+
+//sends the message to the page side to get the info
+const getListings = function() {
+    window.postMessage(
+        {
+            type: 'requestListings'
+        },
+        '*'
+    );
+    return new Promise(resolve => {
+        listingsPromise = resolve;
+    });
+};
+
+//this injected script listens to the messages from the extension side and responds with the page context info needed
+let scriptToInject = `<script id="getListings">
+    window.addEventListener('message', (e) => {
+        if (e.data.type == 'requestListings') {
+            window.postMessage({
+                type: 'listings',
+                listingInfo: g_rgListingInfo
+            }, '*');
+        }
+    });
+</script>`;
+$("body").append(scriptToInject);
+
+getListings().then(listings => {
+    //console.log(listings);
+});
+
