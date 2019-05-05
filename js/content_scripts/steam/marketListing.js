@@ -240,43 +240,76 @@ if(/Doppler/.test(window.location.href)){
 }
 
 // the promise will be stored here temporarily
-let listingsPromise = undefined;
+let itemsPromise = undefined;
 
 //listens to the message events on the extension side of the communication
 window.addEventListener('message', e => {
-    if (e.data.type === 'listings') {
-        listingsPromise(e.data.listingInfo);
-        listingsPromise = undefined;
+    if (e.data.type === 'items') {
+        let assets = e.data.assets[730][2];
+        let listings = e.data.listings;
+        for (let listing in listings){
+            let assetid = listings[listing].asset.id;
+
+            for(let asset in assets){
+                let stickers = [];
+                assets[asset].descriptions.forEach(function (description) {
+                    if(/sticker_info/.test(description.value)){
+                        let names = description.value.split("><br>")[1].split(": ")[1].split(", ");
+                        names[names.length-1] = names[names.length-1].split("<")[0];
+                        let iconURLs = description.value.split("src=\"");
+                        iconURLs.shift();
+                        iconURLs.forEach(function (iconURL, index) {
+                            iconURLs[index] = iconURL.split("\"><")[0];
+                        });
+                        names.forEach(function (name, index) {
+                            stickers.push({
+                                name: name,
+                                iconURL: iconURLs[index],
+                                marketURL: "https://steamcommunity.com/market/listings/730/Sticker%20%7C%20" + name
+                            });
+                        });
+                    }
+                });
+
+                if(assetid === assets[asset].id){
+                    listings[listing].asset = assets[asset];
+                    listings[listing].asset.stickers = stickers;
+                }
+            }
+        }
+        itemsPromise(listings);
+        itemsPromise = undefined;
     }
 });
 
 //sends the message to the page side to get the info
-const getListings = function() {
+const getTtems = function() {
     window.postMessage(
         {
-            type: 'requestListings'
+            type: 'requestItems'
         },
         '*'
     );
     return new Promise(resolve => {
-        listingsPromise = resolve;
+        itemsPromise = resolve;
     });
 };
 
 //this injected script listens to the messages from the extension side and responds with the page context info needed
-let scriptToInject = `<script id="getListings">
+let scriptToInject = `<script id="getItems">
     window.addEventListener('message', (e) => {
-        if (e.data.type == 'requestListings') {
+        if (e.data.type == 'requestItems') {
             window.postMessage({
-                type: 'listings',
-                listingInfo: g_rgListingInfo
+                type: 'items',
+                listings: g_rgListingInfo,
+                assets: g_rgAssets
             }, '*');
         }
     });
 </script>`;
 $("body").append(scriptToInject);
 
-getListings().then(listings => {
-    //console.log(listings);
+getTtems().then(listings => {
+    console.log(listings);
 });
 
