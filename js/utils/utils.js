@@ -688,6 +688,7 @@ function parseStickerInfo(descriptions, linkType){
     descriptions.forEach(function (description) {
         if(/sticker_info/.test(description.value)){
             let names = description.value.split("><br>")[1].split(": ")[1].split("</center>")[0].split(", ");
+            names = handleStickerNamesWithCommas(names);
             let iconURLs = description.value.split("src=\"");
             iconURLs.shift();
             iconURLs.forEach(function (iconURL, index) {
@@ -704,4 +705,31 @@ function parseStickerInfo(descriptions, linkType){
     });
 
     return stickers;
+}
+
+function handleStickerNamesWithCommas(names){
+    let nameWithCommaFound = false;
+    names.forEach(function (name, index) {
+        if(name==="Don't Worry"&&names[index+1]==="I'm Pro"){
+            names[index]="Don't Worry, I'm Pro";
+            names = removeFromArray(names, index+1);
+            nameWithCommaFound = true;
+        }
+    });
+    if(nameWithCommaFound){
+        return handleStickerNamesWithCommas(names);
+    }
+    else{
+        return names;
+    }
+}
+
+function removeFromArray(array, arrayIndex){
+    let newArray = [];
+    array.forEach(function (element, index) {
+        if(!(index===arrayIndex)){
+            newArray.push(element);
+        }
+    });
+    return newArray;
 }
