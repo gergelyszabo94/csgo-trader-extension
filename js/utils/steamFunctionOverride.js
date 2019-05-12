@@ -182,13 +182,18 @@ function PopulateActions( prefix, elActions, rgActions, item, owner )
 			HandleGetGooValueAction( prefix, item, strLink );
 			continue;
 		}
+		
+		let target = "_self"; 
+		if(action.id==="inbrowser"){
+		    target = "_blank";
+		}
 
 		var elAction = new Element(
 			'a',
 			{
 				'class': 'btn_small btn_grey_white_innerfade',
 				href: strLink,
-				target: "_blank"
+				target: target
 			}
 		);
 		var elSpan = new Element( 'span' );
