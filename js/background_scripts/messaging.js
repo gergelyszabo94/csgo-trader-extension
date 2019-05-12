@@ -133,9 +133,10 @@ chrome.runtime.onMessage.addListener(
                     sendResponse({openInternalPage: request.openInternalPage});
                 }
                 else{
-                    sendResponse({openInternalPage: "No permission"});
+                    sendResponse({openInternalPage: "no_tabs_api_access"});
                 }
             });
+            return true;
         }
         else if (request.setAlarm!==undefined){
             chrome.alarms.create(request.setAlarm.name, {when: new Date(request.setAlarm.when).valueOf()});

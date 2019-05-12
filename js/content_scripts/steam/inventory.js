@@ -360,6 +360,8 @@ function addElements(){
             $iteminfo0.after(module0);
         }
 
+        $(".descriptor.tradability.bookmark").text("Bookmark and Notify");
+
         //tradability logic and countdown initiation
         $tradability1 =  $("#iteminfo1_tradability");
         $tradability0 = $("#iteminfo0_tradability");
@@ -759,6 +761,7 @@ function addDopplerPhase(item, dopplerInfo){
 
 function addClickListener(){
     $(".module").click(function () {
+        $module = $(this);
         let bookmark = {
             itemInfo: getItemByAssetID(getAssetIDofActive()),
             owner: getInventoryOwnerID(),
@@ -774,7 +777,11 @@ function addClickListener(){
                 if(bookmark.itemInfo.tradability!=="Tradable"){
                     chrome.runtime.sendMessage({setAlarm: {name:  bookmark.itemInfo.assetid, when: bookmark.itemInfo.tradability}}, function(response) {});
                 }
-                chrome.runtime.sendMessage({openInternalPage: "/html/bookmarks.html"}, function(response) {});
+                chrome.runtime.sendMessage({openInternalPage: "/html/bookmarks.html"}, function(response) {
+                    if(response.openInternalPage==="no_tabs_api_access"){
+                        $module.find($(".descriptor.tradability.bookmark")).text("Bookmarked! Open the bookmarks menu to see what you have saved!");
+                    }
+                });
             });
         });
     });
