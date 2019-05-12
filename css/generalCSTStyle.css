@@ -257,7 +257,7 @@ progress {
 /* Position tooltip above the element */
 [data-tooltip]:before {
     position: absolute;
-    bottom: 350%;
+    bottom: 150%;
     left: 50%;
     margin-bottom: 5px;
     margin-left: -80px;
@@ -290,6 +290,13 @@ progress {
     font-size: 0;
     line-height: 0;
 }
+/* Show tooltip content on hover */
+[data-tooltip]:hover:before,
+[data-tooltip]:hover:after {
+    visibility: visible;
+    opacity: 1;
+}
+
 
 /*Market tooltip - the simple data-tooltip seems to collide with something with the name*/
 
