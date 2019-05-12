@@ -98,6 +98,10 @@ select:active {
 
 /*Classes*/
 
+.navlogo{
+    margin-right: 10px;
+}
+
 .buildingBlock{
     background-color: #23272b;
     margin: 1rem;
