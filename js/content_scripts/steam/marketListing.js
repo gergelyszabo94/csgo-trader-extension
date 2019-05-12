@@ -316,13 +316,16 @@ function addStickers() {
 
     getItems().then(listings => {
         $(".market_listing_row.market_recent_listing_row").each(function () {
-            let listingID = $(this).attr("id").split("listing_")[1];
-            $(this).find(".market_listing_item_name_block").append(`<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`);
-            let stickers = listings[listingID].asset.stickers;
+            if(!($(this).parent().attr("id")==="tabContentsMyActiveMarketListingsRows")){
+                let listingID = $(this).attr("id").split("listing_")[1];
+                console.log(listingID);
+                $(this).find(".market_listing_item_name_block").append(`<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`);
+                let stickers = listings[listingID].asset.stickers;
 
-            stickers.forEach(function (stickerInfo) {
-                $("#stickerHolder_" + listingID).append(`<span class="stickerSlotMarket" data-tooltip-market="${stickerInfo.name}"><a href="${stickerInfo.marketURL}" target="_blank"><img src="${stickerInfo.iconURL}" class="stickerIcon"></a></span>`);
-            })
+                stickers.forEach(function (stickerInfo) {
+                    $("#stickerHolder_" + listingID).append(`<span class="stickerSlotMarket" data-tooltip-market="${stickerInfo.name}"><a href="${stickerInfo.marketURL}" target="_blank"><img src="${stickerInfo.iconURL}" class="stickerIcon"></a></span>`);
+                })
+            }
         });
     });
 }
