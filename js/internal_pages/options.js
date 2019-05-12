@@ -294,3 +294,22 @@ $tradersbump.click(function() {
         });
     }
 });
+
+$markscammers = $("#markScammers");
+
+chrome.storage.sync.get(['markScammers'], function(result) {
+    if(result.markScammers){
+        $markscammers.prop("checked", true);
+    }
+});
+
+$markscammers.click(function() {
+    if(this.checked) {
+        chrome.storage.sync.set({markScammers: true}, function() {
+        });
+    }
+    else{
+        chrome.storage.sync.set({markScammers: false}, function() {
+        });
+    }
+});

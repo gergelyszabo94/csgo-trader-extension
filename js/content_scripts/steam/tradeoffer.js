@@ -1,7 +1,11 @@
 // const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
 
 overrideHandleTradeActionMenu();
-warnOfScammer(getTradePartnerSteamID(), "offer");
+chrome.storage.sync.get(['markScammers'], function(result) {
+    if(result.markScammers){
+        warnOfScammer(getTradePartnerSteamID(), "offer");
+    }
+});
 
 // MutationObserver = window.MutationObserver;
 //

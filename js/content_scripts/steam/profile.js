@@ -1,7 +1,11 @@
 //ensures that we are on a profile page, it's not possible with simple regex
 if($("body").hasClass("profile_page")){
     const profileOwnerSteamID = getProfileOwnerSteamID();
-    warnOfScammer(profileOwnerSteamID, "profile");
+    chrome.storage.sync.get(['markScammers'], function(result) {
+        if(result.markScammers){
+            warnOfScammer(profileOwnerSteamID, "profile");
+        }
+    });
 
     if(getUserSteamID()===profileOwnerSteamID){ //when on the logged in user's own profile
         chrome.storage.sync.get(['reoccuringMessage', 'showReoccButton'], function(result) {
