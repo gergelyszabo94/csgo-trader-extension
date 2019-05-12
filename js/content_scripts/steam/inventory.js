@@ -495,7 +495,7 @@ function addElements(){
                     //sticker wear to sticker icon tooltip
                     stickers.forEach(function (stickerInfo, index) {
                         let wear = 100;
-                        if(stickerInfo.wear!==null){
+                        if(stickerInfo.wear!==undefined){
                             wear =  Math.trunc(stickerInfo.wear*100);
                         }
                         $currentSticker1 = $("#stickers1").find($(".stickerSlot")).eq(index);
