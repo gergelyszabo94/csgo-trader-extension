@@ -222,14 +222,14 @@ chrome.permissions.contains({
 
 $tabsAPI.click(function() {
     if(this.checked) {
-    chrome.permissions.request({
-        permissions: ['tabs']
-    }, function(granted) {
-        if (granted) {}
-        else {
-            $tabsAPI.prop("checked", false);
-        }
-    });
+        chrome.permissions.request({
+            permissions: ['tabs']
+        }, function(granted) {
+            if (granted) {}
+            else {
+                $tabsAPI.prop("checked", false);
+            }
+        });
     }
     else{
         chrome.permissions.remove({
