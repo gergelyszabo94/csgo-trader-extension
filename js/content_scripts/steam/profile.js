@@ -83,7 +83,8 @@ if($("body").hasClass("profile_page")){
                         '🔴🔴🔴🔴🔴🔴⚪⚪⚪🔴', //emoticon swastika
                         'asians are crazy',
                         'asian_guy',
-                        'Your Steam ID is randomly selected'
+                        'Your Steam ID is randomly selected',
+                        'get skins which havent even released lol'
                     ];
 
                     let spamTExtCheck = new RegExp(commentsToReport.join("|"), "i");
