@@ -675,3 +675,33 @@ function warnOfScammer(steamID, page) {
     });
 
 }
+
+function parseStickerInfo(descriptions, linkType){
+    let stickers = [];
+    let link = "";
+    if(linkType==="search"){
+        link = "https://steamcommunity.com/market/search?q=";
+    }
+    else if(linkType==="direct"){
+        link = "https://steamcommunity.com/market/listings/730/Sticker%20%7C%20";
+    }
+    descriptions.forEach(function (description) {
+        if(/sticker_info/.test(description.value)){
+            let names = description.value.split("><br>")[1].split(": ")[1].split("</center>")[0].split(", ");
+            let iconURLs = description.value.split("src=\"");
+            iconURLs.shift();
+            iconURLs.forEach(function (iconURL, index) {
+                iconURLs[index] = iconURL.split("\"><")[0];
+            });
+            names.forEach(function (name, index) {
+                stickers.push({
+                    name: name,
+                    iconURL: iconURLs[index],
+                    marketURL: link + name
+                });
+            });
+        }
+    });
+
+    return stickers;
+}

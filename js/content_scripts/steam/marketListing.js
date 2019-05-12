@@ -10,25 +10,7 @@ window.addEventListener('message', e => {
             let assetid = listings[listing].asset.id;
 
             for(let asset in assets){
-                let stickers = [];
-                assets[asset].descriptions.forEach(function (description) {
-                    if(/sticker_info/.test(description.value)){
-                        let names = description.value.split("><br>")[1].split(": ")[1].split(", ");
-                        names[names.length-1] = names[names.length-1].split("<")[0];
-                        let iconURLs = description.value.split("src=\"");
-                        iconURLs.shift();
-                        iconURLs.forEach(function (iconURL, index) {
-                            iconURLs[index] = iconURL.split("\"><")[0];
-                        });
-                        names.forEach(function (name, index) {
-                            stickers.push({
-                                name: name,
-                                iconURL: iconURLs[index],
-                                marketURL: "https://steamcommunity.com/market/search?q=" + name
-                            });
-                        });
-                    }
-                });
+                let stickers = parseStickerInfo(assets[asset].descriptions, "search");
 
                 if(assetid === assets[asset].id){
                     listings[listing].asset = assets[asset];
@@ -318,7 +300,6 @@ function addStickers() {
         $(".market_listing_row.market_recent_listing_row").each(function () {
             if(!($(this).parent().attr("id")==="tabContentsMyActiveMarketListingsRows")){
                 let listingID = $(this).attr("id").split("listing_")[1];
-                console.log(listingID);
                 $(this).find(".market_listing_item_name_block").append(`<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`);
                 let stickers = listings[listingID].asset.stickers;
 
