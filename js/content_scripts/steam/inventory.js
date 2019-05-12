@@ -115,9 +115,58 @@ const nametag0 = `
     <div class="nametag" id="nametag0"></div>
     </img>`;
 
+// the promise will be stored here temporarily
+let inventoryPromise = undefined;
+
+//listens to the message events on the extension side of the communication
+window.addEventListener('message', e => {
+    if (e.data.type === 'inventory') {
+        inventoryPromise(e.data);
+        inventoryPromise = undefined;
+    }
+});
+
+//sends the message to the page side to get the info
+const getInventory = function() {
+    window.postMessage(
+        {
+            type: 'requestInventory'
+        },
+        '*'
+    );
+    return new Promise(resolve => {
+        inventoryPromise = resolve;
+    });
+};
+
+//this injected script listens to the messages from the extension side and responds with the page context info needed
+let scriptToInject = `<script id="getItems">
+    window.addEventListener('message', (e) => {
+        if (e.data.type == 'requestInventory') {
+            let inventory = UserYou.getInventory(730,2);
+            let assets = inventory.m_rgAssets;
+            let assetKeys= Object.keys(assets);
+            let trimmedAssets = [];
+            
+            for(let assetKey of assetKeys){
+                let asset = {
+                    amount: assets[assetKey].amount,
+                    assetid: assets[assetKey].assetid,
+                    contextid: assets[assetKey].contextid,
+                    description: assets[assetKey].description
+                };
+                trimmedAssets.push(asset);
+            }
+            window.postMessage({
+                type: 'inventory',
+                inventory: trimmedAssets
+            }, '*');
+        }
+    });
+</script>`;
+$("body").append(scriptToInject);
 
 //mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
-
 MutationObserver = window.MutationObserver;
 
 let observer = new MutationObserver(function(mutations, observer) {
@@ -373,12 +422,21 @@ function addElements(){
                 $("#iteminfo0_countdown").show();
             }
 
-            if(item.dopplerInfo!==undefined){
-                changeName(item.name+" ("+ item.dopplerInfo.name+")",item.name_color,item.marketlink);
-            }
-            else{
-                changeName(item.name,item.name_color,item.marketlink);
-            }
+            let name = item.name;
+
+            getInventory().then(inventory => {
+                inventory.inventory.forEach(function (onPageItem) {
+                    if(onPageItem.assetid===activeID){
+                        name = onPageItem.description.name;
+                    }
+                });
+                if(item.dopplerInfo!==undefined){
+                    changeName(name+" ("+ item.dopplerInfo.name+")",item.name_color,item.marketlink);
+                }
+                else{
+                    changeName(name,item.name_color,item.marketlink);
+                }
+            });
 
 
             //removes sih "Get Float" button - does not really work since it's loaded after this script..
