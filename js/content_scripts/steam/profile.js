@@ -1,6 +1,17 @@
 //ensures that we are on a profile page, it's not possible with simple regex
 if($("body").hasClass("profile_page")){
     const profileOwnerSteamID = getProfileOwnerSteamID();
+    const copyPermalink = `<a class="popup_menu_item" href="#" id="copy_profile_perma_link"><img style="width: 16px; height: 16px" src="${chrome.runtime.getURL("images/paperclip.png")}">&nbsp; Copy Profile Permalink</a>`;
+    const textareaToCopy = `<textarea id="text_area_to_copy_permalink" style="position: absolute; left: -9999px" readonly="">https://steamcommunity.com/profiles/${profileOwnerSteamID}</textarea>`;
+    $("#profile_action_dropdown").find(".popup_body.popup_menu.shadow_content").append(copyPermalink);
+
+    $("#copy_profile_perma_link").click(function () {
+        $("body").append(textareaToCopy);
+        $("#text_area_to_copy_permalink").select();
+        document.execCommand('copy');
+        $("#text_area_to_copy_permalink").remove();
+    });
+
     chrome.storage.sync.get(['markScammers'], function(result) {
         if(result.markScammers){
             warnOfScammer(profileOwnerSteamID, "profile");

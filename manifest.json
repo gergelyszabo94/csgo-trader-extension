@@ -110,7 +110,10 @@
         "js/content_scripts/tradersbump.js"]
     }
   ],
-  "web_accessible_resources": ["images/scammerbackground.jpg"],
+  "web_accessible_resources": [
+    "images/scammerbackground.jpg",
+    "images/paperclip.png"
+  ],
   "browser_action": {
     "default_popup": "html/popup.html",
     "default_icon": {
