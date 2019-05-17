@@ -258,11 +258,13 @@ let observer = new MutationObserver(function(mutations, observer) {
     }
 });
 
-observer.observe(document.getElementById("searchResultsRows"), {
-    subtree: true,
-    attributes: false,
-    childList: true
-});
+if($("#searchResultsRows").length!==0){
+    observer.observe(document.getElementById("searchResultsRows"), {
+        subtree: true,
+        attributes: false,
+        childList: true
+    });
+}
 
 
 function addPhasesIndicator(){
