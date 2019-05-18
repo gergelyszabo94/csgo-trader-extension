@@ -313,3 +313,22 @@ $markscammers.click(function() {
         });
     }
 });
+
+$numberoflistings = $("#numberOfListings");
+
+chrome.storage.sync.get(['numberOfListings'], function(result) {
+    $numberoflistings.val(result.numberOfListings);
+});
+
+$numberoflistings.on('input', function() {
+    let number = parseInt($(this).val());
+    if(number<10){
+        number = 10;
+    }
+    else if(number>100){
+        number = 100;
+    }
+    chrome.storage.sync.set({numberOfListings: number}, function() {
+    });
+});
+
