@@ -10,6 +10,29 @@ chrome.runtime.onMessage.addListener(
                 let ids = body.rgInventory;
 
                 let itemsPropertiesToReturn = [];
+                let duplicates = {};
+
+                for (let asset in ids) {
+                    let assetid = ids[asset].id;
+
+                    for (let item in items) {
+                        if (ids[asset].classid === items[item].classid && ids[asset].instanceid === items[item].instanceid) {
+                            let market_hash_name = items[item].market_hash_name;
+                            if(duplicates[market_hash_name]===undefined){
+                                let instances = [assetid];
+                                duplicates[market_hash_name] =
+                                    {
+                                        num: 1,
+                                        instances: instances
+                                    }
+                            }
+                            else{
+                                duplicates[market_hash_name].num=duplicates[market_hash_name].num+1;
+                                duplicates[market_hash_name].instances.push(assetid);
+                            }
+                        }
+                    }
+                }
 
                 for (let asset in ids) {
                     let assetid = ids[asset].id;
@@ -98,7 +121,8 @@ chrome.runtime.onMessage.addListener(
                                 isSouvenir: isSouvenir,
                                 starInName: starInName,
                                 stickers: stickers,
-                                nametag: nametag
+                                nametag: nametag,
+                                duplicates: duplicates[market_hash_name]
                             })
                         }
                     }
