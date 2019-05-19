@@ -100,20 +100,22 @@ const exteriors0 = `
     </div>`;
 
 const stickers1 = `
-    <div class="descriptor customStickers" id="stickers1">
-    </div>`;
+    <div class="descriptor customStickers" id="stickers1"></div>`;
 
 const stickers0 = `
-    <div class="descriptor customStickers" id="stickers0">
-    </img>`;
+    <div class="descriptor customStickers" id="stickers0"></div>`;
 
 const nametag1 = `
-    <div class="nametag" id="nametag1"></div>
-    </img>`;
+    <div class="nametag" id="nametag1"></div>`;
 
 const nametag0 = `
-    <div class="nametag" id="nametag0"></div>
-    </img>`;
+    <div class="nametag" id="nametag0"></div>`;
+
+const duplicates1 = `
+    <div class="duplicate" id="duplicates1">x1</div>`;
+
+const duplicates0 = `
+    <div class="duplicate" id="duplicates0">x1</div>`;
 
 // the promise will be stored here temporarily
 let inventoryPromise = undefined;
@@ -322,10 +324,10 @@ function addElements(){
 
         //adds float bar, sticker info, nametag
         if(!$("#floatBar1").length) {
-            $("#iteminfo1_content").children().first().after(nametag1, stickers1, floatBar1);
+            $("#iteminfo1_content").children().first().after(nametag1, stickers1, duplicates1, floatBar1);
         }
         if(!$("#floatBar0").length) {
-            $("#iteminfo0_content").children().first().after(nametag0, stickers0, floatBar0);
+            $("#iteminfo0_content").children().first().after(nametag0, stickers0, duplicates0, floatBar0);
         }
 
         $(".floatTechnical").hide();
@@ -402,6 +404,9 @@ function addElements(){
                 $("#stickers1").hide();
                 $("#stickers0").hide();
             }
+            //adds duplicates count
+            $("#duplicates1").text("x"+item.duplicates.num);
+            $("#duplicates0").text("x"+item.duplicates.num);
 
             if(item.tradability==="Tradable"){
                 $tradability1.html(tradable);

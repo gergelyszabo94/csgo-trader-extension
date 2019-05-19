@@ -235,6 +235,17 @@ progress {
     right: 80px;
 }
 
+.duplicate{
+    color: yellow;
+    position: absolute;
+    left: 25px;
+    top: 150px;
+    font-size: 2.5em;
+    font-weight: bold;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+}
+
 /**
  * Tooltip Styles
  */
