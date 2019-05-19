@@ -733,3 +733,18 @@ function removeFromArray(array, arrayIndex){
     });
     return newArray;
 }
+
+function addReplytoCommentsFunctionality() {
+    $(".commentthread_comment_actions").append(`<a class="actionlink replybutton" href="javascript:void(0)" data-tooltip-text="Reply"><img style="height: 16px; width: 16px" src="${chrome.runtime.getURL("images/reply.png")}"></a>`);
+
+    $(".replybutton").click(function () {
+        let commenterName = $(this).parent().parent().find($(".commentthread_author_link")).find("bdi").html().split(" <span class=\"nickname_block\">")[0];
+        let currentContent = $(".commentthread_textarea").val();
+        if(currentContent===""){
+            $(".commentthread_textarea").val(currentContent + "[b]@" + commenterName + "[/b]:");
+        }
+        else{
+            $(".commentthread_textarea").val(currentContent + "\n[b]@" + commenterName + "[/b]:");
+        }
+    });
+}
