@@ -741,15 +741,29 @@ function addReplytoCommentsFunctionality() {
            $commentactions.append(`<a class="actionlink replybutton" href="javascript:void(0)" data-tooltip-text="Reply"><img style="height: 16px; width: 16px" src="${chrome.runtime.getURL("images/reply.png")}"></a>`)
        }
     });
-    
-    $(".replybutton").click(function () {
+
+    $(".replybutton").off("click").on("click",function(){
         let commenterName = $(this).parent().parent().find($(".commentthread_author_link")).find("bdi").html().split(" <span class=\"nickname_block\">")[0];
         let currentContent = $(".commentthread_textarea").val();
         if(currentContent===""){
-            $(".commentthread_textarea").val(currentContent + "[b]@" + commenterName + "[/b]:");
+            $(".commentthread_textarea").val(currentContent + "[b]@" + commenterName + "[/b]: ");
         }
         else{
-            $(".commentthread_textarea").val(currentContent + "\n[b]@" + commenterName + "[/b]:");
+            $(".commentthread_textarea").val(currentContent + "\n[b]@" + commenterName + "[/b]: ");
         }
     });
+}
+
+function addCommentsMutationObserver(){
+    let observer = new MutationObserver(function(mutations, observer) {
+        addReplytoCommentsFunctionality();
+    });
+
+    if($(".commentthread_comments").length!==0){
+        observer.observe($(".commentthread_comments")[0], {
+            subtree: true,
+            attributes: false,
+            childList: true
+        });
+    }
 }

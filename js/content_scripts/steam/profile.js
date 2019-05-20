@@ -13,18 +13,7 @@ if($("body").hasClass("profile_page")){
     });
 
     addReplytoCommentsFunctionality();
-
-    let observer = new MutationObserver(function(mutations, observer) {
-        addReplytoCommentsFunctionality();
-    });
-
-    if($(".commentthread_comments").length!==0){
-        observer.observe($(".commentthread_comments")[0], {
-            subtree: true,
-            attributes: false,
-            childList: true
-        });
-    }
+    addCommentsMutationObserver();
 
     chrome.storage.sync.get(['markScammers'], function(result) {
         if(result.markScammers){
