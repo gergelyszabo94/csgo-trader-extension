@@ -101,7 +101,10 @@ if($("body").hasClass("profile_page")){
                         'asians are crazy',
                         'asian_guy',
                         'Your Steam ID is randomly selected',
-                        'get skins which havent even released lol'
+                        'get skins which havent even released lol',
+                        'TradeSkinsNow.com',
+                        'You will never open cs money again',
+                        'Dear winner'
                     ];
 
                     let spamTExtCheck = new RegExp(commentsToReport.join("|"), "i");
