@@ -503,14 +503,14 @@ function addElements(){
                     stickers.forEach(function (stickerInfo, index) {
                         let wear = 100;
                         if(stickerInfo.wear!==undefined){
-                            wear =  Math.trunc(stickerInfo.wear*100);
+                            wear =  Math.trunc(Math.abs(1-stickerInfo.wear)*100);
                         }
                         $currentSticker1 = $("#stickers1").find($(".stickerSlot")).eq(index);
                         $currentSticker0 = $("#stickers0").find($(".stickerSlot")).eq(index);
                         $currentSticker1.attr("data-tooltip", stickerInfo.name + " - Condition: " + wear + "%");
                         $currentSticker0.attr("data-tooltip", stickerInfo.name + " - Condition: " + wear + "%");
-                        $currentSticker1.find("img").css("opacity", wear/100);
-                        $currentSticker0.find("img").css("opacity", wear/100);
+                        $currentSticker1.find("img").css("opacity", (wear>10) ? wear/100 : (wear/100)+0.1);
+                        $currentSticker0.find("img").css("opacity", (wear>10) ? wear/100 : (wear/100)+0.1);
                     });
 
                     if(float===0){
