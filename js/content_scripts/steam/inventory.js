@@ -274,7 +274,7 @@ function addPerItemInfo(updating){
                                     $item.css({"border-color": "#"+item.dopplerInfo.color, "background-image": "url()", "background-color": "#"+item.dopplerInfo.color});
                                 }
                                 else{
-                                    $item.css({"border-color": item.quality.color, "background-image": "url()", "background-color": item.quality.color+"44"});
+                                    $item.css({"border-color": item.quality.backgroundcolor, "background-image": "url()", "background-color": item.quality.backgroundcolor});
                                 }
                             }
 

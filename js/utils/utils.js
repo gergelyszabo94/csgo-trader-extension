@@ -431,98 +431,112 @@ function getQuality(type){
     let quality = {
         name: "stock",
         prettyName: "Stock",
-        color: "#6a6156"
+        color: "#6a6156",
+        backgroundcolor: "#453b30"
     };
 
     if(/Base Grade/i.test(type)){
         quality = {
             name: "base_grade",
             prettyName: "Base Grade",
-            color: "#FFFFFF"
+            color: "#FFFFFF",
+            backgroundcolor: "#7e7e7e"
         };
     }
     else if(/Classified/i.test(type)){
         quality = {
             name: "classified",
             prettyName: "Classified",
-            color: "#d32ce6"
+            color: "#d32ce6",
+            backgroundcolor: "#6c297f"
         };
     }
     else if(/Consumer Grade/i.test(type)){
         quality = {
             name: "consumer_grade",
             prettyName: "Consumer Grade",
-            color: "#FFFFFF"
+            color: "#FFFFFF",
+            backgroundcolor: "#7e7e7e"
         };
     }
     else if(/Contraband/i.test(type)){
         quality = {
             name: "contraband",
             prettyName: "Contraband",
-            color: "#e4ae39"
+            color: "#e4ae39",
+            backgroundcolor: "#b27d36"
         };
     }
     else if(/Covert/i.test(type)){
         quality = {
             name: "covert",
             prettyName: "Covert",
-            color: "#eb4b4b"
+            color: "#eb4b4b",
+            backgroundcolor: "#653232"
         };
     }
     else if(/Exotic/i.test(type)){
         quality = {
             name: "exotic",
             prettyName: "Exotic",
-            color: "#d32ce6"
+            color: "#d32ce6",
+            backgroundcolor: "#6c297f"
         };
     }
     else if(/Extraordinary/i.test(type)){
         quality = {
             name: "extraordinary",
             prettyName: "Extraordinary",
-            color: "#eb4b4b"
+            color: "#eb4b4b",
+            backgroundcolor: "#653232"
         };
     }
     else if(/High Grade/i.test(type)){
         quality = {
             name: "high_grade",
             prettyName: "High Grade",
-            color: "#4b69ff"
+            color: "#4b69ff",
+            backgroundcolor: "#414e9c"
         };
     }
     else if(/Industrial Grade/i.test(type)){
         quality = {
             name: "industrial_grade",
             prettyName: "Industrial",
-            color: "#5e98d9"
+            color: "#5e98d9",
+            backgroundcolor: "#3d6896"
         };
     }
     else if(/Mil-Spec Grade/i.test(type)){
         quality = {
             name: "milspec_grade",
             prettyName: "Mil-Spec Grade",
-            color: "#4b69ff"
+            color: "#4b69ff",
+            backgroundcolor: "#414e9c"
         };
     }
     else if(/Remarkable/i.test(type)){
         quality = {
             name: "remarkable",
             prettyName: "Remarkable",
-            color: "#8847ff"
+            color: "#8847ff",
+            backgroundcolor: "#50248e"
         };
     }
     else if(/Restricted/i.test(type)){
         quality = {
             name: "restricted",
             prettyName: "Restricted",
-            color: "#8847ff"
+            color: "#8847ff",
+            backgroundcolor: "#50248e"
         };
     }
     else if(/Stock/i.test(type)){
         quality = {
             name: "stock",
             prettyName: "Stock",
-            color: "#FFFFFF"
+            color: "#FFFFFF",
+            backgroundcolor: "#7e7e7e"
         };
     }
     return quality;
