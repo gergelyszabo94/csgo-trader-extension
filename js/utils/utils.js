@@ -765,6 +765,7 @@ function addReplytoCommentsFunctionality() {
         else{
             $(".commentthread_textarea").val(currentContent + "\n[b]@" + commenterName + "[/b]: ");
         }
+        $(".commentthread_textarea").focus();
     });
 }
 
