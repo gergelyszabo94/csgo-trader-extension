@@ -104,6 +104,15 @@
         "js/content_scripts/steam/sharedfile.js"]
     },
     {
+      "matches": ["*://steamcommunity.com/games/*/announcements/detail/*"],
+      "run_at" : "document_idle",
+      "js": [
+        "js/thirdparty/jquery-3.3.1.min.js",
+        "js/utils/steamFunctionOverride.js",
+        "js/utils/utils.js",
+        "js/content_scripts/steam/announcements.js"]
+    },
+    {
       "matches": ["*://steamcommunity.com/chat/*"],
       "run_at" : "document_idle",
       "js": [
