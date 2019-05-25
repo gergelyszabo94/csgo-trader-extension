@@ -833,7 +833,7 @@ function reportComments(){
             $(".commentthread_comment.responsive_body_text").each(function () {
                 $commentthread = $(this);
                 if (spamTExtCheck.test($commentthread.find(".commentthread_comment_text").text()) && !$commentthread.hasClass("hidden_post")) {
-                    $commentthread.find("img")[1].click();
+                    $commentthread.find("a.report_and_hide").find("img").click();
                 }
             });
         }
