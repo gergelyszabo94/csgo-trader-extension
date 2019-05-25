@@ -63,61 +63,7 @@ if($("body").hasClass("profile_page")){
                     }, 500);
                 });
             }
-
-            //flags scam comments that include one of these strings
-            chrome.storage.sync.get(['flagScamComments'], function(result) {
-                if(result.flagScamComments) {
-                    const commentsToReport = [
-                        'free skins CS:GO(100$)',
-                        'for all of your csgo graffitties',
-                        'CS:GO Cases For Keys',
-                        'the amount depends on hours in csgo',
-                        'promocode',
-                        'gives its users FREE',
-                        'for all your graffities and cases',
-                        'Your SteamID is selected as winner',
-                        'CS:GO CASES = 1 CS:GO KEY',
-                        'You are winner on weekly giveaway',
-                        'Do you want free skins',
-                        'Free skins CS:GO',
-                        'replenish your inventory with good skins',
-                        'gives its users a Karambit Fade',
-                        'this guy in my profile gives his skins',
-                        'bot to trade your cases for keys',
-                        'join tradeit and take part at promo action there',
-                        'Do you want free items for',
-                        'Do you want some free skins?',
-                        'watch this video and enjoy',
-                        'tradeit giveaway about',
-                        'Do you want to earn money?',
-                        'I want to collect as much graffities as possible',
-                        'Hi you can take 50 coins with my promo',
-                        'tastyskins',
-                        'gives to his users',
-                        'I\'m a major csgo playe and I\'ll trade my',
-                        'join the GIVEAWAY on gabenskins.pro',
-                        'Trade Your Cases For Keys',
-                        ' join bloodyskins',
-                        '🔴🔴🔴🔴🔴🔴⚪⚪⚪🔴', //emoticon swastika
-                        'asians are crazy',
-                        'asian_guy',
-                        'Your Steam ID is randomly selected',
-                        'get skins which havent even released lol',
-                        'TradeSkinsNow.com',
-                        'You will never open cs money again',
-                        'Dear winner'
-                    ];
-
-                    let spamTExtCheck = new RegExp(commentsToReport.join("|"), "i");
-
-                    $(".commentthread_comment.responsive_body_text").each(function () {
-                        $commentthread = $(this);
-                        if (spamTExtCheck.test($commentthread.find(".commentthread_comment_text").text()) && !$commentthread.hasClass("hidden_post")) {
-                            $commentthread.find("img")[1].click();
-                        }
-                    });
-                }
-            });
+            reportComments();
         });
     }
 
