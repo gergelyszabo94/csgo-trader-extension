@@ -1,2 +1,3 @@
 addReplytoCommentsFunctionality();
 addCommentsMutationObserver();
+reportComments();
