@@ -266,7 +266,7 @@ if($("#searchResultsRows").length!==0){
     });
 }
 
-chrome.storage.sync.get(['numberOfListings'], function(result) {
+chrome.storage.local.get(['numberOfListings'], function(result) {
     if(result.numberOfListings!==10){
         $("body").append(`<script>g_oSearchResults.m_cPageSize = ${result.numberOfListings}; g_oSearchResults.GoToPage(0, true);</script>`);
     }

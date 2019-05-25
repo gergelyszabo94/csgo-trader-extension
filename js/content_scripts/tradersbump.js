@@ -1,4 +1,4 @@
-chrome.storage.sync.get(['tradersBump'], function(result) {
+chrome.storage.local.get(['tradersBump'], function(result) {
     if(result.tradersBump){
         setTimeout(function () { //ugly way to wait for the trades to load and become "bumpable"
             bump();

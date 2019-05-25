@@ -15,14 +15,14 @@ if($("body").hasClass("profile_page")){
     addReplytoCommentsFunctionality();
     addCommentsMutationObserver();
 
-    chrome.storage.sync.get(['markScammers'], function(result) {
+    chrome.storage.local.get(['markScammers'], function(result) {
         if(result.markScammers){
             warnOfScammer(profileOwnerSteamID, "profile");
         }
     });
 
     if(getUserSteamID()===profileOwnerSteamID){ //when on the logged in user's own profile
-        chrome.storage.sync.get(['reoccuringMessage', 'showReoccButton'], function(result) {
+        chrome.storage.local.get(['reoccuringMessage', 'showReoccButton'], function(result) {
             if(result.showReoccButton){
                 let reooccText = result.reoccuringMessage;
                 let reooccButton = `<div style="float: right; text-align: center; margin-top: 6px;" class="commentthread_user_avatar playerAvatar"><span class="btn_green_white_innerfade btn_small" id="reocc" style="padding: 5px;">Reocc<span></div>`;
@@ -47,7 +47,7 @@ if($("body").hasClass("profile_page")){
         });
     }
     else{ //when on someone else's profile
-        chrome.storage.sync.get(['reputationMessage', 'showPlusRepButton'], function(result) {
+        chrome.storage.local.get(['reputationMessage', 'showPlusRepButton'], function(result) {
             if(result.showPlusRepButton){
                 let repText =result.reputationMessage;
                 let repButton = `<div style="float: right; text-align: center; margin-top: 6px;" class="commentthread_user_avatar playerAvatar"><span class="btn_green_white_innerfade btn_small" id="repper" style="padding: 5px;">+rep<span></div>`;
@@ -67,7 +67,7 @@ if($("body").hasClass("profile_page")){
         });
     }
 
-    chrome.storage.sync.get(['nsfwFilter'], function(result) {
+    chrome.storage.local.get(['nsfwFilter'], function(result) {
         if(result.nsfwFilter){
             //makes the profile background the same as the default one
             $(".no_header.profile_page").css({"background-image": "url(https://steamcommunity-a.akamaihd.net/public/images/profile/profile_bg.jpg)", "background-repeat": "repeat-x", "background-color": "#262627"});
@@ -85,7 +85,7 @@ if($("body").hasClass("profile_page")){
     });
     overrideShowTradeOffer();
 
-    chrome.storage.sync.get(['showRealStatus'], function(result) {
+    chrome.storage.local.get(['showRealStatus'], function(result) {
         if(result.showRealStatus){
             $statusDiv = $(".profile_in_game.persona");
             if($statusDiv.hasClass("online")){

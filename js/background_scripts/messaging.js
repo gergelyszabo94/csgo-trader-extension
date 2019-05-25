@@ -198,7 +198,7 @@ chrome.runtime.onMessage.addListener(
             return true; //async return to signal that it will return later
         }
         else if (request.GetPlayerSummaries !==undefined) {
-            chrome.storage.sync.get(['apiKeyValid', 'steamAPIKey'], function(result) {
+            chrome.storage.local.get(['apiKeyValid', 'steamAPIKey'], function(result) {
                 if(result.apiKeyValid){
                     let apiKey = result.steamAPIKey;
                     let steamid = request.GetPlayerSummaries;

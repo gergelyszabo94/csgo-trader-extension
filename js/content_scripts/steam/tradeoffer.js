@@ -1,7 +1,7 @@
 // const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
 
 overrideHandleTradeActionMenu();
-chrome.storage.sync.get(['markScammers'], function(result) {
+chrome.storage.local.get(['markScammers'], function(result) {
     if(result.markScammers){
         warnOfScammer(getTradePartnerSteamID(), "offer");
     }

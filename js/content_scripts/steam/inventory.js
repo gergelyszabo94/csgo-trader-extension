@@ -232,7 +232,7 @@ function addPerItemInfo(updating){
     $(".slot_app_fraudwarning").css({"top":"19px", "left":"75px"});
     $items = $(".item.app730.context2");
     if($items.length!==0){
-        chrome.storage.sync.get(['colorfulItems'], function(result) {
+        chrome.storage.local.get(['colorfulItems'], function(result) {
             $items.each(function () {
                 $item = $(this);
                 if($item.attr("data-processed")===undefined||$item.attr("data-processed")==="false"||updating){
@@ -775,10 +775,10 @@ function addClickListener(){
             notifTime: getItemByAssetID(getAssetIDofActive()).tradability.toString(),
             notifType: "chrome"
         };
-        chrome.storage.sync.get('bookmarks', function(result) {
+        chrome.storage.local.get('bookmarks', function(result) {
             let bookmarks = result.bookmarks;
             bookmarks.push(bookmark);
-            chrome.storage.sync.set({'bookmarks': bookmarks}, function() {
+            chrome.storage.local.set({'bookmarks': bookmarks}, function() {
                 if(bookmark.itemInfo.tradability!=="Tradable"){
                     chrome.runtime.sendMessage({setAlarm: {name:  bookmark.itemInfo.assetid, when: bookmark.itemInfo.tradability}}, function(response) {});
                 }

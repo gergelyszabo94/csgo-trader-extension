@@ -1,6 +1,6 @@
 $quckdecline = $("#quickDeclineOffers");
 
-chrome.storage.sync.get(['quickDeclineOffer'], function(result) {
+chrome.storage.local.get(['quickDeclineOffer'], function(result) {
     if(result.quickDeclineOffer){
         $quckdecline.prop("checked", true);
     }
@@ -8,11 +8,11 @@ chrome.storage.sync.get(['quickDeclineOffer'], function(result) {
 
 $quckdecline.click(function() {
     if(this.checked) {
-        chrome.storage.sync.set({quickDeclineOffer: true}, function() {
+        chrome.storage.local.set({quickDeclineOffer: true}, function() {
         });
     }
     else{
-        chrome.storage.sync.set({quickDeclineOffer: false}, function() {
+        chrome.storage.local.set({quickDeclineOffer: false}, function() {
         });
     }
 });
@@ -21,7 +21,7 @@ $quckdecline.click(function() {
 
 $openintab = $("#openOfferInTab");
 
-chrome.storage.sync.get(['openOfferInTab'], function(result) {
+chrome.storage.local.get(['openOfferInTab'], function(result) {
     if(result.openOfferInTab){
         $openintab.prop("checked", true);
     }
@@ -29,11 +29,11 @@ chrome.storage.sync.get(['openOfferInTab'], function(result) {
 
 $openintab.click(function() {
     if(this.checked) {
-        chrome.storage.sync.set({openOfferInTab: true}, function() {
+        chrome.storage.local.set({openOfferInTab: true}, function() {
         });
     }
     else{
-        chrome.storage.sync.set({openOfferInTab: false}, function() {
+        chrome.storage.local.set({openOfferInTab: false}, function() {
         });
     }
 });
@@ -43,7 +43,7 @@ $openintab.click(function() {
 
 $showrepbutton = $("#showPlusRepButton");
 
-chrome.storage.sync.get(['showPlusRepButton'], function(result) {
+chrome.storage.local.get(['showPlusRepButton'], function(result) {
     if(result.showPlusRepButton){
         $showrepbutton.prop("checked", true);
     }
@@ -51,11 +51,11 @@ chrome.storage.sync.get(['showPlusRepButton'], function(result) {
 
 $showrepbutton.click(function() {
     if(this.checked) {
-        chrome.storage.sync.set({showPlusRepButton: true}, function() {
+        chrome.storage.local.set({showPlusRepButton: true}, function() {
         });
     }
     else{
-        chrome.storage.sync.set({showPlusRepButton: false}, function() {
+        chrome.storage.local.set({showPlusRepButton: false}, function() {
         });
     }
 });
@@ -66,7 +66,7 @@ $repmessage = $("#reputationMessageValue");
 $repmessageprint = $("#reputationMessagePrinted");
 $repmessagesave = $("#reputationMessageValueSave");
 
-chrome.storage.sync.get(['reputationMessage'], function(result) {
+chrome.storage.local.get(['reputationMessage'], function(result) {
     $repmessageprint.text(result.reputationMessage.substring(0,8)+"...");
     $repmessage.val(result.reputationMessage);
 });
@@ -74,14 +74,14 @@ chrome.storage.sync.get(['reputationMessage'], function(result) {
 $repmessagesave.click(function(){
     let newmessage = $repmessage.val();
     $repmessageprint.text(newmessage.substring(0,8)+"...");
-    chrome.storage.sync.set({reputationMessage: newmessage}, function() {
+    chrome.storage.local.set({reputationMessage: newmessage}, function() {
     });
 });
 
 
 $showreoccbutton = $("#showReoccButton");
 
-chrome.storage.sync.get(['showReoccButton'], function(result) {
+chrome.storage.local.get(['showReoccButton'], function(result) {
     if(result.showReoccButton){
         $showreoccbutton.prop("checked", true);
     }
@@ -89,11 +89,11 @@ chrome.storage.sync.get(['showReoccButton'], function(result) {
 
 $showreoccbutton.click(function() {
     if(this.checked) {
-        chrome.storage.sync.set({showReoccButton: true}, function() {
+        chrome.storage.local.set({showReoccButton: true}, function() {
         });
     }
     else{
-        chrome.storage.sync.set({showReoccButton: false}, function() {
+        chrome.storage.local.set({showReoccButton: false}, function() {
         });
     }
 });
@@ -102,7 +102,7 @@ $reoccmessage = $("#reoccuringMessageValue");
 $reoccmessageprint = $("#reoccuringMessagePrinted");
 $reoccmessagesave = $("#reoccuringMessageValueSave");
 
-chrome.storage.sync.get(['reoccuringMessage'], function(result) {
+chrome.storage.local.get(['reoccuringMessage'], function(result) {
     $reoccmessageprint.text(result.reoccuringMessage.substring(0,8)+"...");
     $reoccmessage.val(result.reoccuringMessage);
 });
@@ -110,13 +110,13 @@ chrome.storage.sync.get(['reoccuringMessage'], function(result) {
 $reoccmessagesave.click(function(){
     let newmessage = $reoccmessage.val();
     $reoccmessageprint.text(newmessage.substring(0,8)+"...");
-    chrome.storage.sync.set({reoccuringMessage: newmessage}, function() {
+    chrome.storage.local.set({reoccuringMessage: newmessage}, function() {
     });
 });
 
 $nsfw = $("#nsfw");
 
-chrome.storage.sync.get(['nsfwFilter'], function(result) {
+chrome.storage.local.get(['nsfwFilter'], function(result) {
     if(result.nsfwFilter){
         $nsfw.prop("checked", true);
     }
@@ -124,11 +124,11 @@ chrome.storage.sync.get(['nsfwFilter'], function(result) {
 
 $nsfw.click(function() {
     if(this.checked) {
-        chrome.storage.sync.set({nsfwFilter: true}, function() {
+        chrome.storage.local.set({nsfwFilter: true}, function() {
         });
     }
     else{
-        chrome.storage.sync.set({nsfwFilter: false}, function() {
+        chrome.storage.local.set({nsfwFilter: false}, function() {
         });
     }
 });
@@ -136,7 +136,7 @@ $nsfw.click(function() {
 
 $flagcomments = $("#flagScamComments");
 
-chrome.storage.sync.get(['flagScamComments'], function(result) {
+chrome.storage.local.get(['flagScamComments'], function(result) {
     if(result.flagScamComments){
         $flagcomments.prop("checked", true);
     }
@@ -144,11 +144,11 @@ chrome.storage.sync.get(['flagScamComments'], function(result) {
 
 $flagcomments.click(function() {
     if(this.checked) {
-        chrome.storage.sync.set({flagScamComments: true}, function() {
+        chrome.storage.local.set({flagScamComments: true}, function() {
         });
     }
     else{
-        chrome.storage.sync.set({flagScamComments: false}, function() {
+        chrome.storage.local.set({flagScamComments: false}, function() {
         });
     }
 });
@@ -157,7 +157,7 @@ $apikey = $("#steamAPIKeyValue");
 $apikeyprint = $("#steamAPIKeyPrinted");
 $apikeysave = $("#steamAPIKeyValueSave");
 
-chrome.storage.sync.get(['steamAPIKey', 'apiKeyValid'], function(result) {
+chrome.storage.local.get(['steamAPIKey', 'apiKeyValid'], function(result) {
     if(result.apiKeyValid){
         $apikeyprint.text(result.steamAPIKey.substring(0,8)+"...");
         $apikey.val(result.steamAPIKey);
@@ -173,7 +173,7 @@ $apikeysave.click(function(){
     let newapikey = $apikey.val();
     chrome.runtime.sendMessage({apikeytovalidate: newapikey}, function(response) {
         if(response.valid){
-            chrome.storage.sync.set({steamAPIKey: newapikey, apiKeyValid: true}, function() {
+            chrome.storage.local.set({steamAPIKey: newapikey, apiKeyValid: true}, function() {
                 $apikeyprint.text(newapikey.substring(0,8)+"...");
                 $("#invalidAPIWarning").remove();
                 $("#steamAPIkeyModal").modal("hide");
@@ -190,7 +190,7 @@ $apikeysave.click(function(){
 
 $showrealstatus = $("#showRealStatus");
 
-chrome.storage.sync.get(['showRealStatus'], function(result) {
+chrome.storage.local.get(['showRealStatus'], function(result) {
     if(result.showRealStatus){
         $showrealstatus.prop("checked", true);
     }
@@ -198,11 +198,11 @@ chrome.storage.sync.get(['showRealStatus'], function(result) {
 
 $showrealstatus.click(function() {
     if(this.checked) {
-        chrome.storage.sync.set({showRealStatus: true}, function() {
+        chrome.storage.local.set({showRealStatus: true}, function() {
         });
     }
     else{
-        chrome.storage.sync.set({showRealStatus: false}, function() {
+        chrome.storage.local.set({showRealStatus: false}, function() {
         });
     }
 });
@@ -240,7 +240,7 @@ $tabsAPI.click(function() {
 
 $colorfulitems = $("#colorfulItems");
 
-chrome.storage.sync.get(['colorfulItems'], function(result) {
+chrome.storage.local.get(['colorfulItems'], function(result) {
     if(result.colorfulItems){
         $colorfulitems.prop("checked", true);
     }
@@ -248,18 +248,18 @@ chrome.storage.sync.get(['colorfulItems'], function(result) {
 
 $colorfulitems.click(function() {
     if(this.checked) {
-        chrome.storage.sync.set({colorfulItems: true}, function() {
+        chrome.storage.local.set({colorfulItems: true}, function() {
         });
     }
     else{
-        chrome.storage.sync.set({colorfulItems: false}, function() {
+        chrome.storage.local.set({colorfulItems: false}, function() {
         });
     }
 });
 
 $loungebump = $("#loungeBump");
 
-chrome.storage.sync.get(['loungeBump'], function(result) {
+chrome.storage.local.get(['loungeBump'], function(result) {
     if(result.loungeBump){
         $loungebump.prop("checked", true);
     }
@@ -267,18 +267,18 @@ chrome.storage.sync.get(['loungeBump'], function(result) {
 
 $loungebump.click(function() {
     if(this.checked) {
-        chrome.storage.sync.set({loungeBump: true}, function() {
+        chrome.storage.local.set({loungeBump: true}, function() {
         });
     }
     else{
-        chrome.storage.sync.set({loungeBump: false}, function() {
+        chrome.storage.local.set({loungeBump: false}, function() {
         });
     }
 });
 
 $tradersbump = $("#tradersBump");
 
-chrome.storage.sync.get(['tradersBump'], function(result) {
+chrome.storage.local.get(['tradersBump'], function(result) {
     if(result.tradersBump){
         $tradersbump.prop("checked", true);
     }
@@ -286,18 +286,18 @@ chrome.storage.sync.get(['tradersBump'], function(result) {
 
 $tradersbump.click(function() {
     if(this.checked) {
-        chrome.storage.sync.set({tradersBump: true}, function() {
+        chrome.storage.local.set({tradersBump: true}, function() {
         });
     }
     else{
-        chrome.storage.sync.set({tradersBump: false}, function() {
+        chrome.storage.local.set({tradersBump: false}, function() {
         });
     }
 });
 
 $markscammers = $("#markScammers");
 
-chrome.storage.sync.get(['markScammers'], function(result) {
+chrome.storage.local.get(['markScammers'], function(result) {
     if(result.markScammers){
         $markscammers.prop("checked", true);
     }
@@ -305,18 +305,18 @@ chrome.storage.sync.get(['markScammers'], function(result) {
 
 $markscammers.click(function() {
     if(this.checked) {
-        chrome.storage.sync.set({markScammers: true}, function() {
+        chrome.storage.local.set({markScammers: true}, function() {
         });
     }
     else{
-        chrome.storage.sync.set({markScammers: false}, function() {
+        chrome.storage.local.set({markScammers: false}, function() {
         });
     }
 });
 
 $numberoflistings = $("#numberOfListings");
 
-chrome.storage.sync.get(['numberOfListings'], function(result) {
+chrome.storage.local.get(['numberOfListings'], function(result) {
     $numberoflistings.val(result.numberOfListings);
 });
 
@@ -328,7 +328,7 @@ $numberoflistings.on('input', function() {
     else if(number>100){
         number = 100;
     }
-    chrome.storage.sync.set({numberOfListings: number}, function() {
+    chrome.storage.local.set({numberOfListings: number}, function() {
     });
 });
 

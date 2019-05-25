@@ -18,7 +18,7 @@ function ShowTradeOffer( tradeOfferID, rgParams )
 }
 </script>
 `;
-    chrome.storage.sync.get(['openOfferInTab'], function(result) {
+    chrome.storage.local.get(['openOfferInTab'], function(result) {
         if(result.openOfferInTab){
             $("body").append(overRideShowTradeOfferText);
         }
@@ -35,7 +35,7 @@ function DeclineTradeOffer( tradeOfferID )
 }
 </script>`;
 
-    chrome.storage.sync.get(['quickDeclineOffer'], function(result) {
+    chrome.storage.local.get(['quickDeclineOffer'], function(result) {
         if(result.quickDeclineOffer){
             $("body").append(overRideDeclineOffer);
         }

@@ -6,7 +6,7 @@ chrome.runtime.onMessage.addListener(
         }
     });
 
-chrome.storage.sync.get('bookmarks', function(result) {
+chrome.storage.local.get('bookmarks', function(result) {
     if(result.bookmarks.length!==0){
         let bookmarks = [];
         console.log(result.bookmarks);
@@ -90,10 +90,10 @@ $(function () {
 function removeBookmarkListener(){
     $('.remove').click(function () {
         let index = $(this).attr("data-index");
-        chrome.storage.sync.get('bookmarks', function(result) {
+        chrome.storage.local.get('bookmarks', function(result) {
             let assetid =result.bookmarks[index].itemInfo.assetid;
             result.bookmarks.splice(index, 1);
-            chrome.storage.sync.set({'bookmarks': result.bookmarks}, function() {
+            chrome.storage.local.set({'bookmarks': result.bookmarks}, function() {
                 chrome.alarms.clear(assetid, function(){});
                 location.reload();
             });
@@ -105,10 +105,10 @@ function commentListener(){
     $(".comment").on("change keyup paste", function(){
         let index = $(this).attr("data-index");
         let newcomment = $(this).val();
-        chrome.storage.sync.get('bookmarks', function(result) {
+        chrome.storage.local.get('bookmarks', function(result) {
             let bookmarks = result.bookmarks;
             bookmarks[index].comment=newcomment;
-            chrome.storage.sync.set({bookmarks: bookmarks}, function() {
+            chrome.storage.local.set({bookmarks: bookmarks}, function() {
             });
         });
     });
@@ -120,17 +120,17 @@ function setAlarms(){
         let index = $notifSwitch.attr("data-index");
         console.log($notifSwitch.parent().next());
         $notifSwitch.parent().next().toggle();
-        chrome.storage.sync.get('bookmarks', function(result) {
+        chrome.storage.local.get('bookmarks', function(result) {
             let bookmarks = result.bookmarks;
             if($notifSwitch[0].checked) {
                 bookmarks[index].notify=true;
-                chrome.storage.sync.set({bookmarks: bookmarks}, function() {
+                chrome.storage.local.set({bookmarks: bookmarks}, function() {
                     chrome.runtime.sendMessage({setAlarm: {name:  bookmarks[index].itemInfo.assetid, when: bookmarks[index].notifTime}}, function(response) {});
                 });
             }
             else{
                 bookmarks[index].notify=false;
-                chrome.storage.sync.set({bookmarks: bookmarks}, function() {
+                chrome.storage.local.set({bookmarks: bookmarks}, function() {
                     chrome.alarms.clear(bookmarks[index].itemInfo.assetid, function(){})
                 });
             }
@@ -139,7 +139,7 @@ function setAlarms(){
 }
 
 function notificationOptions(){
-    chrome.storage.sync.get('bookmarks', function(result) {
+    chrome.storage.local.get('bookmarks', function(result) {
         $(".notifOptions").each(function () {
             $this = $(this);
             let index = $this.attr("data-index");
@@ -159,12 +159,12 @@ function notificationOptions(){
         let numberOfMinutesOrHours = $this.parent().parent().find(".numberPicker").val();
         let minutesOrHours = $this.parent().parent().find(".minutesOrHours").val();
         let beforeOrAfter = $this.parent().parent().find(".beforeOrAfter").val();
-        chrome.storage.sync.get('bookmarks', function(result) {
+        chrome.storage.local.get('bookmarks', function(result) {
             let bookmarks = result.bookmarks;
             let tradableDate = result.bookmarks[index].itemInfo.tradability;
             bookmarks[index].notifTime = determineNotificationDate(tradableDate,minutesOrHours, numberOfMinutesOrHours, beforeOrAfter).toString();
             bookmarks[index].notifType=notifType;
-            chrome.storage.sync.set({bookmarks: bookmarks}, function() {
+            chrome.storage.local.set({bookmarks: bookmarks}, function() {
                 chrome.runtime.sendMessage({setAlarm: {name:  bookmarks[index].itemInfo.assetid, when: bookmarks[index].notifTime}}, function(response) {});
             });
         });

@@ -1,7 +1,7 @@
 chrome.runtime.onInstalled.addListener(function(details) {
     if(details.reason === "install"){
         //setting default options
-        chrome.storage.sync.set(
+        chrome.storage.local.set(
             {quickDeclineOffer: true,
                 openOfferInTab: true,
                 showPlusRepButton: true,
@@ -18,7 +18,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 loungeBump: true,
                 tradersBump: true,
                 markScammers: true,
-                numberOfListings: 10
+                numberOfListings: 10,
+                storageMigrated: true
             }, function() {
             });
         chrome.browserAction.setBadgeText({text: "1"});
@@ -30,58 +31,88 @@ chrome.runtime.onInstalled.addListener(function(details) {
         }, function(notificationId) {});
     }
     else if(details.reason === "update"){
+        //migrates data from storage.sync to storage.locale
+        if(parseInt(details.previousVersion.split(".")[0])===1&&parseInt(details.previousVersion.split(".")[1])<=14){
+            console.log("previ");
+            chrome.storage.sync.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'showReoccButton', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings'], function(result) {
+                chrome.storage.local.set({
+                    quickDeclineOffer: result.quickDeclineOffer,
+                    openOfferInTab: result.openOfferInTab,
+                    showPlusRepButton: result.showPlusRepButton,
+                    reputationMessage: result.reputationMessage,
+                    showReoccButton: result.showReoccButton,
+                    reoccuringMessage: result.reoccuringMessage,
+                    nsfwFilter: result.nsfwFilter,
+                    flagScamComments: result.flagScamComments,
+                    bookmarks: result.bookmarks,
+                    steamAPIKey: result.steamAPIKey,
+                    apiKeyValid: result.apiKeyValid,
+                    showRealStatus: result.showRealStatus,
+                    colorfulItems: result.colorfulItems,
+                    loungeBump: result.loungeBump,
+                    tradersBump: result.tradersBump,
+                    markScammers: result.markScammers,
+                    numberOfListings: result.numberOfListings,
+                    storageMigrated: true
+                }, function() {});
+            });
+        }
+        else{
+            console.log("latter");
+        }
+
         //setting defaults options for new options that haven't been set yet
-        chrome.storage.sync.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings'], function(result) {
+        chrome.storage.local.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'showReoccButton', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings'], function(result) {
             if(result.quickDeclineOffer===undefined){
-                chrome.storage.sync.set({quickDeclineOffer: true}, function() {});
+                chrome.storage.local.set({quickDeclineOffer: true}, function() {});
             }
             if(result.openOfferInTab===undefined){
-                chrome.storage.sync.set({openOfferInTab: true}, function() {});
+                chrome.storage.local.set({openOfferInTab: true}, function() {});
             }
             if(result.showPlusRepButton===undefined){
-                chrome.storage.sync.set({showPlusRepButton: true}, function() {});
+                chrome.storage.local.set({showPlusRepButton: true}, function() {});
             }
             if(result.reputationMessage===undefined){
-                chrome.storage.sync.set({reputationMessage: "+rep"}, function() {});
+                chrome.storage.local.set({reputationMessage: "+rep"}, function() {});
             }
             if(result.showReoccButton===undefined){
-                chrome.storage.sync.set({showReoccButton: true}, function() {});
+                chrome.storage.local.set({showReoccButton: true}, function() {});
             }
             if(result.reoccuringMessage===undefined){
-                chrome.storage.sync.set({reoccuringMessage: "I don't have other accounts. If someone adds you with my name and picture they are scammers."}, function() {});
+                chrome.storage.local.set({reoccuringMessage: "I don't have other accounts. If someone adds you with my name and picture they are scammers."}, function() {});
             }
             if(result.nsfwFilter===undefined){
-                chrome.storage.sync.set({nsfwFilter: false}, function() {});
+                chrome.storage.local.set({nsfwFilter: false}, function() {});
             }
             if(result.flagScamComments===undefined){
-                chrome.storage.sync.set({flagScamComments: true}, function() {});
+                chrome.storage.local.set({flagScamComments: true}, function() {});
             }
             if(result.bookmarks===undefined){
-                chrome.storage.sync.set({bookmarks: []}, function() {});
+                chrome.storage.local.set({bookmarks: []}, function() {});
             }
             if(result.steamAPIKey===undefined){
-                chrome.storage.sync.set({steamAPIKey: ""}, function() {});
+                chrome.storage.local.set({steamAPIKey: ""}, function() {});
             }
             if(result.apiKeyValid===undefined){
-                chrome.storage.sync.set({steamAPIKey: false}, function() {});
+                chrome.storage.local.set({apiKeyValid: false}, function() {});
             }
             if(result.showRealStatus===undefined){
-                chrome.storage.sync.set({showRealStatus: true}, function() {});
+                chrome.storage.local.set({showRealStatus: true}, function() {});
             }
             if(result.colorfulItems===undefined){
-                chrome.storage.sync.set({colorfulItems: true}, function() {});
+                chrome.storage.local.set({colorfulItems: true}, function() {});
             }
             if(result.loungeBump===undefined){
-                chrome.storage.sync.set({loungeBump: true}, function() {});
+                chrome.storage.local.set({loungeBump: true}, function() {});
             }
             if(result.tradersBump===undefined){
-                chrome.storage.sync.set({tradersBump: true}, function() {});
+                chrome.storage.local.set({tradersBump: true}, function() {});
             }
             if(result.markScammers===undefined){
-                chrome.storage.sync.set({markScammers: true}, function() {});
+                chrome.storage.local.set({markScammers: true}, function() {});
             }
             if(result.numberOfListings===undefined){
-                chrome.storage.sync.set({numberOfListings: 10}, function() {});
+                chrome.storage.local.set({numberOfListings: 10}, function() {});
             }
         });
 
@@ -140,7 +171,7 @@ chrome.alarms.onAlarm.addListener(function(alarm){
             chrome.browserAction.setBadgeText({text: (parseInt(result)+1).toString()});
         }
     });
-    chrome.storage.sync.get('bookmarks', function(result) {
+    chrome.storage.local.get('bookmarks', function(result) {
         let item = result.bookmarks.find(function(element) {
             return element.itemInfo.assetid === alarm.name;
         });

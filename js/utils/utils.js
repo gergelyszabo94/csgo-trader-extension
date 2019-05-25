@@ -826,7 +826,7 @@ function addCommentsMutationObserver(){
 }
 
 function reportComments(){
-    chrome.storage.sync.get(['flagScamComments'], function(result) {
+    chrome.storage.local.get(['flagScamComments'], function(result) {
         if(result.flagScamComments) {
             let spamTExtCheck = new RegExp(commentsToReport.join("|"), "i");
 
