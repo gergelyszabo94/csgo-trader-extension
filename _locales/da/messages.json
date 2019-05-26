@@ -1,67 +1,67 @@
 {
   "application_title": {
     "message": "CSGO Trader - Steam byttehandel udvidelse",
-    "description": "Titlen af programmet, vist på hjemmesiden."
+    "description": "The title of the application, displayed in the web store."
   },
   "application_description": {
     "message": "Udvidelse til at hjælpe med CS:GO handel, trade-lock nedtælling, i-browser inspektion, doppler faser, Steam NSFW, float værdier, osv",
-    "description": "Beskrivelsen af programmet, vist på hjemmesiden. Den er begræsede til 132 karaktere eller mindre"
+    "description": "The description of the application, displayed in the web store. It's character limited (132 or less)"
   },
   "webstore_description": {
     "message": "CSGO Trader Chrome udvidelse Det her er en chrome udvidelse lavet for at hjælpe dig med din CS:GO trading. De ting jeg ville udvikle ville være bygget på Steam Inventory Helper for nu. Nuværende funktioner: - Tilføjer en \"Inspicer i Browseren...\" knap vedsiden af den normale inspicer knap- Viser hvornår et skins tradelock ville udløbe og tilføjer en nedtælling - Viser floats i inventarerne- Viser Doppler knives faser- Viser kvaliten på vær genstand og tilføjer links til andre versioner til inventaren og market siden- NSFW filter for at undgå at vise fx anime bryster til dine kollegaer- Bogmærk og notificer når en genstand er tradable- Realtime chat status på profiler- Farvefulde inventarer- Scammere er markeret på deres profiler og i deres byttetilbud (hvis de er SteamRep banned)- CSGOLouunge.com auto-bumping- CSGOTraders.net auto-bumping- Andre mindre automationer, og ekstra. Føl dig fri til at bigrade (med kode, grafik, oversættelser eller selv ideer) på https://github.com/bladegery/csgo-trader-extension",
-    "description": "Den lange beskrivelse af programmet man ser på dens Chrome Webstore side"
+    "description": "The long description of the application as visible in it's Chrome Webstore page"
   },
   "inspect_in_browser": {
     "message": "Inspicer i browseren...",
-    "description": "Tekst til knapper der åbner browser inspektion"
+    "description": "Text for the buttons that open in-browser inspection"
   },
   "fn_long": {
     "message": "Fabriksny",
-    "description": "Fabriksny"
+    "description": "Factory New"
   },
   "mw_long": {
     "message": "Lidt slidt",
-    "description": "Lidt slidt"
+    "description": "Minimal Wear"
   },
   "ft_long": {
     "message": "Aprøvet i marken",
-    "description": "Aprøvet i marken"
+    "description": "Field-Tested"
   },
   "ww_long": {
     "message": "Velbrugt",
-    "description": "Velbrugt"
+    "description": "Well-Worn"
   },
   "bs_long": {
     "message": "Kampvaniseret",
-    "description": "Kampvaniseret"
+    "description": "Battle-Scared"
   },
   "fn_short": {
     "message": "FN",
-    "description": "Fabriksny"
+    "description": "Factory New"
   },
   "mw_short": {
     "message": "MW",
-    "description": "Lidt slidt"
+    "description": "Minimal Wear"
   },
   "ft_short": {
     "message": "FT",
-    "description": "Aprøvet i marken"
+    "description": "Field-Tested"
   },
   "ww_short": {
     "message": "WW",
-    "description": "Velbrugt"
+    "description": "Well-Worn"
   },
   "bw_short": {
     "message": "BS",
-    "description": "Kampvaniseret"
+    "description": "Battle-Scared"
   },
   "links_to_other_exteriors": {
     "message": "Links til andre versioner af samme skin",
-    "description": "Links til andre versioner af samme skin"
+    "description": "Links to other exteriors"
   },
   "not_every_available": {
     "message": "Ikke alle skins er ledig i alle versioner",
-    "description": "Ikke alle skins er ledig i alle versioner"
+    "description": "Not every item is available in every exterior"
   },
   "souvenir": {
     "message": "Souviner",
@@ -69,6 +69,6 @@
   },
   "get_float_info": {
     "message": "Få Float Information...",
-    "description": "Få Float Information..."
+    "description": "Get Float Information..."
   }
 }
