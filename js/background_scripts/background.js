@@ -33,7 +33,6 @@ chrome.runtime.onInstalled.addListener(function(details) {
     else if(details.reason === "update"){
         //migrates data from storage.sync to storage.locale
         if(parseInt(details.previousVersion.split(".")[0])===1&&parseInt(details.previousVersion.split(".")[1])<=14){
-            console.log("previ");
             chrome.storage.sync.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'showReoccButton', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings'], function(result) {
                 chrome.storage.local.set({
                     quickDeclineOffer: result.quickDeclineOffer,
@@ -56,9 +55,6 @@ chrome.runtime.onInstalled.addListener(function(details) {
                     storageMigrated: true
                 }, function() {});
             });
-        }
-        else{
-            console.log("latter");
         }
 
         //setting defaults options for new options that haven't been set yet
