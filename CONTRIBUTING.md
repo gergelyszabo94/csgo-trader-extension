@@ -4,5 +4,5 @@ I have started using github issues on this repo and marked some issues with "hel
 You can start working on any open issues though or create a new one. I usually check pull requests quickly:)
 
 Contributed so far:
-- @bladegery (Owner - Developer)
-- @cjavad (Danish translation)
+- [@bladegery](https://github.com/bladegery "bladegery's profile") (Owner - Developer)
+- [@cjavad](https://github.com/cjavad "cjavad's profile") (Danish translation)
