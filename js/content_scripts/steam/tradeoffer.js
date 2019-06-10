@@ -1,4 +1,4 @@
-// const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
+const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
 
 // MutationObserver = window.MutationObserver;
 //
@@ -81,6 +81,8 @@ let inventoryAccessScript = `<script id="getItems">
                 inventory = UserThem.getInventory(730,2);
             }
             let assets = inventory.rgInventory;
+            console.log(assets);
+            let steamID = inventory.owner.strSteamId;
             if(assets!==null){
                 let assetKeys= Object.keys(assets);
                 let trimmedAssets = [];
@@ -89,6 +91,8 @@ let inventoryAccessScript = `<script id="getItems">
                     let asset = {
                         amount: assets[assetKey].amount,
                         assetid: assets[assetKey].id,
+                        actions: assets[assetKey].actions,
+                        classid: assets[assetKey].classid,
                         icon: assets[assetKey].icon_url,
                         instanceid: assets[assetKey].instanceid,
                         contextid: assets[assetKey].contextid,
@@ -98,7 +102,9 @@ let inventoryAccessScript = `<script id="getItems">
                         name: assets[assetKey].name,
                         name_color: assets[assetKey].name_color,
                         position: assets[assetKey].pos,
-                        type: assets[assetKey].type
+                        type: assets[assetKey].type,
+                        owner: steamID,
+                        fraudwarnings: assets[assetKey].fraudwarnings
                     };
                     trimmedAssets.push(asset);
                 }
@@ -134,25 +140,28 @@ let inventoryAccessScript = `<script id="getItems">
 </script>`;
 $("body").append(inventoryAccessScript);
 
-let tryGettingInventories = setInterval(getInventories,1000);
+let tryGettingInventories = setInterval(getInventories,500);
 
 function getInventories(){
     getYourInventory().then(inventory => {
-        console.log(inventory.inventory);
         if(inventory.inventory!==null){
             yourInventory = inventory.inventory;
         }
     });
 
     getTheirInventory().then(inventory => {
-        console.log(inventory.inventory);
         if(inventory.inventory!==null){
             theirInventory = inventory.inventory;
         }
     });
 
     if(yourInventory !== undefined && theirInventory !== undefined){
+        yourInventory = buildInventorySctructure(yourInventory);
+        theirInventory = buildInventorySctructure(theirInventory);
+        console.log(yourInventory);
+        console.log(theirInventory);
         clearInterval(tryGettingInventories);
+        addItemInfo();
     }
 }
 
@@ -201,4 +210,101 @@ function findElementByAssetID(assetid){
     return $("#" + elementid);
 }
 
-// $(".item.app730.context2")
+function addItemInfo() {
+    $(".item.app730.context2").each(function () {
+       $item = $(this);
+       $item.append(dopplerPhase);
+    });
+}
+
+function buildInventorySctructure(inventory) {
+    let inventoryArrayToReturn = [];
+    let duplicates = {};
+
+    inventory.forEach(function (item) {
+        let market_hash_name = item.market_hash_name;
+        if(duplicates[market_hash_name]===undefined){
+            let instances = [item.assetid];
+            duplicates[market_hash_name] =
+                {
+                    num: 1,
+                    instances: instances
+                }
+        }
+        else{
+            duplicates[market_hash_name].num=duplicates[market_hash_name].num+1;
+            duplicates[market_hash_name].instances.push(item.assetid);
+        }
+    });
+
+    inventory.forEach(function (item) {
+        let exterior = item.descriptions[0].value.split('Exterior: ')[1];
+        exterior = exterior === undefined ? "" : exterior;
+        let shortExterior = shortenExterior(exterior);
+        let marketlink = "https://steamcommunity.com/market/listings/730/" + item.market_hash_name;
+        let quality = getQuality(item.type);
+        let stickers =  parseStickerInfo(item.descriptions, "direct");
+        let nametag = undefined;
+        let inspectLink ="";
+        let dopplerInfo = undefined;
+        let isStatrack = false;
+        let isSouvenir = false;
+        let starInName = false;
+
+        try {
+            if(item.fraudwarnings!==undefined||item.fraudwarnings[0]!==undefined){
+                nametag = item.fraudwarnings[0].split("Name Tag: ''")[1].split("''")[0];
+            }
+        }
+        catch(error) {
+        }
+
+        if(/Doppler/.test(item.name)){
+            dopplerInfo = getDopplerInfo(item.icon);
+        }
+        if(/StatTrak™/.test(item.name)){
+            isStatrack = true;
+        }
+        if(/Souvenir/.test(item.name)){
+            isSouvenir = true;
+        }
+        if(/★/.test(item.name)){
+            starInName = true;
+        }
+        try {
+            if(item.actions!==undefined&&item.actions[0]!==undefined){
+                let beggining = item.actions[0].link.split('%20S')[0];
+                let end = item.actions[0].link.split('%assetid%')[1];
+                inspectLink = (beggining + "%20S"+item.owner + "A"+ item.assetid + end);
+            }
+        }
+        catch(error) {
+        }
+
+        inventoryArrayToReturn.push({
+            name: item.name,
+            market_hash_name: item.market_hash_name,
+            name_color: item.name_color,
+            marketlink: marketlink,
+            classid: item.classid,
+            instanceid: item.instanceid,
+            assetid: item.assetid,
+            position: item.position,
+            dopplerInfo: dopplerInfo,
+            exterior: exterior,
+            shortExterior: shortExterior,
+            iconURL: item.icon,
+            inspectLink: inspectLink,
+            quality: quality,
+            isStatrack: isStatrack,
+            isSouvenir: isSouvenir,
+            starInName: starInName,
+            stickers: stickers,
+            nametag: nametag,
+            duplicates: duplicates[item.market_hash_name],
+            owner: item.owner
+        })
+    });
+
+    return inventoryArrayToReturn;
+}
