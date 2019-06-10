@@ -46,6 +46,65 @@ const commentsToReport = [
     'I’m collecting csgo base grade items'
 ];
 
+const exteriors = {
+    factory_new: {
+        internal_name: "WearCategory0",
+        type: "factory_new",
+        name: "Factory New",
+        localized_name: chrome.i18n.getMessage("fn_long"),
+        short: "FN",
+        localized_short: chrome.i18n.getMessage("fn_short")
+    },
+    minimal_wear:{
+        internal_name: "WearCategory1",
+        type: "minimal_wear",
+        name: "Minimal Wear",
+        localized_name: chrome.i18n.getMessage("mw_long"),
+        short: "MW",
+        localized_short: chrome.i18n.getMessage("mw_short")
+    },
+    field_tested:{
+        internal_name: "WearCategory2",
+        type: "field_tested",
+        name: "Field-Tested",
+        localized_name: chrome.i18n.getMessage("ft_long"),
+        short: "FT",
+        localized_short: chrome.i18n.getMessage("ft_short")
+    },
+    well_worn:{
+        internal_name: "WearCategory3",
+        type: "well_worn",
+        name: "Well-Worn",
+        localized_name: chrome.i18n.getMessage("ww_long"),
+        short: "WW",
+        localized_short: chrome.i18n.getMessage("ww_short")
+    },
+    battle_scarred:{
+        internal_name: "WearCategory4",
+        type: "battle_scarred",
+        name: "Battle-Scarred",
+        localized_name: chrome.i18n.getMessage("bs_long"),
+        short: "BS",
+        localized_short: chrome.i18n.getMessage("bs_short")
+    }
+};
+
+function getExteriorFromTags(tags) {
+    for(let tag of tags) {
+        if(tag.category==="Exterior"){
+            switch(tag.internal_name){
+                case exteriors.factory_new.internal_name: return exteriors.factory_new;
+                case exteriors.minimal_wear.internal_name: return exteriors.minimal_wear;
+                case exteriors.field_tested.internal_name: return exteriors.field_tested;
+                case exteriors.well_worn.internal_name: return exteriors.well_worn;
+                case exteriors.battle_scarred.internal_name: return exteriors.battle_scarred;
+                default: return undefined;
+            }
+        }
+    }
+    return undefined;
+}
+
 const p1 = {
     type: "doppler",
     name: "Phase 1",
@@ -456,17 +515,6 @@ function getShortDate(tradabibilityDate){
     }
     else{
         return days + "d";
-    }
-}
-
-function shortenExterior(exterior){
-    switch(exterior){
-        case "Factory New": return "FN";
-        case "Minimal Wear": return "MW";
-        case "Field-Tested": return "FT";
-        case "Well-Worn": return "WW";
-        case "Battle-Scarred": return "BS";
-        default: return "";
     }
 }
 

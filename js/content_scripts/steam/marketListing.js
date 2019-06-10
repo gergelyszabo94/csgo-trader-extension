@@ -50,15 +50,15 @@ let scriptToInject = `<script id="getItems">
 </script>`;
 $("body").append(scriptToInject);
 
-const exteriors = `
+const exteriorselement = `
     <div class="descriptor otherExteriors" id="otherExteriors">
         <span>${chrome.i18n.getMessage("links_to_other_exteriors")}:</span>
         <ul>
-            <li><a href="" target="_blank" id="fnLink">${chrome.i18n.getMessage("fn_long")}</a> - <a href="" target="_blank" id="fnSTLink"><span class="stattrakOrange">StatTrak™ ${chrome.i18n.getMessage("fn_long")}</span></a></li>
-            <li><a href="" target="_blank" id="mwLink">${chrome.i18n.getMessage("mw_long")}</a> - <a href="" target="_blank" id="mwSTLink"><span class="stattrakOrange">StatTrak™ ${chrome.i18n.getMessage("mw_long")}</span></a></li>
-            <li><a href="" target="_blank" id="ftLink">${chrome.i18n.getMessage("ft_long")}</a> - <a href="" target="_blank" id="ftSTLink"><span class="stattrakOrange">StatTrak™ ${chrome.i18n.getMessage("ft_long")}</span></a></li>
-            <li><a href="" target="_blank" id="wwLink">${chrome.i18n.getMessage("ww_long")}</a> - <a href="" target="_blank" id="wwSTLink"><span class="stattrakOrange">StatTrak™ ${chrome.i18n.getMessage("ww_long")}</span></a></li>
-            <li><a href="" target="_blank" id="bsLink">${chrome.i18n.getMessage("bs_long")}</a> - <a href="" target="_blank" id="bsSTLink"><span class="stattrakOrange">StatTrak™ ${chrome.i18n.getMessage("bs_long")}</span></a></li>
+            <li><a href="" target="_blank" id="fnLink">${exteriors.factory_new.localized_name}</a> - <a href="" target="_blank" id="fnSTLink"><span class="stattrakOrange">StatTrak™ ${exteriors.factory_new.localized_name}</span></a></li>
+            <li><a href="" target="_blank" id="mwLink">${exteriors.minimal_wear.localized_name}</a> - <a href="" target="_blank" id="mwSTLink"><span class="stattrakOrange">StatTrak™ ${exteriors.minimal_wear.localized_name}</span></a></li>
+            <li><a href="" target="_blank" id="ftLink">${exteriors.field_tested.localized_name}</a> - <a href="" target="_blank" id="ftSTLink"><span class="stattrakOrange">StatTrak™ ${exteriors.field_tested.localized_name}</span></a></li>
+            <li><a href="" target="_blank" id="wwLink">${exteriors.well_worn.localized_name}</a> - <a href="" target="_blank" id="wwSTLink"><span class="stattrakOrange">StatTrak™ ${exteriors.well_worn.localized_name}</span></a></li>
+            <li><a href="" target="_blank" id="bsLink">${exteriors.battle_scarred.localized_name}</a> - <a href="" target="_blank" id="bsSTLink"><span class="stattrakOrange">StatTrak™ ${exteriors.battle_scarred.localized_name}</span></a></li>
         </ul>
         <span>${chrome.i18n.getMessage("not_every_available")}</span>
     </div>`;
@@ -72,7 +72,7 @@ const dopplerPhase = "<div class='dopplerPhaseMarket'><span></span></div>";
 
 let thereSouvenirForThisItem = souvenirExists($(".descriptor").text());
 
-$("#largeiteminfo_item_descriptors").append(exteriors);
+$("#largeiteminfo_item_descriptors").append(exteriorselement);
 
 const genericMarketLink = "https://steamcommunity.com/market/listings/730/";
 const stattrak = "StatTrak%E2%84%A2%20";
@@ -118,30 +118,30 @@ if(isSouvenir||thereSouvenirForThisItem){
 
     $fnst=$("#fnSTLink");
     $fnst.attr("href", genericMarketLink + souvenir + weaponName + "(Factory New)");
-    $fnst.find("span").text(chrome.i18n.getMessage("souvenir")+" " + chrome.i18n.getMessage("fn_long"));
+    $fnst.find("span").text(chrome.i18n.getMessage("souvenir")+" " + exteriors.factory_new.localized_name);
 
     $mwst=$("#mwSTLink");
     $mwst.attr("href", genericMarketLink + souvenir + weaponName + "(Minimal Wear)");
-    $mwst.find("span").text(chrome.i18n.getMessage("souvenir")+" " + chrome.i18n.getMessage("mw_long"));
+    $mwst.find("span").text(chrome.i18n.getMessage("souvenir")+" " + exteriors.minimal_wear.localized_name);
 
     $ftst=$("#ftSTLink");
     $ftst.attr("href", genericMarketLink + souvenir + weaponName + "(Field-Tested)");
-    $ftst.find("span").text(chrome.i18n.getMessage("souvenir")+" " + chrome.i18n.getMessage("ft_long"));
+    $ftst.find("span").text(chrome.i18n.getMessage("souvenir")+" " + field_tested.localized_name);
 
     $wwst=$("#wwSTLink");
     $wwst.attr("href", genericMarketLink + souvenir + weaponName + "(Well-Worn)");
-    $wwst.find("span").text(chrome.i18n.getMessage("souvenir")+" " + chrome.i18n.getMessage("ww_long"));
+    $wwst.find("span").text(chrome.i18n.getMessage("souvenir")+" " + exteriors.well_worn.localized_name);
 
     $bsst=$("#bsSTLink");
     $bsst.attr("href", genericMarketLink + souvenir + weaponName + "(Battle-Scarred)");
-    $bsst.find("span").text(chrome.i18n.getMessage("souvenir")+" " + chrome.i18n.getMessage("bs_long"));
+    $bsst.find("span").text(chrome.i18n.getMessage("souvenir")+" " + exteriors.battle_scarred.localized_name);
 }
 else{
-    $("#fnSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "(Factory New)");
-    $("#mwSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "(Minimal Wear)");
-    $("#ftSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "(Field-Tested)");
-    $("#wwSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "(Well-Worn)");
-    $("#bsSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + "(Battle-Scarred)");
+    $("#fnSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + `(${exteriors.factory_new.name})`);
+    $("#mwSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + `(${exteriors.minimal_wear.name})`);
+    $("#ftSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + `(${exteriors.field_tested.name})`);
+    $("#wwSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + `(${exteriors.well_worn.name})`);
+    $("#bsSTLink").attr("href", genericMarketLink + star + stattrak + weaponName + `(${exteriors.battle_scarred.name})`);
 }
 
 $("#largeiteminfo_item_actions").append(inBrowserInspectButton);
@@ -195,11 +195,11 @@ $("#get_float").click(function () {
         <svg id="floatPointer" class="floatPointer" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path></svg>
    </div>
  <div class="progress">
-    <div class="progress-bar floatBarFN" title="${chrome.i18n.getMessage("fn_long")}"></div>
-    <div class="progress-bar floatBarMW" title="${chrome.i18n.getMessage("mw_long")}"></div>
-    <div class="progress-bar floatBarFT" title="${chrome.i18n.getMessage("ft_long")}"></div>
-    <div class="progress-bar floatBarWW" title="${chrome.i18n.getMessage("ww_long")}"></div>
-     <div class="progress-bar floatBarBS" title="${chrome.i18n.getMessage("bs_long")}"></div>
+    <div class="progress-bar floatBarFN" title="${exteriors.factory_new.localized_name}"></div>
+    <div class="progress-bar floatBarMW" title="${exteriors.minimal_wear.localized_name}"></div>
+    <div class="progress-bar floatBarFT" title="${exteriors.field_tested.localized_name}"></div>
+    <div class="progress-bar floatBarWW" title="${exteriors.well_worn.localized_name}"></div>
+     <div class="progress-bar floatBarBS" title="${exteriors.battle_scarred.localized_name}"></div>
  </div>
   <div class="showTechnical">Show Technical</div>
  <div class="floatTechnical">

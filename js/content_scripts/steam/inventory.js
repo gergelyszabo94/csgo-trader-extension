@@ -75,28 +75,28 @@ const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
 
 const exteriors1 = `
     <div class="descriptor otherExteriors" id="otherExteriors1">
-        <span>Links to other exteriors:</span>
+        <span>${chrome.i18n.getMessage("links_to_other_exteriors")}:</span>
         <ul>
-            <li><a href="" target="_blank" id="fnLink1">Factory New</a> - <a href="" target="_blank" id="fnSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ Factory New</span></a></li>
-            <li><a href="" target="_blank" id="mwLink1">Minimal Wear</a> - <a href="" target="_blank" id="mwSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ Minimal Wear</span></a></li>
-            <li><a href="" target="_blank" id="ftLink1">Field-Tested</a> - <a href="" target="_blank" id="ftSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ Field-Tested</span></a></li>
-            <li><a href="" target="_blank" id="wwLink1">Well-Worn</a> - <a href="" target="_blank" id="wwSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ Well-Worn</span></a></li>
-            <li><a href="" target="_blank" id="bsLink1">Battle-Scarred</a> - <a href="" target="_blank" id="bsSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ Battle-Scarred</span></a></li>
+            <li><a href="" target="_blank" id="fnLink1">${exteriors.factory_new.localized_name}</a> - <a href="" target="_blank" id="fnSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.factory_new.localized_name}</span></a></li>
+            <li><a href="" target="_blank" id="mwLink1">${exteriors.minimal_wear.localized_name}</a> - <a href="" target="_blank" id="mwSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.minimal_wear.localized_name}</span></a></li>
+            <li><a href="" target="_blank" id="ftLink1">${exteriors.field_tested.localized_name}</a> - <a href="" target="_blank" id="ftSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.field_tested.localized_name}</span></a></li>
+            <li><a href="" target="_blank" id="wwLink1">${exteriors.well_worn.localized_name}</a> - <a href="" target="_blank" id="wwSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.well_worn.localized_name}</span></a></li>
+            <li><a href="" target="_blank" id="bsLink1">${exteriors.battle_scarred.localized_name}</a> - <a href="" target="_blank" id="bsSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.battle_scarred.localized_name}</span></a></li>
         </ul>
-        <span>Not every item is available in every exterior</span>
+        <span>${chrome.i18n.getMessage("not_every_available")}</span>
     </div>`;
 
 const exteriors0 = `
     <div class="descriptor otherExteriors" id="otherExteriors0">
-        <span>Links to other exteriors:</span>
+        <span>${chrome.i18n.getMessage("links_to_other_exteriors")}:</span>
         <ul>
-            <li><a href="" target="_blank" id="fnLink0">Factory New</a> - <a href="" target="_blank" id="fnSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ Factory New</span></a></li>
-            <li><a href="" target="_blank" id="mwLink0">Minimal Wear</a> - <a href="" target="_blank" id="mwSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ Minimal Wear</span></a></li>
-            <li><a href="" target="_blank" id="ftLink0">Field-Tested</a> - <a href="" target="_blank" id="ftSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ Field-Tested</span></a></li>
-            <li><a href="" target="_blank" id="wwLink0">Well-Worn</a> - <a href="" target="_blank" id="wwSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ Well-Worn</span></a></li>
-            <li><a href="" target="_blank" id="bsLink0">Battle-Scarred</a> - <a href="" target="_blank" id="bsSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ Battle-Scarred</span></a></li>
+            <li><a href="" target="_blank" id="fnLink0">${exteriors.factory_new.localized_name}</a> - <a href="" target="_blank" id="fnSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.factory_new.localized_name}</span></a></li>
+            <li><a href="" target="_blank" id="mwLink0">${exteriors.minimal_wear.localized_name}</a> - <a href="" target="_blank" id="mwSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.minimal_wear.localized_name}</span></a></li>
+            <li><a href="" target="_blank" id="ftLink0">${exteriors.field_tested.localized_name}</a> - <a href="" target="_blank" id="ftSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.field_tested.localized_name}</span></a></li>
+            <li><a href="" target="_blank" id="wwLink0">${exteriors.well_worn.localized_name}</a> - <a href="" target="_blank" id="wwSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.well_worn.localized_name}</span></a></li>
+            <li><a href="" target="_blank" id="bsLink0">${exteriors.battle_scarred.localized_name}</a> - <a href="" target="_blank" id="bsSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.battle_scarred.localized_name}</span></a></li>
         </ul>
-        <span>Not every item is available in every exterior</span>
+        <span>${chrome.i18n.getMessage("not_every_available")}</span>
     </div>`;
 
 const stickers1 = `
@@ -287,7 +287,9 @@ function addPerItemInfo(updating){
                                 souvenir = "S";
                             }
 
-                            $item.append(`<div class='exteriorSTInfo'><span class="souvenirYellow">${souvenir}</span><span class="stattrakOrange">${stattrak}</span><span class="exteriorIndicator">${item.shortExterior}</span></div>`);
+                            if(item.exterior!==undefined){
+                                $item.append(`<div class='exteriorSTInfo'><span class="souvenirYellow">${souvenir}</span><span class="stattrakOrange">${stattrak}</span><span class="exteriorIndicator">${item.exterior.localized_short}</span></div>`);
+                            }
 
                             $(this).attr("data-processed", true);
                         }
@@ -567,43 +569,43 @@ function addElements(){
 
                 $fnst1=$("#fnSTLink1");
                 $fnst1.attr("href", genericMarketLink + souvenir + weaponName + "%28Factory%20New%29");
-                $fnst1.find("span").text("Souvenir Factory New");
+                $fnst1.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.factory_new.localized_name);
 
                 $mwst1=$("#mwSTLink1");
                 $mwst1.attr("href", genericMarketLink + souvenir + weaponName + "%28Minimal%20Wear%29");
-                $mwst1.find("span").text("Souvenir Minimal Wear");
+                $mwst1.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.minimal_wear.localized_name);
 
                 $ftst1=$("#ftSTLink1");
                 $ftst1.attr("href", genericMarketLink + souvenir + weaponName + "%28Field-Tested%29");
-                $ftst1.find("span").text("Souvenir Field-Tested");
+                $ftst1.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.field_tested.localized_name);
 
                 $wwst1=$("#wwSTLink1");
                 $wwst1.attr("href", genericMarketLink + souvenir + weaponName + "%28Well-Worn%29");
-                $wwst1.find("span").text("Souvenir Well-Worn");
+                $wwst1.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.well_worn.localized_name);
 
                 $bsst1=$("#bsSTLink1");
                 $bsst1.attr("href", genericMarketLink + souvenir + weaponName + "%28Battle-Scarred%29");
-                $bsst1.find("span").text("Souvenir Battle-Scarred");
+                $bsst1.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.battle_scarred.localized_name);
 
                 $fnst0=$("#fnSTLink0");
                 $fnst0.attr("href", genericMarketLink + souvenir + weaponName + "%28Factory%20New%29");
-                $fnst0.find("span").text("Souvenir Factory New");
+                $fnst0.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.factory_new.localized_name);
 
                 $mwst0=$("#mwSTLink0");
                 $mwst0.attr("href", genericMarketLink + souvenir + weaponName + "%28Minimal%20Wear%29");
-                $mwst0.find("span").text("Souvenir Minimal Wear");
+                $mwst0.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.minimal_wear.localized_name);
 
                 $ftst0=$("#ftSTLink0");
                 $ftst0.attr("href", genericMarketLink + souvenir + weaponName + "%28Field-Tested%29");
-                $ftst0.find("span").text("Souvenir Field-Tested");
+                $ftst0.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.field_tested.localized_name);
 
                 $wwst0=$("#wwSTLink0");
                 $wwst0.attr("href", genericMarketLink + souvenir + weaponName + "%28Well-Worn%29");
-                $wwst0.find("span").text("Souvenir Well-Worn");
+                $wwst0.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.well_worn.localized_name);
 
                 $bsst0=$("#bsSTLink0");
                 $bsst0.attr("href", genericMarketLink + souvenir + weaponName + "%28Battle-Scarred%29");
-                $bsst0.find("span").text("Souvenir Battle-Scarred");
+                $bsst0.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.battle_scarred.localized_name);
             }
             else{
                 $sv = $(".souvenirYellow.exteriorsLink");
@@ -624,7 +626,7 @@ function addElements(){
                 $("#bsSTLink0").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Battle-Scarred%29");
             }
 
-            if(item.exterior===""){
+            if(item.exterior===undefined){
                 $("#otherExteriors1").hide();
                 $("#otherExteriors0").hide();
             }

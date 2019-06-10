@@ -46,9 +46,11 @@ chrome.runtime.onMessage.addListener(
                             let marketlink = "https://steamcommunity.com/market/listings/730/" + items[item].market_hash_name;
                             let classid = items[item].classid;
                             let instanceid = items[item].instanceid;
-                            let exterior = items[item].descriptions[0].value.split('Exterior: ')[1];
-                            exterior = exterior === undefined ? "" : exterior;
-                            let shortExterior = shortenExterior(exterior);
+                            // let exterior = items[item].descriptions[0].value.split('Exterior: ')[1];
+                            // exterior = exterior === undefined ? "" : exterior;
+                            // let shortExterior = shortenExterior(exterior);
+                            let exterior = getExteriorFromTags(items[item].tags);
+                            console.log(exterior);
                             let tradability = "Tradable";
                             let tradabilityShort = "T";
                             let dopplerInfo = undefined;
@@ -113,7 +115,6 @@ chrome.runtime.onMessage.addListener(
                                 tradabilityShort: tradabilityShort,
                                 dopplerInfo: dopplerInfo,
                                 exterior: exterior,
-                                shortExterior: shortExterior,
                                 iconURL: icon,
                                 inspectLink: inspectLink,
                                 quality: quality,

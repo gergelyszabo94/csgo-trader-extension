@@ -81,6 +81,7 @@ let inventoryAccessScript = `<script id="getItems">
             else{
                 inventory = UserThem.getInventory(730,2);
             }
+            console.log(inventory);
             let assets = inventory.rgInventory;
             let steamID = inventory.owner.strSteamId;
             if(assets!==null){
@@ -104,7 +105,8 @@ let inventoryAccessScript = `<script id="getItems">
                         position: assets[assetKey].pos,
                         type: assets[assetKey].type,
                         owner: steamID,
-                        fraudwarnings: assets[assetKey].fraudwarnings
+                        fraudwarnings: assets[assetKey].fraudwarnings,
+                        tags: assets[assetKey].tags
                     };
                     trimmedAssets.push(asset);
                 }
@@ -259,7 +261,9 @@ function addItemInfo() {
                             souvenir = "S";
                         }
 
-                        $item.append(`<div class='exteriorSTInfo'><span class="souvenirYellow">${souvenir}</span><span class="stattrakOrange">${stattrak}</span><span class="exteriorIndicator">${item.shortExterior}</span></div>`);
+                        if(item.exterior!==undefined){
+                            $item.append(`<div class='exteriorSTInfo'><span class="souvenirYellow">${souvenir}</span><span class="stattrakOrange">${stattrak}</span><span class="exteriorIndicator">${item.exterior.short}</span></div>`);
+                        }
 
                         $(this).attr("data-processed", true);
                     }
@@ -295,9 +299,7 @@ function buildInventoryStructure(inventory) {
     });
 
     inventory.forEach(function (item) {
-        let exterior = item.descriptions[0].value.split('Exterior: ')[1];
-        exterior = exterior === undefined ? "" : exterior;
-        let shortExterior = shortenExterior(exterior);
+        let exterior = getExteriorFromTags(item.tags);
         let marketlink = "https://steamcommunity.com/market/listings/730/" + item.market_hash_name;
         let quality = getQuality(item.type);
         let stickers =  parseStickerInfo(item.descriptions, "direct");
@@ -349,7 +351,6 @@ function buildInventoryStructure(inventory) {
             position: item.position,
             dopplerInfo: dopplerInfo,
             exterior: exterior,
-            shortExterior: shortExterior,
             iconURL: item.icon,
             inspectLink: inspectLink,
             quality: quality,
