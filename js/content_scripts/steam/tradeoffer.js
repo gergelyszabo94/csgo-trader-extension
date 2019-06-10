@@ -81,10 +81,8 @@ let inventoryAccessScript = `<script id="getItems">
                 inventory = UserThem.getInventory(730,2);
             }
             let assets = inventory.rgInventory;
-            console.log(assets);
             if(assets!==null){
                 let assetKeys= Object.keys(assets);
-                console.log(assetKeys);
                 let trimmedAssets = [];
                 
                 for(let assetKey of assetKeys){
@@ -136,23 +134,27 @@ let inventoryAccessScript = `<script id="getItems">
 </script>`;
 $("body").append(inventoryAccessScript);
 
-getYourInventory().then(inventory => {
-    console.log(inventory.inventory);
-});
+let tryGettingInventories = setInterval(getInventories,1000);
 
-getTheirInventory().then(inventory => {
-    console.log(inventory.inventory);
-});
-
-setTimeout(function () {
+function getInventories(){
     getYourInventory().then(inventory => {
         console.log(inventory.inventory);
+        if(inventory.inventory!==null){
+            yourInventory = inventory.inventory;
+        }
     });
 
     getTheirInventory().then(inventory => {
         console.log(inventory.inventory);
+        if(inventory.inventory!==null){
+            theirInventory = inventory.inventory;
+        }
     });
-}, 3000);
+
+    if(yourInventory !== undefined && theirInventory !== undefined){
+        clearInterval(tryGettingInventories);
+    }
+}
 
 //adds "get float value" action item
 overrideHandleTradeActionMenu();
