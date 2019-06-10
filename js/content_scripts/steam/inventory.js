@@ -750,20 +750,6 @@ function changeName(name, color, link){
     $itemName1.hide();
 }
 
-function addDopplerPhase(item, dopplerInfo){
-    if(dopplerInfo!==undefined){
-        item.append(dopplerPhase);
-        $dopplerPhase = item.find(".dopplerPhase");
-        switch (dopplerInfo.short){
-            case "SH": $dopplerPhase.append(sapphire); break;
-            case "RB": $dopplerPhase.append(ruby); break;
-            case "EM": $dopplerPhase.append(emerald); break;
-            case "BP": $dopplerPhase.append(blackPearl); break;
-            default: $dopplerPhase.text(dopplerInfo.short);
-        }
-    }
-}
-
 function addClickListener(){
     $(".module").click(function () {
         $module = $(this);
