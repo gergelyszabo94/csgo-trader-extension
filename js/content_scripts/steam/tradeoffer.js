@@ -27,6 +27,7 @@ const dopplerPhase = "<div class='dopplerPhase'><span>asd</span></div>";
 
 let yourInventory = undefined;
 let theirInventory = undefined;
+let combinedInventories = [];
 
 // the promise will be stored here temporarily
 let yourInventoryPromise = undefined;
@@ -155,10 +156,16 @@ function getInventories(){
     });
 
     if(yourInventory !== undefined && theirInventory !== undefined){
-        yourInventory = buildInventorySctructure(yourInventory);
-        theirInventory = buildInventorySctructure(theirInventory);
+        yourInventory = buildInventoryStructure(yourInventory);
+        theirInventory = buildInventoryStructure(theirInventory);
+        for (let assetid in yourInventory){
+            combinedInventories.push(yourInventory[assetid])
+        }
+        for (let assetid in theirInventory){
+            combinedInventories.push(theirInventory[assetid])
+        }
         clearInterval(tryGettingInventories);
-        addItemInfo();
+        addItemInfo(false);
     }
 }
 
@@ -207,14 +214,60 @@ function findElementByAssetID(assetid){
     return $("#" + elementid);
 }
 
-function addItemInfo() {
-    $(".item.app730.context2").each(function () {
-       $item = $(this);
-       $item.append(dopplerPhase);
-    });
+function addItemInfo(updating) {
+    $(".slot_app_fraudwarning").css({"top":"19px", "left":"75px"});
+    $items = $(".item.app730.context2");
+    if($items.length!==0){
+        chrome.storage.local.get(['colorfulItems'], function(result) {
+            $items.each(function () {
+                $item = $(this);
+                if($item.attr("data-processed")===undefined||$item.attr("data-processed")==="false"||updating){
+                    if($item.attr('id')===undefined){ //in case the inventory is not loaded yet
+                        setTimeout(function () {
+                            addPerItemInfo(false);
+                        }, 1000);
+                        return false;
+                    }
+                    else{
+                        let assetID = $item.attr('id').split("730_2_")[1]; //gets the assetid of the item from the html
+                        let item = getItemByAssetID(assetID); //matches it with the info from the page variables
+
+
+                        addDopplerPhase($item, item.dopplerInfo);
+                        if(result.colorfulItems){
+                            if(item.dopplerInfo!==undefined){
+                                $item.css({"border-color": "#"+item.dopplerInfo.color, "background-image": "url()", "background-color": "#"+item.dopplerInfo.color});
+                            }
+                            else{
+                                $item.css({"border-color": item.quality.backgroundcolor, "background-image": "url()", "background-color": item.quality.backgroundcolor});
+                            }
+                        }
+
+                        let stattrak = "";
+                        if(item.isStatrack){
+                            stattrak = "ST";
+                        }
+                        let souvenir = "";
+                        if(item.isSouvenir){
+                            souvenir = "S";
+                        }
+
+                        $item.append(`<div class='exteriorSTInfo'><span class="souvenirYellow">${souvenir}</span><span class="stattrakOrange">${stattrak}</span><span class="exteriorIndicator">${item.shortExterior}</span></div>`);
+
+                        $(this).attr("data-processed", true);
+                    }
+                }
+            });
+        });
+    }
+    else{ //in case the inventory is not loaded yet
+        setTimeout(function () {
+            addItemInfo(false);
+        }, 1000);
+    }
 }
 
-function buildInventorySctructure(inventory) {
+function buildInventoryStructure(inventory) {
     let inventoryArrayToReturn = [];
     let duplicates = {};
 
@@ -310,4 +363,26 @@ function buildInventorySctructure(inventory) {
     inventoryArrayToReturn.sort(compare);
 
     return inventoryArrayToReturn;
+}
+
+//gets the details of an item by matching the passed asset id with the ones from page variables
+function getItemByAssetID(assetidToFind){
+    if (combinedInventories === undefined || combinedInventories.length === 0) {
+        return false
+    }
+    return $.grep(combinedInventories, function(e){ return e.assetid === assetidToFind; })[0];
+}
+
+function addDopplerPhase(item, dopplerInfo){
+    if(dopplerInfo!==undefined){
+        item.append(dopplerPhase);
+        $dopplerPhase = item.find(".dopplerPhase");
+        switch (dopplerInfo.short){
+            case "SH": $dopplerPhase.append(sapphire); break;
+            case "RB": $dopplerPhase.append(ruby); break;
+            case "EM": $dopplerPhase.append(emerald); break;
+            case "BP": $dopplerPhase.append(blackPearl); break;
+            default: $dopplerPhase.text(dopplerInfo.short);
+        }
+    }
 }
