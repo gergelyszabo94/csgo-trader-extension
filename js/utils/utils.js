@@ -89,6 +89,241 @@ const exteriors = {
     }
 };
 
+const rarities = {
+    common:{
+        internal_name: "Rarity_Common",
+        name: "common",
+        prettyName: "Common"
+    },
+    common_weapon: {
+        internal_name: "Rarity_Common_Weapon",
+        name: "common",
+        prettyName: "Common Weapon"
+    },
+    uncommon: {
+        internal_name: "Rarity_Uncommon",
+        name: "uncommon",
+        prettyName: "Uncommon"
+    },
+    uncommon_weapon: {
+        internal_name: "Rarity_Uncommon_Weapon",
+        name: "uncommon",
+        prettyName: "Uncommon Weapon"
+    },
+    rare: {
+        internal_name: "Rarity_Rare",
+        name: "rare",
+        prettyName: "Rare"
+    },
+    rare_weapon: {
+        internal_name: "Rarity_Rare_Weapon",
+        name: "rare",
+        prettyName: "Rare Weapon"
+    },
+    mythical: {
+        internal_name: "Rarity_Mythical",
+        name: "mythical",
+        prettyName: "Mythical"
+    },
+    mythical_weapon: {
+        internal_name: "Rarity_Mythical_Weapon",
+        name: "mythical",
+        prettyName: "Mythical Weapon"
+    },
+    legendary: {
+        internal_name: "Rarity_Legendary",
+        name: "legendary",
+        prettyName: "Legendary"
+    },
+    legendary_weapon: {
+        internal_name: "Rarity_Legendary_Weapon",
+        name: "legendary",
+        prettyName: "Legendary Weapon"
+    },
+    ancient: {
+        internal_name: "Rarity_Ancient",
+        name: "ancient",
+        prettyName: "Ancient"
+    },
+    ancient_weapon: {
+        internal_name: "Rarity_Ancient_Weapon",
+        name: "ancient",
+        prettyName: "Ancient Weapon"
+    },
+    contraband: {
+        internal_name: "Rarity_Contraband",
+        name: "contraband",
+        prettyName: "Contraband"
+    },
+    contraband_weapon: {
+        internal_name: "Rarity_Contraband_Weapon",
+        name: "contraband",
+        prettyName: "Contraband Weapon"
+    }
+};
+
+const qualities = {
+    stock: {
+        name: "stock",
+        prettyName: "Stock",
+        color: "#6a6156",
+        backgroundcolor: "#453b30"
+    },
+    base_grade: {
+        name: "base_grade",
+        prettyName: "Base Grade",
+        color: "#FFFFFF",
+        backgroundcolor: "#7e7e7e"
+    },
+    consumer_grade: {
+        name: "consumer_grade",
+        prettyName: "Consumer Grade",
+        color: "#FFFFFF",
+        backgroundcolor: "#7e7e7e"
+    },
+    common:{
+        name: rarities.common.name,
+        prettyName: rarities.common.prettyName,
+        color: "#FFFFFF",
+        backgroundcolor: "#7e7e7e"
+    },
+    industrial_grade: {
+        name: "industrial_grade",
+        prettyName: "Industrial",
+        color: "#5e98d9",
+        backgroundcolor: "#3d6896"
+    },
+    uncommon: {
+        name: rarities.uncommon.name,
+        prettyName: rarities.uncommon.prettyName,
+        color: "#5e98d9",
+        backgroundcolor: "#3d6896"
+    },
+    milspec_grade: {
+        name: "milspec_grade",
+        prettyName: "Mil-Spec Grade",
+        color: "#4b69ff",
+        backgroundcolor: "#414e9c"
+    },
+    high_grade:{
+        name: "high_grade",
+        prettyName: "High Grade",
+        color: "#4b69ff",
+        backgroundcolor: "#414e9c"
+    },
+    rare:{
+        name: rarities.rare.name,
+        prettyName: rarities.rare.prettyName,
+        color: "#4b69ff",
+        backgroundcolor: "#414e9c"
+    },
+    restricted: {
+        name: "restricted",
+        prettyName: "Restricted",
+        color: "#8847ff",
+        backgroundcolor: "#50248e"
+    },
+    remarkable: {
+        name: "remarkable",
+        prettyName: "Remarkable",
+        color: "#8847ff",
+        backgroundcolor: "#50248e"
+    },
+    mythical: {
+        name: rarities.mythical.name,
+        prettyName: rarities.mythical.prettyName,
+        color: "#8847ff",
+        backgroundcolor: "#50248e"
+    },
+    classified: {
+        name: "classified",
+        prettyName: "Classified",
+        color: "#d32ce6",
+        backgroundcolor: "#6c297f"
+    },
+    legendary: {
+        name: rarities.legendary.name,
+        prettyName: rarities.legendary.prettyName,
+        color: "#d32ce6",
+        backgroundcolor: "#6c297f"
+    },
+    exotic: {
+        name: "exotic",
+        prettyName: "Exotic",
+        color: "#d32ce6",
+        backgroundcolor: "#6c297f"
+    },
+    extraordinary: {
+        name: "extraordinary",
+        prettyName: "Extraordinary",
+        color: "#eb4b4b",
+        backgroundcolor: "#653232"
+    },
+    covert: {
+        name: "covert",
+        prettyName: "Covert",
+        color: "#eb4b4b",
+        backgroundcolor: "#653232"
+    },
+    ancient: {
+        name: rarities.ancient.name,
+        prettyName: rarities.ancient.prettyName,
+        color: "#eb4b4b",
+        backgroundcolor: "#653232"
+    },
+    contraband: {
+        name: rarities.contraband.name,
+        prettyName: rarities.contraband.prettyName,
+        color: "#e4ae39",
+        backgroundcolor: "#b27d36"
+    }
+};
+
+function getQuality(type){
+    if(/Base Grade/i.test(type)){return qualities.base_grade;}
+    else if(/Classified/i.test(type)){return qualities.classified}
+    else if(/Consumer Grade/i.test(type)){return qualities.consumer_grade}
+    else if(/Contraband/i.test(type)){return qualities.contraband}
+    else if(/Covert/i.test(type)){return qualities.covert}
+    else if(/Exotic/i.test(type)){return qualities.exotic}
+    else if(/Extraordinary/i.test(type)){return qualities.extraordinary}
+    else if(/High Grade/i.test(type)){return qualities.high_grade}
+    else if(/Industrial Grade/i.test(type)){return qualities.industrial_grade}
+    else if(/Mil-Spec Grade/i.test(type)){return qualities.milspec_grade}
+    else if(/Remarkable/i.test(type)){return qualities.remarkable}
+    else if(/Restricted/i.test(type)){return qualities.restricted}
+    else if(/Stock/i.test(type)){return qualities.stock}
+    else{ return qualities.stock}
+}
+
+function getQualityFromTags(tags){
+    for(let tag of tags) {
+        console.log(tag);
+        console.log(tag.category);
+        if(tag.category==="Rarity"){
+            console.log("in if");
+            switch(tag.internal_name){
+                case rarities.common.internal_name: return qualities.common;
+                case rarities.common_weapon.internal_name: return qualities.common;
+                case rarities.uncommon.internal_name: return qualities.uncommon;
+                case rarities.uncommon_weapon.internal_name: return qualities.uncommon;
+                case rarities.rare.internal_name: return qualities.rare;
+                case rarities.rare_weapon.internal_name: return qualities.rare;
+                case rarities.mythical.internal_name: return qualities.mythical;
+                case rarities.mythical_weapon.internal_name: return qualities.mythical;
+                case rarities.legendary.internal_name: return qualities.legendary;
+                case rarities.legendary_weapon.internal_name: return qualities.legendary;
+                case rarities.ancient.internal_name: return qualities.ancient;
+                case rarities.ancient_weapon.internal_name: return qualities.ancient;
+                case rarities.contraband.internal_name: return qualities.contraband;
+                case rarities.contraband_weapon.internal_name: return qualities.contraband;
+                default: return undefined;
+            }
+        }
+    }
+    return undefined;
+}
+
 function getExteriorFromTags(tags) {
     for(let tag of tags) {
         if(tag.category==="Exterior"){
@@ -518,121 +753,6 @@ function getShortDate(tradabibilityDate){
     }
 }
 
-function getQuality(type){
-    let quality = {
-        name: "stock",
-        prettyName: "Stock",
-        color: "#6a6156",
-        backgroundcolor: "#453b30"
-    };
-
-    if(/Base Grade/i.test(type)){
-        quality = {
-            name: "base_grade",
-            prettyName: "Base Grade",
-            color: "#FFFFFF",
-            backgroundcolor: "#7e7e7e"
-        };
-    }
-    else if(/Classified/i.test(type)){
-        quality = {
-            name: "classified",
-            prettyName: "Classified",
-            color: "#d32ce6",
-            backgroundcolor: "#6c297f"
-        };
-    }
-    else if(/Consumer Grade/i.test(type)){
-        quality = {
-            name: "consumer_grade",
-            prettyName: "Consumer Grade",
-            color: "#FFFFFF",
-            backgroundcolor: "#7e7e7e"
-        };
-    }
-    else if(/Contraband/i.test(type)){
-        quality = {
-            name: "contraband",
-            prettyName: "Contraband",
-            color: "#e4ae39",
-            backgroundcolor: "#b27d36"
-        };
-    }
-    else if(/Covert/i.test(type)){
-        quality = {
-            name: "covert",
-            prettyName: "Covert",
-            color: "#eb4b4b",
-            backgroundcolor: "#653232"
-        };
-    }
-    else if(/Exotic/i.test(type)){
-        quality = {
-            name: "exotic",
-            prettyName: "Exotic",
-            color: "#d32ce6",
-            backgroundcolor: "#6c297f"
-        };
-    }
-    else if(/Extraordinary/i.test(type)){
-        quality = {
-            name: "extraordinary",
-            prettyName: "Extraordinary",
-            color: "#eb4b4b",
-            backgroundcolor: "#653232"
-        };
-    }
-    else if(/High Grade/i.test(type)){
-        quality = {
-            name: "high_grade",
-            prettyName: "High Grade",
-            color: "#4b69ff",
-            backgroundcolor: "#414e9c"
-        };
-    }
-    else if(/Industrial Grade/i.test(type)){
-        quality = {
-            name: "industrial_grade",
-            prettyName: "Industrial",
-            color: "#5e98d9",
-            backgroundcolor: "#3d6896"
-        };
-    }
-    else if(/Mil-Spec Grade/i.test(type)){
-        quality = {
-            name: "milspec_grade",
-            prettyName: "Mil-Spec Grade",
-            color: "#4b69ff",
-            backgroundcolor: "#414e9c"
-        };
-    }
-    else if(/Remarkable/i.test(type)){
-        quality = {
-            name: "remarkable",
-            prettyName: "Remarkable",
-            color: "#8847ff",
-            backgroundcolor: "#50248e"
-        };
-    }
-    else if(/Restricted/i.test(type)){
-        quality = {
-            name: "restricted",
-            prettyName: "Restricted",
-            color: "#8847ff",
-            backgroundcolor: "#50248e"
-        };
-    }
-    else if(/Stock/i.test(type)){
-        quality = {
-            name: "stock",
-            prettyName: "Stock",
-            color: "#FFFFFF",
-            backgroundcolor: "#7e7e7e"
-        };
-    }
-    return quality;
-}
-
 function souvenirExists(iteminfo) {
     const collectionsWithSouvenirs = [
         'The Blacksite Collection',
@@ -840,10 +960,10 @@ function removeFromArray(array, arrayIndex){
 
 function addReplytoCommentsFunctionality() {
     $(".commentthread_comment_actions").each(function () {
-       $commentactions = $(this);
-       if($commentactions.find(".replybutton").length===0){
-           $commentactions.append(`<a class="actionlink replybutton" href="javascript:void(0)" data-tooltip-text="Reply"><img style="height: 16px; width: 16px" src="${chrome.runtime.getURL("images/reply.png")}"></a>`)
-       }
+        $commentactions = $(this);
+        if($commentactions.find(".replybutton").length===0){
+            $commentactions.append(`<a class="actionlink replybutton" href="javascript:void(0)" data-tooltip-text="Reply"><img style="height: 16px; width: 16px" src="${chrome.runtime.getURL("images/reply.png")}"></a>`)
+        }
     });
 
     $(".replybutton").off("click").on("click",function(){

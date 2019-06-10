@@ -1,4 +1,4 @@
-const dopplerPhase = "<div class='dopplerPhase'><span>asd</span></div>";
+const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
 
 // MutationObserver = window.MutationObserver;
 //
@@ -301,7 +301,7 @@ function buildInventoryStructure(inventory) {
     inventory.forEach(function (item) {
         let exterior = getExteriorFromTags(item.tags);
         let marketlink = "https://steamcommunity.com/market/listings/730/" + item.market_hash_name;
-        let quality = getQuality(item.type);
+        let quality = getQualityFromTags(item.tags);
         let stickers =  parseStickerInfo(item.descriptions, "direct");
         let nametag = undefined;
         let inspectLink ="";
