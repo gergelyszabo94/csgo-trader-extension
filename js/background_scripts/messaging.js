@@ -59,6 +59,8 @@ chrome.runtime.onMessage.addListener(
                             let quality = getQuality(items[item].type);
                             let stickers =  parseStickerInfo(items[item].descriptions, "direct");
                             let nametag =undefined;
+                            let inspectLink ="";
+                            let owner = steamID;
 
                             try {
                                 if(items[item].fraudwarnings!==undefined||items[item].fraudwarnings[0]!==undefined){
@@ -88,13 +90,11 @@ chrome.runtime.onMessage.addListener(
                             if(/★/.test(name)){
                                 starInName = true;
                             }
-
-                            let inspectLink ="";
                             try {
                                 if(items[item].actions!==undefined&&items[item].actions[0]!==undefined){
                                     let beggining = items[item].actions[0].link.split('%20S')[0];
                                     let end = items[item].actions[0].link.split('%assetid%')[1];
-                                    inspectLink = (beggining + "%20S"+steamID + "A"+ assetid + end);
+                                    inspectLink = (beggining + "%20S"+owner + "A"+ assetid + end);
                                 }
                             }
                             catch(error) {
@@ -122,7 +122,8 @@ chrome.runtime.onMessage.addListener(
                                 starInName: starInName,
                                 stickers: stickers,
                                 nametag: nametag,
-                                duplicates: duplicates[market_hash_name]
+                                duplicates: duplicates[market_hash_name],
+                                owner: owner
                             })
                         }
                     }
