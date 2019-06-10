@@ -1,4 +1,4 @@
-const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
+const dopplerPhase = "<div class='dopplerPhase'><span>asd</span></div>";
 
 // MutationObserver = window.MutationObserver;
 //
@@ -81,7 +81,6 @@ let inventoryAccessScript = `<script id="getItems">
                 inventory = UserThem.getInventory(730,2);
             }
             let assets = inventory.rgInventory;
-            console.log(assets);
             let steamID = inventory.owner.strSteamId;
             if(assets!==null){
                 let assetKeys= Object.keys(assets);
@@ -158,8 +157,6 @@ function getInventories(){
     if(yourInventory !== undefined && theirInventory !== undefined){
         yourInventory = buildInventorySctructure(yourInventory);
         theirInventory = buildInventorySctructure(theirInventory);
-        console.log(yourInventory);
-        console.log(theirInventory);
         clearInterval(tryGettingInventories);
         addItemInfo();
     }
@@ -305,6 +302,12 @@ function buildInventorySctructure(inventory) {
             owner: item.owner
         })
     });
+
+    function compare(a, b) {
+        return a.position - b.position;
+    }
+
+    inventoryArrayToReturn.sort(compare);
 
     return inventoryArrayToReturn;
 }
