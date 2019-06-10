@@ -165,7 +165,7 @@ function getInventories(){
             combinedInventories.push(theirInventory[assetid])
         }
         clearInterval(tryGettingInventories);
-        addItemInfo(false);
+        addItemInfo();
     }
 }
 
@@ -189,11 +189,17 @@ let scriptToInject = `
 </script>`;
 $("body").append(scriptToInject);
 
+setInterval(function () {
+    removeSIHStuff();
+}, 2000);
+
+$(".inventory_user_tab").click(function () {
+   addItemInfo();
+});
+
 document.addEventListener("message", function(e) {
     addFloatIndicator(e.detail);
 });
-
-
 
 function addFloatIndicator(inspectLink) {
     chrome.runtime.sendMessage({getFloatInfo: inspectLink}, function(response) {
@@ -214,14 +220,15 @@ function findElementByAssetID(assetid){
     return $("#" + elementid);
 }
 
-function addItemInfo(updating) {
+function addItemInfo() {
     $(".slot_app_fraudwarning").css({"top":"19px", "left":"75px"});
     $items = $(".item.app730.context2");
+    removeSIHStuff();
     if($items.length!==0){
         chrome.storage.local.get(['colorfulItems'], function(result) {
             $items.each(function () {
                 $item = $(this);
-                if($item.attr("data-processed")===undefined||$item.attr("data-processed")==="false"||updating){
+                if($item.attr("data-processed")===undefined||$item.attr("data-processed")==="false"){
                     if($item.attr('id')===undefined){ //in case the inventory is not loaded yet
                         setTimeout(function () {
                             addPerItemInfo(false);
@@ -262,7 +269,7 @@ function addItemInfo(updating) {
     }
     else{ //in case the inventory is not loaded yet
         setTimeout(function () {
-            addItemInfo(false);
+            addItemInfo();
         }, 1000);
     }
 }
@@ -371,4 +378,8 @@ function getItemByAssetID(assetidToFind){
         return false
     }
     return $.grep(combinedInventories, function(e){ return e.assetid === assetidToFind; })[0];
+}
+
+function removeSIHStuff() {
+    $(".des-tag").remove();
 }
