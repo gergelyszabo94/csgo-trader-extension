@@ -1,12 +1,5 @@
 // const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
 
-overrideHandleTradeActionMenu();
-chrome.storage.local.get(['markScammers'], function(result) {
-    if(result.markScammers){
-        warnOfScammer(getTradePartnerSteamID(), "offer");
-    }
-});
-
 // MutationObserver = window.MutationObserver;
 //
 // let observer = new MutationObserver(function(mutations, observer) {
@@ -31,6 +24,144 @@ chrome.storage.local.get(['markScammers'], function(result) {
 //         attributes: true
 //     });
 // }
+
+let yourInventory = undefined;
+let theirInventory = undefined;
+
+// the promise will be stored here temporarily
+let yourInventoryPromise = undefined;
+let theirInventoryPromise = undefined;
+
+//listens to the message events on the extension side of the communication
+window.addEventListener('message', e => {
+    if (e.data.type === 'yourInventory') {
+        yourInventoryPromise(e.data);
+        yourInventoryPromise = undefined;
+    }
+    else if (e.data.type === 'theirInventory') {
+        theirInventoryPromise(e.data);
+        theirInventoryPromise = undefined;
+    }
+});
+
+//sends the message to the page side to get the info
+const getYourInventory = function() {
+    window.postMessage(
+        {
+            type: 'requestYourInventory'
+        },
+        '*'
+    );
+    return new Promise(resolve => {
+        yourInventoryPromise = resolve;
+    });
+};
+
+const getTheirInventory = function() {
+    window.postMessage(
+        {
+            type: 'requestTheirInventory'
+        },
+        '*'
+    );
+    return new Promise(resolve => {
+        theirInventoryPromise = resolve;
+    });
+};
+
+//this injected script listens to the messages from the extension side and responds with the page context info needed
+let inventoryAccessScript = `<script id="getItems">
+    window.addEventListener('message', (e) => {
+        if (e.data.type === 'requestYourInventory' || e.data.type === 'requestTheirInventory') {
+            let inventory = undefined;
+            if(e.data.type === 'requestYourInventory'){
+                inventory = UserYou.getInventory(730,2);
+            }
+            else{
+                inventory = UserThem.getInventory(730,2);
+            }
+            let assets = inventory.rgInventory;
+            console.log(assets);
+            if(assets!==null){
+                let assetKeys= Object.keys(assets);
+                console.log(assetKeys);
+                let trimmedAssets = [];
+                
+                for(let assetKey of assetKeys){
+                    let asset = {
+                        amount: assets[assetKey].amount,
+                        assetid: assets[assetKey].id,
+                        icon: assets[assetKey].icon_url,
+                        instanceid: assets[assetKey].instanceid,
+                        contextid: assets[assetKey].contextid,
+                        descriptions: assets[assetKey].descriptions,
+                        market_actions: assets[assetKey].market_actions,
+                        market_hash_name: assets[assetKey].market_hash_name,
+                        name: assets[assetKey].name,
+                        name_color: assets[assetKey].name_color,
+                        position: assets[assetKey].pos,
+                        type: assets[assetKey].type
+                    };
+                    trimmedAssets.push(asset);
+                }
+                    if(e.data.type === 'requestYourInventory'){
+                        window.postMessage({
+                            type: 'yourInventory',
+                            inventory: trimmedAssets
+                        }, '*');
+                    }
+                    else{
+                        window.postMessage({
+                            type: 'theirInventory',
+                            inventory: trimmedAssets
+                        }, '*');
+                    }
+                }
+            else{
+                if(e.data.type === 'requestYourInventory'){
+                        window.postMessage({
+                            type: 'yourInventory',
+                            inventory: null
+                        }, '*');
+                    }
+                    else{
+                        window.postMessage({
+                            type: 'theirInventory',
+                            inventory: null
+                        }, '*');
+                    }
+            }
+        }
+    });
+</script>`;
+$("body").append(inventoryAccessScript);
+
+getYourInventory().then(inventory => {
+    console.log(inventory.inventory);
+});
+
+getTheirInventory().then(inventory => {
+    console.log(inventory.inventory);
+});
+
+setTimeout(function () {
+    getYourInventory().then(inventory => {
+        console.log(inventory.inventory);
+    });
+
+    getTheirInventory().then(inventory => {
+        console.log(inventory.inventory);
+    });
+}, 3000);
+
+//adds "get float value" action item
+overrideHandleTradeActionMenu();
+
+chrome.storage.local.get(['markScammers'], function(result) {
+    if(result.markScammers){
+        warnOfScammer(getTradePartnerSteamID(), "offer");
+    }
+});
 
 //this script gets injected, it allows communication between the page context and the content script initiated on the page
 //when the function is called it dispatches a an event that we listen to from the content script
