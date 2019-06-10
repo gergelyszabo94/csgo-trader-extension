@@ -298,10 +298,7 @@ function getQuality(type){
 
 function getQualityFromTags(tags){
     for(let tag of tags) {
-        console.log(tag);
-        console.log(tag.category);
         if(tag.category==="Rarity"){
-            console.log("in if");
             switch(tag.internal_name){
                 case rarities.common.internal_name: return qualities.common;
                 case rarities.common_weapon.internal_name: return qualities.common;
