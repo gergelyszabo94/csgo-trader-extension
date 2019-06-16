@@ -1,30 +1,5 @@
 const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
 
-// MutationObserver = window.MutationObserver;
-//
-// let observer = new MutationObserver(function(mutations, observer) {
-//     mutations.forEach((mutation)=> {
-//         // console.log(mutation);
-//         if(mutation.target.classList.contains('popup_block_new')){
-//             console.log(mutation.target);
-//         }
-//             if(mutation.target.classList.contains('inventory_ctn')||(mutation.type="childList"&&mutation.target.classList.contains('slot_actionmenu_button'))){
-//             console.log("2" + mutation.target);
-//
-//         }
-//     });
-// });
-//
-// let inventoriesElement = document.getElementById("inventories");
-//
-// if(inventoriesElement!==undefined&&inventoriesElement!==""&&inventoriesElement!==null){
-//     observer.observe(inventoriesElement, {
-//         childList: true,
-//         subtree: true,
-//         attributes: true
-//     });
-// }
-
 let yourInventory = undefined;
 let theirInventory = undefined;
 let combinedInventories = [];
@@ -81,7 +56,6 @@ let inventoryAccessScript = `<script id="getItems">
             else{
                 inventory = UserThem.getInventory(730,2);
             }
-            console.log(inventory);
             let assets = inventory.rgInventory;
             let steamID = inventory.owner.strSteamId;
             if(assets!==null){
