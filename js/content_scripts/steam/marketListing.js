@@ -126,7 +126,7 @@ if(isSouvenir||thereSouvenirForThisItem){
 
     $ftst=$("#ftSTLink");
     $ftst.attr("href", genericMarketLink + souvenir + weaponName + "(Field-Tested)");
-    $ftst.find("span").text(chrome.i18n.getMessage("souvenir")+" " + field_tested.localized_name);
+    $ftst.find("span").text(chrome.i18n.getMessage("souvenir")+" " + exteriors.field_tested.localized_name);
 
     $wwst=$("#wwSTLink");
     $wwst.attr("href", genericMarketLink + souvenir + weaponName + "(Well-Worn)");
