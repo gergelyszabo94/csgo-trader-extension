@@ -9,7 +9,6 @@ chrome.runtime.onMessage.addListener(
 chrome.storage.local.get('bookmarks', function(result) {
     if(result.bookmarks.length!==0){
         let bookmarks = [];
-        console.log(result.bookmarks);
         result.bookmarks.forEach(function (element, index) {
             let iconFullURL= 'https://steamcommunity.com/economy/image/' + element.itemInfo.iconURL + '/256x256';
             let notify = element.notify;
@@ -21,11 +20,19 @@ chrome.storage.local.get('bookmarks', function(result) {
                 notify = "";
                 notifOptionsVisibility = "none";
             }
+            let exterior;
+            //backwards compatibility to display exterior of old bookmarks correctly - they were simple string properties, now objects
+            if(typeof element.itemInfo.exterior === 'object'){
+                exterior = element.itemInfo.exterior.localized_name;
+            }
+            else{
+                exterior = element.itemInfo.exterior;
+            }
             let bookmark = `<div class="buildingBlock">
          <div class="row">
             <div class="col-5">
                 <h3>${element.itemInfo.name}</h3>
-                <h4>${element.itemInfo.exterior}</h4>
+                <h4>${exterior}</h4>
                 <img src="${iconFullURL}">
             </div>
             <div class="col-4 mid-column" data-tradability="${element.itemInfo.tradability}">
@@ -118,7 +125,6 @@ function setAlarms(){
     $(".notify").click(function() {
         $notifSwitch = $(this);
         let index = $notifSwitch.attr("data-index");
-        console.log($notifSwitch.parent().next());
         $notifSwitch.parent().next().toggle();
         chrome.storage.local.get('bookmarks', function(result) {
             let bookmarks = result.bookmarks;
