@@ -261,9 +261,12 @@ function addItemInfo() {
                             souvenir = "S";
                         }
 
+                        let exterior = "";
                         if(item.exterior!==undefined){
-                            $item.append(`<div class='exteriorSTInfo'><span class="souvenirYellow">${souvenir}</span><span class="stattrakOrange">${stattrak}</span><span class="exteriorIndicator">${item.exterior.short}</span></div>`);
+                            exterior = item.exterior.localized_short;
                         }
+
+                        $item.append(`<div class='exteriorSTInfo'><span class="souvenirYellow">${souvenir}</span><span class="stattrakOrange">${stattrak}</span><span class="exteriorIndicator">${exterior}</span></div>`);
 
                         $(this).attr("data-processed", true);
                     }
