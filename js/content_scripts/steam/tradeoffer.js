@@ -213,7 +213,7 @@ function addFloatIndicator(inspectLink) {
 
         }
         let itemToAddFloatTo = findElementByAssetID(inspectLink.split("A")[1].split("D")[0]);
-        itemToAddFloatTo.append(`<span class='floatIndicator'>Float: ${float.toFixed(4)}</span>`);
+        itemToAddFloatTo.append(`<span class='floatIndicator'>${float.toFixed(4)}</span>`);
     });
 }
 

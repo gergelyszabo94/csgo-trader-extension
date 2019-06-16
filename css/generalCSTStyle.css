@@ -160,12 +160,12 @@ progress {
 
 .floatIndicator{
     color: white;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     position: absolute;
     top: 0;
-    right: 0;
-    margin-top: 3px;
-    margin-right: 3px;
+    left: 0;
+    margin-top: 5px;
+    margin-left: 5px;
 }
 
 .note{
