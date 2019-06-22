@@ -128,6 +128,63 @@ const dopplerPhases = {
     }
 };
 
+const patterns = {
+    fades:{
+        karambit:{
+            131: "88%"
+        },
+        talon:{
+
+        },
+        stiletto:{
+            317: "89%"
+        },
+        navaja:{
+
+        },
+        ursus:{
+
+        },
+        butterfly:{
+            222: "84%"
+        },
+        m9:{
+            557: "90%"
+        },
+        bayonet:{
+            742: "99%"
+        },
+        huntsman:{
+            977: "82%"
+        },
+        flip:{
+            777: "80%"
+        },
+        bowie:{
+
+        },
+        daggers:{
+            555: "84%",
+            558: "88%"
+        },
+        gut:{
+
+        },
+        falchion:{
+            759: "98%"
+        },
+        glock:{
+
+        },
+    },
+    marble_fades:{
+
+    },
+    case_hardeneds:{
+
+    }
+};
+
 const exteriors = {
     factory_new: {
         internal_name: "WearCategory0",
@@ -361,8 +418,33 @@ const qualities = {
     }
 };
 
+function getPattern(name, paint_seed){
+    if(/ Marble Fade /i.test(name)){
+
+    }
+    else if(/ Fade /i.test(name)){
+        if(/Karambit/i.test(name)){return patterns.fades.karambit[paint_seed]}
+        else if(/Butterfly/i.test(name)){return patterns.fades.butterfly[paint_seed]}
+        else if(/M9 Bayonet/i.test(name)){return patterns.fades.m9[paint_seed]}
+        else if(/Bayonet/i.test(name)){return patterns.fades.bayonet[paint_seed]}
+        else if(/Talon/i.test(name)){return patterns.fades.talon[paint_seed]}
+        else if(/Stiletto/i.test(name)){return patterns.fades.stiletto[paint_seed]}
+        else if(/Navaja/i.test(name)){return patterns.fades.navaja[paint_seed]}
+        else if(/Ursus/i.test(name)){return patterns.fades.ursus[paint_seed]}
+        else if(/Huntsman/i.test(name)){return patterns.fades.huntsman[paint_seed]}
+        else if(/Flip/i.test(name)){return patterns.fades.flip[paint_seed]}
+        else if(/Bowie/i.test(name)){return patterns.fades.bowie[paint_seed]}
+        else if(/Daggers/i.test(name)){return patterns.fades.daggers[paint_seed]}
+        else if(/Gut/i.test(name)){return patterns.fades.gut[paint_seed]}
+        else if(/Falchion/i.test(name)){return patterns.fades.falchion[paint_seed]}
+        else if(/Glock/i.test(name)){return patterns.fades.glock[paint_seed]}
+        else{return undefined}
+    }
+    else{return undefined;}
+}
+
 function getQuality(type){
-    if(/Base Grade/i.test(type)){return qualities.base_grade;}
+    if(/Base Grade/i.test(type)){return qualities.base_grade}
     else if(/Classified/i.test(type)){return qualities.classified}
     else if(/Consumer Grade/i.test(type)){return qualities.consumer_grade}
     else if(/Contraband/i.test(type)){return qualities.contraband}
@@ -375,7 +457,7 @@ function getQuality(type){
     else if(/Remarkable/i.test(type)){return qualities.remarkable}
     else if(/Restricted/i.test(type)){return qualities.restricted}
     else if(/Stock/i.test(type)){return qualities.stock}
-    else{ return qualities.stock}
+    else{return qualities.stock}
 }
 
 function getQualityFromTags(tags){
