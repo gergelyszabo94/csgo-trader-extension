@@ -15428,7 +15428,10 @@ function getPattern(name, paint_seed){
         else{return undefined}
 
         if(percentage!==undefined){
-            return percentage + "% fade";
+            return {
+                type: "fade",
+                value: percentage + "% Fade"
+            };
         }
         else{
             return undefined;

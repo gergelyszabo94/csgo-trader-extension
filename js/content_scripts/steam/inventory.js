@@ -118,10 +118,10 @@ const duplicates0 = `
     <div class="duplicate" id="duplicates0">x1</div>`;
 
 const patternInfo1 = `
-    <div class="patternInfo" id="patternInfo1">x1</div>`;
+    <div class="patternInfo" id="patternInfo1"></div>`;
 
 const patternInfo0 = `
-    <div class="patternInfo" id="patternInfo0">x1</div>`;
+    <div class="patternInfo" id="patternInfo0"></div>`;
 
 // the promise will be stored here temporarily
 let inventoryPromise = undefined;
@@ -332,10 +332,10 @@ function addElements(){
 
         //adds float bar, sticker info, nametag
         if(!$("#floatBar1").length) {
-            $("#iteminfo1_content").children().first().after(nametag1, stickers1, duplicates1, patternInfo1, floatBar1);
+            $("#iteminfo1_content").children().first().after(nametag1, stickers1, duplicates1, floatBar1, patternInfo1);
         }
         if(!$("#floatBar0").length) {
-            $("#iteminfo0_content").children().first().after(nametag0, stickers0, duplicates0, patternInfo0, floatBar0);
+            $("#iteminfo0_content").children().first().after(nametag0, stickers0, duplicates0, floatBar0, patternInfo0);
         }
 
         $(".floatTechnical").hide();
@@ -495,13 +495,20 @@ function addElements(){
                     $("#float1").css("left", position + "%");
                     $("#float0DropTarget").text(float.toFixed(4));
                     $("#float1DropTarget").text(float.toFixed(4));
+
+                    $patterinfInfo = $(".patternInfo");
                     if(patternInfo!==undefined){
-                        $("#patternInfo0").text(patternInfo);
-                        $("#patternInfo1").text(patternInfo);
+                        $patterinfInfo.removeClass("fadeGradient");
+
+                        if(patternInfo.type==="fade"){
+                            $patterinfInfo.addClass("fadeGradient");
+                        }
+                        $patterinfInfo.text("Pattern: " + patternInfo.value);
+                        $patterinfInfo.show();
                     }
                     else{
-                        $("#patternInfo0").text("");
-                        $("#patternInfo1").text("");
+                        $patterinfInfo.text("");
+                        $patterinfInfo.hide();
                     }
                     $("#fvDrop0").text(float);
                     $("#fvDrop1").text(float);

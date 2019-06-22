@@ -247,14 +247,17 @@ progress {
 }
 
 .patternInfo{
+    position: relative;
+    left: 0;
+    bottom: 15px;
+    font-size: 1.5em;
     color: white;
-    position: absolute;
-    right: 75px;
-    top: 150px;
-    font-size: 2.5em;
-    font-weight: bold;
-    -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: black;
+}
+
+.fadeGradient{
+    background: linear-gradient(to right, #ffc94b 0%, #ca6390 50%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 /**
