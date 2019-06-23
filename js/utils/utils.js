@@ -132,10 +132,11 @@ function getPattern(name, paint_seed){
             };
         }
         else{
-            return {
-                type: "case_hardened",
-                value: "Not special or not found"
-            };
+            return undefined;
+            // return {
+            //     type: "case_hardened",
+            //     value: "Not special or not found"
+            // };
         }
     }
     else{
