@@ -49,7 +49,32 @@ const commentsToReport = [
 
 function getPattern(name, paint_seed){
     if(/ Marble Fade /i.test(name)){
-        
+        let pattern;
+        if(/Karambit/i.test(name)){pattern = patterns.marble_fades.karambit[paint_seed]}
+        else if(/Butterfly/i.test(name)){pattern = patterns.marble_fades.butterfly[paint_seed]}
+        else if(/M9 Bayonet/i.test(name)){pattern = patterns.marble_fades.m9[paint_seed]}
+        else if(/Bayonet/i.test(name)){pattern = patterns.marble_fades.bayonet[paint_seed]}
+        else if(/Talon/i.test(name)){pattern = patterns.marble_fades.talon[paint_seed]}
+        else if(/Stiletto/i.test(name)){pattern = patterns.marble_fades.stiletto[paint_seed]}
+        else if(/Navaja/i.test(name)){pattern = patterns.marble_fades.navaja[paint_seed]}
+        else if(/Ursus/i.test(name)){pattern = patterns.marble_fades.ursus[paint_seed]}
+        else if(/Huntsman/i.test(name)){pattern = patterns.marble_fades.huntsman[paint_seed]}
+        else if(/Flip/i.test(name)){pattern = patterns.marble_fades.flip[paint_seed]}
+        else if(/Bowie/i.test(name)){pattern = patterns.marble_fades.bowie[paint_seed]}
+        else if(/Daggers/i.test(name)){pattern = patterns.marble_fades.daggers[paint_seed]}
+        else if(/Gut/i.test(name)){pattern = patterns.marble_fades.gut[paint_seed]}
+        else if(/Falchion/i.test(name)){pattern = patterns.marble_fades.falchion[paint_seed]}
+        else{return undefined}
+
+        if(pattern!==undefined){
+            return {
+                type: "marble_fade",
+                value: pattern
+            };
+        }
+        else{
+            return undefined;
+        }
     }
     else if(/ Fade /i.test(name)){
         let percentage;

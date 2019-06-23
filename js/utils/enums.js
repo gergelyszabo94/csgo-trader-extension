@@ -15115,7 +15115,10 @@ const patterns = {
         },
     },
     marble_fades:{
-
+        gut: {
+            "396": "Not Fire and Ice",
+            "557": "Not Fire and Ice"
+        }
     },
     case_hardeneds:{
 

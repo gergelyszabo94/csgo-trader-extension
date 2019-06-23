@@ -260,6 +260,12 @@ progress {
     -webkit-text-fill-color: transparent;
 }
 
+.marbleFadeGradient{
+    background: linear-gradient(to right, #ff0000 0%, #0000ff 70%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
 /**
  * Tooltip Styles
  */
