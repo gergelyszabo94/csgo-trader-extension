@@ -15121,7 +15121,54 @@ const patterns = {
         }
     },
     case_hardeneds:{
+        ak: {
 
+        },
+        karambit:{
+
+        },
+        talon:{
+
+        },
+        stiletto:{
+
+        },
+        navaja:{
+
+        },
+        ursus:{
+
+        },
+        butterfly:{
+
+        },
+        m9:{
+
+        },
+        bayonet:{
+
+        },
+        huntsman:{
+
+        },
+        flip:{
+
+        },
+        bowie:{
+
+        },
+        daggers:{
+
+        },
+        gut:{
+
+        },
+        falchion:{
+
+        },
+        five_seven:{
+
+        }
     }
 };
 

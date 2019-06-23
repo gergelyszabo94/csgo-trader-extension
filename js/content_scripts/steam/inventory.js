@@ -498,13 +498,16 @@ function addElements(){
 
                     $patterinfInfo = $(".patternInfo");
                     if(patternInfo!==undefined){
-                        $patterinfInfo.removeClass("fadeGradient marbleFadeGradient");
+                        $patterinfInfo.removeClass("fadeGradient marbleFadeGradient caseHardenedGradient");
 
                         if(patternInfo.type==="fade"){
                             $patterinfInfo.addClass("fadeGradient");
                         }
                         else if(patternInfo.type==="marble_fade"){
                             $patterinfInfo.addClass("marbleFadeGradient");
+                        }
+                        else if(patternInfo.type==="case_hardened"){
+                            $patterinfInfo.addClass("caseHardenedGradient");
                         }
                         $patterinfInfo.text("Pattern: " + patternInfo.value);
                         $patterinfInfo.show();

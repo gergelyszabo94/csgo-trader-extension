@@ -105,6 +105,39 @@ function getPattern(name, paint_seed){
             return undefined;
         }
     }
+    else if(/ Case Hardened/i.test(name)){
+        let pattern;
+        if(/AK-47/i.test(name)){pattern = patterns.case_hardeneds.ak[paint_seed]}
+        else if(/Butterfly/i.test(name)){pattern = patterns.case_hardeneds.butterfly[paint_seed]}
+        else if(/M9 Bayonet/i.test(name)){pattern = patterns.case_hardeneds.m9[paint_seed]}
+        else if(/Bayonet/i.test(name)){pattern = patterns.case_hardeneds.bayonet[paint_seed]}
+        else if(/Talon/i.test(name)){pattern = patterns.case_hardeneds.talon[paint_seed]}
+        else if(/Stiletto/i.test(name)){pattern = patterns.case_hardeneds.stiletto[paint_seed]}
+        else if(/Navaja/i.test(name)){pattern = patterns.case_hardeneds.navaja[paint_seed]}
+        else if(/Ursus/i.test(name)){pattern = patterns.case_hardeneds.ursus[paint_seed]}
+        else if(/Huntsman/i.test(name)){pattern = patterns.case_hardeneds.huntsman[paint_seed]}
+        else if(/Flip/i.test(name)){pattern = patterns.case_hardeneds.flip[paint_seed]}
+        else if(/Bowie/i.test(name)){pattern = patterns.case_hardeneds.bowie[paint_seed]}
+        else if(/Daggers/i.test(name)){pattern = patterns.case_hardeneds.daggers[paint_seed]}
+        else if(/Gut/i.test(name)){pattern = patterns.case_hardeneds.gut[paint_seed]}
+        else if(/Falchion/i.test(name)){pattern = patterns.case_hardeneds.falchion[paint_seed]}
+        else if(/Karambit/i.test(name)){pattern = patterns.case_hardeneds.karambit[paint_seed]}
+        else if(/Five-SeveN/i.test(name)){pattern = patterns.case_hardeneds.five_seven[paint_seed]}
+        else{return undefined}
+
+        if(pattern!==undefined){
+            return {
+                type: "case_hardened",
+                value: pattern
+            };
+        }
+        else{
+            return {
+                type: "case_hardened",
+                value: "Not special or not found"
+            };
+        }
+    }
     else{
         return undefined;
     }

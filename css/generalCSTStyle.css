@@ -266,6 +266,12 @@ progress {
     -webkit-text-fill-color: transparent;
 }
 
+.caseHardenedGradient{
+    background: linear-gradient(to right, #ffc94b 0%, #68568d 70%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
 /**
  * Tooltip Styles
  */
