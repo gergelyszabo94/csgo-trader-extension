@@ -1,6 +1,7 @@
 import json
 import requests
 import boto3
+from datetime import date
 
 
 def lambda_handler(event, context):
@@ -27,11 +28,23 @@ def lambda_handler(event, context):
                 extract[name]['csgobackpack'] = "null"
 
         print("Pricing information extracted")
-        print("Putting result to s3")
+        print("Updating latest.json in s3")
         s3.Object('prices.csgotrader.app', 'latest.json').put(
             Body=(bytes(json.dumps(extract, indent=2).encode('UTF-8')))
         )
-        print("Results on s3")
+        print("latest.json updated")
+
+        print("Getting date")
+        today = date.today()
+        year = today.strftime("%Y")
+        month = today.strftime("%m")
+        day = today.strftime("%d")
+        print(f'Uploading prices to {year}/{month}/{day}/prices.json')
+        s3.Object('prices.csgotrader.app', f'{year}/{month}/{day}/prices.json').put(
+            Body=(bytes(json.dumps(extract, indent=2).encode('UTF-8')))
+        )
+        print("Upload complete")
+
         return{
             'statusCode': 200,
             'body': json.dumps('Success!')
