@@ -285,10 +285,54 @@ def lambda_handler(event, context):
                 extract[item]['bitskins'] = extract[item]['bitskins']
             except KeyError:
                 extract[item] = {
-                    "csgotraders": extract[item]['csgobackpack'],
+                    "csgobackpack": extract[item]['csgobackpack'],
                     "bitskins": "null"
                 }
         print("Pricing info extracted")
+    elif response.status_code == 401:
+        print(response.status_code)
+        return {
+            'statusCode': response.status_code,
+            'body': json.dumps("Request to bitskins failed! It seems like an auth problem")
+        }
+    else:
+        print(f'Could not get bitskins prices, error code: {response.status_code}')
+        return {
+            'statusCode': response.status_code,
+            'body': json.dumps("Request to bitskins failed!")
+        }
+
+    print("Requesting prices from loot.farm")
+    response = requests.get("https://loot.farm/fullprice.json")
+    print("Received response from loot.farm")
+    responseJSON = response.json()
+
+    if response.status_code == 200:
+        print("Valid response from loot.farm")
+        items = responseJSON
+        print("Extracting pricing information")
+        for item in items:
+            name = item.get('name').replace("'", '&#39')
+            price = item.get('price') / 100
+
+            if "M4A4 | Emperor" in name:
+                name = name.replace("M4A4 | Emperor", 'M4A4 | The Emperor')
+
+            try:
+                extract[name]['lootfarm'] = price
+            except KeyError:
+                print(name)
+
+        for item in extract:
+            try:
+                extract[item]['lootfarm'] = extract[item]['lootfarm']
+            except KeyError:
+                extract[item] = {
+                    "csgobackpack": extract[item]['csgobackpack'],
+                    "bitskins": extract[item]['bitskins'],
+                    "lootfarm": "null"
+                }
+        print("Pricing information extracted")
         print("Updating latest.json in s3")
         s3.Object('prices.csgotrader.app', 'latest.json').put(
             Body=(bytes(json.dumps(extract, indent=2).encode('UTF-8')))
@@ -309,15 +353,10 @@ def lambda_handler(event, context):
             'statusCode': 200,
             'body': json.dumps('Success!')
         }
-    elif response.status_code == 401:
-        print(response.status_code)
-        return {
-            'statusCode': response.status_code,
-            'body': json.dumps("Request to bitskins failed! It seems like an auth problem")
-        }
+
     else:
-        print(f'Could not get bitskins prices, error code: {response.status_code}')
+        print("Could not get items from loot.farm, status code: ", response.status_code)
         return {
             'statusCode': response.status_code,
-            'body': json.dumps("Request to bitskins failed!")
+            'body': json.dumps("Request to loot.farm failed!")
         }
