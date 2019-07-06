@@ -11,15 +11,23 @@ def lambda_handler(event, context):
     bitskins_token = pyotp.TOTP(bitskins_secret)
     bitskins_api_key = os.environ['BITSKINS_API_KEY']
 
-    s3 = boto3.resource('s3')
     print("Requesting prices from csgobackpack.net")
-    response = requests.get("http://csgobackpack.net/api/GetItemsList/v2/")
-    print("Received response from csgobackpack.net")
-    responseJSON = response.json()
+    try:
+        response = requests.get("http://csgobackpack.net/api/GetItemsList/v2/")
+    except Exception as e:
+            print(e)
+            error = "Error during csgobaackpack request"
+            alert_via_sns(f'{error}: {e}')
+            return {
+                'statusCode': 500,
+                'body': error
+            }
 
-    if response.status_code == 200 and responseJSON['success']:
+    print("Received response from csgobackpack.net")
+
+    if response.status_code == 200 and response.json()['success']:
         print("Valid response from csgobackpack.net")
-        items = responseJSON['items_list']
+        items = response.json()['items_list']
         extract = {}
         print("Extracting pricing information")
         for key, value in items.items():
@@ -34,21 +42,32 @@ def lambda_handler(event, context):
                 extract[name]['csgobackpack'] = "null"
 
         print("Pricing information extracted")
+        push_to_s3(extract)
 
     else:
-        print("Request failed with status code: ", response.status_code)
+        error = "Could not get items from csgobackpack.net"
+        alert_via_sns(error)
+        print(error, " status code: ", response.status_code)
         return {
             'statusCode': response.status_code,
-            'body': json.dumps("Request to csgobackpack.net failed!")
+            'body': json.dumps(error)
         }
 
     print('Requesting bitskins prices')
-    response = requests.get(
-        "https://bitskins.com/api/v1/get_all_item_prices/?api_key=" + bitskins_api_key + "&code=" + bitskins_token.now() + "&app_id=730")
-    responseJSON = response.json()
-    if response.status_code == 200 and responseJSON['status'] == "success":
+    try:
+        response = requests.get("https://bitskins.com/api/v1/get_all_item_prices/?api_key=" + bitskins_api_key + "&code=" + bitskins_token.now() + "&app_id=730")
+    except Exception as e:
+            print(e)
+            error = "Error during bitskins request"
+            alert_via_sns(f'{error}: {e}')
+            return {
+                'statusCode': 500,
+                'body': error
+            }
+
+    if response.status_code == 200 and response.json()['status'] == "success":
         print("Extracting pricing info")
-        items = responseJSON['prices']
+        items = response.json()['prices']
         for item in items:
             name = item.get('market_hash_name').replace('\xe2\x98\x85', '\u2605').replace("'", '&#39').replace("/", '-')
             pricing_mode = item.get('pricing_mode')
@@ -289,27 +308,40 @@ def lambda_handler(event, context):
                     "bitskins": "null"
                 }
         print("Pricing info extracted")
+        push_to_s3(extract)
     elif response.status_code == 401:
-        print(response.status_code)
+        error = "Could not get items from bitskins, it's most likely an authentication problem"
+        alert_via_sns(error)
+        print(error, " status code: ", response.status_code)
         return {
             'statusCode': response.status_code,
-            'body': json.dumps("Request to bitskins failed! It seems like an auth problem")
+            'body': json.dumps(error)
         }
     else:
-        print(f'Could not get bitskins prices, error code: {response.status_code}')
+        error = "Could not get items from bitskins"
+        alert_via_sns(error)
+        print(error, " status code: ", response.status_code)
         return {
             'statusCode': response.status_code,
-            'body': json.dumps("Request to bitskins failed!")
+            'body': json.dumps(error)
         }
 
     print("Requesting prices from loot.farm")
-    response = requests.get("https://loot.farm/fullprice.json")
+    try:
+        response = requests.get("https://loot.farm/fullprice.json")
+    except Exception as e:
+            print(e)
+            error = "Error during loot.farm request"
+            alert_via_sns(f'{error}: {e}')
+            return {
+                'statusCode': 500,
+                'body': error
+            }
     print("Received response from loot.farm")
-    responseJSON = response.json()
 
     if response.status_code == 200:
         print("Valid response from loot.farm")
-        items = responseJSON
+        items = response.json()
         print("Extracting pricing information")
         for item in items:
             name = item.get('name').replace("'", '&#39')
@@ -333,30 +365,52 @@ def lambda_handler(event, context):
                     "lootfarm": "null"
                 }
         print("Pricing information extracted")
-        print("Updating latest.json in s3")
-        s3.Object('prices.csgotrader.app', 'latest.json').put(
-            Body=(bytes(json.dumps(extract, indent=2).encode('UTF-8')))
-        )
-        print("latest.json updated")
-
-        print("Getting date")
-        today = date.today()
-        year = today.strftime("%Y")
-        month = today.strftime("%m")
-        day = today.strftime("%d")
-        print(f'Uploading prices to {year}/{month}/{day}/prices.json')
-        s3.Object('prices.csgotrader.app', f'{year}/{month}/{day}/prices.json').put(
-            Body=(bytes(json.dumps(extract, indent=2).encode('UTF-8')))
-        )
-        print("Upload complete")
+        push_to_s3(extract)
         return {
             'statusCode': 200,
             'body': json.dumps('Success!')
         }
 
     else:
-        print("Could not get items from loot.farm, status code: ", response.status_code)
+        error = "Could not get items from loot.farm"
+        alert_via_sns(error)
+        print(error, " status code: ", response.status_code)
         return {
             'statusCode': response.status_code,
-            'body': json.dumps("Request to loot.farm failed!")
+            'body': json.dumps(error)
         }
+
+def push_to_s3(content):
+    print("Getting date for result path")
+
+    today = date.today()
+    year = today.strftime("%Y")
+    month = today.strftime("%m")
+    day = today.strftime("%d")
+
+    s3 = boto3.resource('s3')
+
+    print("Updating latest.json in s3")
+    s3.Object('prices.csgotrader.app', 'latest.json').put(
+        Body=(bytes(json.dumps(content, indent=2).encode('UTF-8')))
+    )
+    print("latest.json updated")
+    print(f'Uploading prices to {year}/{month}/{day}/prices.json')
+    s3.Object('prices.csgotrader.app', f'{year}/{month}/{day}/prices.json').put(
+        Body=(bytes(json.dumps(content, indent=2).encode('UTF-8')))
+    )
+    print("Upload complete")
+
+def alert_via_sns(error):
+    print("Publishing error to SNS")
+
+    sns = boto3.client('sns')
+
+    response = sns.publish(
+        TopicArn=os.environ['SNS_TOPIC_ARN'],
+        Message=f'The script could not finish scrapping all prices, error: {error}',
+    )
+
+    print(response)
+
+
