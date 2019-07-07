@@ -303,10 +303,7 @@ def lambda_handler(event, context):
             try:
                 extract[item]['bitskins'] = extract[item]['bitskins']
             except KeyError:
-                extract[item] = {
-                    "csgobackpack": extract[item]['csgobackpack'],
-                    "bitskins": "null"
-                }
+                extract[item]['bitskins'] = "null"
         print("Pricing info extracted")
         push_to_s3(extract)
     elif response.status_code == 401:
@@ -359,11 +356,50 @@ def lambda_handler(event, context):
             try:
                 extract[item]['lootfarm'] = extract[item]['lootfarm']
             except KeyError:
-                extract[item] = {
-                    "csgobackpack": extract[item]['csgobackpack'],
-                    "bitskins": extract[item]['bitskins'],
-                    "lootfarm": "null"
-                }
+                extract[item]['lootfarm'] = "null"
+        print("Pricing information extracted")
+        push_to_s3(extract)
+
+    else:
+        error = "Could not get items from loot.farm"
+        alert_via_sns(error)
+        print(error, " status code: ", response.status_code)
+        return {
+            'statusCode': response.status_code,
+            'body': json.dumps(error)
+        }
+
+    print("Requesting prices from csgo.tm")
+    response = requests.get("https://market.csgo.com/api/v2/prices/USD.json")
+    print("Received response from csgo.tm")
+
+    if response.status_code == 200 and response.json()['success']:
+        print("Valid response from csgo.tm")
+        items = response.json()['items']
+        print("Extracting pricing information")
+        for item in items:
+            name = item.get('market_hash_name').replace("'", '&#39')
+            price = item.get('price')
+
+            if name == "Sticker | Boom(Foil)":
+                name = "Sticker | Boom (Foil)"
+            elif name == "Sticker | Don&#39t Worry(Foil)":
+                name = "Sticker | Don&#39t Worry (Foil)"
+            elif name == "Sticker | Move It(Foil)":
+                name = "Sticker | Move It (Foil)"
+            elif name == "Ninjas in Pyjamas (Holo) | DreamHack 201":
+                name = "Ninjas in Pyjamas (Holo) | DreamHack 2014"
+
+            try:
+                extract[name]['csgotm'] = price
+            except KeyError:
+                print(name)
+
+        for item in extract:
+            try:
+                extract[item]['csgotm'] = extract[item]['csgotm']
+            except KeyError:
+                extract[item]['csgotm'] = "null"
         print("Pricing information extracted")
         push_to_s3(extract)
         return {
@@ -372,7 +408,7 @@ def lambda_handler(event, context):
         }
 
     else:
-        error = "Could not get items from loot.farm"
+        error = "Could not get items from csgo.tm"
         alert_via_sns(error)
         print(error, " status code: ", response.status_code)
         return {
