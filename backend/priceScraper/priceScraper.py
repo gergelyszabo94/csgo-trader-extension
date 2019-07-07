@@ -396,7 +396,7 @@ def push_to_s3(content):
     )
     print("latest.json updated")
     print(f'Uploading prices to {year}/{month}/{day}/prices.json')
-    s3.Object('prices.csgotrader.app', f'{year}/{month}/{day}/prices.json').put(
+    s3.Object(os.environ['RESULTS_BUCKET'], f'{year}/{month}/{day}/prices.json').put(
         Body=(bytes(json.dumps(content, indent=2).encode('UTF-8')))
     )
     print("Upload complete")
