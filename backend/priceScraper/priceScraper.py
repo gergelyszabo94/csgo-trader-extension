@@ -402,13 +402,272 @@ def lambda_handler(event, context):
                 extract[item]['csgotm'] = "null"
         print("Pricing information extracted")
         push_to_s3(extract)
+
+    else:
+        error = "Could not get items from csgo.tm"
+        alert_via_sns(error)
+        print(error, " status code: ", response.status_code)
+        return {
+            'statusCode': response.status_code,
+            'body': json.dumps(error)
+        }
+
+    print("Requesting prices from cs.money")
+    response = requests.get("https://cs.money/js/database-skins/library-en-730.js")
+    print("Received response from cs.money")
+
+    if response.status_code == 200:
+        print("Valid response from cs.money")
+        items = json.loads(response.content.decode().split("skinsBaseList[730] = ")[1])
+        print("Extracting pricing information")
+        for item in items:
+            item = items.get(item)
+            name = item.get('m').replace("/", '-')
+            price = item.get('a')
+
+            missingFromCsgobackpack = [
+                "Souvenir AWP | Pit Viper (Battle-Scarred)",
+                "Souvenir Five-SeveN | Silver Quartz (Well-Worn)",
+                "Souvenir P2000 | Granite Marbleized (Factory New)",
+                "★ StatTrak™ Bayonet | Crimson Web (Factory New)",
+                "★ StatTrak™ Bowie Knife | Forest DDPAT (Factory New)",
+                "★ StatTrak™ Karambit | Forest DDPAT (Factory New)",
+                "★ StatTrak™ Karambit | Urban Masked (Factory New)",
+                "★ StatTrak™ M9 Bayonet | Boreal Forest (Factory New)",
+                "★ StatTrak™ M9 Bayonet | Urban Masked (Factory New)",
+                "★ StatTrak™ Ursus Knife | Scorched (Factory New)",
+                "★ StatTrak™ Ursus Knife | Forest DDPAT (Factory New)",
+                "★ Ursus Knife | Urban Masked (Factory New)",
+                "★ StatTrak™ Ursus Knife | Urban Masked (Factory New)",
+                "★ StatTrak™ Ursus Knife | Crimson Web (Battle-Scarred)",
+                "★ StatTrak™ Ursus Knife | Crimson Web (Factory New)",
+                "★ Ursus Knife | Crimson Web (Factory New)",
+                "★ StatTrak™ Ursus Knife | Boreal Forest (Factory New)",
+                "★ StatTrak™ Stiletto Knife | Case Hardened (Factory New)",
+                "★ Navaja Knife | Safari Mesh (Factory New)",
+                "★ StatTrak™ Stiletto Knife | Fade (Minimal Wear)",
+                "★ Talon Knife | Boreal Forest (Factory New)",
+                "★ Ursus Knife | Ultraviolet (Factory New)",
+                "★ Ursus Knife | Damascus Steel (Battle-Scarred)",
+                "★ StatTrak™ Ursus Knife | Ultraviolet (Battle-Scarred)",
+                "★ StatTrak™ Talon Knife | Ultraviolet (Factory New)",
+                "★ StatTrak™ Talon Knife | Damascus Steel (Well-Worn)",
+                "★ StatTrak™ Talon Knife | Damascus Steel (Battle-Scarred)",
+                "★ StatTrak™ Navaja Knife | Marble Fade (Minimal Wear)",
+                "★ StatTrak™ Ursus Knife | Damascus Steel (Battle-Scarred)",
+                "★ StatTrak™ Ursus Knife | Rust Coat (Well-Worn)",
+                "★ StatTrak™ Navaja Knife | Urban Masked (Factory New)",
+                "★ StatTrak™ Stiletto Knife | Tiger Tooth (Minimal Wear)",
+                "★ StatTrak™ Ursus Knife | Tiger Tooth (Minimal Wear)",
+                "★ Talon Knife | Urban Masked (Factory New)",
+                "★ StatTrak™ Ursus Knife | Marble Fade (Minimal Wear)",
+                "★ StatTrak™ Talon Knife | Tiger Tooth (Minimal Wear)",
+                "★ Talon Knife | Ultraviolet (Factory New)"
+            ]
+
+            if "M4A4 | Emperor" in name:
+                name = name.replace("M4A4 | Emperor", 'M4A4 | The Emperor')
+            elif name in missingFromCsgobackpack:
+                extract[name] = {
+                    "csgobackpack": "null",
+                    "bitskins": "null",
+                    "lootfarm": "null",
+                    "csgotm": "null",
+                    # "csmoney": {
+                    #     'price': "null",
+                    #     'doppler': "null"
+                    # }
+                }
+            elif name == "★ StatTrak™ Navaja Knife | Doppler Phase 1 (Minimal Wear)" or name == "★ StatTrak™ Navaja Knife | Doppler Phase 2 (Minimal Wear)" or name == "★ StatTrak™ Navaja Knife | Doppler Phase 3 (Minimal Wear)" or name == "★ StatTrak™ Navaja Knife | Doppler Phase 4 (Minimal Wear)" or name == "★ StatTrak™ Navaja Knife | Doppler Ruby (Minimal Wear)" or name == "★ StatTrak™ Navaja Knife | Doppler Sapphire (Minimal Wear)" or name == "★ StatTrak™ Navaja Knife | Doppler Black Pearl (Minimal Wear)":
+                try:
+                    extract["★ StatTrak™ Navaja Knife | Doppler (Minimal Wear)"] = extract[
+                        "★ StatTrak™ Navaja Knife | Doppler (Minimal Wear)"]
+                except:
+                    extract["★ StatTrak™ Navaja Knife | Doppler (Minimal Wear)"] = {
+                        "csgobackpack": "null",
+                        "bitskins": "null",
+                        "lootfarm": "null",
+                        "csgotm": "null",
+                        "csmoney": {
+                            'price': "null",
+                            'doppler': {}
+                        }
+                    }
+            elif name == "★ StatTrak™ Talon Knife | Doppler Phase 1 (Minimal Wear)" or name == "★ StatTrak™ Talon Knife | Doppler Phase 2 (Minimal Wear)" or name == "★ StatTrak™ Talon Knife | Doppler Phase 3 (Minimal Wear)" or name == "★ StatTrak™ Talon Knife | Doppler Phase 4 (Minimal Wear)" or name == "★ StatTrak™ Talon Knife | Doppler Ruby (Minimal Wear)" or name == "★ StatTrak™ Talon Knife | Doppler Sapphire (Minimal Wear)" or name == "★ StatTrak™ Talon Knife | Doppler Black Pearl (Minimal Wear)":
+                try:
+                    extract["★ StatTrak™ Talon Knife | Doppler (Minimal Wear)"] = extract[
+                        "★ StatTrak™ Talon Knife | Doppler (Minimal Wear)"]
+                except:
+                    extract["★ StatTrak™ Talon Knife | Doppler (Minimal Wear)"] = {
+                        "csgobackpack": "null",
+                        "bitskins": "null",
+                        "lootfarm": "null",
+                        "csgotm": "null",
+                        "csmoney": {
+                            'price': "null",
+                            'doppler': {}
+                        }
+                    }
+            elif name == "Music Kit | Damjan Mravunac, The Talos Principal" or name == "Music Kit | Damjan Mravunac The Talos Principle":
+                name = "Music Kit | Damjan Mravunac, The Talos Principle"
+            elif name == "Sticker | Coutdown (Holo)":
+                name = "Sticker | Countdown (Holo)"
+            elif name == "Sealed Graffiti | GGWP (Battle-Scarred)":
+                name = "Sealed Graffiti | GGWP (Battle Green)"
+            elif name == "Sealed Graffiti | Karambit (Battle-Scarred)":
+                name = "Sealed Graffiti | Karambit (Battle Green)"
+            elif name == "Sealed Graffiti | Ninja (Battle-Scarred)":
+                name = "Sealed Graffiti | Ninja (Battle Green)"
+            elif name == "Music Kit | Austin Wintory Desert Fire":
+                name = "Music Kit | Austin Wintory, Desert Fire"
+            elif name == "Music Kit | AWOLNATION I Am":
+                name = "Music Kit | AWOLNATION, I Am"
+            elif name == "Music Kit | Beartooth Disgusting":
+                name = "Music Kit | Beartooth, Disgusting"
+            elif name == "Music Kit | Daniel Sadowski Crimson Assault":
+                name = "Music Kit | Daniel Sadowski, Crimson Assault"
+            elif name == "Music Kit | Daniel Sadowski The 8-Bit Kit":
+                name = "Music Kit | Daniel Sadowski, The 8-Bit Kit"
+            elif name == "Music Kit | Daniel Sadowski Total Domination":
+                name = "Music Kit | Daniel Sadowski, Total Domination"
+            elif name == "Music Kit | Darude Moments CSGO":
+                name = "Music Kit | Darude, Moments CSGO"
+            elif name == "Music Kit | Dren Death's Head Demolition":
+                name = "Music Kit | Dren, Death's Head Demolition"
+            elif name == "Music Kit | Feed Me High Noon":
+                name = "Music Kit | Feed Me, High Noon"
+            elif name == "Music Kit | Ian Hultquist Lion's Mouth":
+                name = "Music Kit | Ian Hultquist, Lion's Mouth"
+            elif name == "Music Kit | Kelly Bailey Hazardous Environments":
+                name = "Music Kit | Kelly Bailey, Hazardous Environments"
+            elif name == "Music Kit | Ki:Theory MOLOTOV":
+                name = "Music Kit | Ki:Theory, MOLOTOV"
+            elif name == "Music Kit | Lennie Moore Java Havana Funkaloo":
+                name = "Music Kit | Lennie Moore, Java Havana Funkaloo"
+            elif name == "Music Kit | Mateo Messina For No Mankind":
+                name = "Music Kit | Mateo Messina, For No Mankind"
+            elif name == "Music Kit | Matt Lange IsoRhythm":
+                name = "Music Kit | Matt Lange, IsoRhythm"
+            elif name == "Music Kit | Michael Bross Invasion!":
+                name = "Music Kit | Michael Bross, Invasion!"
+            elif name == "Music Kit | Mord Fustang Diamonds":
+                name = "Music Kit | Mord Fustang, Diamonds"
+            elif name == "Music Kit | New Beat Fund Sponge Fingerz":
+                name = "Music Kit | New Beat Fund, Sponge Fingerz"
+            elif name == "Music Kit | Noisia Sharpened":
+                name = "Music Kit | Noisia, Sharpened"
+            elif name == "Music Kit | Proxy Battlepack":
+                name = "Music Kit | Proxy, Battlepack"
+            elif name == "Music Kit | Robert Allaire Insurgency":
+                name = "Music Kit | Robert Allaire, Insurgency"
+            elif name == "Music Kit | Sasha LNOE":
+                name = "Music Kit | Sasha, LNOE"
+            elif name == "Music Kit | Sean Murray A*D*8":
+                name = "Music Kit | Sean Murray, A*D*8"
+            elif name == "Music Kit | Skog II-Headshot":
+                name = "Music Kit | Skog, II-Headshot"
+            elif name == "Music Kit | Skog Metal":
+                name = "Music Kit | Skog, Metal"
+            elif name == "Music Kit | Troels Folmann Uber Blasto Phone":
+                name = "Music Kit | Troels Folmann, Uber Blasto Phone"
+            elif name == "Music Kit | Various Artists Hotline Miami":
+                name = "Music Kit | Various Artists, Hotline Miami"
+            elif name == "StatTrak™ Music Kit | Austin Wintory Desert Fire":
+                name = "StatTrak™ Music Kit | Austin Wintory, Desert Fire"
+            elif name == "StatTrak™ Music Kit | AWOLNATION I Am":
+                name = "StatTrak™ Music Kit | AWOLNATION, I Am"
+            elif name == "StatTrak™ Music Kit | Beartooth Disgusting":
+                name = "StatTrak™ Music Kit | Beartooth, Disgusting"
+            elif name == "StatTrak™ Music Kit | Daniel Sadowski Crimson Assault":
+                name = "StatTrak™ Music Kit | Daniel Sadowski, Crimson Assault"
+            elif name == "StatTrak™ Music Kit | Daniel Sadowski The 8-Bit Kit":
+                name = "StatTrak™ Music Kit | Daniel Sadowski, The 8-Bit Kit"
+            elif name == "StatTrak™ Music Kit | Daniel Sadowski Total Domination":
+                name = "StatTrak™ Music Kit | Daniel Sadowski, Total Domination"
+            elif name == "StatTrak™ Music Kit | Darude Moments CSGO":
+                name = "StatTrak™ Music Kit | Darude, Moments CSGO"
+            elif name == "StatTrak™ Music Kit | Dren Death's Head Demolition":
+                name = "StatTrak™ Music Kit | Dren, Death's Head Demolition"
+            elif name == "StatTrak™ Music Kit | Feed Me High Noon":
+                name = "StatTrak™ Music Kit | Feed Me, High Noon"
+            elif name == "StatTrak™ Music Kit | Ian Hultquist Lion's Mouth":
+                name = "StatTrak™ Music Kit | Ian Hultquist, Lion's Mouth"
+            elif name == "StatTrak™ Music Kit | Kelly Bailey Hazardous Environments":
+                name = "StatTrak™ Music Kit | Kelly Bailey, Hazardous Environments"
+            elif name == "StatTrak™ Music Kit | Ki:Theory MOLOTOV":
+                name = "StatTrak™ Music Kit | Ki:Theory, MOLOTOV"
+            elif name == "StatTrak™ Music Kit | Lennie Moore Java Havana Funkaloo":
+                name = "StatTrak™ Music Kit | Lennie Moore, Java Havana Funkaloo"
+            elif name == "StatTrak™ Music Kit | Mateo Messina For No Mankind":
+                name = "StatTrak™ Music Kit | Mateo Messina, For No Mankind"
+            elif name == "StatTrak™ Music Kit | Matt Lange IsoRhythm":
+                name = "StatTrak™ Music Kit | Matt Lange, IsoRhythm"
+            elif name == "StatTrak™ Music Kit | Michael Bross Invasion!":
+                name = "StatTrak™ Music Kit | Michael Bross, Invasion!"
+            elif name == "StatTrak™ Music Kit | Mord Fustang Diamonds":
+                name = "StatTrak™ Music Kit | Mord Fustang, Diamonds"
+            elif name == "StatTrak™ Music Kit | New Beat Fund Sponge Fingerz":
+                name = "StatTrak™ Music Kit | New Beat Fund, Sponge Fingerz"
+            elif name == "StatTrak™ Music Kit | Noisia Sharpened":
+                name = "StatTrak™ Music Kit | Noisia, Sharpened"
+            elif name == "StatTrak™ Music Kit | Proxy Battlepack":
+                name = "StatTrak™ Music Kit | Proxy, Battlepack"
+            elif name == "StatTrak™ Music Kit | Robert Allaire Insurgency":
+                name = "StatTrak™ Music Kit | Robert Allaire, Insurgency"
+            elif name == "StatTrak™ Music Kit | Sasha LNOE":
+                name = "StatTrak™ Music Kit | Sasha, LNOE"
+            elif name == "StatTrak™ Music Kit | Sean Murray A*D*8":
+                name = "StatTrak™ Music Kit | Sean Murray, A*D*8"
+            elif name == "StatTrak™ Music Kit | Skog II-Headshot":
+                name = "StatTrak™ Music Kit | Skog, II-Headshot"
+            elif name == "StatTrak™ Music Kit | Skog Metal":
+                name = "StatTrak™ Music Kit | Skog, Metal"
+            elif name == "StatTrak™ Music Kit | Troels Folmann Uber Blasto Phone":
+                name = "StatTrak™ Music Kit | Troels Folmann, Uber Blasto Phone"
+            elif name == "StatTrak™ Music Kit | Various Artists Hotline Miami":
+                name = "StatTrak™ Music Kit | Various Artists, Hotline Miami"
+
+            if "Doppler" in name:
+                phase = name.split("Doppler ")[1].split(" (")[0]
+                name = name.replace(phase + " ", "")
+                try:
+                    extract[name]['csmoney']['doppler'][phase] = price
+                except KeyError:
+                    extract[name]['csmoney'] = {
+                        'price': price,
+                        'doppler': {
+                            phase: price
+                        }
+                    }
+                if phase == "Phase 3":
+                    extract[name]['csmoney']['price'] = price
+            else:
+                try:
+                    extract[name]['csmoney'] = {
+                        'price': price,
+                        'doppler': "null"
+                    }
+                except KeyError:
+                    print(name)
+
+        for item in extract:
+            try:
+                extract[item]['csmoney'] = extract[item]['csmoney']
+            except KeyError:
+                if "Doppler" not in item:
+                    print(item)
+                    extract[item]['csmoney'] = {
+                        "price": "null",
+                        "doppler": "null"
+                    }
+        print("Pricing information extracted")
+        push_to_s3(extract)
         return {
             'statusCode': 200,
             'body': json.dumps('Success!')
         }
-
     else:
-        error = "Could not get items from csgo.tm"
+        error = "Could not get items from cs.money"
         alert_via_sns(error)
         print(error, " status code: ", response.status_code)
         return {
