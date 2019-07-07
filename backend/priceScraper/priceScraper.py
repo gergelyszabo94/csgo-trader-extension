@@ -31,7 +31,7 @@ def lambda_handler(event, context):
         extract = {}
         print("Extracting pricing information")
         for key, value in items.items():
-            name = items.get(key).get('name')
+            name = items.get(key).get('name').replace("&#39", "'")
             price = items.get(key).get('price')
 
             if price:
@@ -69,7 +69,7 @@ def lambda_handler(event, context):
         print("Extracting pricing info")
         items = response.json()['prices']
         for item in items:
-            name = item.get('market_hash_name').replace('\xe2\x98\x85', '\u2605').replace("'", '&#39').replace("/", '-')
+            name = item.get('market_hash_name').replace('\xe2\x98\x85', '\u2605').replace("/", '-')
             pricing_mode = item.get('pricing_mode')
             price = item.get('price')
             instant_sale_price = item.get('instant_sale_price')
@@ -244,10 +244,10 @@ def lambda_handler(event, context):
                 name = "Sticker | Countdown (Foil)"
             elif name == "Sticker | Coutdown (Holo)" or name == "Sticker | Coutdown(Holo)":  # check which one has valid pricing info
                 name = "Sticker | Countdown (Holo)"
-            elif name == "Sticker | Don&#39t Worry(Foil)":
-                name = "Sticker | Don&#39t Worry (Foil)"
-            elif name == "Sticker | Don&#39t Worry(Holo)":
-                name = "Sticker | Don&#39t Worry (Holo)"
+            elif name == "Sticker | Don't Worry(Foil)":
+                name = "Sticker | Don't Worry (Foil)"
+            elif name == "Sticker | Don't Worry(Holo)":
+                name = "Sticker | Don't Worry (Holo)"
             elif name == "Sticker | Hard Cluck Life(Foil)":
                 name = "Sticker | Hard Cluck Life (Foil)"
             elif name == "Sticker | Hard Cluck Life(Holo)":
@@ -341,7 +341,7 @@ def lambda_handler(event, context):
         items = response.json()
         print("Extracting pricing information")
         for item in items:
-            name = item.get('name').replace("'", '&#39')
+            name = item.get('name')
             price = item.get('price') / 100
 
             if "M4A4 | Emperor" in name:
@@ -378,13 +378,13 @@ def lambda_handler(event, context):
         items = response.json()['items']
         print("Extracting pricing information")
         for item in items:
-            name = item.get('market_hash_name').replace("'", '&#39')
+            name = item.get('market_hash_name')
             price = item.get('price')
 
             if name == "Sticker | Boom(Foil)":
                 name = "Sticker | Boom (Foil)"
-            elif name == "Sticker | Don&#39t Worry(Foil)":
-                name = "Sticker | Don&#39t Worry (Foil)"
+            elif name == "Sticker | Don't Worry(Foil)":
+                name = "Sticker | Don't Worry (Foil)"
             elif name == "Sticker | Move It(Foil)":
                 name = "Sticker | Move It (Foil)"
             elif name == "Ninjas in Pyjamas (Holo) | DreamHack 201":
