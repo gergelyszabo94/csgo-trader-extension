@@ -44,7 +44,9 @@ const commentsToReport = [
     'Dear winner',
     'Trade Your CS:GO Cases For',
     'I’m collecting csgo base grade items',
-    'Erotic Streamer'
+    'Erotic Streamer',
+    'giveaway',
+    'SKINSRENT.STORE'
 ];
 
 function getPattern(name, paint_seed){
