@@ -19408,3 +19408,64 @@ const qualities = {
         backgroundcolor: "#b27d36"
     }
 };
+
+const pricingProviders = {
+    csgobackpack: {
+        key: "csgobackpack",
+        long: "CS:GO BACKPACK",
+        short: "CB",
+        url: "https://csgobackpack.net/",
+        description: "CS:GO BACKPACK is a site dedicated to checking Steam user's inventories and their total value. They are also tracking Steam Community Market sales and provide this sales data through their API.",
+        pricing_modes: {
+            "24_hours_average": "The average of the sales from the past 24 hours",
+            "24_hours_median": "The median of the sales from the past 24 hours",
+            "7_days_average": "The average of the sales from the past 7 days",
+            "7_days_median": "The median of the sales from the past 7 days",
+            "30_days_average": "The average of the sales from the past 30 days",
+            "30_days_median": "The median of the sales from the past 30 days",
+            "all_time_average": "The average of of all time sales",
+            "all_time_median": "The median of of all time sales"
+        }
+    },
+    bitskins: {
+        key: "bitskins",
+        long: "BITSKINS",
+        short: "BS",
+        url: "https://bitskins.com/",
+        description: 'BITSKINS is a "real money" marketplace where you can buy and sell skins. They provide sales data through their API.',
+        pricing_modes: {
+            "bitskins": "BITSKINS price",
+            "instant_sale": "Instant sale - what bitskins pays for your item when they buy it themselves"
+        }
+    },
+    csmoney: {
+        key: "csmoney",
+        long: "CS.MONEY",
+        short: "CM",
+        url: "https://cs.money/",
+        description: "CS.MONEY is a tradebot site that has it's own pricing. They also have different prices for each doppler phase.",
+        pricing_modes: {
+            "csmoney": "CS.MONEY price"
+        }
+    },
+    csgotm: {
+        key: "csgotm",
+        long: "CSGO.TM",
+        short: "CT",
+        url: "https://market.csgo.com/",
+        description: "CSGO.TM or market.csgo.com is a Russian site for real money sales. They also provide pricing, but prices are missing for many items so I don't recommend using it.",
+        pricing_modes: {
+            "csgotm": "CSGO.TM price"
+        }
+    },
+    lootfarm: {
+        key: "lootfarm",
+        long: "LOOT.FARM",
+        short: "LF",
+        url: "https://loot.farm/",
+        description: "LOOT.FARM is a tradebot site with public pricing, they tend to overvalue everything in general, so their prices differ from the others.",
+        pricing_modes: {
+            "lootfarm": "LOOT.FARM price"
+        }
+    }
+};
