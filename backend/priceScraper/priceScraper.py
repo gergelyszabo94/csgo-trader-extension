@@ -5,11 +5,14 @@ import pyotp
 import os
 from datetime import date
 
+bitskins_secret = os.environ['BITSKINS_SECRET']
+bitskins_token = pyotp.TOTP(bitskins_secret)
+bitskins_api_key = os.environ['BITSKINS_API_KEY']
+result_s3_bucket = os.environ['RESULTS_BUCKET']
+sns_topic = os.environ['SNS_TOPIC_ARN']
+
 
 def lambda_handler(event, context):
-    bitskins_secret = os.environ['BITSKINS_SECRET']
-    bitskins_token = pyotp.TOTP(bitskins_secret)
-    bitskins_api_key = os.environ['BITSKINS_API_KEY']
 
     print("Requesting prices from csgobackpack.net")
     try:
@@ -42,7 +45,7 @@ def lambda_handler(event, context):
                 extract[name]['csgobackpack'] = "null"
 
         print("Pricing information extracted")
-        push_to_s3(extract)
+        push_to_s3(extract, "false")
 
     else:
         error = "Could not get items from csgobackpack.net"
@@ -305,7 +308,7 @@ def lambda_handler(event, context):
             except KeyError:
                 extract[item]['bitskins'] = "null"
         print("Pricing info extracted")
-        push_to_s3(extract)
+        push_to_s3(extract, "false")
     elif response.status_code == 401:
         error = "Could not get items from bitskins, it's most likely an authentication problem"
         alert_via_sns(error)
@@ -358,7 +361,7 @@ def lambda_handler(event, context):
             except KeyError:
                 extract[item]['lootfarm'] = "null"
         print("Pricing information extracted")
-        push_to_s3(extract)
+        push_to_s3(extract, "false")
 
     else:
         error = "Could not get items from loot.farm"
@@ -401,7 +404,7 @@ def lambda_handler(event, context):
             except KeyError:
                 extract[item]['csgotm'] = "null"
         print("Pricing information extracted")
-        push_to_s3(extract)
+        push_to_s3(extract, "false")
 
     else:
         error = "Could not get items from csgo.tm"
@@ -661,7 +664,7 @@ def lambda_handler(event, context):
                         "doppler": "null"
                     }
         print("Pricing information extracted")
-        push_to_s3(extract)
+        push_to_s3(extract, "true")
         return {
             'statusCode': 200,
             'body': json.dumps('Success!')
@@ -675,7 +678,8 @@ def lambda_handler(event, context):
             'body': json.dumps(error)
         }
 
-def push_to_s3(content):
+
+def push_to_s3(content, latest):
     print("Getting date for result path")
 
     today = date.today()
@@ -685,16 +689,18 @@ def push_to_s3(content):
 
     s3 = boto3.resource('s3')
 
-    print("Updating latest.json in s3")
-    s3.Object('prices.csgotrader.app', 'latest.json').put(
-        Body=(bytes(json.dumps(content, indent=2).encode('UTF-8')))
-    )
-    print("latest.json updated")
+    if latest == "true":
+        print("Updating latest.json in s3")
+        s3.Object(result_s3_bucket, 'latest.json').put(
+            Body=(bytes(json.dumps(content, indent=2).encode('UTF-8')))
+        )
+        print("latest.json updated")
     print(f'Uploading prices to {year}/{month}/{day}/prices.json')
-    s3.Object(os.environ['RESULTS_BUCKET'], f'{year}/{month}/{day}/prices.json').put(
+    s3.Object(result_s3_bucket, f'{year}/{month}/{day}/prices.json').put(
         Body=(bytes(json.dumps(content, indent=2).encode('UTF-8')))
     )
     print("Upload complete")
+
 
 def alert_via_sns(error):
     print("Publishing error to SNS")
@@ -702,7 +708,7 @@ def alert_via_sns(error):
     sns = boto3.client('sns')
 
     response = sns.publish(
-        TopicArn=os.environ['SNS_TOPIC_ARN'],
+        TopicArn = sns_topic,
         Message=f'The script could not finish scrapping all prices, error: {error}',
     )
 
