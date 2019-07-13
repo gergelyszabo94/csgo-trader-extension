@@ -19411,61 +19411,231 @@ const qualities = {
 
 const pricingProviders = {
     csgobackpack: {
-        key: "csgobackpack",
+        name: "csgobackpack",
         long: "CS:GO BACKPACK",
         short: "CB",
         url: "https://csgobackpack.net/",
         description: "CS:GO BACKPACK is a site dedicated to checking Steam user's inventories and their total value. They are also tracking Steam Community Market sales and provide this sales data through their API.",
         pricing_modes: {
-            "24_hours_average": "The average of the sales from the past 24 hours",
-            "24_hours_median": "The median of the sales from the past 24 hours",
-            "7_days_average": "The average of the sales from the past 7 days",
-            "7_days_median": "The median of the sales from the past 7 days",
-            "30_days_average": "The average of the sales from the past 30 days",
-            "30_days_median": "The median of the sales from the past 30 days",
-            "all_time_average": "The average of of all time sales",
-            "all_time_median": "The median of of all time sales"
+            "24_hours_average": {
+                description: "The average of the sales from the past 24 hours",
+                name: "24_hours_average"
+            },
+            "24_hours_median":  {
+                description: "The median of the sales from the past 24 hours",
+                name: "24_hours_median"
+            },
+            "7_days_average": {
+                description: "The average of the sales from the past 7 days",
+                name: "7_days_average"
+            },
+            "7_days_median": {
+                description: "The median of the sales from the past 7 days",
+                name: "7_days_median"
+            },
+            "30_days_average": {
+                description: "The average of the sales from the past 30 days",
+                name: "30_days_average"
+            },
+            "30_days_median": {
+                description: "The median of the sales from the past 30 days",
+                name: "30_days_median"
+            },
+            "all_time_average": {
+                description: "The average of of all time sales",
+                name: "all_time_average"
+            }
         }
     },
     bitskins: {
-        key: "bitskins",
+        name: "bitskins",
         long: "BITSKINS",
         short: "BS",
         url: "https://bitskins.com/",
         description: 'BITSKINS is a "real money" marketplace where you can buy and sell skins. They provide sales data through their API.',
         pricing_modes: {
-            "bitskins": "BITSKINS price",
-            "instant_sale": "Instant sale - what bitskins pays for your item when they buy it themselves"
+            "bitskins": {
+                description: "BITSKINS price",
+                name: "bitskins"
+            },
+            "instant_sale": {
+                description: "Instant sale - what bitskins pays for your item when they buy it themselves",
+                name: "instant_sale"
+            }
         }
     },
     csmoney: {
-        key: "csmoney",
+        name: "csmoney",
         long: "CS.MONEY",
         short: "CM",
         url: "https://cs.money/",
         description: "CS.MONEY is a tradebot site that has it's own pricing. They also have different prices for each doppler phase.",
         pricing_modes: {
-            "csmoney": "CS.MONEY price"
+            "csmoney": {
+                description: "CS.MONEY price",
+                name: "csmoney"
+            }
         }
     },
     csgotm: {
-        key: "csgotm",
+        name: "csgotm",
         long: "CSGO.TM",
         short: "CT",
         url: "https://market.csgo.com/",
         description: "CSGO.TM or market.csgo.com is a Russian site for real money sales. They also provide pricing, but prices are missing for many items so I don't recommend using it.",
         pricing_modes: {
-            "csgotm": "CSGO.TM price"
+            "csgotm": {
+                description: "CSGO.TM price",
+                name: "csgotm"
+            }
         }
     },
     lootfarm: {
-        key: "lootfarm",
+        name: "lootfarm",
         long: "LOOT.FARM",
         short: "LF",
         url: "https://loot.farm/",
         description: "LOOT.FARM is a tradebot site with public pricing, they tend to overvalue everything in general, so their prices differ from the others.",
         pricing_modes: {
-            "lootfarm": "LOOT.FARM price"
+            "lootfarm": {
+                description: "LOOT.FARM price",
+                name: "lootfarm"
+            }
         }
     }
+};
+
+const currencies = {
+    USD:{
+        short: "USD",
+        long: "United States dollar"
+    },
+    EUR:{
+        short: "EUR",
+        long: "Euro"
+    },
+    GBP:{
+        short: "GBP",
+        long: "Pound sterling"
+    },
+    CNY:{
+        short: "CNY",
+        long: "Renminbi"
+    },
+    JPY:{
+        short: "JPY",
+        long: "Japanese yen"
+    },
+    CAD:{
+        short: "CAD",
+        long: "Canadian dollar"
+    },
+    AUD:{
+        short: "AUD",
+        long: "Australian dollar"
+    },
+    HKD:{
+        short: "HKD",
+        long: "Hong Kong dollar"
+    },
+    ISK:{
+        short: "ISK",
+        long: "Icelandic króna"
+    },
+    PHP:{
+        short: "PHP",
+        long: "Philippine peso"
+    },
+    DKK:{
+        short: "DKK",
+        long: "Danish krone"
+    },
+    HUF:{
+        short: "HUF",
+        long: "Hungarian forint"
+    },
+    CZK:{
+        short: "CZK",
+        long: "Czech koruna"
+    },
+    RON:{
+        short: "RON",
+        long: "Romanian leu"
+    },
+    SEK:{
+        short: "SEK",
+        long: "Swedish krona"
+    },
+    IDR:{
+        short: "IDR",
+        long: "Indonesian rupiah"
+    },
+    INR:{
+        short: "INR",
+        long: "Indian rupee"
+    },
+    BRL:{
+        short: "BRL",
+        long: "Brazilian real"
+    },
+    RUB:{
+        short: "RUB",
+        long: "Russian ruble"
+    },
+    HRK:{
+        short: "HRK",
+        long: "Croatian kuna"
+    },
+    THB:{
+        short: "THB",
+        long: "Thai baht"
+    },
+    CHF:{
+        short: "CHF",
+        long: "Swiss franc"
+    },
+    MYR:{
+        short: "MYR",
+        long: "Malaysian ringgit"
+    },
+    BGN:{
+        short: "BGN",
+        long: "Bulgarian lev"
+    },
+    TRY:{
+        short: "TRY",
+        long: "Turkish lira"
+    },
+    NOK:{
+        short: "NOK",
+        long: "Norwegian krone"
+    },
+    NZD:{
+        short: "NZD",
+        long: "New Zealand dollar"
+    },
+    ZAR:{
+        short: "ZAR",
+        long: "South African rand"
+    },
+    MXN:{
+        short: "MXN",
+        long: "Mexican peso"
+    },
+    SGD:{
+        short: "SGD",
+        long: "Singapore dollar"
+    },
+    ILS:{
+        short: "ILS",
+        long: "Israeli new shekel"
+    },
+    KRW:{
+        short: "KRW",
+        long: "South Korean won"
+    },
+    PLN:{
+        short: "KRW",
+        long: "Polish złoty"
+    },
 };
