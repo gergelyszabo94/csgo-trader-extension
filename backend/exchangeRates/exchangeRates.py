@@ -48,8 +48,8 @@ def push_to_s3(content):
 
     s3 = boto3.resource('s3')
 
-    print("Updating exchange_rates.json in s3")
-    s3.Object(result_s3_bucket, 'exchange_rates.json').put(
+    print("Updating latest/exchange_rates.json in s3")
+    s3.Object(result_s3_bucket, 'latest/exchange_rates.json').put(
         Body=(bytes(json.dumps(content, indent=2).encode('UTF-8')))
     )
     print("exchange_rates.json updated")

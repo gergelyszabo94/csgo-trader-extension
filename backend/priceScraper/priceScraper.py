@@ -690,8 +690,8 @@ def push_to_s3(content, latest):
     s3 = boto3.resource('s3')
 
     if latest == "true":
-        print("Updating latest.json in s3")
-        s3.Object(result_s3_bucket, 'latest.json').put(
+        print("Updating latest/prices.json in s3")
+        s3.Object(result_s3_bucket, 'latest/prices.json').put(
             Body=(bytes(json.dumps(content, indent=2).encode('UTF-8')))
         )
         print("latest.json updated")
