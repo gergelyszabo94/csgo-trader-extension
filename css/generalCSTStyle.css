@@ -185,6 +185,14 @@ progress {
     font-size: 0.8rem;
 }
 
+.priceIndicator{
+    color: white;
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    font-size: 0.8rem;
+}
+
 .exteriorIndicator{
     color: var(--steam-note-blue);
 }
