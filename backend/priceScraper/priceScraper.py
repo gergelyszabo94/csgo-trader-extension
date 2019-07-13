@@ -10,6 +10,7 @@ bitskins_token = pyotp.TOTP(bitskins_secret)
 bitskins_api_key = os.environ['BITSKINS_API_KEY']
 result_s3_bucket = os.environ['RESULTS_BUCKET']
 sns_topic = os.environ['SNS_TOPIC_ARN']
+stage = os.environ['STAGE']
 
 
 def lambda_handler(event, context):
@@ -38,11 +39,13 @@ def lambda_handler(event, context):
             price = items.get(key).get('price')
 
             if price:
-                extract[name] = {}
-                extract[name]['csgobackpack'] = price
+                extract[name] = {
+                    "csgobackpack": price
+                }
             else:
-                extract[name] = {}
-                extract[name]['csgobackpack'] = "null"
+                extract[name] = {
+                    "csgobackpack": "null"
+                }
 
         print("Pricing information extracted")
         push_to_s3(extract, "false")
@@ -689,17 +692,23 @@ def push_to_s3(content, latest):
 
     s3 = boto3.resource('s3')
 
-    if latest == "true":
-        print("Updating latest/prices.json in s3")
-        s3.Object(result_s3_bucket, 'latest/prices.json').put(
+    if stage == "prod":
+        if latest == "true":
+            print("Updating latest/prices.json in s3")
+            s3.Object(result_s3_bucket, 'latest/prices.json').put(
+                Body=(bytes(json.dumps(content, indent=2).encode('UTF-8')))
+            )
+            print("latest.json updated")
+        print(f'Uploading prices to {year}/{month}/{day}/prices.json')
+        s3.Object(result_s3_bucket, f'{year}/{month}/{day}/prices.json').put(
             Body=(bytes(json.dumps(content, indent=2).encode('UTF-8')))
         )
-        print("latest.json updated")
-    print(f'Uploading prices to {year}/{month}/{day}/prices.json')
-    s3.Object(result_s3_bucket, f'{year}/{month}/{day}/prices.json').put(
-        Body=(bytes(json.dumps(content, indent=2).encode('UTF-8')))
-    )
-    print("Upload complete")
+        print("Upload complete")
+    elif stage == "dev":
+        print("Updating test/prices.json in s3")
+        s3.Object(result_s3_bucket, 'test/prices.json').put(
+            Body=(bytes(json.dumps(content, indent=2).encode('UTF-8')))
+        )
 
 
 def alert_via_sns(error):
@@ -713,5 +722,3 @@ def alert_via_sns(error):
     )
 
     print(response)
-
-
