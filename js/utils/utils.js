@@ -796,3 +796,167 @@ function addDopplerPhase(item, dopplerInfo){
         }
     }
 }
+
+function updatePrices(){
+    let request = new Request('https://prices.csgotrader.app/latest/prices.json');
+
+    fetch(request).then(function(response) {
+        return response.json();
+    }).then(function(fullPricesJSON) {
+        chrome.storage.local.get(['itemPricing', 'pricingProvider', 'pricingMode'], function(result) {
+            if(result.itemPricing){
+                let prices = {};
+                const keys = Object.keys(fullPricesJSON);
+                if(result.pricingProvider === pricingProviders.csgobackpack.name){
+                        if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["7_days_average"].name){
+                            for (const key of keys) {
+                                if (fullPricesJSON[key][result.pricingProvider]["7_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
+                                    prices[key] = fullPricesJSON[key][result.pricingProvider]["7_days"]["average"]
+                                }
+                                else {
+                                    prices[key] = "null";
+                                    console.log(key);
+                                }
+                            }
+                        }
+                        else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["7_days_median"].name){
+                            for (const key of keys) {
+                                if (fullPricesJSON[key][result.pricingProvider]["7_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
+                                    prices[key] = fullPricesJSON[key][result.pricingProvider]["7_days"]["median"]
+                                }
+                                else {
+                                    prices[key] = "null";
+                                    console.log(key);
+                                }
+                            }
+                        }
+                        else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["24_hours_average"].name){
+                            for (const key of keys) {
+                                if (fullPricesJSON[key][result.pricingProvider]["24_hours"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
+                                    prices[key] = fullPricesJSON[key][result.pricingProvider]["24_hours"]["average"]
+                                }
+                                else {
+                                    prices[key] = "null";
+                                    console.log(key);
+                                }
+                            }
+                        }
+                        else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["24_hours_median"].name){
+                            for (const key of keys) {
+                                if (fullPricesJSON[key][result.pricingProvider]["24_hours"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
+                                    prices[key] = fullPricesJSON[key][result.pricingProvider]["24_hours"]["median"]
+                                }
+                                else {
+                                    prices[key] = "null";
+                                    console.log(key);
+                                }
+                            }
+                        }
+                        else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["30_days_average"].name){
+                            for (const key of keys) {
+                                if (fullPricesJSON[key][result.pricingProvider]["30_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
+                                    prices[key] = fullPricesJSON[key][result.pricingProvider]["30_days"]["average"]
+                                }
+                                else {
+                                    prices[key] = "null";
+                                    console.log(key);
+                                }
+                            }
+                        }
+                        else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["30_days_median"].name){
+                            for (const key of keys) {
+                                if (fullPricesJSON[key][result.pricingProvider]["30_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
+                                    prices[key] = fullPricesJSON[key][result.pricingProvider]["30_days"]["median"]
+                                }
+                                else {
+                                    prices[key] = "null";
+                                    console.log(key);
+                                }
+                            }
+                        }
+                        else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["all_time_average"].name){
+                            for (const key of keys) {
+                                if (fullPricesJSON[key][result.pricingProvider]["all_time"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
+                                    prices[key] = fullPricesJSON[key][result.pricingProvider]["all_time"]["average"]
+                                }
+                                else {
+                                    prices[key] = "null";
+                                    console.log(key);
+                                }
+                            }
+                        }
+                        else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["all_time_median"].name){
+                            for (const key of keys) {
+                                if (fullPricesJSON[key][result.pricingProvider]["all_time"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
+                                    prices[key] = fullPricesJSON[key][result.pricingProvider]["all_time"]["median"]
+                                }
+                                else {
+                                    prices[key] = "null";
+                                    console.log(key);
+                                }
+                            }
+                        }
+                    else {
+                        prices[key] = "null";
+                        console.log(key);
+                    }
+                }
+                else if(result.pricingProvider === pricingProviders.bitskins.name){
+                    if(result.pricingMode === pricingProviders.bitskins.pricing_modes.bitskins.name){
+                        for (const key of keys) {
+                            if (fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined && fullPricesJSON[key][result.pricingProvider]["price"] !== undefined) {
+                                prices[key] = fullPricesJSON[key][result.pricingProvider]["price"];
+                            }
+                            else {
+                                prices[key] = "null";
+                                console.log(key);
+                            }
+                        }
+                    }
+                    else if(result.pricingMode === pricingProviders.bitskins.pricing_modes.instant_sale.name){
+                        for (const key of keys) {
+                            if (fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined && fullPricesJSON[key][result.pricingProvider]["instant_sale_price"] !== undefined) {
+                                prices[key] = fullPricesJSON[key][result.pricingProvider]["instant_sale_price"];
+                            }
+                            else {
+                                prices[key] = "null";
+                                console.log(key);
+                            }
+                        }
+                    }
+                }
+                else if(result.pricingProvider === pricingProviders.lootfarm.name || result.pricingProvider === pricingProviders.csgotm.name){
+                    for (const key of keys) {
+                        if(fullPricesJSON[key][result.pricingProvider] !== undefined){
+                            prices[key] = fullPricesJSON[key][result.pricingProvider];
+                        }
+                        else{
+                            prices[key] = "null";
+                        }
+                    }
+                }
+                else if(result.pricingProvider === pricingProviders.csmoney.name){
+                    for (const key of keys) {
+                        if(fullPricesJSON[key][result.pricingProvider] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null"){
+                            if(fullPricesJSON[key][result.pricingProvider]["doppler"] !== "null"){
+                                //TODO handle dopplers
+                            }
+                            else{
+                                prices[key] = fullPricesJSON[key][result.pricingProvider]["price"];
+                            }
+                        }
+                        else{
+                            prices[key] = "null";
+                        }
+                    }
+                }
+                console.log(prices);
+                chrome.storage.local.set({prices: prices,}, function() {});
+            }
+        });
+    });
+}
+
+function updateExchangeRates(){
+
+}

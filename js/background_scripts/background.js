@@ -173,6 +173,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
             }, function(notificationId) {});
         });
     }
+
+    updatePrices()
 });
 
 chrome.runtime.setUninstallURL("https://docs.google.com/forms/d/e/1FAIpQLSeOpZilYGr3JAPd7_GSh-tCJShVWHpNFoW8joxStzZf1PFq5A/viewform?usp=sf_link", function(){});

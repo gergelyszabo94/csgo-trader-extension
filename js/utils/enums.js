@@ -19444,6 +19444,10 @@ const pricingProviders = {
             "all_time_average": {
                 description: "The average of of all time sales",
                 name: "all_time_average"
+            },
+            "all_time_median": {
+                description: "The median of of all time sales",
+                name: "all_time_median"
             }
         }
     },
