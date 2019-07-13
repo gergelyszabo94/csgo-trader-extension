@@ -19,7 +19,14 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 tradersBump: true,
                 markScammers: true,
                 numberOfListings: 10,
-                storageMigrated: true
+                storageMigrated: true,
+                itemPricing: true,
+                pricingProvider: pricingProviders.csgobackpack.name,
+                pricingMode: pricingProviders.csgobackpack.pricing_modes["24_hours_average"].name,
+                pricesLastRefreshed: null,
+                prices: null,
+                currency: currencies.USD.short,
+                exchangeRate: 1.0
             }, function() {
             });
         chrome.browserAction.setBadgeText({text: "1"});
@@ -73,7 +80,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
         }
 
         //setting defaults options for new options that haven't been set yet
-        chrome.storage.local.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'showReoccButton', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings'], function(result) {
+        chrome.storage.local.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'showReoccButton', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode', 'pricesLastRefreshed', 'prices', 'currency', 'exchangeRate'], function(result) {
             if(result.quickDeclineOffer===undefined){
                 chrome.storage.local.set({quickDeclineOffer: true}, function() {});
             }
@@ -124,6 +131,27 @@ chrome.runtime.onInstalled.addListener(function(details) {
             }
             if(result.numberOfListings===undefined){
                 chrome.storage.local.set({numberOfListings: 10}, function() {});
+            }
+            if(result.itemPricing===undefined){
+                chrome.storage.local.set({itemPricing: true}, function() {});
+            }
+            if(result.pricingProvider===undefined){
+                chrome.storage.local.set({pricingProvider: pricingProviders.csgobackpack.name}, function() {});
+            }
+            if(result.pricingMode===undefined){
+                chrome.storage.local.set({pricingMode: pricingProviders.csgobackpack.pricing_modes["24_hours_average"].name}, function() {});
+            }
+            if(result.pricesLastRefreshed===undefined){
+                chrome.storage.local.set({pricesLastRefreshed: null}, function() {});
+            }
+            if(result.prices===undefined){
+                chrome.storage.local.set({prices: null}, function() {});
+            }
+            if(result.currency===undefined){
+                chrome.storage.local.set({currency: currencies.USD.short}, function() {});
+            }
+            if(result.exchangeRate===undefined){
+                chrome.storage.local.set({exchangeRate: 1.0}, function() {});
             }
         });
 
