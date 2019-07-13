@@ -22,7 +22,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 storageMigrated: true,
                 itemPricing: true,
                 pricingProvider: pricingProviders.csgobackpack.name,
-                pricingMode: pricingProviders.csgobackpack.pricing_modes["24_hours_average"].name,
+                pricingMode: pricingProviders.csgobackpack.pricing_modes["7_days_average"].name,
                 pricesLastRefreshed: null,
                 prices: null,
                 currency: currencies.USD.short,
@@ -139,7 +139,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 chrome.storage.local.set({pricingProvider: pricingProviders.csgobackpack.name}, function() {});
             }
             if(result.pricingMode===undefined){
-                chrome.storage.local.set({pricingMode: pricingProviders.csgobackpack.pricing_modes["24_hours_average"].name}, function() {});
+                chrome.storage.local.set({pricingMode: pricingProviders.csgobackpack.pricing_modes["7_days_average"].name}, function() {});
             }
             if(result.pricesLastRefreshed===undefined){
                 chrome.storage.local.set({pricesLastRefreshed: null}, function() {});
