@@ -203,6 +203,12 @@ if($("#no_inventories").length!==1&&$("#iteminfo0").length!==0){
     });
 }
 
+chrome.storage.local.get('hideOtherExtensionPrices', function(result) {
+    if(result.hideOtherExtensionPrices){
+        hideOtherExtensionPrices();
+    }
+});
+
 //sends a message to the "back end" to request inventory contents
 
 let items = [];
@@ -821,4 +827,15 @@ function addClickListener(){
     $("#Lnk_SortItems").click(function () {
         addPerItemInfo(false);
     });
+}
+
+function hideOtherExtensionPrices(){
+    //sih
+    document.querySelectorAll(".price_flag").forEach((price)=>{
+        price.remove();
+        });
+
+    setTimeout(function () {
+        hideOtherExtensionPrices();
+    }, 2000);
 }
