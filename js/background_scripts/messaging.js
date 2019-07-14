@@ -1,7 +1,7 @@
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if (request.inventory !==undefined) {
-            chrome.storage.local.get(['prices', 'exchangeRate'], function(result) {
+            chrome.storage.local.get(['prices', 'currency', 'exchangeRate'], function(result) {
                 let prices = result.prices;
                 let steamID = request.inventory;
                 let xhr = new XMLHttpRequest();
@@ -61,7 +61,10 @@ chrome.runtime.onMessage.addListener(
                                 let nametag =undefined;
                                 let inspectLink ="";
                                 let owner = steamID;
-                                let price = prices[market_hash_name]==="null"||prices[market_hash_name]===undefined?0.0:prices[market_hash_name]*result.exchangeRate;
+                                let price = {
+                                    price: prices[market_hash_name]==="null"||prices[market_hash_name]===undefined?0.0:(prices[market_hash_name]*result.exchangeRate).toFixed(2),
+                                    display: prices[market_hash_name]==="null"||prices[market_hash_name]===undefined?"":currencies[result.currency].sign + (prices[market_hash_name]*result.exchangeRate).toFixed(2)
+                                };
 
                                 try {
                                     if(items[item].fraudwarnings!==undefined||items[item].fraudwarnings[0]!==undefined){

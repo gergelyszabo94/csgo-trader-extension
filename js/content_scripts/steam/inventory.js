@@ -73,8 +73,6 @@ const notTradable = "<span class='not_tradable'>Not Tradable</span>";
 
 const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
 
-const priceIndicator = ""
-
 const exteriors1 = `
     <div class="descriptor otherExteriors" id="otherExteriors1">
         <span>${chrome.i18n.getMessage("links_to_other_exteriors")}:</span>
@@ -300,7 +298,7 @@ function addPerItemInfo(updating){
                             }
 
                             if(item.price!==undefined && item.price !== "null"){
-                                $item.append(`<div class='priceIndicator'>${item.price}</div>`);
+                                $item.append(`<div class='priceIndicator'>${item.price.display}</div>`);
                             }
 
                             $(this).attr("data-processed", true);
