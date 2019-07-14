@@ -19419,35 +19419,43 @@ const pricingProviders = {
         pricing_modes: {
             "24_hours_average": {
                 description: "The average of the sales from the past 24 hours",
-                name: "24_hours_average"
+                name: "24_hours_average",
+                long: "24 Hour Average"
             },
             "24_hours_median":  {
                 description: "The median of the sales from the past 24 hours",
-                name: "24_hours_median"
+                name: "24_hours_median",
+                long: "24 Hour Median"
             },
             "7_days_average": {
                 description: "The average of the sales from the past 7 days",
-                name: "7_days_average"
+                name: "7_days_average",
+                long: "7 Days Average"
             },
             "7_days_median": {
                 description: "The median of the sales from the past 7 days",
-                name: "7_days_median"
+                name: "7_days_median",
+                long: "7 Days Median"
             },
             "30_days_average": {
                 description: "The average of the sales from the past 30 days",
-                name: "30_days_average"
+                name: "30_days_average",
+                long: "30 Days Average"
             },
             "30_days_median": {
                 description: "The median of the sales from the past 30 days",
-                name: "30_days_median"
+                name: "30_days_median",
+                long: "30 Days Median"
             },
             "all_time_average": {
                 description: "The average of of all time sales",
-                name: "all_time_average"
+                name: "all_time_average",
+                long: "All The Time Average"
             },
             "all_time_median": {
                 description: "The median of of all time sales",
-                name: "all_time_median"
+                name: "all_time_median",
+                long: "All The Time Median"
             }
         }
     },
@@ -19459,12 +19467,14 @@ const pricingProviders = {
         description: 'BITSKINS is a "real money" marketplace where you can buy and sell skins. They provide sales data through their API.',
         pricing_modes: {
             "bitskins": {
-                description: "BITSKINS price",
-                name: "bitskins"
+                description: "Standard BITSKINS price, I am not sure how they calculate it",
+                name: "bitskins",
+                long: "Standard BITSKINS price"
             },
             "instant_sale": {
                 description: "Instant sale - what bitskins pays for your item when they buy it themselves",
-                name: "instant_sale"
+                name: "instant_sale",
+                long: "Instant sale price"
             }
         }
     },
@@ -19477,7 +19487,8 @@ const pricingProviders = {
         pricing_modes: {
             "csmoney": {
                 description: "CS.MONEY price",
-                name: "csmoney"
+                name: "csmoney",
+                long: "CS.MONEY Price"
             }
         }
     },
@@ -19490,7 +19501,8 @@ const pricingProviders = {
         pricing_modes: {
             "csgotm": {
                 description: "CSGO.TM price",
-                name: "csgotm"
+                name: "csgotm",
+                long: "CSGO.TM Price"
             }
         }
     },
@@ -19503,7 +19515,8 @@ const pricingProviders = {
         pricing_modes: {
             "lootfarm": {
                 description: "LOOT.FARM price",
-                name: "lootfarm"
+                name: "lootfarm",
+                long: "LOOT.FARM Price"
             }
         }
     }

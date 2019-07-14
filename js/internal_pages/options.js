@@ -228,12 +228,12 @@ numberoflistings.addEventListener("input", function () {
 let currencySelect = document.getElementById("currency");
 
 let keys = Object.keys(currencies);
-    for (let key of keys){
-        let option = document.createElement("option");
-        option.value = currencies[key].short;
-        option.text = currencies[key].short + " - " + currencies[key].long;
-        currencySelect.add(option);
-    }
+for (let key of keys){
+    let option = document.createElement("option");
+    option.value = currencies[key].short;
+    option.text = currencies[key].short + " - " + currencies[key].long;
+    currencySelect.add(option);
+}
 
 chrome.storage.local.get('currency', function(result) {
     document.querySelector('#currency [value="' + result.currency + '"]').selected = true;
@@ -244,4 +244,68 @@ currencySelect.addEventListener("click", function () {
     chrome.storage.local.set({currency: currency}, function() {
         updateExchangeRates();
     });
+});
+
+let pricingProviderSelect = document.getElementById("pricingProvider");
+let aboutTheProvider = document.getElementById("aboutTheProvider");
+let pricingModeSelect = document.getElementById("pricingMode");
+let aboutTheMode = document.getElementById("aboutTheMode");
+let providers = Object.keys(pricingProviders);
+for (let provider of providers){
+    let option = document.createElement("option");
+    option.value = pricingProviders[provider].name;
+    option.text = pricingProviders[provider].long;
+    pricingProviderSelect.add(option);
+}
+
+chrome.storage.local.get(['pricingProvider', 'pricingMode'], function(result) {
+    let provider = result.pricingProvider;
+    document.querySelector('#pricingProvider [value="' + provider + '"]').selected = true;
+    aboutTheProvider.innerText = pricingProviders[provider].description;
+    let modes = Object.keys(pricingProviders[provider].pricing_modes);
+    for (let mode of modes){
+        let option = document.createElement("option");
+        option.value = pricingProviders[provider].pricing_modes[mode].name;
+        option.text = pricingProviders[provider].pricing_modes[mode].long;
+        pricingModeSelect.add(option);
+    }
+    document.querySelector('#pricingMode [value="' + result.pricingMode + '"]').selected = true;
+    aboutTheMode.innerText = pricingProviders[provider].pricing_modes[result.pricingMode].description;
+});
+
+pricingProviderSelect.addEventListener("click", function () {
+    let provider = pricingProviderSelect.options[pricingProviderSelect.selectedIndex].value;
+    aboutTheProvider.innerText = pricingProviders[provider].description;
+    chrome.storage.local.get('pricingProvider', function(result) {
+        if(provider !== result.pricingProvider){
+            pricingModeSelect.innerHTML = "";
+            let modes = Object.keys(pricingProviders[provider].pricing_modes);
+            for (let mode of modes){
+                let option = document.createElement("option");
+                option.value = pricingProviders[provider].pricing_modes[mode].name;
+                option.text = pricingProviders[provider].pricing_modes[mode].long;
+                pricingModeSelect.add(option);
+            }
+            if(provider === pricingProviders.csgobackpack.name){
+                document.querySelector('#pricingMode [value="7_days_average"]').selected = true;
+            }
+            else if(provider === pricingProviders.bitskins.name){
+                document.querySelector('#pricingMode [value="bitskins"]').selected = true;
+            }
+            let selectedMode = pricingModeSelect.options[pricingModeSelect.selectedIndex].value;
+            aboutTheMode.innerText = pricingProviders[provider].pricing_modes[selectedMode].description;
+            chrome.storage.local.set({pricingProvider: provider, pricingMode: selectedMode}, function() {
+                updatePrices();
+            });
+        }
+    });
+});
+
+pricingModeSelect.addEventListener("click", function () {
+    let mode = pricingModeSelect.options[pricingModeSelect.selectedIndex].value;
+    let provider = pricingProviderSelect.options[pricingProviderSelect.selectedIndex].value;
+    aboutTheMode.innerText = pricingProviders[provider].pricing_modes[mode].description;
+        chrome.storage.local.set({pricingMode: mode}, function() {
+            updatePrices();
+        });
 });
