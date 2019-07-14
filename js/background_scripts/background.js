@@ -26,7 +26,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 pricesLastRefreshed: null,
                 prices: null,
                 currency: currencies.USD.short,
-                exchangeRate: 1.0
+                exchangeRate: 1.0,
+                exchangeRates: null
             }, function() {
             });
         chrome.browserAction.setBadgeText({text: "1"});
@@ -80,7 +81,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
         }
 
         //setting defaults options for new options that haven't been set yet
-        chrome.storage.local.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'showReoccButton', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode', 'pricesLastRefreshed', 'prices', 'currency', 'exchangeRate'], function(result) {
+        chrome.storage.local.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'showReoccButton', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode', 'pricesLastRefreshed', 'prices', 'currency', 'exchangeRate', 'exchangeRates'], function(result) {
             if(result.quickDeclineOffer===undefined){
                 chrome.storage.local.set({quickDeclineOffer: true}, function() {});
             }
@@ -153,6 +154,9 @@ chrome.runtime.onInstalled.addListener(function(details) {
             if(result.exchangeRate===undefined){
                 chrome.storage.local.set({exchangeRate: 1.0}, function() {});
             }
+            if(result.exchangeRates===undefined){
+                chrome.storage.local.set({exchangeRates: null}, function() {});
+            }
         });
 
         chrome.browserAction.setBadgeText({text: "1"});
@@ -174,7 +178,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
         });
     }
 
-    updatePrices()
+    updatePrices();
+    updateExchangeRates();
 });
 
 chrome.runtime.setUninstallURL("https://docs.google.com/forms/d/e/1FAIpQLSeOpZilYGr3JAPd7_GSh-tCJShVWHpNFoW8joxStzZf1PFq5A/viewform?usp=sf_link", function(){});
