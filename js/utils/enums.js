@@ -19512,134 +19512,167 @@ const pricingProviders = {
 const currencies = {
     USD:{
         short: "USD",
-        long: "United States dollar"
+        long: "United States dollar",
+        sign: "$"
     },
     EUR:{
         short: "EUR",
-        long: "Euro"
+        long: "Euro",
+        sign: "€"
     },
     GBP:{
         short: "GBP",
-        long: "Pound sterling"
+        long: "Pound sterling",
+        sign: "£"
     },
     CNY:{
         short: "CNY",
-        long: "Renminbi"
+        long: "Renminbi",
+        sign: "¥"
     },
     JPY:{
         short: "JPY",
-        long: "Japanese yen"
+        long: "Japanese yen",
+        sign: "¥"
     },
     CAD:{
         short: "CAD",
-        long: "Canadian dollar"
+        long: "Canadian dollar",
+        sign: "C$"
     },
     AUD:{
         short: "AUD",
-        long: "Australian dollar"
+        long: "Australian dollar",
+        name: "A$"
     },
     HKD:{
         short: "HKD",
-        long: "Hong Kong dollar"
+        long: "Hong Kong dollar",
+        sign: "HK$"
     },
     ISK:{
         short: "ISK",
-        long: "Icelandic króna"
+        long: "Icelandic króna",
+        sign: "kr"
     },
     PHP:{
         short: "PHP",
-        long: "Philippine peso"
+        long: "Philippine peso",
+        sign: "₱"
     },
     DKK:{
         short: "DKK",
-        long: "Danish krone"
+        long: "Danish krone",
+        sign: "kr"
     },
     HUF:{
         short: "HUF",
-        long: "Hungarian forint"
+        long: "Hungarian forint",
+        sign: "Ft"
     },
     CZK:{
         short: "CZK",
-        long: "Czech koruna"
+        long: "Czech koruna",
+        sign: "Kč"
     },
     RON:{
         short: "RON",
-        long: "Romanian leu"
+        long: "Romanian leu",
+        sign: "L"
     },
     SEK:{
         short: "SEK",
-        long: "Swedish krona"
+        long: "Swedish krona",
+        sign: "kr"
     },
     IDR:{
         short: "IDR",
-        long: "Indonesian rupiah"
+        long: "Indonesian rupiah",
+        sign: "Rp"
     },
     INR:{
         short: "INR",
-        long: "Indian rupee"
+        long: "Indian rupee",
+        sign: "₹"
     },
     BRL:{
         short: "BRL",
-        long: "Brazilian real"
+        long: "Brazilian real",
+        sign: "R$"
     },
     RUB:{
         short: "RUB",
-        long: "Russian ruble"
+        long: "Russian ruble",
+        sign: "₽"
     },
     HRK:{
         short: "HRK",
-        long: "Croatian kuna"
+        long: "Croatian kuna",
+        sign: "kn"
     },
     THB:{
         short: "THB",
-        long: "Thai baht"
+        long: "Thai baht",
+        sign: "฿"
     },
     CHF:{
         short: "CHF",
-        long: "Swiss franc"
+        long: "Swiss franc",
+        sign: "CHF"
     },
     MYR:{
         short: "MYR",
-        long: "Malaysian ringgit"
+        long: "Malaysian ringgit",
+        sign: "RM"
     },
     BGN:{
         short: "BGN",
-        long: "Bulgarian lev"
+        long: "Bulgarian lev",
+        sign: "лв"
     },
     TRY:{
         short: "TRY",
-        long: "Turkish lira"
+        long: "Turkish lira",
+        sign: "₺"
     },
     NOK:{
         short: "NOK",
-        long: "Norwegian krone"
+        long: "Norwegian krone",
+        sign: "kr"
     },
     NZD:{
         short: "NZD",
-        long: "New Zealand dollar"
+        long: "New Zealand dollar",
+        sign: "NZ$"
     },
     ZAR:{
         short: "ZAR",
-        long: "South African rand"
+        long: "South African rand",
+        sign: "R"
     },
     MXN:{
         short: "MXN",
-        long: "Mexican peso"
+        long: "Mexican peso",
+        sign: "Mex$"
     },
     SGD:{
         short: "SGD",
-        long: "Singapore dollar"
+        long: "Singapore dollar",
+        sign: "S$"
     },
     ILS:{
         short: "ILS",
-        long: "Israeli new shekel"
+        long: "Israeli new shekel",
+        sign: "₪"
     },
     KRW:{
         short: "KRW",
-        long: "South Korean won"
+        long: "South Korean won",
+        sign: "₩"
     },
     PLN:{
         short: "KRW",
-        long: "Polish złoty"
+        long: "Polish złoty",
+        sign: "zł"
     },
 };
