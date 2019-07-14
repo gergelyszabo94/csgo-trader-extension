@@ -180,6 +180,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
 
     updatePrices();
     updateExchangeRates();
+    chrome.alarms.create("updatePricesAndExchangeRates", {periodInMinutes: 1440});
 });
 
 chrome.runtime.setUninstallURL("https://docs.google.com/forms/d/e/1FAIpQLSeOpZilYGr3JAPd7_GSh-tCJShVWHpNFoW8joxStzZf1PFq5A/viewform?usp=sf_link", function(){});
@@ -209,48 +210,54 @@ chrome.notifications.onClicked.addListener(function(notificationID) {
 });
 
 chrome.alarms.onAlarm.addListener(function(alarm){
-    chrome.browserAction.getBadgeText({}, function (result) {
-        if(result===""){
-            chrome.browserAction.setBadgeText({text:"1"});
-        }
-        else{
-            chrome.browserAction.setBadgeText({text: (parseInt(result)+1).toString()});
-        }
-    });
-    chrome.storage.local.get('bookmarks', function(result) {
-        let item = result.bookmarks.find(function(element) {
-            return element.itemInfo.assetid === alarm.name;
+    if(alarm.name === "updatePricesAndExchangeRates"){
+        updatePrices();
+        updateExchangeRates();
+    }
+    else{
+        chrome.browserAction.getBadgeText({}, function (result) {
+            if(result===""){
+                chrome.browserAction.setBadgeText({text:"1"});
+            }
+            else{
+                chrome.browserAction.setBadgeText({text: (parseInt(result)+1).toString()});
+            }
         });
-        if(item.notifType==="chrome"){
-            let iconFullURL= 'https://steamcommunity.com/economy/image/' + item.itemInfo.iconURL + '/128x128';
-            chrome.permissions.contains({
-                permissions: ['tabs']
-            }, function(result) {
-                let message = item.itemInfo.name + ' is tradable!';
-                if (result) {
-                    message = 'Click here to see your bookmarks!';
-                }
-                chrome.notifications.create(alarm.name, {
-                    type: 'basic',
-                    iconUrl: iconFullURL,
-                    title: item.itemInfo.name + ' is tradable!',
-                    message: message
-                }, function(notificationId) {});
+        chrome.storage.local.get('bookmarks', function(result) {
+            let item = result.bookmarks.find(function(element) {
+                return element.itemInfo.assetid === alarm.name;
             });
-        }
-        else if(item.notifType==="alert"){
-            chrome.permissions.contains({
-                permissions: ['tabs']
-            }, function(result) {
-                if (result) {
-                    goToInternalPage("/html/bookmarks.html");
-                    setTimeout(function () {
-                        chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-                            chrome.tabs.sendMessage(tabs[0].id, {alert: item.itemInfo.name}, function(response) {});
-                        });
-                    }, 1000);
-                }
-            });
-        }
-    });
+            if(item.notifType==="chrome"){
+                let iconFullURL= 'https://steamcommunity.com/economy/image/' + item.itemInfo.iconURL + '/128x128';
+                chrome.permissions.contains({
+                    permissions: ['tabs']
+                }, function(result) {
+                    let message = item.itemInfo.name + ' is tradable!';
+                    if (result) {
+                        message = 'Click here to see your bookmarks!';
+                    }
+                    chrome.notifications.create(alarm.name, {
+                        type: 'basic',
+                        iconUrl: iconFullURL,
+                        title: item.itemInfo.name + ' is tradable!',
+                        message: message
+                    }, function(notificationId) {});
+                });
+            }
+            else if(item.notifType==="alert"){
+                chrome.permissions.contains({
+                    permissions: ['tabs']
+                }, function(result) {
+                    if (result) {
+                        goToInternalPage("/html/bookmarks.html");
+                        setTimeout(function () {
+                            chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+                                chrome.tabs.sendMessage(tabs[0].id, {alert: item.itemInfo.name}, function(response) {});
+                            });
+                        }, 1000);
+                    }
+                });
+            }
+        });
+    }
 });
