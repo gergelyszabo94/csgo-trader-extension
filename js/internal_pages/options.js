@@ -120,6 +120,16 @@ nsfw.addEventListener("click", function () {
     chrome.storage.local.set({nsfwFilter: nsfw.checked}, function() {});
 });
 
+let hideotherprices = document.getElementById("hideOtherExtensionPrices");
+
+chrome.storage.local.get('hideOtherExtensionPrices', function(result) {
+    hideotherprices.checked = result.hideOtherExtensionPrices;
+});
+
+hideotherprices.addEventListener("click", function () {
+    chrome.storage.local.set({hideOtherExtensionPrices: hideotherprices.checked}, function() {});
+});
+
 // checkboxes - toggles with logic
 
 let tabsAPI = document.getElementById("tabsAPI");

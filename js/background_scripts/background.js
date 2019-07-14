@@ -27,7 +27,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 prices: null,
                 currency: currencies.USD.short,
                 exchangeRate: 1.0,
-                exchangeRates: null
+                exchangeRates: null,
+                hideOtherExtensionPrices: true
             }, function() {
             });
         chrome.browserAction.setBadgeText({text: "1"});
@@ -81,7 +82,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
         }
 
         //setting defaults options for new options that haven't been set yet
-        chrome.storage.local.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'showReoccButton', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode', 'pricesLastRefreshed', 'prices', 'currency', 'exchangeRate', 'exchangeRates'], function(result) {
+        chrome.storage.local.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'showReoccButton', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode', 'pricesLastRefreshed', 'prices', 'currency', 'exchangeRate', 'exchangeRates', 'hideOtherExtensionPrices'], function(result) {
             if(result.quickDeclineOffer===undefined){
                 chrome.storage.local.set({quickDeclineOffer: true}, function() {});
             }
@@ -156,6 +157,9 @@ chrome.runtime.onInstalled.addListener(function(details) {
             }
             if(result.exchangeRates===undefined){
                 chrome.storage.local.set({exchangeRates: null}, function() {});
+            }
+            if(result.hideOtherExtensionPrices===undefined){
+                chrome.storage.local.set({hideOtherExtensionPrices: true}, function() {});
             }
         });
 
