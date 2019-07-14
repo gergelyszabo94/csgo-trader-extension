@@ -222,3 +222,24 @@ numberoflistings.addEventListener("input", function () {
     }
     chrome.storage.local.set({numberOfListings: number}, function() {});
 });
+
+//select
+
+let currencySelect = document.getElementById("currency");
+
+let keys = Object.keys(currencies);
+    for (let key of keys){
+        let option = document.createElement("option");
+        option.value = currencies[key].short;
+        option.text = currencies[key].short + " - " + currencies[key].long;
+        currencySelect.add(option);
+    }
+
+chrome.storage.local.get('currency', function(result) {
+    document.querySelector('#currency [value="' + result.currency + '"]').selected = true;
+});
+
+currencySelect.addEventListener("click", function () {
+    let currency = currencySelect.options[currencySelect.selectedIndex].value;
+    chrome.storage.local.set({currency: currency}, function() {});
+});

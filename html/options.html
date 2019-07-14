@@ -10,6 +10,8 @@
 <body>
 <script src="/js/thirdparty/jquery-3.3.1.min.js"></script>
 <script src="/js/thirdparty/bootstrap.bundle.min.js"></script>
+<script src="/js/utils/enums.js"></script>
+<script src="/js/utils/utils.js"></script>
 
 <div class="col-lg-10 col-md-10 mx-auto" id="settings">
     <nav class="navbar navbar-expand-lg">
@@ -88,6 +90,59 @@
             </tbody>
         </table>
     </div>
+
+
+    <div class="buildingBlock">
+        <h2>Pricing (BETA)</h2>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Value</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Pricing</td>
+                <td style="text-align:center;">
+                    <label class="switch">
+                        <input type="checkbox" id="itemPricing">
+                        <span class="slider round"></span>
+                    </label>
+                </td>
+                <td>Shows item prices in inventories and trade offers</td>
+            </tr>
+            <tr>
+                <td>Currency</td>
+                <td style="text-align:center;">
+                    <select class="select-theme" id="currency">
+                    </select>
+                </td>
+                <td>The currency you want prices to show in for you</td>
+            </tr>
+            <tr>
+                <td>Provider</td>
+                <td style="text-align:center;">
+                    <select class="select-theme" id="pricingProvider">
+                    </select>
+                </td>
+                <td>The pricing provider you want to get your prices from</td>
+            </tr>
+            <tr>
+                <td>Hide other extensions</td>
+                <td style="text-align:center;">
+                    <label class="switch">
+                        <input type="checkbox" id="hideOtherExtensions">
+                        <span class="slider round"></span>
+                    </label>
+                </td>
+                <td>Hides prices applied by other extensions like Steam Inventory Helper or SteamWizard</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
     <div class="buildingBlock">
         <h2>Trade Offer</h2>
         <table class="table table-striped">
