@@ -241,5 +241,7 @@ chrome.storage.local.get('currency', function(result) {
 
 currencySelect.addEventListener("click", function () {
     let currency = currencySelect.options[currencySelect.selectedIndex].value;
-    chrome.storage.local.set({currency: currency}, function() {});
+    chrome.storage.local.set({currency: currency}, function() {
+        updateExchangeRates();
+    });
 });

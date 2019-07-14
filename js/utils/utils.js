@@ -958,5 +958,14 @@ function updatePrices(){
 }
 
 function updateExchangeRates(){
+    let request = new Request('https://prices.csgotrader.app/latest/exchange_rates.json');
 
+    fetch(request).then(function(response) {
+        return response.json();
+    }).then(function(exchangeRatesJSON) {
+        chrome.storage.local.set({exchangeRates: exchangeRatesJSON,}, function() {});
+        chrome.storage.local.get('currency', function(result) {
+            chrome.storage.local.set({exchangeRate: exchangeRatesJSON[result.currency],}, function() {});
+        });
+    });
 }
