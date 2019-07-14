@@ -1,334 +1,224 @@
-$quckdecline = $("#quickDeclineOffers");
+//simple checkboxes - toggles
 
-chrome.storage.local.get(['quickDeclineOffer'], function(result) {
-    if(result.quickDeclineOffer){
-        $quckdecline.prop("checked", true);
-    }
+let pricing = document.getElementById("itemPricing");
+
+chrome.storage.local.get('itemPricing', function(result) {
+    pricing.checked = result.itemPricing;
 });
 
-$quckdecline.click(function() {
-    if(this.checked) {
-        chrome.storage.local.set({quickDeclineOffer: true}, function() {
+pricing.addEventListener("click", function () {
+    chrome.storage.local.set({itemPricing: pricing.checked}, function() {});
+});
+
+let markscammers = document.getElementById("markScammers");
+
+chrome.storage.local.get('markScammers', function(result) {
+    markscammers.checked = result.markScammers;
+});
+
+markscammers.addEventListener("click", function () {
+    chrome.storage.local.set({markScammers: markscammers.checked}, function() {});
+});
+
+let tradersbump = document.getElementById("tradersBump");
+
+chrome.storage.local.get('tradersBump', function(result) {
+    tradersbump.checked = result.tradersBump;
+});
+
+tradersbump.addEventListener("click", function () {
+    chrome.storage.local.set({tradersBump: tradersbump.checked}, function() {});
+});
+
+let loungebump = document.getElementById("loungeBump");
+
+chrome.storage.local.get('loungeBump', function(result) {
+    loungebump.checked = result.loungeBump;
+});
+
+loungebump.addEventListener("click", function () {
+    chrome.storage.local.set({loungeBump: loungebump.checked}, function() {});
+});
+
+let colorfulitems = document.getElementById("colorfulItems");
+
+chrome.storage.local.get('colorfulItems', function(result) {
+    colorfulitems.checked = result.colorfulItems;
+});
+
+colorfulitems.addEventListener("click", function () {
+    chrome.storage.local.set({colorfulItems: colorfulitems.checked}, function() {});
+});
+
+let showrealstatus = document.getElementById("showRealStatus");
+
+chrome.storage.local.get('showRealStatus', function(result) {
+    showrealstatus.checked = result.showRealStatus;
+});
+
+showrealstatus.addEventListener("click", function () {
+    chrome.storage.local.set({showRealStatus: showrealstatus.checked}, function() {});
+});
+
+let flagcomments = document.getElementById("flagScamComments");
+
+chrome.storage.local.get('flagScamComments', function(result) {
+    flagcomments.checked = result.flagScamComments;
+});
+
+flagcomments.addEventListener("click", function () {
+    chrome.storage.local.set({flagScamComments: flagcomments.checked}, function() {});
+});
+
+let quickdecline = document.getElementById("quickDeclineOffers");
+
+chrome.storage.local.get('quickDeclineOffers', function(result) {
+    quickdecline.checked = result.quickDeclineOffers;
+});
+
+quickdecline.addEventListener("click", function () {
+    chrome.storage.local.set({quickDeclineOffers: quickdecline.checked}, function() {});
+});
+
+let openintab = document.getElementById("openOfferInTab");
+
+chrome.storage.local.get('openOfferInTab', function(result) {
+    openintab.checked = result.openOfferInTab;
+});
+
+openintab.addEventListener("click", function () {
+    chrome.storage.local.set({openOfferInTab: openintab.checked}, function() {});
+});
+
+let showrepbutton = document.getElementById("showPlusRepButton");
+
+chrome.storage.local.get('showPlusRepButton', function(result) {
+    showrepbutton.checked = result.showPlusRepButton;
+});
+
+showrepbutton.addEventListener("click", function () {
+    chrome.storage.local.set({showPlusRepButton: showrepbutton.checked}, function() {});
+});
+
+let showreoccbutton = document.getElementById("showReoccButton");
+
+chrome.storage.local.get('showReoccButton', function(result) {
+    showreoccbutton.checked = result.showReoccButton;
+});
+
+showreoccbutton.addEventListener("click", function () {
+    chrome.storage.local.set({showReoccButton: showreoccbutton.checked}, function() {});
+});
+
+let nsfw = document.getElementById("nsfw");
+
+chrome.storage.local.get('nsfwFilter', function(result) {
+    nsfw.checked = result.nsfwFilter;
+});
+
+nsfw.addEventListener("click", function () {
+    chrome.storage.local.set({nsfwFilter: nsfw.checked}, function() {});
+});
+
+// checkboxes - toggles with logic
+
+let tabsAPI = document.getElementById("tabsAPI");
+
+chrome.permissions.contains({permissions: ['tabs']}, function(result) {
+    tabsAPI.checked = result;
+});
+
+tabsAPI.addEventListener("click", function () {
+    if(tabsAPI.checked){
+        chrome.permissions.request({permissions: ['tabs']}, function(granted) {
+            tabsAPI.checked = granted;
         });
     }
     else{
-        chrome.storage.local.set({quickDeclineOffer: false}, function() {
-        });
+        chrome.permissions.remove({permissions: ['tabs']}, function(removed) {});
     }
 });
 
+// textbox modals
 
-
-$openintab = $("#openOfferInTab");
-
-chrome.storage.local.get(['openOfferInTab'], function(result) {
-    if(result.openOfferInTab){
-        $openintab.prop("checked", true);
-    }
-});
-
-$openintab.click(function() {
-    if(this.checked) {
-        chrome.storage.local.set({openOfferInTab: true}, function() {
-        });
-    }
-    else{
-        chrome.storage.local.set({openOfferInTab: false}, function() {
-        });
-    }
-});
-
-
-
-
-$showrepbutton = $("#showPlusRepButton");
-
-chrome.storage.local.get(['showPlusRepButton'], function(result) {
-    if(result.showPlusRepButton){
-        $showrepbutton.prop("checked", true);
-    }
-});
-
-$showrepbutton.click(function() {
-    if(this.checked) {
-        chrome.storage.local.set({showPlusRepButton: true}, function() {
-        });
-    }
-    else{
-        chrome.storage.local.set({showPlusRepButton: false}, function() {
-        });
-    }
-});
-
-
-
-$repmessage = $("#reputationMessageValue");
-$repmessageprint = $("#reputationMessagePrinted");
-$repmessagesave = $("#reputationMessageValueSave");
+repmessage = document.getElementById("reputationMessageValue");
+repmessageprint = document.getElementById("reputationMessagePrinted");
+repmessagesave = document.getElementById("reputationMessageValueSave");
 
 chrome.storage.local.get(['reputationMessage'], function(result) {
-    $repmessageprint.text(result.reputationMessage.substring(0,8)+"...");
-    $repmessage.val(result.reputationMessage);
+    repmessageprint.textContent = result.reputationMessage.substring(0,8)+"...";
+    repmessage.value = result.reputationMessage;
 });
 
-$repmessagesave.click(function(){
-    let newmessage = $repmessage.val();
-    $repmessageprint.text(newmessage.substring(0,8)+"...");
-    chrome.storage.local.set({reputationMessage: newmessage}, function() {
-    });
+repmessagesave.addEventListener("click", function () {
+    let newmessage = repmessage.value;
+    repmessageprint.textContent = newmessage.substring(0,8)+"...";
+    chrome.storage.local.set({reputationMessage: newmessage}, function() {});
 });
 
-
-$showreoccbutton = $("#showReoccButton");
-
-chrome.storage.local.get(['showReoccButton'], function(result) {
-    if(result.showReoccButton){
-        $showreoccbutton.prop("checked", true);
-    }
-});
-
-$showreoccbutton.click(function() {
-    if(this.checked) {
-        chrome.storage.local.set({showReoccButton: true}, function() {
-        });
-    }
-    else{
-        chrome.storage.local.set({showReoccButton: false}, function() {
-        });
-    }
-});
-
-$reoccmessage = $("#reoccuringMessageValue");
-$reoccmessageprint = $("#reoccuringMessagePrinted");
-$reoccmessagesave = $("#reoccuringMessageValueSave");
+reoccmessage = document.getElementById("reoccuringMessageValue");
+reoccmessageprint = document.getElementById("reoccuringMessagePrinted");
+reoccmessagesave = document.getElementById("reoccuringMessageValueSave");
 
 chrome.storage.local.get(['reoccuringMessage'], function(result) {
-    $reoccmessageprint.text(result.reoccuringMessage.substring(0,8)+"...");
-    $reoccmessage.val(result.reoccuringMessage);
+    reoccmessageprint.textContent = result.reoccuringMessage.substring(0,8)+"...";
+    reoccmessage.value = result.reoccuringMessage;
 });
 
-$reoccmessagesave.click(function(){
-    let newmessage = $reoccmessage.val();
-    $reoccmessageprint.text(newmessage.substring(0,8)+"...");
-    chrome.storage.local.set({reoccuringMessage: newmessage}, function() {
-    });
+reoccmessagesave.addEventListener("click", function () {
+    let newmessage = reoccmessage.value;
+    reoccmessageprint.textContent = newmessage.substring(0,8)+"...";
+    chrome.storage.local.set({reoccuringMessage: newmessage}, function() {});
 });
 
-$nsfw = $("#nsfw");
-
-chrome.storage.local.get(['nsfwFilter'], function(result) {
-    if(result.nsfwFilter){
-        $nsfw.prop("checked", true);
-    }
-});
-
-$nsfw.click(function() {
-    if(this.checked) {
-        chrome.storage.local.set({nsfwFilter: true}, function() {
-        });
-    }
-    else{
-        chrome.storage.local.set({nsfwFilter: false}, function() {
-        });
-    }
-});
-
-
-$flagcomments = $("#flagScamComments");
-
-chrome.storage.local.get(['flagScamComments'], function(result) {
-    if(result.flagScamComments){
-        $flagcomments.prop("checked", true);
-    }
-});
-
-$flagcomments.click(function() {
-    if(this.checked) {
-        chrome.storage.local.set({flagScamComments: true}, function() {
-        });
-    }
-    else{
-        chrome.storage.local.set({flagScamComments: false}, function() {
-        });
-    }
-});
-
-$apikey = $("#steamAPIKeyValue");
-$apikeyprint = $("#steamAPIKeyPrinted");
-$apikeysave = $("#steamAPIKeyValueSave");
+apikey = document.getElementById("steamAPIKeyValue");
+apikeyprint = document.getElementById("steamAPIKeyPrinted");
+apikeysave = document.getElementById("steamAPIKeyValueSave");
 
 chrome.storage.local.get(['steamAPIKey', 'apiKeyValid'], function(result) {
     if(result.apiKeyValid){
-        $apikeyprint.text(result.steamAPIKey.substring(0,8)+"...");
-        $apikey.val(result.steamAPIKey);
+        apikeyprint.textContent = result.steamAPIKey.substring(0,8)+"...";
+        apikey.value = result.steamAPIKey;
     }
     else{
-        $apikeyprint.text("Not set");
-        $apikey.val("Not set");
+        apikeyprint.textContent = "Not set";
+        apikey.value = "Not set";
     }
 });
 
-
-$apikeysave.click(function(){
-    let newapikey = $apikey.val();
+apikeysave.addEventListener("click", function () {
+    let newapikey = apikey.value;
     chrome.runtime.sendMessage({apikeytovalidate: newapikey}, function(response) {
         if(response.valid){
             chrome.storage.local.set({steamAPIKey: newapikey, apiKeyValid: true}, function() {
-                $apikeyprint.text(newapikey.substring(0,8)+"...");
-                $("#invalidAPIWarning").remove();
-                $("#steamAPIkeyModal").modal("hide");
+                apikeyprint.textContent = newapikey.substring(0,8)+"...";
+                document.getElementById("invalidAPIWarning").remove();
+                //document.getElementById("steamAPIkeyModal").modal("hide");
+                $("#steamAPIkeyModal").modal("hide"); //TODO figure out how to lose jquery here
             });
         }
         else{
-            let invalidWarning = `
-            <div id="invalidAPIWarning" class="warning"><i class="fas fa-exclamation-triangle"></i> <span class="warning">Could not validate your API key, it's either incorrect or Steam is down at the moment</span></div>
-            `;
-            $apikey.after(invalidWarning);
+            let invalidDiv = document.createElement("div");
+            invalidDiv.classList.add("warning");
+            invalidDiv.id="invalidAPIWarning";
+            invalidDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span class="warning">Could not validate your API key, it\'s either incorrect or Steam is down at the moment</span>';
+            apikey.parentNode.insertBefore(invalidDiv, apikey.nextSibling);
         }
     });
 });
 
-$showrealstatus = $("#showRealStatus");
+// number inputs
+numberoflistings = document.getElementById("numberOfListings");
 
-chrome.storage.local.get(['showRealStatus'], function(result) {
-    if(result.showRealStatus){
-        $showrealstatus.prop("checked", true);
-    }
-});
+chrome.storage.local.get('numberOfListings', function(result) {numberoflistings.value = result.numberOfListings});
 
-$showrealstatus.click(function() {
-    if(this.checked) {
-        chrome.storage.local.set({showRealStatus: true}, function() {
-        });
-    }
-    else{
-        chrome.storage.local.set({showRealStatus: false}, function() {
-        });
-    }
-});
-
-$tabsAPI = $("#tabsAPI");
-
-chrome.permissions.contains({
-    permissions: ['tabs']
-}, function(result) {
-    if (result) {
-        $tabsAPI.prop("checked", true);
-    }
-    else{
-        $tabsAPI.prop("checked", false);
-    }
-});
-
-$tabsAPI.click(function() {
-    if(this.checked) {
-        chrome.permissions.request({
-            permissions: ['tabs']
-        }, function(granted) {
-            if (granted) {}
-            else {
-                $tabsAPI.prop("checked", false);
-            }
-        });
-    }
-    else{
-        chrome.permissions.remove({
-            permissions: ['tabs']
-        }, function(removed) {});
-    }
-});
-
-$colorfulitems = $("#colorfulItems");
-
-chrome.storage.local.get(['colorfulItems'], function(result) {
-    if(result.colorfulItems){
-        $colorfulitems.prop("checked", true);
-    }
-});
-
-$colorfulitems.click(function() {
-    if(this.checked) {
-        chrome.storage.local.set({colorfulItems: true}, function() {
-        });
-    }
-    else{
-        chrome.storage.local.set({colorfulItems: false}, function() {
-        });
-    }
-});
-
-$loungebump = $("#loungeBump");
-
-chrome.storage.local.get(['loungeBump'], function(result) {
-    if(result.loungeBump){
-        $loungebump.prop("checked", true);
-    }
-});
-
-$loungebump.click(function() {
-    if(this.checked) {
-        chrome.storage.local.set({loungeBump: true}, function() {
-        });
-    }
-    else{
-        chrome.storage.local.set({loungeBump: false}, function() {
-        });
-    }
-});
-
-$tradersbump = $("#tradersBump");
-
-chrome.storage.local.get(['tradersBump'], function(result) {
-    if(result.tradersBump){
-        $tradersbump.prop("checked", true);
-    }
-});
-
-$tradersbump.click(function() {
-    if(this.checked) {
-        chrome.storage.local.set({tradersBump: true}, function() {
-        });
-    }
-    else{
-        chrome.storage.local.set({tradersBump: false}, function() {
-        });
-    }
-});
-
-$markscammers = $("#markScammers");
-
-chrome.storage.local.get(['markScammers'], function(result) {
-    if(result.markScammers){
-        $markscammers.prop("checked", true);
-    }
-});
-
-$markscammers.click(function() {
-    if(this.checked) {
-        chrome.storage.local.set({markScammers: true}, function() {
-        });
-    }
-    else{
-        chrome.storage.local.set({markScammers: false}, function() {
-        });
-    }
-});
-
-$numberoflistings = $("#numberOfListings");
-
-chrome.storage.local.get(['numberOfListings'], function(result) {
-    $numberoflistings.val(result.numberOfListings);
-});
-
-$numberoflistings.on('input', function() {
-    let number = parseInt($(this).val());
+numberoflistings.addEventListener("input", function () {
+    let number = parseInt(this.value);
     if(number<10){
         number = 10;
     }
     else if(number>100){
         number = 100;
     }
-    chrome.storage.local.set({numberOfListings: number}, function() {
-    });
+    chrome.storage.local.set({numberOfListings: number}, function() {});
 });
-
