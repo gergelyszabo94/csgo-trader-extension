@@ -220,6 +220,7 @@ function requestInventory(){
             addElements();
             addPerItemInfo();
             addClickListener();
+            getInventoryTotal(items);
         }
         else{
             console.log("Wasn't able to get the inventory, it's most likely steam not working properly or you loading inventory pages at the same time");
@@ -838,4 +839,19 @@ function hideOtherExtensionPrices(){
     setTimeout(function () {
         hideOtherExtensionPrices();
     }, 2000);
+}
+
+function getInventoryTotal(items){
+    chrome.runtime.sendMessage({inventoryTotal: items}, function(response) {
+        if(!(response===undefined||response.inventoryTotal===undefined||response.inventoryTotal===""||response.inventoryTotal==="error")){
+            let total = response.inventoryTotal;
+            console.log(total);
+        }
+        else{
+            setTimeout(function () {
+                getInventoryTotal(items);
+            }, 1000);
+
+        }
+    });
 }

@@ -160,6 +160,19 @@ chrome.runtime.onMessage.addListener(
             });
             return true; //async return to signal that it will return later
         }
+        else if (request.inventoryTotal!==undefined){
+            let inventory = request.inventoryTotal;
+            let total = 0;
+            chrome.storage.local.get(['prices', 'exchangeRate', 'currency'], function(result){
+                inventory.forEach(item =>{
+                    if(result.prices[item.market_hash_name] !== undefined && result.prices[item.market_hash_name] !== "null"){
+                        total += result.prices[item.market_hash_name];
+                    }
+                });
+                sendResponse({inventoryTotal: currencies[result.currency].sign + (total*result.exchangeRate).toFixed(2)});
+            });
+            return true;
+        }
         else if (request.badgetext!==undefined){
             chrome.browserAction.setBadgeText({text: request.badgetext});
             sendResponse({badgetext: request.badgetext})
