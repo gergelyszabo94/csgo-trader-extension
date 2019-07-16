@@ -173,6 +173,22 @@ chrome.runtime.onMessage.addListener(
             });
             return true;
         }
+        else if (request.addPricesToInventory!==undefined){
+            let inventory = request.addPricesToInventory;
+            chrome.storage.local.get(['prices', 'exchangeRate', 'currency'], function(result){
+                inventory.forEach(item =>{
+                    if(result.prices[item.market_hash_name] !== undefined && result.prices[item.market_hash_name] !== "null"){
+                        price = {
+                            price: result.prices[item.market_hash_name]==="null"||result.prices[item.market_hash_name]===undefined?0.0:(result.prices[item.market_hash_name]*result.exchangeRate).toFixed(2),
+                            display: result.prices[item.market_hash_name]==="null"||result.prices[item.market_hash_name]===undefined?"":currencies[result.currency].sign + (result.prices[item.market_hash_name]*result.exchangeRate).toFixed(2)
+                        };
+                        item.price = price;
+                    }
+                });
+                sendResponse({addPricesToInventory: inventory});
+            });
+            return true;
+        }
         else if (request.badgetext!==undefined){
             chrome.browserAction.setBadgeText({text: request.badgetext});
             sendResponse({badgetext: request.badgetext})

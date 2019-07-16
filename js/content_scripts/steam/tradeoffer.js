@@ -132,16 +132,24 @@ function getInventories(){
     });
 
     if(yourInventory !== undefined && theirInventory !== undefined){
-        yourInventory = buildInventoryStructure(yourInventory);
-        theirInventory = buildInventoryStructure(theirInventory);
-        for (let assetid in yourInventory){
-            combinedInventories.push(yourInventory[assetid])
-        }
-        for (let assetid in theirInventory){
-            combinedInventories.push(theirInventory[assetid])
-        }
         clearInterval(tryGettingInventories);
-        addItemInfo();
+        yourBuiltInventory = buildInventoryStructure(yourInventory);
+        theirBuiltInventory = buildInventoryStructure(theirInventory);
+
+        chrome.runtime.sendMessage({addPricesToInventory: yourBuiltInventory}, function(response) {
+            yourInventoryWithPrices = response.addPricesToInventory;
+            chrome.runtime.sendMessage({addPricesToInventory: theirBuiltInventory}, function(response) {
+                theirInventoryWithPrices = response.addPricesToInventory;
+                for (let assetid in yourInventoryWithPrices){
+                    combinedInventories.push(yourInventoryWithPrices[assetid])
+                }
+                for (let assetid in theirInventoryWithPrices){
+                    combinedInventories.push(theirInventoryWithPrices[assetid])
+                }
+                addItemInfo();
+            });
+
+        });
     }
 }
 
@@ -241,6 +249,10 @@ function addItemInfo() {
                         }
 
                         $item.append(`<div class='exteriorSTInfo'><span class="souvenirYellow">${souvenir}</span><span class="stattrakOrange">${stattrak}</span><span class="exteriorIndicator">${exterior}</span></div>`);
+
+                        if(item.price!==undefined && item.price !== "null"){
+                            $item.append(`<div class='priceIndicator'>${item.price.display}</div>`);
+                        }
 
                         $(this).attr("data-processed", true);
                     }
@@ -360,4 +372,5 @@ function getItemByAssetID(assetidToFind){
 
 function removeSIHStuff() {
     $(".des-tag").remove();
+    $(".p-price").remove();
 }
