@@ -180,6 +180,7 @@ MutationObserver = window.MutationObserver;
 let observer = new MutationObserver(function(mutations, observer) {
     if($(".games_list_tab.active").first().attr("href")==="#730"){
         addElements();
+        addFunctionBar();
     }
     else{
         removeElements();
@@ -845,7 +846,7 @@ function getInventoryTotal(items){
     chrome.runtime.sendMessage({inventoryTotal: items}, function(response) {
         if(!(response===undefined||response.inventoryTotal===undefined||response.inventoryTotal===""||response.inventoryTotal==="error")){
             let total = response.inventoryTotal;
-            console.log(total);
+            document.getElementById("inventoryTotalValue").innerText = total;
         }
         else{
             setTimeout(function () {
@@ -854,4 +855,13 @@ function getInventoryTotal(items){
 
         }
     });
+}
+
+function addFunctionBar(){
+    if(document.getElementById("inventory_function_bar") === null){
+        let functionBar = document.createElement("div");
+        functionBar.id="inventory_function_bar";
+        functionBar.innerHTML = '<div id="inventoryTotal"><span>Total Inventory Value: </span><span id="inventoryTotalValue"></span></div>';
+        document.querySelector(".filter_ctn.inventory_filters").insertAdjacentElement('afterend', functionBar);
+    }
 }

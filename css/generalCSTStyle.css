@@ -10,6 +10,23 @@
     --steam-sale-golden: #e4ca63;
 }
 
+#inventory_function_bar {
+    display: flex;
+    flex-flow: row nowrap;
+    margin: 0 15px 2px 15px;
+    padding: 10px;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    height: 35px;
+}
+
+#inventoryTotal {
+    font-size: 1.5rem;
+    position: absolute;
+    right: 10px;
+}
+
 /*bootstrap progress bar*/
 progress {
     vertical-align: baseline;
