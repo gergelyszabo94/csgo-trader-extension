@@ -859,9 +859,6 @@ function getInventoryTotal(items){
 
 function addFunctionBar(){
     if(document.getElementById("inventory_function_bar") === null){
-        let functionBar = document.createElement("div");
-        functionBar.id="inventory_function_bar";
-        functionBar.innerHTML = '<div id="inventoryTotal"><span>Total Inventory Value: </span><span id="inventoryTotalValue"></span></div>';
-        document.querySelector(".filter_ctn.inventory_filters").insertAdjacentElement('afterend', functionBar);
+        document.querySelector(".filter_ctn.inventory_filters").insertAdjacentHTML('afterend', '<div id="inventory_function_bar"><div id="inventoryTotal"><span>Total Inventory Value: </span><span id="inventoryTotalValue"></span></div></div>')
     }
 }
