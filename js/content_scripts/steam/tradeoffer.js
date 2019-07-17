@@ -133,13 +133,13 @@ function getInventories(){
 
     if(yourInventory !== undefined && theirInventory !== undefined){
         clearInterval(tryGettingInventories);
-        yourBuiltInventory = buildInventoryStructure(yourInventory);
-        theirBuiltInventory = buildInventoryStructure(theirInventory);
+        let yourBuiltInventory = buildInventoryStructure(yourInventory);
+        let theirBuiltInventory = buildInventoryStructure(theirInventory);
 
         chrome.runtime.sendMessage({addPricesToInventory: yourBuiltInventory}, function(response) {
-            yourInventoryWithPrices = response.addPricesToInventory;
+            let yourInventoryWithPrices = response.addPricesToInventory;
             chrome.runtime.sendMessage({addPricesToInventory: theirBuiltInventory}, function(response) {
-                theirInventoryWithPrices = response.addPricesToInventory;
+                let theirInventoryWithPrices = response.addPricesToInventory;
                 for (let assetid in yourInventoryWithPrices){
                     combinedInventories.push(yourInventoryWithPrices[assetid])
                 }
@@ -147,6 +147,7 @@ function getInventories(){
                     combinedInventories.push(theirInventoryWithPrices[assetid])
                 }
                 addItemInfo();
+                addInventoryTotals(yourInventoryWithPrices, theirInventoryWithPrices);
             });
 
         });
@@ -373,4 +374,21 @@ function getItemByAssetID(assetidToFind){
 function removeSIHStuff() {
     $(".des-tag").remove();
     $(".p-price").remove();
+}
+
+function addInventoryTotals(yourInventory, theirInventory){
+    chrome.runtime.sendMessage({inventoryTotal: yourInventory}, function(response) {
+        if(!(response===undefined||response.inventoryTotal===undefined||response.inventoryTotal===""||response.inventoryTotal==="error")){
+            let yourInventoryTitleDiv = document.getElementById("inventory_select_your_inventory").querySelector("div");
+            yourInventoryTitleDiv.style.fontSize = "16px";
+            yourInventoryTitleDiv.innerText = yourInventoryTitleDiv.innerText + " (" + response.inventoryTotal + ")";
+        }
+    });
+    chrome.runtime.sendMessage({inventoryTotal: theirInventory}, function(response) {
+        if(!(response===undefined||response.inventoryTotal===undefined||response.inventoryTotal===""||response.inventoryTotal==="error")){
+            let theirInventoryTitleDiv = document.getElementById("inventory_select_their_inventory").querySelector("div");
+            theirInventoryTitleDiv.style.fontSize = "16px";
+            theirInventoryTitleDiv.innerText = theirInventoryTitleDiv.innerText + " (" + response.inventoryTotal + ")";
+        }
+    });
 }
