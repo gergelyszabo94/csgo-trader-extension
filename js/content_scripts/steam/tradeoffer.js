@@ -148,6 +148,7 @@ function getInventories(){
                 }
                 addItemInfo();
                 addInventoryTotals(yourInventoryWithPrices, theirInventoryWithPrices);
+                addInTradeTotals();
             });
 
         });
@@ -391,4 +392,28 @@ function addInventoryTotals(yourInventory, theirInventory){
             theirInventoryTitleDiv.innerText = theirInventoryTitleDiv.innerText + " (" + response.inventoryTotal + ")";
         }
     });
+}
+
+function addInTradeTotals(){
+    let yourItemsInTrade = document.getElementById("your_slots").querySelectorAll(".item.app730.context2");
+    let yourInTradeTotal = 0;
+    yourItemsInTrade.forEach(function (inTradeItem) {
+        let assetID = inTradeItem.id.split("730_2_")[1]; //gets the assetid of the item from the html
+        let item = getItemByAssetID(assetID); //matches it with the info from the page variables
+        yourInTradeTotal += parseFloat(item.price.price);
+    });
+    let yourItemsTextDiv = document.getElementById("trade_yours").querySelector("h2.ellipsis");
+    yourItemsTextDiv.innerText = yourItemsTextDiv.innerText.split(":")[0] + ` (${yourInTradeTotal}):`;
+
+    let theirItemsInTrade = document.getElementById("their_slots").querySelectorAll(".item.app730.context2");
+    let theirInTradeTotal = 0;
+    theirItemsInTrade.forEach(function (inTradeItem) {
+        let assetID = inTradeItem.id.split("730_2_")[1]; //gets the assetid of the item from the html
+        let item = getItemByAssetID(assetID); //matches it with the info from the page variables
+        theirInTradeTotal += parseFloat(item.price.price);
+    });
+    let theirItemsTextDiv = document.getElementById("trade_theirs").querySelector(".offerheader").querySelector("h2");
+    console.log(theirItemsTextDiv.innerText);
+    console.log(theirItemsTextDiv.innerHTML);
+    theirItemsTextDiv.innerText = theirItemsTextDiv.innerText.split(":")[0] + ` (${theirInTradeTotal}):`;
 }
