@@ -843,8 +843,9 @@ function hideOtherExtensionPrices(){
 }
 
 function getInventoryTotal(items){
+    let inventoryTotalValueElement = document.getElementById("inventoryTotalValue");
     chrome.runtime.sendMessage({inventoryTotal: items}, function(response) {
-        if(!(response===undefined||response.inventoryTotal===undefined||response.inventoryTotal===""||response.inventoryTotal==="error")){
+        if(!(response===undefined||response.inventoryTotal===undefined||response.inventoryTotal===""||response.inventoryTotal==="error"||inventoryTotalValueElement===null)){
             let total = response.inventoryTotal;
             document.getElementById("inventoryTotalValue").innerText = total;
         }
@@ -852,7 +853,6 @@ function getInventoryTotal(items){
             setTimeout(function () {
                 getInventoryTotal(items);
             }, 1000);
-
         }
     });
 }
@@ -860,5 +860,10 @@ function getInventoryTotal(items){
 function addFunctionBar(){
     if(document.getElementById("inventory_function_bar") === null){
         document.querySelector(".filter_ctn.inventory_filters").insertAdjacentHTML('afterend', '<div id="inventory_function_bar"><div id="inventoryTotal"><span>Total Inventory Value: </span><span id="inventoryTotalValue"></span></div></div>')
+    }
+    else{
+        setTimeout(function () {
+            getInventoryTotal(items);
+        }, 1000);
     }
 }
