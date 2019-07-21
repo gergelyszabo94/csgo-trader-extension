@@ -148,7 +148,8 @@ function getInventories(){
                 }
                 addItemInfo();
                 addInventoryTotals(yourInventoryWithPrices, theirInventoryWithPrices);
-                addInTradeTotals();
+                addInTradeTotals("your");
+                addInTradeTotals("their");
             });
 
         });
@@ -180,7 +181,7 @@ setInterval(function () {
 }, 2000);
 
 $(".inventory_user_tab").click(function () {
-   addItemInfo();
+    addItemInfo();
 });
 
 document.addEventListener("message", function(e) {
@@ -375,8 +376,15 @@ function getItemByAssetID(assetidToFind){
 function removeSIHStuff() {
     $(".des-tag").remove();
     $(".p-price").remove();
+    let price_tags = document.querySelectorAll(".price-tag");
+    if(price_tags.length!==0){
+        document.querySelectorAll(".price-tag").forEach((pricetag) => {
+            if (pricetag !==undefined) {
+                pricetag.remove();
+            }
+        });
+    }
 }
-
 function addInventoryTotals(yourInventory, theirInventory){
     chrome.runtime.sendMessage({inventoryTotal: yourInventory}, function(response) {
         if(!(response===undefined||response.inventoryTotal===undefined||response.inventoryTotal===""||response.inventoryTotal==="error")){
@@ -394,28 +402,35 @@ function addInventoryTotals(yourInventory, theirInventory){
     });
 }
 
-function addInTradeTotals(){
-    let yourItemsInTrade = document.getElementById("your_slots").querySelectorAll(".item.app730.context2");
-    let yourInTradeTotal = 0;
-    yourItemsInTrade.forEach(function (inTradeItem) {
+function addInTradeTotals(whose){
+    let itemsInTrade = document.getElementById(whose + "_slots").querySelectorAll(".item.app730.context2");
+    let inTradeTotal = 0;
+    itemsInTrade.forEach(function (inTradeItem) {
         let assetID = inTradeItem.id.split("730_2_")[1]; //gets the assetid of the item from the html
         let item = getItemByAssetID(assetID); //matches it with the info from the page variables
-        yourInTradeTotal += parseFloat(item.price.price);
-    });
-    let yourItemsTextDiv = document.getElementById("trade_yours").querySelector("h2.ellipsis");
-    chrome.storage.local.get(['currency'], function(result) {
-        yourItemsTextDiv.innerText = yourItemsTextDiv.innerText.split(":")[0] + ` (${prettyPrintPrice(result.currency, yourInTradeTotal)}):`;
+        inTradeTotal += parseFloat(item.price.price);
     });
 
-    let theirItemsInTrade = document.getElementById("their_slots").querySelectorAll(".item.app730.context2");
-    let theirInTradeTotal = 0;
-    theirItemsInTrade.forEach(function (inTradeItem) {
-        let assetID = inTradeItem.id.split("730_2_")[1]; //gets the assetid of the item from the html
-        let item = getItemByAssetID(assetID); //matches it with the info from the page variables
-        theirInTradeTotal += parseFloat(item.price.price);
-    });
-    let theirItemsTextDiv = document.getElementById("trade_theirs").querySelector(".offerheader").querySelector("h2");
-    chrome.storage.local.get(['currency'], function(result) {
-        theirItemsTextDiv.innerText = theirItemsTextDiv.innerText.split(":")[0] + ` (${prettyPrintPrice(result.currency, theirInTradeTotal)}):`;
-    });
+    if(document.getElementById(whose + "InTradeTotal")===null){
+        let itemsTextDiv = undefined;
+        if(whose==="your"){
+            itemsTextDiv = document.getElementById("trade_yours").querySelector("h2.ellipsis");
+        }
+        else{
+            itemsTextDiv = document.getElementById("trade_theirs").querySelector(".offerheader").querySelector("h2");
+        }
+        chrome.storage.local.get(['currency'], function(result) {
+            itemsTextDiv.innerHTML = itemsTextDiv.innerText.split(":")[0] + ` (<span id="${whose}InTradeTotal">${prettyPrintPrice(result.currency, inTradeTotal)}</span>):`;
+        });
+    }
+    else{
+        chrome.storage.local.get(['currency'], function(result) {
+            document.getElementById( whose + "InTradeTotal").innerText = prettyPrintPrice(result.currency, inTradeTotal);
+        });
+    }
+
+    setTimeout(function () {
+        addInTradeTotals("your");
+        addInTradeTotals("their");
+    }, 1000);
 }
