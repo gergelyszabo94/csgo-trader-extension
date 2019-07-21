@@ -403,7 +403,9 @@ function addInTradeTotals(){
         yourInTradeTotal += parseFloat(item.price.price);
     });
     let yourItemsTextDiv = document.getElementById("trade_yours").querySelector("h2.ellipsis");
-    yourItemsTextDiv.innerText = yourItemsTextDiv.innerText.split(":")[0] + ` (${yourInTradeTotal}):`;
+    chrome.storage.local.get(['currency'], function(result) {
+        yourItemsTextDiv.innerText = yourItemsTextDiv.innerText.split(":")[0] + ` (${prettyPrintPrice(result.currency, yourInTradeTotal)}):`;
+    });
 
     let theirItemsInTrade = document.getElementById("their_slots").querySelectorAll(".item.app730.context2");
     let theirInTradeTotal = 0;
@@ -413,7 +415,7 @@ function addInTradeTotals(){
         theirInTradeTotal += parseFloat(item.price.price);
     });
     let theirItemsTextDiv = document.getElementById("trade_theirs").querySelector(".offerheader").querySelector("h2");
-    console.log(theirItemsTextDiv.innerText);
-    console.log(theirItemsTextDiv.innerHTML);
-    theirItemsTextDiv.innerText = theirItemsTextDiv.innerText.split(":")[0] + ` (${theirInTradeTotal}):`;
+    chrome.storage.local.get(['currency'], function(result) {
+        theirItemsTextDiv.innerText = theirItemsTextDiv.innerText.split(":")[0] + ` (${prettyPrintPrice(result.currency, theirInTradeTotal)}):`;
+    });
 }

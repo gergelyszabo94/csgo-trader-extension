@@ -846,8 +846,7 @@ function getInventoryTotal(items){
     let inventoryTotalValueElement = document.getElementById("inventoryTotalValue");
     chrome.runtime.sendMessage({inventoryTotal: items}, function(response) {
         if(!(response===undefined||response.inventoryTotal===undefined||response.inventoryTotal===""||response.inventoryTotal==="error"||inventoryTotalValueElement===null)){
-            let total = response.inventoryTotal;
-            document.getElementById("inventoryTotalValue").innerText = total;
+            document.getElementById("inventoryTotalValue").innerText = response.inventoryTotal;
         }
         else{
             setTimeout(function () {

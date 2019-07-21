@@ -169,8 +169,7 @@ chrome.runtime.onMessage.addListener(
                         total += result.prices[item.market_hash_name];
                     }
                 });
-                let nf = new Intl.NumberFormat();
-                sendResponse({inventoryTotal: currencies[result.currency].sign + nf.format((total*result.exchangeRate).toFixed(0))});
+                sendResponse({inventoryTotal: prettyPrintPrice(result.currency, (total*result.exchangeRate).toFixed(0))});
             });
             return true;
         }

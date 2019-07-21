@@ -969,3 +969,8 @@ function updateExchangeRates(){
         });
     });
 }
+
+function prettyPrintPrice(currency, price){
+    let nf = new Intl.NumberFormat();
+    return currencies[currency].sign + nf.format(price);
+}
