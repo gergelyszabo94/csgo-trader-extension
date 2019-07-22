@@ -46,7 +46,8 @@ const commentsToReport = [
     'I’m collecting csgo base grade items',
     'Erotic Streamer',
     'giveaway',
-    'SKINSRENT.STORE'
+    'SKINSRENT.STORE',
+    'skins-market.org'
 ];
 
 function getPattern(name, paint_seed){
