@@ -150,7 +150,6 @@ function getInventories(){
                 addInventoryTotals(yourInventoryWithPrices, theirInventoryWithPrices);
                 addInTradeTotals("your");
                 addInTradeTotals("their");
-                periodicallyUpdateTotals();
             });
 
         });
@@ -409,9 +408,7 @@ function addInTradeTotals(whose){
     itemsInTrade.forEach(function (inTradeItem) {
         let assetID = inTradeItem.id.split("730_2_")[1]; //gets the assetid of the item from the html
         let item = getItemByAssetID(assetID); //matches it with the info from the page variables
-        if(item.price!==undefined){
-            inTradeTotal += parseFloat(item.price.price);
-        }
+        inTradeTotal += parseFloat(item.price.price);
     });
 
     if(document.getElementById(whose + "InTradeTotal")===null){
@@ -431,10 +428,8 @@ function addInTradeTotals(whose){
             document.getElementById( whose + "InTradeTotal").innerText = prettyPrintPrice(result.currency, inTradeTotal);
         });
     }
-}
 
-function periodicallyUpdateTotals(){
-    setInterval(function () {
+    setTimeout(function () {
         addInTradeTotals("your");
         addInTradeTotals("their");
     }, 1000);
