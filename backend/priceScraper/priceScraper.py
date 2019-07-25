@@ -667,11 +667,7 @@ def lambda_handler(event, context):
                         "doppler": "null"
                     }
         print("Pricing information extracted")
-        push_to_s3(extract, "true")
-        return {
-            'statusCode': 200,
-            'body': json.dumps('Success!')
-        }
+        push_to_s3(extract, "false")
     else:
         error = "Could not get items from cs.money"
         alert_via_sns(error)
@@ -680,6 +676,38 @@ def lambda_handler(event, context):
             'statusCode': response.status_code,
             'body': json.dumps(error)
         }
+
+    print("Creates own pricing")
+    print("Calculate market trends")
+
+    week_to_day = 0
+    month_to_week = 0
+    count = 0
+    for item in extract:
+        if "csgobackpack" in extract[item] and "24_hours" in extract[item]["csgobackpack"] and "7_days" in extract[item]["csgobackpack"] and "30_days" in extract[item]["csgobackpack"]:
+            daily = float(extract[item]["csgobackpack"]["24_hours"]["average"])
+            weekly = float(extract[item]["csgobackpack"]["7_days"]["average"])
+            monthly = float(extract[item]["csgobackpack"]["30_days"]["average"])
+            if daily != 0 and weekly != 0 and monthly != 0:
+                week_to_day += (daily/weekly)
+                month_to_week += (weekly/monthly)
+                count += 1
+    week_to_day = week_to_day/count
+    month_to_week = month_to_week/count
+    print("Market trends: WtD: " + str(week_to_day) + " MtW: " + str(month_to_week))
+
+    for item in extract:
+        csgobackpack_aggregate = get_csgobackpack_price(item, extract, week_to_day, month_to_week)
+        if csgobackpack_aggregate != "null":
+            extract[item]["csgotrader"] = csgobackpack_aggregate
+        else:
+            extract[item]["csgotrader"] = "null"
+
+    push_to_s3(extract, "true")
+    return {
+        'statusCode': 200,
+        'body': json.dumps('Success!')
+    }
 
 
 def push_to_s3(content, latest):
@@ -722,3 +750,18 @@ def alert_via_sns(error):
     )
 
     print(response)
+
+
+def get_csgobackpack_price(item, extract, daily_trend, weekly_trend):
+    if "csgobackpack" in extract[item]:
+        if "24_hours" in extract[item]["csgobackpack"] and "sold" in extract[item]["csgobackpack"]["24_hours"] and extract[item]["csgobackpack"]["24_hours"]["sold"] != "" and float(extract[item]["csgobackpack"]["24_hours"]["sold"]) >= 5.0:
+            return extract[item]["csgobackpack"]["24_hours"]["average"]
+        elif "7_days" in extract[item]["csgobackpack"]:
+            return float(extract[item]["csgobackpack"]["7_days"]["average"])*daily_trend
+        elif "30_days" in extract[item]["csgobackpack"]:
+            return float(extract[item]["csgobackpack"]["30_days"]["average"])*weekly_trend*daily_trend
+        else:
+            return "null"
+    else:
+        return "null"
+
