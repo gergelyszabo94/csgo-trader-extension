@@ -21,8 +21,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 numberOfListings: 10,
                 storageMigrated: true,
                 itemPricing: true,
-                pricingProvider: pricingProviders.csgobackpack.name,
-                pricingMode: pricingProviders.csgobackpack.pricing_modes["7_days_average"].name,
+                pricingProvider: pricingProviders.csgotrader.name,
+                pricingMode: pricingProviders.csgotrader.pricing_modes["csgotrader"].name,
                 pricesLastRefreshed: null,
                 prices: null,
                 currency: currencies.USD.short,
@@ -138,10 +138,10 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 chrome.storage.local.set({itemPricing: true}, function() {});
             }
             if(result.pricingProvider===undefined){
-                chrome.storage.local.set({pricingProvider: pricingProviders.csgobackpack.name}, function() {});
+                chrome.storage.local.set({pricingProvider: pricingProviders.csgotrader.name}, function() {});
             }
             if(result.pricingMode===undefined){
-                chrome.storage.local.set({pricingMode: pricingProviders.csgobackpack.pricing_modes["7_days_average"].name}, function() {});
+                chrome.storage.local.set({pricingMode: pricingProviders.csgotrader.pricing_modes["csgotrader"].name}, function() {});
             }
             if(result.pricesLastRefreshed===undefined){
                 chrome.storage.local.set({pricesLastRefreshed: null}, function() {});
