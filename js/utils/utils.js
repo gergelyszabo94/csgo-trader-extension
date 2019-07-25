@@ -926,7 +926,7 @@ function updatePrices(){
                         }
                     }
                 }
-                else if(result.pricingProvider === pricingProviders.lootfarm.name || result.pricingProvider === pricingProviders.csgotm.name){
+                else if(result.pricingProvider === pricingProviders.lootfarm.name || result.pricingProvider === pricingProviders.csgotm.name || result.pricingProvider === pricingProviders.csgotrader.name){
                     for (const key of keys) {
                         if(fullPricesJSON[key][result.pricingProvider] !== undefined){
                             prices[key] = fullPricesJSON[key][result.pricingProvider];
