@@ -19410,6 +19410,20 @@ const qualities = {
 };
 
 const pricingProviders = {
+    csgotrader: {
+        name: "csgotrader",
+        long: "CSGO Trader",
+        short: "CS",
+        url: "http://csgotrader.app",
+        description: "The extension's own pricing, aims to be accurate and to provide some kind of price for every item.",
+        pricing_modes: {
+            "csgotrader": {
+                description: "CSGO Trader price",
+                name: "csgotrader",
+                long: "CSGO Trader price"
+            }
+        }
+    },
     csgobackpack: {
         name: "csgobackpack",
         long: "CS:GO BACKPACK",
