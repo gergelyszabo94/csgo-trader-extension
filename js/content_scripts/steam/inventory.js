@@ -237,7 +237,9 @@ requestInventory();
 
 //to refresh the trade lock remaining indicators
 setInterval(function () {
-    addPerItemInfo(true); //true means it's only for updating the time remaining indicators
+    if(!document.hidden){
+        addPerItemInfo(true); //true means it's only for updating the time remaining indicators
+    }
 }, 60000);
 
 
@@ -832,10 +834,12 @@ function addClickListener(){
 }
 
 function hideOtherExtensionPrices(){
-    //sih
-    document.querySelectorAll(".price_flag").forEach((price)=>{
-        price.remove();
+    if(!document.hidden){
+        //sih
+        document.querySelectorAll(".price_flag").forEach((price)=>{
+            price.remove();
         });
+    }
 
     setTimeout(function () {
         hideOtherExtensionPrices();

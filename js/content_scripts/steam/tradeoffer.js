@@ -178,7 +178,11 @@ let scriptToInject = `
 $("body").append(scriptToInject);
 
 setInterval(function () {
-    removeSIHStuff();
+    chrome.storage.local.get('hideOtherExtensionPrices', function(result) {
+        if(result.hideOtherExtensionPrices && !document.hidden){
+            removeSIHStuff();
+        }
+    });
 }, 2000);
 
 $(".inventory_user_tab").click(function () {
@@ -435,7 +439,9 @@ function addInTradeTotals(whose){
 
 function periodicallyUpdateTotals(){
     setInterval(function () {
-        addInTradeTotals("your");
-        addInTradeTotals("their");
+        if (!document.hidden) {
+            addInTradeTotals("your");
+            addInTradeTotals("their");
+        }
     }, 1000);
 }
