@@ -6,6 +6,7 @@ The features I develop will be complementary to Steam Inventory Helper for now.
 
 Current Features:
 --------------
+- Adds pricing info to inventories and tradeoffers along with totals
 - Adds an "Inspect in Browser..." button beside the default inspect button
 - Shows when an item's tradelock will expire and adds a countdown
 - Shows Doppler knives' phases
