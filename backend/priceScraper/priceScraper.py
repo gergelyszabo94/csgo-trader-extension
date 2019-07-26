@@ -746,12 +746,12 @@ def push_to_s3(content, latest):
         if latest == "true":
             print("Updating latest/prices.json in s3")
             s3.Object(result_s3_bucket, 'latest/prices.json').put(
-                Body=(bytes(json.dumps(content, indent=2).encode('UTF-8')))
+                Body=(bytes(json.dumps(content).encode('UTF-8')))
             )
             print("latest.json updated")
         print(f'Uploading prices to {year}/{month}/{day}/prices.json')
         s3.Object(result_s3_bucket, f'{year}/{month}/{day}/prices.json').put(
-            Body=(bytes(json.dumps(content, indent=2).encode('UTF-8')))
+            Body=(bytes(json.dumps(content).encode('UTF-8')))
         )
         print("Upload complete")
     elif stage == "dev":
