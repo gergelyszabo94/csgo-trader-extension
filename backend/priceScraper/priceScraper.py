@@ -688,7 +688,7 @@ def lambda_handler(event, context):
             daily = float(extract[item]["csgobackpack"]["24_hours"]["average"])
             weekly = float(extract[item]["csgobackpack"]["7_days"]["average"])
             monthly = float(extract[item]["csgobackpack"]["30_days"]["average"])
-            if daily != 0 and weekly != 0 and monthly != 0:
+            if (daily != 0 and weekly != 0 and monthly != 0) and (daily != 0.03 and weekly != 0.03 and monthly != 0.03):
                 week_to_day += (daily/weekly)
                 month_to_week += (weekly/monthly)
                 count += 1
@@ -696,10 +696,32 @@ def lambda_handler(event, context):
     month_to_week = month_to_week/count
     print("Market trends: WtD: " + str(week_to_day) + " MtW: " + str(month_to_week))
 
+    print("Getting price difference ratio between csgopbackback:bitskins and csgobackpack:csmoney")
+    csb_bit = 0
+    csb_csm = 0
+    count = 0
+
+    for item in extract:
+        if "csgobackpack" in extract[item] and "7_days" in extract[item]["csgobackpack"] and "bitskins" in extract[item] and "price" in extract[item]["bitskins"] and "csmoney" in extract[item] and "price" in extract[item]["csmoney"]:
+            csb_weekly = float(extract[item]["csgobackpack"]["7_days"]["average"])
+            bit = float(extract[item]["bitskins"]["price"])
+            csm = float(extract[item]["csmoney"]["price"])
+            if (csb_weekly != 0 and bit != 0 and csm != 0) and (csb_weekly != 0.03 and bit != 0.03 and csm != 0.03):
+                csb_bit += (csb_weekly/bit)
+                csb_csm += (csb_weekly/csm)
+                count += 1
+    csb_bit = csb_bit/count
+    csb_csm = csb_csm/count
+    print("Backpack:Bitskins: " + str(csb_bit) + " Backpack:Csmoney:  " + str(csb_csm))
+
     for item in extract:
         csgobackpack_aggregate = get_csgobackpack_price(item, extract, week_to_day, month_to_week)
         if csgobackpack_aggregate != "null":
-            extract[item]["csgotrader"] = csgobackpack_aggregate
+            extract[item]["csgotrader"] = float("{0:.2f}".format(csgobackpack_aggregate))
+        elif extract[item]["csmoney"]["price"] != "null" and extract[item]["csmoney"]["price"] != 0:
+            extract[item]["csgotrader"] = float("{0:.2f}".format(float(extract[item]["csmoney"]["price"])*csb_csm*week_to_day))
+        elif "price" in extract[item]["bitskins"] and extract[item]["bitskins"]["price"] != "null":
+            extract[item]["csgotrader"] = float("{0:.2f}".format(float(extract[item]["bitskins"]["price"])*csb_bit*week_to_day))
         else:
             extract[item]["csgotrader"] = "null"
 
