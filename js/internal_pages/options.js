@@ -202,7 +202,10 @@ apikeysave.addEventListener("click", function () {
         if(response.valid){
             chrome.storage.local.set({steamAPIKey: newapikey, apiKeyValid: true}, function() {
                 apikeyprint.textContent = newapikey.substring(0,8)+"...";
-                document.getElementById("invalidAPIWarning").remove();
+                let warningDiv = document.getElementById("invalidAPIWarning");
+                if(warningDiv != null){
+                    warningDiv.remove();
+                }
                 //document.getElementById("steamAPIkeyModal").modal("hide");
                 $("#steamAPIkeyModal").modal("hide"); //TODO figure out how to lose jquery here
             });
