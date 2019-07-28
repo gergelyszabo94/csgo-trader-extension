@@ -72,12 +72,12 @@ flagcomments.addEventListener("click", function () {
 
 let quickdecline = document.getElementById("quickDeclineOffers");
 
-chrome.storage.local.get('quickDeclineOffers', function(result) {
-    quickdecline.checked = result.quickDeclineOffers;
+chrome.storage.local.get('quickDeclineOffer', function(result) {
+    quickdecline.checked = result.quickDeclineOffer;
 });
 
 quickdecline.addEventListener("click", function () {
-    chrome.storage.local.set({quickDeclineOffers: quickdecline.checked}, function() {});
+    chrome.storage.local.set({quickDeclineOffer: quickdecline.checked}, function() {});
 });
 
 let openintab = document.getElementById("openOfferInTab");

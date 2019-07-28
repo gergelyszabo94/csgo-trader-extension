@@ -2,7 +2,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
     if(details.reason === "install"){
         //setting default options
         chrome.storage.local.set(
-            {quickDeclineOffer: true,
+            {
+                quickDeclineOffer: true,
                 openOfferInTab: true,
                 showPlusRepButton: true,
                 reputationMessage: "+rep",
