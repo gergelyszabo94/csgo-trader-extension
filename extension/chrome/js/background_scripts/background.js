@@ -186,6 +186,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
     updatePrices();
     updateExchangeRates();
     chrome.alarms.create("updatePricesAndExchangeRates", {periodInMinutes: 1440});
+    chrome.alarms.create("retryUpdatePricesAndExchangeRates", {periodInMinutes: 1});
 });
 
 chrome.runtime.setUninstallURL("https://docs.google.com/forms/d/e/1FAIpQLSeOpZilYGr3JAPd7_GSh-tCJShVWHpNFoW8joxStzZf1PFq5A/viewform?usp=sf_link", function(){});
@@ -218,6 +219,16 @@ chrome.alarms.onAlarm.addListener(function(alarm){
     if(alarm.name === "updatePricesAndExchangeRates"){
         updatePrices();
         updateExchangeRates();
+    }
+    else if(alarm.name === "retryUpdatePricesAndExchangeRates"){
+        chrome.storage.local.get('prices', function(result) {
+            if(result.prices === null){
+                updatePrices();
+            }
+            else{
+                chrome.alarms.clear("retryUpdatePricesAndExchangeRates", function (wasCleared) {});
+            }
+        });
     }
     else{
         chrome.browserAction.getBadgeText({}, function (result) {
