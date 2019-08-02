@@ -51,6 +51,10 @@ input[type=number]::-webkit-inner-spin-button {
     -webkit-appearance: none;
 }
 
+input[type=number]{
+    -moz-appearance: textfield;
+}
+
 i{
     margin: 0.5rem;
 }
