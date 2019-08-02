@@ -1,0 +1,167 @@
+{
+  "manifest_version": 2,
+  "name": "__MSG_application_title__",
+  "short_name": "CSGO Trader",
+  "version": "1.16.1",
+  "default_locale": "en",
+  "description": "__MSG_application_description__",
+  "homepage_url": "https://github.com/bladegery/csgo-trader-extension",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "notifications",
+    "alarms",
+    "*://steamcommunity.com/*",
+    "*://api.steampowered.com/*",
+    "*://api.csgotrader.app/*",
+    "*://prices.csgotrader.app/*",
+    "*://steamrep.com/api/*",
+    "*://api.csgofloat.com/*",
+    "*://csgolounge.com/*",
+    "*://csgotraders.net/*"],
+  "optional_permissions": [ "tabs"],
+  "background": {
+    "scripts": [
+      "js/utils/enums.js",
+      "js/utils/utils.js",
+      "js/background_scripts/background.js",
+      "js/background_scripts/messaging.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://steamcommunity.com/*/inventory",
+        "*://steamcommunity.com/*/inventory/*"],
+      "run_at" : "document_idle",
+      "js": [
+        "js/thirdparty/jquery-3.3.1.min.js",
+        "js/utils/steamFunctionOverride.js",
+        "js/utils/enums.js",
+        "js/utils/utils.js",
+        "js/content_scripts/steam/inventory.js"],
+      "css": ["/css/generalCSTStyle.css"]
+    },
+    {
+      "matches": ["*://steamcommunity.com/tradeoffer/*"],
+      "run_at" : "document_idle",
+      "js": [
+        "js/thirdparty/jquery-3.3.1.min.js",
+        "js/utils/steamFunctionOverride.js",
+        "js/utils/enums.js",
+        "js/utils/utils.js",
+        "js/content_scripts/steam/tradeoffer.js"],
+      "css": ["/css/generalCSTStyle.css"]
+    },
+    {
+      "matches": ["*://steamcommunity.com/*/tradeoffers*"],
+      "run_at" : "document_idle",
+      "js": [
+        "js/thirdparty/jquery-3.3.1.min.js",
+        "js/utils/steamFunctionOverride.js",
+        "js/utils/enums.js",
+        "js/utils/utils.js" ,
+        "js/content_scripts/steam/tradeoffers.js"],
+      "css": ["/css/generalCSTStyle.css"]
+    },
+    {
+      "matches": ["*://steamcommunity.com/market/listings/730/*"],
+      "run_at" : "document_idle",
+      "js": [
+        "js/thirdparty/jquery-3.3.1.min.js",
+        "js/utils/steamFunctionOverride.js",
+        "js/utils/enums.js",
+        "js/utils/utils.js",
+        "js/content_scripts/steam/marketListing.js"],
+      "css": ["/css/generalCSTStyle.css"]
+    },
+    {
+      "matches": [
+        "*://steamcommunity.com/id/*/*",
+        "*://steamcommunity.com/id/*",
+        "*://steamcommunity.com/profiles/*/*",
+        "*://steamcommunity.com/profiles/*"],
+      "run_at" : "document_idle",
+      "js": [
+        "js/thirdparty/jquery-3.3.1.min.js",
+        "js/utils/steamFunctionOverride.js",
+        "js/utils/enums.js",
+        "js/utils/utils.js",
+        "js/content_scripts/steam/profile.js"]
+    },
+    {
+      "matches": ["*://steamcommunity.com/groups/*"],
+      "run_at" : "document_idle",
+      "js": [
+        "js/thirdparty/jquery-3.3.1.min.js",
+        "js/utils/steamFunctionOverride.js",
+        "js/utils/enums.js",
+        "js/utils/utils.js",
+        "js/content_scripts/steam/group.js"]
+    },
+    {
+      "matches": ["*://steamcommunity.com/sharedfiles/filedetails/*"],
+      "run_at" : "document_idle",
+      "js": [
+        "js/thirdparty/jquery-3.3.1.min.js",
+        "js/utils/steamFunctionOverride.js",
+        "js/utils/enums.js",
+        "js/utils/utils.js",
+        "js/content_scripts/steam/sharedfile.js"]
+    },
+    {
+      "matches": ["*://steamcommunity.com/games/*/announcements/detail/*"],
+      "run_at" : "document_idle",
+      "js": [
+        "js/thirdparty/jquery-3.3.1.min.js",
+        "js/utils/steamFunctionOverride.js",
+        "js/utils/enums.js",
+        "js/utils/utils.js",
+        "js/content_scripts/steam/announcements.js"]
+    },
+    {
+      "matches": ["*://steamcommunity.com/chat/*"],
+      "run_at" : "document_idle",
+      "js": [
+        "js/thirdparty/jquery-3.3.1.min.js",
+        "js/utils/steamFunctionOverride.js",
+        "js/utils/enums.js",
+        "js/utils/utils.js",
+        "js/content_scripts/steam/webchat.js"],
+      "css": ["/css/generalCSTStyle.css"]
+    },
+    {
+      "matches": ["*://csgolounge.com/mytrades/*"],
+      "run_at" : "document_idle",
+      "js": [
+        "js/thirdparty/jquery-3.3.1.min.js",
+        "js/content_scripts/loungebump.js"]
+    },
+    {
+      "matches": ["*://csgotraders.net/mytrades*"],
+      "run_at" : "document_idle",
+      "js": [
+        "js/thirdparty/jquery-3.3.1.min.js",
+        "js/content_scripts/tradersbump.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    "images/scammerbackground.jpg",
+    "images/paperclip.png",
+    "images/reply.png"
+  ],
+  "browser_action": {
+    "default_popup": "html/popup.html",
+    "default_icon": {
+      "16": "images/cstlogo16.png",
+      "32": "images/cstlogo32.png",
+      "48": "images/cstlogo48.png",
+      "128": "images/cstlogo128.png"
+    }
+  },
+  "icons": {
+    "16": "images/cstlogo16.png",
+    "32": "images/cstlogo32.png",
+    "48": "images/cstlogo48.png",
+    "128": "images/cstlogo128.png"
+  }
+}
