@@ -41,47 +41,6 @@ chrome.runtime.onInstalled.addListener(function(details) {
         }, function(notificationId) {});
     }
     else if(details.reason === "update"){
-        //migrates data from storage.sync to storage.locale
-        if(parseInt(details.previousVersion.split(".")[0])===1&&parseInt(details.previousVersion.split(".")[1])<=14){
-            chrome.storage.sync.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'showReoccButton', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings'], function(result) {
-                if(!(Object.keys(result).length === 0 && result.constructor === Object)){
-                    chrome.storage.local.get('bookmarks', function (res) { //fixes bookmark migration from previ update
-                        let bookmarks = [];
-                        if(!(Object.keys(res).length === 0 && res.constructor === Object)){
-                            if(res.bookmarks!==null||res.bookmarks!==undefined||res.bookmarks!==""){
-                                bookmarks = res.bookmarks;
-                            }
-                            else{
-                                bookmarks = result.bookmarks;
-                            }
-                        }
-                        chrome.storage.local.set({
-                            quickDeclineOffer: result.quickDeclineOffer,
-                            openOfferInTab: result.openOfferInTab,
-                            showPlusRepButton: result.showPlusRepButton,
-                            reputationMessage: result.reputationMessage,
-                            showReoccButton: result.showReoccButton,
-                            reoccuringMessage: result.reoccuringMessage,
-                            nsfwFilter: result.nsfwFilter,
-                            flagScamComments: result.flagScamComments,
-                            bookmarks: bookmarks,
-                            steamAPIKey: result.steamAPIKey,
-                            apiKeyValid: result.apiKeyValid,
-                            showRealStatus: result.showRealStatus,
-                            colorfulItems: result.colorfulItems,
-                            loungeBump: result.loungeBump,
-                            tradersBump: result.tradersBump,
-                            markScammers: result.markScammers,
-                            numberOfListings: result.numberOfListings,
-                            storageMigrated: true
-                        }, function() {
-                            chrome.storage.sync.clear();
-                        });
-                    });
-                }
-            });
-        }
-
         //setting defaults options for new options that haven't been set yet
         chrome.storage.local.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'showReoccButton', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode', 'pricesLastRefreshed', 'prices', 'currency', 'exchangeRate', 'exchangeRates', 'hideOtherExtensionPrices'], function(result) {
             if(result.quickDeclineOffer===undefined){
