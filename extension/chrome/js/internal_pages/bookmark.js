@@ -47,7 +47,7 @@ chrome.storage.local.get('bookmarks', function(result) {
                 <div class="notifOptions" style="display: ${notifOptionsVisibility}" data-index="${index}">
                     <h5 class="someSpaceBefore">How do you want to be notified?</h5>
                     <select class="select-theme notifType" data-index="${index}">
-                      <option value="chrome">Chrome desktop notification</option>
+                      <option value="chrome">Browser desktop notification</option>
                       <option value="alert">Browser alert (to focus)</option>
                     </select>
                     <h5 class="someSpaceBefore">When do you want to be notified?</h5>
