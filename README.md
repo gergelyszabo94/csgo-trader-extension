@@ -1,8 +1,8 @@
 CSGO Trader Chrome Extension
 ==============
 
-This is a chrome extension designed to help with CS:GO trading.
-The features I develop will be complementary to Steam Inventory Helper for now.
+This is a browser extension designed to help with CS:GO trading.
+I started developing complementary features to Steam Inventory Helper, but it does most of them and more now.
 
 Current Features:
 --------------
@@ -23,4 +23,8 @@ Current Features:
 
 Feel free to contribute (with code, graphics, translations or even with ideas)
 
-You can install it from the <a target="_blank" href="https://chrome.google.com/webstore/detail/csgo-trader/kaibcgikagnkfgjnibflebpldakfhfih/">Chrome Web Store</a>.
+Install:
+You can get it for Chrome from the <a target="_blank" href="https://chrome.google.com/webstore/detail/csgo-trader/kaibcgikagnkfgjnibflebpldakfhfih/">Chrome Web Store</a>.
+For Firefox through <a target="_blank" href="https://addons.mozilla.org/en-US/firefox/addon/csgo-trader-steam-trading/">Firefox Add-ons</a>.
+
+To install the in-development ("nightly") version, download the code and <a target="_blank" href="https://developer.chrome.com/extensions/getstarted">follow these instructions</a> (from after "Create a Manifest")
