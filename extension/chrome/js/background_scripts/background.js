@@ -160,14 +160,14 @@ chrome.notifications.onClicked.addListener(function(notificationID) {
                 goToInternalPage("/html/options.html");
             }
             else if(notificationID==="updated"){
-                goToInternalPage("/html/changelog.html");
+                chrome.tabs.create({url: "https://csgotrader.app/changelog/"});
             }
             else{
                 goToInternalPage("/html/bookmarks.html");
             }
         }
         else{
-            if (notificationID==="installed"){
+            if (notificationID === "installed"){
                 chrome.runtime.openOptionsPage(function(){})
             }
         }
