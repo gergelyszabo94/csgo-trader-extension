@@ -2,70 +2,113 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CSGO Trader Extension</title>
+    <meta name="description" content="">
+    <meta name="author" content="Gergely Szabo">
+    <meta name="theme-color" content="#ee7600">
+
+    <meta property="og:title" content="CSGO Trader - Steam Trading Enhancer Extension" />
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https:csgotrader.app" />
+    <meta property="og:image" content="https:csgotrader.app/img/features/cstdopplers.jpg" />
+
+    <meta property="og:description" content="CSGO Trader - Steam Trading Enhancer Extension for Chrome and Firefox that is designed to help with CS:GO trading." />
+    <meta property="og:determiner" content="" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:site_name" content="CSGOTrader" />
+
+
+    <title>CSGO Trader - Steam Trading Enhancer</title>
+    <link rel="stylesheet" href="/css/thirdparty/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/CSTExtensionPages.css">
 </head>
-<style>
-    body {
-        width: 30%;
-        text-align: center;
-        margin: auto;
-        background-color: #1d2124;
-    }
-    h1{
-        color: #FF8C00;
-    }
-    p, b, th, tr, ul, li, a, span, div {
-        color: #e1e1e1;
-    }
-
-    a{
-        color:  rgb(255, 215, 0);
-    }
-
-    a:hover {
-        color: #e1e1e1;
-        text-decoration: underline;
-    }
-
-</style>
 <body>
+<script type="text/javascript" src="/js/thirdparty/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="/js/thirdparty/bootstrap.bundle.min.js"></script>
+<div class="col-lg-10 col-md-10 mx-auto">
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand active" href="/"><img class="navlogo" src="/img/cstlogo48.png">CSGO Trader - Steam Trading Enhancer Extension</a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link orange" href="/changelog">Changelog</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+<h1 style="text-align: center">CSGO Trader Extension</h1>
+<div class="col-lg-3 col-md-3 mx-auto"></div>
+<div class="col-lg-6 col-md-6 mx-auto">
+    <div class="row">
+        <div class="buildingBlock">
+            <p>
+            CSGO Trader is a browser extension for Chrome and Firefox that is designed to help with CS:GO trading.
+            I started by adding functionality that Steam Inventory Helper lacked, but it already has SIH's most important features and much more.
+            </p>
+            <br>
+            <h2>Current Features:</h2>
+            <ul>
+                <li>Adds pricing info to inventories and tradeoffers along with totals</li>
+                <li>Adds an "Inspect in Browser..." button beside the default inspect button</li>
+                <li>Shows when an item's tradelock will expire and adds a countdown</li>
+                <li>Shows floats and other technical info in inventories, offers and on the market</li>
+                <li>Shows Doppler knives' phases</li>
+                <li>Shows exterior on each item and adds links to other version to inventory and market pages</li>
+                <li>NSFW filter mode to avoid showing anime boobs to your colleagues</li>
+                <li>Bookmark and notify when item is tradable</li>
+                <li>Real chat status on profiles</li>
+                <li>Colorful inventories</li>
+                <li>Scammers are market on their profile and in trade offers (if they are SteamRep banned)</li>
+                <li>CSGOLounge.com auto-bumping</li>
+                <li>CSGOTraders.net auto-bumping</li>
+                <li>Other small automations, conveniences</li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="buildingBlock">
+            <h2>Install</h2>
+            <p>
+                The extension is available in the <a target="_blank" href="https://chrome.google.com/webstore/detail/csgo-trader/kaibcgikagnkfgjnibflebpldakfhfih/">Chrome Web Store</a> and at <a target="_blank" href="https://addons.mozilla.org/en-US/firefox/addon/csgo-trader-steam-trading/">AMO</a>. These release versions are usually updated every 1-2 weeks.
+                If you have a browser that is not Chrome or Firefox don't worry, not all is lost.
+                If you have a Chromium based browser like Opera, Ungoogled Chromium, Brave or the new Microsoft Edge you should be able to install the Chrome version.
+                If you are on Safari though, all is lost for you because there is no plan to port it for your browser.
+            </p>
+            Get it from your browser's marketplace:
+            <p align="center">
+                <a target="_blank" href="https://chrome.google.com/webstore/detail/csgo-trader/kaibcgikagnkfgjnibflebpldakfhfih/"><img src="/img/chrome.png" width="128" title="Get it for Chrome from Chrome Web Store" alt="Get it for Chrome from Chrome Web Store"></a>
+                <a target="_blank" href="https://addons.mozilla.org/en-US/firefox/addon/csgo-trader-steam-trading/"><img src="/img/firefox.png" width="120" title="Add it to your Firefox through Firefox Add-ons" alt="Add it to your Firefox through Firefox Add-ons"></a>
+            </p>
+            <p>
+                Or to install the in-development ("nightly") version, download the code and <a target="_blank" href="https://developer.chrome.com/extensions/getstarted">follow these instructions</a> (from after "Create a Manifest")
+            </p>
+        </div>
+    </div>
+</div>
+<div class="col-lg-3 col-md-3 mx-auto"></div>
 
-<h1>CSGO Trader - Steam Trading Enhancer Extension</h1>
-<p>Hi, unfortunately the extension is not available at the Chrome Webstore.
-    It's mostly Google's fault. I wrote this up to inform my users.
-    I was not able to publish new updates for over a month (I had big new features ready like fade percentage checking and pricing), but it's been stuck in the status of "pending review" and Google's Dev support has been no help.
-    Out of desperation I foolishly clicked "unpublish", which made it disappear from the Chrome Webstore and it turns out you can't re-publish while it's under "pending review" status...
-    The last version that was available out there was 1.14.2, I have released 1.15 (which added fade percentage checking to inventories) and 1.16 (which added pricing information).
-    This move definitely made me prioritize porting my extension to Firefox and other browsers.
-    When it's (hopefully soon) back, it should be available where it used to in the <a href="https://chrome.google.com/webstore/detail/csgo-trader/kaibcgikagnkfgjnibflebpldakfhfih" target="_blank">Chrome Webstore</a>.
-</p>
-<p>
-    For now you have install it manually. I will write up a more detailed and illustrated version of this guide, but I am on vacation so I have limited time:
-</p>
-<ul>
-    <li>
-        Grab the Source code (zip) of the latest version from the <a href="https://github.com/bladegery/csgo-trader-extension/releases" target="_blank">Github Releases</a>
-    </li>
-    <li>
-        Unzip it to a location you can find easily.
-    </li>
-    <li>
-        Open <a href="chrome://extensions/" target="_blank">chrome://extensions/</a>.
-    </li>
-    <li>
-        Turn on Developer mode on the top right.
-    </li>
-    <li>
-        Click "Load Unpacked".
-    </li>
-    <li>
-        Select the folder that has "manifest.json" right inside it.
-    </li>
-</ul>
-<p>
-    The Extension should now install and you can use it the same way if you have installed it from the Webstore.
-    Unfortunately you won't get extension updates this way so if you find it useful please check back here.
-</p>
-<h2></h2>
+<h2 style="text-align: center">Feature Showcase</h2>
+<div class="">
+    <div align="center">
+        <h3>Bookmark and notify menu</h3>
+        <img src="/img/features/bookmarkandnotify.jpg" title="Bookmark and notify" alt="Bookmark and notify">
+        <br>
+        <br>
+        <h3>Inventory features</h3>
+        <img src="/img/features/cstdopplers.jpg" title="Inventory features" alt="Inventory features">
+        <br>
+        <br>
+        <h3>Options menu</h3>
+        <img src="/img/features/cstoptions.jpg" title="Options menu" alt="Options menu">
+        <br>
+        <br>
+        <h3>Other features</h3>
+        <img src="/img/features/featureshowcase.png" title="Other features" alt="Other features">
+        <br>
+        <br>
+        <h3>NSFW mode</h3>
+        <img src="/img/features/nsfwmode.png" title="NSFW mode" alt="NSFW mode">
+    </div>
+</div>
 </body>
 </html>
