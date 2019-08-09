@@ -34,6 +34,8 @@ def lambda_handler(event, context):
             'statusCode': 500,
             'body': error
         }
+    rates["KEY"] = 0.4  # 1/2.5
+
     push_to_s3(rates)
     cloudfront_invalidate()
     return {
@@ -81,19 +83,34 @@ def alert_via_sns(error):
         Message=f'Failed to update exchange rates, error: {error}',
     )
 
+
 def cloudfront_invalidate():
     print("Invalidating the latest prices and exchange rates")
     cloudfront = boto3.client('cloudfront')
-    response = cloudfront.create_invalidation(
-        DistributionId=cloudfront_dist_id,
-        InvalidationBatch={
-            'Paths': {
-                'Quantity': 1,
-                'Items': [
-                    '/latest/*',
-                ]
-            },
-            'CallerReference': str(time.time())
-        }
-    )
+    if stage == "prod":
+        response = cloudfront.create_invalidation(
+            DistributionId=cloudfront_dist_id,
+            InvalidationBatch={
+                'Paths': {
+                    'Quantity': 1,
+                    'Items': [
+                        '/latest/*',
+                    ]
+                },
+                'CallerReference': str(time.time())
+            }
+        )
+    else:
+        response = cloudfront.create_invalidation(
+            DistributionId=cloudfront_dist_id,
+            InvalidationBatch={
+                'Paths': {
+                    'Quantity': 1,
+                    'Items': [
+                        '/test/*',
+                    ]
+                },
+                'CallerReference': str(time.time())
+            }
+        )
     print(response)

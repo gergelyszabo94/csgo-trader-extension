@@ -19552,6 +19552,11 @@ const currencies = {
         long: "Pound sterling",
         sign: "£"
     },
+    KEY:{
+        short: "KEY",
+        long: "Case Key",
+        sign: "K"
+    },
     CNY:{
         short: "CNY",
         long: "Renminbi",
