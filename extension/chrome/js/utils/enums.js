@@ -19707,4 +19707,24 @@ const currencies = {
         long: "Polish złoty",
         sign: "zł"
     },
+    BTC:{
+        short: "BTC",
+        long: "Bitcoin",
+        sign: "₿"
+    },
+    MBC:{
+        short: "MBC",
+        long: "μBTC (you-bit or 0.000001 of a Bitcoin)",
+        sign: "μ₿"
+    },
+    ETH:{
+        short: "ETH",
+        long: "Ethereum",
+        sign: "Ξ"
+    },
+    FET:{
+        short: "FET",
+        long: "Finney (0.001 of an Ether)",
+        sign: "fΞ"
+    },
 };

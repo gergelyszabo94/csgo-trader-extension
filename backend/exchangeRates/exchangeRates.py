@@ -36,6 +36,39 @@ def lambda_handler(event, context):
         }
     rates["KEY"] = 0.4  # 1/2.5
 
+    print("Requesting cryptocurrency exchange rates from coincap.io")
+    try:
+        response = requests.get("https://api.coincap.io/v2/assets?ids=bitcoin,ethereum")
+    except Exception as e:
+        print(e)
+        error = "Error during request"
+        alert_via_sns(f'{error}: {e}')
+        return {
+            'statusCode': 500,
+            'body': error
+        }
+    print("Response from coincap.io")
+    try:
+        cryptos = response.json()['data']
+    except Exception as e:
+        print(e)
+        error = "Error parsing crypto rates from the request response"
+        alert_via_sns(f'{error}: {e}')
+        return {
+            'statusCode': 500,
+            'body': error
+        }
+    for crypto in cryptos:
+        symbol = crypto.get('symbol')
+        exchange_rate = crypto.get('priceUsd')
+        rates[symbol] = '{:.20f}'.format(1/float(exchange_rate))
+
+    btc_price = float(rates.get('BTC'))
+    micro_btc_price = btc_price*1000000
+    rates["MBC"] = micro_btc_price
+    eth_price = float(rates.get('ETH'))
+    finney_eth = eth_price*1000
+    rates["FET"] = finney_eth
     push_to_s3(rates)
     cloudfront_invalidate()
     return {
@@ -85,9 +118,9 @@ def alert_via_sns(error):
 
 
 def cloudfront_invalidate():
-    print("Invalidating the latest prices and exchange rates")
     cloudfront = boto3.client('cloudfront')
     if stage == "prod":
+        print("Invalidating the latest prices and exchange rates")
         response = cloudfront.create_invalidation(
             DistributionId=cloudfront_dist_id,
             InvalidationBatch={
@@ -101,6 +134,7 @@ def cloudfront_invalidate():
             }
         )
     else:
+        print("Invalidating the test prices and exchange rates")
         response = cloudfront.create_invalidation(
             DistributionId=cloudfront_dist_id,
             InvalidationBatch={
