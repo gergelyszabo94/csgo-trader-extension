@@ -699,16 +699,17 @@ def lambda_handler(event, context):
     month_to_week = 0
     count = 0
     for item in extract:
-        if "csgobackpack" in extract[item] and "24_hours" in extract[item]["csgobackpack"] and "7_days" in extract[item]["csgobackpack"] and "30_days" in extract[item]["csgobackpack"]:
+        if "csgobackpack" in extract[item] and "24_hours" in extract[item]["csgobackpack"] and "7_days" in \
+                extract[item]["csgobackpack"] and "30_days" in extract[item]["csgobackpack"]:
             daily = float(extract[item]["csgobackpack"]["24_hours"]["average"])
             weekly = float(extract[item]["csgobackpack"]["7_days"]["average"])
             monthly = float(extract[item]["csgobackpack"]["30_days"]["average"])
             if (daily != 0 and weekly != 0 and monthly != 0) and (daily != 0.03 and weekly != 0.03 and monthly != 0.03):
-                week_to_day += (daily/weekly)
-                month_to_week += (weekly/monthly)
+                week_to_day += (daily / weekly)
+                month_to_week += (weekly / monthly)
                 count += 1
-    week_to_day = week_to_day/count
-    month_to_week = month_to_week/count
+    week_to_day = week_to_day / count
+    month_to_week = month_to_week / count
     print("Market trends: WtD: " + str(week_to_day) + " MtW: " + str(month_to_week))
 
     print("Getting price difference ratio between csgopbackback:bitskins and csgobackpack:csmoney")
@@ -717,16 +718,18 @@ def lambda_handler(event, context):
     count = 0
 
     for item in extract:
-        if "csgobackpack" in extract[item] and "7_days" in extract[item]["csgobackpack"] and "bitskins" in extract[item] and "price" in extract[item]["bitskins"] and "csmoney" in extract[item] and "price" in extract[item]["csmoney"]:
+        if "csgobackpack" in extract[item] and "7_days" in extract[item]["csgobackpack"] and "bitskins" in extract[
+            item] and "price" in extract[item]["bitskins"] and "csmoney" in extract[item] and "price" in extract[item][
+            "csmoney"]:
             csb_weekly = float(extract[item]["csgobackpack"]["7_days"]["average"])
             bit = float(extract[item]["bitskins"]["price"])
             csm = float(extract[item]["csmoney"]["price"])
             if (csb_weekly != 0 and bit != 0 and csm != 0) and (csb_weekly != 0.03 and bit != 0.03 and csm != 0.03):
-                csb_bit += (csb_weekly/bit)
-                csb_csm += (csb_weekly/csm)
+                csb_bit += (csb_weekly / bit)
+                csb_csm += (csb_weekly / csm)
                 count += 1
-    csb_bit = csb_bit/count
-    csb_csm = csb_csm/count
+    csb_bit = csb_bit / count
+    csb_csm = csb_csm / count
     print("Backpack:Bitskins: " + str(csb_bit) + " Backpack:Csmoney:  " + str(csb_csm))
 
     for item in extract:
@@ -734,11 +737,13 @@ def lambda_handler(event, context):
         if csgobackpack_aggregate != "null":
             extract[item]["csgotrader"] = float("{0:.2f}".format(csgobackpack_aggregate))
         elif extract[item]["csmoney"]["price"] != "null" and extract[item]["csmoney"]["price"] != 0:
-            extract[item]["csgotrader"] = float("{0:.2f}".format(float(extract[item]["csmoney"]["price"])*csb_csm*week_to_day))
+            extract[item]["csgotrader"] = float(
+                "{0:.2f}".format(float(extract[item]["csmoney"]["price"]) * csb_csm * week_to_day))  # case F
         elif "price" in extract[item]["bitskins"] and extract[item]["bitskins"]["price"] != "null":
-            extract[item]["csgotrader"] = float("{0:.2f}".format(float(extract[item]["bitskins"]["price"])*csb_bit*week_to_day))
+            extract[item]["csgotrader"] = float(
+                "{0:.2f}".format(float(extract[item]["bitskins"]["price"]) * csb_bit * week_to_day))  # case G
         else:
-            extract[item]["csgotrader"] = "null"
+            extract[item]["csgotrader"] = "null"  # case H
 
     push_to_s3(extract, "true")
     return {
@@ -782,7 +787,7 @@ def alert_via_sns(error):
     sns = boto3.client('sns')
 
     response = sns.publish(
-        TopicArn = sns_topic,
+        TopicArn=sns_topic,
         Message=f'The script could not finish scrapping all prices, error: {error}',
     )
 
@@ -791,12 +796,27 @@ def alert_via_sns(error):
 
 def get_csgobackpack_price(item, extract, daily_trend, weekly_trend):
     if "csgobackpack" in extract[item]:
-        if "24_hours" in extract[item]["csgobackpack"] and "sold" in extract[item]["csgobackpack"]["24_hours"] and extract[item]["csgobackpack"]["24_hours"]["sold"] != "" and float(extract[item]["csgobackpack"]["24_hours"]["sold"]) >= 5.0:
-            return extract[item]["csgobackpack"]["24_hours"]["average"]
+        if "24_hours" in extract[item]["csgobackpack"] and "sold" in extract[item]["csgobackpack"]["24_hours"] and \
+                extract[item]["csgobackpack"]["24_hours"]["sold"] != "" and float(
+                extract[item]["csgobackpack"]["24_hours"]["sold"]) >= 5.0:
+            if abs(1 - float(extract[item]["csgobackpack"]["24_hours"]["average"]) / float(
+                    extract[item]["csgobackpack"]["7_days"]["average"])) <= 0.15:
+                return extract[item]["csgobackpack"]["24_hours"]["average"]  # case A
+            elif abs(1 - float(extract[item]["csgobackpack"]["24_hours"]["median"]) / float(
+                    extract[item]["csgobackpack"]["7_days"]["average"])) <= 0.15:
+                return extract[item]["csgobackpack"]["24_hours"]["median"]  # case B
+            else:
+                return float(extract[item]["csgobackpack"]["7_days"]["average"]) * daily_trend  # case C
         elif "7_days" in extract[item]["csgobackpack"]:
-            return float(extract[item]["csgobackpack"]["7_days"]["average"])*daily_trend
+            if float(extract[item]["csgobackpack"]["30_days"]["average"]) != 0.0 and abs(
+                    1 - float(extract[item]["csgobackpack"]["7_days"]["average"]) / float(
+                            extract[item]["csgobackpack"]["30_days"]["average"])) <= 0.15 and float(
+                    extract[item]["csgobackpack"]["7_days"]["sold"]) >= 5.0:
+                return float(extract[item]["csgobackpack"]["7_days"]["average"]) * daily_trend  # case D
+            else:
+                return float(extract[item]["csgobackpack"]["30_days"]["average"]) * weekly_trend * daily_trend  # case E
         elif "30_days" in extract[item]["csgobackpack"]:
-            return float(extract[item]["csgobackpack"]["30_days"]["average"])*weekly_trend*daily_trend
+            return float(extract[item]["csgobackpack"]["30_days"]["average"]) * weekly_trend * daily_trend  # case E
         else:
             return "null"
     else:
