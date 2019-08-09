@@ -514,6 +514,21 @@ def lambda_handler(event, context):
                             'doppler': {}
                         }
                     }
+            elif name == "★ StatTrak™ Stiletto Knife | Doppler Phase 1 (Minimal Wear)" or name == "★ StatTrak™ Stiletto Knife | Doppler Phase 2 (Minimal Wear)" or name == "★ StatTrak™ Stiletto Knife | Doppler Phase 3 (Minimal Wear)" or name == "★ StatTrak™ Stiletto Knife | Doppler Phase 4 (Minimal Wear)" or name == "★ StatTrak™ Stiletto Knife | Doppler Ruby (Minimal Wear)" or name == "★ StatTrak™ Stiletto Knife | Doppler Sapphire (Minimal Wear)" or name == "★ StatTrak™ Stiletto Knife | Doppler Black Pearl (Minimal Wear)":
+                try:
+                    extract["★ StatTrak™ Stiletto Knife | Doppler (Minimal Wear)"] = extract[
+                        "★ StatTrak™ Stiletto Knife | Doppler (Minimal Wear)"]
+                except:
+                    extract["★ StatTrak™ Stiletto Knife | Doppler (Minimal Wear)"] = {
+                        "csgobackpack": "null",
+                        "bitskins": "null",
+                        "lootfarm": "null",
+                        "csgotm": "null",
+                        "csmoney": {
+                            'price': "null",
+                            'doppler': {}
+                        }
+                    }
             elif name == "Music Kit | Damjan Mravunac, The Talos Principal" or name == "Music Kit | Damjan Mravunac The Talos Principle":
                 name = "Music Kit | Damjan Mravunac, The Talos Principle"
             elif name == "Sticker | Coutdown (Holo)":
