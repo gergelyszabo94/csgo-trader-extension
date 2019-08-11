@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-48407333-4"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-48407333-4');
+    </script>
+
+
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta name="author" content="Gergely Szabo">
+    <meta name="theme-color" content="#ee7600">
+
+    <meta property="og:title" content="CSGO Trader - Prices" />
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://csgotrader.app/prices" />
+    <meta property="og:image" content="https://csgotrader.app/img/features/cstdopplers.jpg" />
+
+    <meta property="og:description" content="CSGO Trader - Describes how the extension calculates prices and where they are available" />
+    <meta property="og:determiner" content="" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:site_name" content="CSGOTrader" />
+
+
+    <title>CSGO Trader - Steam Trading Enhancer</title>
+    <link rel="stylesheet" href="/css/thirdparty/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/CSTExtensionPages.css">
+</head>
+<body>
+<script type="text/javascript" src="/js/thirdparty/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="/js/thirdparty/bootstrap.bundle.min.js"></script>
+<div class="col-lg-10 col-md-10 mx-auto">
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand orange" href="/"><img class="navlogo" src="/img/cstlogo48.png">CSGO Trader - Steam Trading Enhancer Extension</a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link orange" href="/changelog">Changelog</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/prices">Prices</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+<h1 style="text-align: center">Prices</h1>
+<div class="col-lg-10 col-md-10 mx-auto">
+    <div class="buildingBlock">
+        <h2>How prices are calculated</h2>
+        CSGOTrader mostly relies on Steam Community Market historical sales data to calculate it's prices.
+        It uses data gathered by <a href="https://csgobackpack.net/" target="_blank">CS:GO BACKPACK</a> (thank you!).
+        If there is no market data it uses other providers, the whole algorithm is described in plain english below.
+        If you prefer to read the Python code itself you can scroll through this.
+        For popular items with stable market sales it's pretty simple.
+        <br>
+        <ul>
+            <li>
+                <span class="orange">A,</span> If there is more than 5 sold in the past 24 hours and the average price does not differ more than 15% from the past week's average this is what the extension takes as the price of the item.
+                This is the case for most popular items.
+            </li>
+            <li>
+                <span class="orange">B,</span> If the difference from the last week's average is over 15%, it checks if the median of the past 24 hours of sales differs less than 15% compared to the last week's average.
+                If that is the case that median is taken as the price of the item. It usually happens when there are outlying sales the skew the average.
+            </li>
+            <li>
+                <span class="orange">C,</span> If that is not the case the extension takes the last week's average and adjusts it with the general market trend of the last week.
+            </li>
+        </ul>
+        If the item is not that popular (in this case defined as sold less than 5 times in the past 24 hours) then the next best thing that can be checked is the average of the last week.
+        <br>
+        <ul>
+            <li>
+                <span class="orange">D,</span> If there were more than 5 sales during the last week and the difference between that and the last month's average is less than 15%
+                this average is taken and used as the price after it gets adjusted by general market trends.
+            </li>
+            <li>
+                <span class="orange">E,</span> When there is less than 5 sold in the past week or there is no weekly data at all the monthly average is taken after adjusted with market trends.
+            </li>
+        </ul>
+        If there is no monthly market sales data the algorithm proceeds to other providers
+        <br>
+        <ul>
+            <li>
+                <span class="orange">F,</span> If there is no monthly market data it takes CS.MONEY's price and adjusts with the average difference between CS.MONEY and market prices.
+            </li>
+            <li>
+                <span class="orange">G,</span> If there is no CS.MONEY price it tries takes the Bitskins price and adjusts with the average difference between Bitskins and market prices.
+            </li>
+            <li>
+                <span class="orange">H,</span> If all of the above doesn't happen then the extension does not set any price to the item.
+            </li>
+        </ul>
+    </div>
+    <div class="buildingBlock">
+        <h2>Architecture - How the prices are scrapped, processed, stored and served</h2>
+        <p>
+            It all happens on AWS. There is a python script that is responsible for price scraping and another one that updates exchange rates.
+            The <a href="https://github.com/bladegery/csgo-trader-extension/blob/master/backend/priceScraper/priceScraper.py" target="_blank">price scrapper script</a> runs daily at 3AM UTC.
+            The <a href="https://github.com/bladegery/csgo-trader-extension/blob/master/backend/exchangeRates/exchangeRates.py" target="_blank">exchange rates</a> update every 3 hours.
+            Both of these Lambda functions are triggered by CloudWatch events and are executed in a Python 3.7 environment.
+            The pricing script scrapes prices from CSGOBACKPACK.NET, CS.MONEY, BITSKINS.COM, LOOT.FARM and CSGO.TM then the extension calculates it's own pricing with the algorithm described above.
+            The pricing data is stored in an S3 Bucket and made available and distributed around the world under the prices.csgotrader.app domain by Cloudfront.
+        </p>
+        <p>
+            The latest prices are always available at: <br>
+            <a href="https://prices.csgotrader.app/latest/prices.json" target="_blank">prices.csgotrader.app/latest/prices.json</a> <br>
+            and each days pricing is archived in a path like:<br>
+            prices.csgotrader.app/YYYY/MM/DD/prices.json. <br>
+            For example: <a href="https://prices.csgotrader.app/2019/08/11/prices.json" target="_blank">prices.csgotrader.app/2019/08/11/prices.json</a>.
+        </p>
+    </div>
+</div>
+</body>
+</html>
