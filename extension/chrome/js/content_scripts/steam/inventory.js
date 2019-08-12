@@ -220,8 +220,8 @@ function requestInventory(){
             items = response.inventory;
             addElements();
             addPerItemInfo();
-            addClickListener();
             getInventoryTotal(items);
+            addClickListener();
         }
         else{
             console.log("Wasn't able to get the inventory, it's most likely steam not working properly or you loading inventory pages at the same time");
@@ -794,6 +794,13 @@ function changeName(name, color, link){
     $itemName1.hide();
 }
 
+let listenSelectClicks = function (event){
+    if (event.target.parentElement.classList.contains('item') && event.target.parentElement.classList.contains('app730') && event.target.parentElement.classList.contains('context2')) {
+        event.target.parentElement.classList.toggle("selected");
+        updateSelectedValue();
+    }
+};
+
 function addClickListener(){
     $(".module").click(function () {
         $module = $(this);
@@ -831,6 +838,20 @@ function addClickListener(){
     $("#Lnk_SortItems").click(function () {
         addPerItemInfo(false);
     });
+
+    document.getElementById("selectButton").addEventListener("click", function (event) {
+        if(event.target.classList.contains("selectionActive")){
+            unselectAllItems();
+            updateSelectedValue();
+            event.target.classList.remove("selectionActive");
+            console.log(document.body.removeEventListener('click', listenSelectClicks, false));
+            document.body.removeEventListener('click', listenSelectClicks, false);
+        }
+        else{
+            document.body.addEventListener('click', listenSelectClicks, false);
+            event.target.classList.add("selectionActive");
+        }
+    });
 }
 
 function hideOtherExtensionPrices(){
@@ -862,11 +883,43 @@ function getInventoryTotal(items){
 
 function addFunctionBar(){
     if(document.getElementById("inventory_function_bar") === null){
-        document.querySelector(".filter_ctn.inventory_filters").insertAdjacentHTML('afterend', '<div id="inventory_function_bar"><div id="inventoryTotal"><span>Total Inventory Value: </span><span id="inventoryTotalValue"></span></div></div>')
+        chrome.storage.local.get('currency', function(result) {
+            let currency_sign = currencies[result.currency].sign;
+            let hand_pointer = chrome.runtime.getURL("images/hand-pointer-solid.svg");
+            document.querySelector(".filter_ctn.inventory_filters").insertAdjacentHTML('afterend', `
+                <div id="inventory_function_bar">
+                    <div id="values" class="functionBarRow">
+                        <span id="selectedTotal"><span>Selected Items Value: ${currency_sign}</span><span id="selectedTotalValue">0.00</span></span>
+                        <span id="inventoryTotal"><span>Total Inventory Value: </span><span id="inventoryTotalValue">0.00</span></span>
+                    </div>
+                    <div id="actions" class="functionBarRow">
+                        <img id ="selectButton" src="${hand_pointer}">
+                    </div>
+                </div>
+                `)
+        });
     }
     else{
         setTimeout(function () {
             getInventoryTotal(items);
         }, 1000);
     }
+}
+
+function updateSelectedValue(){
+    let selectedItems = document.querySelectorAll(".item.app730.context2.selected");
+    let selectedTotal = 0;
+    selectedItems.forEach(itemelement =>{
+        let assetID = itemelement.id.split("730_2_")[1];
+        let item = getItemByAssetID(assetID);
+        selectedTotal += parseFloat(item.price.price);
+    });
+    document.getElementById("selectedTotalValue").innerText = selectedTotal.toFixed(2);
+}
+
+function unselectAllItems() {
+    let items = document.querySelectorAll(".item.app730.context2");
+    items.forEach(item =>{
+        item.classList.remove("selected");
+    })
 }

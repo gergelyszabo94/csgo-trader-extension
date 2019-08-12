@@ -11,20 +11,20 @@
 }
 
 #inventory_function_bar {
-    display: flex;
-    flex-flow: row nowrap;
     margin: 0 15px 2px 15px;
-    padding: 10px;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-    height: 35px;
+    font-size: 1.5rem;
+}
+
+.functionBarRow{
+    height: 30px;
 }
 
 #inventoryTotal {
-    font-size: 1.5rem;
-    position: absolute;
-    right: 10px;
+    float: right;
+}
+
+#selectedTotal{
+    float: left;
 }
 
 /*bootstrap progress bar*/
@@ -250,6 +250,15 @@ progress {
 
 .activeInfo{
     border-color: white !important;
+}
+
+.selected{
+    border: 1px dashed white !important;
+}
+
+#selectButton{
+    width: 20px;
+    height: 20px;
 }
 
 .nametag{
