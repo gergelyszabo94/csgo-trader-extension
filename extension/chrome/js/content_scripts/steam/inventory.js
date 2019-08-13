@@ -884,6 +884,8 @@ function addFunctionBar(){
                         <span id="sort_price_asc">Cheap</span>
                         <span id="name_asc">Alphabetical</span>
                         <span id="name_desc">Revers alphabetical</span>
+                        <span id="tradability_desc">Tradable in a while</span>
+                        <span id="tradability_asc">Tradable soon</span>
                     </div>
                 </div>
                 `);
@@ -906,6 +908,8 @@ function addFunctionBar(){
             document.getElementById("sort_price_asc").addEventListener("click", function(){sortItems("price_asc")}, false);
             document.getElementById("name_asc").addEventListener("click", function(){sortItems("name_asc")}, false);
             document.getElementById("name_desc").addEventListener("click", function(){sortItems("name_desc")}, false);
+            document.getElementById("tradability_desc").addEventListener("click", function(){sortItems("tradability_desc")}, false);
+            document.getElementById("tradability_asc").addEventListener("click", function(){sortItems("tradability_asc")}, false);
         });
     }
     else{
@@ -967,13 +971,44 @@ function sortItems(method) {
             if (nameOfA < nameOfB) {return 1;}
             return 0;
         });
-        //items.reverse();
     }
     else if(method === "tradability_asc"){
-
+        items = Array.from(items).sort(function(a, b){
+            let tradabilityOfA = getItemByAssetID(a.id.split("730_2_")[1]).tradability;
+            let tradabilityOfB = getItemByAssetID(b.id.split("730_2_")[1]).tradability;
+            if(tradabilityOfA === "Tradable"){return -1}
+            else if(tradabilityOfA === "Not Tradable"){return 1}
+            else if(tradabilityOfB === "Tradable"){return 1}
+            else if(tradabilityOfB === "Not Tradable"){return -1}
+            else{
+                let tradabilityOfATime = new Date(tradabilityOfA);
+                tradabilityOfATime = tradabilityOfATime.getTime();
+                let tradabilityOfBTime = new Date(tradabilityOfB);
+                tradabilityOfBTime = tradabilityOfBTime.getTime();
+                if (tradabilityOfATime < tradabilityOfBTime) {return -1;}
+                if (tradabilityOfATime > tradabilityOfBTime) {return 1;}
+                return 0;
+            }
+        });
     }
     else if(method === "tradability_desc"){
-
+        items = Array.from(items).sort(function(a, b){
+            let tradabilityOfA = getItemByAssetID(a.id.split("730_2_")[1]).tradability;
+            let tradabilityOfB = getItemByAssetID(b.id.split("730_2_")[1]).tradability;
+            if(tradabilityOfA === "Tradable"){return 1}
+            else if(tradabilityOfA === "Not Tradable"){return -1}
+            else if(tradabilityOfB === "Tradable"){return -1}
+            else if(tradabilityOfB === "Not Tradable"){return 1}
+            else{
+                let tradabilityOfATime = new Date(tradabilityOfA);
+                tradabilityOfATime = tradabilityOfATime.getTime();
+                let tradabilityOfBTime = new Date(tradabilityOfB);
+                tradabilityOfBTime = tradabilityOfBTime.getTime();
+                if (tradabilityOfATime > tradabilityOfBTime) {return -1;}
+                if (tradabilityOfATime < tradabilityOfBTime) {return 1;}
+                return 0;
+            }
+        });
     }
 
     let itemHolders = document.getElementById("inventories").querySelectorAll(".itemHolder");
