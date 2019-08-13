@@ -794,13 +794,6 @@ function changeName(name, color, link){
     $itemName1.hide();
 }
 
-let listenSelectClicks = function (event){
-    if (event.target.parentElement.classList.contains('item') && event.target.parentElement.classList.contains('app730') && event.target.parentElement.classList.contains('context2')) {
-        event.target.parentElement.classList.toggle("selected");
-        updateSelectedValue();
-    }
-};
-
 function addClickListener(){
     $(".module").click(function () {
         $module = $(this);
@@ -838,20 +831,6 @@ function addClickListener(){
     $("#Lnk_SortItems").click(function () {
         addPerItemInfo(false);
     });
-
-    document.getElementById("selectButton").addEventListener("click", function (event) {
-        if(event.target.classList.contains("selectionActive")){
-            unselectAllItems();
-            updateSelectedValue();
-            event.target.classList.remove("selectionActive");
-            console.log(document.body.removeEventListener('click', listenSelectClicks, false));
-            document.body.removeEventListener('click', listenSelectClicks, false);
-        }
-        else{
-            document.body.addEventListener('click', listenSelectClicks, false);
-            event.target.classList.add("selectionActive");
-        }
-    });
 }
 
 function hideOtherExtensionPrices(){
@@ -881,6 +860,13 @@ function getInventoryTotal(items){
     });
 }
 
+let listenSelectClicks = function (event){
+    if (event.target.parentElement.classList.contains('item') && event.target.parentElement.classList.contains('app730') && event.target.parentElement.classList.contains('context2')) {
+        event.target.parentElement.classList.toggle("selected");
+        updateSelectedValue();
+    }
+};
+
 function addFunctionBar(){
     if(document.getElementById("inventory_function_bar") === null){
         chrome.storage.local.get('currency', function(result) {
@@ -894,9 +880,32 @@ function addFunctionBar(){
                     </div>
                     <div id="actions" class="functionBarRow">
                         <img id ="selectButton" src="${hand_pointer}">
+                        <span id="sort_price_desc">Expensive</span>
+                        <span id="sort_price_asc">Cheap</span>
+                        <span id="name_asc">Alphabetical</span>
+                        <span id="name_desc">Revers alphabetical</span>
                     </div>
                 </div>
-                `)
+                `);
+
+            document.getElementById("selectButton").addEventListener("click", function (event) {
+                if(event.target.classList.contains("selectionActive")){
+                    unselectAllItems();
+                    updateSelectedValue();
+                    event.target.classList.remove("selectionActive");
+                    console.log(document.body.removeEventListener('click', listenSelectClicks, false));
+                    document.body.removeEventListener('click', listenSelectClicks, false);
+                }
+                else{
+                    document.body.addEventListener('click', listenSelectClicks, false);
+                    event.target.classList.add("selectionActive");
+                }
+            });
+
+            document.getElementById("sort_price_desc").addEventListener("click", function(){sortItems("price_desc")}, false);
+            document.getElementById("sort_price_asc").addEventListener("click", function(){sortItems("price_asc")}, false);
+            document.getElementById("name_asc").addEventListener("click", function(){sortItems("name_asc")}, false);
+            document.getElementById("name_desc").addEventListener("click", function(){sortItems("name_desc")}, false);
         });
     }
     else{
@@ -922,4 +931,55 @@ function unselectAllItems() {
     items.forEach(item =>{
         item.classList.remove("selected");
     })
+}
+
+function sortItems(method) {
+    let items = document.querySelectorAll(".item.app730.context2");
+
+    if(method === "price_asc"){
+        items = Array.from(items).sort(function(a, b) {
+            let priceOfA = parseFloat(getItemByAssetID(a.id.split("730_2_")[1]).price.price);
+            let priceOfB = parseFloat(getItemByAssetID(b.id.split("730_2_")[1]).price.price);
+            return priceOfA - priceOfB;
+        });
+    }
+    else if(method === "price_desc"){
+        items = Array.from(items).sort(function(a, b) {
+            let priceOfA = parseFloat(getItemByAssetID(a.id.split("730_2_")[1]).price.price);
+            let priceOfB = parseFloat(getItemByAssetID(b.id.split("730_2_")[1]).price.price);
+            return priceOfB - priceOfA;
+        });
+    }
+    else if(method === "name_asc"){
+        items = Array.from(items).sort(function(a, b){
+            let nameOfA = getItemByAssetID(a.id.split("730_2_")[1]).market_hash_name.toLowerCase();
+            let nameOfB = getItemByAssetID(b.id.split("730_2_")[1]).market_hash_name.toLowerCase();
+            if (nameOfA < nameOfB) {return -1;}
+            if (nameOfA > nameOfB) {return 1;}
+            return 0;
+        });
+    }
+    else if(method === "name_desc"){
+        items = Array.from(items).sort(function(a, b){
+            let nameOfA = getItemByAssetID(a.id.split("730_2_")[1]).market_hash_name.toLowerCase();
+            let nameOfB = getItemByAssetID(b.id.split("730_2_")[1]).market_hash_name.toLowerCase();
+            if (nameOfA > nameOfB) {return -1;}
+            if (nameOfA < nameOfB) {return 1;}
+            return 0;
+        });
+        //items.reverse();
+    }
+    else if(method === "tradability_asc"){
+
+    }
+    else if(method === "tradability_desc"){
+
+    }
+
+    let itemHolders = document.getElementById("inventories").querySelectorAll(".itemHolder");
+
+    items.forEach(function (item, index) {
+        itemHolders[index].innerHTML = "";
+        itemHolders[index].appendChild(item);
+    });
 }
