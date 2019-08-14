@@ -935,7 +935,7 @@ function updateSelectedValue(){
     let selectedItems = document.querySelectorAll(".item.app730.context2.selected");
     let selectedTotal = 0;
     selectedItems.forEach(itemelement =>{
-        let assetID = itemelement.id.split("730_2_")[1];
+        let assetID = getAssetIDOfElement(itemelement);
         let item = getItemByAssetID(assetID);
         selectedTotal += parseFloat(item.price.price);
     });
@@ -954,22 +954,22 @@ function sortItems(method) {
 
     if(method === "price_asc"){
         items = Array.from(items).sort(function(a, b) {
-            let priceOfA = parseFloat(getItemByAssetID(a.id.split("730_2_")[1]).price.price);
-            let priceOfB = parseFloat(getItemByAssetID(b.id.split("730_2_")[1]).price.price);
+            let priceOfA = parseFloat(getItemByAssetID(getAssetIDOfElement(a)).price.price);
+            let priceOfB = parseFloat(getItemByAssetID(getAssetIDOfElement(b)).price.price);
             return priceOfA - priceOfB;
         });
     }
     else if(method === "price_desc"){
         items = Array.from(items).sort(function(a, b) {
-            let priceOfA = parseFloat(getItemByAssetID(a.id.split("730_2_")[1]).price.price);
-            let priceOfB = parseFloat(getItemByAssetID(b.id.split("730_2_")[1]).price.price);
+            let priceOfA = parseFloat(getItemByAssetID(getAssetIDOfElement(a)).price.price);
+            let priceOfB = parseFloat(getItemByAssetID(getAssetIDOfElement(b)).price.price);
             return priceOfB - priceOfA;
         });
     }
     else if(method === "name_asc"){
         items = Array.from(items).sort(function(a, b){
-            let nameOfA = getItemByAssetID(a.id.split("730_2_")[1]).market_hash_name.toLowerCase();
-            let nameOfB = getItemByAssetID(b.id.split("730_2_")[1]).market_hash_name.toLowerCase();
+            let nameOfA = getItemByAssetID(getAssetIDOfElement(a)).market_hash_name.toLowerCase();
+            let nameOfB = getItemByAssetID(getAssetIDOfElement(b)).market_hash_name.toLowerCase();
             if (nameOfA < nameOfB) {return -1;}
             if (nameOfA > nameOfB) {return 1;}
             return 0;
@@ -977,8 +977,8 @@ function sortItems(method) {
     }
     else if(method === "name_desc"){
         items = Array.from(items).sort(function(a, b){
-            let nameOfA = getItemByAssetID(a.id.split("730_2_")[1]).market_hash_name.toLowerCase();
-            let nameOfB = getItemByAssetID(b.id.split("730_2_")[1]).market_hash_name.toLowerCase();
+            let nameOfA = getItemByAssetID(getAssetIDOfElement(a)).market_hash_name.toLowerCase();
+            let nameOfB = getItemByAssetID(getAssetIDOfElement(b)).market_hash_name.toLowerCase();
             if (nameOfA > nameOfB) {return -1;}
             if (nameOfA < nameOfB) {return 1;}
             return 0;
@@ -986,8 +986,8 @@ function sortItems(method) {
     }
     else if(method === "tradability_asc"){
         items = Array.from(items).sort(function(a, b){
-            let tradabilityOfA = getItemByAssetID(a.id.split("730_2_")[1]).tradability;
-            let tradabilityOfB = getItemByAssetID(b.id.split("730_2_")[1]).tradability;
+            let tradabilityOfA = getItemByAssetID(getAssetIDOfElement(a)).tradability;
+            let tradabilityOfB = getItemByAssetID(getAssetIDOfElement(b)).tradability;
             if(tradabilityOfA === "Tradable"){return -1}
             else if(tradabilityOfA === "Not Tradable"){return 1}
             else if(tradabilityOfB === "Tradable"){return 1}
@@ -1005,8 +1005,8 @@ function sortItems(method) {
     }
     else if(method === "tradability_desc"){
         items = Array.from(items).sort(function(a, b){
-            let tradabilityOfA = getItemByAssetID(a.id.split("730_2_")[1]).tradability;
-            let tradabilityOfB = getItemByAssetID(b.id.split("730_2_")[1]).tradability;
+            let tradabilityOfA = getItemByAssetID(getAssetIDOfElement(a)).tradability;
+            let tradabilityOfB = getItemByAssetID(getAssetIDOfElement(b)).tradability;
             if(tradabilityOfA === "Tradable"){return 1}
             else if(tradabilityOfA === "Not Tradable"){return -1}
             else if(tradabilityOfB === "Tradable"){return -1}
@@ -1024,8 +1024,8 @@ function sortItems(method) {
     }
     else if(method === "default"){
         items = Array.from(items).sort(function(a, b){
-            let positionOfA = parseInt(getItemByAssetID(a.id.split("730_2_")[1]).position);
-            let positionOfB = parseInt(getItemByAssetID(b.id.split("730_2_")[1]).position);
+            let positionOfA = parseInt(getItemByAssetID(getAssetIDOfElement(a)).position);
+            let positionOfB = parseInt(getItemByAssetID(getAssetIDOfElement(b)).position);
 
             if (positionOfA > positionOfB) {return 1;}
             if (positionOfA < positionOfB) {return -1;}
@@ -1035,8 +1035,8 @@ function sortItems(method) {
     }
     else if(method === "reverse"){
         items = Array.from(items).sort(function(a, b){
-            let positionOfA = parseInt(getItemByAssetID(a.id.split("730_2_")[1]).position);
-            let positionOfB = parseInt(getItemByAssetID(b.id.split("730_2_")[1]).position);
+            let positionOfA = parseInt(getItemByAssetID(getAssetIDOfElement(a)).position);
+            let positionOfB = parseInt(getItemByAssetID(getAssetIDOfElement(b)).position);
 
             if (positionOfA > positionOfB) {return -1;}
             if (positionOfA < positionOfB) {return 1;}
@@ -1057,4 +1057,8 @@ function isSIHActiveInInventory(){
     let SIHSwitch = document.getElementById("switchPanel");
     let SIHSwitcherCheckbox = document.getElementById("switcher");
     return (SIHSwitch !== null && SIHSwitcherCheckbox !== null && SIHSwitcherCheckbox.checked)
+}
+
+function getAssetIDOfElement(element){
+    return element.id.split("730_2_")[1];
 }
