@@ -62,11 +62,11 @@
         <br>
         <ul>
             <li>
-                <span class="orange">A,</span> If there is more than 5 sold in the past 24 hours and the average price does not differ more than 15% from the past week's average this is what the extension takes as the price of the item.
+                <span class="orange">A,</span> If there is more than 5 sold in the past 24 hours and the average price does not differ more than 10% from the past week's average this is what the extension takes as the price of the item.
                 This is the case for most popular items.
             </li>
             <li>
-                <span class="orange">B,</span> If the difference from the last week's average is over 15%, it checks if the median of the past 24 hours of sales differs less than 15% compared to the last week's average.
+                <span class="orange">B,</span> If the difference from the last week's average is over 10%, it checks if the median of the past 24 hours of sales differs less than 10% compared to the last week's average.
                 If that is the case that median is taken as the price of the item. It usually happens when there are outlying sales the skew the average.
             </li>
             <li>
@@ -77,7 +77,7 @@
         <br>
         <ul>
             <li>
-                <span class="orange">D,</span> If there were more than 5 sales during the last week and the difference between that and the last month's average is less than 15%
+                <span class="orange">D,</span> If there were more than 5 sales during the last week and the difference between that and the last month's average is less than 10%
                 this average is taken and used as the price after it gets adjusted by general market trends.
             </li>
             <li>

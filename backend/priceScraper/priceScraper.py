@@ -800,17 +800,17 @@ def get_csgobackpack_price(item, extract, daily_trend, weekly_trend):
                 extract[item]["csgobackpack"]["24_hours"]["sold"] != "" and float(
                 extract[item]["csgobackpack"]["24_hours"]["sold"]) >= 5.0:
             if abs(1 - float(extract[item]["csgobackpack"]["24_hours"]["average"]) / float(
-                    extract[item]["csgobackpack"]["7_days"]["average"])) <= 0.15:
+                    extract[item]["csgobackpack"]["7_days"]["average"])) <= 0.1:
                 return extract[item]["csgobackpack"]["24_hours"]["average"]  # case A
             elif abs(1 - float(extract[item]["csgobackpack"]["24_hours"]["median"]) / float(
-                    extract[item]["csgobackpack"]["7_days"]["average"])) <= 0.15:
+                    extract[item]["csgobackpack"]["7_days"]["average"])) <= 0.1:
                 return extract[item]["csgobackpack"]["24_hours"]["median"]  # case B
             else:
                 return float(extract[item]["csgobackpack"]["7_days"]["average"]) * daily_trend  # case C
         elif "7_days" in extract[item]["csgobackpack"]:
             if float(extract[item]["csgobackpack"]["30_days"]["average"]) != 0.0 and abs(
                     1 - float(extract[item]["csgobackpack"]["7_days"]["average"]) / float(
-                            extract[item]["csgobackpack"]["30_days"]["average"])) <= 0.15 and float(
+                            extract[item]["csgobackpack"]["30_days"]["average"])) <= 0.1 and float(
                     extract[item]["csgobackpack"]["7_days"]["sold"]) >= 5.0:
                 return float(extract[item]["csgobackpack"]["7_days"]["average"]) * daily_trend  # case D
             else:
