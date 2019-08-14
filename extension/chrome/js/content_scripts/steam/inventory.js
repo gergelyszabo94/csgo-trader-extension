@@ -469,10 +469,12 @@ function addElements(){
 
 
             //removes sih "Get Float" button - does not really work since it's loaded after this script..
-            $(".float_block").remove();
-            setTimeout(function () {
-                $(".float_block").remove();
-            }, 1000);
+            if(isSIHActiveInInventory()){
+                document.querySelectorAll(".float_block").forEach(e => e.parentNode.removeChild(e));
+                setTimeout(function () {
+                    document.querySelectorAll(".float_block").forEach(e => e.parentNode.removeChild(e));
+                }, 1000);
+            }
 
             let inspectLink = item.inspectLink;
 
@@ -828,9 +830,11 @@ function addClickListener(){
     });
 
     //sih sort
-    $("#Lnk_SortItems").click(function () {
-        addPerItemInfo(false);
-    });
+    if(isSIHActiveInInventory()){
+        document.getElementById("Lnk_SortItems").addEventListener("click", function () {
+            addPerItemInfo(false);
+        })
+    }
 }
 
 function hideOtherExtensionPrices(){
@@ -1047,4 +1051,10 @@ function sortItems(method) {
         itemHolders[index].appendChild(item);
     });
     addPerItemInfo(false);
+}
+
+function isSIHActiveInInventory(){
+    let SIHSwitch = document.getElementById("switchPanel");
+    let SIHSwitcherCheckbox = document.getElementById("switcher");
+    return (SIHSwitch !== null && SIHSwitcherCheckbox !== null && SIHSwitcherCheckbox.checked)
 }
