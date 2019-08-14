@@ -118,11 +118,11 @@ select:active {
 }
 
 .orange{
-    color: darkorange;
+    color: darkorange !important;
 }
 
 .active{
-    color: var(--steam-souvenir-yellow);
+    color: var(--steam-souvenir-yellow) !important;
 }
 
 .tradability{

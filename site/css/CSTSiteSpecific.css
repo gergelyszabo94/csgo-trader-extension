@@ -1,0 +1,9 @@
+.showCaseImage{
+    width: 100%;
+}
+
+@media (min-width: 1280px){
+    .showCaseImage{
+        width: 1280px;
+    }
+}
