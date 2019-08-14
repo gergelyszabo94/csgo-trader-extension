@@ -874,18 +874,27 @@ function addFunctionBar(){
             let hand_pointer = chrome.runtime.getURL("images/hand-pointer-solid.svg");
             document.querySelector(".filter_ctn.inventory_filters").insertAdjacentHTML('afterend', `
                 <div id="inventory_function_bar">
-                    <div id="values" class="functionBarRow">
+                    <div id="functionBarValues" class="functionBarRow">
                         <span id="selectedTotal"><span>Selected Items Value: ${currency_sign}</span><span id="selectedTotalValue">0.00</span></span>
                         <span id="inventoryTotal"><span>Total Inventory Value: </span><span id="inventoryTotalValue">0.00</span></span>
                     </div>
-                    <div id="actions" class="functionBarRow">
-                        <img id ="selectButton" src="${hand_pointer}">
-                        <span id="sort_price_desc">Expensive</span>
-                        <span id="sort_price_asc">Cheap</span>
-                        <span id="name_asc">Alphabetical</span>
-                        <span id="name_desc">Revers alphabetical</span>
-                        <span id="tradability_desc">Tradable in a while</span>
-                        <span id="tradability_asc">Tradable soon</span>
+                    <div id="functionBarActions" class="functionBarRow">
+                        <span id="selectMenu">
+                            <img id ="selectButton" src="${hand_pointer}">
+                        </span>
+                        <div id="sortingMenu">
+                            <span>Sorting:</span>
+                            <select id="sortingMethod">
+                            <option value="default">Default (position last to first)</option>
+                            <option value="reverse">Reverse (position first to last)</option>
+                            <option value="price_desc">Price (expensive to cheap)</option>
+                            <option value="price_asc">Price (cheap to expensive)</option>
+                            <option value="name_asc">Alphabetical (a to z)</option>
+                            <option value="name_desc">Alphabetical (z to a)</option>
+                            <option value="tradability_desc">Tradability (untradable to tradable)</option>
+                            <option value="tradability_asc">Tradability (tradable to untradable)</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 `);
@@ -904,12 +913,11 @@ function addFunctionBar(){
                 }
             });
 
-            document.getElementById("sort_price_desc").addEventListener("click", function(){sortItems("price_desc")}, false);
-            document.getElementById("sort_price_asc").addEventListener("click", function(){sortItems("price_asc")}, false);
-            document.getElementById("name_asc").addEventListener("click", function(){sortItems("name_asc")}, false);
-            document.getElementById("name_desc").addEventListener("click", function(){sortItems("name_desc")}, false);
-            document.getElementById("tradability_desc").addEventListener("click", function(){sortItems("tradability_desc")}, false);
-            document.getElementById("tradability_asc").addEventListener("click", function(){sortItems("tradability_asc")}, false);
+            let sortingSelect = document.getElementById("sortingMethod");
+            sortingSelect.addEventListener("change", function () {
+                let selected = sortingSelect.options[sortingSelect.selectedIndex].value;
+                sortItems(selected);
+            });
         });
     }
     else{
@@ -1010,11 +1018,33 @@ function sortItems(method) {
             }
         });
     }
+    else if(method === "default"){
+        items = Array.from(items).sort(function(a, b){
+            let positionOfA = parseInt(getItemByAssetID(a.id.split("730_2_")[1]).position);
+            let positionOfB = parseInt(getItemByAssetID(b.id.split("730_2_")[1]).position);
 
+            if (positionOfA > positionOfB) {return 1;}
+            if (positionOfA < positionOfB) {return -1;}
+            return 0;
+
+        });
+    }
+    else if(method === "reverse"){
+        items = Array.from(items).sort(function(a, b){
+            let positionOfA = parseInt(getItemByAssetID(a.id.split("730_2_")[1]).position);
+            let positionOfB = parseInt(getItemByAssetID(b.id.split("730_2_")[1]).position);
+
+            if (positionOfA > positionOfB) {return -1;}
+            if (positionOfA < positionOfB) {return 1;}
+            return 0;
+
+        });
+    }
     let itemHolders = document.getElementById("inventories").querySelectorAll(".itemHolder");
 
     items.forEach(function (item, index) {
         itemHolders[index].innerHTML = "";
         itemHolders[index].appendChild(item);
     });
+    addPerItemInfo(false);
 }
