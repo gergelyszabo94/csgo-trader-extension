@@ -888,19 +888,21 @@ function addFunctionBar(){
                         <div id="sortingMenu">
                             <span>Sorting:</span>
                             <select id="sortingMethod">
-                            <option value="default">Default (position last to first)</option>
-                            <option value="reverse">Reverse (position first to last)</option>
-                            <option value="price_desc">Price (expensive to cheap)</option>
-                            <option value="price_asc">Price (cheap to expensive)</option>
-                            <option value="name_asc">Alphabetical (a to z)</option>
-                            <option value="name_desc">Alphabetical (z to a)</option>
-                            <option value="tradability_desc">Tradability (untradable to tradable)</option>
-                            <option value="tradability_asc">Tradability (tradable to untradable)</option>
                             </select>
                         </div>
                     </div>
                 </div>
                 `);
+
+        let sortingSelect = document.getElementById("sortingMethod");
+
+        let keys = Object.keys(sortingModes);
+        for (let key of keys){
+            let option = document.createElement("option");
+            option.value = sortingModes[key].key;
+            option.text = sortingModes[key].name;
+            sortingSelect.add(option);
+        }
 
         chrome.storage.local.get('currency', function(result) {
             let currency_sign = currencies[result.currency].sign;
@@ -923,7 +925,6 @@ function addFunctionBar(){
             }
         });
 
-        let sortingSelect = document.getElementById("sortingMethod");
         sortingSelect.addEventListener("change", function () {
             let selected = sortingSelect.options[sortingSelect.selectedIndex].value;
             sortItems(selected);
