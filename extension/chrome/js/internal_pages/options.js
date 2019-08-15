@@ -322,3 +322,23 @@ pricingModeSelect.addEventListener("click", function () {
             updatePrices();
         });
 });
+
+
+let inventorySortingSelect = document.getElementById("inventorySortingMethod");
+
+let inventorySortingModes = Object.keys(sortingModes);
+for (let modes of inventorySortingModes){
+    let option = document.createElement("option");
+    option.value = sortingModes[modes].key;
+    option.text = sortingModes[modes].name;
+    inventorySortingSelect.add(option);
+}
+
+chrome.storage.local.get('inventorySortingMode', function(result) {
+    document.querySelector('#inventorySortingMethod [value="' + result.inventorySortingMode + '"]').selected = true;
+});
+
+inventorySortingSelect.addEventListener("click", function () {
+    let inventorySortingMode = inventorySortingSelect.options[inventorySortingSelect.selectedIndex].value;
+    chrome.storage.local.set({inventorySortingMode: inventorySortingMode}, function() {});
+});

@@ -29,7 +29,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 currency: currencies.USD.short,
                 exchangeRate: 1.0,
                 exchangeRates: null,
-                hideOtherExtensionPrices: true
+                hideOtherExtensionPrices: true,
+                inventorySortingMode: sortingModes.default.key
             }, function() {
             });
         chrome.browserAction.setBadgeText({text: "1"});
@@ -42,7 +43,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
     }
     else if(details.reason === "update"){
         //setting defaults options for new options that haven't been set yet
-        chrome.storage.local.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'showReoccButton', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode', 'pricesLastRefreshed', 'prices', 'currency', 'exchangeRate', 'exchangeRates', 'hideOtherExtensionPrices'], function(result) {
+        chrome.storage.local.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'showReoccButton', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode', 'pricesLastRefreshed', 'prices', 'currency', 'exchangeRate', 'exchangeRates', 'hideOtherExtensionPrices', 'inventorySortingMode'], function(result) {
             if(result.quickDeclineOffer===undefined){
                 chrome.storage.local.set({quickDeclineOffer: true}, function() {});
             }
@@ -120,6 +121,9 @@ chrome.runtime.onInstalled.addListener(function(details) {
             }
             if(result.hideOtherExtensionPrices===undefined){
                 chrome.storage.local.set({hideOtherExtensionPrices: true}, function() {});
+            }
+            if(result.inventorySortingMode===undefined){
+                chrome.storage.local.set({inventorySortingMode: sortingModes.default.key}, function() {});
             }
         });
 

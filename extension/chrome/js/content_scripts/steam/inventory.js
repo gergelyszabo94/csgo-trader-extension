@@ -224,6 +224,7 @@ function requestInventory(){
             addClickListener();
             addFunctionBar();
             loadFullInventory();
+            doInitSorting();
         }
         else{
             console.log("Wasn't able to get the inventory, it's most likely steam not working properly or you loading inventory pages at the same time");
@@ -1077,3 +1078,11 @@ function loadFullInventory() {
     }
     isInventoryFullyLoaded = true;
 }
+
+function doInitSorting() {
+    chrome.storage.local.get('inventorySortingMode', function(result) {
+        sortItems(result.inventorySortingMode);
+        document.querySelector('#sortingMethod [value="' + result.inventorySortingMode + '"]').selected = true;
+    });
+}
+
