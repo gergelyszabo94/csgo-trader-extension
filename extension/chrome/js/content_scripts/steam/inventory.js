@@ -222,6 +222,8 @@ function requestInventory(){
             addPerItemInfo();
             getInventoryTotal(items);
             addClickListener();
+            addFunctionBar();
+            loadFullInventory();
         }
         else{
             console.log("Wasn't able to get the inventory, it's most likely steam not working properly or you loading inventory pages at the same time");
@@ -838,16 +840,15 @@ function addClickListener(){
 }
 
 function hideOtherExtensionPrices(){
-    if(!document.hidden){
+    if(!document.hidden && isSIHActiveInInventory()){
         //sih
         document.querySelectorAll(".price_flag").forEach((price)=>{
             price.remove();
         });
+        setTimeout(function () {
+            hideOtherExtensionPrices();
+        }, 2000);
     }
-
-    setTimeout(function () {
-        hideOtherExtensionPrices();
-    }, 2000);
 }
 
 function getInventoryTotal(items){
@@ -1061,4 +1062,13 @@ function isSIHActiveInInventory(){
 
 function getAssetIDOfElement(element){
     return element.id.split("730_2_")[1];
+}
+
+let isInventoryFullyLoaded = false;
+
+function loadFullInventory() {
+    if(!isSIHActiveInInventory()){
+        location.href = `javascript: g_ActiveInventory.LoadMoreAssets(2000);`;
+    }
+    isInventoryFullyLoaded = true;
 }
