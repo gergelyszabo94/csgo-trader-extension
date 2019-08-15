@@ -874,14 +874,12 @@ let listenSelectClicks = function (event){
 
 function addFunctionBar(){
     if(document.getElementById("inventory_function_bar") === null){
-        chrome.storage.local.get('currency', function(result) {
-            let currency_sign = currencies[result.currency].sign;
-            let hand_pointer = chrome.runtime.getURL("images/hand-pointer-solid.svg");
-            document.querySelector(".filter_ctn.inventory_filters").insertAdjacentHTML('afterend', `
+        let hand_pointer = chrome.runtime.getURL("images/hand-pointer-solid.svg");
+        document.querySelector(".filter_ctn.inventory_filters").insertAdjacentHTML('afterend', `
                 <div id="inventory_function_bar">
                     <div id="functionBarValues" class="functionBarRow">
-                        <span id="selectedTotal"><span>Selected Items Value: ${currency_sign}</span><span id="selectedTotalValue">0.00</span></span>
-                        <span id="inventoryTotal"><span>Total Inventory Value: </span><span id="inventoryTotalValue">0.00</span></span>
+                        <span id="selectedTotal"><span>Selected Items Value: <span class="currency_sign"></span></span><span id="selectedTotalValue">0.00</span></span>
+                        <span id="inventoryTotal"><span>Total Inventory Value: </span><span class="currency_sign"></span><span id="inventoryTotalValue">0.00</span></span>
                     </div>
                     <div id="functionBarActions" class="functionBarRow">
                         <span id="selectMenu">
@@ -904,25 +902,31 @@ function addFunctionBar(){
                 </div>
                 `);
 
-            document.getElementById("selectButton").addEventListener("click", function (event) {
-                if(event.target.classList.contains("selectionActive")){
-                    unselectAllItems();
-                    updateSelectedValue();
-                    event.target.classList.remove("selectionActive");
-                    console.log(document.body.removeEventListener('click', listenSelectClicks, false));
-                    document.body.removeEventListener('click', listenSelectClicks, false);
-                }
-                else{
-                    document.body.addEventListener('click', listenSelectClicks, false);
-                    event.target.classList.add("selectionActive");
-                }
-            });
+        chrome.storage.local.get('currency', function(result) {
+            let currency_sign = currencies[result.currency].sign;
+            document.querySelectorAll(".currency_sign").forEach(element =>{
+                element.inneText = currency_sign;
+            })
+        });
 
-            let sortingSelect = document.getElementById("sortingMethod");
-            sortingSelect.addEventListener("change", function () {
-                let selected = sortingSelect.options[sortingSelect.selectedIndex].value;
-                sortItems(selected);
-            });
+        document.getElementById("selectButton").addEventListener("click", function (event) {
+            if(event.target.classList.contains("selectionActive")){
+                unselectAllItems();
+                updateSelectedValue();
+                event.target.classList.remove("selectionActive");
+                console.log(document.body.removeEventListener('click', listenSelectClicks, false));
+                document.body.removeEventListener('click', listenSelectClicks, false);
+            }
+            else{
+                document.body.addEventListener('click', listenSelectClicks, false);
+                event.target.classList.add("selectionActive");
+            }
+        });
+
+        let sortingSelect = document.getElementById("sortingMethod");
+        sortingSelect.addEventListener("change", function () {
+            let selected = sortingSelect.options[sortingSelect.selectedIndex].value;
+            sortItems(selected);
         });
     }
     else{
