@@ -832,9 +832,9 @@ function addClickListener(){
         $("#floatTechnical0").toggle();
     });
 
-    //sih sort
-    if(isSIHActiveInInventory()){
-        document.getElementById("Lnk_SortItems").addEventListener("click", function () {
+    let sihSort = document.getElementById("Lnk_SortItems");
+    if(isSIHActiveInInventory() && sihSort !== null){
+        sihSort.addEventListener("click", function () {
             addPerItemInfo(false);
         })
     }
@@ -846,10 +846,10 @@ function hideOtherExtensionPrices(){
         document.querySelectorAll(".price_flag").forEach((price)=>{
             price.remove();
         });
-        setTimeout(function () {
-            hideOtherExtensionPrices();
-        }, 2000);
     }
+    setTimeout(function () {
+        hideOtherExtensionPrices();
+    }, 2000);
 }
 
 function getInventoryTotal(items){
