@@ -455,14 +455,19 @@ function sortItems(method) {
     });
 
     let items = activeInventory.querySelectorAll(".item.app730.context2");
-    let itemHolders = activeInventory.querySelectorAll(".itemHolder");
-    doTheSorting(items, method, itemHolders);
+    let offerPages = activeInventory.querySelectorAll(".inventory_page");
+    doTheSorting(items, method, offerPages, "offer");
+
     loadAllItemsProperly();
 }
 
 function loadAllItemsProperly(){
     if(!isSIHActive()){
-        location.href = `javascript: g_ActiveInventory.LayoutPages(); g_ActiveInventory.MakeActive();`;
+        location.href = `javascript: 
+        g_ActiveInventory.pageList.forEach(function (page, index) {
+            g_ActiveInventory.pageList[index].images_loaded = false;
+            g_ActiveInventory.LoadPageImages(page);
+        });`
     }
 }
 

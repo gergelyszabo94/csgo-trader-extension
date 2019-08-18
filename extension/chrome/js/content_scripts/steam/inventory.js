@@ -966,12 +966,10 @@ function unselectAllItems() {
 
 function sortItems(method) {
     let items = document.querySelectorAll(".item.app730.context2");
-    let itemHolders = document.getElementById("inventories").querySelectorAll(".itemHolder");
-    doTheSorting(items, method, itemHolders);
+    let inventoryPages = document.getElementById("inventories").querySelectorAll(".inventory_page");
+    doTheSorting(items, method, Array.from(inventoryPages), "inventory");
     addPerItemInfo(false);
 }
-
-let isInventoryFullyLoaded = false;
 
 function loadFullInventory() {
     if(!isSIHActive()){
@@ -989,7 +987,6 @@ function loadFullInventory() {
     else{
         doInitSorting();
     }
-    isInventoryFullyLoaded = true;
 }
 
 function doInitSorting() {

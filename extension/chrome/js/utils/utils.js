@@ -980,7 +980,7 @@ function getAssetIDOfElement(element){
     return element.id.split("730_2_")[1];
 }
 
-function doTheSorting(items, method, holders){
+function doTheSorting(items, method, pages, type){
     if(method === "price_asc"){
         items = Array.from(items).sort(function(a, b) {
             let priceOfA = parseFloat(getItemByAssetID(getAssetIDOfElement(a)).price.price);
@@ -1074,9 +1074,19 @@ function doTheSorting(items, method, holders){
         });
     }
 
-    items.forEach(function (item, index) {
-        holders[index].innerHTML = "";
-        holders[index].appendChild(item);
+    items.reverse();
+
+    let numberOfItemsPerPage = 0;
+    type === "offer" ? numberOfItemsPerPage = 16 : numberOfItemsPerPage = 25;
+
+    pages.forEach(function (page) {
+        page.innerHTML = "";
+        for( let i = 0; i <numberOfItemsPerPage ; i++){
+            let item = items.pop();
+            if(item !== undefined){
+                page.append(item.parentElement);
+            }
+        }
     });
 }
 
