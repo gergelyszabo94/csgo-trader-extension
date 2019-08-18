@@ -917,7 +917,6 @@ function addFunctionBar(){
                 unselectAllItems();
                 updateSelectedValue();
                 event.target.classList.remove("selectionActive");
-                console.log(document.body.removeEventListener('click', listenSelectClicks, false));
                 document.body.removeEventListener('click', listenSelectClicks, false);
             }
             else{
@@ -1074,7 +1073,12 @@ let isInventoryFullyLoaded = false;
 
 function loadFullInventory() {
     if(!isSIHActiveInInventory()){
-        location.href = `javascript: g_ActiveInventory.LoadMoreAssets(2000);`;
+        location.href = `javascript: g_ActiveInventory.LoadCompleteInventory().done(function () {
+            for (let i = 0; i < g_ActiveInventory.m_cPages; i++) {
+                g_ActiveInventory.m_rgPages[i].EnsurePageItemsCreated();
+                g_ActiveInventory.PreloadPageImages(i);
+            }
+        });`;
     }
     isInventoryFullyLoaded = true;
 }
