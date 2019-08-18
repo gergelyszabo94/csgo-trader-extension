@@ -228,9 +228,7 @@ function addItemInfo() {
                         return false;
                     }
                     else{
-                        let assetID = $item.attr('id').split("730_2_")[1]; //gets the assetid of the item from the html
-                        let item = getItemByAssetID(assetID); //matches it with the info from the page variables
-
+                        let item = getItemByAssetID(getAssetIDOfElement($item.get(0))); //matches it with the info from the page variables
 
                         addDopplerPhase($item, item.dopplerInfo);
                         if(result.colorfulItems){
@@ -411,8 +409,7 @@ function addInTradeTotals(whose){
     let itemsInTrade = document.getElementById(whose + "_slots").querySelectorAll(".item.app730.context2");
     let inTradeTotal = 0;
     itemsInTrade.forEach(function (inTradeItem) {
-        let assetID = inTradeItem.id.split("730_2_")[1]; //gets the assetid of the item from the html
-        let item = getItemByAssetID(assetID); //matches it with the info from the page variables
+        let item = getItemByAssetID(getAssetIDOfElement(inTradeItem)); //matches it with the info from the page variables
         if(item.price!==undefined){
             inTradeTotal += parseFloat(item.price.price);
         }
@@ -445,3 +442,63 @@ function periodicallyUpdateTotals(){
         }
     }, 1000);
 }
+
+function sortItems(method) {
+    let inventories = document.querySelectorAll(".inventory_ctn");
+    let activeInventory = undefined;
+
+    inventories.forEach(function (inventory) {
+        if(inventory.style.display !== "none"){
+            activeInventory = inventory;
+        }
+    });
+
+    let items = activeInventory.querySelectorAll(".item.app730.context2");
+    let itemHolders = activeInventory.querySelectorAll(".itemHolder");
+    doTheSorting(items, method, itemHolders);
+    loadAllItemsProperly();
+}
+
+function loadAllItemsProperly(){
+    if(!isSIHActive()){
+        location.href = `javascript: g_ActiveInventory.LayoutPages(); g_ActiveInventory.MakeActive();`;
+    }
+}
+
+function addFunctionBar(){
+    if(document.getElementById("responsivetrade_itemfilters") !== null) {
+        if (document.getElementById("offer_function_bar") === null) {
+            document.getElementById("responsivetrade_itemfilters").insertAdjacentHTML("beforebegin", `
+            <div id="offer_function_bar">
+                <div id="offer_sorting">
+                    <span>Sorting:</span>
+                    <select id="offer_sorting_mode"></select>
+                </div>
+            </div>
+            `);
+
+            let sortingSelect = document.getElementById("offer_sorting_mode");
+
+            let keys = Object.keys(sortingModes);
+            for (let key of keys) {
+                let option = document.createElement("option");
+                if (key !== "tradability_desc" && key !== "tradability_asc") {
+                    option.value = sortingModes[key].key;
+                    option.text = sortingModes[key].name;
+                    sortingSelect.add(option);
+                }
+            }
+            sortingSelect.addEventListener("change", function () {
+                let selected = sortingSelect.options[sortingSelect.selectedIndex].value;
+                sortItems(selected);
+            });
+        }
+    }
+    else{
+        setTimeout(function () {
+            addFunctionBar();
+        }, 500);
+    }
+}
+
+addFunctionBar();

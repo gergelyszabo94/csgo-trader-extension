@@ -975,3 +975,113 @@ function prettyPrintPrice(currency, price){
     let nf = new Intl.NumberFormat();
     return currencies[currency].sign + nf.format(price);
 }
+
+function getAssetIDOfElement(element){
+    return element.id.split("730_2_")[1];
+}
+
+function doTheSorting(items, method, holders){
+    if(method === "price_asc"){
+        items = Array.from(items).sort(function(a, b) {
+            let priceOfA = parseFloat(getItemByAssetID(getAssetIDOfElement(a)).price.price);
+            let priceOfB = parseFloat(getItemByAssetID(getAssetIDOfElement(b)).price.price);
+            return priceOfA - priceOfB;
+        });
+    }
+    else if(method === "price_desc"){
+        items = Array.from(items).sort(function(a, b) {
+            let priceOfA = parseFloat(getItemByAssetID(getAssetIDOfElement(a)).price.price);
+            let priceOfB = parseFloat(getItemByAssetID(getAssetIDOfElement(b)).price.price);
+            return priceOfB - priceOfA;
+        });
+    }
+    else if(method === "name_asc"){
+        items = Array.from(items).sort(function(a, b){
+            let nameOfA = getItemByAssetID(getAssetIDOfElement(a)).market_hash_name.toLowerCase();
+            let nameOfB = getItemByAssetID(getAssetIDOfElement(b)).market_hash_name.toLowerCase();
+            if (nameOfA < nameOfB) {return -1;}
+            if (nameOfA > nameOfB) {return 1;}
+            return 0;
+        });
+    }
+    else if(method === "name_desc"){
+        items = Array.from(items).sort(function(a, b){
+            let nameOfA = getItemByAssetID(getAssetIDOfElement(a)).market_hash_name.toLowerCase();
+            let nameOfB = getItemByAssetID(getAssetIDOfElement(b)).market_hash_name.toLowerCase();
+            if (nameOfA > nameOfB) {return -1;}
+            if (nameOfA < nameOfB) {return 1;}
+            return 0;
+        });
+    }
+    else if(method === "tradability_asc"){
+        items = Array.from(items).sort(function(a, b){
+            let tradabilityOfA = getItemByAssetID(getAssetIDOfElement(a)).tradability;
+            let tradabilityOfB = getItemByAssetID(getAssetIDOfElement(b)).tradability;
+            if(tradabilityOfA === "Tradable"){return -1}
+            else if(tradabilityOfA === "Not Tradable"){return 1}
+            else if(tradabilityOfB === "Tradable"){return 1}
+            else if(tradabilityOfB === "Not Tradable"){return -1}
+            else{
+                let tradabilityOfATime = new Date(tradabilityOfA);
+                tradabilityOfATime = tradabilityOfATime.getTime();
+                let tradabilityOfBTime = new Date(tradabilityOfB);
+                tradabilityOfBTime = tradabilityOfBTime.getTime();
+                if (tradabilityOfATime < tradabilityOfBTime) {return -1;}
+                if (tradabilityOfATime > tradabilityOfBTime) {return 1;}
+                return 0;
+            }
+        });
+    }
+    else if(method === "tradability_desc"){
+        items = Array.from(items).sort(function(a, b){
+            let tradabilityOfA = getItemByAssetID(getAssetIDOfElement(a)).tradability;
+            let tradabilityOfB = getItemByAssetID(getAssetIDOfElement(b)).tradability;
+            if(tradabilityOfA === "Tradable"){return 1}
+            else if(tradabilityOfA === "Not Tradable"){return -1}
+            else if(tradabilityOfB === "Tradable"){return -1}
+            else if(tradabilityOfB === "Not Tradable"){return 1}
+            else{
+                let tradabilityOfATime = new Date(tradabilityOfA);
+                tradabilityOfATime = tradabilityOfATime.getTime();
+                let tradabilityOfBTime = new Date(tradabilityOfB);
+                tradabilityOfBTime = tradabilityOfBTime.getTime();
+                if (tradabilityOfATime > tradabilityOfBTime) {return -1;}
+                if (tradabilityOfATime < tradabilityOfBTime) {return 1;}
+                return 0;
+            }
+        });
+    }
+    else if(method === "default"){
+        items = Array.from(items).sort(function(a, b){
+            let positionOfA = parseInt(getItemByAssetID(getAssetIDOfElement(a)).position);
+            let positionOfB = parseInt(getItemByAssetID(getAssetIDOfElement(b)).position);
+
+            if (positionOfA > positionOfB) {return 1;}
+            if (positionOfA < positionOfB) {return -1;}
+            return 0;
+
+        });
+    }
+    else if(method === "reverse"){
+        items = Array.from(items).sort(function(a, b){
+            let positionOfA = parseInt(getItemByAssetID(getAssetIDOfElement(a)).position);
+            let positionOfB = parseInt(getItemByAssetID(getAssetIDOfElement(b)).position);
+
+            if (positionOfA > positionOfB) {return -1;}
+            if (positionOfA < positionOfB) {return 1;}
+            return 0;
+
+        });
+    }
+
+    items.forEach(function (item, index) {
+        holders[index].innerHTML = "";
+        holders[index].appendChild(item);
+    });
+}
+
+function isSIHActive(){
+    let SIHSwitch = document.getElementById("switchPanel");
+    let SIHSwitcherCheckbox = document.getElementById("switcher");
+    return (SIHSwitch !== null && SIHSwitcherCheckbox !== null && SIHSwitcherCheckbox.checked)
+}

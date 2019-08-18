@@ -479,7 +479,7 @@ function addElements(){
 
 
             //removes sih "Get Float" button - does not really work since it's loaded after this script..
-            if(isSIHActiveInInventory()){
+            if(isSIHActive()){
                 document.querySelectorAll(".float_block").forEach(e => e.parentNode.removeChild(e));
                 setTimeout(function () {
                     document.querySelectorAll(".float_block").forEach(e => e.parentNode.removeChild(e));
@@ -842,7 +842,7 @@ function addClickListener(){
     });
 
     let sihSort = document.getElementById("Lnk_SortItems");
-    if(isSIHActiveInInventory() && sihSort !== null){
+    if(isSIHActive() && sihSort !== null){
         sihSort.addEventListener("click", function () {
             addPerItemInfo(false);
         })
@@ -850,7 +850,7 @@ function addClickListener(){
 }
 
 function hideOtherExtensionPrices(){
-    if(!document.hidden && isSIHActiveInInventory()){
+    if(!document.hidden && isSIHActive()){
         //sih
         document.querySelectorAll(".price_flag").forEach((price)=>{
             price.remove();
@@ -966,122 +966,15 @@ function unselectAllItems() {
 
 function sortItems(method) {
     let items = document.querySelectorAll(".item.app730.context2");
-
-    if(method === "price_asc"){
-        items = Array.from(items).sort(function(a, b) {
-            let priceOfA = parseFloat(getItemByAssetID(getAssetIDOfElement(a)).price.price);
-            let priceOfB = parseFloat(getItemByAssetID(getAssetIDOfElement(b)).price.price);
-            return priceOfA - priceOfB;
-        });
-    }
-    else if(method === "price_desc"){
-        items = Array.from(items).sort(function(a, b) {
-            let priceOfA = parseFloat(getItemByAssetID(getAssetIDOfElement(a)).price.price);
-            let priceOfB = parseFloat(getItemByAssetID(getAssetIDOfElement(b)).price.price);
-            return priceOfB - priceOfA;
-        });
-    }
-    else if(method === "name_asc"){
-        items = Array.from(items).sort(function(a, b){
-            let nameOfA = getItemByAssetID(getAssetIDOfElement(a)).market_hash_name.toLowerCase();
-            let nameOfB = getItemByAssetID(getAssetIDOfElement(b)).market_hash_name.toLowerCase();
-            if (nameOfA < nameOfB) {return -1;}
-            if (nameOfA > nameOfB) {return 1;}
-            return 0;
-        });
-    }
-    else if(method === "name_desc"){
-        items = Array.from(items).sort(function(a, b){
-            let nameOfA = getItemByAssetID(getAssetIDOfElement(a)).market_hash_name.toLowerCase();
-            let nameOfB = getItemByAssetID(getAssetIDOfElement(b)).market_hash_name.toLowerCase();
-            if (nameOfA > nameOfB) {return -1;}
-            if (nameOfA < nameOfB) {return 1;}
-            return 0;
-        });
-    }
-    else if(method === "tradability_asc"){
-        items = Array.from(items).sort(function(a, b){
-            let tradabilityOfA = getItemByAssetID(getAssetIDOfElement(a)).tradability;
-            let tradabilityOfB = getItemByAssetID(getAssetIDOfElement(b)).tradability;
-            if(tradabilityOfA === "Tradable"){return -1}
-            else if(tradabilityOfA === "Not Tradable"){return 1}
-            else if(tradabilityOfB === "Tradable"){return 1}
-            else if(tradabilityOfB === "Not Tradable"){return -1}
-            else{
-                let tradabilityOfATime = new Date(tradabilityOfA);
-                tradabilityOfATime = tradabilityOfATime.getTime();
-                let tradabilityOfBTime = new Date(tradabilityOfB);
-                tradabilityOfBTime = tradabilityOfBTime.getTime();
-                if (tradabilityOfATime < tradabilityOfBTime) {return -1;}
-                if (tradabilityOfATime > tradabilityOfBTime) {return 1;}
-                return 0;
-            }
-        });
-    }
-    else if(method === "tradability_desc"){
-        items = Array.from(items).sort(function(a, b){
-            let tradabilityOfA = getItemByAssetID(getAssetIDOfElement(a)).tradability;
-            let tradabilityOfB = getItemByAssetID(getAssetIDOfElement(b)).tradability;
-            if(tradabilityOfA === "Tradable"){return 1}
-            else if(tradabilityOfA === "Not Tradable"){return -1}
-            else if(tradabilityOfB === "Tradable"){return -1}
-            else if(tradabilityOfB === "Not Tradable"){return 1}
-            else{
-                let tradabilityOfATime = new Date(tradabilityOfA);
-                tradabilityOfATime = tradabilityOfATime.getTime();
-                let tradabilityOfBTime = new Date(tradabilityOfB);
-                tradabilityOfBTime = tradabilityOfBTime.getTime();
-                if (tradabilityOfATime > tradabilityOfBTime) {return -1;}
-                if (tradabilityOfATime < tradabilityOfBTime) {return 1;}
-                return 0;
-            }
-        });
-    }
-    else if(method === "default"){
-        items = Array.from(items).sort(function(a, b){
-            let positionOfA = parseInt(getItemByAssetID(getAssetIDOfElement(a)).position);
-            let positionOfB = parseInt(getItemByAssetID(getAssetIDOfElement(b)).position);
-
-            if (positionOfA > positionOfB) {return 1;}
-            if (positionOfA < positionOfB) {return -1;}
-            return 0;
-
-        });
-    }
-    else if(method === "reverse"){
-        items = Array.from(items).sort(function(a, b){
-            let positionOfA = parseInt(getItemByAssetID(getAssetIDOfElement(a)).position);
-            let positionOfB = parseInt(getItemByAssetID(getAssetIDOfElement(b)).position);
-
-            if (positionOfA > positionOfB) {return -1;}
-            if (positionOfA < positionOfB) {return 1;}
-            return 0;
-
-        });
-    }
     let itemHolders = document.getElementById("inventories").querySelectorAll(".itemHolder");
-
-    items.forEach(function (item, index) {
-        itemHolders[index].innerHTML = "";
-        itemHolders[index].appendChild(item);
-    });
+    doTheSorting(items, method, itemHolders);
     addPerItemInfo(false);
-}
-
-function isSIHActiveInInventory(){
-    let SIHSwitch = document.getElementById("switchPanel");
-    let SIHSwitcherCheckbox = document.getElementById("switcher");
-    return (SIHSwitch !== null && SIHSwitcherCheckbox !== null && SIHSwitcherCheckbox.checked)
-}
-
-function getAssetIDOfElement(element){
-    return element.id.split("730_2_")[1];
 }
 
 let isInventoryFullyLoaded = false;
 
 function loadFullInventory() {
-    if(!isSIHActiveInInventory()){
+    if(!isSIHActive()){
         location.href = `javascript: g_ActiveInventory.LoadCompleteInventory().done(function () {
             for (let i = 0; i < g_ActiveInventory.m_cPages; i++) {
                 g_ActiveInventory.m_rgPages[i].EnsurePageItemsCreated();
