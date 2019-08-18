@@ -130,6 +130,16 @@ hideotherprices.addEventListener("click", function () {
     chrome.storage.local.set({hideOtherExtensionPrices: hideotherprices.checked}, function() {});
 });
 
+let updatenotifications = document.getElementById("updateNotifications");
+
+chrome.storage.local.get('updateNotifications', function(result) {
+    updatenotifications.checked = result.updateNotifications;
+});
+
+updatenotifications.addEventListener("click", function () {
+    chrome.storage.local.set({updateNotifications: updatenotifications.checked}, function() {});
+});
+
 // checkboxes - toggles with logic
 
 let tabsAPI = document.getElementById("tabsAPI");

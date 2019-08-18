@@ -30,7 +30,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 exchangeRate: 1.0,
                 exchangeRates: null,
                 hideOtherExtensionPrices: true,
-                inventorySortingMode: sortingModes.default.key
+                inventorySortingMode: sortingModes.default.key,
+                notifyOnUpdate: false
             }, function() {
             });
         chrome.browserAction.setBadgeText({text: "1"});
@@ -43,7 +44,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
     }
     else if(details.reason === "update"){
         //setting defaults options for new options that haven't been set yet
-        chrome.storage.local.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'showReoccButton', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode', 'pricesLastRefreshed', 'prices', 'currency', 'exchangeRate', 'exchangeRates', 'hideOtherExtensionPrices', 'inventorySortingMode'], function(result) {
+        chrome.storage.local.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'showReoccButton', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode', 'pricesLastRefreshed', 'prices', 'currency', 'exchangeRate', 'exchangeRates', 'hideOtherExtensionPrices', 'inventorySortingMode', 'notifyOnUpdate'], function(result) {
             if(result.quickDeclineOffer===undefined){
                 chrome.storage.local.set({quickDeclineOffer: true}, function() {});
             }
@@ -125,24 +126,31 @@ chrome.runtime.onInstalled.addListener(function(details) {
             if(result.inventorySortingMode===undefined){
                 chrome.storage.local.set({inventorySortingMode: sortingModes.default.key}, function() {});
             }
+            if(result.notifyOnUpdate===undefined){
+                chrome.storage.local.set({notifyOnUpdate: false}, function() {});
+            }
         });
 
-        chrome.browserAction.setBadgeText({text: "1"});
+        chrome.browserAction.setBadgeText({text: "U"});
 
-        let thisVersion = chrome.runtime.getManifest().version;
-        chrome.permissions.contains({
-            permissions: ['tabs']
-        }, function(result) {
-            let message = 'Check the changelog for the hot new stuff!';
-            if (result) {
-                message = 'You can check the changelog by clicking here!';
+        chrome.storage.local.get('updateNotifications', function(result) {
+            if(result.updateNotifications){
+                let thisVersion = chrome.runtime.getManifest().version;
+                chrome.permissions.contains({
+                    permissions: ['tabs']
+                }, function(result) {
+                    let message = 'Check the changelog for the hot new stuff!';
+                    if (result) {
+                        message = 'You can check the changelog by clicking here!';
+                    }
+                    chrome.notifications.create("updated", {
+                        type: 'basic',
+                        iconUrl: '/images/cstlogo128.png',
+                        title: 'Extension updated to ' + thisVersion + "!",
+                        message: message
+                    }, function(notificationId) {});
+                });
             }
-            chrome.notifications.create("updated", {
-                type: 'basic',
-                iconUrl: '/images/cstlogo128.png',
-                title: 'Extension updated to ' + thisVersion + "!",
-                message: message
-            }, function(notificationId) {});
         });
     }
 
