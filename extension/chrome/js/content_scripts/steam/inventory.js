@@ -132,6 +132,14 @@ window.addEventListener('message', e => {
         inventoryPromise(e.data);
         inventoryPromise = undefined;
     }
+    else if (e.data.type === 'allItemsLoaded') {
+        if(e.data.allItemsLoaded){
+            doInitSorting();
+        }
+        else{
+            loadFullInventory();
+        }
+    }
 });
 
 //sends the message to the page side to get the info
@@ -224,7 +232,6 @@ function requestInventory(){
             addClickListener();
             addFunctionBar();
             loadFullInventory();
-            doInitSorting();
         }
         else{
             console.log("Wasn't able to get the inventory, it's most likely steam not working properly or you loading inventory pages at the same time");
@@ -1078,7 +1085,14 @@ function loadFullInventory() {
                 g_ActiveInventory.m_rgPages[i].EnsurePageItemsCreated();
                 g_ActiveInventory.PreloadPageImages(i);
             }
+            window.postMessage({
+                type: 'allItemsLoaded',
+                allItemsLoaded: true
+            }, '*');
         });`;
+    }
+    else{
+        doInitSorting();
     }
     isInventoryFullyLoaded = true;
 }
