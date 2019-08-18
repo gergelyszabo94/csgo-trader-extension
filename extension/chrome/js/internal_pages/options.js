@@ -383,3 +383,22 @@ inventorySortingSelect.addEventListener("click", function () {
     let inventorySortingMode = inventorySortingSelect.options[inventorySortingSelect.selectedIndex].value;
     chrome.storage.local.set({inventorySortingMode: inventorySortingMode}, function() {});
 });
+
+let offerSortingSelect = document.getElementById("offerSortingMode");
+
+let offerSortingModes = Object.keys(sortingModes);
+for (let modes of inventorySortingModes){
+    let option = document.createElement("option");
+    option.value = sortingModes[modes].key;
+    option.text = sortingModes[modes].name;
+    offerSortingSelect.add(option);
+}
+
+chrome.storage.local.get('offerSortingMode', function(result) {
+    document.querySelector('#offerSortingMode [value="' + result.offerSortingMode + '"]').selected = true;
+});
+
+offerSortingSelect.addEventListener("click", function () {
+    let offerSortingMode = offerSortingSelect.options[offerSortingSelect.selectedIndex].value;
+    chrome.storage.local.set({offerSortingMode: offerSortingMode}, function() {});
+});

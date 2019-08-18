@@ -151,6 +151,7 @@ function getInventories(){
                 addInTradeTotals("your");
                 addInTradeTotals("their");
                 periodicallyUpdateTotals();
+                doInitSorting();
             });
 
         });
@@ -499,6 +500,13 @@ function addFunctionBar(){
             addFunctionBar();
         }, 500);
     }
+}
+
+function doInitSorting() {
+    chrome.storage.local.get('offerSortingMode', function(result) {
+        sortItems(result.offerSortingMode);
+        document.querySelector('#offer_sorting_mode [value="' + result.offerSortingMode + '"]').selected = true;
+    });
 }
 
 addFunctionBar();

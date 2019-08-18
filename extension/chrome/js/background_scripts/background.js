@@ -31,7 +31,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 exchangeRates: null,
                 hideOtherExtensionPrices: true,
                 inventorySortingMode: sortingModes.default.key,
-                notifyOnUpdate: false
+                notifyOnUpdate: false,
+                offerSortingMode: sortingModes.default.key
             }, function() {
             });
         chrome.browserAction.setBadgeText({text: "1"});
@@ -44,7 +45,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
     }
     else if(details.reason === "update"){
         //setting defaults options for new options that haven't been set yet
-        chrome.storage.local.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'showReoccButton', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode', 'pricesLastRefreshed', 'prices', 'currency', 'exchangeRate', 'exchangeRates', 'hideOtherExtensionPrices', 'inventorySortingMode', 'notifyOnUpdate'], function(result) {
+        chrome.storage.local.get(['quickDeclineOffer','openOfferInTab', 'showPlusRepButton','reputationMessage', 'showReoccButton', 'reoccuringMessage', 'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems', 'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode', 'pricesLastRefreshed', 'prices', 'currency', 'exchangeRate', 'exchangeRates', 'hideOtherExtensionPrices', 'inventorySortingMode', 'notifyOnUpdate', 'offerSortingMode'], function(result) {
             if(result.quickDeclineOffer===undefined){
                 chrome.storage.local.set({quickDeclineOffer: true}, function() {});
             }
@@ -128,6 +129,9 @@ chrome.runtime.onInstalled.addListener(function(details) {
             }
             if(result.notifyOnUpdate===undefined){
                 chrome.storage.local.set({notifyOnUpdate: false}, function() {});
+            }
+            if(result.offerSortingMode===undefined){
+                chrome.storage.local.set({offerSortingMode: sortingModes.default.key}, function() {});
             }
         });
 
