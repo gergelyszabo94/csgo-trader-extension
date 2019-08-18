@@ -20,26 +20,6 @@ markscammers.addEventListener("click", function () {
     chrome.storage.local.set({markScammers: markscammers.checked}, function() {});
 });
 
-let tradersbump = document.getElementById("tradersBump");
-
-chrome.storage.local.get('tradersBump', function(result) {
-    tradersbump.checked = result.tradersBump;
-});
-
-tradersbump.addEventListener("click", function () {
-    chrome.storage.local.set({tradersBump: tradersbump.checked}, function() {});
-});
-
-let loungebump = document.getElementById("loungeBump");
-
-chrome.storage.local.get('loungeBump', function(result) {
-    loungebump.checked = result.loungeBump;
-});
-
-loungebump.addEventListener("click", function () {
-    chrome.storage.local.set({loungeBump: loungebump.checked}, function() {});
-});
-
 let colorfulitems = document.getElementById("colorfulItems");
 
 chrome.storage.local.get('colorfulItems', function(result) {
@@ -140,7 +120,7 @@ updatenotifications.addEventListener("click", function () {
     chrome.storage.local.set({updateNotifications: updatenotifications.checked}, function() {});
 });
 
-// checkboxes - toggles with logic
+// checkboxes - toggles with additional logic
 
 let tabsAPI = document.getElementById("tabsAPI");
 
@@ -158,6 +138,57 @@ tabsAPI.addEventListener("click", function () {
         chrome.permissions.remove({permissions: ['tabs']}, function(removed) {});
     }
 });
+
+let tradersbump = document.getElementById("tradersBump");
+
+chrome.storage.local.get('tradersBump', function(result) {
+    let optionOn = result.tradersBump;
+    chrome.permissions.contains({permissions: ['tabs'], origins: ['*://csgotraders.net/*']}, function(result) {
+        if(optionOn && result){
+            tradersbump.checked = result;
+        }
+    });
+});
+
+tradersbump.addEventListener("click", function () {
+    if(tradersbump.checked){
+        chrome.permissions.request({permissions: ['tabs'], origins: ['*://csgotraders.net/*']}, function(granted) {
+            tradersbump.checked = granted;
+            chrome.storage.local.set({tradersBump: granted}, function() {});
+        });
+    }
+    else{
+        chrome.storage.local.set({tradersBump: tradersbump.checked}, function() {});
+    }
+});
+
+let loungebump = document.getElementById("loungeBump");
+
+chrome.storage.local.get('loungeBump', function(result) {
+    let optionOn = result.loungeBump;
+    chrome.permissions.contains({permissions: ['tabs'], origins: ['*://csgolounge.com/*']}, function(result) {
+        if(optionOn && result){
+            loungeBump.checked = result;
+        }
+    });
+});
+
+loungebump.addEventListener("click", function () {
+    chrome.storage.local.set({loungeBump: loungebump.checked}, function() {});
+});
+
+loungebump.addEventListener("click", function () {
+    if(loungebump.checked){
+        chrome.permissions.request({permissions: ['tabs'], origins: ['*://csgolounge.com/*']}, function(granted) {
+            loungebump.checked = granted;
+            chrome.storage.local.set({loungebump: granted}, function() {});
+        });
+    }
+    else{
+        chrome.storage.local.set({loungebump: loungebump.checked}, function() {});
+    }
+});
+
 
 // textbox modals
 

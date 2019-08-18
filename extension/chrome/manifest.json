@@ -5,7 +5,7 @@
   "version": "1.16.1",
   "default_locale": "en",
   "description": "__MSG_application_description__",
-  "homepage_url": "https://github.com/bladegery/csgo-trader-extension",
+  "homepage_url": "https://csgotrader.app/",
   "permissions": [
     "activeTab",
     "storage",
@@ -16,10 +16,11 @@
     "*://api.csgotrader.app/*",
     "*://prices.csgotrader.app/*",
     "*://steamrep.com/api/*",
-    "*://api.csgofloat.com/*",
+    "*://api.csgofloat.com/*"],
+  "optional_permissions": [
+    "tabs",
     "*://csgolounge.com/*",
-    "*://csgotraders.net/*"],
-  "optional_permissions": [ "tabs"],
+    "*://csgotraders.net/*" ],
   "options_page": "html/options.html",
   "background": {
     "scripts": [

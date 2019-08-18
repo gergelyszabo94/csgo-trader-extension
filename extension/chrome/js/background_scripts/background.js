@@ -16,8 +16,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 apiKeyValid: false,
                 showRealStatus: true,
                 colorfulItems: true,
-                loungeBump: true,
-                tradersBump: true,
+                loungeBump: false,
+                tradersBump: false,
                 markScammers: true,
                 numberOfListings: 10,
                 storageMigrated: true,
@@ -85,10 +85,10 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 chrome.storage.local.set({colorfulItems: true}, function() {});
             }
             if(result.loungeBump===undefined){
-                chrome.storage.local.set({loungeBump: true}, function() {});
+                chrome.storage.local.set({loungeBump: false}, function() {});
             }
             if(result.tradersBump===undefined){
-                chrome.storage.local.set({tradersBump: true}, function() {});
+                chrome.storage.local.set({tradersBump: false}, function() {});
             }
             if(result.markScammers===undefined){
                 chrome.storage.local.set({markScammers: true}, function() {});
