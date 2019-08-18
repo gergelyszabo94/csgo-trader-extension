@@ -999,3 +999,7 @@ function doInitSorting() {
     });
 }
 
+//reloads the page on extension update/reload/uninstall
+chrome.runtime.connect().onDisconnect.addListener(function() {
+    location.reload();
+});

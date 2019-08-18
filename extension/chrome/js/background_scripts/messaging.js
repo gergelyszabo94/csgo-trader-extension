@@ -319,3 +319,5 @@ chrome.runtime.onMessage.addListener(
             return true; //async return to signal that it will return later
         }
     });
+
+chrome.runtime.onConnect.addListener(port => {});

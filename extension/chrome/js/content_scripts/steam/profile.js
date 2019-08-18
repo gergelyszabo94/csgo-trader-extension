@@ -106,3 +106,8 @@ if($("body").hasClass("profile_page")){
         }
     });
 }
+
+//reloads the page on extension update/reload/uninstall
+chrome.runtime.connect().onDisconnect.addListener(function() {
+    location.reload();
+});
