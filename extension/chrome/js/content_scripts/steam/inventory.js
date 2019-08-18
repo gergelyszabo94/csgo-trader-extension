@@ -437,8 +437,10 @@ function addElements(){
                 $("#stickers0").hide();
             }
             //adds duplicates count
-            $("#duplicates1").text("x"+item.duplicates.num);
-            $("#duplicates0").text("x"+item.duplicates.num);
+            document.querySelectorAll(".duplicate").forEach (duplicate => {
+                duplicate.style.display = "block";
+                duplicate.innerText = "x"+item.duplicates.num;
+            });
 
             if(item.tradability==="Tradable"){
                 $tradability1.html(tradable);
@@ -694,20 +696,12 @@ function addElements(){
 
 
 function removeElements() {
-    $("#iteminfo1_countdown").hide();
-    $("#iteminfo0_countdown").hide();
-    $("#otherExteriors1").hide();
-    $("#otherExteriors0").hide();
-    $("#iteminfo1_tradability").hide();
-    $("#iteminfo0_tradability").hide();
-    $("#floatBar1").hide();
-    $("#floatBar0").hide();
-    $("#iteminfo0_bookmark").hide();
-    $("#iteminfo1_bookmark").hide();
-    $("#item_name0").hide();
-    $("#item_name1").hide();
-    document.getElementById("duplicates1").style.display = "none";
-    document.getElementById("duplicates0").style.display = "none";
+    let itemsWiththeseSelectorsToRemove = [".otherExteriors", "a.hover_item_name", ".duplicate", ".customStickers", ".countdown", ".bookmark", ".floatBar", ".descriptor.tradability", ".nametag"];
+    itemsWiththeseSelectorsToRemove.forEach((selector) =>{
+        document.querySelectorAll(selector).forEach((element) =>{
+            element.style.display = "none";
+        })
+    });
     $("#iteminfo0_item_name").show();
     $("#iteminfo1_item_name").show();
     //removeNote();
