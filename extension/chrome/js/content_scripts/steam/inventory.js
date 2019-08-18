@@ -706,6 +706,8 @@ function removeElements() {
     $("#iteminfo1_bookmark").hide();
     $("#item_name0").hide();
     $("#item_name1").hide();
+    document.getElementById("duplicates1").style.display = "none";
+    document.getElementById("duplicates0").style.display = "none";
     $("#iteminfo0_item_name").show();
     $("#iteminfo1_item_name").show();
     //removeNote();
