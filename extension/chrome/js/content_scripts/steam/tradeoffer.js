@@ -512,7 +512,8 @@ function addFunctionBar(){
 }
 
 function doInitSorting() {
-    chrome.storage.local.get('offerSortingMode', function(result) {
+    chrome.storage.local.get(['offerSortingMode', 'switchToOtherInventory'], (result) => {
+        if(result.switchToOtherInventory) document.getElementById("inventory_select_their_inventory").click();
         sortItems(result.offerSortingMode);
         document.querySelector('#offer_sorting_mode [value="' + result.offerSortingMode + '"]').selected = true;
     });

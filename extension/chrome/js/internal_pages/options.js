@@ -120,6 +120,16 @@ updatenotifications.addEventListener("click", function () {
     chrome.storage.local.set({updateNotifications: updatenotifications.checked}, function() {});
 });
 
+let switchToOtherInventory = document.getElementById("switchToOtherInventory");
+
+chrome.storage.local.get('switchToOtherInventory', (result) => {
+    switchToOtherInventory.checked = result.switchToOtherInventory;
+});
+
+switchToOtherInventory.addEventListener("click", () => {
+    chrome.storage.local.set({switchToOtherInventory: switchToOtherInventory.checked}, () => {});
+});
+
 // checkboxes - toggles with additional logic
 
 let tabsAPI = document.getElementById("tabsAPI");
