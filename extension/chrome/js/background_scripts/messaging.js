@@ -1,7 +1,7 @@
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if (request.inventory !==undefined) {
-            chrome.storage.local.get(['itemPricing', 'prices', 'currency', 'exchangeRate'], function(result) {
+            chrome.storage.local.get(['itemPricing', 'prices', 'currency', 'exchangeRate', 'pricingProvider'], function(result) {
                 let prices = result.prices;
                 let steamID = request.inventory;
                 let xhr = new XMLHttpRequest();
@@ -63,11 +63,11 @@ chrome.runtime.onMessage.addListener(
                                 let owner = steamID;
                                 let price = null;
 
+                                if(/Doppler/.test(name)){
+                                    dopplerInfo = getDopplerInfo(icon);
+                                }
                                 if(result.itemPricing){
-                                    price = {
-                                        price: prices[market_hash_name]==="null"||prices[market_hash_name]===undefined?0.0:(prices[market_hash_name]*result.exchangeRate).toFixed(2),
-                                        display: prices[market_hash_name]==="null"||prices[market_hash_name]===undefined?"":currencies[result.currency].sign + (prices[market_hash_name]*result.exchangeRate).toFixed(2)
-                                    };
+                                    price = getPrice(market_hash_name, dopplerInfo, prices, result.pricingProvider, result.exchangeRate, result.currency);
                                 }
                                 else{
                                     price = {
@@ -91,9 +91,6 @@ chrome.runtime.onMessage.addListener(
                                 if (items[item].marketable === 0) {
                                     tradability = "Not Tradable";
                                     tradabilityShort = "";
-                                }
-                                if(/Doppler/.test(name)){
-                                    dopplerInfo = getDopplerInfo(icon);
                                 }
                                 if(/StatTrak™/.test(name)){
                                     isStatrack = true;
@@ -162,28 +159,22 @@ chrome.runtime.onMessage.addListener(
         }
         else if (request.inventoryTotal!==undefined){
             let inventory = request.inventoryTotal;
-            let total = 0;
-            chrome.storage.local.get(['prices', 'exchangeRate', 'currency'], function(result){
-                inventory.forEach(item =>{
-                    if(result.prices[item.market_hash_name] !== undefined && result.prices[item.market_hash_name] !== "null"){
-                        total += result.prices[item.market_hash_name];
-                    }
+            let total = 0.0;
+            chrome.storage.local.get(['prices', 'exchangeRate', 'currency', 'pricingProvider'], function(result){
+                inventory.forEach(item => {
+                    total += parseFloat(getPrice(item.market_hash_name, item.dopplerInfo, result.prices, result.pricingProvider, result.exchangeRate, result.currency).price);
                 });
-                sendResponse({inventoryTotal: prettyPrintPrice(result.currency, (total*result.exchangeRate).toFixed(0))});
+                sendResponse({inventoryTotal: prettyPrintPrice(result.currency, (total).toFixed(0))});
             });
             return true;
         }
         else if (request.addPricesToInventory!==undefined){
             let inventory = request.addPricesToInventory;
-            chrome.storage.local.get(['prices', 'exchangeRate', 'currency', 'itemPricing'], function(result){
+            chrome.storage.local.get(['prices', 'exchangeRate', 'currency', 'itemPricing', 'pricingProvider'], function(result){
                 if(result.itemPricing){
                     inventory.forEach(item =>{
                         if(result.prices[item.market_hash_name] !== undefined && result.prices[item.market_hash_name] !== "null"){
-                            price = {
-                                price: result.prices[item.market_hash_name]==="null"||result.prices[item.market_hash_name]===undefined?0.0:(result.prices[item.market_hash_name]*result.exchangeRate).toFixed(2),
-                                display: result.prices[item.market_hash_name]==="null"||result.prices[item.market_hash_name]===undefined?"":currencies[result.currency].sign + (result.prices[item.market_hash_name]*result.exchangeRate).toFixed(2)
-                            };
-                            item.price = price;
+                            item.price =  getPrice(item.market_hash_name, item.dopplerInfo, result.prices, result.pricingProvider, result.exchangeRate, result.currency);
                         }
                     });
                     sendResponse({addPricesToInventory: inventory});

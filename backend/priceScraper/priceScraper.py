@@ -718,9 +718,7 @@ def lambda_handler(event, context):
     count = 0
 
     for item in extract:
-        if "csgobackpack" in extract[item] and "7_days" in extract[item]["csgobackpack"] and "bitskins" in extract[
-            item] and "price" in extract[item]["bitskins"] and "csmoney" in extract[item] and "price" in extract[item][
-            "csmoney"]:
+        if "csgobackpack" in extract[item] and "7_days" in extract[item]["csgobackpack"] and "bitskins" in extract[item] and "price" in extract[item]["bitskins"] and "csmoney" in extract[item] and "price" in extract[item]["csmoney"]:
             csb_weekly = float(extract[item]["csgobackpack"]["7_days"]["average"])
             bit = float(extract[item]["bitskins"]["price"])
             csm = float(extract[item]["csmoney"]["price"])
@@ -734,17 +732,25 @@ def lambda_handler(event, context):
 
     for item in extract:
         csgobackpack_aggregate = get_csgobackpack_price(item, extract, week_to_day, month_to_week)
+        extract[item]["csgotrader"] = {
+            "price": "null",
+            "doppler": "null"
+        }
         if csgobackpack_aggregate != "null":
-            extract[item]["csgotrader"] = float("{0:.2f}".format(csgobackpack_aggregate))
+            extract[item]["csgotrader"]["price"] = float("{0:.2f}".format(csgobackpack_aggregate))
         elif extract[item]["csmoney"]["price"] != "null" and extract[item]["csmoney"]["price"] != 0:
-            extract[item]["csgotrader"] = float(
-                "{0:.2f}".format(float(extract[item]["csmoney"]["price"]) * csb_csm * week_to_day))  # case F
+            extract[item]["csgotrader"]["price"] = float("{0:.2f}".format(float(extract[item]["csmoney"]["price"]) * csb_csm * week_to_day))  # case F
         elif "price" in extract[item]["bitskins"] and extract[item]["bitskins"]["price"] != "null":
-            extract[item]["csgotrader"] = float(
-                "{0:.2f}".format(float(extract[item]["bitskins"]["price"]) * csb_bit * week_to_day))  # case G
+            extract[item]["csgotrader"]["price"] = float("{0:.2f}".format(float(extract[item]["bitskins"]["price"]) * csb_bit * week_to_day))  # case G
         else:
-            extract[item]["csgotrader"] = "null"  # case H
+            extract[item]["csgotrader"]["price"] = "null"  # case H
 
+        if "Doppler" in item:
+            extract[item]["csgotrader"]["doppler"] = {}
+            for phase in extract[item]["csmoney"]["doppler"]:
+                extract[item]["csgotrader"]["doppler"][phase] = float("{0:.2f}".format(float(extract[item]["csmoney"]["doppler"][phase]) * csb_csm))  # case I
+        else:
+            extract[item]["csgotrader"]["doppler"] = "null"
     push_to_s3(extract, "true")
     return {
         'statusCode': 200,
@@ -764,13 +770,13 @@ def push_to_s3(content, latest):
 
     if stage == "prod":
         if latest == "true":
-            print("Updating latest/prices.json in s3")
-            s3.Object(result_s3_bucket, 'latest/prices.json').put(
+            print("Updating latest/prices_v2.json in s3")
+            s3.Object(result_s3_bucket, 'latest/prices_v2.json').put(
                 Body=(bytes(json.dumps(content).encode('UTF-8')))
             )
             print("latest.json updated")
-        print(f'Uploading prices to {year}/{month}/{day}/prices.json')
-        s3.Object(result_s3_bucket, f'{year}/{month}/{day}/prices.json').put(
+        print(f'Uploading prices to {year}/{month}/{day}/prices_v2.json')
+        s3.Object(result_s3_bucket, f'{year}/{month}/{day}/prices_v2.json').put(
             Body=(bytes(json.dumps(content).encode('UTF-8')))
         )
         print("Upload complete")
