@@ -103,6 +103,15 @@
                 <span class="orange">H,</span> If all of the above doesn't happen then the extension does not set any price to the item.
             </li>
         </ul>
+        Special cases:
+        <br>
+        <ul>
+            <li>
+                <span class="orange">I,</span> Doppler and Gamma doppler knives have special pricing,
+                if there is price info for the given phase for the knife on CS.MONEY, it takes that price and adjusts with the average difference between CS.MONEY and market prices.
+                If there isn't it falls back to the price calculated by the algorithm above.
+            </li>
+        </ul>
     </div>
     <div class="buildingBlock">
         <h2>Architecture - How the prices are scrapped, processed, stored and served</h2>
