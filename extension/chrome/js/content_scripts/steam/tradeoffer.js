@@ -186,8 +186,12 @@ setInterval(function () {
     });
 }, 2000);
 
-$(".inventory_user_tab").click(function () {
-    addItemInfo();
+document.querySelectorAll(".inventory_user_tab").forEach( (inventoryTab) =>{
+    inventoryTab.addEventListener("click", () => {
+        addItemInfo();
+        let sortingSelect = document.getElementById("offer_sorting_mode");
+        sortItems(sortingSelect.options[sortingSelect.selectedIndex].value);
+    })
 });
 
 document.addEventListener("message", function(e) {
