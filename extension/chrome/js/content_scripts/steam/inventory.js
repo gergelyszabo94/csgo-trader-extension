@@ -156,7 +156,7 @@ const getInventory = function() {
 };
 
 //this injected script listens to the messages from the extension side and responds with the page context info needed
-let scriptToInject = `<script id="getItems">
+let getItems = `
     window.addEventListener('message', (e) => {
         if (e.data.type == 'requestInventory') {
             let inventory = UserYou.getInventory(730,2);
@@ -178,9 +178,8 @@ let scriptToInject = `<script id="getItems">
                 inventory: trimmedAssets
             }, '*');
         }
-    });
-</script>`;
-$("body").append(scriptToInject);
+    });`;
+injectToPage(getItems, false, "getItems");
 
 //mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
 MutationObserver = window.MutationObserver;
@@ -967,7 +966,8 @@ function sortItems(method) {
 
 function loadFullInventory() {
     if(!isSIHActive()){
-        location.href = `javascript: g_ActiveInventory.LoadCompleteInventory().done(function () {
+        let loadFullInventory = `
+        g_ActiveInventory.LoadCompleteInventory().done(function () {
             for (let i = 0; i < g_ActiveInventory.m_cPages; i++) {
                 g_ActiveInventory.m_rgPages[i].EnsurePageItemsCreated();
                 g_ActiveInventory.PreloadPageImages(i);
@@ -977,6 +977,7 @@ function loadFullInventory() {
                 allItemsLoaded: true
             }, '*');
         });`;
+        injectToPage(loadFullInventory, true, "loadFullInventory");
     }
     else{
         doInitSorting();

@@ -46,7 +46,7 @@ const getTheirInventory = function() {
 };
 
 //this injected script listens to the messages from the extension side and responds with the page context info needed
-let inventoryAccessScript = `<script id="getItems">
+let inventoryAccessScript = `
     window.addEventListener('message', (e) => {
         if (e.data.type === 'requestYourInventory' || e.data.type === 'requestTheirInventory') {
             let inventory = undefined;
@@ -112,9 +112,8 @@ let inventoryAccessScript = `<script id="getItems">
                     }
             }
         }
-    });
-</script>`;
-$("body").append(inventoryAccessScript);
+    });`;
+injectToPage(inventoryAccessScript, false, "inventoryAccessScript");
 
 let tryGettingInventories = setInterval(getInventories,500);
 
@@ -169,14 +168,12 @@ chrome.storage.local.get(['markScammers'], function(result) {
 
 //this script gets injected, it allows communication between the page context and the content script initiated on the page
 //when the function is called it dispatches a an event that we listen to from the content script
-let scriptToInject = `
-    <script id="sendMessageToContentScript">
+let sendMessageToContentScript = `
     function sendMessageToContentScript(message){
         let event = new CustomEvent("message", { "detail": message });
         document.dispatchEvent(event);
-    }
-</script>`;
-$("body").append(scriptToInject);
+    }`;
+injectToPage(sendMessageToContentScript, false, "sendMessageToContentScript");
 
 setInterval(function () {
     chrome.storage.local.get('hideOtherExtensionPrices', function(result) {
@@ -467,11 +464,12 @@ function sortItems(method) {
 
 function loadAllItemsProperly(){
     if(!isSIHActive()){
-        location.href = `javascript: 
+        let loadAllItemsProperly = `
         g_ActiveInventory.pageList.forEach(function (page, index) {
             g_ActiveInventory.pageList[index].images_loaded = false;
             g_ActiveInventory.LoadPageImages(page);
-        });`
+        });`;
+        injectToPage(loadAllItemsProperly, true, "loadAllItemsProperly");
     }
 }
 
