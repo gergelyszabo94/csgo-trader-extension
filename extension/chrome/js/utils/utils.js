@@ -799,7 +799,14 @@ function addDopplerPhase(item, dopplerInfo){
 }
 
 function updatePrices(){
-    let request = new Request('https://prices.csgotrader.app/latest/prices_v2.json');
+    let headers = new Headers();
+    headers.append('Accept-Encoding', 'gzip');
+    let init = { method: 'GET',
+        headers: headers,
+        mode: 'cors',
+        cache: 'default' };
+
+    let request = new Request('https://prices.csgotrader.app/latest/prices_v2.json', init);
 
     fetch(request).then(function(response) {
         return response.json();

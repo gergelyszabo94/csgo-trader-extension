@@ -3,6 +3,7 @@ import requests
 import boto3
 import pyotp
 import os
+import gzip
 from datetime import date
 
 bitskins_secret = os.environ['BITSKINS_SECRET']
@@ -772,18 +773,21 @@ def push_to_s3(content, latest):
         if latest == "true":
             print("Updating latest/prices_v2.json in s3")
             s3.Object(result_s3_bucket, 'latest/prices_v2.json').put(
-                Body=(bytes(json.dumps(content).encode('UTF-8')))
+                Body=(gzip.compress(bytes(json.dumps(content).encode('UTF-8')), 9)),
+                ContentEncoding='gzip'
             )
             print("latest.json updated")
         print(f'Uploading prices to {year}/{month}/{day}/prices_v2.json')
         s3.Object(result_s3_bucket, f'{year}/{month}/{day}/prices_v2.json').put(
-            Body=(bytes(json.dumps(content).encode('UTF-8')))
+            Body=(gzip.compress(bytes(json.dumps(content).encode('UTF-8')), 9)),
+            ContentEncoding='gzip'
         )
         print("Upload complete")
     elif stage == "dev":
         print("Updating test/prices.json in s3")
         s3.Object(result_s3_bucket, 'test/prices.json').put(
-            Body=(bytes(json.dumps(content, indent=2).encode('UTF-8')))
+            Body=(gzip.compress(bytes(json.dumps(content, indent=2).encode('UTF-8')), 9)),
+            ContentEncoding='gzip'
         )
 
 
