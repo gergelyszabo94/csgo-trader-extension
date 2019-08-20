@@ -1,4 +1,4 @@
-CSGO Trader Chrome Extension
+CSGO Trader Browser Extension
 ==============
 
 This is a browser extension designed to help with CS:GO trading.
