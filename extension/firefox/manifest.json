@@ -2,10 +2,10 @@
   "manifest_version": 2,
   "name": "__MSG_application_title__",
   "short_name": "CSGO Trader",
-  "version": "1.16.1",
+  "version": "1.17",
   "default_locale": "en",
   "description": "__MSG_application_description__",
-  "homepage_url": "https://github.com/bladegery/csgo-trader-extension",
+  "homepage_url": "https://csgotrader.app/",
   "permissions": [
     "activeTab",
     "storage",
@@ -16,10 +16,11 @@
     "*://api.csgotrader.app/*",
     "*://prices.csgotrader.app/*",
     "*://steamrep.com/api/*",
-    "*://api.csgofloat.com/*",
+    "*://api.csgofloat.com/*"],
+  "optional_permissions": [
+    "tabs",
     "*://csgolounge.com/*",
-    "*://csgotraders.net/*"],
-  "optional_permissions": [ "tabs"],
+    "*://csgotraders.net/*" ],
   "background": {
     "scripts": [
       "js/utils/enums.js",
@@ -147,7 +148,8 @@
   "web_accessible_resources": [
     "images/scammerbackground.jpg",
     "images/paperclip.png",
-    "images/reply.png"
+    "images/reply.png",
+    "images/hand-pointer-solid.svg"
   ],
   "browser_action": {
     "default_popup": "html/popup.html",

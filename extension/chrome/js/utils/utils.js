@@ -1123,3 +1123,13 @@ function getPrice(market_hash_name, dopplerInfo, prices, provider, exchange_rate
         display: price === 0.0 ? "" : currencies[currency].sign + price
     };
 }
+
+function injectToPage(scriptString, toRemove, id){
+    let toInject = document.createElement("script");
+    toInject.id = id;
+    toInject.innerHTML = scriptString;
+    (document.head || document.documentElement).appendChild(toInject);
+    if(toRemove){
+        document.head.removeChild(toInject);
+    }
+}

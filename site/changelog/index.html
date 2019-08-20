@@ -55,6 +55,34 @@
     </nav>
     <h1>Changelog</h1>
     <div class="buildingBlock">
+        <h2>Version 1.17 - 2019-08-20</h2>
+        <ul>
+            <li>Created <a href="https://csgotrader.app/" target="_blank">csgotrader.app</a> site that showcases the features of the extension</li>
+            <li>Moved the changelog pages from the extension to <a href="https://csgotrader.app/changelog/" target="_blank">csgotrader.app/changelog</a></li>
+            <li>Created <a href="https://csgotrader.app/prices/" target="_blank">csgotrader.app/prices</a> page that explains how the extension calculates prices</li>
+            <li>Added case keys, BTC, ETH and their denominations as currencies</li>
+            <li>Adjusted the pricing algorithm to try to get a more accurate price for rare items and specify different prices for different Doppler phases</li>
+            <li>Added feature to check the value of the items selected, the selection can be initiated by clicking the hand icon in inventories</li>
+            <li>Added sorting feature to trade offers and inventories, items can be sorted by:</li>
+            <ul>
+                <li>Name (alphabetical)</li>
+                <li>Tradability</li>
+                <li>Price</li>
+                <li>Position (default)</li>
+                <li>And any of the mentioned reversed</li>
+            </ul>
+            <li>The default sorting mode can be set in the options menu</li>
+            <li>All inventory items are loaded automatically to accommodate sorting and eliminate waiting when searching or filtering <a href="https://github.com/bladegery/csgo-trader-extension/issues/47" target="_blank">#47</a></li>
+            <li>Bug fix: Turning off pricing has no effect in offers <a href="https://github.com/bladegery/csgo-trader-extension/issues/62" target="_blank">#62</a> (thanks to <a href="https://steamcommunity.com/profiles/76561198103971634" target="_blank">Dᴊᴇɴᴛ</a> for reporting it)</li>
+            <li>Bug fix: Duplicate item count visible and broken in non-CS:GO inventories <a href="https://github.com/bladegery/csgo-trader-extension/issues/57" target="_blank">#57</a></li>
+            <li>Receiving update notification is optional and off by default <a href="https://github.com/bladegery/csgo-trader-extension/issues/58" target="_blank">#58</a></li>
+            <li>Made csgolounge and csgotraders permissions optional <a href="https://github.com/bladegery/csgo-trader-extension/issues/31" target="_blank">#31</a></li>
+            <li>Pages where the extension adds features get reloaded when the extension updates <a href="https://github.com/bladegery/csgo-trader-extension/issues/61" target="_blank">#61</a></li>
+            <li>Added option to make the other party's inventory active by default <a href="https://github.com/bladegery/csgo-trader-extension/issues/25" target="_blank">#25</a></li>
+            <li>Applied compression to prices.json to save bandwidth and time</li>
+        </ul>
+    </div>
+    <div class="buildingBlock">
         <h2>Version 1.16.1 - 2019-07-30</h2>
         <ul>
             <li>Fixed extension breaking if the pricing info was not successfully set for the first time</li>
