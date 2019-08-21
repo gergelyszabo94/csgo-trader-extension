@@ -227,7 +227,7 @@ function requestInventory(){
             items = response.inventory;
             addElements();
             addPerItemInfo();
-            getInventoryTotal(items);
+            setInventoryTotal(items);
             addClickListener();
             addFunctionBar();
             loadFullInventory();
@@ -849,22 +849,16 @@ function hideOtherExtensionPrices(){
             price.remove();
         });
     }
-    setTimeout(function () {
-        hideOtherExtensionPrices();
-    }, 2000);
+    setTimeout(() =>{hideOtherExtensionPrices()}, 2000);
 }
 
-function getInventoryTotal(items){
+function setInventoryTotal(items){
     let inventoryTotalValueElement = document.getElementById("inventoryTotalValue");
-    chrome.runtime.sendMessage({inventoryTotal: items}, function(response) {
+    chrome.runtime.sendMessage({inventoryTotal: items}, (response) =>{
         if(!(response===undefined||response.inventoryTotal===undefined||response.inventoryTotal===""||response.inventoryTotal==="error"||inventoryTotalValueElement===null)){
-            document.getElementById("inventoryTotalValue").innerText = response.inventoryTotal;
+            inventoryTotalValueElement.innerText = response.inventoryTotal;
         }
-        else{
-            setTimeout(function () {
-                getInventoryTotal(items);
-            }, 1000);
-        }
+        else setTimeout(() =>{setInventoryTotal(items)}, 1000)
     });
 }
 
@@ -881,8 +875,8 @@ function addFunctionBar(){
         document.querySelector(".filter_ctn.inventory_filters").insertAdjacentHTML('afterend', `
                 <div id="inventory_function_bar">
                     <div id="functionBarValues" class="functionBarRow">
-                        <span id="selectedTotal"><span>Selected Items Value: <span class="currency_sign"></span></span><span id="selectedTotalValue">0.00</span></span>
-                        <span id="inventoryTotal"><span>Total Inventory Value: </span><span class="currency_sign"></span><span id="inventoryTotalValue">0.00</span></span>
+                        <span id="selectedTotal"><span>Selected Items Value: </span><span id="selectedTotalValue">0.00</span></span>
+                        <span id="inventoryTotal"><span>Total Inventory Value: </span><span id="inventoryTotalValue">0.00</span></span>
                     </div>
                     <div id="functionBarActions" class="functionBarRow">
                         <span id="selectMenu">
@@ -907,13 +901,6 @@ function addFunctionBar(){
             sortingSelect.add(option);
         }
 
-        chrome.storage.local.get('currency', function(result) {
-            let currency_sign = currencies[result.currency].sign;
-            document.querySelectorAll(".currency_sign").forEach(element =>{
-                element.inneText = currency_sign;
-            })
-        });
-
         document.getElementById("selectButton").addEventListener("click", function (event) {
             if(event.target.classList.contains("selectionActive")){
                 unselectAllItems();
@@ -934,7 +921,7 @@ function addFunctionBar(){
     }
     else{
         setTimeout(function () {
-            getInventoryTotal(items);
+            setInventoryTotal(items);
         }, 1000);
     }
 }
@@ -947,7 +934,9 @@ function updateSelectedValue(){
         let item = getItemByAssetID(assetID);
         selectedTotal += parseFloat(item.price.price);
     });
-    document.getElementById("selectedTotalValue").innerText = selectedTotal.toFixed(2);
+    chrome.storage.local.get('currency', (result) =>{
+        document.getElementById("selectedTotalValue").innerText = prettyPrintPrice(result.currency, selectedTotal);
+    });
 }
 
 function unselectAllItems() {
