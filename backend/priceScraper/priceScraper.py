@@ -21,7 +21,7 @@ def lambda_handler(event, context):
         response = requests.get("http://csgobackpack.net/api/GetItemsList/v2/")
     except Exception as e:
             print(e)
-            error = "Error during csgobaackpack request"
+            error = "Error during csgobackpack request"
             alert_via_sns(f'{error}: {e}')
             return {
                 'statusCode': 500,
