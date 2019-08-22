@@ -986,15 +986,15 @@ function getAssetIDOfElement(element){
 function doTheSorting(items, method, pages, type){
     if(method === "price_asc"){
         items = Array.from(items).sort(function(a, b) {
-            let priceOfA = parseFloat(getItemByAssetID(getAssetIDOfElement(a)).price.price);
-            let priceOfB = parseFloat(getItemByAssetID(getAssetIDOfElement(b)).price.price);
+            let priceOfA = getItemByAssetID(getAssetIDOfElement(a)).price !== undefined ?  parseFloat(getItemByAssetID(getAssetIDOfElement(a)).price.price) : 0.0;
+            let priceOfB = getItemByAssetID(getAssetIDOfElement(b)).price !== undefined ?  parseFloat(getItemByAssetID(getAssetIDOfElement(b)).price.price) : 0.0;
             return priceOfA - priceOfB;
         });
     }
     else if(method === "price_desc"){
         items = Array.from(items).sort(function(a, b) {
-            let priceOfA = parseFloat(getItemByAssetID(getAssetIDOfElement(a)).price.price);
-            let priceOfB = parseFloat(getItemByAssetID(getAssetIDOfElement(b)).price.price);
+            let priceOfA = getItemByAssetID(getAssetIDOfElement(a)).price !== undefined ?  parseFloat(getItemByAssetID(getAssetIDOfElement(a)).price.price) : 0.0;
+            let priceOfB = getItemByAssetID(getAssetIDOfElement(b)).price !== undefined ?  parseFloat(getItemByAssetID(getAssetIDOfElement(b)).price.price) : 0.0;
             return priceOfB - priceOfA;
         });
     }
