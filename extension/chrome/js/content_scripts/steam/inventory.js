@@ -1,127 +1,40 @@
 overridePopulateActions();
 
-const module0 = `<a class="module">
-    <div class="descriptor tradability" id="iteminfo0_tradability"></div>
-    <div class="descriptor countdown" id="iteminfo0_countdown"></div>
-    <div class="descriptor tradability bookmark" id="iteminfo0_bookmark">Bookmark and Notify</div>
-</a>`;
-
-const module1 = `<a class="module">
-    <div class="descriptor tradability" id="iteminfo1_tradability"></div>
-    <div class="descriptor countdown" id="iteminfo1_countdown"></div>
-    <div class="descriptor tradability bookmark" id="iteminfo1_bookmark">Bookmark and Notify</div>
-</a>`;
-
-const floatBar0 = `
-<div class="floatBar" id="floatBar0">
-    <div class="floatToolTip" id="float0">
-        <div>Float: <span id="float0DropTarget">Waiting for csgofloat.com</span></div>
-        <svg id="floatPointer0" class="floatPointer" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path></svg>
+const upperModule = `
+<div class="upperModule">
+    <div class="nametag"></div>
+    <div class="descriptor customStickers"></div>
+    <div class="duplicate">x1</div>
+    <div class="floatBar">
+    <div class="floatToolTip">
+        <div>Float: <span class="floatDropTarget">Waiting for csgofloat.com</span></div>
+        <svg class="floatPointer" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path></svg>
    </div>
- <div class="progress">
-    <div class="progress-bar floatBarFN" title="Factory New"></div>
-    <div class="progress-bar floatBarMW" title="Minimal Wear"></div>
-    <div class="progress-bar floatBarFT" title="Field-Tested"></div>
-    <div class="progress-bar floatBarWW" title="Well-Worn"></div>
-     <div class="progress-bar floatBarBS" title="Battle-Scarred"></div>
- </div>
- <div class="showTechnical" id="showTechnical0">Show Technical</div>
- <div class="floatTechnical" id="floatTechnical0">
-        Technical:<br>
-        Float Value: <span id="fvDrop0"></span><br>
-        Paint Index: <span id="piDrop0"></span><br>
-        Paint Seed: <span id="psDrop0"></span><br>
-        Origin: <span id="origDrop0"></span><br>
-        Best Possible Float: <span id="minDrop0"></span><br>
-        Worst Possible Float: <span id="maxDrop0"></span><br>
-        <br>
-        Float info from <a href="https://csgofloat.com/" target="_blank">csgofloat.com</a>
+     <div class="progress">
+        <div class="progress-bar floatBarFN" title="Factory New"></div>
+        <div class="progress-bar floatBarMW" title="Minimal Wear"></div>
+        <div class="progress-bar floatBarFT" title="Field-Tested"></div>
+        <div class="progress-bar floatBarWW" title="Well-Worn"></div>
+         <div class="progress-bar floatBarBS" title="Battle-Scarred"></div>
+     </div>
+      <div class="showTechnical">Show Technical</div>
+    </div>
+    <div class="patternInfo"></div>
 </div>
-</div>`;
-const floatBar1 = `
-<div class="floatBar" id="floatBar1">
-    <div class="floatToolTip" id="float1">
-        <div>Float: <span id="float1DropTarget">Waiting for csgofloat.com</span></div>
-        <svg id="floatPointer1" class="floatPointer" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path></svg>
-   </div>
- <div class="progress">
-    <div class="progress-bar floatBarFN" title="Factory New"></div>
-    <div class="progress-bar floatBarMW" title="Minimal Wear"></div>
-    <div class="progress-bar floatBarFT" title="Field-Tested"></div>
-    <div class="progress-bar floatBarWW" title="Well-Worn"></div>
-     <div class="progress-bar floatBarBS" title="Battle-Scarred"></div>
- </div>
-  <div class="showTechnical" id="showTechnical1">Show Technical</div>
- <div class="floatTechnical" id="floatTechnical1">
-        Technical:<br>
-        Float Value: <span id="fvDrop1"></span><br>
-        Paint Index: <span id="piDrop1"></span><br>
-        Paint Seed: <span id="psDrop1"></span><br>
-        Origin: <span id="origDrop1"></span><br>
-        Best Possible Float: <span id="minDrop1"></span><br>
-        Worst Possible Float: <span id="maxDrop1"></span><br>
-        <br>
-        Float info from <a href="https://csgofloat.com/" target="_blank">csgofloat.com</a>
-</div>
-</div>`;
+`;
+
+const lowerModule = `<a class="lowerModule">
+    <div class="descriptor tradability tradabilityDiv"></div>
+    <div class="descriptor countdown"></div>
+    <div class="descriptor tradability bookmark">Bookmark and Notify</div>
+</a>`;
 
 // const note0 = `<div class="descriptor note" id="note0"></div>`;
 // const note1 = `<div class="descriptor note" id="note1"></div>`;
 
 const tradable = "<span class='tradable'>Tradable</span>";
 const notTradable = "<span class='not_tradable'>Not Tradable</span>";
-
 const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
-
-const exteriors1 = `
-    <div class="descriptor otherExteriors" id="otherExteriors1">
-        <span>${chrome.i18n.getMessage("links_to_other_exteriors")}:</span>
-        <ul>
-            <li><a href="" target="_blank" id="fnLink1">${exteriors.factory_new.localized_name}</a> - <a href="" target="_blank" id="fnSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.factory_new.localized_name}</span></a></li>
-            <li><a href="" target="_blank" id="mwLink1">${exteriors.minimal_wear.localized_name}</a> - <a href="" target="_blank" id="mwSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.minimal_wear.localized_name}</span></a></li>
-            <li><a href="" target="_blank" id="ftLink1">${exteriors.field_tested.localized_name}</a> - <a href="" target="_blank" id="ftSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.field_tested.localized_name}</span></a></li>
-            <li><a href="" target="_blank" id="wwLink1">${exteriors.well_worn.localized_name}</a> - <a href="" target="_blank" id="wwSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.well_worn.localized_name}</span></a></li>
-            <li><a href="" target="_blank" id="bsLink1">${exteriors.battle_scarred.localized_name}</a> - <a href="" target="_blank" id="bsSTLink1"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.battle_scarred.localized_name}</span></a></li>
-        </ul>
-        <span>${chrome.i18n.getMessage("not_every_available")}</span>
-    </div>`;
-
-const exteriors0 = `
-    <div class="descriptor otherExteriors" id="otherExteriors0">
-        <span>${chrome.i18n.getMessage("links_to_other_exteriors")}:</span>
-        <ul>
-            <li><a href="" target="_blank" id="fnLink0">${exteriors.factory_new.localized_name}</a> - <a href="" target="_blank" id="fnSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.factory_new.localized_name}</span></a></li>
-            <li><a href="" target="_blank" id="mwLink0">${exteriors.minimal_wear.localized_name}</a> - <a href="" target="_blank" id="mwSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.minimal_wear.localized_name}</span></a></li>
-            <li><a href="" target="_blank" id="ftLink0">${exteriors.field_tested.localized_name}</a> - <a href="" target="_blank" id="ftSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.field_tested.localized_name}</span></a></li>
-            <li><a href="" target="_blank" id="wwLink0">${exteriors.well_worn.localized_name}</a> - <a href="" target="_blank" id="wwSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.well_worn.localized_name}</span></a></li>
-            <li><a href="" target="_blank" id="bsLink0">${exteriors.battle_scarred.localized_name}</a> - <a href="" target="_blank" id="bsSTLink0"><span class="stattrakOrange exteriorsLink">StatTrak™ ${exteriors.battle_scarred.localized_name}</span></a></li>
-        </ul>
-        <span>${chrome.i18n.getMessage("not_every_available")}</span>
-    </div>`;
-
-const stickers1 = `
-    <div class="descriptor customStickers" id="stickers1"></div>`;
-
-const stickers0 = `
-    <div class="descriptor customStickers" id="stickers0"></div>`;
-
-const nametag1 = `
-    <div class="nametag" id="nametag1"></div>`;
-
-const nametag0 = `
-    <div class="nametag" id="nametag0"></div>`;
-
-const duplicates1 = `
-    <div class="duplicate" id="duplicates1">x1</div>`;
-
-const duplicates0 = `
-    <div class="duplicate" id="duplicates0">x1</div>`;
-
-const patternInfo1 = `
-    <div class="patternInfo" id="patternInfo1"></div>`;
-
-const patternInfo0 = `
-    <div class="patternInfo" id="patternInfo0"></div>`;
 
 // the promise will be stored here temporarily
 let inventoryPromise = undefined;
@@ -217,7 +130,7 @@ chrome.storage.local.get('hideOtherExtensionPrices', function(result) {
     }
 });
 
-//sends a message to the "back end" to request inventory contents
+// sends a message to the "back end" to request inventory contents
 
 let items = [];
 
@@ -244,13 +157,8 @@ function requestInventory(){
 }
 requestInventory();
 
-//to refresh the trade lock remaining indicators
-setInterval(function () {
-    if(!document.hidden){
-        addPerItemInfo(true); //true means it's only for updating the time remaining indicators
-    }
-}, 60000);
-
+// to refresh the trade lock remaining indicators
+setInterval(() =>{if(!document.hidden) addPerItemInfo(true)}, 60000); // true means it's only for updating the time remaining indicators
 
 //adds everything that is per item, like trade lock, exterior, doppler phases, border colors
 function addPerItemInfo(updating){
@@ -339,160 +247,116 @@ let countingDown = false;
 let countDownID = "";
 
 function addElements(){
-    if($(".games_list_tab.active").first().attr("href")==="#730"){
-        let activeID = "";
-        try{
-            activeID = getAssetIDofActive();
-        }catch (e) {
-            console.log("Could not get assetID of active item");
-            return false
-        }
+    // only add elements if the CS:GO inventory is the active one
+    if(document.querySelector(".games_list_tab.active").getAttribute("href") === "#730"){
+        let activeID = undefined;
+        try {activeID = getAssetIDofActive()}
+        catch (e) { console.log("Could not get assetID of active item"); return false}
         let item = getItemByAssetID(activeID);
 
-        //removes "tags"
-        $("#iteminfo1_item_tags").remove();
-        $("#iteminfo0_item_tags").remove();
+        // removes "tags" and "tradable after" in one's own inventory
+        document.querySelectorAll("#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors").forEach((tagsElement) => tagsElement.parentNode.removeChild(tagsElement));
 
-        //adds float bar, sticker info, nametag
-        if(!$("#floatBar1").length) {
-            $("#iteminfo1_content").children().first().after(nametag1, stickers1, duplicates1, floatBar1, patternInfo1);
-        }
-        if(!$("#floatBar0").length) {
-            $("#iteminfo0_content").children().first().after(nametag0, stickers0, duplicates0, floatBar0, patternInfo0);
-        }
+        // cleans up previously added elements
+        document.querySelectorAll(".upperModule, .lowerModule, .otherExteriors").forEach((element) => element.parentNode.removeChild(element));
 
-        $(".floatTechnical").hide();
+        // removes previously added listeners
+        document.querySelectorAll(".showTechnical").forEach(showTechnical => showTechnical.removeEventListener("click"));
 
-        //allows the float pointer's text to go outside the boundaries of the item - they would not be visible otherwise on high-float items
-        $(".item_desc_content.app730.context2").css("overflow", "visible");
+        // adds float bar, sticker info, nametag
+        document.querySelectorAll(".item_desc_icon").forEach((icon) =>{icon.insertAdjacentHTML("afterend", upperModule)});
 
-        //removes background from the right side of the page
-        $(".item_desc_content").css("background-image", 'url()');
+        // listens to click on "show technical"
+        document.querySelectorAll(".showTechnical").forEach(showTechnical => {
+            showTechnical.addEventListener("click", event =>{
+                document.querySelectorAll(".floatTechnical").forEach(floatTechnical => floatTechnical.classList.toggle("hidden"));
+            })
+        });
 
-        //add "other exteriors" links module
-        if(!$("#otherExteriors1").length) {
-            $("#iteminfo1_item_descriptors").after(exteriors1);
-        }
-        if(!$("#otherExteriors0").length) {
-            $("#iteminfo0_item_descriptors").after(exteriors0);
-        }
+        // allows the float pointer's text to go outside the boundaries of the item - they would not be visible otherwise on high-float items
+        // also removes background from the right side of the page
+        document.querySelectorAll(".item_desc_content").forEach((item_desc_content) => item_desc_content.setAttribute("style", "overflow: visible; background-image: url()"));
 
-        //hides "tradable after" in one's own inventory
-        $("#iteminfo1_item_owner_descriptors").hide();
-        $("#iteminfo0_item_owner_descriptors").hide();
-
-
-        $iteminfo1 = $("#iteminfo1_item_actions");
-        $iteminfo0 = $("#iteminfo0_item_actions");
-
-        //adds tradability and countdown elements
-        if(!$("#iteminfo1_tradability").length){
-            $iteminfo1.after(module1);
-        }
-        if(!$("#iteminfo0_tradability").length){
-            $iteminfo0.after(module0);
-        }
-
-        $(".descriptor.tradability.bookmark").text("Bookmark and Notify");
-
-        //tradability logic and countdown initiation
-        $tradability1 =  $("#iteminfo1_tradability");
-        $tradability0 = $("#iteminfo0_tradability");
+        // adds the lower module that includes tradability, countdown  and bookmarking
+        document.querySelectorAll("#iteminfo1_item_actions, #iteminfo0_item_actions").forEach((action) => action.insertAdjacentHTML("afterend", lowerModule));
 
         if(item){
-            //add nametag
-            $nametag0 = $("#nametag0");
-            $nametag1 = $("#nametag1");
-            if(item.nametag!==undefined){
-                $nametag0.show();
-                $nametag1.show();
-                $nametag0.text(item.nametag);
-                $nametag1.text(item.nametag);
-                $("#iteminfo1_fraud_warnings").remove();
-                $("#iteminfo0_fraud_warnings").remove();
-            }
-            else{
-                $nametag0.hide();
-                $nametag1.hide();
-            }
-            //repositions stickers
-            if(item.stickers.length!==0){
-                $("#sticker_info").remove();
-
-                setTimeout(function () { //sometimes it is added slowly so it does not get removed by the first one..
-                    $("#sticker_info").remove();
-                }, 1000);
-
-                $( ".stickerSlot" ).remove();
-                $("#stickers1").show();
-                $("#stickers0").show();
-                item.stickers.forEach(function (stickerInfo) {
-                    $("#stickers1").append(`<div class="stickerSlot" data-tooltip="${stickerInfo.name}"><a href="${stickerInfo.marketURL}" target="_blank"><img src="${stickerInfo.iconURL}" class="stickerIcon"></a></div>`);
-                    $("#stickers0").append(`<div class="stickerSlot" data-tooltip="${stickerInfo.name}"><a href="${stickerInfo.marketURL}" target="_blank"><img src="${stickerInfo.iconURL}" class="stickerIcon"></a></div>`);
-                })
-            }
-            else{
-                $("#stickers1").hide();
-                $("#stickers0").hide();
-            }
-            //adds duplicates count
-            document.querySelectorAll(".duplicate").forEach (duplicate => {
-                duplicate.style.display = "block";
-                duplicate.innerText = "x"+item.duplicates.num;
+            // adds the nametag text to nametags
+            document.querySelectorAll(".nametag").forEach((nametag) =>{
+                if(item.nametag !== undefined){
+                    nametag.innerText = item.nametag;
+                    document.querySelectorAll(".fraud_warning").forEach((fraud_warning) => fraud_warning.outerHTML = "");
+                }
+                else{
+                    nametag.style.display = "none";
+                }
             });
 
-            if(item.tradability==="Tradable"){
-                $tradability1.html(tradable);
-                $tradability0.html(tradable);
-                $("#iteminfo1_countdown").hide();
-                $("#iteminfo0_countdown").hide();
-            }
-            else if(item.tradability==="Not Tradable"){
-                $tradability1.html(notTradable);
-                $tradability0.html(notTradable);
-                $("#iteminfo1_countdown").hide();
-                $("#iteminfo0_countdown").hide();
-            }
-            else{
-                let tradableAt = new Date(item.tradability).toString().split("GMT")[0];
-                $tradability1.html(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
-                $tradability0.html(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
-                countDown(tradableAt);
-                $("#iteminfo1_countdown").show();
-                $("#iteminfo0_countdown").show();
+            // repositions stickers
+            if(item.stickers.length !== 0){
+                // removes the original stickers elements
+                let originalStickers = document.getElementById("sticker_info");
+                if(originalStickers !== null) originalStickers.outerHTML = "";
+
+                // sometimes it is added slowly so it does not get removed the first time..
+                setTimeout(() =>{if(originalStickers !== null && originalStickers.parentNode !== null) originalStickers.outerHTML = ""}, 1000);
+
+                // adds own sticker elements
+                item.stickers.forEach((stickerInfo) =>{
+                    document.querySelectorAll(".customStickers").forEach((customStickers) =>{
+                        customStickers.innerHTML = customStickers.innerHTML + `
+                        <div class="stickerSlot" data-tooltip="${stickerInfo.name}">
+                            <a href="${stickerInfo.marketURL}" target="_blank">
+                                <img src="${stickerInfo.iconURL}" class="stickerIcon">
+                            </a>
+                        </div>
+                        `
+                    });
+                })
             }
 
+            // adds duplicates counts
+            document.querySelectorAll(".duplicate").forEach (duplicate => {
+                duplicate.style.display = "block";
+                duplicate.innerText = "x" + item.duplicates.num;
+            });
+
+            // sets the tradability info
+            document.querySelectorAll(".tradabilityDiv").forEach (tradabilityDiv => {
+                if(item.tradability === "Tradable"){
+                    tradabilityDiv.innerHTML = tradable;
+                    document.querySelectorAll(".countdown").forEach((countdown) => countdown.style.display = "none");
+                }
+                else if(item.tradability === "Not Tradable"){
+                    tradabilityDiv.innerHTML = notTradable;
+                    document.querySelectorAll(".countdown").forEach((countdown) => countdown.style.display = "none");
+                }
+                else{
+                    let tradableAt = new Date(item.tradability).toString().split("GMT")[0];
+                    tradabilityDiv.innerHTML = `<span class='not_tradable'>Tradable After ${tradableAt}</span>`;
+                    countDown(tradableAt);
+                    document.querySelectorAll(".countdown").forEach((countdown) => countdown.style.display = "block");
+                }
+            });
+
+
+            // adds doppler phase  to the name and makes it a link to the market listings page
             let name = item.name;
 
             getInventory().then(inventory => {
-                inventory.inventory.forEach(function (onPageItem) {
-                    if(onPageItem.assetid===activeID){
-                        name = onPageItem.description.name;
-                    }
-                });
-                if(item.dopplerInfo!==undefined){
-                    changeName(name+" ("+ item.dopplerInfo.name+")",item.name_color,item.marketlink);
-                }
-                else{
-                    changeName(name,item.name_color,item.marketlink);
-                }
+                inventory.inventory.forEach((onPageItem) => {if(onPageItem.assetid === activeID) name = onPageItem.description.name});
+                if(item.dopplerInfo !== undefined){changeName(name + " ("+ item.dopplerInfo.name+")", item.name_color, item.marketlink);}
+                else{ changeName(name, item.name_color, item.marketlink)}
             });
 
-
-            //removes sih "Get Float" button - does not really work since it's loaded after this script..
+            // removes sih "Get Float" button - does not really work since it's loaded after this script..
             if(isSIHActive()){
                 document.querySelectorAll(".float_block").forEach(e => e.parentNode.removeChild(e));
-                setTimeout(function () {
-                    document.querySelectorAll(".float_block").forEach(e => e.parentNode.removeChild(e));
-                }, 1000);
+                setTimeout(() =>{document.querySelectorAll(".float_block").forEach(e => e.parentNode.removeChild(e));}, 1000);
             }
 
             let inspectLink = item.inspectLink;
-
-            //text while floats load
-            let float ="Waiting for csgofloat.com";
-            $("#float0DropTarget").text(float);
-            $("#float1DropTarget").text(float);
+            let float = "";
             let paintIndex = "";
             let paintSeed = "";
             let origin = "";
@@ -500,9 +364,8 @@ function addElements(){
             let max = "";
             let stickers = [];
 
-            if(inspectLink!==""&&inspectLink!==undefined){
-                $(".floatBar").show();
-                chrome.runtime.sendMessage({getFloatInfo: inspectLink}, function(response) {
+            if(inspectLink !== "" && inspectLink !== undefined){
+                chrome.runtime.sendMessage({getFloatInfo: inspectLink}, (response) =>{
                     try{
                         float = response.floatInfo.floatvalue;
                         paintIndex = response.floatInfo.paintindex;
@@ -516,74 +379,78 @@ function addElements(){
                     catch{
 
                     }
+
+                    let floatTechnical = `
+                        <div class="floatTechnical hidden">
+                            Technical:<br>
+                            Float Value: ${float}<br>
+                            Paint Index: ${paintIndex}<br>
+                            Paint Seed: ${paintSeed}<br>
+                            Origin: ${origin}<br>
+                            Best Possible Float: ${min}<br>
+                            Worst Possible Float: ${max}<br>
+                            <br>
+                            Float info from <a href="https://csgofloat.com/" target="_blank">csgofloat.com</a>
+                        </div>`;
+
+                    document.querySelectorAll(".showTechnical").forEach (showTechnical => showTechnical.insertAdjacentHTML("afterend", floatTechnical));
+
                     let patternInfo =  getPattern(item.market_hash_name, paintSeed);
                     let position = float.toFixed(2)*100-2;
-                    $("#float0").css("left", position + "%");
-                    $("#float1").css("left", position + "%");
-                    $("#float0DropTarget").text(float.toFixed(4));
-                    $("#float1DropTarget").text(float.toFixed(4));
+                    document.querySelectorAll(".floatToolTip").forEach(floatToolTip => floatToolTip.setAttribute("style", `left: ${position}%`));
+                    document.querySelectorAll(".floatDropTarget").forEach(floatDropTarget => floatDropTarget.innerText = float.toFixed(4));
 
-                    $patterinfInfo = $(".patternInfo");
-                    if(patternInfo!==undefined){
-                        $patterinfInfo.removeClass("fadeGradient marbleFadeGradient caseHardenedGradient");
+                    document.querySelectorAll(".patternInfo").forEach(patternInfoElement => {
+                        if(patternInfo !== undefined){
+                            if(patternInfo.type === "fade"){
+                                patternInfoElement.classList.add("fadeGradient");
+                            }
+                            else if(patternInfo.type === "marble_fade"){
+                                patternInfoElement.classList.add("marbleFadeGradient");
+                            }
+                            else if(patternInfo.type === "case_hardened"){
+                                patternInfoElement.classList.add("caseHardenedGradient");
+                            }
+                            patternInfoElement.innerText = "Pattern: " + patternInfo.value;
+                        }
+                    });
 
-                        if(patternInfo.type==="fade"){
-                            $patterinfInfo.addClass("fadeGradient");
-                        }
-                        else if(patternInfo.type==="marble_fade"){
-                            $patterinfInfo.addClass("marbleFadeGradient");
-                        }
-                        else if(patternInfo.type==="case_hardened"){
-                            $patterinfInfo.addClass("caseHardenedGradient");
-                        }
-                        $patterinfInfo.text("Pattern: " + patternInfo.value);
-                        $patterinfInfo.show();
-                    }
-                    else{
-                        $patterinfInfo.text("");
-                        $patterinfInfo.hide();
-                    }
-                    $("#fvDrop0").text(float);
-                    $("#fvDrop1").text(float);
-                    $("#piDrop0").text(paintIndex);
-                    $("#piDrop1").text(paintIndex);
-                    $("#psDrop0").text(paintSeed);
-                    $("#psDrop1").text(paintSeed);
-                    $("#origDrop0").text(origin);
-                    $("#origDrop1").text(origin);
-                    $("#minDrop0").text(min);
-                    $("#minDrop1").text(min);
-                    $("#maxDrop0").text(max);
-                    $("#maxDrop1").text(max);
-
-                    //sticker wear to sticker icon tooltip
-                    stickers.forEach(function (stickerInfo, index) {
+                    // sticker wear to sticker icon tooltip
+                    stickers.forEach((stickerInfo, index) =>{
                         let wear = 100;
-                        if(stickerInfo.wear!==undefined){
-                            wear =  Math.trunc(Math.abs(1-stickerInfo.wear)*100);
+                        if(stickerInfo.wear !== undefined){
+                            wear =  Math.trunc(Math.abs( 1 - stickerInfo.wear) * 100);
                         }
-                        $currentSticker1 = $("#stickers1").find($(".stickerSlot")).eq(index);
-                        $currentSticker0 = $("#stickers0").find($(".stickerSlot")).eq(index);
-                        $currentSticker1.attr("data-tooltip", stickerInfo.name + " - Condition: " + wear + "%");
-                        $currentSticker0.attr("data-tooltip", stickerInfo.name + " - Condition: " + wear + "%");
-                        $currentSticker1.find("img").css("opacity", (wear>10) ? wear/100 : (wear/100)+0.1);
-                        $currentSticker0.find("img").css("opacity", (wear>10) ? wear/100 : (wear/100)+0.1);
+                        document.querySelectorAll(".customStickers").forEach(customStickers => {
+                            let currentSticker = customStickers.querySelectorAll(".stickerSlot")[index];
+                            currentSticker.setAttribute("data-tooltip", stickerInfo.name + " - Condition: " + wear + "%");
+                            currentSticker.querySelector("img").setAttribute("style", `opacity: ${(wear > 10) ? wear/100 : (wear/100) + 0.1}`);
+                        });
                     });
 
                     if(float===0){
-                        $(".floatBar").hide();
+                        document.querySelectorAll(".floatBar").forEach(floatBar => floatBar.classList.add("hidden"));
                     }
                 });
             }
             else{
-                $(".floatBar").hide();
+                document.querySelectorAll(".floatBar").forEach(floatBar => floatBar.classList.add("hidden"));
             }
 
-            let thereSouvenirForThisItem = souvenirExists($(".descriptor").text());
+            // it takes the visible descriptors and checks if the collection includes souvenirs
+            let textOfDescriptors = "";
+            document.querySelectorAll(".descriptor").forEach(descriptor => {
+                if(descriptor.parentNode.classList.contains("item_desc_descriptors") && descriptor.parentNode.parentNode.parentNode.parentNode.style.display !== "none"){
+                    textOfDescriptors += descriptor.innerText;
+                }
+
+            });
+            let thereSouvenirForThisItem =  souvenirExists(textOfDescriptors);
 
             let genericMarketLink = "https://steamcommunity.com/market/listings/730/";
             let weaponName = "";
             let stattrak = "StatTrak%E2%84%A2%20";
+            let stattrakPretty = "StatTrak™";
             let souvenir = "Souvenir ";
             let star = "";
 
@@ -604,92 +471,37 @@ function addElements(){
                 }
             }
 
-
-            $("#fnLink1").attr("href", genericMarketLink + star + weaponName + "%28Factory%20New%29");
-            $("#mwLink1").attr("href", genericMarketLink + star + weaponName + "%28Minimal%20Wear%29");
-            $("#ftLink1").attr("href", genericMarketLink + star + weaponName + "%28Field-Tested%29");
-            $("#wwLink1").attr("href", genericMarketLink + star + weaponName + "%28Well-Worn%29");
-            $("#bsLink1").attr("href", genericMarketLink + star + weaponName + "%28Battle-Scarred%29");
-
-            $("#fnLink0").attr("href", genericMarketLink + star + weaponName + "%28Factory%20New%29");
-            $("#mwLink0").attr("href", genericMarketLink + star + weaponName + "%28Minimal%20Wear%29");
-            $("#ftLink0").attr("href", genericMarketLink + star + weaponName + "%28Field-Tested%29");
-            $("#wwLink0").attr("href", genericMarketLink + star + weaponName + "%28Well-Worn%29");
-            $("#bsLink0").attr("href", genericMarketLink + star + weaponName + "%28Battle-Scarred%29");
-
+            let stOrSv = stattrakPretty;
+            let stOrSvClass = "stattrakOrange";
+            let linkMidPart = star + stattrak;
+            console.log("issouvenir: " + item.isSouvenir + "thereis: " + thereSouvenirForThisItem);
             if(item.isSouvenir||thereSouvenirForThisItem){
-                $st = $(".stattrakOrange.exteriorsLink");
-                $st.addClass("souvenirYellow");
-                $st.removeClass("stattrakOrange");
-
-                $fnst1=$("#fnSTLink1");
-                $fnst1.attr("href", genericMarketLink + souvenir + weaponName + "%28Factory%20New%29");
-                $fnst1.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.factory_new.localized_name);
-
-                $mwst1=$("#mwSTLink1");
-                $mwst1.attr("href", genericMarketLink + souvenir + weaponName + "%28Minimal%20Wear%29");
-                $mwst1.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.minimal_wear.localized_name);
-
-                $ftst1=$("#ftSTLink1");
-                $ftst1.attr("href", genericMarketLink + souvenir + weaponName + "%28Field-Tested%29");
-                $ftst1.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.field_tested.localized_name);
-
-                $wwst1=$("#wwSTLink1");
-                $wwst1.attr("href", genericMarketLink + souvenir + weaponName + "%28Well-Worn%29");
-                $wwst1.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.well_worn.localized_name);
-
-                $bsst1=$("#bsSTLink1");
-                $bsst1.attr("href", genericMarketLink + souvenir + weaponName + "%28Battle-Scarred%29");
-                $bsst1.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.battle_scarred.localized_name);
-
-                $fnst0=$("#fnSTLink0");
-                $fnst0.attr("href", genericMarketLink + souvenir + weaponName + "%28Factory%20New%29");
-                $fnst0.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.factory_new.localized_name);
-
-                $mwst0=$("#mwSTLink0");
-                $mwst0.attr("href", genericMarketLink + souvenir + weaponName + "%28Minimal%20Wear%29");
-                $mwst0.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.minimal_wear.localized_name);
-
-                $ftst0=$("#ftSTLink0");
-                $ftst0.attr("href", genericMarketLink + souvenir + weaponName + "%28Field-Tested%29");
-                $ftst0.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.field_tested.localized_name);
-
-                $wwst0=$("#wwSTLink0");
-                $wwst0.attr("href", genericMarketLink + souvenir + weaponName + "%28Well-Worn%29");
-                $wwst0.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.well_worn.localized_name);
-
-                $bsst0=$("#bsSTLink0");
-                $bsst0.attr("href", genericMarketLink + souvenir + weaponName + "%28Battle-Scarred%29");
-                $bsst0.find("span").text(chrome.i18n.getMessage("souvenir")+ exteriors.battle_scarred.localized_name);
-            }
-            else{
-                $sv = $(".souvenirYellow.exteriorsLink");
-                if($sv.length!==0){
-                    $sv.addClass("stattrakOrange");
-                    $sv.removeClass("souvenirYellow");
-                }
-                $("#fnSTLink1").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Factory%20New%29");
-                $("#mwSTLink1").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Minimal%20Wear%29");
-                $("#ftSTLink1").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Field-Tested%29");
-                $("#wwSTLink1").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Well-Worn%29");
-                $("#bsSTLink1").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Battle-Scarred%29");
-
-                $("#fnSTLink0").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Factory%20New%29");
-                $("#mwSTLink0").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Minimal%20Wear%29");
-                $("#ftSTLink0").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Field-Tested%29");
-                $("#wwSTLink0").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Well-Worn%29");
-                $("#bsSTLink0").attr("href", genericMarketLink + star + stattrak + weaponName + "%28Battle-Scarred%29");
+                stOrSvClass = "souvenirYellow";
+                stOrSv = souvenir;
+                linkMidPart = souvenir;
             }
 
-            if(item.exterior===undefined){
-                $("#otherExteriors1").hide();
-                $("#otherExteriors0").hide();
+            let otherExteriors = `
+            <div class="descriptor otherExteriors">
+                <span>${chrome.i18n.getMessage("links_to_other_exteriors")}:</span>
+                <ul>
+                    <li><a href="${genericMarketLink + star + weaponName + "%28Factory%20New%29"}" target="_blank">${exteriors.factory_new.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Factory%20New%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.factory_new.localized_name}</span></a></li>
+                    <li><a href="${genericMarketLink + star + weaponName + "%28Minimal%20Wear%29"}"" target="_blank">${exteriors.minimal_wear.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Minimal%20Wear%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.minimal_wear.localized_name}</span></a></li>
+                    <li><a href="${genericMarketLink + star + weaponName + "%28Field-Tested%29"}"" target="_blank">${exteriors.field_tested.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Field-Tested%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.field_tested.localized_name}</span></a></li>
+                    <li><a href="${genericMarketLink + star + weaponName + "%28Well-Worn%29"}"" target="_blank">${exteriors.well_worn.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Well-Worn%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.well_worn.localized_name}</span></a></li>
+                    <li><a href="${genericMarketLink + star + weaponName + "%28Battle-Scarred%29"}"" target="_blank">${exteriors.battle_scarred.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Battle-Scarred%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.battle_scarred.localized_name}</span></a></li>
+                </ul>
+                <span>${chrome.i18n.getMessage("not_every_available")}</span>
+            </div>
+            `;
+
+            if(item.exterior !== undefined){
+                document.querySelectorAll("#iteminfo1_item_descriptors, #iteminfo0_item_descriptors").forEach((descriptor) => descriptor.insertAdjacentHTML("afterend", otherExteriors));
             }
         }
     }
     else{
-        $("#iteminfo1_countdown").hide();
-        $("#iteminfo0_countdown").hide();
+        document.querySelectorAll(".countdown").forEach((countdown) => countdown.style.display = "none");
     }
 }
 
@@ -707,26 +519,19 @@ function removeElements() {
 }
 
 // gets the asset id of the item that is currently selected
-function getAssetIDofActive() {
-    return  $(".activeInfo")[0].id.split("730_2_")[1];
-}
+function getAssetIDofActive() {return getAssetIDOfElement(document.querySelector(".activeInfo"))}
 
-//gets the details of an item by matching the passed asset id with the ones from the api call
+// gets the details of an item by matching the passed asset id with the ones from the api call
 function getItemByAssetID(assetidToFind){
-    if (items === undefined || items.length === 0) {
-        return false
-    }
+    if (items === undefined || items.length === 0) return false;
     return $.grep(items, function(e){ return e.assetid === assetidToFind; })[0];
 }
 
-//manages the trade lock countdown
 function countDown(dateToCountDownTo){
     if(!countingDown){
         countingDown = true;
-        countDownID = setInterval(function() {
-            $(".countdown").each(function () {
-                let $this = $(this);
-
+        countDownID = setInterval(() =>{
+            document.querySelectorAll(".countdown").forEach((countdown) => {
                 let now = new Date().getTime();
                 let distance = new Date(dateToCountDownTo) - now;
                 let days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -734,21 +539,19 @@ function countDown(dateToCountDownTo){
                 let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 let seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                $this.text(days + "d " + hours + "h "
-                    + minutes + "m " + seconds + "s " + "remains");
+                countdown.innerText = days + "d " + hours + "h " + minutes + "m " + seconds + "s " + "remains";
 
                 if (distance < 0) {
                     clearInterval(countDownID);
-                    $this.hide();
-                    $tradability1 = $("#iteminfo1_tradability");
-                    $tradability1.text("Tradable");
-                    $tradability1.addClass("tradable");
-                    $tradability0 = $("#iteminfo0_tradability");
-                    $tradability0.text("Tradable");
-                    $tradability0.addClass("tradable");
+                    countdown.style.display = "none";
+                    document.querySelectorAll(".tradabilityDiv").forEach (tradabilityDiv => {
+                        tradabilityDiv.innerText = "Tradable";
+                        tradabilityDiv.classList.add("tradable");
+                    });
+
                 }
-            }, 1000);
-        });
+            });
+        }, 1000);
     }
     else{
         clearInterval(countDownID);
@@ -802,7 +605,7 @@ function changeName(name, color, link){
 }
 
 function addClickListener(){
-    $(".module").click(function () {
+    $(".lowerModule").click(function () {
         $module = $(this);
         let bookmark = {
             itemInfo: getItemByAssetID(getAssetIDofActive()),
@@ -826,12 +629,6 @@ function addClickListener(){
                 });
             });
         });
-    });
-    $("#showTechnical1").click(function () {
-        $("#floatTechnical1").toggle();
-    });
-    $("#showTechnical0").click(function () {
-        $("#floatTechnical0").toggle();
     });
 
     let sihSort = document.getElementById("Lnk_SortItems");

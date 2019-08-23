@@ -65,6 +65,10 @@ progress {
     }
 }
 
+.hidden {
+    display: none;
+}
+
 .progress {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -182,7 +186,6 @@ progress {
 
 .floatTechnical{
     margin-top: 0.5rem;
-    display: none;
 }
 
 .showTechnical{
