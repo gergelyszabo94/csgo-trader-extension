@@ -103,7 +103,7 @@ let observer = new MutationObserver(function(mutations, observer) {
         addFunctionBar();
     }
     else{
-        removeElements();
+        cleanUpElements(true);
     }
 });
 
@@ -258,7 +258,7 @@ function addElements(){
         document.querySelectorAll("#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors").forEach((tagsElement) => tagsElement.parentNode.removeChild(tagsElement));
 
         // cleans up previously added elements
-        document.querySelectorAll(".upperModule, .lowerModule, .otherExteriors").forEach((element) => element.parentNode.removeChild(element));
+        cleanUpElements(false);
 
         // removes previously added listeners
         document.querySelectorAll(".showTechnical").forEach(showTechnical => showTechnical.removeEventListener("click"));
@@ -474,7 +474,6 @@ function addElements(){
             let stOrSv = stattrakPretty;
             let stOrSvClass = "stattrakOrange";
             let linkMidPart = star + stattrak;
-            console.log("issouvenir: " + item.isSouvenir + "thereis: " + thereSouvenirForThisItem);
             if(item.isSouvenir||thereSouvenirForThisItem){
                 stOrSvClass = "souvenirYellow";
                 stOrSv = souvenir;
@@ -506,16 +505,9 @@ function addElements(){
 }
 
 
-function removeElements() {
-    let itemsWiththeseSelectorsToRemove = [".otherExteriors", "a.hover_item_name", ".duplicate", ".customStickers", ".countdown", ".bookmark", ".floatBar", ".descriptor.tradability", ".nametag"];
-    itemsWiththeseSelectorsToRemove.forEach((selector) =>{
-        document.querySelectorAll(selector).forEach((element) =>{
-            element.style.display = "none";
-        })
-    });
-    $("#iteminfo0_item_name").show();
-    $("#iteminfo1_item_name").show();
-    //removeNote();
+function cleanUpElements(nonCSGOInventory) {
+    document.querySelectorAll(".upperModule, .lowerModule, .otherExteriors, .custom_name").forEach((element) => element.parentNode.removeChild(element));
+    if(nonCSGOInventory) document.querySelectorAll(".hover_item_name").forEach((name) => name.classList.remove("hidden"));
 }
 
 // gets the asset id of the item that is currently selected
@@ -577,31 +569,12 @@ function countDown(dateToCountDownTo){
 // }
 
 function changeName(name, color, link){
-    $itemName0 = $("#iteminfo0_item_name");
-    $itemName1 = $("#iteminfo1_item_name");
-    let newNameElement0 = `<a class="hover_item_name" id="item_name0" style="color: ${color}" href="${link}" target="_blank">${name}</a>`;
-    let newNameElement1 = `<a class="hover_item_name" id="item_name1" style="color: ${color}" href="${link}" target="_blank">${name}</a>`;
+    let newNameElement = `<a class="hover_item_name custom_name" style="color: ${color}" href="${link}" target="_blank">${name}</a>`;
 
-    if($("#item_name0").length===0&&$("#item_name1").length===0){
-        $itemName0.after(newNameElement0);
-        $itemName1.after(newNameElement1);
-    }
-    else{
-        $newItemname0 =  $("#item_name0");
-        $newItemname1 =  $("#item_name1");
-        $newItemname0.attr({
-            href: link,
-            style: `color: #${color}`
-        });
-        $newItemname0.text(name);
-        $newItemname1.attr({
-            href: link,
-            style: `color: #${color}`
-        });
-        $newItemname1.text(name);
-    }
-    $itemName0.hide();
-    $itemName1.hide();
+    document.querySelectorAll(".hover_item_name").forEach((name) => {
+        name.insertAdjacentHTML("afterend", newNameElement);
+        name.classList.add("hidden");
+    });
 }
 
 function addClickListener(){
