@@ -19798,7 +19798,7 @@ const defaultPopupLinks = [
     {
         id: "tradeoffers",
         name: "Trade Offers",
-        url: "https://steamcommunity.com/${steamIDOfUser}/tradeoffers",
+        url: "https://steamcommunity.com/",
         active: true
     },
 ];
