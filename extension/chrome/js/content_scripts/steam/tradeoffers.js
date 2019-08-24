@@ -6,17 +6,12 @@ updateLoggedInUserID();
 //this only happens when the tab is opened in the background, https://www.chromestatus.com/feature/5527160148197376
 //this is a dirty but working fix for that
 let thisManyTimes = 15;
-(function () {
-    let id = setInterval(function(){
-        if(thisManyTimes>0){
-            overrideShowTradeOffer();
-            overrideDecline();
-        }
-        else{
-            clearInterval(id);
-        }
-        thisManyTimes--;
-    }, 1000);
-})();
-
+let intervalID = setInterval(() =>{
+    if(thisManyTimes > 0){
+        overrideShowTradeOffer();
+        overrideDecline();
+    }
+    else clearInterval(intervalID);
+    thisManyTimes--;
+}, 1000);
 

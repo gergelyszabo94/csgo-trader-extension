@@ -12,7 +12,7 @@ window.addEventListener('message', e => {
             let assetid = listings[listing].asset.id;
 
             for(let asset in assets){
-                let stickers = parseStickerInfo(assets[asset].descriptions, "search");
+                let stickers = parseStickerInfo(assets[asset].descriptions, 'search');
 
                 if(assetid === assets[asset].id){
                     listings[listing].asset = assets[asset];
@@ -26,7 +26,7 @@ window.addEventListener('message', e => {
 });
 
 //sends the message to the page side to get the info
-const getItems = function() {
+const getItems = () =>{
     window.postMessage(
         {
             type: 'requestItems'
@@ -38,8 +38,8 @@ const getItems = function() {
     });
 };
 
-//this injected script listens to the messages from the extension side and responds with the page context info needed
-let scriptToInject = `<script id="getItems">
+// this injected script listens to the messages from the extension side and responds with the page context info needed
+let getItemsScript = `
     window.addEventListener('message', (e) => {
         if (e.data.type == 'requestItems') {
             window.postMessage({
@@ -49,8 +49,8 @@ let scriptToInject = `<script id="getItems">
             }, '*');
         }
     });
-</script>`;
-$("body").append(scriptToInject);
+    `;
+injectToPage(getItemsScript, false, 'getItems', null);
 
 const exteriorselement = `
     <div class="descriptor otherExteriors" id="otherExteriors">

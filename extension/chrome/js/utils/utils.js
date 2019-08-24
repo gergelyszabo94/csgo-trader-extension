@@ -613,14 +613,8 @@ function getOfferStyleSteamID(steamID64){
 
 //gets the steam id of the user that's profile this script is run on
 function getProfileOwnerSteamID(){
-    let scriptToInject = `
-    <script id="getProfileOwnerSteamID">
-    document.querySelector("body").setAttribute("steamidOfProfileOwner", g_rgProfileData.steamid);
-</script>`;
-    $("body").append(scriptToInject);
-    let result = $("body").attr("steamidOfProfileOwner");
-    $("#getProfileOwnerSteamID").remove();
-    return result;
+    let steamidOfProfileOwnerScript = `document.querySelector('body').setAttribute('steamidOfProfileOwner', g_rgProfileData.steamid);`;
+    return injectToPage(steamidOfProfileOwnerScript, true, 'steamidOfProfileOwner', 'steamidOfProfileOwner');
 }
 
 
@@ -632,25 +626,13 @@ function getUserSteamID(){
 
 //gets the other party's steam id in a trade offer
 function getTradePartnerSteamID(){
-    let scriptToInject = `
-    <script id="getTradePartnerSteamID">
-    document.querySelector("body").setAttribute("TradePartnerSteamID", g_ulTradePartnerSteamID);
-</script>`;
-    $("body").append(scriptToInject);
-    let result =  $("body").attr("TradePartnerSteamID");
-    $("#getTradePartnerSteamID").remove();
-    return result;
+    let tradePartnerSteamIDScript = `document.querySelector('body').setAttribute('tradePartnerSteamID', g_ulTradePartnerSteamID);`;
+    return injectToPage(tradePartnerSteamIDScript, true, 'tradePartnerSteamID', 'tradePartnerSteamID')
 }
 
 function getInventoryOwnerID(){
-    let scriptToInject = `
-    <script id="getInventoryOwnerID">
-    document.querySelector("body").setAttribute("inventoryOwnerID", UserYou.GetSteamId());
-</script>`;
-    $("body").append(scriptToInject);
-    let result = $("body").attr("inventoryOwnerID");
-    $("#getInventoryOwnerID").remove();
-    return result;
+    let inventoryOwnerIDScript = `document.querySelector('body').setAttribute('inventoryOwnerID', UserYou.GetSteamId());`;
+    return injectToPage(inventoryOwnerIDScript, true, 'inventoryOwnerID', 'inventoryOwnerID')
 }
 
 function warnOfScammer(steamID, page) {
@@ -1118,15 +1100,19 @@ function getPrice(market_hash_name, dopplerInfo, prices, provider, exchange_rate
     };
 }
 
+// inject scripts from content scripts the the page context, usually to access variables or override functionality
 function injectToPage(scriptString, toRemove, id, executeAndReturn){
+    // removes previously added instance of the script
+    let elementFromBefore = document.getElementById(id);
+    if(elementFromBefore !== null) elementFromBefore.parentElement.removeChild(elementFromBefore);
+
     let toInject = document.createElement('script');
     toInject.id = id;
     toInject.innerHTML = scriptString;
     (document.head || document.documentElement).appendChild(toInject);
 
-    let result = null;
-    if(executeAndReturn === 'getUserSteamID') result =  document.querySelector('body').getAttribute('steamidOfLoggedinUser');
-
+    let simpleAttributeParsing = ['getUserSteamID', 'steamidOfProfileOwner', 'tradePartnerSteamID', 'inventoryOwnerID'];
+    let result = simpleAttributeParsing.includes(executeAndReturn) ? document.querySelector('body').getAttribute(executeAndReturn) : null;
 
     if(toRemove) document.head.removeChild(toInject);
     return result;
