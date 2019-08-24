@@ -1,3 +1,5 @@
+updateLoggedInUserID();
+
 // the promise will be stored here temporarily
 let itemsPromise = undefined;
 

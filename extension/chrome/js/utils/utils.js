@@ -624,16 +624,10 @@ function getProfileOwnerSteamID(){
 }
 
 
-//gets steamid of the user logged into steam (on profile pages)
+// gets SteamID of the user logged into steam (returns false if there is no user logged in)
 function getUserSteamID(){
-    let scriptToInject = `
-    <script id="getUserSteamID">
-    document.querySelector("body").setAttribute("steamidOfLoggedinUser", g_steamID);
-</script>`;
-    $("body").append(scriptToInject);
-    let result =  $("body").attr("steamidOfLoggedinUser");
-    $("#getUserSteamID").remove();
-    return result;
+    let getUserSteamIDScript = `document.querySelector('body').setAttribute('steamidOfLoggedinUser', g_steamID);`;
+    return injectToPage(getUserSteamIDScript, true, 'getUserSteamID', 'getUserSteamID');
 }
 
 //gets the other party's steam id in a trade offer
@@ -1124,12 +1118,24 @@ function getPrice(market_hash_name, dopplerInfo, prices, provider, exchange_rate
     };
 }
 
-function injectToPage(scriptString, toRemove, id){
-    let toInject = document.createElement("script");
+function injectToPage(scriptString, toRemove, id, executeAndReturn){
+    let toInject = document.createElement('script');
     toInject.id = id;
     toInject.innerHTML = scriptString;
     (document.head || document.documentElement).appendChild(toInject);
-    if(toRemove){
-        document.head.removeChild(toInject);
+
+    let result = null;
+    if(executeAndReturn === 'getUserSteamID') result =  document.querySelector('body').getAttribute('steamidOfLoggedinUser');
+
+
+    if(toRemove) document.head.removeChild(toInject);
+    return result;
+}
+
+// updates the SteamID of the extension's user in storage
+function updateLoggedInUserID(){
+    let steamID = getUserSteamID();
+    if(steamID !== "false" && steamID !== false){
+        chrome.storage.local.set({steamIDOfUser: steamID}, () =>{});
     }
 }

@@ -33,8 +33,10 @@ chrome.runtime.onInstalled.addListener((details) =>{
                 notifyOnUpdate: false,
                 offerSortingMode: sortingModes.default.key,
                 switchToOtherInventory: false,
-                popupLinks: defaultPopupLinks
+                popupLinks: defaultPopupLinks,
+                steamIDOfUser: ''
             }, () =>{});
+
         chrome.browserAction.setBadgeText({text: 'I'});
         chrome.notifications.create('installed', {
             type: 'basic',
@@ -51,7 +53,7 @@ chrome.runtime.onInstalled.addListener((details) =>{
             'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems',
             'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode',
             'pricesLastRefreshed', 'prices', 'currency', 'exchangeRate', 'exchangeRates', 'hideOtherExtensionPrices','inventorySortingMode',
-            'notifyOnUpdate', 'offerSortingMode', 'switchToOtherInventory', 'popupLinks'], (result) =>{
+            'notifyOnUpdate', 'offerSortingMode', 'switchToOtherInventory', 'popupLinks', 'steamIDOfUser'], (result) =>{
             if(result.quickDeclineOffer === undefined) chrome.storage.local.set({quickDeclineOffer: true}, ()=>{});
             if(result.openOfferInTab === undefined) chrome.storage.local.set({openOfferInTab: true}, ()=>{});
             if(result.showPlusRepButton === undefined) chrome.storage.local.set({showPlusRepButton: true}, () =>{});
@@ -83,6 +85,7 @@ chrome.runtime.onInstalled.addListener((details) =>{
             if(result.offerSortingMode === undefined) chrome.storage.local.set({offerSortingMode: sortingModes.default.key}, () =>{});
             if(result.switchToOtherInventory === undefined) chrome.storage.local.set({switchToOtherInventory: false}, () =>{});
             if(result.popupLinks === undefined) chrome.storage.local.set({popupLinks: defaultPopupLinks}, () =>{});
+            if(result.steamIDOfUser === undefined) chrome.storage.local.set({steamIDOfUser: ''}, () =>{});
         });
 
         chrome.browserAction.setBadgeText({text: 'U'});

@@ -1,3 +1,4 @@
 addReplytoCommentsFunctionality();
 addCommentsMutationObserver();
 reportComments();
+updateLoggedInUserID();

@@ -1,5 +1,7 @@
 overridePopulateActions();
 
+updateLoggedInUserID();
+
 const upperModule = `
 <div class="upperModule">
     <div class="nametag"></div>

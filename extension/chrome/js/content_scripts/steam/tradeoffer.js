@@ -157,8 +157,10 @@ function getInventories(){
     }
 }
 
-//adds "get float value" action item
+// adds "get float value" action item
 overrideHandleTradeActionMenu();
+
+updateLoggedInUserID();
 
 chrome.storage.local.get(['markScammers'], function(result) {
     if(result.markScammers){

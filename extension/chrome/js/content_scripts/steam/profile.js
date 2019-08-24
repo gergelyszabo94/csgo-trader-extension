@@ -1,5 +1,6 @@
 //ensures that we are on a profile page, it's not possible with simple regex
 if($("body").hasClass("profile_page")){
+    updateLoggedInUserID();
     const profileOwnerSteamID = getProfileOwnerSteamID();
     const copyPermalink = `<a class="popup_menu_item" href="#" id="copy_profile_perma_link"><img style="width: 16px; height: 16px" src="${chrome.runtime.getURL("images/paperclip.png")}">&nbsp; Copy Profile Permalink</a>`;
     const textareaToCopy = `<textarea id="text_area_to_copy_permalink" style="position: absolute; left: -9999px" readonly="">https://steamcommunity.com/profiles/${profileOwnerSteamID}</textarea>`;
