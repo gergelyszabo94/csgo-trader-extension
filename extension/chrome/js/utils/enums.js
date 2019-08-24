@@ -19763,3 +19763,42 @@ const sortingModes = {
         name: "Tradability (tradable to untradable)"
     },
 };
+
+const defaultPopupLinks = [
+    {
+        id: "about",
+        name: "About",
+        url: "about.html",
+        active: true
+    },
+    {
+        id: "options",
+        name: "Options",
+        url: "options.html",
+        active: true
+    },
+    {
+        id: "changelog",
+        name: "Changelog",
+        url: "https://csgotrader.app/changelog/",
+        active: true
+    },
+    {
+        id: "bookmarks",
+        name: "Bookmarks",
+        url: "bookmarks.html",
+        active: true
+    },
+    {
+        id: "inventory",
+        name: "Inventory",
+        url: "https://steamcommunity.com/my/inventory/",
+        active: true
+    },
+    {
+        id: "tradeoffers",
+        name: "Trade Offers",
+        url: "https://steamcommunity.com/${steamIDOfUser}/tradeoffers",
+        active: true
+    },
+];

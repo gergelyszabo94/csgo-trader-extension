@@ -199,68 +199,6 @@ loungebump.addEventListener("click", function () {
     }
 });
 
-// get all checkbox elements for popups
-let aboutPopup = document.getElementById("aboutPopup");
-let optionsPopup = document.getElementById("optionsPopup");
-let changelogPopup = document.getElementById("changelogPopup");
-let bookmarksPopup = document.getElementById("bookmarksPopup");
-let inventoryPopup = document.getElementById("inventoryPopup");
-let tradeofferPopup = document.getElementById("tradeofferPopup");
-
-// create listeners and chrome storage functions for each one of them
-
-chrome.storage.local.get('aboutPopup', function(result){ 
-    aboutPopup.checked = result.aboutPopup;
-});
-
-aboutPopup.addEventListener("click", function () {
-    chrome.storage.local.set({aboutPopup: aboutPopup.checked}, function() {});
-});
-
-chrome.storage.local.get('optionsPopup', function(result){ 
-    optionsPopup.checked = result.optionsPopup;
-});
-
-optionsPopup.addEventListener("click", function () {
-    chrome.storage.local.set({optionsPopup: optionsPopup.checked}, function() {});
-});
-
-chrome.storage.local.get('changelogPopup', function(result){ 
-    changelogPopup.checked = result.changelogPopup;
-});
-
-changelogPopup.addEventListener("click", function () {
-    chrome.storage.local.set({changelogPopup: changelogPopup.checked}, function() {});
-});
-
-chrome.storage.local.get('bookmarksPopup', function(result){ 
-    bookmarksPopup.checked = result.bookmarksPopup;
-});
-
-
-bookmarksPopup.addEventListener("click", function () {
-    chrome.storage.local.set({bookmarksPopup: bookmarksPopup.checked}, function() {});
-});
-
-chrome.storage.local.get('inventoryPopup', function(result){ 
-    inventoryPopup.checked = result.inventoryPopup;
-});
-
-
-inventoryPopup.addEventListener("click", function () {
-    chrome.storage.local.set({inventoryPopup: inventoryPopup.checked}, function() {});
-});
-
-chrome.storage.local.get('tradeofferPopup', function(result){ 
-    tradeofferPopup.checked = result.tradeofferPopup;
-});
-
-
-tradeofferPopup.addEventListener("click", function () {
-    chrome.storage.local.set({tradeofferPopup: tradeofferPopup.checked}, function() {});
-});
-
-
 // textbox modals
 
 repmessage = document.getElementById("reputationMessageValue");
@@ -430,9 +368,9 @@ pricingModeSelect.addEventListener("click", function () {
     let mode = pricingModeSelect.options[pricingModeSelect.selectedIndex].value;
     let provider = pricingProviderSelect.options[pricingProviderSelect.selectedIndex].value;
     aboutTheMode.innerText = pricingProviders[provider].pricing_modes[mode].description;
-        chrome.storage.local.set({pricingMode: mode}, function() {
-            updatePrices();
-        });
+    chrome.storage.local.set({pricingMode: mode}, function() {
+        updatePrices();
+    });
 });
 
 
@@ -472,4 +410,31 @@ chrome.storage.local.get('offerSortingMode', function(result) {
 offerSortingSelect.addEventListener("click", function () {
     let offerSortingMode = offerSortingSelect.options[offerSortingSelect.selectedIndex].value;
     chrome.storage.local.set({offerSortingMode: offerSortingMode}, function() {});
+});
+
+
+// list
+
+let popupLinksToShow = document.getElementById('popupLinksToShow');
+
+chrome.storage.local.get('popupLinks', (result) => {
+    result.popupLinks.forEach(link =>{
+        let linkElement = document.createElement('li');
+        linkElement.id = link.id;
+        linkElement.innerText = link.name;
+        if(link.active) linkElement.classList.add('active');
+
+        linkElement.addEventListener('click', (event) =>{
+            // does not allow to remove the options one so users can always find their way back here
+            if(event.target.id !== 'options'){
+                event.target.classList.toggle('active');
+                chrome.storage.local.get('popupLinks', (result) =>{
+                    result.popupLinks.forEach(link =>{if(link.id === event.target.id) link.active =! link.active});
+                    chrome.storage.local.set({popupLinks: result.popupLinks}, () =>{});
+                });
+            }
+        });
+
+        popupLinksToShow.appendChild(linkElement);
+    });
 });
