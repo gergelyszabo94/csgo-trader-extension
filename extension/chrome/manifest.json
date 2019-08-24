@@ -38,7 +38,7 @@
       "run_at" : "document_idle",
       "js": [
         "js/thirdparty/jquery-3.3.1.min.js",
-        "js/utils/steamFunctionOverride.js",
+        "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
         "js/content_scripts/steam/inventory.js"],
@@ -49,7 +49,7 @@
       "run_at" : "document_idle",
       "js": [
         "js/thirdparty/jquery-3.3.1.min.js",
-        "js/utils/steamFunctionOverride.js",
+        "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
         "js/content_scripts/steam/tradeoffer.js"],
@@ -60,7 +60,7 @@
       "run_at" : "document_idle",
       "js": [
         "js/thirdparty/jquery-3.3.1.min.js",
-        "js/utils/steamFunctionOverride.js",
+        "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js" ,
         "js/content_scripts/steam/tradeoffers.js"],
@@ -71,7 +71,7 @@
       "run_at" : "document_idle",
       "js": [
         "js/thirdparty/jquery-3.3.1.min.js",
-        "js/utils/steamFunctionOverride.js",
+        "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
         "js/content_scripts/steam/marketListing.js"],
@@ -86,7 +86,7 @@
       "run_at" : "document_idle",
       "js": [
         "js/thirdparty/jquery-3.3.1.min.js",
-        "js/utils/steamFunctionOverride.js",
+        "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
         "js/content_scripts/steam/profile.js"]
@@ -96,7 +96,7 @@
       "run_at" : "document_idle",
       "js": [
         "js/thirdparty/jquery-3.3.1.min.js",
-        "js/utils/steamFunctionOverride.js",
+        "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
         "js/content_scripts/steam/group.js"]
@@ -106,7 +106,7 @@
       "run_at" : "document_idle",
       "js": [
         "js/thirdparty/jquery-3.3.1.min.js",
-        "js/utils/steamFunctionOverride.js",
+        "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
         "js/content_scripts/steam/sharedfile.js"]
@@ -116,7 +116,7 @@
       "run_at" : "document_idle",
       "js": [
         "js/thirdparty/jquery-3.3.1.min.js",
-        "js/utils/steamFunctionOverride.js",
+        "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
         "js/content_scripts/steam/announcements.js"]
@@ -126,7 +126,7 @@
       "run_at" : "document_idle",
       "js": [
         "js/thirdparty/jquery-3.3.1.min.js",
-        "js/utils/steamFunctionOverride.js",
+        "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
         "js/content_scripts/steam/webchat.js"],
