@@ -168,9 +168,19 @@
                 <tr>
                     <td>Links to show</td>
                     <td style="text-align:center;">
-                        <ul style="list-style: none;" id="popupLinksToShow"></ul>
+                        <div style="list-style: none;" id="popupLinksToShow"></div>
                     </td>
-                    <td>Choose which links you want to see in the popup. "Options" will always be there so you can come back and see this page. Links to be shown are in gold, links to be hidden are in white. Click to switch.</td>
+                    <td>Choose which links you want to see in the popup. "Options" will always be there so you can come back and see this page. Links to be shown are in gold, links to be hidden are in white.
+                        Click it to switch visibility. You can also delete those that you have created before.</td>
+                </tr>
+                <tr>
+                    <td>Add your own links</td>
+                    <td style="text-align:center;">
+                        Name on popup: <input class="orangeTextField" type="text" id="popupLinkName"><br>
+                        URL to point to: <input class="orangeTextField" type="text" id="popupLinURL"><br>
+                        <span class="active" id="savePopupLink">Save</span>
+                    </td>
+                    <td>You can add your own links that would appear in the popup.</td>
                 </tr>
             </tbody>
         </table>
@@ -423,7 +433,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <textarea type="text" id="steamAPIKeyValue"></textarea>
+                <textarea class="orangeBox" type="text" id="steamAPIKeyValue"></textarea>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -443,7 +453,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <textarea type="text" id="reputationMessageValue"></textarea>
+                <textarea class="orangeBox" type="text" id="reputationMessageValue"></textarea>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -463,7 +473,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <textarea type="text" id="reoccuringMessageValue"></textarea>
+                <textarea class="orangeBox" type="text" id="reoccuringMessageValue"></textarea>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

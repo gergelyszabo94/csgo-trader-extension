@@ -39,14 +39,6 @@ nav{
     background-color: #23272b;
 }
 
-textarea, input[type=text]{
-    background-color: #23272b;
-    color: #e1e1e1;
-    border-color: darkorange;
-    width: 100%;
-    height: 100px;
-}
-
 input[type=number]::-webkit-inner-spin-button {
     -webkit-appearance: none;
 }
@@ -101,6 +93,25 @@ select:active {
 }
 
 /*Classes*/
+
+.orangeBox{
+    background-color: #23272b;
+    color: #e1e1e1;
+    border-color: darkorange;
+    width: 100%;
+    height: 100px;
+}
+
+.orangeTextField{
+    background-color: #23272b;
+    color: #e1e1e1;
+    border-color: darkorange;
+}
+
+.delete{
+    color: var(--steam-nametag-red);
+    margin-left: 5px;
+}
 
 .navlogo{
     margin-right: 10px;

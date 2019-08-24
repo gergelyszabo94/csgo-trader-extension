@@ -73,7 +73,7 @@ chrome.storage.local.get('bookmarks', function(result) {
             <i class="fas fa-trash remove" data-index="${index}" data-toggle="tooltip" data-placement="top" title="Remove the item from your bookmarks"></i>
             </div>
             <h4>Comment</h4>
-                <textarea class="comment" data-index="${index}">${element.comment}</textarea>
+                <textarea class="comment orangeBox" data-index="${index}">${element.comment}</textarea>
             </div>
         </div>
         </div>`;

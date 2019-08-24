@@ -419,10 +419,14 @@ let popupLinksToShow = document.getElementById('popupLinksToShow');
 
 chrome.storage.local.get('popupLinks', (result) => {
     result.popupLinks.forEach(link =>{
-        let linkElement = document.createElement('li');
+        let linkDiv = document.createElement('div');
+        let linkElement = document.createElement('span');
+
         linkElement.id = link.id;
         linkElement.innerText = link.name;
         if(link.active) linkElement.classList.add('active');
+
+        linkDiv.appendChild(linkElement);
 
         linkElement.addEventListener('click', (event) =>{
             // does not allow to remove the options one so users can always find their way back here
@@ -435,6 +439,45 @@ chrome.storage.local.get('popupLinks', (result) => {
             }
         });
 
-        popupLinksToShow.appendChild(linkElement);
+        let defaultPopupLinkIDs = [];
+        defaultPopupLinks.forEach(link =>{defaultPopupLinkIDs.push(link.id)});
+        if(!defaultPopupLinkIDs.includes(link.id)) {
+            let removeLinkElement = document.createElement('span');
+            removeLinkElement.innerText = 'Delete';
+            removeLinkElement.classList.add('delete');
+            removeLinkElement.id = link.id;
+
+            linkDiv.appendChild(removeLinkElement);
+
+            removeLinkElement.addEventListener('click', (event) =>{
+                chrome.storage.local.get('popupLinks', (result) => {
+                    let newpopupLinks = [];
+                    result.popupLinks.forEach(link => {
+                            if (link.id !== event.target.id) newpopupLinks.push(link)
+                        }
+                    );
+                    chrome.storage.local.set({popupLinks: newpopupLinks}, () => {location.reload()});
+                });
+            });
+        }
+
+        popupLinksToShow.appendChild(linkDiv);
+    });
+});
+
+// form
+
+document.getElementById('savePopupLink').addEventListener('click', () =>{
+    let linkName = document.getElementById('popupLinkName').value;
+    let linkID = linkName.replace(/\W/g, '').toLowerCase();  // removes non-alphanumeric chars - https://stackoverflow.com/questions/9364400/remove-not-alphanumeric-characters-from-string-having-trouble-with-the-char
+    let linkURL = document.getElementById('popupLinURL').value;
+    chrome.storage.local.get('popupLinks', (result) => {
+        result.popupLinks.push({
+            id: linkID,
+            name: linkName,
+            url: linkURL,
+            active: true
+        });
+        chrome.storage.local.set({popupLinks: result.popupLinks}, () =>{location.reload();});
     });
 });
