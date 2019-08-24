@@ -30,6 +30,12 @@ chrome.runtime.onInstalled.addListener(function(details) {
                 exchangeRate: 1.0,
                 exchangeRates: null,
                 hideOtherExtensionPrices: true,
+                aboutPopup: true,
+                optionsPopup: true,
+                changelogPopup: true,
+                bookmarksPopup: true,
+                inventoryPopup: true,
+                tradeofferPopup: true,
                 inventorySortingMode: sortingModes.default.key,
                 notifyOnUpdate: false,
                 offerSortingMode: sortingModes.default.key,
@@ -50,7 +56,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
             'quickDeclineOffer', 'openOfferInTab', 'showPlusRepButton', 'reputationMessage', 'showReoccButton', 'reoccuringMessage',
             'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems',
             'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode',
-            'pricesLastRefreshed', 'prices', 'currency', 'exchangeRate', 'exchangeRates', 'hideOtherExtensionPrices', 'inventorySortingMode',
+            'pricesLastRefreshed', 'prices', 'currency', 'exchangeRate', 'exchangeRates', 'hideOtherExtensionPrices', 'aboutPopup', 
+            'optionsPopup', 'changelogPopup', 'booksmarksPopup', 'inventoryPopup', 'tradeofferPopup', 'inventorySortingMode',
             'notifyOnUpdate', 'offerSortingMode', 'switchToOtherInventory'], function(result) {
             if(result.quickDeclineOffer===undefined){
                 chrome.storage.local.set({quickDeclineOffer: true}, function() {});

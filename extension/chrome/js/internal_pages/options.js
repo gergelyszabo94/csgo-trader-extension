@@ -199,6 +199,67 @@ loungebump.addEventListener("click", function () {
     }
 });
 
+// get all checkbox elements for popups
+let aboutPopup = document.getElementById("aboutPopup");
+let optionsPopup = document.getElementById("optionsPopup");
+let changelogPopup = document.getElementById("changelogPopup");
+let bookmarksPopup = document.getElementById("bookmarksPopup");
+let inventoryPopup = document.getElementById("inventoryPopup");
+let tradeofferPopup = document.getElementById("tradeofferPopup");
+
+// create listeners and chrome storage functions for each one of them
+
+chrome.storage.local.get('aboutPopup', function(result){ 
+    aboutPopup.checked = result.aboutPopup;
+});
+
+aboutPopup.addEventListener("click", function () {
+    chrome.storage.local.set({aboutPopup: aboutPopup.checked}, function() {});
+});
+
+chrome.storage.local.get('optionsPopup', function(result){ 
+    optionsPopup.checked = result.optionsPopup;
+});
+
+optionsPopup.addEventListener("click", function () {
+    chrome.storage.local.set({optionsPopup: optionsPopup.checked}, function() {});
+});
+
+chrome.storage.local.get('changelogPopup', function(result){ 
+    changelogPopup.checked = result.changelogPopup;
+});
+
+changelogPopup.addEventListener("click", function () {
+    chrome.storage.local.set({changelogPopup: changelogPopup.checked}, function() {});
+});
+
+chrome.storage.local.get('bookmarksPopup', function(result){ 
+    bookmarksPopup.checked = result.bookmarksPopup;
+});
+
+
+bookmarksPopup.addEventListener("click", function () {
+    chrome.storage.local.set({bookmarksPopup: bookmarksPopup.checked}, function() {});
+});
+
+chrome.storage.local.get('inventoryPopup', function(result){ 
+    inventoryPopup.checked = result.inventoryPopup;
+});
+
+
+inventoryPopup.addEventListener("click", function () {
+    chrome.storage.local.set({inventoryPopup: inventoryPopup.checked}, function() {});
+});
+
+chrome.storage.local.get('tradeofferPopup', function(result){ 
+    tradeofferPopup.checked = result.tradeofferPopup;
+});
+
+
+tradeofferPopup.addEventListener("click", function () {
+    chrome.storage.local.set({tradeofferPopup: tradeofferPopup.checked}, function() {});
+});
+
 
 // textbox modals
 
