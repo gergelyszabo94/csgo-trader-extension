@@ -74,7 +74,7 @@
         "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
-        "js/content_scripts/steam/marketListing.js"],
+        "js/content_scripts/steam/market_listing.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
