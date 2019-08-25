@@ -23,8 +23,15 @@ if (document.querySelector('body').classList.contains('profile_page')){
 
                 document.getElementById('reocc').addEventListener('click', () => {
                    document.querySelectorAll('.commentthread_comment.responsive_body_text').forEach(commentThread => {
-                       // regex: replaces whitespaces
-                       if (commentThread.querySelector('.commentthread_comment_text').innerText.replace(/\s/g,'') === result.reoccuringMessage.replace(/\s/g,'')){
+                       // regex: replaces whitespaces and steam text formatting tags
+                       let toReplace = '';
+                       steamTextFormatingTags.forEach(tag => {
+                          toReplace += tag.replace('[','\\[').replace(']', '\\]') + '|';
+                       });
+                       toReplace += '\\s';
+                       let toReplaceRegex = new RegExp(toReplace, 'g');
+
+                       if (commentThread.querySelector('.commentthread_comment_text').innerText.replace(toReplaceRegex,'') === result.reoccuringMessage.replace(toReplaceRegex,'')){
                            commentThread.querySelectorAll('img')[1].click();
                        }
                     });
