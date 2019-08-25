@@ -761,16 +761,19 @@ function reportComments(){
 }
 
 function addDopplerPhase(item, dopplerInfo){
-    if(dopplerInfo!==undefined){
-        item.append(dopplerPhase);
-        $dopplerPhase = item.find(".dopplerPhase");
+    if(dopplerInfo !== undefined){
+        let dopplerDiv = document.createElement('div');
+        dopplerDiv.classList.add('dopplerPhase');
+
         switch (dopplerInfo.short){
-            case "SH": $dopplerPhase.append(sapphire); break;
-            case "RB": $dopplerPhase.append(ruby); break;
-            case "EM": $dopplerPhase.append(emerald); break;
-            case "BP": $dopplerPhase.append(blackPearl); break;
-            default: $dopplerPhase.text(dopplerInfo.short);
+            case "SH": dopplerDiv.insertAdjacentHTML('beforeend', sapphire); break;
+            case "RB": dopplerDiv.insertAdjacentHTML('beforeend', ruby); break;
+            case "EM": dopplerDiv.insertAdjacentHTML('beforeend', emerald); break;
+            case "BP": dopplerDiv.insertAdjacentHTML('beforeend', blackPearl); break;
+            default: dopplerDiv.innerText = dopplerInfo.short;
         }
+
+        item.appendChild(dopplerDiv);
     }
 }
 

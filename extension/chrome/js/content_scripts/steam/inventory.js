@@ -164,7 +164,10 @@ setInterval(() =>{if(!document.hidden) addPerItemInfo(true)}, 60000); // true me
 
 //adds everything that is per item, like trade lock, exterior, doppler phases, border colors
 function addPerItemInfo(updating){
-    $(".slot_app_fraudwarning").css({"top":"19px", "left":"75px"});
+    // moves the nametag warning icon to make space for other elements
+    document.querySelectorAll('.slot_app_fraudwarning').forEach(fraudwarning => {fraudwarning.setAttribute('style', `${fraudwarning.getAttribute('style')}; top: 19px; left: 75px;`)});
+
+
     $items = $(".item.app730.context2");
     if($items.length!==0){
         chrome.storage.local.get(['colorfulItems'], function(result) {
@@ -203,7 +206,7 @@ function addPerItemInfo(updating){
                                 $item.append(`<div class='perItemDate not_tradable'>${item.tradabilityShort}</div>`);
                             }
 
-                            addDopplerPhase($item, item.dopplerInfo);
+                            addDopplerPhase($item.get(0), item.dopplerInfo);
                             if(result.colorfulItems){
                                 if(item.dopplerInfo!==undefined){
                                     $item.css({"border-color": "#"+item.dopplerInfo.color, "background-image": "url()", "background-color": "#"+item.dopplerInfo.color});

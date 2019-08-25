@@ -113,7 +113,7 @@ let inventoryAccessScript = `
             }
         }
     });`;
-injectToPage(inventoryAccessScript, false, "inventoryAccessScript");
+injectToPage(inventoryAccessScript, false, 'inventoryAccessScript');
 
 let tryGettingInventories = setInterval(getInventories,500);
 
@@ -162,119 +162,89 @@ overrideHandleTradeActionMenu();
 
 updateLoggedInUserID();
 
-chrome.storage.local.get(['markScammers'], function(result) {
-    if(result.markScammers){
-        warnOfScammer(getTradePartnerSteamID(), "offer");
-    }
-});
+// changes background and adds a banner if steamrep banned scammer detected
+chrome.storage.local.get('markScammers', result => {if(result.markScammers) warnOfScammer(getTradePartnerSteamID(), 'offer')});
 
 //this script gets injected, it allows communication between the page context and the content script initiated on the page
 //when the function is called it dispatches a an event that we listen to from the content script
 let sendMessageToContentScript = `
     function sendMessageToContentScript(message){
-        let event = new CustomEvent("message", { "detail": message });
+        let event = new CustomEvent('message', { 'detail': message });
         document.dispatchEvent(event);
     }`;
-injectToPage(sendMessageToContentScript, false, "sendMessageToContentScript");
+injectToPage(sendMessageToContentScript, false,'sendMessageToContentScript');
 
-setInterval(function () {
-    chrome.storage.local.get('hideOtherExtensionPrices', function(result) {
-        if(result.hideOtherExtensionPrices && !document.hidden){
-            removeSIHStuff();
-        }
+setInterval(() => {
+    chrome.storage.local.get('hideOtherExtensionPrices', (result) => {
+        if (result.hideOtherExtensionPrices && !document.hidden) removeSIHStuff();
     });
 }, 2000);
 
-document.querySelectorAll(".inventory_user_tab").forEach( (inventoryTab) =>{
-    inventoryTab.addEventListener("click", () => {
+document.querySelectorAll('.inventory_user_tab').forEach( (inventoryTab) => {
+    inventoryTab.addEventListener('click', () => {
         addItemInfo();
-        let sortingSelect = document.getElementById("offer_sorting_mode");
+        let sortingSelect = document.getElementById('offer_sorting_mode');
         sortItems(sortingSelect.options[sortingSelect.selectedIndex].value);
     })
 });
 
-document.addEventListener("message", function(e) {
-    addFloatIndicator(e.detail);
-});
+document.addEventListener('message', (e) => {addFloatIndicator(e.detail)});
 
 function addFloatIndicator(inspectLink) {
-    chrome.runtime.sendMessage({getFloatInfo: inspectLink}, function(response) {
-        let float ="Waiting for csgofloat.com";
-        try{
-            float = response.floatInfo.floatvalue;
-        }
-        catch{
-
-        }
-        let itemToAddFloatTo = findElementByAssetID(inspectLink.split("A")[1].split("D")[0]);
-        itemToAddFloatTo.append(`<span class='floatIndicator'>${float.toFixed(4)}</span>`);
+    chrome.runtime.sendMessage({getFloatInfo: inspectLink}, (response) => {
+        let float = 'Waiting for csgofloat.com';
+        try{float = response.floatInfo.floatvalue}
+        catch{}
+        let itemToAddFloatTo = findElementByAssetID(inspectLink.split('A')[1].split('D')[0]);
+        itemToAddFloatTo.insertAdjacentHTML('beforeend', `<span class='floatIndicator'>${float.toFixed(4)}</span>`);
     });
 }
 
-function findElementByAssetID(assetid){
-    let elementid = "item730_2_" + assetid;
-    return $("#" + elementid);
-}
+function findElementByAssetID(assetID){ return document.getElementById(`item730_2_${assetID}`)}
+//     let elementid = "item730_2_" + assetid;
+//     return $("#" + elementid);
+// }
 
 function addItemInfo() {
-    $(".slot_app_fraudwarning").css({"top":"19px", "left":"75px"});
-    $items = $(".item.app730.context2");
     removeSIHStuff();
-    if($items.length!==0){
-        chrome.storage.local.get(['colorfulItems'], function(result) {
-            $items.each(function () {
-                $item = $(this);
-                if($item.attr("data-processed")===undefined||$item.attr("data-processed")==="false"){
-                    if($item.attr('id')===undefined){ //in case the inventory is not loaded yet
-                        setTimeout(function () {
-                            addPerItemInfo(false);
-                        }, 1000);
-                        return false;
+
+    // moves the nametag warning icon to make space for other elements
+    document.querySelectorAll('.slot_app_fraudwarning').forEach(fraudwarning => {fraudwarning.setAttribute('style', `${fraudwarning.getAttribute('style')}; top: 19px; left: 75px;`)});
+
+    let itemElements = document.querySelectorAll('.item.app730.context2');
+    if (itemElements.length !== 0){
+        chrome.storage.local.get('colorfulItems', (result) => {
+            itemElements.forEach(itemElement =>{
+                if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false'){
+                    // in case the inventory is not loaded yet it retires in a second
+                    if (itemElement.id === undefined) {
+                        setTimeout( () =>{addPerItemInfo(false)}, 1000);
+                        return false
                     }
                     else{
-                        let item = getItemByAssetID(getAssetIDOfElement($item.get(0))); //matches it with the info from the page variables
+                        let item = getItemByAssetID(getAssetIDOfElement(itemElement)); // matches it with the info from the page variables
+                        addDopplerPhase(itemElement, item.dopplerInfo); // won't work yet
 
-                        addDopplerPhase($item, item.dopplerInfo);
                         if(result.colorfulItems){
-                            if(item.dopplerInfo!==undefined){
-                                $item.css({"border-color": "#"+item.dopplerInfo.color, "background-image": "url()", "background-color": "#"+item.dopplerInfo.color});
-                            }
-                            else{
-                                $item.css({"border-color": item.quality.backgroundcolor, "background-image": "url()", "background-color": item.quality.backgroundcolor});
-                            }
+                            if (item.dopplerInfo !== undefined) itemElement.setAttribute('style', `background-image: url(); background-color: #${item.dopplerInfo.color}`);
+                            else itemElement.setAttribute('style', `background-image: url(); background-color: ${item.quality.backgroundcolor}; border-color: ${item.quality.backgroundcolor}`);
                         }
 
-                        let stattrak = "";
-                        if(item.isStatrack){
-                            stattrak = "ST";
-                        }
-                        let souvenir = "";
-                        if(item.isSouvenir){
-                            souvenir = "S";
-                        }
+                        let stattrak = item.isStatrack ? 'ST' : '';
+                        let souvenir = item.isSouvenir ? 'S' : '';
+                        let exterior = item.exterior !== undefined ? item.exterior.localized_short : '';
 
-                        let exterior = "";
-                        if(item.exterior!==undefined){
-                            exterior = item.exterior.localized_short;
-                        }
+                        itemElement.insertAdjacentHTML('beforeend', `<div class='exteriorSTInfo'><span class="souvenirYellow">${souvenir}</span><span class="stattrakOrange">${stattrak}</span><span class="exteriorIndicator">${exterior}</span></div>`);
 
-                        $item.append(`<div class='exteriorSTInfo'><span class="souvenirYellow">${souvenir}</span><span class="stattrakOrange">${stattrak}</span><span class="exteriorIndicator">${exterior}</span></div>`);
-
-                        if(item.price!==undefined && item.price !== "null"){
-                            $item.append(`<div class='priceIndicator'>${item.price.display}</div>`);
-                        }
-
-                        $(this).attr("data-processed", true);
+                        if(item.price !== undefined && item.price !== "null" && item.price !== null) itemElement.insertAdjacentHTML('beforeend', `<div class='priceIndicator'>${item.price.display}</div>`);
+                        itemElement.setAttribute('data-processed', 'true');
                     }
                 }
             });
         });
     }
-    else{ //in case the inventory is not loaded yet
-        setTimeout(function () {
-            addItemInfo();
-        }, 1000);
-    }
+    // in case the inventory is not loaded yet
+    else{setTimeout( () => {addItemInfo()}, 1000)}
 }
 
 function buildInventoryStructure(inventory) {
