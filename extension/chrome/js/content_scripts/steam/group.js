@@ -3,8 +3,4 @@ addCommentsMutationObserver();
 reportComments();
 updateLoggedInUserID();
 
-setInterval(function () {
-    if(/#announcements|#comments/.test(window.location.href)){
-        addReplytoCommentsFunctionality();
-    }
-},2000);
+setInterval( () =>{if(/#announcements|#comments/.test(window.location.href))addReplytoCommentsFunctionality()}, 2000);
