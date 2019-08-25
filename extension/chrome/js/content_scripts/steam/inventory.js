@@ -440,24 +440,24 @@ function addElements(){
             }
 
             // it takes the visible descriptors and checks if the collection includes souvenirs
-            let textOfDescriptors = "";
-            document.querySelectorAll(".descriptor").forEach(descriptor => {
-                if(descriptor.parentNode.classList.contains("item_desc_descriptors") && descriptor.parentNode.parentNode.parentNode.parentNode.style.display !== "none"){
+            let textOfDescriptors = '';
+            document.querySelectorAll('.descriptor').forEach(descriptor => {
+                if(descriptor.parentNode.classList.contains('item_desc_descriptors') && descriptor.parentNode.parentNode.parentNode.parentNode.style.display !== 'none'){
                     textOfDescriptors += descriptor.innerText;
                 }
 
             });
             let thereSouvenirForThisItem =  souvenirExists(textOfDescriptors);
 
-            let genericMarketLink = "https://steamcommunity.com/market/listings/730/";
-            let weaponName = "";
-            let stattrak = "StatTrak%E2%84%A2%20";
-            let stattrakPretty = "StatTrak™";
-            let souvenir = "Souvenir ";
-            let star = "";
+            let genericMarketLink = 'https://steamcommunity.com/market/listings/730/';
+            let weaponName = '';
+            let stattrak = 'StatTrak%E2%84%A2%20';
+            let stattrakPretty = 'StatTrak™';
+            let souvenir = 'Souvenir ';
+            let star = '';
 
             if(item.starInName){
-                star = "%E2%98%85%20";
+                star = '%E2%98%85%20';
             }
 
             if(item.isStatrack){
@@ -752,7 +752,5 @@ function doInitSorting() {
     });
 }
 
-//reloads the page on extension update/reload/uninstall
-chrome.runtime.connect().onDisconnect.addListener(function() {
-    location.reload();
-});
+// reloads the page on extension update/reload/uninstall
+chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});
