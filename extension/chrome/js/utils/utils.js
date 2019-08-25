@@ -621,7 +621,7 @@ function getProfileOwnerSteamID(){
 // gets SteamID of the user logged into steam (returns false if there is no user logged in)
 function getUserSteamID(){
     let getUserSteamIDScript = `document.querySelector('body').setAttribute('steamidOfLoggedinUser', g_steamID);`;
-    return injectToPage(getUserSteamIDScript, true, 'getUserSteamID', 'getUserSteamID');
+    return injectToPage(getUserSteamIDScript, true, 'steamidOfLoggedinUser', 'steamidOfLoggedinUser');
 }
 
 //gets the other party's steam id in a trade offer
@@ -1111,7 +1111,7 @@ function injectToPage(scriptString, toRemove, id, executeAndReturn){
     toInject.innerHTML = scriptString;
     (document.head || document.documentElement).appendChild(toInject);
 
-    let simpleAttributeParsing = ['getUserSteamID', 'steamidOfProfileOwner', 'tradePartnerSteamID', 'inventoryOwnerID'];
+    let simpleAttributeParsing = ['steamidOfLoggedinUser', 'steamidOfProfileOwner', 'tradePartnerSteamID', 'inventoryOwnerID'];
     let result = simpleAttributeParsing.includes(executeAndReturn) ? document.querySelector('body').getAttribute(executeAndReturn) : null;
 
     if(toRemove) document.head.removeChild(toInject);
