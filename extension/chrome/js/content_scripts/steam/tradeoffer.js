@@ -201,9 +201,6 @@ function addFloatIndicator(inspectLink) {
 }
 
 function findElementByAssetID(assetID){ return document.getElementById(`item730_2_${assetID}`)}
-//     let elementid = "item730_2_" + assetid;
-//     return $("#" + elementid);
-// }
 
 function addItemInfo() {
     removeSIHStuff();
@@ -222,7 +219,7 @@ function addItemInfo() {
                         return false
                     }
                     else{
-                        let item = getItemByAssetID(getAssetIDOfElement(itemElement)); // matches it with the info from the page variables
+                        let item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
                         addDopplerPhase(itemElement, item.dopplerInfo);
 
                         if(result.colorfulItems){
@@ -342,14 +339,6 @@ function buildInventoryStructure(inventory) {
     return inventoryArrayToReturn;
 }
 
-//gets the details of an item by matching the passed asset id with the ones from page variables
-function getItemByAssetID(assetidToFind){
-    if (combinedInventories === undefined || combinedInventories.length === 0) {
-        return false
-    }
-    return $.grep(combinedInventories, function(e){ return e.assetid === assetidToFind; })[0];
-}
-
 function removeSIHStuff() {
     $(".des-tag").remove();
     $(".p-price").remove();
@@ -383,7 +372,7 @@ function addInTradeTotals(whose){
     let itemsInTrade = document.getElementById(whose + "_slots").querySelectorAll(".item.app730.context2");
     let inTradeTotal = 0;
     itemsInTrade.forEach(function (inTradeItem) {
-        let item = getItemByAssetID(getAssetIDOfElement(inTradeItem)); //matches it with the info from the page variables
+        let item = getItemByAssetID(combinedInventories, getAssetIDOfElement(inTradeItem)); //matches it with the info from the page variables
         if(item.price!==undefined){
             inTradeTotal += parseFloat(item.price.price);
         }

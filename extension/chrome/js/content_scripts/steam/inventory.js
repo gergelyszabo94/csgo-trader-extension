@@ -152,7 +152,7 @@ function addPerItemInfo(updating){
                         return false
                     }
                     else{
-                        let item = getItemByAssetID(getAssetIDOfElement(itemElement));
+                        let item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
 
                         if (updating){
                             let itemDateElement = itemElement.querySelector('.perItemDate');
@@ -204,7 +204,7 @@ function addElements(){
         let activeID = undefined;
         try {activeID = getAssetIDofActive()}
         catch (e) { console.log("Could not get assetID of active item"); return false}
-        let item = getItemByAssetID(activeID);
+        let item = getItemByAssetID(items, activeID);
 
         // removes "tags" and "tradable after" in one's own inventory
         document.querySelectorAll("#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors").forEach((tagsElement) => tagsElement.parentNode.removeChild(tagsElement));
@@ -454,12 +454,6 @@ function cleanUpElements(nonCSGOInventory) {
 // gets the asset id of the item that is currently selected
 function getAssetIDofActive() {return getAssetIDOfElement(document.querySelector('.activeInfo'))}
 
-// gets the details of an item by matching the passed asset id with the ones from the api call
-function getItemByAssetID(assetIDToFind){
-    if (items === undefined || items.length === 0) return false;
-    for (let item of items) if (item.assetid === assetIDToFind) return item;
-}
-
 function countDown(dateToCountDownTo){
     if(!countingDown){
         countingDown = true;
@@ -506,7 +500,7 @@ function changeName(name, color, link, dopplerInfo){
 }
 
 function addBookmark(module) {
-    let item = getItemByAssetID(getAssetIDofActive());
+    let item = getItemByAssetID(items, getAssetIDofActive());
     let bookmark = {
         itemInfo: item,
         owner: getInventoryOwnerID(),
@@ -615,7 +609,7 @@ function updateSelectedValue(){
     let selectedTotal = 0;
 
     selectedItems.forEach(itemElement =>{
-        let item = getItemByAssetID(getAssetIDOfElement(itemElement));
+        let item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
         selectedTotal += parseFloat(item.price.price);
     });
 

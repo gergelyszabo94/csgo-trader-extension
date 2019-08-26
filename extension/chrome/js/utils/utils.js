@@ -1128,3 +1128,9 @@ function updateLoggedInUserID(){
         chrome.storage.local.set({steamIDOfUser: steamID}, () =>{});
     }
 }
+
+// gets the details of an item by matching the passed asset id with the ones from the api call
+function getItemByAssetID(items, assetIDToFind){
+    if (items === undefined || items.length === 0) return null;
+    for (let item of items) if (item.assetid === assetIDToFind) return item;
+}
