@@ -2,3 +2,4 @@
 .vs/*
 backend/.idea/*
 backend/priceScraper/package/*
+extension/chrome/.DS_Store
