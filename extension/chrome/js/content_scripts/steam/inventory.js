@@ -31,12 +31,9 @@ const lowerModule = `<a class="lowerModule">
     <div class="descriptor tradability bookmark">Bookmark and Notify</div>
 </a>`;
 
-// const note0 = `<div class="descriptor note" id="note0"></div>`;
-// const note1 = `<div class="descriptor note" id="note1"></div>`;
-
-const tradable = "<span class='tradable'>Tradable</span>";
-const notTradable = "<span class='not_tradable'>Not Tradable</span>";
-const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
+const tradable = '<span class="tradable">Tradable</span>';
+const notTradable = '<span class="not_tradable">Not Tradable</span>';
+const dopplerPhase = '<div class="dopplerPhase"><span></span></div>';
 
 // the promise will be stored here temporarily
 let inventoryPromise = undefined;
@@ -48,26 +45,15 @@ window.addEventListener('message', e => {
         inventoryPromise = undefined;
     }
     else if (e.data.type === 'allItemsLoaded') {
-        if(e.data.allItemsLoaded){
-            doInitSorting();
-        }
-        else{
-            loadFullInventory();
-        }
+        if (e.data.allItemsLoaded) doInitSorting();
+        else loadFullInventory();
     }
 });
 
 //sends the message to the page side to get the info
 const getInventory = function() {
-    window.postMessage(
-        {
-            type: 'requestInventory'
-        },
-        '*'
-    );
-    return new Promise(resolve => {
-        inventoryPromise = resolve;
-    });
+    window.postMessage({type: 'requestInventory'}, '*');
+    return new Promise(resolve => {inventoryPromise = resolve});
 };
 
 //this injected script listens to the messages from the extension side and responds with the page context info needed
@@ -94,73 +80,61 @@ let getItems = `
             }, '*');
         }
     });`;
-injectToPage(getItems, false, "getItems");
+injectToPage(getItems, false, 'getItems');
 
-//mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
+// mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
 MutationObserver = window.MutationObserver;
 
-let observer = new MutationObserver(function(mutations, observer) {
-    if($(".games_list_tab.active").first().attr("href")==="#730"){
+let observer = new MutationObserver(() => {
+    if (document.querySelector('.games_list_tab.active').getAttribute('href') === '#730'){
         addElements();
         addFunctionBar();
     }
-    else{
-        cleanUpElements(true);
-    }
+    else cleanUpElements(true);
 });
 
-let observer2 = new MutationObserver(function(mutations, observer) {
-    addPerItemInfo(false);
-});
+let observer2 = new MutationObserver(() => {addPerItemInfo(false)});
 
-//does not execute if inventory is private or failed to load the page (502 for example, mostly when steam is dead)
-if($("#no_inventories").length!==1&&$("#iteminfo0").length!==0){
-    observer.observe(document.getElementById("iteminfo0"), {
+// does not execute if inventory is private or failed to load the page (502 for example, mostly when steam is dead)
+if (document.getElementById('no_inventories') === null && document.getElementById('iteminfo0') !== null){
+    observer.observe(document.getElementById('iteminfo0'), {
         subtree: false,
         attributes: true
     });
 
-    observer2.observe(document.getElementById("inventories"),{
+    observer2.observe(document.getElementById('inventories'),{
         subtree: false,
         attributes: true
     });
 }
 
-chrome.storage.local.get('hideOtherExtensionPrices', function(result) {
-    if(result.hideOtherExtensionPrices){
-        hideOtherExtensionPrices();
-    }
-});
+chrome.storage.local.get('hideOtherExtensionPrices', (result) => {if (result.hideOtherExtensionPrices) hideOtherExtensionPrices()});
 
 // sends a message to the "back end" to request inventory contents
 
 let items = [];
 
 function requestInventory(){
-    chrome.runtime.sendMessage({inventory: getInventoryOwnerID()}, function(response) {
-        if(!(response===undefined||response.inventory===undefined||response.inventory===""||response.inventory==="error")){
+    chrome.runtime.sendMessage({inventory: getInventoryOwnerID()}, (response) => {
+        if (!(response === undefined || response.inventory === undefined || response.inventory === '' || response.inventory === 'error')){
             items = response.inventory;
             addElements();
             addPerItemInfo();
             setInventoryTotal(items);
-            addClickListener();
             addFunctionBar();
             loadFullInventory();
         }
         else{
             console.log("Wasn't able to get the inventory, it's most likely steam not working properly or you loading inventory pages at the same time");
             console.log("Retrying in 30 seconds");
-            setTimeout(function () {
-                requestInventory();
-            }, 30000);
-
+            setTimeout(() => {requestInventory()}, 30000);
         }
     });
 }
 requestInventory();
 
 // to refresh the trade lock remaining indicators
-setInterval(() =>{if(!document.hidden) addPerItemInfo(true)}, 60000); // true means it's only for updating the time remaining indicators
+setInterval(() => {if (!document.hidden) addPerItemInfo(true)}, 60000); // true means it's only for updating the time remaining indicators
 
 //adds everything that is per item, like trade lock, exterior, doppler phases, border colors
 function addPerItemInfo(updating){
@@ -178,7 +152,7 @@ function addPerItemInfo(updating){
                         return false
                     }
                     else{
-                        let item = getItemByAssetID(getAssetIDOfElement(itemElement)); // matches it with the info from the page variables
+                        let item = getItemByAssetID(getAssetIDOfElement(itemElement));
 
                         if (updating){
                             let itemDateElement = itemElement.querySelector('.perItemDate');
@@ -222,7 +196,7 @@ function addPerItemInfo(updating){
 
 //variables for the countdown recursive logic
 let countingDown = false;
-let countDownID = "";
+let countDownID = '';
 
 function addElements(){
     // only add elements if the CS:GO inventory is the active one
@@ -239,14 +213,14 @@ function addElements(){
         cleanUpElements(false);
 
         // removes previously added listeners
-        document.querySelectorAll(".showTechnical").forEach(showTechnical => showTechnical.removeEventListener("click"));
+        document.querySelectorAll(".showTechnical, .lowerModule").forEach(element => element.removeEventListener('click'));
 
         // adds float bar, sticker info, nametag
         document.querySelectorAll(".item_desc_icon").forEach((icon) =>{icon.insertAdjacentHTML("afterend", upperModule)});
 
         // listens to click on "show technical"
         document.querySelectorAll(".showTechnical").forEach(showTechnical => {
-            showTechnical.addEventListener("click", event =>{
+            showTechnical.addEventListener("click", () =>{
                 document.querySelectorAll(".floatTechnical").forEach(floatTechnical => floatTechnical.classList.toggle("hidden"));
             })
         });
@@ -257,6 +231,10 @@ function addElements(){
 
         // adds the lower module that includes tradability, countdown  and bookmarking
         document.querySelectorAll("#iteminfo1_item_actions, #iteminfo0_item_actions").forEach((action) => action.insertAdjacentHTML("afterend", lowerModule));
+
+        document.querySelectorAll('.lowerModule').forEach(module => {
+            module.addEventListener('click', event => {addBookmark(event.target)})
+        });
 
         if(item){
             // adds the nametag text to nametags
@@ -477,9 +455,9 @@ function cleanUpElements(nonCSGOInventory) {
 function getAssetIDofActive() {return getAssetIDOfElement(document.querySelector('.activeInfo'))}
 
 // gets the details of an item by matching the passed asset id with the ones from the api call
-function getItemByAssetID(assetidToFind){
+function getItemByAssetID(assetIDToFind){
     if (items === undefined || items.length === 0) return false;
-    return $.grep(items, function(e){ return e.assetid === assetidToFind })[0];
+    for (let item of items) if (item.assetid === assetIDToFind) return item;
 }
 
 function countDown(dateToCountDownTo){
@@ -515,22 +493,6 @@ function countDown(dateToCountDownTo){
     }
 }
 
-// function addNote(note){
-//     if(!$("#note1").length) {
-//         $("#iteminfo1_item_descriptors").before(note1);
-//     }
-//     if(!$("#note0").length) {
-//         $("#iteminfo0_item_descriptors").before(note0);
-//     }
-//     $("#note1").text("Note: " + note);
-//     $("#note0").text("Note: " + note);
-// }
-//
-// function removeNote(){
-//     $("#note1").remove();
-//     $("#note0").remove();
-// }
-
 // it hides the original item name element and replaces it with one that is a link to it's market page and adds the doppler phase to the name
 function changeName(name, color, link, dopplerInfo){
     let newNameElement = `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name}</a>`;
@@ -543,39 +505,29 @@ function changeName(name, color, link, dopplerInfo){
     });
 }
 
-function addClickListener(){
-    $(".lowerModule").click(function () {
-        $module = $(this);
-        let bookmark = {
-            itemInfo: getItemByAssetID(getAssetIDofActive()),
-            owner: getInventoryOwnerID(),
-            comment: " ",
-            notify: true,
-            notifTime: getItemByAssetID(getAssetIDofActive()).tradability.toString(),
-            notifType: "chrome"
-        };
-        chrome.storage.local.get('bookmarks', function(result) {
-            let bookmarks = result.bookmarks;
-            bookmarks.push(bookmark);
-            chrome.storage.local.set({'bookmarks': bookmarks}, function() {
-                if(bookmark.itemInfo.tradability!=="Tradable"){
-                    chrome.runtime.sendMessage({setAlarm: {name:  bookmark.itemInfo.assetid, when: bookmark.itemInfo.tradability}}, function(response) {});
-                }
-                chrome.runtime.sendMessage({openInternalPage: "/html/bookmarks.html"}, function(response) {
-                    if(response.openInternalPage==="no_tabs_api_access"){
-                        $module.find($(".descriptor.tradability.bookmark")).text("Bookmarked! Open the bookmarks menu to see what you have saved!");
-                    }
-                });
+function addBookmark(module) {
+    let item = getItemByAssetID(getAssetIDofActive());
+    let bookmark = {
+        itemInfo: item,
+        owner: getInventoryOwnerID(),
+        comment: ' ',
+        notify: true,
+        notifTime: item.tradability.toString(),
+        notifType: 'chrome'
+    };
+
+    chrome.storage.local.get('bookmarks', (result) => {
+        let bookmarks = result.bookmarks;
+        bookmarks.push(bookmark);
+
+        chrome.storage.local.set({'bookmarks': bookmarks}, () => {
+            if (bookmark.itemInfo.tradability !== 'Tradable') chrome.runtime.sendMessage({setAlarm: {name:  bookmark.itemInfo.assetid, when: bookmark.itemInfo.tradability}}, (response) => {});
+
+            chrome.runtime.sendMessage({openInternalPage: '/html/bookmarks.html'}, (response) => {
+                if (response.openInternalPage === 'no_tabs_api_access') module.querySelector('.descriptor.tradability.bookmark').innerText = 'Bookmarked! Open the bookmarks menu to see what you have saved!';
             });
         });
     });
-
-    let sihSort = document.getElementById("Lnk_SortItems");
-    if(isSIHActive() && sihSort !== null){
-        sihSort.addEventListener("click", function () {
-            addPerItemInfo(false);
-        })
-    }
 }
 
 function hideOtherExtensionPrices(){
@@ -706,7 +658,6 @@ function loadFullInventory() {
 function doInitSorting() {
     chrome.storage.local.get('inventorySortingMode', (result) => {
         sortItems(result.inventorySortingMode);
-        //document.querySelector('#sortingMethod [value="' + result.inventorySortingMode + '"]').selected = true;
         document.querySelector(`#sortingMethod [value="${result.inventorySortingMode}"]`).selected = true;
     });
 }
