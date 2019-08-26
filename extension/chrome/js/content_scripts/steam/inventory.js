@@ -350,8 +350,7 @@ function addElements(){
 
             getInventory().then(inventory => {
                 inventory.inventory.forEach((onPageItem) => {if(onPageItem.assetid === activeID) name = onPageItem.description.name});
-                if(item.dopplerInfo !== undefined){changeName(name + " ("+ item.dopplerInfo.name+")", item.name_color, item.marketlink);}
-                else{ changeName(name, item.name_color, item.marketlink)}
+                changeName(name, item.name_color, item.marketlink, item.dopplerInfo);
             });
 
             // removes sih "Get Float" button - does not really work since it's loaded after this script..
@@ -573,8 +572,11 @@ function countDown(dateToCountDownTo){
 //     $("#note0").remove();
 // }
 
-function changeName(name, color, link){
-    let newNameElement = `<a class="hover_item_name custom_name" style="color: ${color}" href="${link}" target="_blank">${name}</a>`;
+// it hides the original item name element and replaces it with one that is a link to it's market page and adds the doppler phase to the name
+function changeName(name, color, link, dopplerInfo){
+    let newNameElement = `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name}</a>`;
+
+    if(dopplerInfo !== undefined) newNameElement = `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name} (${dopplerInfo.name})</a>`;
 
     document.querySelectorAll(".hover_item_name").forEach((name) => {
         name.insertAdjacentHTML("afterend", newNameElement);
