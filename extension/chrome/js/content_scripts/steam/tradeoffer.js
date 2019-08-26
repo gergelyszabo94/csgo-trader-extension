@@ -113,7 +113,7 @@ let inventoryAccessScript = `
             }
         }
     });`;
-injectToPage(inventoryAccessScript, false, 'inventoryAccessScript');
+injectToPage(inventoryAccessScript, false, 'inventoryAccessScript', null);
 
 let tryGettingInventories = setInterval(getInventories,500);
 
@@ -172,13 +172,9 @@ let sendMessageToContentScript = `
         let event = new CustomEvent('message', { 'detail': message });
         document.dispatchEvent(event);
     }`;
-injectToPage(sendMessageToContentScript, false,'sendMessageToContentScript');
+injectToPage(sendMessageToContentScript, false,'sendMessageToContentScript', null);
 
-setInterval(() => {
-    chrome.storage.local.get('hideOtherExtensionPrices', (result) => {
-        if (result.hideOtherExtensionPrices && !document.hidden) removeSIHStuff();
-    });
-}, 2000);
+setInterval(() => {chrome.storage.local.get('hideOtherExtensionPrices', (result) => { if (result.hideOtherExtensionPrices && !document.hidden) removeSIHStuff()})}, 2000);
 
 document.querySelectorAll('.inventory_user_tab').forEach( (inventoryTab) => {
     inventoryTab.addEventListener('click', () => {
@@ -248,63 +244,43 @@ function buildInventoryStructure(inventory) {
     let inventoryArrayToReturn = [];
     let duplicates = {};
 
-    inventory.forEach(function (item) {
-        let market_hash_name = item.market_hash_name;
-        if(duplicates[market_hash_name]===undefined){
+    inventory.forEach((item) => {
+        if (duplicates[item.market_hash_name] === undefined){
             let instances = [item.assetid];
-            duplicates[market_hash_name] =
-                {
+            duplicates[item.market_hash_name] = {
                     num: 1,
                     instances: instances
-                }
+                };
         }
         else{
-            duplicates[market_hash_name].num=duplicates[market_hash_name].num+1;
-            duplicates[market_hash_name].instances.push(item.assetid);
+            duplicates[item.market_hash_name].num += 1;
+            duplicates[item.market_hash_name].instances.push(item.assetid);
         }
     });
 
-    inventory.forEach(function (item) {
+    inventory.forEach((item) => {
         let exterior = getExteriorFromTags(item.tags);
-        let marketlink = "https://steamcommunity.com/market/listings/730/" + item.market_hash_name;
+        let marketlink = `https://steamcommunity.com/market/listings/730/${item.market_hash_name}`;
         let quality = getQualityFromTags(item.tags);
-        let stickers =  parseStickerInfo(item.descriptions, "direct");
+        let stickers =  parseStickerInfo(item.descriptions, 'direct');
         let nametag = undefined;
         let inspectLink ="";
-        let dopplerInfo = undefined;
-        let isStatrack = false;
-        let isSouvenir = false;
-        let starInName = false;
+        let dopplerInfo = /Doppler/.test(item.name) ? getDopplerInfo(item.icon) : undefined;
+        let isStatrack = /StatTrak™/.test(item.name);
+        let isSouvenir = /Souvenir/.test(item.name);
+        let starInName = /★/.test(item.name);
+
+        try {if (item.fraudwarnings !== undefined || item.fraudwarnings[0] !== undefined) nametag = item.fraudwarnings[0].split('Name Tag: \'\'')[1].split('\'\'')[0]}
+        catch(error) {}
 
         try {
-            if(item.fraudwarnings!==undefined||item.fraudwarnings[0]!==undefined){
-                nametag = item.fraudwarnings[0].split("Name Tag: ''")[1].split("''")[0];
-            }
-        }
-        catch(error) {
-        }
-
-        if(/Doppler/.test(item.name)){
-            dopplerInfo = getDopplerInfo(item.icon);
-        }
-        if(/StatTrak™/.test(item.name)){
-            isStatrack = true;
-        }
-        if(/Souvenir/.test(item.name)){
-            isSouvenir = true;
-        }
-        if(/★/.test(item.name)){
-            starInName = true;
-        }
-        try {
-            if(item.actions!==undefined&&item.actions[0]!==undefined){
+            if (item.actions !== undefined && item.actions[0] !== undefined){
                 let beggining = item.actions[0].link.split('%20S')[0];
                 let end = item.actions[0].link.split('%assetid%')[1];
-                inspectLink = (beggining + "%20S"+item.owner + "A"+ item.assetid + end);
+                inspectLink = (`${beggining}%20S${item.owner}A${item.assetid}${end}`);
             }
         }
-        catch(error) {
-        }
+        catch(error) {}
 
         inventoryArrayToReturn.push({
             name: item.name,
@@ -330,99 +306,66 @@ function buildInventoryStructure(inventory) {
         })
     });
 
-    function compare(a, b) {
-        return a.position - b.position;
-    }
-
-    inventoryArrayToReturn.sort(compare);
+    inventoryArrayToReturn.sort((a, b) => { return a.position - b.position});
 
     return inventoryArrayToReturn;
 }
 
-function removeSIHStuff() {
-    $(".des-tag").remove();
-    $(".p-price").remove();
-    let price_tags = document.querySelectorAll(".price-tag");
-    if(price_tags.length!==0){
-        document.querySelectorAll(".price-tag").forEach((pricetag) => {
-            if (pricetag !==undefined) {
-                pricetag.remove();
-            }
-        });
-    }
-}
+function removeSIHStuff() {document.querySelectorAll('.des-tag, .p-price, .price-tag').forEach(element => {element.parentNode.removeChild(element)})}
+
 function addInventoryTotals(yourInventory, theirInventory){
-    chrome.runtime.sendMessage({inventoryTotal: yourInventory}, function(response) {
-        if(!(response===undefined||response.inventoryTotal===undefined||response.inventoryTotal===""||response.inventoryTotal==="error")){
-            let yourInventoryTitleDiv = document.getElementById("inventory_select_your_inventory").querySelector("div");
-            yourInventoryTitleDiv.style.fontSize = "16px";
-            yourInventoryTitleDiv.innerText = yourInventoryTitleDiv.innerText + " (" + response.inventoryTotal + ")";
+    chrome.runtime.sendMessage({inventoryTotal: yourInventory}, (response) => {
+        if (!(response === undefined || response.inventoryTotal === undefined || response.inventoryTotal === '' || response.inventoryTotal === 'error')){
+            let yourInventoryTitleDiv = document.getElementById('inventory_select_your_inventory').querySelector('div');
+            yourInventoryTitleDiv.style.fontSize = '16px';
+            yourInventoryTitleDiv.innerText = `${yourInventoryTitleDiv.innerText} (${response.inventoryTotal})`;
         }
     });
-    chrome.runtime.sendMessage({inventoryTotal: theirInventory}, function(response) {
-        if(!(response===undefined||response.inventoryTotal===undefined||response.inventoryTotal===""||response.inventoryTotal==="error")){
-            let theirInventoryTitleDiv = document.getElementById("inventory_select_their_inventory").querySelector("div");
-            theirInventoryTitleDiv.style.fontSize = "16px";
-            theirInventoryTitleDiv.innerText = theirInventoryTitleDiv.innerText + " (" + response.inventoryTotal + ")";
+    chrome.runtime.sendMessage({inventoryTotal: theirInventory}, (response) => {
+        if (!(response === undefined || response.inventoryTotal === undefined || response.inventoryTotal === '' || response.inventoryTotal === 'error')){
+            let theirInventoryTitleDiv = document.getElementById('inventory_select_their_inventory').querySelector('div');
+            theirInventoryTitleDiv.style.fontSize = '16px';
+            theirInventoryTitleDiv.innerText = `${theirInventoryTitleDiv.innerText} (${response.inventoryTotal})`;
         }
     });
 }
 
 function addInTradeTotals(whose){
-    let itemsInTrade = document.getElementById(whose + "_slots").querySelectorAll(".item.app730.context2");
+    let itemsInTrade = document.getElementById(`${whose}_slots`).querySelectorAll('.item.app730.context2');
     let inTradeTotal = 0;
-    itemsInTrade.forEach(function (inTradeItem) {
-        let item = getItemByAssetID(combinedInventories, getAssetIDOfElement(inTradeItem)); //matches it with the info from the page variables
-        if(item.price!==undefined){
-            inTradeTotal += parseFloat(item.price.price);
-        }
+
+    itemsInTrade.forEach((inTradeItem) =>{
+        let item = getItemByAssetID(combinedInventories, getAssetIDOfElement(inTradeItem));
+        if (item.price !== undefined) inTradeTotal += parseFloat(item.price.price);
     });
 
-    if(document.getElementById(whose + "InTradeTotal")===null){
-        let itemsTextDiv = undefined;
-        if(whose==="your"){
-            itemsTextDiv = document.getElementById("trade_yours").querySelector("h2.ellipsis");
-        }
-        else{
-            itemsTextDiv = document.getElementById("trade_theirs").querySelector(".offerheader").querySelector("h2");
-        }
-        chrome.storage.local.get(['currency'], function(result) {
-            itemsTextDiv.innerHTML = itemsTextDiv.innerText.split(":")[0] + ` (<span id="${whose}InTradeTotal">${prettyPrintPrice(result.currency, inTradeTotal)}</span>):`;
+    if (document.getElementById(`${whose}InTradeTotal`) === null){
+        let itemsTextDiv;
+        if (whose === 'your') itemsTextDiv = document.getElementById('trade_yours').querySelector('h2.ellipsis');
+        else itemsTextDiv = document.getElementById('trade_theirs').querySelector('.offerheader').querySelector('h2');
+        chrome.storage.local.get('currency', (result) => {
+            itemsTextDiv.innerHTML = `${itemsTextDiv.innerText.split(':')[0]} (<span id="${whose}InTradeTotal">${prettyPrintPrice(result.currency, inTradeTotal)}</span>):`;
         });
     }
-    else{
-        chrome.storage.local.get(['currency'], function(result) {
-            document.getElementById( whose + "InTradeTotal").innerText = prettyPrintPrice(result.currency, inTradeTotal);
-        });
-    }
+    else chrome.storage.local.get('currency', (result) => {document.getElementById(`${whose}InTradeTotal`).innerText = prettyPrintPrice(result.currency, inTradeTotal)});
 }
 
-function periodicallyUpdateTotals(){
-    setInterval(function () {
-        if (!document.hidden) {
-            addInTradeTotals("your");
-            addInTradeTotals("their");
-        }
-    }, 1000);
-}
+function periodicallyUpdateTotals(){setInterval(() => {if (!document.hidden) addInTradeTotals('your'); addInTradeTotals('their')}, 1000)}
 
 function sortItems(method) {
-    let inventories = document.querySelectorAll(".inventory_ctn");
-    let activeInventory = undefined;
+    let inventories = document.querySelectorAll('.inventory_ctn');
+    let activeInventory = null;
 
-    inventories.forEach(function (inventory) {
-        if(inventory.style.display !== "none"){
-            activeInventory = inventory;
-        }
-    });
+    inventories.forEach((inventory) => {if (inventory.style.display !== 'none') activeInventory = inventory});
 
-    let items = activeInventory.querySelectorAll(".item.app730.context2");
-    let offerPages = activeInventory.querySelectorAll(".inventory_page");
-    doTheSorting(items, method, offerPages, "offer");
+    let items = activeInventory.querySelectorAll('.item.app730.context2');
+    let offerPages = activeInventory.querySelectorAll('.inventory_page');
+    doTheSorting(combinedInventories, Array.from(items), method, offerPages, 'offer');
 
     loadAllItemsProperly();
 }
 
+// forces steam to load the item images
 function loadAllItemsProperly(){
     if(!isSIHActive()){
         let loadAllItemsProperly = `
@@ -430,14 +373,14 @@ function loadAllItemsProperly(){
             g_ActiveInventory.pageList[index].images_loaded = false;
             g_ActiveInventory.LoadPageImages(page);
         });`;
-        injectToPage(loadAllItemsProperly, true, "loadAllItemsProperly");
+        injectToPage(loadAllItemsProperly, true, 'loadAllItemsProperly', null);
     }
 }
 
 function addFunctionBar(){
-    if(document.getElementById("responsivetrade_itemfilters") !== null) {
-        if (document.getElementById("offer_function_bar") === null) {
-            document.getElementById("responsivetrade_itemfilters").insertAdjacentHTML("beforebegin", `
+    if(document.getElementById('responsivetrade_itemfilters') !== null) {
+        if (document.getElementById('offer_function_bar') === null) {
+            document.getElementById('responsivetrade_itemfilters').insertAdjacentHTML('beforebegin', `
             <div id="offer_function_bar">
                 <div id="offer_sorting">
                     <span>Sorting:</span>
@@ -446,28 +389,24 @@ function addFunctionBar(){
             </div>
             `);
 
-            let sortingSelect = document.getElementById("offer_sorting_mode");
+            let sortingSelect = document.getElementById('offer_sorting_mode');
 
             let keys = Object.keys(sortingModes);
             for (let key of keys) {
-                let option = document.createElement("option");
-                if (key !== "tradability_desc" && key !== "tradability_asc") {
+                let option = document.createElement('option');
+                if (key !== 'tradability_desc' && key !== 'tradability_asc') {
                     option.value = sortingModes[key].key;
                     option.text = sortingModes[key].name;
-                    sortingSelect.add(option);
+                    sortingSelect.appendChild(option);
                 }
             }
-            sortingSelect.addEventListener("change", function () {
+            sortingSelect.addEventListener('change', () => {
                 let selected = sortingSelect.options[sortingSelect.selectedIndex].value;
                 sortItems(selected);
             });
         }
     }
-    else{
-        setTimeout(function () {
-            addFunctionBar();
-        }, 500);
-    }
+    else setTimeout(() => {addFunctionBar()}, 500);
 }
 
 function doInitSorting() {

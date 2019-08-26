@@ -962,43 +962,43 @@ function getAssetIDOfElement(element){
     return element.id.split("730_2_")[1];
 }
 
-function doTheSorting(items, method, pages, type){
+function doTheSorting(items, itemElements, method, pages, type){
     if(method === "price_asc"){
-        items = Array.from(items).sort(function(a, b) {
-            let priceOfA = getItemByAssetID(getAssetIDOfElement(a)).price !== undefined ?  parseFloat(getItemByAssetID(getAssetIDOfElement(a)).price.price) : 0.0;
-            let priceOfB = getItemByAssetID(getAssetIDOfElement(b)).price !== undefined ?  parseFloat(getItemByAssetID(getAssetIDOfElement(b)).price.price) : 0.0;
+        itemElements = itemElements.sort((a, b) => {
+            let priceOfA = getItemByAssetID(items, getAssetIDOfElement(a)).price !== undefined ?  parseFloat(getItemByAssetID(items, getAssetIDOfElement(a)).price.price) : 0.0;
+            let priceOfB = getItemByAssetID(items, getAssetIDOfElement(b)).price !== undefined ?  parseFloat(getItemByAssetID(items, getAssetIDOfElement(b)).price.price) : 0.0;
             return priceOfA - priceOfB;
         });
     }
     else if(method === "price_desc"){
-        items = Array.from(items).sort(function(a, b) {
-            let priceOfA = getItemByAssetID(getAssetIDOfElement(a)).price !== undefined ?  parseFloat(getItemByAssetID(getAssetIDOfElement(a)).price.price) : 0.0;
-            let priceOfB = getItemByAssetID(getAssetIDOfElement(b)).price !== undefined ?  parseFloat(getItemByAssetID(getAssetIDOfElement(b)).price.price) : 0.0;
+        itemElements = itemElements.sort((a, b) => {
+            let priceOfA = getItemByAssetID(items, getAssetIDOfElement(a)).price !== undefined ?  parseFloat(getItemByAssetID(items, getAssetIDOfElement(a)).price.price) : 0.0;
+            let priceOfB = getItemByAssetID(items, getAssetIDOfElement(b)).price !== undefined ?  parseFloat(getItemByAssetID(items, getAssetIDOfElement(b)).price.price) : 0.0;
             return priceOfB - priceOfA;
         });
     }
     else if(method === "name_asc"){
-        items = Array.from(items).sort(function(a, b){
-            let nameOfA = getItemByAssetID(getAssetIDOfElement(a)).market_hash_name.toLowerCase();
-            let nameOfB = getItemByAssetID(getAssetIDOfElement(b)).market_hash_name.toLowerCase();
+        itemElements = itemElements.sort((a, b) => {
+            let nameOfA = getItemByAssetID(items, getAssetIDOfElement(a)).market_hash_name.toLowerCase();
+            let nameOfB = getItemByAssetID(items, getAssetIDOfElement(b)).market_hash_name.toLowerCase();
             if (nameOfA < nameOfB) {return -1;}
             if (nameOfA > nameOfB) {return 1;}
             return 0;
         });
     }
     else if(method === "name_desc"){
-        items = Array.from(items).sort(function(a, b){
-            let nameOfA = getItemByAssetID(getAssetIDOfElement(a)).market_hash_name.toLowerCase();
-            let nameOfB = getItemByAssetID(getAssetIDOfElement(b)).market_hash_name.toLowerCase();
+        itemElements = itemElements.sort((a, b) => {
+            let nameOfA = getItemByAssetID(items, getAssetIDOfElement(a)).market_hash_name.toLowerCase();
+            let nameOfB = getItemByAssetID(items, getAssetIDOfElement(b)).market_hash_name.toLowerCase();
             if (nameOfA > nameOfB) {return -1;}
             if (nameOfA < nameOfB) {return 1;}
             return 0;
         });
     }
     else if(method === "tradability_asc"){
-        items = Array.from(items).sort(function(a, b){
-            let tradabilityOfA = getItemByAssetID(getAssetIDOfElement(a)).tradability;
-            let tradabilityOfB = getItemByAssetID(getAssetIDOfElement(b)).tradability;
+        itemElements = itemElements.sort((a, b) => {
+            let tradabilityOfA = getItemByAssetID(items, getAssetIDOfElement(a)).tradability;
+            let tradabilityOfB = getItemByAssetID(items, getAssetIDOfElement(b)).tradability;
             if(tradabilityOfA === "Tradable"){return -1}
             else if(tradabilityOfA === "Not Tradable"){return 1}
             else if(tradabilityOfB === "Tradable"){return 1}
@@ -1015,9 +1015,9 @@ function doTheSorting(items, method, pages, type){
         });
     }
     else if(method === "tradability_desc"){
-        items = Array.from(items).sort(function(a, b){
-            let tradabilityOfA = getItemByAssetID(getAssetIDOfElement(a)).tradability;
-            let tradabilityOfB = getItemByAssetID(getAssetIDOfElement(b)).tradability;
+        itemElements = itemElements.sort((a, b) => {
+            let tradabilityOfA = getItemByAssetID(items, getAssetIDOfElement(a)).tradability;
+            let tradabilityOfB = getItemByAssetID(items, getAssetIDOfElement(b)).tradability;
             if(tradabilityOfA === "Tradable"){return 1}
             else if(tradabilityOfA === "Not Tradable"){return -1}
             else if(tradabilityOfB === "Tradable"){return -1}
@@ -1034,40 +1034,35 @@ function doTheSorting(items, method, pages, type){
         });
     }
     else if(method === "default"){
-        items = Array.from(items).sort(function(a, b){
-            let positionOfA = parseInt(getItemByAssetID(getAssetIDOfElement(a)).position);
-            let positionOfB = parseInt(getItemByAssetID(getAssetIDOfElement(b)).position);
+        itemElements = itemElements.sort((a, b) =>{
+            let positionOfA = parseInt(getItemByAssetID(items, getAssetIDOfElement(a)).position);
+            let positionOfB = parseInt(getItemByAssetID(items, getAssetIDOfElement(b)).position);
 
             if (positionOfA > positionOfB) {return 1;}
             if (positionOfA < positionOfB) {return -1;}
             return 0;
-
         });
     }
     else if(method === "reverse"){
-        items = Array.from(items).sort(function(a, b){
-            let positionOfA = parseInt(getItemByAssetID(getAssetIDOfElement(a)).position);
-            let positionOfB = parseInt(getItemByAssetID(getAssetIDOfElement(b)).position);
+        itemElements = itemElements.sort((a, b) =>{
+            let positionOfA = parseInt(getItemByAssetID(items, getAssetIDOfElement(a)).position);
+            let positionOfB = parseInt(getItemByAssetID(items, getAssetIDOfElement(b)).position);
 
             if (positionOfA > positionOfB) {return -1;}
             if (positionOfA < positionOfB) {return 1;}
             return 0;
-
         });
     }
 
-    items.reverse();
+    itemElements.reverse();
 
-    let numberOfItemsPerPage = 0;
-    type === "offer" ? numberOfItemsPerPage = 16 : numberOfItemsPerPage = 25;
+    let numberOfItemsPerPage = type === 'offer' ? 16 : 25;
 
-    pages.forEach(function (page) {
-        page.innerHTML = "";
-        for( let i = 0; i <numberOfItemsPerPage ; i++){
-            let item = items.pop();
-            if(item !== undefined){
-                page.append(item.parentElement);
-            }
+    pages.forEach((page) => {
+        page.innerHTML = '';
+        for( let i = 0; i < numberOfItemsPerPage ; i++){
+            let item = itemElements.pop();
+            if (item !== undefined) page.appendChild(item.parentElement);
         }
     });
 }

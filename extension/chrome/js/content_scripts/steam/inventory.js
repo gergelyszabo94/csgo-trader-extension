@@ -331,9 +331,7 @@ function addElements(){
                         stickers = response.floatInfo.stickers;
 
                     }
-                    catch{
-
-                    }
+                    catch(error){console.log(error)}
 
                     let floatTechnical = `
                         <div class="floatTechnical hidden">
@@ -409,7 +407,7 @@ function addElements(){
             let souvenir = 'Souvenir ';
             let star = item.starInName ? '%E2%98%85%20' : '';
 
-            if (item.isStatrack) weaponName = item.market_hash_name.split('StatTrak™ "')[1].split('(')[0];
+            if (item.isStatrack) weaponName = item.market_hash_name.split('StatTrak™ ')[1].split('(')[0];
             else if (item.isSouvenir) weaponName = item.market_hash_name.split('Souvenir ')[1].split('(')[0];
             else{
                 weaponName = item.market_hash_name.split('(')[0].split('★ ')[1];
@@ -594,7 +592,7 @@ function addFunctionBar(){
 
         sortingSelect.addEventListener("change", function () {
             let selected = sortingSelect.options[sortingSelect.selectedIndex].value;
-            sortItems(selected);
+            sortItems(items, selected);
         });
     }
     else{
@@ -618,16 +616,12 @@ function updateSelectedValue(){
     });
 }
 
-function unselectAllItems() {
-    document.querySelectorAll('.item.app730.context2').forEach(item =>{
-        item.classList.remove('selected');
-    })
-}
+function unselectAllItems() {document.querySelectorAll('.item.app730.context2').forEach(item => {item.classList.remove('selected')})}
 
-function sortItems(method) {
-    let items = document.querySelectorAll('.item.app730.context2');
+function sortItems(items, method) {
+    let itemElements = document.querySelectorAll('.item.app730.context2');
     let inventoryPages = document.getElementById('inventories').querySelectorAll('.inventory_page');
-    doTheSorting(items, method, Array.from(inventoryPages), 'inventory');
+    doTheSorting(items, Array.from(itemElements), method, Array.from(inventoryPages), 'inventory');
     addPerItemInfo(false);
 }
 
@@ -651,7 +645,7 @@ function loadFullInventory() {
 
 function doInitSorting() {
     chrome.storage.local.get('inventorySortingMode', (result) => {
-        sortItems(result.inventorySortingMode);
+        sortItems(items, result.inventorySortingMode);
         document.querySelector(`#sortingMethod [value="${result.inventorySortingMode}"]`).selected = true;
     });
 }

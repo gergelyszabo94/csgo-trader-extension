@@ -45,71 +45,47 @@ chrome.runtime.onMessage.addListener(
                                 let name = items[item].name;
                                 let market_hash_name = items[item].market_hash_name;
                                 let name_color = items[item].name_color;
-                                let marketlink = "https://steamcommunity.com/market/listings/730/" + items[item].market_hash_name;
+                                let marketlink = `https://steamcommunity.com/market/listings/730/${items[item].market_hash_name}`;
                                 let classid = items[item].classid;
                                 let instanceid = items[item].instanceid;
                                 let exterior = getExteriorFromTags(items[item].tags);
-                                let tradability = "Tradable";
-                                let tradabilityShort = "T";
-                                let dopplerInfo = undefined;
-                                let isStatrack = false;
-                                let isSouvenir = false;
-                                let starInName = false;
+                                let tradability = 'Tradable';
+                                let tradabilityShort = 'T';
                                 let icon = items[item].icon_url;
+                                let dopplerInfo = /Doppler/.test(items[item].name) ? getDopplerInfo(icon) : undefined;
+                                let isStatrack = /StatTrak™/.test(items[item].name);
+                                let isSouvenir = /Souvenir/.test(items[item].name);
+                                let starInName = /★/.test(items[item].name);
                                 let quality = getQuality(items[item].type);
-                                let stickers =  parseStickerInfo(items[item].descriptions, "direct");
+                                let stickers =  parseStickerInfo(items[item].descriptions, 'direct');
                                 let nametag = undefined;
                                 let inspectLink ="";
                                 let owner = steamID;
                                 let price = null;
 
-                                if(/Doppler/.test(name)){
-                                    dopplerInfo = getDopplerInfo(icon);
-                                }
-                                if(result.itemPricing){
-                                    price = getPrice(market_hash_name, dopplerInfo, prices, result.pricingProvider, result.exchangeRate, result.currency);
-                                }
-                                else{
-                                    price = {
-                                        price: "",
-                                        display: ""
-                                    }
-                                }
+                                if (result.itemPricing) price = getPrice(market_hash_name, dopplerInfo, prices, result.pricingProvider, result.exchangeRate, result.currency);
+                                else{price = {price: '', display: ''}}
 
-                                try {
-                                    if(items[item].fraudwarnings!==undefined||items[item].fraudwarnings[0]!==undefined){
-                                        nametag = items[item].fraudwarnings[0].split('Name Tag: ')[1];
-                                    }
-                                }
-                                catch(error) {
-                                }
+                                try {if (items[item].fraudwarnings !== undefined || items[item].fraudwarnings[0] !== undefined) nametag = items[item].fraudwarnings[0].split('Name Tag: ')[1]}
+                                catch(error){}
 
                                 if (items[item].tradable === 0) {
                                     tradability = items[item].cache_expiration;
                                     tradabilityShort = getShortDate(tradability);
                                 }
                                 if (items[item].marketable === 0) {
-                                    tradability = "Not Tradable";
-                                    tradabilityShort = "";
+                                    tradability = 'Not Tradable';
+                                    tradabilityShort = '';
                                 }
-                                if(/StatTrak™/.test(name)){
-                                    isStatrack = true;
-                                }
-                                if(/Souvenir/.test(name)){
-                                    isSouvenir = true;
-                                }
-                                if(/★/.test(name)){
-                                    starInName = true;
-                                }
+
                                 try {
-                                    if(items[item].actions!==undefined&&items[item].actions[0]!==undefined){
+                                    if (items[item].actions !== undefined && items[item].actions[0] !== undefined){
                                         let beggining = items[item].actions[0].link.split('%20S')[0];
                                         let end = items[item].actions[0].link.split('%assetid%')[1];
-                                        inspectLink = (beggining + "%20S"+owner + "A"+ assetid + end);
+                                        inspectLink = (`${beggining}%20S${owner}A${assetid}${end}`);
                                     }
                                 }
-                                catch(error) {
-                                }
+                                catch(error) {}
 
                                 itemsPropertiesToReturn.push({
                                     name: name,
@@ -140,11 +116,7 @@ chrome.runtime.onMessage.addListener(
                         }
                     }
 
-                    function compare(a, b) {
-                        return a.position - b.position;
-                    }
-
-                    itemsPropertiesToReturn.sort(compare);
+                    itemsPropertiesToReturn.sort((a, b) => { return a.position - b.position});
                     sendResponse({inventory: itemsPropertiesToReturn});
                 };
                 try {
