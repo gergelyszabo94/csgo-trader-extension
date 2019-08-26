@@ -218,12 +218,12 @@ function addItemInfo() {
                 if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false'){
                     // in case the inventory is not loaded yet it retires in a second
                     if (itemElement.id === undefined) {
-                        setTimeout( () =>{addPerItemInfo(false)}, 1000);
+                        setTimeout( () =>{addItemInfo()}, 1000);
                         return false
                     }
                     else{
                         let item = getItemByAssetID(getAssetIDOfElement(itemElement)); // matches it with the info from the page variables
-                        addDopplerPhase(itemElement, item.dopplerInfo); // won't work yet
+                        addDopplerPhase(itemElement, item.dopplerInfo);
 
                         if(result.colorfulItems){
                             if (item.dopplerInfo !== undefined) itemElement.setAttribute('style', `background-image: url(); background-color: #${item.dopplerInfo.color}`);
