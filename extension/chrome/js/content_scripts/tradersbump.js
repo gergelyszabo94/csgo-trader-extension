@@ -1,27 +1,19 @@
-chrome.storage.local.get(['tradersBump'], function(result) {
+chrome.storage.local.get('tradersBump', (result) => {
     if(result.tradersBump){
-        setTimeout(function () { //ugly way to wait for the trades to load and become "bumpable"
-            bump();
-        }, 2000);
+        // ugly way to wait for the trades to load and become "bumpable"
+        setTimeout(() => {bump()}, 2000);
 
         let reloadInterval = Math.floor((Math.random() * 10) + 31);
 
-        setTimeout(function () {
-            location.reload()
-        }, reloadInterval*60*1000);
-
-        function bump(){
-            $(".btn.btn-custom.btn-xs").each(function () {
-                let link = $(this).attr("href");
-                let xhr = new XMLHttpRequest();
-                xhr.open("GET", link, true);
-                try {
-                    xhr.send();
-                }
-                catch (e) {
-                    console.log(e);
-                }
-            });
-        }
+        setTimeout(() => {location.reload()}, reloadInterval*60*1000);
     }
 });
+
+function bump(){
+    document.querySelectorAll('.btn.btn-custom.btn-xs').forEach(button =>{
+        let link = button.getAttribute('href');
+        let request = new Request(link);
+
+        fetch(request).then((response) => {})
+    });
+}

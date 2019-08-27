@@ -1,17 +1,12 @@
-chrome.storage.local.get(['loungeBump'], function(result) {
+chrome.storage.local.get('loungeBump', (result) => {
     if(result.loungeBump){
-        setTimeout(function () { //ugly way to wait for the trades to load and become "bumpable"
-            bump();
-        }, 5000);
+        // ugly way to wait for the trades to load and become "bumpable"
+        setTimeout(() => {bump()}, 5000);
 
         let reloadInterval = Math.floor((Math.random() * 10) + 31);
 
-        setTimeout(function () {
-            location.reload()
-        }, reloadInterval*60*1000);
-
-        function bump(){
-            $(".btn-bump___1-VFc").click();
-        }
+        setTimeout(() => {location.reload()}, reloadInterval*60*1000);
     }
 });
+
+function bump(){document.querySelectorAll('.btn-bump___1-VFc').forEach(bumpButton => {bumpButton.click()})}

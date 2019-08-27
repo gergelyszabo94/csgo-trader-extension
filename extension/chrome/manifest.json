@@ -135,16 +135,12 @@
     {
       "matches": ["*://csgolounge.com/mytrades/*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
-        "js/content_scripts/loungebump.js"]
+      "js": ["js/content_scripts/loungebump.js"]
     },
     {
       "matches": ["*://csgotraders.net/mytrades*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
-        "js/content_scripts/tradersbump.js"]
+      "js": ["js/content_scripts/tradersbump.js"]
     }
   ],
   "web_accessible_resources": [
