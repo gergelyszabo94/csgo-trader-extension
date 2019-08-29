@@ -109,7 +109,7 @@ if(fullName.split("(")[1] !== undefined) document.getElementById('largeiteminfo_
 // adds the in-browser inspect button to the top of the page
 const originalInspectButton = document.getElementById('largeiteminfo_item_actions').querySelector('.btn_small.btn_grey_white_innerfade'); // some items don't have inspect buttons (like cases)
 if (originalInspectButton !== null){
-    originalInspectButton.getAttribute('href');
+    const inspectLink = originalInspectButton.getAttribute('href');
     const inBrowserInspectButton =`<a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect_button" href="http://csgo.gallery/${inspectLink}" target="_blank"><span>${chrome.i18n.getMessage("inspect_in_browser")}</span></a>`;
     document.getElementById('largeiteminfo_item_actions').insertAdjacentHTML('beforeend', inBrowserInspectButton);
 }
