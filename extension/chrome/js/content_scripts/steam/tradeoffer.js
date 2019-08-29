@@ -248,9 +248,9 @@ function buildInventoryStructure(inventory) {
         if (duplicates[item.market_hash_name] === undefined){
             let instances = [item.assetid];
             duplicates[item.market_hash_name] = {
-                    num: 1,
-                    instances: instances
-                };
+                num: 1,
+                instances: instances
+            };
         }
         else{
             duplicates[item.market_hash_name].num += 1;
@@ -367,14 +367,12 @@ function sortItems(method) {
 
 // forces steam to load the item images
 function loadAllItemsProperly(){
-    if(!isSIHActive()){
-        let loadAllItemsProperly = `
+    let loadAllItemsProperly = `
         g_ActiveInventory.pageList.forEach(function (page, index) {
             g_ActiveInventory.pageList[index].images_loaded = false;
             g_ActiveInventory.LoadPageImages(page);
         });`;
-        injectToPage(loadAllItemsProperly, true, 'loadAllItemsProperly', null);
-    }
+    injectToPage(loadAllItemsProperly, true, 'loadAllItemsProperly', null);
 }
 
 function addFunctionBar(){
