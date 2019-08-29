@@ -1,2 +1,3 @@
-let thisVersion = chrome.runtime.getManifest().version;
-$("#version").text(thisVersion);
+// sets extension version
+let version = chrome.runtime.getManifest().version;
+document.getElementById('version').innerText = version;
