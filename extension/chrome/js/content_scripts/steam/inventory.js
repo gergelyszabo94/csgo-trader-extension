@@ -464,14 +464,14 @@ function countDown(dateToCountDownTo){
                 let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 let seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                countdown.innerText = days + "d " + hours + "h " + minutes + "m " + seconds + "s " + "remains";
+                countdown.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s `;
 
                 if (distance < 0) {
                     clearInterval(countDownID);
-                    countdown.style.display = "none";
-                    document.querySelectorAll(".tradabilityDiv").forEach (tradabilityDiv => {
-                        tradabilityDiv.innerText = "Tradable";
-                        tradabilityDiv.classList.add("tradable");
+                    countdown.classList.add('hidden');
+                    document.querySelectorAll('.tradabilityDiv').forEach (tradabilityDiv => {
+                        tradabilityDiv.innerText = 'Tradable';
+                        tradabilityDiv.classList.add('tradable');
                     });
 
                 }

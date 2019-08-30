@@ -94,6 +94,10 @@ select:active {
 
 /*Classes*/
 
+.hidden {
+    display: none;
+}
+
 .orangeBox{
     background-color: #23272b;
     color: #e1e1e1;
