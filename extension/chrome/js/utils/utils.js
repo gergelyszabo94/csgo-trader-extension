@@ -51,123 +51,96 @@ const commentsToReport = [
 ];
 
 function getPattern(name, paint_seed){
-    if(/ Marble Fade /i.test(name)){
-        let pattern;
-        if(/Karambit/i.test(name)){pattern = patterns.marble_fades.karambit[paint_seed]}
-        else if(/Butterfly/i.test(name)){pattern = patterns.marble_fades.butterfly[paint_seed]}
-        else if(/M9 Bayonet/i.test(name)){pattern = patterns.marble_fades.m9[paint_seed]}
-        else if(/Bayonet/i.test(name)){pattern = patterns.marble_fades.bayonet[paint_seed]}
-        else if(/Talon/i.test(name)){pattern = patterns.marble_fades.talon[paint_seed]}
-        else if(/Stiletto/i.test(name)){pattern = patterns.marble_fades.stiletto[paint_seed]}
-        else if(/Navaja/i.test(name)){pattern = patterns.marble_fades.navaja[paint_seed]}
-        else if(/Ursus/i.test(name)){pattern = patterns.marble_fades.ursus[paint_seed]}
-        else if(/Huntsman/i.test(name)){pattern = patterns.marble_fades.huntsman[paint_seed]}
-        else if(/Flip/i.test(name)){pattern = patterns.marble_fades.flip[paint_seed]}
-        else if(/Bowie/i.test(name)){pattern = patterns.marble_fades.bowie[paint_seed]}
-        else if(/Daggers/i.test(name)){pattern = patterns.marble_fades.daggers[paint_seed]}
-        else if(/Gut/i.test(name)){pattern = patterns.marble_fades.gut[paint_seed]}
-        else if(/Falchion/i.test(name)){pattern = patterns.marble_fades.falchion[paint_seed]}
-        else{return undefined}
+    if (/ Marble Fade /i.test(name)){
+        let pattern = null;
+        if (/Karambit/i.test(name)) pattern = patterns.marble_fades.karambit[paint_seed];
+        else if (/Butterfly/i.test(name)) pattern = patterns.marble_fades.butterfly[paint_seed];
+        else if (/M9 Bayonet/i.test(name)) pattern = patterns.marble_fades.m9[paint_seed];
+        else if (/Bayonet/i.test(name)) pattern = patterns.marble_fades.bayonet[paint_seed];
+        else if (/Talon/i.test(name)) pattern = patterns.marble_fades.talon[paint_seed];
+        else if (/Stiletto/i.test(name)) pattern = patterns.marble_fades.stiletto[paint_seed];
+        else if (/Navaja/i.test(name)) pattern = patterns.marble_fades.navaja[paint_seed];
+        else if (/Ursus/i.test(name)) pattern = patterns.marble_fades.ursus[paint_seed];
+        else if (/Huntsman/i.test(name)) pattern = patterns.marble_fades.huntsman[paint_seed];
+        else if (/Flip/i.test(name)) pattern = patterns.marble_fades.flip[paint_seed];
+        else if (/Bowie/i.test(name)) pattern = patterns.marble_fades.bowie[paint_seed];
+        else if (/Daggers/i.test(name)) pattern = patterns.marble_fades.daggers[paint_seed];
+        else if (/Gut/i.test(name)) pattern = patterns.marble_fades.gut[paint_seed];
+        else if (/Falchion/i.test(name)) pattern = patterns.marble_fades.falchion[paint_seed];
+        else return undefined;
 
-        if(pattern!==undefined){
-            return {
-                type: "marble_fade",
-                value: pattern
-            };
-        }
-        else{
-            return undefined;
-        }
+        if (pattern !== null) return {type: 'marble_fade', value: pattern};
+        else return undefined;
     }
-    else if(/ Fade /i.test(name)){
-        let percentage;
-        if(/Karambit/i.test(name)){percentage = patterns.fades.karambit[paint_seed]}
-        else if(/Butterfly/i.test(name)){percentage = patterns.fades.butterfly[paint_seed]}
-        else if(/M9 Bayonet/i.test(name)){percentage = patterns.fades.m9[paint_seed]}
-        else if(/Bayonet/i.test(name)){percentage = patterns.fades.bayonet[paint_seed]}
-        else if(/Talon/i.test(name)){percentage = patterns.fades.talon[paint_seed]}
-        else if(/Stiletto/i.test(name)){percentage = patterns.fades.stiletto[paint_seed]}
-        else if(/Navaja/i.test(name)){percentage = patterns.fades.navaja[paint_seed]}
-        else if(/Ursus/i.test(name)){percentage = patterns.fades.ursus[paint_seed]}
-        else if(/Huntsman/i.test(name)){percentage = patterns.fades.huntsman[paint_seed]}
-        else if(/Flip/i.test(name)){percentage = patterns.fades.flip[paint_seed]}
-        else if(/Bowie/i.test(name)){percentage = patterns.fades.bowie[paint_seed]}
-        else if(/Daggers/i.test(name)){percentage = patterns.fades.daggers[paint_seed]}
-        else if(/Gut/i.test(name)){percentage = patterns.fades.gut[paint_seed]}
-        else if(/Falchion/i.test(name)){percentage = patterns.fades.falchion[paint_seed]}
-        else if(/Glock/i.test(name)){percentage = patterns.fades.glock[paint_seed]}
-        else{return undefined}
+    else if (/ Fade /i.test(name)){
+        let percentage = null;
+        if (/Karambit/i.test(name)) percentage = patterns.fades.karambit[paint_seed];
+        else if (/Butterfly/i.test(name)) percentage = patterns.fades.butterfly[paint_seed];
+        else if (/M9 Bayonet/i.test(name)) percentage = patterns.fades.m9[paint_seed];
+        else if (/Bayonet/i.test(name)) percentage = patterns.fades.bayonet[paint_seed];
+        else if (/Talon/i.test(name)) percentage = patterns.fades.talon[paint_seed];
+        else if (/Stiletto/i.test(name)) percentage = patterns.fades.stiletto[paint_seed];
+        else if (/Navaja/i.test(name)) percentage = patterns.fades.navaja[paint_seed];
+        else if (/Ursus/i.test(name)) percentage = patterns.fades.ursus[paint_seed];
+        else if (/Huntsman/i.test(name)) percentage = patterns.fades.huntsman[paint_seed];
+        else if (/Flip/i.test(name)) percentage = patterns.fades.flip[paint_seed];
+        else if (/Bowie/i.test(name)) percentage = patterns.fades.bowie[paint_seed];
+        else if (/Daggers/i.test(name)) percentage = patterns.fades.daggers[paint_seed];
+        else if (/Gut/i.test(name)) percentage = patterns.fades.gut[paint_seed];
+        else if (/Falchion/i.test(name)) percentage = patterns.fades.falchion[paint_seed];
+        else if (/Glock/i.test(name)) percentage = patterns.fades.glock[paint_seed];
+        else return undefined;
 
-        if(percentage!==undefined){
-            return {
-                type: "fade",
-                value: percentage + "% Fade"
-            };
-        }
-        else{
-            return undefined;
-        }
+        if(percentage !== null) return {type: 'fade', value: `${percentage}% Fade`};
+        else return undefined;
     }
-    else if(/ Case Hardened/i.test(name)){
-        let pattern;
-        if(/AK-47/i.test(name)){pattern = patterns.case_hardeneds.ak[paint_seed]}
-        else if(/Butterfly/i.test(name)){pattern = patterns.case_hardeneds.butterfly[paint_seed]}
-        else if(/M9 Bayonet/i.test(name)){pattern = patterns.case_hardeneds.m9[paint_seed]}
-        else if(/Bayonet/i.test(name)){pattern = patterns.case_hardeneds.bayonet[paint_seed]}
-        else if(/Talon/i.test(name)){pattern = patterns.case_hardeneds.talon[paint_seed]}
-        else if(/Stiletto/i.test(name)){pattern = patterns.case_hardeneds.stiletto[paint_seed]}
-        else if(/Navaja/i.test(name)){pattern = patterns.case_hardeneds.navaja[paint_seed]}
-        else if(/Ursus/i.test(name)){pattern = patterns.case_hardeneds.ursus[paint_seed]}
-        else if(/Huntsman/i.test(name)){pattern = patterns.case_hardeneds.huntsman[paint_seed]}
-        else if(/Flip/i.test(name)){pattern = patterns.case_hardeneds.flip[paint_seed]}
-        else if(/Bowie/i.test(name)){pattern = patterns.case_hardeneds.bowie[paint_seed]}
-        else if(/Daggers/i.test(name)){pattern = patterns.case_hardeneds.daggers[paint_seed]}
-        else if(/Gut/i.test(name)){pattern = patterns.case_hardeneds.gut[paint_seed]}
-        else if(/Falchion/i.test(name)){pattern = patterns.case_hardeneds.falchion[paint_seed]}
-        else if(/Karambit/i.test(name)){pattern = patterns.case_hardeneds.karambit[paint_seed]}
-        else if(/Five-SeveN/i.test(name)){pattern = patterns.case_hardeneds.five_seven[paint_seed]}
-        else{return undefined}
+    else if (/ Case Hardened/i.test(name)){
+        let pattern = null;
+        if (/AK-47/i.test(name)) pattern = patterns.case_hardeneds.ak[paint_seed];
+        else if (/Butterfly/i.test(name)) pattern = patterns.case_hardeneds.butterfly[paint_seed];
+        else if (/M9 Bayonet/i.test(name)) pattern = patterns.case_hardeneds.m9[paint_seed];
+        else if (/Bayonet/i.test(name)) pattern = patterns.case_hardeneds.bayonet[paint_seed];
+        else if (/Talon/i.test(name)) pattern = patterns.case_hardeneds.talon[paint_seed];
+        else if (/Stiletto/i.test(name)) pattern = patterns.case_hardeneds.stiletto[paint_seed];
+        else if (/Navaja/i.test(name)) pattern = patterns.case_hardeneds.navaja[paint_seed];
+        else if (/Ursus/i.test(name)) pattern = patterns.case_hardeneds.ursus[paint_seed];
+        else if (/Huntsman/i.test(name)) pattern = patterns.case_hardeneds.huntsman[paint_seed];
+        else if (/Flip/i.test(name)) pattern = patterns.case_hardeneds.flip[paint_seed];
+        else if (/Bowie/i.test(name)) pattern = patterns.case_hardeneds.bowie[paint_seed];
+        else if (/Daggers/i.test(name)) pattern = patterns.case_hardeneds.daggers[paint_seed];
+        else if (/Gut/i.test(name)) pattern = patterns.case_hardeneds.gut[paint_seed];
+        else if (/Falchion/i.test(name)) pattern = patterns.case_hardeneds.falchion[paint_seed];
+        else if (/Karambit/i.test(name)) pattern = patterns.case_hardeneds.karambit[paint_seed];
+        else if (/Five-SeveN/i.test(name)) pattern = patterns.case_hardeneds.five_seven[paint_seed];
+        else return undefined;
 
-        if(pattern!==undefined){
-            return {
-                type: "case_hardened",
-                value: pattern
-            };
-        }
-        else{
-            return undefined;
-            // return {
-            //     type: "case_hardened",
-            //     value: "Not special or not found"
-            // };
-        }
+        if (pattern !== null) return {type: 'case_hardened', value: pattern};
+        else return undefined; // return {type: 'case_hardened', value: 'Not special or not found'};
     }
-    else{
-        return undefined;
-    }
+    else return undefined;
 }
 
 function getQuality(type){
-    if(/Base Grade/i.test(type)){return qualities.base_grade}
-    else if(/Classified/i.test(type)){return qualities.classified}
-    else if(/Consumer Grade/i.test(type)){return qualities.consumer_grade}
-    else if(/Contraband/i.test(type)){return qualities.contraband}
-    else if(/Covert/i.test(type)){return qualities.covert}
-    else if(/Exotic/i.test(type)){return qualities.exotic}
-    else if(/Extraordinary/i.test(type)){return qualities.extraordinary}
-    else if(/High Grade/i.test(type)){return qualities.high_grade}
-    else if(/Industrial Grade/i.test(type)){return qualities.industrial_grade}
-    else if(/Mil-Spec Grade/i.test(type)){return qualities.milspec_grade}
-    else if(/Remarkable/i.test(type)){return qualities.remarkable}
-    else if(/Restricted/i.test(type)){return qualities.restricted}
-    else if(/Stock/i.test(type)){return qualities.stock}
-    else{return qualities.stock}
+    if (/Base Grade/i.test(type)) return qualities.base_grade;
+    else if (/Classified/i.test(type)) return qualities.classified;
+    else if (/Consumer Grade/i.test(type)) return qualities.consumer_grade;
+    else if (/Contraband/i.test(type)) return qualities.contraband;
+    else if (/Covert/i.test(type)) return qualities.covert;
+    else if (/Exotic/i.test(type)) return qualities.exotic;
+    else if (/Extraordinary/i.test(type)) return qualities.extraordinary;
+    else if (/High Grade/i.test(type)) return qualities.high_grade;
+    else if (/Industrial Grade/i.test(type)) return qualities.industrial_grade;
+    else if (/Mil-Spec Grade/i.test(type)) return qualities.milspec_grade;
+    else if (/Remarkable/i.test(type)) return qualities.remarkable;
+    else if (/Restricted/i.test(type)) return qualities.restricted;
+    else if (/Stock/i.test(type)) return qualities.stock;
+    else return qualities.stock;
 }
 
 function getQualityFromTags(tags){
-    for(let tag of tags) {
-        if(tag.category==="Rarity"){
-            switch(tag.internal_name){
+    for (let tag of tags) {
+        if(tag.category === 'Rarity'){
+            switch (tag.internal_name){
                 case rarities.common.internal_name: return qualities.common;
                 case rarities.common_weapon.internal_name: return qualities.common;
                 case rarities.uncommon.internal_name: return qualities.uncommon;
@@ -190,8 +163,8 @@ function getQualityFromTags(tags){
 }
 
 function getExteriorFromTags(tags) {
-    for(let tag of tags) {
-        if(tag.category==="Exterior"){
+    for (let tag of tags) {
+        if(tag.category === 'Exterior'){
             switch(tag.internal_name){
                 case exteriors.factory_new.internal_name: return exteriors.factory_new;
                 case exteriors.minimal_wear.internal_name: return exteriors.minimal_wear;
@@ -206,8 +179,8 @@ function getExteriorFromTags(tags) {
 }
 
 function getDopplerInfo(icon){
-    switch(icon){
-        //guts
+    switch (icon){
+        // guts
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1ObcTjxP09i5hJCHkuXLI7PQhW4A18l4jeHVu9703Azs-hA_MTuncNWWIVU-aF7Z_1a7k-bo0cW_v8_OyXVqvyAqsy3D30vgdDGy9vw":
             return dopplerPhases.p1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1ObcTjxP09i5hJCHkuXLI7PQhW4D18l4jeHVu96tilbtqEFrZT_3IYXBcgA4Z1_V_1e5wunu1pC6upucm3Zqu3EgtH7D30vgYyt-jDc":
@@ -223,7 +196,7 @@ function getDopplerInfo(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1ObcTjxP0966lYOAh_L1Ibfum2pD6sl0g_PE8bP5gVO8v11tZzqhLYGRIw86aQ2G81i3k-bog8XptcjIynFi7CB3sH6Jzh2_1BlFcKUx0ncN5NuB":
             return dopplerPhases.bp;
 
-        //daggers
+        // daggers
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfw-bbeQJD4eOym5Cbm_LmDKvZl3hUufp9g-7J4cKg3AXgrxJkZzqgcdTEcg5sY1mEqQXsk-3q15G76pnKmnFmsikg5CqMgVXp1pw20OEp":
             return dopplerPhases.p1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfw-bbeQJD4eOym5Cbm_LmDKvZl3hUuvpzteXI8oThxgHl_RdqMD_2cYeTIQ84ZQuE-VTsye3m1JTutM_Pn3Rh63Qn43vdlxapwUYb4JkLank":
@@ -239,7 +212,7 @@ function getDopplerInfo(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfw-bbeQJD4eO0mIGInOfxMqndqWZQ-sd9j-Db8IjKimu4ohQ0J3egJYCRJwNtaAnZqFbswunp0ZS_7Z_MyXpi7iknsXeJyxa3ghhJbOw5m7XAHiOIIXZS":
             return dopplerPhases.bp;
 
-        //falchions
+        // falchions
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1fLEcjVL49KJlY20k_jkI7fUhFRB4MRij7j--YXygED6_kZvZDryJoDHegU4YA2DqQC9wO_mgJe-vM6bwHBlviJ05HjblxC2iQYMMLJU9KLVJA":
             return dopplerPhases.p1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1fLEcjVL49KJlY20k_jkI7fUhFRB4MRij7v--YXygED6_0M4YGr2dY6VJ1NoaArR-gK4yOu6jJ-8u8yYmydk7nErt3iJmBWz0gYMMLKkrq5FpQ":
@@ -255,7 +228,7 @@ function getDopplerInfo(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1fLEcjVL49KJlY20lfv1MLDBk2pD5Pp8i_vD-Yn8klGwlB81NDG3OtDAcgM4Mw6GrwS3kOjn15Hv7ZnBmiFjvCcr5y2OmhC_h0wdPbZth_WACQLJOWkAmeM":
             return dopplerPhases.bp;
 
-        //bowies
+        // bowies
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfwObaZzRU7dCJlo-cnvLLMrbukmRB-Ml0mNbR_Y3mjQWLpxo7Oy3tJI6ddwM-aQ7S_VW-w-a8gcDuvZrKz3Rl63F05X7UyRGziRFJa-xvgeveFwsmoJhDFQ":
             return dopplerPhases.p1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfwObaZzRU7dCJlo-cnvLLMrbukmRB-Ml0mNbR_Y3mjQaLpxo7Oy3tI9eRd1I7aA6G8ge_lOi-1pW6vsnLzyNjviRw4Hnfl0eyghFPa7FsgOveFwvj2l7OdQ":
@@ -271,7 +244,7 @@ function getDopplerInfo(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfwObaZzRU7dCJlo-cnvLLMrbulGdQ685hj-jT-bP4iUa2pxY1KTynS9rMJV56fwzW_1bryevohMLv6siYmnNn6XQr7CndzEa2h0tKardshqGZTV2bUq1XXP7VSLu9WCk":
             return dopplerPhases.bp;
 
-        //flips
+        // flips
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1f_BYQJD4eOym5Cbm_LmDKvZl3hUufp9g-7J4cKj3FK2qEpvYmH7ddSRdVVvMFDTqVfsk7q6h8C_tZnJzHRh7CFw53zagVXp1vI5Ejry":
             return dopplerPhases.p1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1f_BYQJD4eOym5Cbm_LmDKvZl3hUuvp9g-7J4cKn21Lg-UtsZzunJNCcdgQ9Zg7T-QS6wLu5h5e4vZXAzno16CQr4HnegVXp1j8d9SMm":
@@ -287,7 +260,7 @@ function getDopplerInfo(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1f_BYQJD4eO0mIGInOfxMqndqWZQ-sd9j-Db8IjKhF2zowdyZz_yLIfGdAFvYguD-Fa9kOrp15G9vpifz3A26ycjt3qMzBDig05Lafsv26IspbmNiQ":
             return dopplerPhases.bp;
 
-        //huntsmans
+        // huntsmans
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfx_LLZTRB7dCJlY20k_jkI7fUhFRB4MRij7j--YXygED6-0Q-Z2umLYGddVc5ZlnU-QXowr2-08O9tZ_JyyAys3Jz4ivUnxK3hwYMMLKe5XXxtg":
             return dopplerPhases.p1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfx_LLZTRB7dCJlY20k_jkI7fUhFRB4MRij7v--YXygED68xFta2z0cYOWIVJqMF7T-Fi2xbvojcLtv5zAwXNnsnYr4naPzhKygQYMMLKHPHTzSA":
@@ -303,7 +276,7 @@ function getDopplerInfo(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfx_LLZTRB7dCJlY20lfv1MLDBk2pD5Pp8i_vD-Yn8klGwlB81NDG3OoWQJgFtaF-D_lK-kr3t15Tuv8jAmnJn6Ccj4yzenBPh1U1FPOM606eACQLJCUKwlNc":
             return dopplerPhases.bp;
 
-        //bayonets
+        // bayonets
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpotLu8JAllx8zJfAJG48ymmIWZqOf8MqjUx1Rd4cJ5nqeT8Ymi3wzt-UNrZ2mmItWRcgRvM16BqVK4l7jq0J-4vZ3IwHQ16HUq-z-DyALmsiWI":
             return dopplerPhases.p1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpotLu8JAllx8zJfAJG48ymmIWZqOf8MqjUxFRd4cJ5nqeW946n0FfgrRFqYWulIdSVdAI5NAqC-Fa2kOvv0Z-9vJ7KmidquCQr-z-DyAl0eh_q":
@@ -319,7 +292,7 @@ function getDopplerInfo(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpotLu8JAllx8zJfAJA4N21n5COluX4DLbQhGld7cxrj-3--YXygED6rxVtMWmgJ4fDJ1U_aA6EqFC5w7vujMO9uJrIzCdg6HMgs3mMlxe-0wYMMLLYtmuUHw":
             return dopplerPhases.bp;
 
-        //m9s
+        // m9s
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf3qr3czxb49KzgL-KmsjwPKvBmm5D19V5i_rEpLP5gVO8v11tMmD6IobEdFRsMFmB8lPvlL-9hZbuvJ_JziBn7HYltnvfnES21xhKcKUx0sfosVEP":
             return dopplerPhases.p1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf3qr3czxb49KzgL-KmsjwPKvBmm5D19V5i_rEp7P5gVO8v11uaz_7d9SRcQM-ZlCG-lS3x-_s0Je56JrMmCFnu3Yitnjby0Cx0B4acKUx0j6jkldx":
@@ -335,7 +308,7 @@ function getDopplerInfo(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf3qr3czxb49KzgL-Kmsj2P7rSnXtU6dd9teTA5475jV2urhcDPzCkfMKLIwRvYwrWqVS8wezpjcS_78_Mn3Bruykj7HbfzhPm00xLOLc-jPXNHELeWfLcbrqw2A":
             return dopplerPhases.bp;
 
-        //butterlies
+        // butterlies
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf0ebcZThQ6tCvq4GGqPP7I6vdk3lu-M1wmeyQyoD8j1yg5RVtMmCmctOWJlI-YwyD_VG8w-nohsPt78zKz3Zhsygq4HnczEHk0k5SLrs4Un2yL0k":
             return dopplerPhases.p1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf0ebcZThQ6tCvq4GGqPP7I6vdk3lu-M1wmeyTyo7KhF2zowdyYmqicYedI1NoYAvR-FK5yevmg5S6us_MnSFjuSYm4ivaykDigBtIa_sv26I7TRzdOw":
@@ -351,7 +324,7 @@ function getDopplerInfo(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf0ebcZThQ6tCvq4GGqPX4Mrjahm5Q-slOh-jT94DwgU6xryw-DDWqc97RbA9vN1GD8gO2ybq7hsK9tZ_By3ZqsiJw7X3elxzj1xpPb7c506GZSVmAR_selHmOwYo":
             return dopplerPhases.bp;
 
-        //karambits
+        // karambits
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlY20k_jkI7fUhFRB4MRij7j--YXygED6-kU_Y2HyLYaXeldoZFHYqFa5w-btg8W-7s7PzndkuyJz5CvYzkO0hgYMMLK4xIyRWw":
             return dopplerPhases.p1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlY20k_jkI7fUhFRB4MRij7v--YXygED6-BZpNTqicoWXcQ43aV6Br1DqxL--jZO_7svAzXs3uCQg4XyLmhXhhQYMMLKBF8xkUA":
@@ -367,7 +340,7 @@ function getDopplerInfo(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlY20lfv1MLDBk2pD5Pp8i_vD-Yn8klGwlB81NDG3OtWTJAdsNVCG-Vjvwrvsh8Dv6szBznVivSMnt3eOlx22hhhNbu1o0PaACQLJyiL9rI8":
             return dopplerPhases.bp;
 
-        //gamma guts
+        // gamma guts
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1ObcTjxP09u3mY2KqPP7I6vdk3lu-M1wmeyQyoD8j1yg5RI9YzymItKRcQY2YFyC-Fe7x-3p05K8uMybwXdmvyN34n6LnBGygUxSLrs4hchk9Mk":
             return dopplerPhases.gp1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1ObcTjxP09u3mY2KqPP7I6vdk3lu-M1wmeyTyoD8j1yg5RZrazv1J9fGJgRvNF_W_Afolefs0Z6_uJSaznM36yInt3rbnRW-iB9SLrs4UCqX9kU":
@@ -379,7 +352,7 @@ function getDopplerInfo(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1ObcTjxP09m7kZKKm_PLPrrDlGdU4d90jtbN_Iv9nBqxqRU5MG32ddeQIwdsaVqE_wTtkO66g5Hv7p6fzHprvidx4XiLzBezn1gSOQvdpryG":
             return dopplerPhases.em;
 
-        //gamma flips
+        // gamma flips
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1f_BYQJD4eOxlY2GlsjwPKvBmm5D19V5i_rEpLP5gVO8v11rMT_6JtWUcwE2ZVmF_1S9wurv18W5752dyXBlvHNw4XrVzRy1gxxFcKUx0qdLIRFw":
             return dopplerPhases.gp1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1f_BYQJD4eOxlY2GlsjwPKvBmm5D19V5i_rEp7P5gVO8v11lN2v2Io_DIwI3YQyC_FHqyezvhMS8v5_OyiRguCMgtHzczBWy000YcKUx0nna_20E":
@@ -391,7 +364,7 @@ function getDopplerInfo(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1f_BYQJD4eOzmYWZlvvwDLbQhGld7cxrj-3--YXygED6-UBlZWGiIICVdQBoZFHR-Fftk7y8hsTotZjAmiFhuil2ti6ImkCwhQYMMLJIJJ_2Qw":
             return dopplerPhases.em;
 
-        //gamma bayonet
+        // gamma bayonet
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpotLu8JAllx8zJfAJF7dG7lb-PmOfkP77DqXtZ6dZ029bN_Iv9nBrk-RE-NTygJYOdcwdsMlnW_Vi6xufuhZHt6p2an3cwvCYn5yrZn0O2n1gSOaR__zxS":
             return dopplerPhases.gp1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpotLu8JAllx8zJfAJF7dG7lb-PmOfkP77DqXtZ6dZ02NbN_Iv9nBq3rRBsNzv1LdXBIwI5YgqFqVi3kL3shJW578nAynU3vHZ34imOmRCzn1gSOeA4WWgj":
@@ -403,7 +376,7 @@ function getDopplerInfo(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpotLu8JAllx8zJfAJH4dmklYyPqPr1Ibndk2JL7cFOhuDG_Zi72VDh8kduZW37JIeWJ1Q9Yl2G8gToxrrmhpfvtZ6YynI1siRw7HbVmwv330-du9HHOA":
             return dopplerPhases.em;
 
-        //gamma m9s
+        // gamma m9s
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf3qr3czxb49KzgL-KmsjzMrbcl1RV59VhhuzTypz9iUex-iwwOj6rYJiRew4-MgrSqAO-yLvujMe4tMzJzSM2uylz5SrbnBC0hRpKO-1u1qbLVxzAUNEUr2p2":
             return dopplerPhases.gp1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf3qr3czxb49KzgL-KmsjzMrbcl1RV59VhhuzTypz9iUex-SwwOj6rYJiRcg8-Z13Trlm5w--60ZS96szJzidn6ygi5yvamUPk0kxJb7E6hqaZVxzAUK6TGQbC":
@@ -415,7 +388,7 @@ function getDopplerInfo(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf3qr3czxb49KzgL-KmsjxPr7Dl2dV18hwmOvN8IXvjVCLpxo7Oy3tIdLEdgdqNAmBqFa_kO3mh8K9uJqbyiMy7HIn5H3VzUPl1B0dO7M7hOveFwvYitsMFw":
             return dopplerPhases.em;
 
-        //gamma karambits
+        // gamma karambits
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlY20kPb5PrrukmRB-Ml0mNbR_Y3mjQWLpxo7Oy3tI4CcIVA8MArW_VfrkOy-gsK7v5_LmnBmsnYn4i2MzB3j0klMbuZsg-veFwtNHI-dng":
             return dopplerPhases.gp1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlY20kPb5PrrukmRB-Ml0mNbR_Y3mjQaLpxo7Oy3tcYKVcQRsZF_Q-FTow-zs0Jft7czNmiNluyV35nrbyR2_1UlPaOFp1uveFwtI0RP3qg":
@@ -427,7 +400,7 @@ function getDopplerInfo(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlY20kvrxIbrdklRc6ddzhuzI74nxt1i9rBsofT-ld9LDJgVsY1nX-QLtlejqg5bu7Zydm3Q1uSVzsXmOmUe3ghFKauBxxavJdWR7Gog":
             return dopplerPhases.em;
 
-        //stilettos
+        // stilettos
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfwOfBfThW-NOJlY20k_jkI7fUhFRB4MRij7j--YXygED6_kptYWmnINDAe1U_MFqE-AK8kubsgZC6vZTBy3dm7iAjty6OmRG0gAYMMLJXF6TfvA":
             return dopplerPhases.p1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfwOfBfThW-NOJlY20k_jkI7fUhFRB4MRij7v--YXygED6_hZvNmH6dYCTIQQ9Ml3XrwTvwLi615K46s_Pmns1uXJ34SnYmBKw0AYMMLKAKIcTNQ":
@@ -443,7 +416,7 @@ function getDopplerInfo(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfwOfBfThW-NOJlY20lfv1MLDBk2pD5Pp8i_vD-Yn8klGwlB81NDG3Oo-QIQA7ZFnSqVG9wuju0cfpucvLnHNivyFw7HrbmEGxgBxOaOFu1qCACQLJ4GHavAc":
             return dopplerPhases.bp;
 
-        //ursuses
+        // ursuses
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfxuHbZC597dGJkI-bh_vxIYTBnmpC7ZROhuDG_Zi7jQWy-UFqN2r7INDDdAVsMAmD8lLql7vvhJPq75jLzXYysnIn7XbVmQv3309_tWjVng":
             return dopplerPhases.p1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfxuHbZC597dGJkI-bh_vxIYTBnmpC7ZdOhuDG_Zi7iwLn_UVpZGrzcYKdcg82Z13U_FS-l7znjZ60tMzKmHRju3VwsX-LmAv330-XRUGjkQ":
@@ -459,7 +432,7 @@ function getDopplerInfo(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfxuHbZC597dGJloyKlPzkNrrDmlRc6ddzhuzI74nxt1i9rBsofW-gLdORJw42ZV6D_lG4kuy71Me9tZ3MwSdgsyl3tCzdn0DhgB1EbeBxxavJfwNOLfc":
             return dopplerPhases.bp;
 
-        //navajas
+        // navajas
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1OrYYiR95t21n4uFnvHxDLrcqW9e-NV9j_v-5YT0m1HllB81NDG3OoeScgM5aFDSqVbvlLjth8K_6MzOy3dl6yRz7Czemx3ihhhEabQ716OACQLJ_piUbl4":
             return dopplerPhases.p1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1OrYYiR95t21n4uFnvHxDLrcqW9e-NV9j_v-5YT0m1HmlB81NDG3OoaSI1M4M1iE81jrxr-51Je_v52dyHoxvicm7C6OmBy0hU5IaOQ9hfOACQLJ1793rRA":
@@ -473,7 +446,7 @@ function getDopplerInfo(icon){
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1OrYYiR95t21n4uFnvHxDLrcqXlE6txOh-jT94DwgU6xrywwOj6rYJiSIFA6YVjY_FntlLjojMK6tJuczHZn7Cgr5CrcnBezghxMaLA9gabPVxzAUCJgZThD":
             return dopplerPhases.rb;
 
-        //talons
+        // talons
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfxPrMfipP7dezhr-KmsjwPKvBmm5D19V5i_rEpLPigVC7vCwwOj6rYJiWdw87NFyB-wfqxLq5h5PtuJudyHU36SR25i7blkfmiBsYOOc-gvLPVxzAUHaSd1K1":
             return dopplerPhases.p1;
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfxPrMfipP7dezhr-KmsjwPKvBmm5D19V5i_rEp7PigVC7vCwwOj6rYJjBcAZvNFvTrFC_l7-5jJbvtMnMyHtrs3J27SqLlhG010xJOLM5gvyZVxzAUE0LMc1E":
@@ -494,39 +467,26 @@ function getDopplerInfo(icon){
 }
 
 function getShortDate(tradabibilityDate){
-    if(tradabibilityDate==="Tradable"||tradabibilityDate===""){
-        return "T";
-    }
+    if (tradabibilityDate === 'Tradable' || tradabibilityDate === '') return 'T';
     let now = new Date().getTime();
     let distance = new Date(tradabibilityDate) - now;
-    if(distance<=0){
-        return "T";
-    }
+    if (distance <= 0) return 'T';
+
     let days = Math.floor(distance / (1000 * 60 * 60 * 24));
     let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     let seconds = Math.floor((distance % (1000 * 60)) / 1000);
-    if(days===0){
-        if(hours===0){
-            if(minutes===0){
-                if(seconds===0){
-                    return "";
-                }
-                else{
-                    return seconds + "s";
-                }
+    if (days === 0){
+        if (hours === 0){
+            if (minutes === 0){
+                if (seconds === 0) return '';
+                else return `${seconds}s`;
             }
-            else{
-                return minutes + "m";
-            }
+            else return `${minutes}m`;
         }
-        else {
-            return hours + "h";
-        }
+        else return `${hours}h`;
     }
-    else{
-        return days + "d";
-    }
+    else return `${days}d`;
 }
 
 function souvenirExists(iteminfo) {
@@ -546,17 +506,17 @@ function souvenirExists(iteminfo) {
         'The Safehouse Collection',
         'The Train Collection'
     ];
-    let collectionsWithSouvenirstoCheck = new RegExp(collectionsWithSouvenirs.join("|"), "i");
 
+    let collectionsWithSouvenirstoCheck = new RegExp(collectionsWithSouvenirs.join('|'), 'i');
     return collectionsWithSouvenirstoCheck.test(iteminfo);
 
 }
 
 function goToInternalPage(targetURL) {
-    chrome.tabs.query({}, function(tabs) {
+    chrome.tabs.query({}, (tabs) =>{
         for (let i = 0, tab; tab = tabs[i]; i++) {
-            if (tab.url===("chrome-extension://"+ chrome.runtime.id + targetURL)) {
-                chrome.tabs.reload(tab.id, {}, function(){});
+            if (tab.url === ('chrome-extension://'+ chrome.runtime.id + targetURL)) { // TODO make this work in firefox or remove the whole thing
+                chrome.tabs.reload(tab.id, {}, () => {});
                 chrome.tabs.update(tab.id, {active: true});
                 return;
             }
@@ -567,39 +527,20 @@ function goToInternalPage(targetURL) {
 
 function determineNotificationDate(tradableDate, minutesOrHours, numberOfMinutesOrHours, beforeOrAfter){
     let baseTimeUnit = 0;
-    if(minutesOrHours==="minutes"){
-        baseTimeUnit = 60;
-    }
-    else if(minutesOrHours==="hours"){
-        baseTimeUnit = 3600;
-    }
-    if(beforeOrAfter==="before"){
-        baseTimeUnit=baseTimeUnit*-1
-    }
-    let timeDifference = numberOfMinutesOrHours*baseTimeUnit;
+    if (minutesOrHours === 'minutes') baseTimeUnit = 60;
+    else if (minutesOrHours === 'hours') baseTimeUnit = 3600;
+    if (beforeOrAfter === 'before') baseTimeUnit *= -1;
+    let timeDifference = numberOfMinutesOrHours * baseTimeUnit;
     return new Date((parseInt((new Date(tradableDate).getTime() / 1000).toFixed(0)) + timeDifference)*1000);
 }
 
 function reverseWhenNotifDetails(tradability, notifTime){
-    let beforeOrAfter =  "";
     let difference = (parseInt(new Date(notifTime).getTime() / 1000).toFixed(0)) - (parseInt(new Date(tradability).getTime() / 1000).toFixed(0));
     let differenceAbs =  Math.abs(difference);
-    if(difference>=0){
-        beforeOrAfter = "after";
-    }
-    else{
-        beforeOrAfter = "before";
-    }
-    let minutesOrHours = "";
-    let numberOfMinutesOrHours = 0;
-    if((differenceAbs)/60>=60){
-        minutesOrHours = "hours";
-        numberOfMinutesOrHours = (differenceAbs/60)/60;
-    }
-    else{
-        minutesOrHours = "minutes";
-        numberOfMinutesOrHours = differenceAbs/60;
-    }
+    let beforeOrAfter = difference >= 0 ? 'after' : 'before';
+    let minutesOrHours = differenceAbs / 60 >= 60 ? 'hours' : 'minutes';
+    let numberOfMinutesOrHours = differenceAbs / 60 >= 60 ? ( differenceAbs / 60) / 60 : differenceAbs / 60;
+
     return {
         numberOfMinutesOrHours: numberOfMinutesOrHours,
         minutesOrHours: minutesOrHours,
@@ -607,16 +548,14 @@ function reverseWhenNotifDetails(tradability, notifTime){
     };
 }
 
-function getOfferStyleSteamID(steamID64){
-    return Number(steamID64.split("7656")[1]) - Number(1197960265728);
-}
+// there are many different kinds of SteamID formats , this function converts the 64bit into the ones used in trade offers
+function getOfferStyleSteamID(steamID64){return Number(steamID64.split('7656')[1]) - Number(1197960265728)}
 
-//gets the steam id of the user that's profile this script is run on
+// gets the steam id of the user that's profile this script is run on
 function getProfileOwnerSteamID(){
     let steamidOfProfileOwnerScript = `document.querySelector('body').setAttribute('steamidOfProfileOwner', g_rgProfileData.steamid);`;
     return injectToPage(steamidOfProfileOwnerScript, true, 'steamidOfProfileOwner', 'steamidOfProfileOwner');
 }
-
 
 // gets SteamID of the user logged into steam (returns false if there is no user logged in)
 function getUserSteamID(){
@@ -624,7 +563,7 @@ function getUserSteamID(){
     return injectToPage(getUserSteamIDScript, true, 'steamidOfLoggedinUser', 'steamidOfLoggedinUser');
 }
 
-//gets the other party's steam id in a trade offer
+// gets the other party's steam id in a trade offer
 function getTradePartnerSteamID(){
     let tradePartnerSteamIDScript = `document.querySelector('body').setAttribute('tradePartnerSteamID', g_ulTradePartnerSteamID);`;
     return injectToPage(tradePartnerSteamIDScript, true, 'tradePartnerSteamID', 'tradePartnerSteamID')
@@ -636,41 +575,29 @@ function getInventoryOwnerID(){
 }
 
 function warnOfScammer(steamID, page) {
-    chrome.runtime.sendMessage({getSteamRepInfo: steamID}, function(response) {
-        if(response.SteamRepInfo.reputation.summary==="SCAMMER"){
-            let backgroundURL = chrome.runtime.getURL("images/scammerbackground.jpg");
-            $("body").prepend(`<div style="background-color: red; color: white; padding: 5px; text-align: center;" class="scammerWarning"><span>Watch out, this user was banned on SteamRep for scamming! You can check the details of what they did on <a style="color: black; font-weight: bold" href='https://steamrep.com/profiles/${steamID}'>steamrep.com</a></span></div>`)
-            if(page==="offer"){
-                $("body").css({"background-image": "url('" + backgroundURL + "')"});
-            }
-            else if(page==="profile"){
-                $(".no_header.profile_page").css({"background-image": "url('" + backgroundURL + "')"});
-            }
+    chrome.runtime.sendMessage({getSteamRepInfo: steamID}, (response) => {
+        if (response.SteamRepInfo.reputation.summary === 'SCAMMER'){
+            let backgroundURL = chrome.runtime.getURL('images/scammerbackground.jpg');
+            document.querySelector('body').insertAdjacentHTML('beforebegin', `<div style="background-color: red; color: white; padding: 5px; text-align: center;" class="scammerWarning"><span>Watch out, this user was banned on SteamRep for scamming! You can check the details of what they did on <a style="color: black; font-weight: bold" href='https://steamrep.com/profiles/${steamID}'>steamrep.com</a></span></div>`);
 
+            if (page === 'offer')   document.querySelector('body').setAttribute('style', `background-image: url('${backgroundURL}')`);
+            else if (page === 'profile') document.querySelector('.no_header.profile_page').setAttribute('style', `background-image: url('${backgroundURL}')`);
         }
     });
-
 }
 
 function parseStickerInfo(descriptions, linkType){
     let stickers = [];
-    let link = "";
-    if(linkType==="search"){
-        link = "https://steamcommunity.com/market/search?q=";
-    }
-    else if(linkType==="direct"){
-        link = "https://steamcommunity.com/market/listings/730/Sticker%20%7C%20";
-    }
-    descriptions.forEach(function (description) {
-        if(/sticker_info/.test(description.value)){
-            let names = description.value.split("><br>")[1].split(": ")[1].split("</center>")[0].split(", ");
+    let link = linkType === 'search' ? 'https://steamcommunity.com/market/search?q=' : 'https://steamcommunity.com/market/listings/730/Sticker%20%7C%20';
+
+    descriptions.forEach((description) => {
+        if (/sticker_info/.test(description.value)){
+            let names = description.value.split('><br>')[1].split(': ')[1].split('</center>')[0].split(', ');
             names = handleStickerNamesWithCommas(names);
-            let iconURLs = description.value.split("src=\"");
+            let iconURLs = description.value.split('src="');
             iconURLs.shift();
-            iconURLs.forEach(function (iconURL, index) {
-                iconURLs[index] = iconURL.split("\"><")[0];
-            });
-            names.forEach(function (name, index) {
+            iconURLs.forEach((iconURL, index) => {iconURLs[index] = iconURL.split('><')[0]});
+            names.forEach((name, index) => {
                 stickers.push({
                     name: name,
                     iconURL: iconURLs[index],
@@ -685,75 +612,72 @@ function parseStickerInfo(descriptions, linkType){
 
 function handleStickerNamesWithCommas(names){
     let nameWithCommaFound = false;
-    names.forEach(function (name, index) {
-        if(name==="Don't Worry"&&names[index+1]==="I'm Pro"){
-            names[index]="Don't Worry, I'm Pro";
-            names = removeFromArray(names, index+1);
+
+    names.forEach((name, index) => {
+        if(name === 'Don\'t Worry' && names[index+1] === 'I\'m Pro'){
+            names[index] = 'Don\'t Worry, I\'m Pro';
+            names = removeFromArray(names, index + 1);
             nameWithCommaFound = true;
         }
     });
-    if(nameWithCommaFound){
-        return handleStickerNamesWithCommas(names);
-    }
-    else{
-        return names;
-    }
+
+    if(nameWithCommaFound) return handleStickerNamesWithCommas(names);
+    else return names;
 }
 
 function removeFromArray(array, arrayIndex){
     let newArray = [];
-    array.forEach(function (element, index) {
-        if(!(index===arrayIndex)){
-            newArray.push(element);
-        }
-    });
+    array.forEach((element, index) => {if (index !== arrayIndex) newArray.push(element)});
     return newArray;
 }
 
 function addReplytoCommentsFunctionality() {
-    $(".commentthread_comment_actions").each(function () {
-        $commentactions = $(this);
-        if($commentactions.find(".replybutton").length===0){
-            $commentactions.append(`<a class="actionlink replybutton" href="javascript:void(0)" data-tooltip-text="Reply"><img style="height: 16px; width: 16px" src="${chrome.runtime.getURL("images/reply.png")}"></a>`)
+    document.querySelectorAll('.commentthread_comment_actions').forEach(commentThread => {
+        if (commentThread.querySelector('.replybutton') === null){
+            commentThread.insertAdjacentHTML('beforeend', `<a class="actionlink replybutton" data-tooltip-text="Reply"><img style="height: 16px; width: 16px" src="${chrome.runtime.getURL("images/reply.png")}"></a>`);
         }
     });
 
-    $(".replybutton").off("click").on("click",function(){
-        let commenterName = $(this).parent().parent().find($(".commentthread_author_link")).find("bdi").html().split(" <span class=\"nickname_block\">")[0];
-        let currentContent = $(".commentthread_textarea").val();
-        if(currentContent===""){
-            $(".commentthread_textarea").val(currentContent + "[b]@" + commenterName + "[/b]: ");
-        }
-        else{
-            $(".commentthread_textarea").val(currentContent + "\n[b]@" + commenterName + "[/b]: ");
-        }
-        $(".commentthread_textarea").focus();
+    document.querySelectorAll('.replybutton').forEach(replyButton => {
+        // if there was one previously added
+        replyButton.removeEventListener('click', (event ));
+
+        replyButton.addEventListener('click', (event) => {
+            console.log(event);
+            let commenterName = event.target.parentNode.parentNode.parentNode.querySelector('.commentthread_author_link').querySelector('bdi').innerHTML.split(' <span class="nickname_block">')[0];
+            let commentTextarea = document.querySelector('.commentthread_textarea');
+            let currentContent = commentTextarea.value;
+
+            if (currentContent === '') commentTextarea.value = `[b]@${commenterName}[/b]: `;
+            else commentTextarea.value = `${currentContent}\n[b]@${commenterName}[/b]: `;
+
+            commentTextarea.focus();
+        });
     });
 }
 
 function addCommentsMutationObserver(){
-    let observer = new MutationObserver(function(mutations, observer) {
-        addReplytoCommentsFunctionality();
-    });
+    let observer = new MutationObserver(() => {addReplytoCommentsFunctionality()});
 
-    if($(".commentthread_comments").length!==0){
-        observer.observe($(".commentthread_comments")[0], {
+    let commentThread = document.querySelector('.commentthread_comments');
+
+    if (commentThread  !== null){
+        observer.observe(commentThread, {
             subtree: true,
             attributes: false,
             childList: true
-        });
+        })
     }
 }
 
 function reportComments(){
-    chrome.storage.local.get(['flagScamComments'], function(result) {
+    chrome.storage.local.get('flagScamComments', (result) => {
         if(result.flagScamComments) {
-            let spamTExtCheck = new RegExp(commentsToReport.join("|"), "i");
+            let spamTextCheck = new RegExp(commentsToReport.join('|'), 'i');
 
-            $(".commentthread_comment.responsive_body_text").each(function () {
-                $commentthread = $(this);
-                if (spamTExtCheck.test($commentthread.find(".commentthread_comment_text").text()) && !$commentthread.hasClass("hidden_post")) {
-                    $commentthread.find("a.report_and_hide").find("img").click();
+            document.querySelectorAll('.commentthread_comment.responsive_body_text').forEach(comment => {
+                if (spamTextCheck.test(comment.querySelector('.commentthread_comment_text').innerText) && !comment.classList.contains('hidden_post')){
+                    comment.querySelector('a.report_and_hide').querySelector('img').click();
                 }
             });
         }
@@ -766,10 +690,10 @@ function addDopplerPhase(item, dopplerInfo){
         dopplerDiv.classList.add('dopplerPhase');
 
         switch (dopplerInfo.short){
-            case "SH": dopplerDiv.insertAdjacentHTML('beforeend', sapphire); break;
-            case "RB": dopplerDiv.insertAdjacentHTML('beforeend', ruby); break;
-            case "EM": dopplerDiv.insertAdjacentHTML('beforeend', emerald); break;
-            case "BP": dopplerDiv.insertAdjacentHTML('beforeend', blackPearl); break;
+            case 'SH': dopplerDiv.insertAdjacentHTML('beforeend', sapphire); break;
+            case 'RB': dopplerDiv.insertAdjacentHTML('beforeend', ruby); break;
+            case 'EM': dopplerDiv.insertAdjacentHTML('beforeend', emerald); break;
+            case 'BP': dopplerDiv.insertAdjacentHTML('beforeend', blackPearl); break;
             default: dopplerDiv.innerText = dopplerInfo.short;
         }
 
@@ -787,105 +711,105 @@ function updatePrices(){
 
     let request = new Request('https://prices.csgotrader.app/latest/prices_v2.json', init);
 
-    fetch(request).then(function(response) {
+    fetch(request).then((response) => {
         return response.json();
-    }).then(function(fullPricesJSON) {
-        chrome.storage.local.get(['itemPricing', 'pricingProvider', 'pricingMode'], function(result) {
+    }).then((fullPricesJSON) => {
+        chrome.storage.local.get(['itemPricing', 'pricingProvider', 'pricingMode'], (result) => {
             if(result.itemPricing){
                 let prices = {};
                 const keys = Object.keys(fullPricesJSON);
                 if(result.pricingProvider === pricingProviders.csgobackpack.name){
-                        if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["7_days_average"].name){
-                            for (const key of keys) {
-                                if (fullPricesJSON[key][result.pricingProvider]["7_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                    prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["7_days"]["average"]};
-                                }
-                                else {
-                                    prices[key] = {"price": "null"};
-                                    console.log(key);
-                                }
+                    if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["7_days_average"].name){
+                        for (const key of keys) {
+                            if (fullPricesJSON[key][result.pricingProvider]["7_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
+                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["7_days"]["average"]};
+                            }
+                            else {
+                                prices[key] = {"price": "null"};
+                                console.log(key);
                             }
                         }
-                        else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["7_days_median"].name){
-                            for (const key of keys) {
-                                if (fullPricesJSON[key][result.pricingProvider]["7_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                    prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["7_days"]["median"]};
-                                }
-                                else {
-                                    prices[key] = {"price": "null"};
-                                    console.log(key);
-                                }
+                    }
+                    else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["7_days_median"].name){
+                        for (const key of keys) {
+                            if (fullPricesJSON[key][result.pricingProvider]["7_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
+                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["7_days"]["median"]};
+                            }
+                            else {
+                                prices[key] = {"price": "null"};
+                                console.log(key);
                             }
                         }
-                        else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["24_hours_average"].name){
-                            for (const key of keys) {
-                                if (fullPricesJSON[key][result.pricingProvider]["24_hours"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                    prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["24_hours"]["average"]};
-                                }
-                                else {
-                                    prices[key] = {"price": "null"};
-                                    console.log(key);
-                                }
+                    }
+                    else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["24_hours_average"].name){
+                        for (const key of keys) {
+                            if (fullPricesJSON[key][result.pricingProvider]["24_hours"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
+                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["24_hours"]["average"]};
+                            }
+                            else {
+                                prices[key] = {"price": "null"};
+                                console.log(key);
                             }
                         }
-                        else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["24_hours_median"].name){
-                            for (const key of keys) {
-                                if (fullPricesJSON[key][result.pricingProvider]["24_hours"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                    prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["24_hours"]["median"]};
-                                }
-                                else {
-                                    prices[key] = {"price": "null"};
-                                    console.log(key);
-                                }
+                    }
+                    else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["24_hours_median"].name){
+                        for (const key of keys) {
+                            if (fullPricesJSON[key][result.pricingProvider]["24_hours"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
+                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["24_hours"]["median"]};
+                            }
+                            else {
+                                prices[key] = {"price": "null"};
+                                console.log(key);
                             }
                         }
-                        else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["30_days_average"].name){
-                            for (const key of keys) {
-                                if (fullPricesJSON[key][result.pricingProvider]["30_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                    prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["30_days"]["average"]};
-                                }
-                                else {
-                                    prices[key] = {"price": "null"};
-                                    console.log(key);
-                                }
+                    }
+                    else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["30_days_average"].name){
+                        for (const key of keys) {
+                            if (fullPricesJSON[key][result.pricingProvider]["30_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
+                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["30_days"]["average"]};
+                            }
+                            else {
+                                prices[key] = {"price": "null"};
+                                console.log(key);
                             }
                         }
-                        else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["30_days_median"].name){
-                            for (const key of keys) {
-                                if (fullPricesJSON[key][result.pricingProvider]["30_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                    prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["30_days"]["median"]};
-                                }
-                                else {
-                                    prices[key] = {"price": "null"};
-                                    console.log(key);
-                                }
+                    }
+                    else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["30_days_median"].name){
+                        for (const key of keys) {
+                            if (fullPricesJSON[key][result.pricingProvider]["30_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
+                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["30_days"]["median"]};
+                            }
+                            else {
+                                prices[key] = {"price": "null"};
+                                console.log(key);
                             }
                         }
-                        else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["all_time_average"].name){
-                            for (const key of keys) {
-                                if (fullPricesJSON[key][result.pricingProvider]["all_time"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                    prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["all_time"]["average"]};
-                                }
-                                else {
-                                    prices[key] = {"price": "null"};
-                                    console.log(key);
-                                }
+                    }
+                    else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["all_time_average"].name){
+                        for (const key of keys) {
+                            if (fullPricesJSON[key][result.pricingProvider]["all_time"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
+                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["all_time"]["average"]};
+                            }
+                            else {
+                                prices[key] = {"price": "null"};
+                                console.log(key);
                             }
                         }
-                        else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["all_time_median"].name){
-                            for (const key of keys) {
-                                if (fullPricesJSON[key][result.pricingProvider]["all_time"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                    prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["all_time"]["median"]}
-                                }
-                                else {
-                                    prices[key] = {"price": "null"};
-                                    console.log(key);
-                                }
+                    }
+                    else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["all_time_median"].name){
+                        for (const key of keys) {
+                            if (fullPricesJSON[key][result.pricingProvider]["all_time"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
+                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["all_time"]["median"]}
+                            }
+                            else {
+                                prices[key] = {"price": "null"};
+                                console.log(key);
                             }
                         }
+                    }
                     else {
-                            prices[key] = {"price": "null"};
-                            console.log(key);
+                        prices[key] = {"price": "null"};
+                        console.log(key);
                     }
                 }
                 else if(result.pricingProvider === pricingProviders.bitskins.name){
@@ -934,7 +858,7 @@ function updatePrices(){
                     }
                 }
                 console.log(prices);
-                chrome.storage.local.set({prices: prices,}, function() {});
+                chrome.storage.local.set({prices: prices}, () => {});
             }
         });
     });
@@ -943,13 +867,11 @@ function updatePrices(){
 function updateExchangeRates(){
     let request = new Request('https://prices.csgotrader.app/latest/exchange_rates.json');
 
-    fetch(request).then(function(response) {
+    fetch(request).then((response) => {
         return response.json();
-    }).then(function(exchangeRatesJSON) {
-        chrome.storage.local.set({exchangeRates: exchangeRatesJSON,}, function() {});
-        chrome.storage.local.get('currency', function(result) {
-            chrome.storage.local.set({exchangeRate: exchangeRatesJSON[result.currency],}, function() {});
-        });
+    }).then((exchangeRatesJSON) => {
+        chrome.storage.local.set({exchangeRates: exchangeRatesJSON}, () =>{});
+        chrome.storage.local.get('currency', (result) => {chrome.storage.local.set({exchangeRate: exchangeRatesJSON[result.currency]}, () => {})});
     });
 }
 
@@ -959,7 +881,7 @@ function prettyPrintPrice(currency, price){
 }
 
 function getAssetIDOfElement(element){
-    return element.id.split("730_2_")[1];
+    return element.id.split('730_2_')[1];
 }
 
 function doTheSorting(items, itemElements, method, pages, type){
@@ -1119,9 +1041,7 @@ function injectToPage(scriptString, toRemove, id, executeAndReturn){
 // updates the SteamID of the extension's user in storage
 function updateLoggedInUserID(){
     let steamID = getUserSteamID();
-    if(steamID !== "false" && steamID !== false){
-        chrome.storage.local.set({steamIDOfUser: steamID}, () =>{});
-    }
+    if(steamID !== 'false' && steamID !== false) chrome.storage.local.set({steamIDOfUser: steamID}, () =>{});
 }
 
 // gets the details of an item by matching the passed asset id with the ones from the api call
