@@ -76,8 +76,8 @@ if (document.querySelector('body').classList.contains('profile_page')){
 
                     });
                 }
-                reportComments();
             });
+            reportComments();
         }
     }
 
@@ -108,11 +108,11 @@ if (document.querySelector('body').classList.contains('profile_page')){
                     if(response.apiKeyValid){
                         switch(response.personastate){
                             case 1: break;
-                            case 2: textDiv.innerText = ("Currently Busy"); break;
-                            case 3: textDiv.innerText = ("Currently Away"); break;
-                            case 4: textDiv.innerText = ("Currently Snooze"); break;
-                            case 5: textDiv.innerText = ("Currently Looking to Trade"); break;
-                            case 6: textDiv.innerText = ("Currently Looking to Play"); break;
+                            case 2: textDiv.innerText = ('Currently Busy'); break;
+                            case 3: textDiv.innerText = ('Currently Away'); break;
+                            case 4: textDiv.innerText = ('Currently Snooze'); break;
+                            case 5: textDiv.innerText = ('Currently Looking to Trade'); break;
+                            case 6: textDiv.innerText = ('Currently Looking to Play'); break;
                         }
                     }
                 });
