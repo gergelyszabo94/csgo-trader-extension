@@ -2,40 +2,40 @@ chrome.runtime.onInstalled.addListener((details) =>{
     if(details.reason === 'install'){
         // sets the default options for first run (on install from the webstore/amo or when loaded in developer mode)
         chrome.storage.local.set({
-                quickDeclineOffer: true,
-                openOfferInTab: true,
-                showPlusRepButton: true,
-                reputationMessage: '+rep',
-                showReoccButton: true,
-                reoccuringMessage: 'I don\'t have other accounts. If someone adds you with my name and picture they are scammers.',
-                nsfwFilter: false,
-                flagScamComments: true,
-                bookmarks: [],
-                steamAPIKey: '',
-                apiKeyValid: false,
-                showRealStatus: true,
-                colorfulItems: true,
-                loungeBump: false,
-                tradersBump: false,
-                markScammers: true,
-                numberOfListings: 10,
-                storageMigrated: true,
-                itemPricing: true,
-                pricingProvider: pricingProviders.csgotrader.name,
-                pricingMode: pricingProviders.csgotrader.pricing_modes['csgotrader'].name,
-                pricesLastRefreshed: null,
-                prices: null,
-                currency: currencies.USD.short,
-                exchangeRate: 1.0,
-                exchangeRates: null,
-                hideOtherExtensionPrices: true,
-                inventorySortingMode: sortingModes.default.key,
-                notifyOnUpdate: false,
-                offerSortingMode: sortingModes.default.key,
-                switchToOtherInventory: false,
-                popupLinks: defaultPopupLinks,
-                steamIDOfUser: ''
-            }, () =>{});
+            quickDeclineOffer: true,
+            openOfferInTab: true,
+            showPlusRepButton: true,
+            reputationMessage: '+rep',
+            showReoccButton: true,
+            reoccuringMessage: 'I don\'t have other accounts. If someone adds you with my name and picture they are scammers.',
+            nsfwFilter: false,
+            flagScamComments: true,
+            bookmarks: [],
+            steamAPIKey: '',
+            apiKeyValid: false,
+            showRealStatus: true,
+            colorfulItems: true,
+            loungeBump: false,
+            tradersBump: false,
+            markScammers: true,
+            numberOfListings: 10,
+            storageMigrated: true,
+            itemPricing: true,
+            pricingProvider: pricingProviders.csgotrader.name,
+            pricingMode: pricingProviders.csgotrader.pricing_modes['csgotrader'].name,
+            pricesLastRefreshed: null,
+            prices: null,
+            currency: currencies.USD.short,
+            exchangeRate: 1.0,
+            exchangeRates: null,
+            hideOtherExtensionPrices: true,
+            inventorySortingMode: sortingModes.default.key,
+            notifyOnUpdate: false,
+            offerSortingMode: sortingModes.default.key,
+            switchToOtherInventory: false,
+            popupLinks: defaultPopupLinks,
+            steamIDOfUser: ''
+        }, () =>{});
 
         chrome.browserAction.setBadgeText({text: 'I'});
         chrome.notifications.create('installed', {
@@ -141,8 +141,10 @@ chrome.notifications.onClicked.addListener((notificationID) =>{
 
 // handles periodic and timed events like bookmarked items getting tradable
 chrome.alarms.onAlarm.addListener((alarm) =>{
-    if(alarm.name === 'updatePricesAndExchangeRates'){
-        updatePrices();
+    if (alarm.name === 'updatePricesAndExchangeRates'){
+        chrome.storage.local.get('itemPricing', (result) =>{
+            if (result.itemPricing === true) updatePrices();
+        });
         updateExchangeRates();
     }
     else if(alarm.name === 'retryUpdatePricesAndExchangeRates'){
@@ -154,7 +156,7 @@ chrome.alarms.onAlarm.addListener((alarm) =>{
     else{
         chrome.browserAction.getBadgeText({}, (result) =>{
             if(result === '') chrome.browserAction.setBadgeText({text:'1'});
-            else chrome.browserAction.setBadgeText({text: (parseInt(result)+1).toString()});
+            else chrome.browserAction.setBadgeText({text: (parseInt(result) + 1).toString()});
         });
         chrome.storage.local.get('bookmarks', (result) =>{
             let item = result.bookmarks.find((element) =>{return element.itemInfo.assetid === alarm.name});
