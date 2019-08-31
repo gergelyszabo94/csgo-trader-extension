@@ -381,7 +381,11 @@ function addFunctionBar(){
                 <div id="offer_sorting">
                     <span>Sorting:</span>
                     <select id="offer_sorting_mode"></select>
-                     <span id="take_all_button">All page</span>
+                </div>
+                <div id="offer_take">
+                    <span>Take: </span>
+                    <span id="take_all_button">All page</span>
+                    <span id="take_everything_button">Everything</span>
                 </div>
             </div>
             `);
@@ -394,6 +398,18 @@ function addFunctionBar(){
                 document.querySelectorAll('.inventory_ctn').forEach(inventory => {if (inventory.style.display !== 'none') activeInventory = inventory});
                 activeInventory.querySelectorAll('.inventory_page').forEach(page => {if (page.style.display !== 'none') activePage = page});
                 activePage.querySelectorAll('.item').forEach(item => {
+                    let clickEvent = document.createEvent ('MouseEvents');
+                    clickEvent.initEvent ('dblclick', true, true);
+                    item.dispatchEvent (clickEvent);
+                });
+            });
+
+            // take everything functionality
+            document.getElementById('take_everything_button').addEventListener('click', () => {
+                let activeInventory = null;
+
+                document.querySelectorAll('.inventory_ctn').forEach(inventory => {if (inventory.style.display !== 'none') activeInventory = inventory});
+                activeInventory.querySelectorAll('.item').forEach(item => {
                     let clickEvent = document.createEvent ('MouseEvents');
                     clickEvent.initEvent ('dblclick', true, true);
                     item.dispatchEvent (clickEvent);
