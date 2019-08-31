@@ -261,7 +261,7 @@ function buildInventoryStructure(inventory) {
     inventory.forEach((item) => {
         let exterior = getExteriorFromTags(item.tags);
         let marketlink = `https://steamcommunity.com/market/listings/730/${item.market_hash_name}`;
-        let quality = getQualityFromTags(item.tags);
+        let quality = getQuality(item.type);
         let stickers =  parseStickerInfo(item.descriptions, 'direct');
         let nametag = undefined;
         let inspectLink ="";
@@ -269,6 +269,7 @@ function buildInventoryStructure(inventory) {
         let isStatrack = /StatTrak™/.test(item.name);
         let isSouvenir = /Souvenir/.test(item.name);
         let starInName = /★/.test(item.name);
+        let type = getType(item.tags);
 
         try {if (item.fraudwarnings !== undefined || item.fraudwarnings[0] !== undefined) nametag = item.fraudwarnings[0].split('Name Tag: \'\'')[1].split('\'\'')[0]}
         catch(error) {}
@@ -302,7 +303,8 @@ function buildInventoryStructure(inventory) {
             stickers: stickers,
             nametag: nametag,
             duplicates: duplicates[item.market_hash_name],
-            owner: item.owner
+            owner: item.owner,
+            type: type
         })
     });
 
@@ -351,10 +353,7 @@ function addInTradeTotals(whose){
 function periodicallyUpdateTotals(){setInterval(() => {if (!document.hidden) addInTradeTotals('your'); addInTradeTotals('their')}, 1000)}
 
 function sortItems(method) {
-    let inventories = document.querySelectorAll('.inventory_ctn');
-    let activeInventory = null;
-
-    inventories.forEach((inventory) => {if (inventory.style.display !== 'none') activeInventory = inventory});
+    let activeInventory = getActiveInventory();
 
     let items = activeInventory.querySelectorAll('.item.app730.context2');
     let offerPages = activeInventory.querySelectorAll('.inventory_page');
@@ -384,35 +383,36 @@ function addFunctionBar(){
                 </div>
                 <div id="offer_take">
                     <span>Take: </span>
-                    <span id="take_all_button">All page</span>
-                    <span id="take_everything_button">Everything</span>
+                    <span class="offer_action" id="take_all_button">All page</span>
+                    <span class="offer_action" id="take_everything_button">Everything</span>
+                    <input type="number" id="take_number_of_keys">
+                    <span class="offer_action" id="take_keys">Keys</span>
                 </div>
             </div>
             `);
 
             // take all from page functionality
             document.getElementById('take_all_button').addEventListener('click', () => {
-                let activeInventory = null;
                 let activePage = null;
 
-                document.querySelectorAll('.inventory_ctn').forEach(inventory => {if (inventory.style.display !== 'none') activeInventory = inventory});
-                activeInventory.querySelectorAll('.inventory_page').forEach(page => {if (page.style.display !== 'none') activePage = page});
-                activePage.querySelectorAll('.item').forEach(item => {
-                    let clickEvent = document.createEvent ('MouseEvents');
-                    clickEvent.initEvent ('dblclick', true, true);
-                    item.dispatchEvent (clickEvent);
-                });
+                getActiveInventory().querySelectorAll('.inventory_page').forEach(page => {if (page.style.display !== 'none') activePage = page});
+                activePage.querySelectorAll('.item').forEach(item => {moveItem(item)});
             });
 
             // take everything functionality
             document.getElementById('take_everything_button').addEventListener('click', () => {
-                let activeInventory = null;
+                getActiveInventory().querySelectorAll('.item').forEach(item => {moveItem(item)});
+            });
 
-                document.querySelectorAll('.inventory_ctn').forEach(inventory => {if (inventory.style.display !== 'none') activeInventory = inventory});
-                activeInventory.querySelectorAll('.item').forEach(item => {
-                    let clickEvent = document.createEvent ('MouseEvents');
-                    clickEvent.initEvent ('dblclick', true, true);
-                    item.dispatchEvent (clickEvent);
+            // add keys functionality
+            document.getElementById('take_keys').addEventListener('click', () => {
+                let numberOfKeys = document.getElementById('take_number_of_keys').value;
+                let keysTaken = 0;
+                getActiveInventory().querySelectorAll('.item').forEach((item) => {
+                    if (keysTaken < numberOfKeys && getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).type.internal_name === itemTypes.key.internal_name){
+                        moveItem(item);
+                        keysTaken++;
+                    }
                 });
             });
 
@@ -442,6 +442,18 @@ function doInitSorting() {
         sortItems(result.offerSortingMode);
         document.querySelector('#offer_sorting_mode [value="' + result.offerSortingMode + '"]').selected = true;
     });
+}
+
+function getActiveInventory(){
+    let activeInventory = null;
+    document.querySelectorAll('.inventory_ctn').forEach(inventory => {if (inventory.style.display !== 'none') activeInventory = inventory});
+    return activeInventory;
+}
+
+function moveItem(item){
+    let clickEvent = document.createEvent ('MouseEvents');
+    clickEvent.initEvent ('dblclick', true, true);
+    item.dispatchEvent (clickEvent);
 }
 
 addFunctionBar();

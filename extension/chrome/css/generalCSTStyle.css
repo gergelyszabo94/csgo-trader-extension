@@ -42,6 +42,10 @@
     float: right;
 }
 
+#take_number_of_keys{
+    width: 50px;
+}
+
 /*bootstrap progress bar*/
 progress {
     vertical-align: baseline;
@@ -63,6 +67,10 @@ progress {
     to {
         background-position: 0 0;
     }
+}
+
+.offer_action{
+    margin-right: 10px;
 }
 
 .hidden {
