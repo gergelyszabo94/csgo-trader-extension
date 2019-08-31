@@ -156,10 +156,11 @@ function addPerItemInfo(updating){
 
                         if (updating){
                             let itemDateElement = itemElement.querySelector('.perItemDate');
-
-                            itemDateElement.innerText =  getShortDate(item.tradability);
-                            itemDateElement.classList.toggle('not_tradable');
-                            itemDateElement.classList.toggle('tradable');
+                            if (itemDateElement !== null){
+                                itemDateElement.innerText =  getShortDate(item.tradability);
+                                itemDateElement.classList.toggle('not_tradable');
+                                itemDateElement.classList.toggle('tradable');
+                            }
                         }
                         else{
                             // adds tradability indicator
