@@ -37,7 +37,6 @@
         "*://steamcommunity.com/*/inventory/*"],
       "run_at" : "document_idle",
       "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
         "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
@@ -48,7 +47,6 @@
       "matches": ["*://steamcommunity.com/tradeoffer/*"],
       "run_at" : "document_idle",
       "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
         "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
@@ -59,7 +57,6 @@
       "matches": ["*://steamcommunity.com/*/tradeoffers*"],
       "run_at" : "document_idle",
       "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
         "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js" ,
@@ -70,7 +67,6 @@
       "matches": ["*://steamcommunity.com/market/listings/730/*"],
       "run_at" : "document_idle",
       "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
         "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
@@ -85,7 +81,6 @@
         "*://steamcommunity.com/profiles/*"],
       "run_at" : "document_idle",
       "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
         "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
@@ -95,7 +90,6 @@
       "matches": ["*://steamcommunity.com/groups/*"],
       "run_at" : "document_idle",
       "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
         "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
@@ -105,7 +99,6 @@
       "matches": ["*://steamcommunity.com/sharedfiles/filedetails/*"],
       "run_at" : "document_idle",
       "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
         "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
@@ -115,7 +108,6 @@
       "matches": ["*://steamcommunity.com/games/*/announcements/detail/*"],
       "run_at" : "document_idle",
       "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
         "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
@@ -125,7 +117,6 @@
       "matches": ["*://steamcommunity.com/chat/*"],
       "run_at" : "document_idle",
       "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
         "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
