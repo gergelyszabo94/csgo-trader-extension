@@ -238,7 +238,7 @@ function addStickers() {
 
     getItems().then(listings => {
         document.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listing_row => {
-            if (listing_row.parentNode.id !== 'tabContentsMyActiveMarketListingsRows'){
+            if (listing_row.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listing_row.parentNode.parentNode.id !== 'tabContentsMyListings'){
                 let listingID = listing_row.id.split('listing_')[1];
                 listing_row.querySelectorAll('.market_listing_item_name_block').forEach(name_block =>{name_block.insertAdjacentHTML('beforeend', `<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`)});
 
