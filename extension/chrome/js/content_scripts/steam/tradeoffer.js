@@ -306,9 +306,7 @@ function buildInventoryStructure(inventory) {
         })
     });
 
-    inventoryArrayToReturn.sort((a, b) => { return a.position - b.position});
-
-    return inventoryArrayToReturn;
+    return inventoryArrayToReturn.sort((a, b) => { return a.position - b.position});
 }
 
 function removeSIHStuff() {document.querySelectorAll('.des-tag, .p-price, .price-tag').forEach(element => {element.parentNode.removeChild(element)})}
@@ -383,9 +381,24 @@ function addFunctionBar(){
                 <div id="offer_sorting">
                     <span>Sorting:</span>
                     <select id="offer_sorting_mode"></select>
+                     <span id="take_all_button">All page</span>
                 </div>
             </div>
             `);
+
+            // take all from page functionality
+            document.getElementById('take_all_button').addEventListener('click', () => {
+                let activeInventory = null;
+                let activePage = null;
+
+                document.querySelectorAll('.inventory_ctn').forEach(inventory => {if (inventory.style.display !== 'none') activeInventory = inventory});
+                activeInventory.querySelectorAll('.inventory_page').forEach(page => {if (page.style.display !== 'none') activePage = page});
+                activePage.querySelectorAll('.item').forEach(item => {
+                    let clickEvent = document.createEvent ('MouseEvents');
+                    clickEvent.initEvent ('dblclick', true, true);
+                    item.dispatchEvent (clickEvent);
+                });
+            });
 
             let sortingSelect = document.getElementById('offer_sorting_mode');
 
