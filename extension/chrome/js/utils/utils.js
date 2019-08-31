@@ -137,29 +137,32 @@ function getQuality(type){
     else return qualities.stock;
 }
 
-function getQualityFromTags(tags){
-    for (let tag of tags) {
-        if(tag.category === 'Rarity'){
-            switch (tag.internal_name){
-                case rarities.common.internal_name: return qualities.common;
-                case rarities.common_weapon.internal_name: return qualities.common;
-                case rarities.uncommon.internal_name: return qualities.uncommon;
-                case rarities.uncommon_weapon.internal_name: return qualities.uncommon;
-                case rarities.rare.internal_name: return qualities.rare;
-                case rarities.rare_weapon.internal_name: return qualities.rare;
-                case rarities.mythical.internal_name: return qualities.mythical;
-                case rarities.mythical_weapon.internal_name: return qualities.mythical;
-                case rarities.legendary.internal_name: return qualities.legendary;
-                case rarities.legendary_weapon.internal_name: return qualities.legendary;
-                case rarities.ancient.internal_name: return qualities.ancient;
-                case rarities.ancient_weapon.internal_name: return qualities.ancient;
-                case rarities.contraband.internal_name: return qualities.contraband;
-                case rarities.contraband_weapon.internal_name: return qualities.contraband;
-                default: return undefined;
-            }
+function getType(tags) {
+    for (let tag of tags) if(tag.category === 'Type'){
+        switch(tag.internal_name){
+            case itemTypes.collectible.internal_name: return itemTypes.collectible;
+            case itemTypes.graffiti.internal_name: return itemTypes.graffiti;
+            case itemTypes.c4.internal_name: return itemTypes.c4;
+            case itemTypes.sniper.internal_name: return itemTypes.sniper;
+            case itemTypes.rifle.internal_name: return itemTypes.rifle;
+            case itemTypes.pistol.internal_name: return itemTypes.pistol;
+            case itemTypes.smg.internal_name: return itemTypes.smg;
+            case itemTypes.gloves.internal_name: return itemTypes.gloves;
+            case itemTypes.key.internal_name: return itemTypes.key;
+            case itemTypes.music_kit.internal_name: return itemTypes.music_kit;
+            case itemTypes.nametag.internal_name: return itemTypes.nametag;
+            case itemTypes.container.internal_name: return itemTypes.container;
+            case itemTypes.knife.internal_name: return itemTypes.knife;
+            case itemTypes.shotgun.internal_name: return itemTypes.shotgun;
+            case itemTypes.machinegun.internal_name: return itemTypes.machinegun;
+            case itemTypes.sticker.internal_name: return itemTypes.sticker;
+            case itemTypes.ticket.internal_name: return itemTypes.ticket;
+            case itemTypes.tool.internal_name: return itemTypes.tool;
+            case itemTypes.gift_package.internal_name: return itemTypes.gift_package;
+            default: console.log(tag.internal_name); return null;
         }
     }
-    return undefined;
+    return null;
 }
 
 function getExteriorFromTags(tags) {
@@ -880,9 +883,7 @@ function prettyPrintPrice(currency, price){
     return currencies[currency].sign + nf.format(price);
 }
 
-function getAssetIDOfElement(element){
-    return element.id.split('730_2_')[1];
-}
+function getAssetIDOfElement(element){return element.id.split('730_2_')[1];}
 
 function doTheSorting(items, itemElements, method, pages, type){
     if(method === "price_asc"){

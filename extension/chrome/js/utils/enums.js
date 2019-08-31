@@ -19387,6 +19387,85 @@ const qualities = {
     }
 };
 
+const itemTypes = {
+    collectible:{
+        name: "Collectible",
+        internal_name: "CSGO_Type_Collectible"
+    },
+    container:{
+        name: "Container",
+        internal_name: "CSGO_Type_WeaponCase"
+    },
+    knife:{
+        name: "Knife",
+        internal_name: "CSGO_Type_Knife"
+    },
+    graffiti:{
+        name: "Graffiti",
+        internal_name: "CSGO_Type_Spray"
+    },
+    c4:{
+        name: "C4",
+        internal_name: "CSGO_Type_C4"
+    },
+    sniper:{
+        name: "Sniper Rifle",
+        internal_name: "CSGO_Type_SniperRifle"
+    },
+    rifle:{
+        name: "Rifle",
+        internal_name: "CSGO_Type_Rifle"
+    },
+    pistol:{
+        name: "Pistol",
+        internal_name: "CSGO_Type_Pistol"
+    },
+    smg:{
+        name: "SMG",
+        internal_name: "CSGO_Type_SMG"
+    },
+    gloves:{
+        name: "Gloves",
+        internal_name: "Type_Hands"
+    },
+    key:{
+        name: "Key",
+        internal_name: "CSGO_Tool_WeaponCase_KeyTag"
+    },
+    music_kit:{
+        name: "Music Kit",
+        internal_name: "CSGO_Type_MusicKit"
+    },
+    nametag:{
+        name: "Name Tag",
+        internal_name: "CSGO_Tool_Name_TagTag"
+    },
+    shotgun:{
+        name: "Shotgun",
+        internal_name: "CSGO_Type_Shotgun"
+    },
+    machinegun:{
+        name: "Machinegun",
+        internal_name: "CSGO_Type_Machinegun"
+    },
+    sticker:{
+        name: "Sticker",
+        internal_name: "CSGO_Tool_Sticker"
+    },
+    tool:{
+        name: "Swap Tool",
+        internal_name: "CSGO_Type_Tool"
+    },
+    ticket:{
+        name: "Pass",
+        internal_name: "CSGO_Type_Ticket"
+    },
+    gift_package:{
+        name: "Gift Package",
+        internal_name: "CSGO_Tool_GiftTag"
+    }
+};
+
 const pricingProviders = {
     csgotrader: {
         name: "csgotrader",

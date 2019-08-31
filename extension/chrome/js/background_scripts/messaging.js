@@ -69,6 +69,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 let inspectLink = '';
                                 let owner = steamID;
                                 let price = null;
+                                let type = getType(items[item].tags);
 
                                 if (result.itemPricing) price = getPrice(market_hash_name, dopplerInfo, prices, result.pricingProvider, result.exchangeRate, result.currency);
                                 else{price = {price: '', display: ''}}
@@ -117,7 +118,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     nametag: nametag,
                                     duplicates: duplicates[market_hash_name],
                                     owner: owner,
-                                    price: price
+                                    price: price,
+                                    type: type
                                 })
                             }
                         }
