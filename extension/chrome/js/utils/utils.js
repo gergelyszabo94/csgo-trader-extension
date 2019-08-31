@@ -67,10 +67,10 @@ function getPattern(name, paint_seed){
         else if (/Daggers/i.test(name)) pattern = patterns.marble_fades.daggers[paint_seed];
         else if (/Gut/i.test(name)) pattern = patterns.marble_fades.gut[paint_seed];
         else if (/Falchion/i.test(name)) pattern = patterns.marble_fades.falchion[paint_seed];
-        else return undefined;
+        else return null;
 
-        if (pattern !== null) return {type: 'marble_fade', value: pattern};
-        else return undefined;
+        if (pattern !== null && pattern !== undefined) return {type: 'marble_fade', value: pattern};
+        else return null;
     }
     else if (/ Fade /i.test(name)){
         let percentage = null;
@@ -89,10 +89,10 @@ function getPattern(name, paint_seed){
         else if (/Gut/i.test(name)) percentage = patterns.fades.gut[paint_seed];
         else if (/Falchion/i.test(name)) percentage = patterns.fades.falchion[paint_seed];
         else if (/Glock/i.test(name)) percentage = patterns.fades.glock[paint_seed];
-        else return undefined;
+        else return null;
 
-        if(percentage !== null) return {type: 'fade', value: `${percentage}% Fade`};
-        else return undefined;
+        if(percentage !== null && percentage !== undefined) return {type: 'fade', value: `${percentage}% Fade`};
+        else return null;
     }
     else if (/ Case Hardened/i.test(name)){
         let pattern = null;
@@ -112,12 +112,12 @@ function getPattern(name, paint_seed){
         else if (/Falchion/i.test(name)) pattern = patterns.case_hardeneds.falchion[paint_seed];
         else if (/Karambit/i.test(name)) pattern = patterns.case_hardeneds.karambit[paint_seed];
         else if (/Five-SeveN/i.test(name)) pattern = patterns.case_hardeneds.five_seven[paint_seed];
-        else return undefined;
+        else return null;
 
-        if (pattern !== null) return {type: 'case_hardened', value: pattern};
-        else return undefined; // return {type: 'case_hardened', value: 'Not special or not found'};
+        if (pattern !== null && pattern !== undefined) return {type: 'case_hardened', value: pattern};
+        else return null; // return {type: 'case_hardened', value: 'Not special or not found'};
     }
-    else return undefined;
+    else return null;
 }
 
 function getQuality(type){

@@ -19122,57 +19122,35 @@ const patterns = {
             "997":"FFI",
             "998":"Not Fire and Ice",
             "999":"Not Fire and Ice"
-        }
+        },
+        karambit:{},
+        talon:{},
+        stiletto:{},
+        navaja:{},
+        ursus:{},
+        butterfly:{},
+        huntsman:{},
+        bowie:{},
+        daggers:{},
+        falchion:{}
     },
     case_hardeneds:{
-        ak: {
-
-        },
-        karambit:{
-
-        },
-        talon:{
-
-        },
-        stiletto:{
-
-        },
-        navaja:{
-
-        },
-        ursus:{
-
-        },
-        butterfly:{
-
-        },
-        m9:{
-
-        },
-        bayonet:{
-
-        },
-        huntsman:{
-
-        },
-        flip:{
-
-        },
-        bowie:{
-
-        },
-        daggers:{
-
-        },
-        gut:{
-
-        },
-        falchion:{
-
-        },
-        five_seven:{
-
-        }
+        ak: {},
+        karambit:{},
+        talon:{},
+        stiletto:{},
+        navaja:{},
+        ursus:{},
+        butterfly:{},
+        m9:{},
+        bayonet:{},
+        huntsman:{},
+        flip:{},
+        bowie:{},
+        daggers:{},
+        gut:{},
+        falchion:{},
+        five_seven:{}
     }
 };
 

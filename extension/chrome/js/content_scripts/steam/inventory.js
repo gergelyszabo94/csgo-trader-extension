@@ -354,7 +354,7 @@ function addElements(){
                     document.querySelectorAll(".floatDropTarget").forEach(floatDropTarget => floatDropTarget.innerText = float.toFixed(4));
 
                     document.querySelectorAll(".patternInfo").forEach(patternInfoElement => {
-                        if(patternInfo !== undefined){
+                        if(patternInfo !== null){
                             if(patternInfo.type === "fade"){
                                 patternInfoElement.classList.add("fadeGradient");
                             }
