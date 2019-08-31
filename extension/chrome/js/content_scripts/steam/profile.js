@@ -6,7 +6,7 @@ if (document.querySelector('body').classList.contains('profile_page')){
 
     let isProfilePrivate = false;
     let profileActionPopup = document.getElementById('profile_action_dropdown');
-    if (profileActionPopup === null) isProfilePrivate = true;
+    if (profileActionPopup === null && profileOwnerSteamID !== loggedInUserID) isProfilePrivate = true;
 
     addReplytoCommentsFunctionality();
     addCommentsMutationObserver();
