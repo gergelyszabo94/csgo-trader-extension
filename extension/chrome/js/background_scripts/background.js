@@ -155,7 +155,7 @@ chrome.alarms.onAlarm.addListener((alarm) =>{
     }
     else{
         chrome.browserAction.getBadgeText({}, (result) =>{
-            if(result === '') chrome.browserAction.setBadgeText({text:'1'});
+            if(result === '' || result === 'U' || result === 'I') chrome.browserAction.setBadgeText({text:'1'});
             else chrome.browserAction.setBadgeText({text: (parseInt(result) + 1).toString()});
         });
         chrome.storage.local.get('bookmarks', (result) =>{
