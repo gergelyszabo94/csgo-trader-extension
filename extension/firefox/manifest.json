@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "__MSG_application_title__",
   "short_name": "CSGO Trader",
-  "version": "1.17",
+  "version": "1.17.1",
   "default_locale": "en",
   "description": "__MSG_application_description__",
   "homepage_url": "https://csgotrader.app/",
@@ -35,8 +35,7 @@
         "*://steamcommunity.com/*/inventory/*"],
       "run_at" : "document_idle",
       "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
-        "js/utils/steamFunctionOverride.js",
+        "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
         "js/content_scripts/steam/inventory.js"],
@@ -46,8 +45,7 @@
       "matches": ["*://steamcommunity.com/tradeoffer/*"],
       "run_at" : "document_idle",
       "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
-        "js/utils/steamFunctionOverride.js",
+        "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
         "js/content_scripts/steam/tradeoffer.js"],
@@ -57,8 +55,7 @@
       "matches": ["*://steamcommunity.com/*/tradeoffers*"],
       "run_at" : "document_idle",
       "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
-        "js/utils/steamFunctionOverride.js",
+        "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js" ,
         "js/content_scripts/steam/tradeoffers.js"],
@@ -68,11 +65,10 @@
       "matches": ["*://steamcommunity.com/market/listings/730/*"],
       "run_at" : "document_idle",
       "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
-        "js/utils/steamFunctionOverride.js",
+        "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
-        "js/content_scripts/steam/marketListing.js"],
+        "js/content_scripts/steam/market_listing.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
@@ -83,8 +79,7 @@
         "*://steamcommunity.com/profiles/*"],
       "run_at" : "document_idle",
       "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
-        "js/utils/steamFunctionOverride.js",
+        "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
         "js/content_scripts/steam/profile.js"]
@@ -93,8 +88,7 @@
       "matches": ["*://steamcommunity.com/groups/*"],
       "run_at" : "document_idle",
       "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
-        "js/utils/steamFunctionOverride.js",
+        "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
         "js/content_scripts/steam/group.js"]
@@ -103,8 +97,7 @@
       "matches": ["*://steamcommunity.com/sharedfiles/filedetails/*"],
       "run_at" : "document_idle",
       "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
-        "js/utils/steamFunctionOverride.js",
+        "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
         "js/content_scripts/steam/sharedfile.js"]
@@ -113,8 +106,7 @@
       "matches": ["*://steamcommunity.com/games/*/announcements/detail/*"],
       "run_at" : "document_idle",
       "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
-        "js/utils/steamFunctionOverride.js",
+        "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
         "js/content_scripts/steam/announcements.js"]
@@ -123,8 +115,7 @@
       "matches": ["*://steamcommunity.com/chat/*"],
       "run_at" : "document_idle",
       "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
-        "js/utils/steamFunctionOverride.js",
+        "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
         "js/content_scripts/steam/webchat.js"],
@@ -133,16 +124,12 @@
     {
       "matches": ["*://csgolounge.com/mytrades/*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
-        "js/content_scripts/loungebump.js"]
+      "js": ["js/content_scripts/loungebump.js"]
     },
     {
       "matches": ["*://csgotraders.net/mytrades*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/thirdparty/jquery-3.3.1.min.js",
-        "js/content_scripts/tradersbump.js"]
+      "js": ["js/content_scripts/tradersbump.js"]
     }
   ],
   "web_accessible_resources": [
