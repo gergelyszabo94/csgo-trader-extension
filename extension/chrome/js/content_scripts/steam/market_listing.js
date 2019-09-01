@@ -104,7 +104,8 @@ let otherExteriors = `
             </div>
             `;
 
-if(fullName.split("(")[1] !== undefined) document.getElementById('largeiteminfo_item_descriptors').insertAdjacentHTML('beforeend', otherExteriors);
+const descriptor = document.getElementById('largeiteminfo_item_descriptors');
+if(fullName.split('(')[1] !== undefined && descriptor !== null) descriptor.insertAdjacentHTML('beforeend', otherExteriors);
 
 // adds the in-browser inspect button to the top of the page
 const originalInspectButton = document.getElementById('largeiteminfo_item_actions').querySelector('.btn_small.btn_grey_white_innerfade'); // some items don't have inspect buttons (like cases)
