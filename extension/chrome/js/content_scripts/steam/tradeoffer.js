@@ -475,27 +475,31 @@ function moveItem(item){
     item.dispatchEvent (clickEvent);
 }
 
+// single click move, move same with ctrl+click
 function singleClickControlClick(){
-    // single click move, move same with ctrl+click
-    document.querySelectorAll('.item.app730.context2').forEach(item => {
-        item.addEventListener('click', (event) => {
-            if (event.ctrlKey) {
-                let marketHashNameToLookFor = getItemByAssetID(combinedInventories, getAssetIDOfElement(event.target.parentNode)).market_hash_name;
-                let inInventory = null;
-                if (event.target.parentNode.parentNode.parentNode.parentNode.id === 'their_slots') inInventory = document.getElementById('their_slots');
-                else if (event.target.parentNode.parentNode.parentNode.parentNode.id === 'your_slots') inInventory = document.getElementById('your_slots');
-                else inInventory = getActiveInventory();
-                inInventory.querySelectorAll('.item.app730.context2').forEach(item => {
-                    if (getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name === marketHashNameToLookFor){
-                        moveItem(item);
-                    }
-                });
+    document.querySelectorAll('.item.app730.context2').forEach(item => {item.removeEventListener('click', singleClickControlClickHandler)});
 
-               removeLeftOverSlots();
-            }
-            else moveItem(item);
-        });
+    document.querySelectorAll('.item.app730.context2').forEach(item => {
+        item.addEventListener('click', singleClickControlClickHandler);
     });
+}
+
+function singleClickControlClickHandler(event) {
+    if (event.ctrlKey) {
+        let marketHashNameToLookFor = getItemByAssetID(combinedInventories, getAssetIDOfElement(event.target.parentNode)).market_hash_name;
+        let inInventory = null;
+        if (event.target.parentNode.parentNode.parentNode.parentNode.id === 'their_slots') inInventory = document.getElementById('their_slots');
+        else if (event.target.parentNode.parentNode.parentNode.parentNode.id === 'your_slots') inInventory = document.getElementById('your_slots');
+        else inInventory = getActiveInventory();
+        inInventory.querySelectorAll('.item.app730.context2').forEach(item => {
+            if (getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name === marketHashNameToLookFor){
+                moveItem(item);
+            }
+        });
+
+        removeLeftOverSlots();
+    }
+    else moveItem(event.target);
 }
 
 // removes buggy slots that remain behind and break the ui
@@ -541,6 +545,8 @@ function addAPartysFunctionBar(whose){
         });
     });
 }
+
+document.getElementById('inventory_select_their_inventory').addEventListener('click', () => {singleClickControlClick()});
 
 addFunctionBars();
 
