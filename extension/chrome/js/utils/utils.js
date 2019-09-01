@@ -979,15 +979,23 @@ function doTheSorting(items, itemElements, method, pages, type){
 
     itemElements.reverse();
 
-    let numberOfItemsPerPage = type === 'offer' ? 16 : 25;
+    if (type === 'offer' || type === 'inventory'){
 
-    pages.forEach((page) => {
-        page.innerHTML = '';
-        for( let i = 0; i < numberOfItemsPerPage ; i++){
-            let item = itemElements.pop();
-            if (item !== undefined) page.appendChild(item.parentElement);
-        }
-    });
+        let numberOfItemsPerPage = type === 'offer' ? 16 : 25;
+
+        pages.forEach((page) => {
+            page.innerHTML = '';
+            for( let i = 0; i < numberOfItemsPerPage ; i++){
+                let item = itemElements.pop();
+                if (item !== undefined) page.appendChild(item.parentElement);
+            }
+        });
+    }
+    else{
+        itemElements.forEach(itemElement => {
+            document.getElementById(`${type}_slots`).insertAdjacentElement('afterbegin', itemElement.parentNode.parentNode);
+        });
+    }
 }
 
 function isSIHActive(){

@@ -180,7 +180,7 @@ document.querySelectorAll('.inventory_user_tab').forEach( (inventoryTab) => {
     inventoryTab.addEventListener('click', () => {
         addItemInfo();
         let sortingSelect = document.getElementById('offer_sorting_mode');
-        sortItems(sortingSelect.options[sortingSelect.selectedIndex].value);
+        sortItems(sortingSelect.options[sortingSelect.selectedIndex].value, 'offer');
     })
 });
 
@@ -352,12 +352,18 @@ function addInTradeTotals(whose){
 
 function periodicallyUpdateTotals(){setInterval(() => {if (!document.hidden) addInTradeTotals('your'); addInTradeTotals('their')}, 1000)}
 
-function sortItems(method) {
-    let activeInventory = getActiveInventory();
+function sortItems(method, type) {
+    if (type === 'offer'){
+        let activeInventory = getActiveInventory();
 
-    let items = activeInventory.querySelectorAll('.item.app730.context2');
-    let offerPages = activeInventory.querySelectorAll('.inventory_page');
-    doTheSorting(combinedInventories, Array.from(items), method, offerPages, 'offer');
+        let items = activeInventory.querySelectorAll('.item.app730.context2');
+        let offerPages = activeInventory.querySelectorAll('.inventory_page');
+        doTheSorting(combinedInventories, Array.from(items), method, offerPages, type);
+    }
+    else {
+        let items = document.getElementById(`trade_${type}s`).querySelectorAll('.item.app730.context2');
+        doTheSorting(combinedInventories, Array.from(items), method, document.getElementById(`${type}_slots`), type);
+    }
 
     loadAllItemsProperly();
 }
@@ -372,9 +378,10 @@ function loadAllItemsProperly(){
     injectToPage(loadAllItemsProperly, true, 'loadAllItemsProperly', null);
 }
 
-function addFunctionBar(){
+function addFunctionBars(){
     if(document.getElementById('responsivetrade_itemfilters') !== null) {
         if (document.getElementById('offer_function_bar') === null) {
+            // inserts left side function bar
             document.getElementById('responsivetrade_itemfilters').insertAdjacentHTML('beforebegin', `
             <div id="offer_function_bar">
                 <div id="offer_sorting">
@@ -385,7 +392,7 @@ function addFunctionBar(){
                     <span>Take: </span>
                     <span class="offer_action" id="take_all_button">All page</span>
                     <span class="offer_action" id="take_everything_button">Everything</span>
-                    <input type="number" id="take_number_of_keys">
+                    <input type="number" id="take_number_of_keys" class="keyNumberInput">
                     <span class="offer_action" id="take_keys">Keys</span>
                 </div>
             </div>
@@ -416,7 +423,12 @@ function addFunctionBar(){
                 });
             });
 
+            addAPartysFunctionBar('your');
+            addAPartysFunctionBar('their');
+
             let sortingSelect = document.getElementById('offer_sorting_mode');
+            let yourSortingSelect = document.getElementById('offer_your_sorting_mode');
+            let theirSortingSelect = document.getElementById('offer_their_sorting_mode');
 
             let keys = Object.keys(sortingModes);
             for (let key of keys) {
@@ -425,22 +437,28 @@ function addFunctionBar(){
                     option.value = sortingModes[key].key;
                     option.text = sortingModes[key].name;
                     sortingSelect.appendChild(option);
+                    yourSortingSelect.appendChild(option.cloneNode(true));
+                    theirSortingSelect.appendChild(option.cloneNode(true));
                 }
             }
-            sortingSelect.addEventListener('change', () => {
-                let selected = sortingSelect.options[sortingSelect.selectedIndex].value;
-                sortItems(selected);
-            });
+            sortingSelect.addEventListener('change', () => {sortItems(sortingSelect.options[sortingSelect.selectedIndex].value, 'offer')});
+            yourSortingSelect.addEventListener('change', () => {sortItems(yourSortingSelect.options[yourSortingSelect.selectedIndex].value, 'your')});
+            theirSortingSelect.addEventListener('change', () => {sortItems(theirSortingSelect.options[theirSortingSelect.selectedIndex].value, 'their')});
         }
     }
-    else setTimeout(() => {addFunctionBar()}, 500);
+    else setTimeout(() => {addFunctionBars()}, 500);
 }
 
 function doInitSorting() {
     chrome.storage.local.get(['offerSortingMode', 'switchToOtherInventory'], (result) => {
         if(result.switchToOtherInventory) document.getElementById("inventory_select_their_inventory").click();
-        sortItems(result.offerSortingMode);
-        document.querySelector('#offer_sorting_mode [value="' + result.offerSortingMode + '"]').selected = true;
+        sortItems(result.offerSortingMode, 'offer');
+        sortItems(result.offerSortingMode, 'your');
+        sortItems(result.offerSortingMode, 'their');
+        document.querySelector(`#offer_sorting_mode [value="${result.offerSortingMode}"]`).selected = true;
+        document.querySelector(`#offer_your_sorting_mode [value="${result.offerSortingMode}"]`).selected = true;
+        document.querySelector(`#offer_their_sorting_mode [value="${result.offerSortingMode}"]`).selected = true;
+        singleClickControlClick();
     });
 }
 
@@ -450,13 +468,81 @@ function getActiveInventory(){
     return activeInventory;
 }
 
+// moves items to/from being in the offer
 function moveItem(item){
     let clickEvent = document.createEvent ('MouseEvents');
     clickEvent.initEvent ('dblclick', true, true);
     item.dispatchEvent (clickEvent);
 }
 
-addFunctionBar();
+function singleClickControlClick(){
+    // single click move, move same with ctrl+click
+    document.querySelectorAll('.item.app730.context2').forEach(item => {
+        item.addEventListener('click', (event) => {
+            if (event.ctrlKey) {
+                let marketHashNameToLookFor = getItemByAssetID(combinedInventories, getAssetIDOfElement(event.target.parentNode)).market_hash_name;
+                let inInventory = null;
+                if (event.target.parentNode.parentNode.parentNode.parentNode.id === 'their_slots') inInventory = document.getElementById('their_slots');
+                else if (event.target.parentNode.parentNode.parentNode.parentNode.id === 'your_slots') inInventory = document.getElementById('your_slots');
+                else inInventory = getActiveInventory();
+                inInventory.querySelectorAll('.item.app730.context2').forEach(item => {
+                    if (getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name === marketHashNameToLookFor){
+                        moveItem(item);
+                    }
+                });
+
+               removeLeftOverSlots();
+            }
+            else moveItem(item);
+        });
+    });
+}
+
+// removes buggy slots that remain behind and break the ui
+function removeLeftOverSlots(){
+    setTimeout( () =>{
+        document.querySelectorAll('.itemHolder.trade_slot').forEach(slot => {if (slot.parentNode.id !== 'your_slots' && slot.parentNode.id !== 'their_slots') slot.parentNode.removeChild(slot)})
+    }, 500);
+}
+
+function addAPartysFunctionBar(whose){
+    // inserts "your" function bar
+    document.getElementById(`trade_${whose}s`).querySelector('.offerheader').insertAdjacentHTML('afterend', `
+            <div id="offer_${whose}_function_bar">
+                <div id="offer_${whose}_sorting">
+                    <span>Sorting:</span>
+                    <select id="offer_${whose}_sorting_mode"></select>
+                </div>
+                <div id="offer_${whose}_remove">
+                    <span>Remove: </span>
+                    <span class="offer_action" id="remove_${whose}_everything_button">Everything</span>
+                    <input type="number" id="remove_${whose}_number_of_keys" class="keyNumberInput">
+                    <span class="offer_action" id="remove_${whose}_keys">Keys</span>
+                </div>
+            </div>
+            `);
+
+    // remove "your" everything functionality
+    document.getElementById(`remove_${whose}_everything_button`).addEventListener('click', () => {
+        document.getElementById(`trade_${whose}s`).querySelectorAll('.item').forEach(item => {moveItem(item)});
+        removeLeftOverSlots();
+    });
+
+    // remove your keys functionality
+    document.getElementById(`remove_${whose}_keys`).addEventListener('click', () => {
+        let numberOfKeys = document.getElementById(`remove_${whose}_number_of_keys`).value;
+        let keysRemoved = 0;
+        document.getElementById(`trade_${whose}s`).querySelectorAll('.item').forEach((item) => {
+            if (keysRemoved < numberOfKeys && getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).type.internal_name === itemTypes.key.internal_name){
+                moveItem(item);
+                keysRemoved++;
+            }
+            removeLeftOverSlots();
+        });
+    });
+}
+
+addFunctionBars();
 
 // reloads the page on extension update/reload/uninstall
 chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});

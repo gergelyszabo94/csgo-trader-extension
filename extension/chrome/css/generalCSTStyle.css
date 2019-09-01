@@ -47,7 +47,7 @@
     float: right;
 }
 
-#take_number_of_keys{
+.keyNumberInput{
     width: 50px;
 }
 
