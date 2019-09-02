@@ -74,6 +74,11 @@ progress {
     }
 }
 
+.hidden-copy-textarea{
+    position: absolute;
+    left: -9999px
+}
+
 .offer_action{
     margin-right: 10px;
 }

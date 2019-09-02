@@ -977,9 +977,8 @@ function doTheSorting(items, itemElements, method, pages, type){
         });
     }
 
-    itemElements.reverse();
-
     if (type === 'offer' || type === 'inventory'){
+        itemElements.reverse();
 
         let numberOfItemsPerPage = type === 'offer' ? 16 : 25;
 
@@ -991,11 +990,13 @@ function doTheSorting(items, itemElements, method, pages, type){
             }
         });
     }
-    else{
+    else if (type === 'your' || type === 'their'){
+        itemElements.reverse();
         itemElements.forEach(itemElement => {
             document.getElementById(`${type}_slots`).insertAdjacentElement('afterbegin', itemElement.parentNode.parentNode);
         });
     }
+    else return itemElements;
 }
 
 function isSIHActive(){

@@ -559,10 +559,37 @@ function addFunctionBar(){
                         <span id="selectMenu">
                             <img id ="selectButton" src="${hand_pointer}">
                         </span>
+                        <span id="generate_list">Generate list</span>
                         <div id="sortingMenu">
                             <span>Sorting:</span>
                             <select id="sortingMethod">
                             </select>
+                        </div>
+                    </div>
+                    <div id="functionBarGenerateMenu" class="functionBarRow hidden">
+                        <div>
+                            <span>Generate list of inventory items (for posting in groups, trading forums, etc.) </span>
+                            <span id="generate_button">Generate </span> 
+                            <span id="generation_result"></span>
+                        </div>
+                        <div>
+                            <!--<table>-->
+                                <!--<thead>-->
+                                    <!--<tr>-->
+                                        <!--<th>Type</th>-->
+                                        <!--<th>Name</th>-->
+                                    <!--</tr>-->
+                                <!--</thead>-->
+                                <!--<tbody>-->
+                                    <!--<tr>-->
+                                        <!--<td>Format:</td>-->
+                                    <!--</tr>-->
+                                    <!--<tr>-->
+                                        <!--<td>Example:</td>-->
+                                    <!--</tr>-->
+                                <!--</tbody>-->
+                            <!--</table>-->
+                            <textarea class="hidden-copy-textarea" id="generated_list_copy_textarea"></textarea>
                         </div>
                     </div>
                 </div>
@@ -595,6 +622,10 @@ function addFunctionBar(){
             let selected = sortingSelect.options[sortingSelect.selectedIndex].value;
             sortItems(items, selected);
         });
+
+        document.getElementById('generate_list').addEventListener('click', () => {document.getElementById('functionBarGenerateMenu').classList.toggle('hidden')});
+
+        document.getElementById('generate_button').addEventListener('click', generateItemsList);
     }
     else{
         setTimeout(function () {
@@ -649,6 +680,21 @@ function doInitSorting() {
         sortItems(items, result.inventorySortingMode);
         document.querySelector(`#sortingMethod [value="${result.inventorySortingMode}"]`).selected = true;
     });
+}
+
+function generateItemsList(){
+    let sortedItems = doTheSorting(items, Array.from(document.querySelectorAll('.item.app730.context2')), 'name_asc', null, 'simple_sort');
+    let copyTextArea = document.getElementById('generated_list_copy_textarea');
+
+    sortedItems.forEach(itemElement => {
+        let item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+        copyTextArea.value += `${item.name} | ${item.exterior !== undefined ? item.exterior.name : ''}\n`;
+    });
+
+    copyTextArea.select();
+    document.execCommand('copy');
+
+    document.getElementById('generation_result').innerText = 'List of items generated and copied to clipboard';
 }
 
 // reloads the page on extension update/reload/uninstall

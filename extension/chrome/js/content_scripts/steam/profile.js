@@ -53,7 +53,7 @@ if (document.querySelector('body').classList.contains('profile_page')){
             profileActionPopup.querySelector('.popup_body.popup_menu.shadow_content').insertAdjacentHTML('beforeend', copyPermalink);
 
             // this is a workaround to only being able to copy text to the clipboard that is selected in a textbox
-            const textareaToCopy = `<textarea id="text_area_to_copy_permalink" style="position: absolute; left: -9999px" readonly="">https://steamcommunity.com/profiles/${profileOwnerSteamID}</textarea>`;
+            const textareaToCopy = `<textarea id="text_area_to_copy_permalink" class="hidden-copy-textarea" readonly="">https://steamcommunity.com/profiles/${profileOwnerSteamID}</textarea>`;
 
             document.getElementById('copy_profile_perma_link').addEventListener('click', () => {
                 document.querySelector('body').insertAdjacentHTML('beforeend', textareaToCopy);
