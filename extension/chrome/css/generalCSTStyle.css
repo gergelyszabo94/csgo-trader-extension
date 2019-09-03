@@ -51,6 +51,14 @@
     width: 50px;
 }
 
+#functionBarGenerateMenu{
+    height: auto;
+}
+
+#generate_delimiter{
+    width: 15px;
+}
+
 /*bootstrap progress bar*/
 progress {
     vertical-align: baseline;

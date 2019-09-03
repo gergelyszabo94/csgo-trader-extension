@@ -572,30 +572,44 @@ function addFunctionBar(){
                             <span id="generate_button">Generate </span> 
                             <span id="generation_result"></span>
                         </div>
-                        <div>
-                            <!--<table>-->
-                                <!--<thead>-->
-                                    <!--<tr>-->
-                                        <!--<th>Type</th>-->
-                                        <!--<th>Name</th>-->
-                                    <!--</tr>-->
-                                <!--</thead>-->
-                                <!--<tbody>-->
-                                    <!--<tr>-->
-                                        <!--<td>Format:</td>-->
-                                    <!--</tr>-->
-                                    <!--<tr>-->
-                                        <!--<td>Example:</td>-->
-                                    <!--</tr>-->
-                                <!--</tbody>-->
-                            <!--</table>-->
+                            
+                            <div id="generate_options">
+                                <span>Delimiter</span>
+                                <input id="generate_delimiter" value="-">
+                                <span>Exterior:</span>
+                                <select id="generate_exterior">
+                                    <option value="full">Full length</option>
+                                    <option value="short">Shortened</option>
+                                </select>
+                                
+                                <span>Show Price</span>
+                                <input type="checkbox" id="generate_price">
+                                <span>Sort:</span>
+                                <select id="generate_sort"></select>
+                                
+                                <!--<span>Limit</span>-->
+                               
+                            </div>
+                            
+                            <div id="generate_examples"></div>
+                                <b>Examples:</b> <br>
+                                <span>M4A4 | The Emperor</span>
+                                <span id="example1_delimiter">-</span>
+                                <span id="example1_exterior">Field-Tested</span>
+                                <span id="example1_price"></span>
+                                <br>
+                                <span>★ Karambit | Night</span>
+                                <span id="example2_delimiter">-</span>
+                                <span id="example2_exterior">Minimal Wear</span>
+                                <span id="example2_price"></span>
+                            </div>
                             <textarea class="hidden-copy-textarea" id="generated_list_copy_textarea"></textarea>
-                        </div>
                     </div>
                 </div>
                 `);
 
-        let sortingSelect = document.getElementById("sortingMethod");
+        let sortingSelect = document.getElementById('sortingMethod');
+        let generateSortingSelect = document.getElementById('generate_sort');
 
         let keys = Object.keys(sortingModes);
         for (let key of keys){
@@ -603,6 +617,7 @@ function addFunctionBar(){
             option.value = sortingModes[key].key;
             option.text = sortingModes[key].name;
             sortingSelect.add(option);
+            generateSortingSelect.add(option.cloneNode(true));
         }
 
         document.getElementById("selectButton").addEventListener("click", function (event) {
@@ -679,16 +694,33 @@ function doInitSorting() {
     chrome.storage.local.get('inventorySortingMode', (result) => {
         sortItems(items, result.inventorySortingMode);
         document.querySelector(`#sortingMethod [value="${result.inventorySortingMode}"]`).selected = true;
+        document.querySelector(`#generate_sort [value="${result.inventorySortingMode}"]`).selected = true;
     });
 }
 
 function generateItemsList(){
-    let sortedItems = doTheSorting(items, Array.from(document.querySelectorAll('.item.app730.context2')), 'name_asc', null, 'simple_sort');
+    let generateSorting = document.getElementById('generate_sort');
+    let sortingMode = generateSorting.options[generateSorting.selectedIndex].value;
+    let sortedItems = doTheSorting(items, Array.from(document.querySelectorAll('.item.app730.context2')), sortingMode, null, 'simple_sort');
     let copyTextArea = document.getElementById('generated_list_copy_textarea');
+    copyTextArea.value = '';
+
+    let delimiter = document.getElementById('generate_delimiter').value;
+    document.querySelectorAll('#example1_delimiter, #example2_delimiter').forEach(delimiterElement => delimiterElement.innerText = delimiter);
+
+    let exteriorSelect = document.getElementById('generate_exterior');
+    let exteriorSelected = exteriorSelect.options[exteriorSelect.selectedIndex].value;
+    let exteriorType = exteriorSelected === 'full' ? 'name' : 'short';
+
+    document.getElementById('example1_exterior').innerText = exteriorSelected === 'full' ? 'Field-Tested' : 'FT';
+    document.getElementById('example2_exterior').innerText = exteriorSelected === 'full' ? 'Minimal Wear' : 'MW';
+
+    let showPrice = document.getElementById('generate_price').checked;
 
     sortedItems.forEach(itemElement => {
         let item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
-        copyTextArea.value += `${item.name} | ${item.exterior !== undefined ? item.exterior.name : ''}\n`;
+        let price = (showPrice && item.price !== null) ? item.price.display : '';
+        copyTextArea.value += `${item.name} ${delimiter} ${item.exterior !== undefined ? item.exterior[exteriorType] : ''} ${delimiter} ${price}\n`;
     });
 
     copyTextArea.select();
