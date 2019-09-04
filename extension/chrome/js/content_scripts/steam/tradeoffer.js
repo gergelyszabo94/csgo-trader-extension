@@ -546,7 +546,8 @@ function addAPartysFunctionBar(whose){
     });
 }
 
-document.getElementById('inventory_select_their_inventory').addEventListener('click', () => {singleClickControlClick()});
+let theirInventoryTab = document.getElementById('inventory_select_their_inventory');
+if (theirInventoryTab !== null) document.getElementById('inventory_select_their_inventory').addEventListener('click', () => {singleClickControlClick()}); // if the offer "active"
 
 addFunctionBars();
 
