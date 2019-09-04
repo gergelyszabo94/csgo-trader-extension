@@ -642,11 +642,7 @@ function addFunctionBar(){
 
         document.getElementById('generate_button').addEventListener('click', generateItemsList);
     }
-    else{
-        setTimeout(function () {
-            setInventoryTotal(items);
-        }, 1000);
-    }
+    else setTimeout(() => {setInventoryTotal(items)}, 1000);
 }
 
 function updateSelectedValue(){
@@ -717,16 +713,23 @@ function generateItemsList(){
 
     let showPrice = document.getElementById('generate_price').checked;
 
+    let lineCount = 0;
+    let characterCount = 0;
+
     sortedItems.forEach(itemElement => {
         let item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
         let price = (showPrice && item.price !== null) ? item.price.display : '';
-        copyTextArea.value += `${item.name} ${delimiter} ${item.exterior !== undefined ? item.exterior[exteriorType] : ''} ${delimiter} ${price}\n`;
+        let line = `${item.name} ${delimiter} ${item.exterior !== undefined ? item.exterior[exteriorType] : ''} ${delimiter} ${price}\n`;
+        copyTextArea.value += line;
+
+        characterCount += line.length;
+        lineCount++;
     });
 
     copyTextArea.select();
     document.execCommand('copy');
 
-    document.getElementById('generation_result').innerText = 'List of items generated and copied to clipboard';
+    document.getElementById('generation_result').innerText = `${lineCount} lines (${characterCount} chars) generated and copied to clipboard`;
 }
 
 // reloads the page on extension update/reload/uninstall
