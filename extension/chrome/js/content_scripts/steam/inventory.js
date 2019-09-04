@@ -587,17 +587,20 @@ function addFunctionBar(){
                                 <span>Sort:</span>
                                 <select id="generate_sort"></select>
                                 
+                                <span>Include: duplicates</span>
+                                <input id="generate_duplicates" type="checkbox">
+                                <span>non-marketable</span>
+                                <input id="generate_non_market" type="checkbox">
                                 <!--<span>Limit</span>-->
                                
                             </div>
                             
                             <div id="generate_examples"></div>
-                                <b>Examples:</b> <br>
+                                <b>Examples:</b>
                                 <span>M4A4 | The Emperor</span>
                                 <span id="example1_delimiter">-</span>
                                 <span id="example1_exterior">Field-Tested</span>
-                                <span id="example1_price"></span>
-                                <br>
+                                <span id="example1_price"></span> 
                                 <span>★ Karambit | Night</span>
                                 <span id="example2_delimiter">-</span>
                                 <span id="example2_exterior">Minimal Wear</span>
@@ -708,22 +711,39 @@ function generateItemsList(){
     let exteriorSelected = exteriorSelect.options[exteriorSelect.selectedIndex].value;
     let exteriorType = exteriorSelected === 'full' ? 'name' : 'short';
 
+    let showPrice = document.getElementById('generate_price').checked;
+    let includeDupes = document.getElementById('generate_duplicates').checked;
+    let includeNonMarketable = document.getElementById('generate_non_market').checked;
+
+    if (showPrice) {
+        document.getElementById('example1_price').innerText = '€34.79';
+        document.getElementById('example2_price').innerText = '€322.48';
+    }
+    else{
+        document.querySelectorAll('#example1_price, #example2_price').forEach(priceSpan => {priceSpan.innerText = ''});
+    }
+
     document.getElementById('example1_exterior').innerText = exteriorSelected === 'full' ? 'Field-Tested' : 'FT';
     document.getElementById('example2_exterior').innerText = exteriorSelected === 'full' ? 'Minimal Wear' : 'MW';
 
-    let showPrice = document.getElementById('generate_price').checked;
-
     let lineCount = 0;
     let characterCount = 0;
+    let namesAlreadyInList = [];
 
     sortedItems.forEach(itemElement => {
         let item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
-        let price = (showPrice && item.price !== null) ? item.price.display : '';
-        let line = `${item.name} ${delimiter} ${item.exterior !== undefined ? item.exterior[exteriorType] : ''} ${delimiter} ${price}\n`;
-        copyTextArea.value += line;
+        let price = (showPrice && item.price !== null) ? ` ${delimiter} ${item.price.display}` : '';
+        let duplicate = (!includeDupes && item.duplicates.num !== 1) ? `${delimiter} x${item.duplicates.num}` : '';
+        let line = `${item.name} ${delimiter} ${item.exterior !== undefined ? item.exterior[exteriorType] : ''}${price} ${duplicate}\n`;
 
-        characterCount += line.length;
-        lineCount++;
+        if (includeDupes || (!includeDupes && !namesAlreadyInList.includes(item.market_hash_name))){
+            if ((!includeNonMarketable && item.tradability !== 'Not Tradable') || (item.tradability === 'Not Tradable' && includeNonMarketable)){
+                namesAlreadyInList.push(item.market_hash_name);
+                copyTextArea.value += line;
+                characterCount += line.length;
+                lineCount++;
+            }
+        }
     });
 
     copyTextArea.select();
