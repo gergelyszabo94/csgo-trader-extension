@@ -584,6 +584,8 @@ function addFunctionBar(){
                                 
                                 <span>Show Price</span>
                                 <input type="checkbox" id="generate_price">
+                                <span>Show Tradability</span>
+                                <input type="checkbox" id="generate_tradability">
                                 <span>Sort:</span>
                                 <select id="generate_sort"></select>
                                 
@@ -712,6 +714,7 @@ function generateItemsList(){
     let exteriorType = exteriorSelected === 'full' ? 'name' : 'short';
 
     let showPrice = document.getElementById('generate_price').checked;
+    let showTradability = document.getElementById('generate_tradability').checked;
     let includeDupes = document.getElementById('generate_duplicates').checked;
     let includeNonMarketable = document.getElementById('generate_non_market').checked;
 
@@ -719,9 +722,7 @@ function generateItemsList(){
         document.getElementById('example1_price').innerText = '€34.79';
         document.getElementById('example2_price').innerText = '€322.48';
     }
-    else{
-        document.querySelectorAll('#example1_price, #example2_price').forEach(priceSpan => {priceSpan.innerText = ''});
-    }
+    else document.querySelectorAll('#example1_price, #example2_price').forEach(priceSpan => {priceSpan.innerText = ''});
 
     document.getElementById('example1_exterior').innerText = exteriorSelected === 'full' ? 'Field-Tested' : 'FT';
     document.getElementById('example2_exterior').innerText = exteriorSelected === 'full' ? 'Minimal Wear' : 'MW';
@@ -733,8 +734,11 @@ function generateItemsList(){
     sortedItems.forEach(itemElement => {
         let item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
         let price = (showPrice && item.price !== null) ? ` ${delimiter} ${item.price.display}` : '';
+        let exterior = item.exterior !== undefined ? item.exterior[exteriorType] : '';
+        let tradableAt = new Date(item.tradability).toString().split('GMT')[0];
+        let tradability = (showTradability && tradableAt !== 'Invalid Date') ? `${delimiter} ${tradableAt}` : '';
         let duplicate = (!includeDupes && item.duplicates.num !== 1) ? `${delimiter} x${item.duplicates.num}` : '';
-        let line = `${item.name} ${delimiter} ${item.exterior !== undefined ? item.exterior[exteriorType] : ''}${price} ${duplicate}\n`;
+        let line = `${item.name} ${delimiter} ${exterior}${price}${tradability} ${duplicate}\n`;
 
         if (includeDupes || (!includeDupes && !namesAlreadyInList.includes(item.market_hash_name))){
             if ((!includeNonMarketable && item.tradability !== 'Not Tradable') || (item.tradability === 'Not Tradable' && includeNonMarketable)){
