@@ -23,7 +23,6 @@ chrome.runtime.onInstalled.addListener((details) =>{
             itemPricing: true,
             pricingProvider: pricingProviders.csgotrader.name,
             pricingMode: pricingProviders.csgotrader.pricing_modes['csgotrader'].name,
-            pricesLastRefreshed: null,
             prices: null,
             currency: currencies.USD.short,
             exchangeRate: 1.0,
@@ -52,7 +51,7 @@ chrome.runtime.onInstalled.addListener((details) =>{
             'quickDeclineOffer', 'openOfferInTab', 'showPlusRepButton', 'reputationMessage', 'showReoccButton', 'reoccuringMessage',
             'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems',
             'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode',
-            'pricesLastRefreshed', 'prices', 'currency', 'exchangeRate', 'exchangeRates', 'hideOtherExtensionPrices','inventorySortingMode',
+            'prices', 'currency', 'exchangeRate', 'exchangeRates', 'hideOtherExtensionPrices','inventorySortingMode',
             'notifyOnUpdate', 'offerSortingMode', 'switchToOtherInventory', 'popupLinks', 'steamIDOfUser'], (result) =>{
             if(result.quickDeclineOffer === undefined) chrome.storage.local.set({quickDeclineOffer: true}, ()=>{});
             if(result.openOfferInTab === undefined) chrome.storage.local.set({openOfferInTab: true}, ()=>{});
@@ -74,7 +73,6 @@ chrome.runtime.onInstalled.addListener((details) =>{
             if(result.itemPricing === undefined) chrome.storage.local.set({itemPricing: true}, () =>{});
             if(result.pricingProvider === undefined) chrome.storage.local.set({pricingProvider: pricingProviders.csgotrader.name},() =>{});
             if(result.pricingMode === undefined) chrome.storage.local.set({pricingMode: pricingProviders.csgotrader.pricing_modes['csgotrader'].name}, () =>{});
-            if(result.pricesLastRefreshed === undefined) chrome.storage.local.set({pricesLastRefreshed: null}, () =>{});
             if(result.prices === undefined) chrome.storage.local.set({prices: null}, () =>{});
             if(result.currency === undefined) chrome.storage.local.set({currency: currencies.USD.short}, () =>{});
             if(result.exchangeRate === undefined) chrome.storage.local.set({exchangeRate: 1.0}, () =>{});
