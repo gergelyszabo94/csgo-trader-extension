@@ -579,13 +579,16 @@ function getInventoryOwnerID(){
 
 function warnOfScammer(steamID, page) {
     chrome.runtime.sendMessage({getSteamRepInfo: steamID}, (response) => {
-        if (response.SteamRepInfo.reputation.summary === 'SCAMMER'){
-            let backgroundURL = chrome.runtime.getURL('images/scammerbackground.jpg');
-            document.querySelector('body').insertAdjacentHTML('beforebegin', `<div style="background-color: red; color: white; padding: 5px; text-align: center;" class="scammerWarning"><span>Watch out, this user was banned on SteamRep for scamming! You can check the details of what they did on <a style="color: black; font-weight: bold" href='https://steamrep.com/profiles/${steamID}'>steamrep.com</a></span></div>`);
+        if(response.SteamRepInfo !== 'error'){
+            if (response.SteamRepInfo.reputation.summary === 'SCAMMER'){
+                let backgroundURL = chrome.runtime.getURL('images/scammerbackground.jpg');
+                document.querySelector('body').insertAdjacentHTML('beforebegin', `<div style="background-color: red; color: white; padding: 5px; text-align: center;" class="scammerWarning"><span>Watch out, this user was banned on SteamRep for scamming! You can check the details of what they did on <a style="color: black; font-weight: bold" href='https://steamrep.com/profiles/${steamID}'>steamrep.com</a></span></div>`);
 
-            if (page === 'offer')   document.querySelector('body').setAttribute('style', `background-image: url('${backgroundURL}')`);
-            else if (page === 'profile') document.querySelector('.no_header.profile_page').setAttribute('style', `background-image: url('${backgroundURL}')`);
+                if (page === 'offer')   document.querySelector('body').setAttribute('style', `background-image: url('${backgroundURL}')`);
+                else if (page === 'profile') document.querySelector('.no_header.profile_page').setAttribute('style', `background-image: url('${backgroundURL}')`);
+            }
         }
+        else console.log('Could not get steamrep info');
     });
 }
 
@@ -715,6 +718,9 @@ function updatePrices(){
     let request = new Request('https://prices.csgotrader.app/latest/prices_v2.json', init);
 
     fetch(request).then((response) => {
+        if (!response.ok) {
+            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+        }
         return response.json();
     }).then((fullPricesJSON) => {
         chrome.storage.local.get(['itemPricing', 'pricingProvider', 'pricingMode'], (result) => {
@@ -864,18 +870,21 @@ function updatePrices(){
                 chrome.storage.local.set({prices: prices}, () => {});
             }
         });
-    });
+    }).catch((err) => {console.log(err)});
 }
 
 function updateExchangeRates(){
     let request = new Request('https://prices.csgotrader.app/latest/exchange_rates.json');
 
     fetch(request).then((response) => {
+        if (!response.ok) {
+            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+        }
         return response.json();
     }).then((exchangeRatesJSON) => {
         chrome.storage.local.set({exchangeRates: exchangeRatesJSON}, () =>{});
         chrome.storage.local.get('currency', (result) => {chrome.storage.local.set({exchangeRate: exchangeRatesJSON[result.currency]}, () => {})});
-    });
+    }).catch((err) => {console.log(err)});
 }
 
 function prettyPrintPrice(currency, price){
