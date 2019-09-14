@@ -481,3 +481,53 @@ document.getElementById('savePopupLink').addEventListener('click', () =>{
         chrome.storage.local.set({popupLinks: result.popupLinks}, () =>{location.reload();});
     });
 });
+
+// export preferences
+
+chrome.storage.local.get([
+    'quickDeclineOffer', 'openOfferInTab', 'showPlusRepButton', 'reputationMessage', 'showReoccButton', 'reoccuringMessage',
+    'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems',
+    'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode',
+    'pricesLastRefreshed', 'prices', 'currency', 'exchangeRate', 'exchangeRates', 'hideOtherExtensionPrices','inventorySortingMode',
+    'notifyOnUpdate', 'offerSortingMode', 'switchToOtherInventory', 'popupLinks', 'steamIDOfUser'], (result) =>{
+
+    let JSONContent = 'data:application/json,';
+
+    let preferencesJSON = {
+        version: 1,
+        type: "preferences",
+        preferences: {
+            quickDeclineOffer: result.quickDeclineOffer,
+            openOfferInTab: result.openOfferInTab,
+            showPlusRepButton: result.showPlusRepButton,
+            reputationMessage: result.reputationMessage,
+            showReoccButton: result.showReoccButton,
+            reoccuringMessage: result.reoccuringMessage,
+            nsfwFilter: result.nsfwFilter,
+            flagScamComments: result.flagScamComments,
+            steamAPIKey: result.steamAPIKey,
+            apiKeyValid: result.apiKeyValid,
+            showRealStatus: result.showRealStatus,
+            colorfulItems: result.colorfulItems,
+            loungeBump: result.loungeBump,
+            tradersBump: result.tradersBump,
+            markScammers: result.markScammers,
+            numberOfListings: result.numberOfListings,
+            itemPricing: result.itemPricing,
+            currency: result.currency,
+            exchangeRate: result.exchangeRate,
+            hideOtherExtensionPrices: result.hideOtherExtensionPrices,
+            inventorySortingMode: result.inventorySortingMode,
+            notifyOnUpdate: result.notifyOnUpdate,
+            offerSortingMode: result.offerSortingMode,
+            switchToOtherInventory: result.switchToOtherInventory,
+            popupLinks: result.popupLinks,
+            steamIDOfUser: result.steamIDOfUser
+        }
+    };
+
+    JSONContent += encodeURIComponent(JSON.stringify(preferencesJSON));
+
+    let exportPreferences = document.getElementById('export_preferences');
+    exportPreferences.setAttribute('href', JSONContent);
+});
