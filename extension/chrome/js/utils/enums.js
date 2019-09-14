@@ -19267,6 +19267,16 @@ const rarities = {
         internal_name: "Rarity_Contraband_Weapon",
         name: "contraband",
         prettyName: "Contraband Weapon"
+    },
+    default: {
+        internal_name: "Rarity_Default",
+        name: "stock",
+        prettyName: "Default"
+    },
+    default_weapon: {
+        internal_name: "Rarity_Default_Weapon",
+        name: "stock",
+        prettyName: "Default Weapon"
     }
 };
 

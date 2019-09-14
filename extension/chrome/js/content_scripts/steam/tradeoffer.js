@@ -261,7 +261,7 @@ function buildInventoryStructure(inventory) {
     inventory.forEach((item) => {
         let exterior = getExteriorFromTags(item.tags);
         let marketlink = `https://steamcommunity.com/market/listings/730/${item.market_hash_name}`;
-        let quality = getQuality(item.type);
+        let quality = getQuality(item.tags);
         let stickers =  parseStickerInfo(item.descriptions, 'direct');
         let nametag = undefined;
         let inspectLink ="";

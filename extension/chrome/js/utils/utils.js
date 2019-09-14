@@ -120,21 +120,29 @@ function getPattern(name, paint_seed){
     else return null;
 }
 
-function getQuality(type){
-    if (/Base Grade/i.test(type)) return qualities.base_grade;
-    else if (/Classified/i.test(type)) return qualities.classified;
-    else if (/Consumer Grade/i.test(type)) return qualities.consumer_grade;
-    else if (/Contraband/i.test(type)) return qualities.contraband;
-    else if (/Covert/i.test(type)) return qualities.covert;
-    else if (/Exotic/i.test(type)) return qualities.exotic;
-    else if (/Extraordinary/i.test(type)) return qualities.extraordinary;
-    else if (/High Grade/i.test(type)) return qualities.high_grade;
-    else if (/Industrial Grade/i.test(type)) return qualities.industrial_grade;
-    else if (/Mil-Spec Grade/i.test(type)) return qualities.milspec_grade;
-    else if (/Remarkable/i.test(type)) return qualities.remarkable;
-    else if (/Restricted/i.test(type)) return qualities.restricted;
-    else if (/Stock/i.test(type)) return qualities.stock;
-    else return qualities.stock;
+function getQuality(tags){
+    for (let tag of tags) if(tag.category === 'Rarity'){
+        switch(tag.internal_name){
+            case rarities.common.internal_name: return qualities[rarities.common.name];
+            case rarities.common_weapon.internal_name: return qualities[rarities.common_weapon.name];
+            case rarities.uncommon.internal_name: return qualities[rarities.uncommon.name];
+            case rarities.uncommon_weapon.internal_name: return qualities[rarities.uncommon_weapon.name];
+            case rarities.rare.internal_name: return qualities[rarities.rare.name];
+            case rarities.rare_weapon.internal_name: return qualities[rarities.rare_weapon.name];
+            case rarities.mythical.internal_name: return qualities[rarities.mythical.name];
+            case rarities.mythical_weapon.internal_name: return qualities[rarities.mythical_weapon.name];
+            case rarities.legendary.internal_name: return qualities[rarities.legendary.name];
+            case rarities.legendary_weapon.internal_name: return qualities[rarities.legendary_weapon.name];
+            case rarities.ancient.internal_name: return qualities[rarities.ancient.name];
+            case rarities.ancient_weapon.internal_name: return qualities[rarities.ancient_weapon.name];
+            case rarities.contraband.internal_name: return qualities[rarities.contraband.name];
+            case rarities.contraband_weapon.internal_name: return qualities[rarities.contraband_weapon.name];
+            case rarities.default.internal_name: return qualities[rarities.default.name];
+            case rarities.default_weapon.internal_name: return qualities[rarities.default_weapon.name];
+            default: console.log(tag.internal_name); return qualities.stock;
+        }
+    }
+    return null;
 }
 
 function getType(tags) {
