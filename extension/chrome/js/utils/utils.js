@@ -1027,7 +1027,7 @@ function getPrice(market_hash_name, dopplerInfo, prices, provider, exchange_rate
     if(provider === pricingProviders.csgotrader.name || provider === pricingProviders.csmoney.name){
         if(dopplerInfo !== undefined){
             if(prices[market_hash_name] !== undefined && prices[market_hash_name]["doppler"] !== undefined && prices[market_hash_name]["doppler"] !== "null" && prices[market_hash_name]["doppler"][dopplerInfo.name] !== "null" && prices[market_hash_name]["doppler"][dopplerInfo.name] !== undefined){
-                price = (prices[market_hash_name]["doppler"][dopplerInfo.name]).toFixed(2);
+                price = (prices[market_hash_name]["doppler"][dopplerInfo.name] * exchange_rate).toFixed(2);
             }
             else if(prices[market_hash_name] !== undefined && (prices[market_hash_name]["doppler"] === undefined || prices[market_hash_name]["doppler"][dopplerInfo.name] === undefined || prices[market_hash_name]["doppler"] === "null" || prices[market_hash_name]["doppler"][dopplerInfo.name] === "null") && prices[market_hash_name]["price"] !== "null"){
                 price = (prices[market_hash_name]["price"] * exchange_rate).toFixed(2)
