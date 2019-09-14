@@ -549,6 +549,7 @@ let listenSelectClicks = function (event){
 function addFunctionBar(){
     if(document.getElementById("inventory_function_bar") === null){
         let hand_pointer = chrome.runtime.getURL("images/hand-pointer-solid.svg");
+        let table = chrome.runtime.getURL("images/table-solid.svg");
         document.querySelector(".filter_ctn.inventory_filters").insertAdjacentHTML('afterend', `
                 <div id="inventory_function_bar">
                     <div id="functionBarValues" class="functionBarRow">
@@ -559,7 +560,9 @@ function addFunctionBar(){
                         <span id="selectMenu">
                             <img id ="selectButton" src="${hand_pointer}">
                         </span>
-                        <span id="generate_list">Generate list</span>
+                        <span id="generate_menu">
+                            <img id ="generate_list" src="${table}">
+                        </span>
                         <div id="sortingMenu">
                             <span>Sorting:</span>
                             <select id="sortingMethod">
@@ -569,8 +572,7 @@ function addFunctionBar(){
                     <div id="functionBarGenerateMenu" class="functionBarRow hidden">
                         <div>
                             <span>Generate list of inventory items (for posting in groups, trading forums, etc.) </span>
-                            <span id="generate_button">Generate </span> 
-                            <span id="generation_result"></span>
+                            <span id="generate_button">Click here to generate</span> 
                         </div>
                             
                             <div id="generate_options">
@@ -582,31 +584,25 @@ function addFunctionBar(){
                                     <option value="short">Shortened</option>
                                 </select>
                                 
-                                <span>Show Price</span>
+                                <span><b>Show:</b> Price</span>
                                 <input type="checkbox" id="generate_price">
-                                <span>Show Tradability</span>
+                                <span> Tradability</span>
                                 <input type="checkbox" id="generate_tradability">
-                                <span>Sort:</span>
-                                <select id="generate_sort"></select>
-                                
-                                <span>Include: duplicates</span>
+                                <span><b>Include:</b> Duplicates</span>
                                 <input id="generate_duplicates" type="checkbox">
-                                <span>non-marketable</span>
+                                <span>Non-Marketable</span>
                                 <input id="generate_non_market" type="checkbox">
-                                <!--<span>Limit</span>-->
-                               
                             </div>
                             
-                            <div id="generate_examples"></div>
-                                <b>Examples:</b>
-                                <span>M4A4 | The Emperor</span>
-                                <span id="example1_delimiter">-</span>
-                                <span id="example1_exterior">Field-Tested</span>
-                                <span id="example1_price"></span> 
-                                <span>★ Karambit | Night</span>
-                                <span id="example2_delimiter">-</span>
-                                <span id="example2_exterior">Minimal Wear</span>
-                                <span id="example2_price"></span>
+                            <div>
+                                <b>Sort:</b>
+                                <select id="generate_sort"></select>
+                                <b>Limit result to:</b>
+                                <input id="generate_limit" type="number" value="10000" min="1" max="10000">
+                            </div>
+                            <div>
+                                <span id="generation_result"></span>
+                                <a class="hidden" id="generate_download" href="" download="inventory_items.csv">Download .csv</a> 
                             </div>
                             <textarea class="hidden-copy-textarea" id="generated_list_copy_textarea"></textarea>
                     </div>
@@ -707,7 +703,8 @@ function generateItemsList(){
     copyTextArea.value = '';
 
     let delimiter = document.getElementById('generate_delimiter').value;
-    document.querySelectorAll('#example1_delimiter, #example2_delimiter').forEach(delimiterElement => delimiterElement.innerText = delimiter);
+
+    let limit = document.getElementById('generate_limit').value;
 
     let exteriorSelect = document.getElementById('generate_exterior');
     let exteriorSelected = exteriorSelect.options[exteriorSelect.selectedIndex].value;
@@ -718,37 +715,44 @@ function generateItemsList(){
     let includeDupes = document.getElementById('generate_duplicates').checked;
     let includeNonMarketable = document.getElementById('generate_non_market').checked;
 
-    if (showPrice) {
-        document.getElementById('example1_price').innerText = '€34.79';
-        document.getElementById('example2_price').innerText = '€322.48';
-    }
-    else document.querySelectorAll('#example1_price, #example2_price').forEach(priceSpan => {priceSpan.innerText = ''});
-
-    document.getElementById('example1_exterior').innerText = exteriorSelected === 'full' ? 'Field-Tested' : 'FT';
-    document.getElementById('example2_exterior').innerText = exteriorSelected === 'full' ? 'Minimal Wear' : 'MW';
-
     let lineCount = 0;
     let characterCount = 0;
     let namesAlreadyInList = [];
 
+    let csvContent = 'data:text/csv;charset=utf-8,';
+    let headers = `Name,Exterior${showPrice ? ',Price' : ''}${showTradability ? ',Tradability' : ''}${includeDupes ? '' : ',Duplicates'}\n`;
+    csvContent += headers;
+
     sortedItems.forEach(itemElement => {
         let item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
         let price = (showPrice && item.price !== null) ? ` ${delimiter} ${item.price.display}` : '';
+        let priceCSV = (showPrice && item.price !== null) ? `,${item.price.display}` : '';
         let exterior = item.exterior !== undefined ? item.exterior[exteriorType] : '';
         let tradableAt = new Date(item.tradability).toString().split('GMT')[0];
         let tradability = (showTradability && tradableAt !== 'Invalid Date') ? `${delimiter} ${tradableAt}` : '';
+        let tradabilityCSV = (showTradability && tradableAt !== 'Invalid Date') ? `,${tradableAt}` : '';
         let duplicate = (!includeDupes && item.duplicates.num !== 1) ? `${delimiter} x${item.duplicates.num}` : '';
+        let duplicateCSV = (!includeDupes && item.duplicates.num !== 1) ? `,x${item.duplicates.num}` : '';
         let line = `${item.name} ${delimiter} ${exterior}${price}${tradability} ${duplicate}\n`;
+        let lineCSV = `"${item.name}",${exterior}${priceCSV}${tradabilityCSV}${duplicateCSV}\n`;
 
-        if (includeDupes || (!includeDupes && !namesAlreadyInList.includes(item.market_hash_name))){
-            if ((!includeNonMarketable && item.tradability !== 'Not Tradable') || (item.tradability === 'Not Tradable' && includeNonMarketable)){
-                namesAlreadyInList.push(item.market_hash_name);
-                copyTextArea.value += line;
-                characterCount += line.length;
-                lineCount++;
+        if(lineCount < limit){
+            if (includeDupes || (!includeDupes && !namesAlreadyInList.includes(item.market_hash_name))){
+                if ((!includeNonMarketable && item.tradability !== 'Not Tradable') || (item.tradability === 'Not Tradable' && includeNonMarketable)){
+                    namesAlreadyInList.push(item.market_hash_name);
+                    copyTextArea.value += line;
+                    csvContent += lineCSV;
+                    characterCount += line.length;
+                    lineCount++;
+                }
             }
         }
     });
+    let encodedURI = encodeURI(csvContent);
+    let downloadButton = document.getElementById('generate_download');
+    downloadButton.setAttribute('href', encodedURI);
+    downloadButton.classList.remove('hidden');
+    downloadButton.setAttribute('download', `${getInventoryOwnerID()}_csgo_items.csv`);
 
     copyTextArea.select();
     document.execCommand('copy');

@@ -138,7 +138,8 @@
     "images/scammerbackground.jpg",
     "images/paperclip.png",
     "images/reply.png",
-    "images/hand-pointer-solid.svg"
+    "images/hand-pointer-solid.svg",
+    "images/table-solid.svg"
   ],
   "browser_action": {
     "default_popup": "html/popup.html",

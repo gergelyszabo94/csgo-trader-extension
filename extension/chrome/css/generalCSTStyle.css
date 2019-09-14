@@ -59,6 +59,15 @@
     width: 15px;
 }
 
+#generate_options{
+    margin-top: 5px;
+}
+
+#generate_button{
+    margin-left: 15px;
+    text-decoration: underline;
+}
+
 /*bootstrap progress bar*/
 progress {
     vertical-align: baseline;
@@ -301,6 +310,11 @@ progress {
 }
 
 #selectButton{
+    width: 20px;
+    height: 20px;
+}
+
+#generate_list{
     width: 20px;
     height: 20px;
 }
