@@ -621,7 +621,7 @@ function addFunctionBar(){
             generateSortingSelect.add(option.cloneNode(true));
         }
 
-        document.getElementById("selectButton").addEventListener("click", function (event) {
+        document.getElementById("selectButton").addEventListener("click", (event) => {
             if(event.target.classList.contains("selectionActive")){
                 unselectAllItems();
                 updateSelectedValue();
@@ -634,7 +634,7 @@ function addFunctionBar(){
             }
         });
 
-        sortingSelect.addEventListener("change", function () {
+        sortingSelect.addEventListener("change", () => {
             let selected = sortingSelect.options[sortingSelect.selectedIndex].value;
             sortItems(items, selected);
         });
