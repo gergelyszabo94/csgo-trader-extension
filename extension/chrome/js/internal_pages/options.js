@@ -486,9 +486,9 @@ document.getElementById('savePopupLink').addEventListener('click', () =>{
 
 chrome.storage.local.get([
     'quickDeclineOffer', 'openOfferInTab', 'showPlusRepButton', 'reputationMessage', 'showReoccButton', 'reoccuringMessage',
-    'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems',
+    'nsfwFilter', 'flagScamComments', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems',
     'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode',
-    'pricesLastRefreshed', 'prices', 'currency', 'exchangeRate', 'exchangeRates', 'hideOtherExtensionPrices','inventorySortingMode',
+    'pricesLastRefreshed', 'currency', 'exchangeRate', 'hideOtherExtensionPrices','inventorySortingMode',
     'notifyOnUpdate', 'offerSortingMode', 'switchToOtherInventory', 'popupLinks', 'steamIDOfUser'], (result) =>{
 
     let JSONContent = 'data:application/json,';
@@ -530,4 +530,16 @@ chrome.storage.local.get([
 
     let exportPreferences = document.getElementById('export_preferences');
     exportPreferences.setAttribute('href', JSONContent);
+});
+
+// export bookmarks
+
+chrome.storage.local.get('bookmarks', (result) =>{
+
+    let JSONContent = 'data:application/json,';
+
+    JSONContent += encodeURIComponent(JSON.stringify(result.bookmarks));
+
+    let exportBookmarks = document.getElementById('export_bookmarks');
+    exportBookmarks.setAttribute('href', JSONContent);
 });
