@@ -488,7 +488,7 @@ chrome.storage.local.get([
     'quickDeclineOffer', 'openOfferInTab', 'showPlusRepButton', 'reputationMessage', 'showReoccButton', 'reoccuringMessage',
     'nsfwFilter', 'flagScamComments', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems',
     'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode',
-    'pricesLastRefreshed', 'currency', 'exchangeRate', 'hideOtherExtensionPrices','inventorySortingMode',
+    'currency', 'exchangeRate', 'hideOtherExtensionPrices','inventorySortingMode',
     'notifyOnUpdate', 'offerSortingMode', 'switchToOtherInventory', 'popupLinks', 'steamIDOfUser'], (result) =>{
 
     let JSONContent = 'data:application/json,';
@@ -514,6 +514,8 @@ chrome.storage.local.get([
             markScammers: result.markScammers,
             numberOfListings: result.numberOfListings,
             itemPricing: result.itemPricing,
+            pricingProvider: result.pricingProvider,
+            pricingMode: result.pricingMode,
             currency: result.currency,
             exchangeRate: result.exchangeRate,
             hideOtherExtensionPrices: result.hideOtherExtensionPrices,
@@ -542,4 +544,49 @@ chrome.storage.local.get('bookmarks', (result) =>{
 
     let exportBookmarks = document.getElementById('export_bookmarks');
     exportBookmarks.setAttribute('href', JSONContent);
+});
+
+//import preferences
+
+let importPrefInput = document.getElementById('import_preferences');
+
+importPrefInput.addEventListener('change', event => {
+    let file = event.target.files[0];
+    let fr = new FileReader();
+
+    fr.addEventListener('load', event => {
+       let inputAsJSON = JSON.parse(event.target.result);
+       if (parseInt(inputAsJSON.version) === 1) {
+           if(inputAsJSON.preferences.quickDeclineOffer !== undefined) chrome.storage.local.set({quickDeclineOffer: inputAsJSON.preferences.quickDeclineOffer}, ()=>{});
+           if(inputAsJSON.preferences.openOfferInTab !== undefined) chrome.storage.local.set({openOfferInTab: inputAsJSON.preferences.openOfferInTab}, ()=>{});
+           if(inputAsJSON.preferences.showPlusRepButton !== undefined) chrome.storage.local.set({showPlusRepButton: inputAsJSON.preferences.showPlusRepButton}, () =>{});
+           if(inputAsJSON.preferences.reputationMessage !== undefined) chrome.storage.local.set({reputationMessage: inputAsJSON.preferences.reputationMessage}, () =>{});
+           if(inputAsJSON.preferences.showReoccButton !== undefined) chrome.storage.local.set({showReoccButton: inputAsJSON.preferences.showReoccButton}, () =>{});
+           if(inputAsJSON.preferences.reoccuringMessage !== undefined) chrome.storage.local.set({reoccuringMessage: inputAsJSON.preferences.reoccuringMessage}, () =>{});
+           if(inputAsJSON.preferences.nsfwFilter !== undefined) chrome.storage.local.set({nsfwFilter: inputAsJSON.preferences.nsfwFilter}, () =>{});
+           if(inputAsJSON.preferences.flagScamComments !== undefined) chrome.storage.local.set({flagScamComments: inputAsJSON.preferences.flagScamComments}, () =>{});
+           if(inputAsJSON.preferences.steamAPIKey !== undefined) chrome.storage.local.set({steamAPIKey: inputAsJSON.preferences.steamAPIKey}, () =>{});
+           if(inputAsJSON.preferences.apiKeyValid !== undefined) chrome.storage.local.set({apiKeyValid: inputAsJSON.preferences.apiKeyValid}, () =>{});
+           if(inputAsJSON.preferences.showRealStatus !== undefined) chrome.storage.local.set({showRealStatus: inputAsJSON.preferences.showRealStatus}, () =>{});
+           if(inputAsJSON.preferences.colorfulItems !== undefined) chrome.storage.local.set({colorfulItems: inputAsJSON.preferences.colorfulItems}, () =>{});
+           if(inputAsJSON.preferences.loungeBump !== undefined) chrome.storage.local.set({loungeBump: inputAsJSON.preferences.loungeBump}, () =>{});
+           if(inputAsJSON.preferences.tradersBump !== undefined) chrome.storage.local.set({tradersBump: inputAsJSON.preferences.tradersBump}, () =>{});
+           if(inputAsJSON.preferences.markScammers !== undefined) chrome.storage.local.set({markScammers: inputAsJSON.preferences.markScammers}, () =>{});
+           if(inputAsJSON.preferences.numberOfListings !== undefined) chrome.storage.local.set({numberOfListings: inputAsJSON.preferences.numberOfListings}, () =>{});
+           if(inputAsJSON.preferences.itemPricing !== undefined) chrome.storage.local.set({itemPricing: inputAsJSON.preferences.itemPricing}, () =>{});
+           if(inputAsJSON.preferences.pricingProvider !== undefined) chrome.storage.local.set({pricingProvider: inputAsJSON.preferences.pricingProvider},() =>{});
+           if(inputAsJSON.preferences.pricingMode !== undefined) chrome.storage.local.set({pricingMode: inputAsJSON.preferences.pricingMode}, () =>{});
+           if(inputAsJSON.preferences.currency !== undefined) chrome.storage.local.set({currency: inputAsJSON.preferences.currency}, () =>{});
+           if(inputAsJSON.preferences.exchangeRate !== undefined) chrome.storage.local.set({exchangeRate: inputAsJSON.preferences.exchangeRate}, () =>{});
+           if(inputAsJSON.preferences.hideOtherExtensionPrices !== undefined) chrome.storage.local.set({hideOtherExtensionPrices: inputAsJSON.preferences.hideOtherExtensionPrices}, () =>{});
+           if(inputAsJSON.preferences.inventorySortingMode !== undefined) chrome.storage.local.set({inventorySortingMode: inputAsJSON.preferences.inventorySortingMode}, () =>{});
+           if(inputAsJSON.preferences.notifyOnUpdate !== undefined) chrome.storage.local.set({notifyOnUpdate: inputAsJSON.preferences.notifyOnUpdate}, () =>{});
+           if(inputAsJSON.preferences.offerSortingMode !== undefined) chrome.storage.local.set({offerSortingMode: inputAsJSON.preferences.offerSortingMode}, () =>{});
+           if(inputAsJSON.preferences.switchToOtherInventory !== undefined) chrome.storage.local.set({switchToOtherInventory: inputAsJSON.preferences.switchToOtherInventory}, () =>{});
+           if(inputAsJSON.preferences.popupLinks !== undefined) chrome.storage.local.set({popupLinks: inputAsJSON.preferences.popupLinks}, () =>{});
+           if(inputAsJSON.preferences.steamIDOfUser !== undefined) chrome.storage.local.set({steamIDOfUser: inputAsJSON.preferences.steamIDOfUser}, () =>{});
+       }
+       else console.log(inputAsJSON.version);
+    });
+    fr.readAsText(file);
 });
