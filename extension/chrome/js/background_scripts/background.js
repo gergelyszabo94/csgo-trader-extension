@@ -1,40 +1,7 @@
 chrome.runtime.onInstalled.addListener((details) =>{
     if(details.reason === 'install'){
         // sets the default options for first run (on install from the webstore/amo or when loaded in developer mode)
-        chrome.storage.local.set({
-            quickDeclineOffer: true,
-            openOfferInTab: true,
-            showPlusRepButton: true,
-            reputationMessage: '+rep',
-            showReoccButton: true,
-            reoccuringMessage: 'I don\'t have other accounts. If someone adds you with my name and picture they are scammers.',
-            nsfwFilter: false,
-            flagScamComments: true,
-            bookmarks: [],
-            steamAPIKey: '',
-            apiKeyValid: false,
-            showRealStatus: true,
-            colorfulItems: true,
-            loungeBump: false,
-            tradersBump: false,
-            markScammers: true,
-            numberOfListings: 10,
-            storageMigrated: true,
-            itemPricing: true,
-            pricingProvider: pricingProviders.csgotrader.name,
-            pricingMode: pricingProviders.csgotrader.pricing_modes['csgotrader'].name,
-            prices: null,
-            currency: currencies.USD.short,
-            exchangeRate: 1.0,
-            exchangeRates: null,
-            hideOtherExtensionPrices: true,
-            inventorySortingMode: sortingModes.default.key,
-            notifyOnUpdate: false,
-            offerSortingMode: sortingModes.default.key,
-            switchToOtherInventory: false,
-            popupLinks: defaultPopupLinks,
-            steamIDOfUser: ''
-        }, () =>{});
+        for (let key in storageKeys) {chrome.storage.local.set({[key]: storageKeys[key]}, () =>{});}
 
         chrome.browserAction.setBadgeText({text: 'I'});
         chrome.notifications.create('installed', {
@@ -47,43 +14,11 @@ chrome.runtime.onInstalled.addListener((details) =>{
     else if(details.reason === 'update'){
         // sets defaults options for new options that haven't been set yet (for features introduced since the last version - runs when the extension updates or gets reloaded in developer mode)
         // it checks whether the setting has ever been set - I consider removing older ones since there is no one updating from version that old
-        chrome.storage.local.get([
-            'quickDeclineOffer', 'openOfferInTab', 'showPlusRepButton', 'reputationMessage', 'showReoccButton', 'reoccuringMessage',
-            'nsfwFilter', 'flagScamComments', 'bookmarks', 'steamAPIKey', 'apiKeyValid', 'showRealStatus', 'colorfulItems',
-            'loungeBump', 'tradersBump', 'markScammers', 'numberOfListings', 'itemPricing', 'pricingProvider', 'pricingMode',
-            'prices', 'currency', 'exchangeRate', 'exchangeRates', 'hideOtherExtensionPrices','inventorySortingMode',
-            'notifyOnUpdate', 'offerSortingMode', 'switchToOtherInventory', 'popupLinks', 'steamIDOfUser'], (result) =>{
-            if(result.quickDeclineOffer === undefined) chrome.storage.local.set({quickDeclineOffer: true}, ()=>{});
-            if(result.openOfferInTab === undefined) chrome.storage.local.set({openOfferInTab: true}, ()=>{});
-            if(result.showPlusRepButton === undefined) chrome.storage.local.set({showPlusRepButton: true}, () =>{});
-            if(result.reputationMessage === undefined) chrome.storage.local.set({reputationMessage: '+rep'}, () =>{});
-            if(result.showReoccButton === undefined) chrome.storage.local.set({showReoccButton: true}, () =>{});
-            if(result.reoccuringMessage === undefined) chrome.storage.local.set({reoccuringMessage: 'I don\'t have other accounts. If someone adds you with my name and picture they are scammers.'}, () =>{});
-            if(result.nsfwFilter === undefined) chrome.storage.local.set({nsfwFilter: false}, () =>{});
-            if(result.flagScamComments === undefined) chrome.storage.local.set({flagScamComments: true}, () =>{});
-            if(result.bookmarks === undefined) chrome.storage.local.set({bookmarks: []}, () =>{});
-            if(result.steamAPIKey === undefined) chrome.storage.local.set({steamAPIKey: ''}, () =>{});
-            if(result.apiKeyValid === undefined) chrome.storage.local.set({apiKeyValid: false}, () =>{});
-            if(result.showRealStatus === undefined) chrome.storage.local.set({showRealStatus: true}, () =>{});
-            if(result.colorfulItems === undefined) chrome.storage.local.set({colorfulItems: true}, () =>{});
-            if(result.loungeBump === undefined) chrome.storage.local.set({loungeBump: false}, () =>{});
-            if(result.tradersBump === undefined) chrome.storage.local.set({tradersBump: false}, () =>{});
-            if(result.markScammers === undefined) chrome.storage.local.set({markScammers: true}, () =>{});
-            if(result.numberOfListings === undefined) chrome.storage.local.set({numberOfListings: 10}, () =>{});
-            if(result.itemPricing === undefined) chrome.storage.local.set({itemPricing: true}, () =>{});
-            if(result.pricingProvider === undefined) chrome.storage.local.set({pricingProvider: pricingProviders.csgotrader.name},() =>{});
-            if(result.pricingMode === undefined) chrome.storage.local.set({pricingMode: pricingProviders.csgotrader.pricing_modes['csgotrader'].name}, () =>{});
-            if(result.prices === undefined) chrome.storage.local.set({prices: null}, () =>{});
-            if(result.currency === undefined) chrome.storage.local.set({currency: currencies.USD.short}, () =>{});
-            if(result.exchangeRate === undefined) chrome.storage.local.set({exchangeRate: 1.0}, () =>{});
-            if(result.exchangeRates === undefined) chrome.storage.local.set({exchangeRates: null}, () =>{});
-            if(result.hideOtherExtensionPrices === undefined) chrome.storage.local.set({hideOtherExtensionPrices: true}, () =>{});
-            if(result.inventorySortingMode === undefined) chrome.storage.local.set({inventorySortingMode: sortingModes.default.key}, () =>{});
-            if(result.notifyOnUpdate === undefined) chrome.storage.local.set({notifyOnUpdate: false}, () =>{});
-            if(result.offerSortingMode === undefined) chrome.storage.local.set({offerSortingMode: sortingModes.default.key}, () =>{});
-            if(result.switchToOtherInventory === undefined) chrome.storage.local.set({switchToOtherInventory: false}, () =>{});
-            if(result.popupLinks === undefined) chrome.storage.local.set({popupLinks: defaultPopupLinks}, () =>{});
-            if(result.steamIDOfUser === undefined) chrome.storage.local.set({steamIDOfUser: ''}, () =>{});
+        let keysArray = [];
+        for (let key in storageKeys) {keysArray.push(key)}
+
+        chrome.storage.local.get(keysArray, (result) =>{
+            for (let key in storageKeys) { if (result[key] === undefined) chrome.storage.local.set({[key]: storageKeys[key]}, () =>{}) }
         });
 
         chrome.browserAction.setBadgeText({text: 'U'});

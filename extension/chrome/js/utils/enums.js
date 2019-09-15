@@ -19871,3 +19871,38 @@ const defaultPopupLinks = [
 ];
 
 const steamTextFormatingTags = [ '[h1]', '[/h1]', '[b]', '[/b]', '[u]', '[/u]', '[i]', '[/i]', '[strike]', '[/strike]', '[spoiler]', '[/spoiler]', '[noparse]', '[/noparse]', '[url=*]', '[/url]'];
+
+const storageKeys = {
+    quickDeclineOffer: true,
+    openOfferInTab: true,
+    showPlusRepButton: true,
+    reputationMessage: '+rep',
+    showReoccButton: true,
+    reoccuringMessage: 'I don\'t have other accounts. If someone adds you with my name and picture they are scammers.',
+    nsfwFilter: false,
+    flagScamComments: true,
+    bookmarks: [],
+    steamAPIKey: '',
+    apiKeyValid: false,
+    showRealStatus: true,
+    colorfulItems: true,
+    loungeBump: false,
+    tradersBump: false,
+    markScammers: true,
+    numberOfListings: 10,
+    storageMigrated: true,
+    itemPricing: true,
+    pricingProvider: pricingProviders.csgotrader.name,
+    pricingMode: pricingProviders.csgotrader.pricing_modes['csgotrader'].name,
+    prices: null,
+    currency: currencies.USD.short,
+    exchangeRate: 1.0,
+    exchangeRates: null,
+    hideOtherExtensionPrices: true,
+    inventorySortingMode: sortingModes.default.key,
+    notifyOnUpdate: false,
+    offerSortingMode: sortingModes.default.key,
+    switchToOtherInventory: false,
+    popupLinks: defaultPopupLinks,
+    steamIDOfUser: ''
+};
