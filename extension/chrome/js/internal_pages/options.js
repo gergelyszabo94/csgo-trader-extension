@@ -540,7 +540,12 @@ chrome.storage.local.get('bookmarks', (result) =>{
 
     let JSONContent = 'data:application/json,';
 
-    JSONContent += encodeURIComponent(JSON.stringify(result.bookmarks));
+    let bookmarksJSON= {
+      version: 1,
+      bookmarks: result.bookmarks
+    };
+
+    JSONContent += encodeURIComponent(JSON.stringify(bookmarksJSON));
 
     let exportBookmarks = document.getElementById('export_bookmarks');
     exportBookmarks.setAttribute('href', JSONContent);
@@ -585,8 +590,31 @@ importPrefInput.addEventListener('change', event => {
            if(inputAsJSON.preferences.switchToOtherInventory !== undefined) chrome.storage.local.set({switchToOtherInventory: inputAsJSON.preferences.switchToOtherInventory}, () =>{});
            if(inputAsJSON.preferences.popupLinks !== undefined) chrome.storage.local.set({popupLinks: inputAsJSON.preferences.popupLinks}, () =>{});
            if(inputAsJSON.preferences.steamIDOfUser !== undefined) chrome.storage.local.set({steamIDOfUser: inputAsJSON.preferences.steamIDOfUser}, () =>{});
+
+           location.reload();
        }
        else console.log(inputAsJSON.version);
+    });
+    fr.readAsText(file);
+});
+
+//import bookmarks
+
+let importBookmarksInput = document.getElementById('import_bookmarks');
+
+importBookmarksInput.addEventListener('change', event => {
+    let file = event.target.files[0];
+    let fr = new FileReader();
+
+    fr.addEventListener('load', event => {
+        let inputAsJSON = JSON.parse(event.target.result);
+        if (parseInt(inputAsJSON.version) === 1) {
+            inputAsJSON.bookmarks.forEach( (bookmark) => {
+                chrome.runtime.sendMessage({setAlarm: {name:  bookmark.itemInfo.assetid, when: bookmark.notifTime}}, (response) => {location.href = 'bookmarks.html'});
+            });
+            if(inputAsJSON.bookmarks !== undefined) chrome.storage.local.set({bookmarks: inputAsJSON.bookmarks}, ()=>{});
+        }
+        else console.log(inputAsJSON.version);
     });
     fr.readAsText(file);
 });
