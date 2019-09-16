@@ -19890,7 +19890,6 @@ const storageKeys = {
     tradersBump: false,
     markScammers: true,
     numberOfListings: 10,
-    storageMigrated: true,
     itemPricing: true,
     pricingProvider: pricingProviders.csgotrader.name,
     pricingMode: pricingProviders.csgotrader.pricing_modes['csgotrader'].name,
