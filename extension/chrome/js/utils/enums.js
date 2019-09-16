@@ -19906,3 +19906,5 @@ const storageKeys = {
     popupLinks: defaultPopupLinks,
     steamIDOfUser: ''
 };
+
+let nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates'];
