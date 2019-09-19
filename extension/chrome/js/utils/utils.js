@@ -638,9 +638,10 @@ function addCommentsMutationObserver(){
 }
 
 function reportComments(){
-    chrome.storage.local.get('flagScamComments', (result) => {
+    chrome.storage.local.get(['flagScamComments', 'customCommentsToReport'], (result) => {
         if(result.flagScamComments) {
-            let spamTextCheck = new RegExp(commentsToReport.join('|'), 'i');
+            let mergedStringToReport = result.customCommentsToReport.concat(commentsToReport);
+            let spamTextCheck = new RegExp(mergedStringToReport.join('|'), 'i');
 
             document.querySelectorAll('.commentthread_comment.responsive_body_text').forEach(comment => {
                 if (spamTextCheck.test(comment.querySelector('.commentthread_comment_text').innerText) && !comment.classList.contains('hidden_post')){
