@@ -3,53 +3,6 @@ const sapphire = '<img src="https://steamcommunity-a.akamaihd.net/economy/emotic
 const emerald = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/greenjewel" class="gemIcon">';
 const blackPearl = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/lltqjewel" class="gemIcon">';
 
-const commentsToReport = [
-    'free skins CS:GO(100$)',
-    'for all of your csgo graffitties',
-    'CS:GO Cases For Keys',
-    'the amount depends on hours in csgo',
-    'promocode',
-    'gives its users FREE',
-    'for all your graffities and cases',
-    'Your SteamID is selected as winner',
-    'CS:GO CASES = 1 CS:GO KEY',
-    'You are winner on weekly giveaway',
-    'Do you want free skins',
-    'Free skins CS:GO',
-    'replenish your inventory with good skins',
-    'gives its users a Karambit Fade',
-    'this guy in my profile gives his skins',
-    'bot to trade your cases for keys',
-    'join tradeit and take part at promo action there',
-    'Do you want free items for',
-    'Do you want some free skins?',
-    'watch this video and enjoy',
-    'tradeit giveaway about',
-    'Do you want to earn money?',
-    'I want to collect as much graffities as possible',
-    'Hi you can take 50 coins with my promo',
-    'tastyskins',
-    'gives to his users',
-    'I\'m a major csgo playe and I\'ll trade my',
-    'join the GIVEAWAY on gabenskins.pro',
-    'Trade Your Cases For Keys',
-    ' join bloodyskins',
-    '🔴🔴🔴🔴🔴🔴⚪⚪⚪🔴',
-    'asians are crazy',
-    'asian_guy',
-    'Your Steam ID is randomly selected',
-    'get skins which havent even released lol',
-    'TradeSkinsNow.com',
-    'You will never open cs money again',
-    'Dear winner',
-    'Trade Your CS:GO Cases For',
-    'I’m collecting csgo base grade items',
-    'Erotic Streamer',
-    'giveaway',
-    'SKINSRENT.STORE',
-    'skins-market.org'
-];
-
 function getPattern(name, paint_seed){
     if (/ Marble Fade /i.test(name)){
         let pattern = null;
@@ -1075,4 +1028,13 @@ function updateLoggedInUserID(){
 function getItemByAssetID(items, assetIDToFind){
     if (items === undefined || items.length === 0) return null;
     for (let item of items) if (item.assetid === assetIDToFind) return item;
+}
+
+function generateRandomString(length) {
+    let text = "";
+    let allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (let i = 0; i < length; i++) text += allowedChars.charAt(Math.floor(Math.random() * allowedChars.length));
+
+    return text;
 }

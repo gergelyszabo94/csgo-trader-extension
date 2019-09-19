@@ -270,6 +270,79 @@ apikeysave.addEventListener("click", function () {
     });
 });
 
+let customComments = document.getElementById("customCommentsToReportValue");
+let customCommentsPreviousList = document.getElementById("customCommentsToReportPrevious");
+let customCommentsSave = document.getElementById("customCommentsToReportValueSave");
+
+chrome.storage.local.get('customCommentsToReport', (result) => {
+    result.customCommentsToReport.forEach(comment => {
+        let commentListRowDiv = document.createElement('div');
+        let commentListRowElement = document.createElement('span');
+
+        commentListRowElement.innerText = comment.text;
+        commentListRowDiv.appendChild(commentListRowElement);
+
+        let customCommentIDs = [];
+        customCommentIDs.forEach(comment =>{customCommentIDs.push(comment.id)});
+        if(!customCommentIDs.includes(comment.id)) {
+            let removeCommentElement = document.createElement('span');
+            removeCommentElement.innerText = 'Delete';
+            removeCommentElement.classList.add('delete');
+            removeCommentElement.id = comment.id;
+
+            commentListRowDiv.appendChild(removeCommentElement);
+
+            addDeleteClickListener(removeCommentElement);
+        }
+        customCommentsPreviousList.appendChild(commentListRowDiv);
+    });
+});
+
+customCommentsSave.addEventListener('click', () => {
+    chrome.storage.local.get('customCommentsToReport', (result) => {
+        let newCustomComments = result.customCommentsToReport;
+        let generatedID = generateRandomString(32);
+        newCustomComments.push({
+            text: customComments.value,
+            id: generatedID
+        });
+        chrome.storage.local.set({customCommentsToReport: newCustomComments}, () => {
+            let commentListRowDiv = document.createElement('div');
+            let commentListRowElement = document.createElement('span');
+            let removeCommentElement = document.createElement('span');
+
+            commentListRowElement.innerText = customComments.value;
+
+            removeCommentElement.innerText = 'Delete';
+            removeCommentElement.classList.add('delete');
+            removeCommentElement.id = generatedID;
+            addDeleteClickListener(removeCommentElement);
+
+            commentListRowDiv.appendChild(commentListRowElement);
+            commentListRowDiv.appendChild(removeCommentElement);
+
+            customCommentsPreviousList.appendChild(commentListRowDiv);
+
+            customComments.value = '';
+            $('#customCommentsToReportModal').modal('hide');
+        });
+    });
+});
+
+function addDeleteClickListener(element){
+    element.addEventListener('click', (event) =>{
+        chrome.storage.local.get('customCommentsToReport', (result) => {
+            let newCustomComments = [];
+            result.customCommentsToReport.forEach(comment => {
+                    if (comment.id !== event.target.id) newCustomComments.push(comment)
+                }
+            );
+            chrome.storage.local.set({customCommentsToReport: newCustomComments}, () => {event.target.parentNode.parentNode.removeChild(event.target.parentNode)});
+        });
+    });
+}
+
+
 // number inputs
 numberoflistings = document.getElementById("numberOfListings");
 
@@ -396,7 +469,7 @@ inventorySortingSelect.addEventListener("click", function () {
 let offerSortingSelect = document.getElementById("offerSortingMode");
 
 let offerSortingModes = Object.keys(sortingModes);
-for (let modes of inventorySortingModes){
+for (let modes of offerSortingModes){
     let option = document.createElement("option");
     option.value = sortingModes[modes].key;
     option.text = sortingModes[modes].name;
@@ -512,8 +585,8 @@ chrome.storage.local.get('bookmarks', (result) =>{
     let JSONContent = 'data:application/json,';
 
     let bookmarksJSON= {
-      version: 1,
-      bookmarks: result.bookmarks
+        version: 1,
+        bookmarks: result.bookmarks
     };
 
     JSONContent += encodeURIComponent(JSON.stringify(bookmarksJSON));
@@ -531,14 +604,14 @@ importPrefInput.addEventListener('change', event => {
     let fr = new FileReader();
 
     fr.addEventListener('load', event => {
-       let inputAsJSON = JSON.parse(event.target.result);
-       if (parseInt(inputAsJSON.version) === 1) {
-           settingsStorageKeys.forEach(setting => {
-               if (inputAsJSON.preferences[setting] !== undefined) chrome.storage.local.set({[setting]: inputAsJSON.preferences[setting]}, ()=>{});
-           });
-           location.reload();
-       }
-       else console.log(inputAsJSON.version);
+        let inputAsJSON = JSON.parse(event.target.result);
+        if (parseInt(inputAsJSON.version) === 1) {
+            settingsStorageKeys.forEach(setting => {
+                if (inputAsJSON.preferences[setting] !== undefined) chrome.storage.local.set({[setting]: inputAsJSON.preferences[setting]}, ()=>{});
+            });
+            location.reload();
+        }
+        else console.log(inputAsJSON.version);
     });
     fr.readAsText(file);
 });

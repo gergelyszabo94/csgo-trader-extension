@@ -84,6 +84,13 @@
                 <td>Reports obvious scam and spam comments like "I will give my knife for all of your csgo graffitties" and others. Helps to keep steamcommunity cleaner and safer.</td>
             </tr>
             <tr>
+                <td>Your strings to report</td>
+                <td style="text-align:center;">
+                    <a href="#" title="Edit" data-toggle="modal" data-target="#customCommentsToReportModal"><i class="fas fa-edit"></i></a>
+                </td>
+                <td>Make the extension report comments that includes one of the the strings you add here. These are additional to the built-in ones.</td>
+            </tr>
+            <tr>
                 <td>Colorful items</td>
                 <td style="text-align:center;">
                     <label class="switch">
@@ -521,6 +528,30 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="button" id="reoccuringMessageValueSave" class="btn btn-orange" data-dismiss="modal">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="customCommentsToReportModal" tabindex="-1" role="dialog" aria-labelledby="customCommentsToReportModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customCommentsToReportModalLabel">Add or remove your strings to report</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Previously added:
+                <div style="list-style: none;" id="customCommentsToReportPrevious"></div>
+                <!--<ul id="customCommentsToReportPrevious"></ul>-->
+                Add:
+                <textarea class="orangeBox" type="text" id="customCommentsToReportValue"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="customCommentsToReportValueSave" class="btn btn-orange">Save changes</button>
             </div>
         </div>
     </div>
