@@ -299,34 +299,37 @@ chrome.storage.local.get('customCommentsToReport', (result) => {
 });
 
 customCommentsSave.addEventListener('click', () => {
-    chrome.storage.local.get('customCommentsToReport', (result) => {
-        let newCustomComments = result.customCommentsToReport;
-        let generatedID = generateRandomString(32);
-        newCustomComments.push({
-            text: customComments.value,
-            id: generatedID
+    if (customComments.value !== '' && customComments.value !== null){
+        chrome.storage.local.get('customCommentsToReport', (result) => {
+            let newCustomComments = result.customCommentsToReport;
+            let generatedID = generateRandomString(32);
+            newCustomComments.push({
+                text: customComments.value,
+                id: generatedID
+            });
+            chrome.storage.local.set({customCommentsToReport: newCustomComments}, () => {
+                let commentListRowDiv = document.createElement('div');
+                let commentListRowElement = document.createElement('span');
+                let removeCommentElement = document.createElement('span');
+
+                commentListRowElement.innerText = customComments.value;
+
+                removeCommentElement.innerText = 'Delete';
+                removeCommentElement.classList.add('delete');
+                removeCommentElement.id = generatedID;
+                addDeleteClickListener(removeCommentElement);
+
+                commentListRowDiv.appendChild(commentListRowElement);
+                commentListRowDiv.appendChild(removeCommentElement);
+
+                customCommentsPreviousList.appendChild(commentListRowDiv);
+
+                customComments.value = '';
+                $('#customCommentsToReportModal').modal('hide');
+            });
         });
-        chrome.storage.local.set({customCommentsToReport: newCustomComments}, () => {
-            let commentListRowDiv = document.createElement('div');
-            let commentListRowElement = document.createElement('span');
-            let removeCommentElement = document.createElement('span');
-
-            commentListRowElement.innerText = customComments.value;
-
-            removeCommentElement.innerText = 'Delete';
-            removeCommentElement.classList.add('delete');
-            removeCommentElement.id = generatedID;
-            addDeleteClickListener(removeCommentElement);
-
-            commentListRowDiv.appendChild(commentListRowElement);
-            commentListRowDiv.appendChild(removeCommentElement);
-
-            customCommentsPreviousList.appendChild(commentListRowDiv);
-
-            customComments.value = '';
-            $('#customCommentsToReportModal').modal('hide');
-        });
-    });
+    }
+    else $('#customCommentsToReportModal').modal('hide');
 });
 
 function addDeleteClickListener(element){
