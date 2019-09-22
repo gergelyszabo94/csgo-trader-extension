@@ -607,20 +607,21 @@ function addReplytoCommentsFunctionality() {
 
     document.querySelectorAll('.replybutton').forEach(replyButton => {
         // if there was one previously added
-        replyButton.removeEventListener('click', (event ));
+        replyButton.removeEventListener('click', handleReplyToCommentFunctionality);
 
-        replyButton.addEventListener('click', (event) => {
-            console.log(event);
-            let commenterName = event.target.parentNode.parentNode.parentNode.querySelector('.commentthread_author_link').querySelector('bdi').innerHTML.split(' <span class="nickname_block">')[0];
-            let commentTextarea = document.querySelector('.commentthread_textarea');
-            let currentContent = commentTextarea.value;
-
-            if (currentContent === '') commentTextarea.value = `[b]@${commenterName}[/b]: `;
-            else commentTextarea.value = `${currentContent}\n[b]@${commenterName}[/b]: `;
-
-            commentTextarea.focus();
-        });
+        replyButton.addEventListener('click', handleReplyToCommentFunctionality);
     });
+}
+
+function handleReplyToCommentFunctionality(event) {
+    let commenterName = event.target.parentNode.parentNode.parentNode.querySelector('.commentthread_author_link').querySelector('bdi').innerHTML.split(' <span class="nickname_block">')[0];
+    let commentTextarea = document.querySelector('.commentthread_textarea');
+    let currentContent = commentTextarea.value;
+
+    if (currentContent === '') commentTextarea.value = `[b]@${commenterName}[/b]: `;
+    else commentTextarea.value = `${currentContent}\n[b]@${commenterName}[/b]: `;
+
+    commentTextarea.focus();
 }
 
 function addCommentsMutationObserver(){
