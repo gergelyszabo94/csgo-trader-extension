@@ -1,133 +1,14 @@
-//simple checkboxes - toggles
+// simple checkboxes - toggles
 
-let pricing = document.getElementById("itemPricing");
+const simpleBinaryOptions = ['itemPricing', 'markScammers','colorfulItems', 'showRealStatus', 'flagScamComments', 'quickDeclineOffer', 'openOfferInTab', 'showPlusRepButton',
+    'showReoccButton', 'nsfwFilter', 'hideOtherExtensionPrices', 'updateNotifications', 'switchToOtherInventory'];
 
-chrome.storage.local.get('itemPricing', function(result) {
-    pricing.checked = result.itemPricing;
-});
+simpleBinaryOptions.forEach(option => {
+   let optionCheckbox = document.getElementById(option);
 
-pricing.addEventListener("click", function () {
-    chrome.storage.local.set({itemPricing: pricing.checked}, function() {});
-});
+   chrome.storage.local.get(option, (result) => {optionCheckbox.checked = result[option]});
 
-let markscammers = document.getElementById("markScammers");
-
-chrome.storage.local.get('markScammers', function(result) {
-    markscammers.checked = result.markScammers;
-});
-
-markscammers.addEventListener("click", function () {
-    chrome.storage.local.set({markScammers: markscammers.checked}, function() {});
-});
-
-let colorfulitems = document.getElementById("colorfulItems");
-
-chrome.storage.local.get('colorfulItems', function(result) {
-    colorfulitems.checked = result.colorfulItems;
-});
-
-colorfulitems.addEventListener("click", function () {
-    chrome.storage.local.set({colorfulItems: colorfulitems.checked}, function() {});
-});
-
-let showrealstatus = document.getElementById("showRealStatus");
-
-chrome.storage.local.get('showRealStatus', function(result) {
-    showrealstatus.checked = result.showRealStatus;
-});
-
-showrealstatus.addEventListener("click", function () {
-    chrome.storage.local.set({showRealStatus: showrealstatus.checked}, function() {});
-});
-
-let flagcomments = document.getElementById("flagScamComments");
-
-chrome.storage.local.get('flagScamComments', function(result) {
-    flagcomments.checked = result.flagScamComments;
-});
-
-flagcomments.addEventListener("click", function () {
-    chrome.storage.local.set({flagScamComments: flagcomments.checked}, function() {});
-});
-
-let quickdecline = document.getElementById("quickDeclineOffers");
-
-chrome.storage.local.get('quickDeclineOffer', function(result) {
-    quickdecline.checked = result.quickDeclineOffer;
-});
-
-quickdecline.addEventListener("click", function () {
-    chrome.storage.local.set({quickDeclineOffer: quickdecline.checked}, function() {});
-});
-
-let openintab = document.getElementById("openOfferInTab");
-
-chrome.storage.local.get('openOfferInTab', function(result) {
-    openintab.checked = result.openOfferInTab;
-});
-
-openintab.addEventListener("click", function () {
-    chrome.storage.local.set({openOfferInTab: openintab.checked}, function() {});
-});
-
-let showrepbutton = document.getElementById("showPlusRepButton");
-
-chrome.storage.local.get('showPlusRepButton', function(result) {
-    showrepbutton.checked = result.showPlusRepButton;
-});
-
-showrepbutton.addEventListener("click", function () {
-    chrome.storage.local.set({showPlusRepButton: showrepbutton.checked}, function() {});
-});
-
-let showreoccbutton = document.getElementById("showReoccButton");
-
-chrome.storage.local.get('showReoccButton', function(result) {
-    showreoccbutton.checked = result.showReoccButton;
-});
-
-showreoccbutton.addEventListener("click", function () {
-    chrome.storage.local.set({showReoccButton: showreoccbutton.checked}, function() {});
-});
-
-let nsfw = document.getElementById("nsfw");
-
-chrome.storage.local.get('nsfwFilter', function(result) {
-    nsfw.checked = result.nsfwFilter;
-});
-
-nsfw.addEventListener("click", function () {
-    chrome.storage.local.set({nsfwFilter: nsfw.checked}, function() {});
-});
-
-let hideotherprices = document.getElementById("hideOtherExtensionPrices");
-
-chrome.storage.local.get('hideOtherExtensionPrices', function(result) {
-    hideotherprices.checked = result.hideOtherExtensionPrices;
-});
-
-hideotherprices.addEventListener("click", function () {
-    chrome.storage.local.set({hideOtherExtensionPrices: hideotherprices.checked}, function() {});
-});
-
-let updatenotifications = document.getElementById("updateNotifications");
-
-chrome.storage.local.get('updateNotifications', function(result) {
-    updatenotifications.checked = result.updateNotifications;
-});
-
-updatenotifications.addEventListener("click", function () {
-    chrome.storage.local.set({updateNotifications: updatenotifications.checked}, function() {});
-});
-
-let switchToOtherInventory = document.getElementById("switchToOtherInventory");
-
-chrome.storage.local.get('switchToOtherInventory', (result) => {
-    switchToOtherInventory.checked = result.switchToOtherInventory;
-});
-
-switchToOtherInventory.addEventListener("click", () => {
-    chrome.storage.local.set({switchToOtherInventory: switchToOtherInventory.checked}, () => {});
+   optionCheckbox.addEventListener('click', (event) => {chrome.storage.local.set({[event.target.id]: event.target.checked}, () => {})});
 });
 
 // checkboxes - toggles with additional logic
