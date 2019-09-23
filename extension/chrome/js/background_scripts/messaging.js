@@ -119,7 +119,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 duplicates: duplicates[market_hash_name],
                                 owner: owner,
                                 price: price,
-                                type: type
+                                type: type,
+                                floatInfo: null,
+                                patternInfo: null
                             })
                         }
                     }
@@ -242,7 +244,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             }
             else return response.json();
         }).then((body) => {
-            sendResponse({floatInfo: body.iteminfo});
+            if (body.iteminfo.floatvalue !== undefined) sendResponse({floatInfo: body.iteminfo});
+            else sendResponse('error');
         }).catch(err => {
             console.log(err);
             sendResponse('error');

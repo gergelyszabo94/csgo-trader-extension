@@ -311,84 +311,26 @@ function addElements(){
                 setTimeout(() =>{document.querySelectorAll(".float_block").forEach(e => e.parentNode.removeChild(e));}, 1000);
             }
 
-            let inspectLink = item.inspectLink;
-            let float = "";
-            let paintIndex = "";
-            let paintSeed = "";
-            let origin = "";
-            let min = "";
-            let max = "";
-            let stickers = [];
-
-            if(inspectLink !== "" && inspectLink !== undefined){
-                chrome.runtime.sendMessage({getFloatInfo: inspectLink}, (response) =>{
-                    try{
-                        float = response.floatInfo.floatvalue;
-                        paintIndex = response.floatInfo.paintindex;
-                        paintSeed = response.floatInfo.paintseed;
-                        origin = response.floatInfo.origin_name;
-                        min = response.floatInfo.min;
-                        max = response.floatInfo.max;
-                        stickers = response.floatInfo.stickers;
-
-                    }
-                    catch(error){console.log(error)}
-
-                    let floatTechnical = `
-                        <div class="floatTechnical hidden">
-                            Technical:<br>
-                            Float Value: ${float}<br>
-                            Paint Index: ${paintIndex}<br>
-                            Paint Seed: ${paintSeed}<br>
-                            Origin: ${origin}<br>
-                            Best Possible Float: ${min}<br>
-                            Worst Possible Float: ${max}<br>
-                            <br>
-                            Float info from <a href="https://csgofloat.com/" target="_blank">csgofloat.com</a>
-                        </div>`;
-
-                    document.querySelectorAll(".showTechnical").forEach (showTechnical => showTechnical.insertAdjacentHTML("afterend", floatTechnical));
-
-                    let patternInfo =  getPattern(item.market_hash_name, paintSeed);
-                    let position = float.toFixed(2)*100-2;
-                    document.querySelectorAll(".floatToolTip").forEach(floatToolTip => floatToolTip.setAttribute("style", `left: ${position}%`));
-                    document.querySelectorAll(".floatDropTarget").forEach(floatDropTarget => floatDropTarget.innerText = float.toFixed(4));
-
-                    document.querySelectorAll(".patternInfo").forEach(patternInfoElement => {
-                        if(patternInfo !== null){
-                            if(patternInfo.type === "fade"){
-                                patternInfoElement.classList.add("fadeGradient");
-                            }
-                            else if(patternInfo.type === "marble_fade"){
-                                patternInfoElement.classList.add("marbleFadeGradient");
-                            }
-                            else if(patternInfo.type === "case_hardened"){
-                                patternInfoElement.classList.add("caseHardenedGradient");
-                            }
-                            patternInfoElement.innerText = "Pattern: " + patternInfo.value;
+            if (item.floatInfo === null){
+                if(item.inspectLink !== '' && item.inspectLink !== undefined){
+                    chrome.runtime.sendMessage({getFloatInfo: item.inspectLink}, (response) => {
+                        if (response !== 'error'){
+                            setFloatBarWithData(response.floatInfo);
+                            let patternInfo =  getPattern(item.market_hash_name, response.floatInfo.paintSeed);
+                            setPatternInfo(patternInfo);
+                            setStickerInfo(response.floatInfo.stickers);
+                            item.floatInfo = response.floatInfo;
+                            item.patternInfo = patternInfo;
                         }
+                        else hideFloatBars();
                     });
-
-                    // sticker wear to sticker icon tooltip
-                    stickers.forEach((stickerInfo, index) =>{
-                        let wear = 100;
-                        if(stickerInfo.wear !== undefined){
-                            wear =  Math.trunc(Math.abs( 1 - stickerInfo.wear) * 100);
-                        }
-                        document.querySelectorAll(".customStickers").forEach(customStickers => {
-                            let currentSticker = customStickers.querySelectorAll(".stickerSlot")[index];
-                            currentSticker.setAttribute("data-tooltip", stickerInfo.name + " - Condition: " + wear + "%");
-                            currentSticker.querySelector("img").setAttribute("style", `opacity: ${(wear > 10) ? wear/100 : (wear/100) + 0.1}`);
-                        });
-                    });
-
-                    if(float===0){
-                        document.querySelectorAll(".floatBar").forEach(floatBar => floatBar.classList.add("hidden"));
-                    }
-                });
+                }
+                else hideFloatBars();
             }
-            else{
-                document.querySelectorAll(".floatBar").forEach(floatBar => floatBar.classList.add("hidden"));
+            else {
+                setFloatBarWithData(item.floatInfo);
+                setPatternInfo(item.patternInfo);
+                setStickerInfo(item.floatInfo.stickers);
             }
 
             // it takes the visible descriptors and checks if the collection includes souvenirs
@@ -758,6 +700,65 @@ function generateItemsList(){
     document.execCommand('copy');
 
     document.getElementById('generation_result').innerText = `${lineCount} lines (${characterCount} chars) generated and copied to clipboard`;
+}
+
+function setFloatBarWithData(floatInfo){
+    let floatTechnical = `
+                        <div class="floatTechnical hidden">
+                            Technical:<br>
+                            Float Value: ${floatInfo.floatvalue}<br>
+                            Paint Index: ${floatInfo.paintindex}<br>
+                            Paint Seed: ${floatInfo.paintseed}<br>
+                            Origin: ${floatInfo.origin_name}<br>
+                            Best Possible Float: ${floatInfo.min}<br>
+                            Worst Possible Float: ${floatInfo.max}<br>
+                            <br>
+                            Float info from <a href="https://csgofloat.com/" target="_blank">csgofloat.com</a>
+                        </div>`;
+
+    document.querySelectorAll('.showTechnical').forEach (showTechnical => showTechnical.insertAdjacentHTML('afterend', floatTechnical));
+
+    let position = floatInfo.floatvalue.toFixed(2)*100-2;
+    document.querySelectorAll('.floatToolTip').forEach(floatToolTip => floatToolTip.setAttribute('style', `left: ${position}%`));
+    document.querySelectorAll('.floatDropTarget').forEach(floatDropTarget => floatDropTarget.innerText = floatInfo.floatvalue.toFixed(4));
+
+    if(floatInfo.floatvalue === 0) hideFloatBars();
+}
+
+function setPatternInfo(patternInfo){
+    document.querySelectorAll('.patternInfo').forEach(patternInfoElement => {
+        if(patternInfo !== null){
+            if(patternInfo.type === 'fade'){
+                patternInfoElement.classList.add('fadeGradient');
+            }
+            else if(patternInfo.type === 'marble_fade'){
+                patternInfoElement.classList.add('marbleFadeGradient');
+            }
+            else if(patternInfo.type === 'case_hardened'){
+                patternInfoElement.classList.add('caseHardenedGradient');
+            }
+            patternInfoElement.innerText = `Pattern: ${patternInfo.value}`;
+        }
+    });
+}
+
+function setStickerInfo(stickers){
+    // sticker wear to sticker icon tooltip
+    stickers.forEach((stickerInfo, index) =>{
+        let wear = 100;
+        if(stickerInfo.wear !== undefined){
+            wear =  Math.trunc(Math.abs( 1 - stickerInfo.wear) * 100);
+        }
+        document.querySelectorAll('.customStickers').forEach(customStickers => {
+            let currentSticker = customStickers.querySelectorAll('.stickerSlot')[index];
+            currentSticker.setAttribute('data-tooltip', `${stickerInfo.name} - Condition: ${wear}%`);
+            currentSticker.querySelector('img').setAttribute('style', `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`);
+        });
+    });
+}
+
+function hideFloatBars(){
+    document.querySelectorAll('.floatBar').forEach(floatBar => floatBar.classList.add('hidden'));
 }
 
 // reloads the page on extension update/reload/uninstall

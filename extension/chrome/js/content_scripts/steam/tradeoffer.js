@@ -304,7 +304,9 @@ function buildInventoryStructure(inventory) {
             nametag: nametag,
             duplicates: duplicates[item.market_hash_name],
             owner: item.owner,
-            type: type
+            type: type,
+            floatInfo: null,
+            patternInfo: null
         })
     });
 
