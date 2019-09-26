@@ -605,11 +605,12 @@ function updateSelectedValue(){
 function unselectAllItems() {document.querySelectorAll('.item.app730.context2').forEach(item => {item.classList.remove('selected')})}
 
 function sortItems(items, method) {
-
-    let itemElements = document.querySelectorAll('.item.app730.context2');
-    let inventoryPages = document.getElementById('inventories').querySelectorAll('.inventory_page');
-    doTheSorting(items, Array.from(itemElements), method, Array.from(inventoryPages), 'inventory');
-    addPerItemInfo(false);
+    if (isCSGOInventoryActive('inventory')){
+        let itemElements = document.querySelectorAll('.item.app730.context2');
+        let inventoryPages = document.getElementById('inventories').querySelectorAll('.inventory_page');
+        doTheSorting(items, Array.from(itemElements), method, Array.from(inventoryPages), 'inventory');
+        addPerItemInfo(false);
+    }
 }
 
 function loadFullInventory() {
