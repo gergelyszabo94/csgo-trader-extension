@@ -95,8 +95,8 @@ function overrideHandleTradeActionMenu(){
                     if(rgAction.name==="getfloat"){
                         elNewAction.attr("data-assetid", item.id );
                     }
-        
-                    if ( rgAction.link.substr( 0, 6 ) != "steam:" )
+                    
+                    if ( rgAction.link.substr( 0, 6 ) != "steam:" && rgAction.link.substr( 0, 37 ) != "javascript:sendMessageToContentScript")
                     {
                         elNewAction.attr( 'target', '_blank' );
                         elNewAction.attr( 'rel', 'noreferrer' );
