@@ -135,20 +135,16 @@ function getInventories(){
         let yourBuiltInventory = buildInventoryStructure(yourInventory);
         let theirBuiltInventory = buildInventoryStructure(theirInventory);
 
-        chrome.runtime.sendMessage({addPricesToInventory: yourBuiltInventory}, function(response) {
+        chrome.runtime.sendMessage({addPricesToInventory: yourBuiltInventory}, (response) => {
             let yourInventoryWithPrices = response.addPricesToInventory;
-            chrome.runtime.sendMessage({addPricesToInventory: theirBuiltInventory}, function(response) {
+            chrome.runtime.sendMessage({addPricesToInventory: theirBuiltInventory}, (response) => {
                 let theirInventoryWithPrices = response.addPricesToInventory;
-                for (let assetid in yourInventoryWithPrices){
-                    combinedInventories.push(yourInventoryWithPrices[assetid])
-                }
-                for (let assetid in theirInventoryWithPrices){
-                    combinedInventories.push(theirInventoryWithPrices[assetid])
-                }
+                for (let assetid in yourInventoryWithPrices) combinedInventories.push(yourInventoryWithPrices[assetid]);
+                for (let assetid in theirInventoryWithPrices) combinedInventories.push(theirInventoryWithPrices[assetid]);
                 addItemInfo();
                 addInventoryTotals(yourInventoryWithPrices, theirInventoryWithPrices);
-                addInTradeTotals("your");
-                addInTradeTotals("their");
+                addInTradeTotals('your');
+                addInTradeTotals('their');
                 periodicallyUpdateTotals();
                 doInitSorting();
             });
@@ -165,8 +161,8 @@ updateLoggedInUserID();
 // changes background and adds a banner if steamrep banned scammer detected
 chrome.storage.local.get('markScammers', result => {if(result.markScammers) warnOfScammer(getTradePartnerSteamID(), 'offer')});
 
-//this script gets injected, it allows communication between the page context and the content script initiated on the page
-//when the function is called it dispatches a an event that we listen to from the content script
+// this script gets injected, it allows communication between the page context and the content script initiated on the page
+// when the function is called it dispatches a an event that we listen to from the content script
 let sendMessageToContentScript = `
     function sendMessageToContentScript(message){
         let event = new CustomEvent('message', { 'detail': message });
@@ -182,6 +178,10 @@ document.querySelectorAll('.inventory_user_tab').forEach( (inventoryTab) => {
         let sortingSelect = document.getElementById('offer_sorting_mode');
         sortItems(sortingSelect.options[sortingSelect.selectedIndex].value, 'offer');
     })
+});
+
+document.getElementById('appselect').addEventListener('click', () => {
+    setTimeout( () => {if (isCSGOInventoryActive()) addItemInfo()}, 2000);
 });
 
 document.addEventListener('message', (e) => {
@@ -363,7 +363,7 @@ function addInTradeTotals(whose){
 function periodicallyUpdateTotals(){setInterval(() => {if (!document.hidden) addInTradeTotals('your'); addInTradeTotals('their')}, 1000)}
 
 function sortItems(method, type) {
-    if (document.getElementById('appselect_activeapp').querySelector('img').src.includes('/730/')){ // if CS:GO is selected - active
+    if (isCSGOInventoryActive()){
         if (type === 'offer'){
             let activeInventory = getActiveInventory();
 
@@ -556,6 +556,11 @@ function addAPartysFunctionBar(whose){
             removeLeftOverSlots();
         });
     });
+}
+
+// if CS:GO is selected - active
+function isCSGOInventoryActive() {
+    return document.getElementById('appselect_activeapp').querySelector('img').src.includes('/730/');
 }
 
 let theirInventoryTab = document.getElementById('inventory_select_their_inventory');
