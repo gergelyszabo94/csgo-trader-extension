@@ -1041,6 +1041,10 @@ function generateRandomString(length) {
     return text;
 }
 
-function getAssetIDFromInspectLink(inspectLink) {
-    return inspectLink.split('A')[1].split('D')[0];
+function getAssetIDFromInspectLink(inspectLink) {return inspectLink.split('A')[1].split('D')[0]}
+
+// if CS:GO is selected - active
+function isCSGOInventoryActive(where) {
+    if (where === 'offer') return document.getElementById('appselect_activeapp').querySelector('img').src.includes('/730/');
+    else if (where === 'inventory') return document.querySelector('.games_list_tab.active').getAttribute('href') === '#730';
 }

@@ -181,7 +181,7 @@ document.querySelectorAll('.inventory_user_tab').forEach( (inventoryTab) => {
 });
 
 document.getElementById('appselect').addEventListener('click', () => {
-    setTimeout( () => {if (isCSGOInventoryActive()) addItemInfo()}, 2000);
+    setTimeout( () => {if (isCSGOInventoryActive('offer')) addItemInfo()}, 2000);
 });
 
 document.addEventListener('message', (e) => {
@@ -363,7 +363,7 @@ function addInTradeTotals(whose){
 function periodicallyUpdateTotals(){setInterval(() => {if (!document.hidden) addInTradeTotals('your'); addInTradeTotals('their')}, 1000)}
 
 function sortItems(method, type) {
-    if (isCSGOInventoryActive()){
+    if (isCSGOInventoryActive('offer')){
         if (type === 'offer'){
             let activeInventory = getActiveInventory();
 
@@ -556,11 +556,6 @@ function addAPartysFunctionBar(whose){
             removeLeftOverSlots();
         });
     });
-}
-
-// if CS:GO is selected - active
-function isCSGOInventoryActive() {
-    return document.getElementById('appselect_activeapp').querySelector('img').src.includes('/730/');
 }
 
 let theirInventoryTab = document.getElementById('inventory_select_their_inventory');

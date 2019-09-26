@@ -201,7 +201,7 @@ let countDownID = '';
 
 function addElements(){
     // only add elements if the CS:GO inventory is the active one
-    if(document.querySelector(".games_list_tab.active").getAttribute("href") === "#730"){
+    if(isCSGOInventoryActive('inventory')){
         let activeID = undefined;
         try {activeID = getAssetIDofActive()}
         catch (e) { console.log("Could not get assetID of active item"); return false}
@@ -605,6 +605,7 @@ function updateSelectedValue(){
 function unselectAllItems() {document.querySelectorAll('.item.app730.context2').forEach(item => {item.classList.remove('selected')})}
 
 function sortItems(items, method) {
+
     let itemElements = document.querySelectorAll('.item.app730.context2');
     let inventoryPages = document.getElementById('inventories').querySelectorAll('.inventory_page');
     doTheSorting(items, Array.from(itemElements), method, Array.from(inventoryPages), 'inventory');
