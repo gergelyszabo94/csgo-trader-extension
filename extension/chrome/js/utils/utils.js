@@ -1040,3 +1040,7 @@ function generateRandomString(length) {
 
     return text;
 }
+
+function getAssetIDFromInspectLink(inspectLink) {
+    return inspectLink.split('A')[1].split('D')[0];
+}

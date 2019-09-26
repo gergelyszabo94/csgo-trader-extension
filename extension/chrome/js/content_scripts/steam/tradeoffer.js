@@ -184,16 +184,24 @@ document.querySelectorAll('.inventory_user_tab').forEach( (inventoryTab) => {
     })
 });
 
-document.addEventListener('message', (e) => {addFloatIndicator(e.detail)});
+document.addEventListener('message', (e) => {
+    let inspectLink = e.detail;
+    let assetID = getAssetIDFromInspectLink(inspectLink);
+    let itemElementToAddFloatTo = findElementByAssetID(assetID);
+    let item = getItemByAssetID(combinedInventories, assetID);
+    if (item.floatInfo === null){
+        chrome.runtime.sendMessage({getFloatInfo: inspectLink}, (response) => {
+            if (response !== 'error'){
+                item.floatInfo = response.floatInfo;
+                addFloatIndicator(itemElementToAddFloatTo, item.floatInfo);
+            }
+        });
+    }
+    else addFloatIndicator(itemElementToAddFloatTo, item.floatInfo);
+});
 
-function addFloatIndicator(inspectLink) {
-    chrome.runtime.sendMessage({getFloatInfo: inspectLink}, (response) => {
-        let float = 'Waiting for csgofloat.com';
-        try{float = response.floatInfo.floatvalue}
-        catch{}
-        let itemToAddFloatTo = findElementByAssetID(inspectLink.split('A')[1].split('D')[0]);
-        itemToAddFloatTo.insertAdjacentHTML('beforeend', `<span class='floatIndicator'>${float.toFixed(4)}</span>`);
-    });
+function addFloatIndicator(itemElement, floatInfo) {
+    itemElement.insertAdjacentHTML('beforeend', `<span class='floatIndicator'>${floatInfo.floatvalue.toFixed(4)}</span>`);
 }
 
 function findElementByAssetID(assetID){ return document.getElementById(`item730_2_${assetID}`)}
