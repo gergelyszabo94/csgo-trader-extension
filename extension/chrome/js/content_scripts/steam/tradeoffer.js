@@ -363,19 +363,21 @@ function addInTradeTotals(whose){
 function periodicallyUpdateTotals(){setInterval(() => {if (!document.hidden) addInTradeTotals('your'); addInTradeTotals('their')}, 1000)}
 
 function sortItems(method, type) {
-    if (type === 'offer'){
-        let activeInventory = getActiveInventory();
+    if (document.getElementById('appselect_activeapp').querySelector('img').src.includes('/730/')){ // if CS:GO is selected - active
+        if (type === 'offer'){
+            let activeInventory = getActiveInventory();
 
-        let items = activeInventory.querySelectorAll('.item.app730.context2');
-        let offerPages = activeInventory.querySelectorAll('.inventory_page');
-        doTheSorting(combinedInventories, Array.from(items), method, offerPages, type);
-    }
-    else {
-        let items = document.getElementById(`trade_${type}s`).querySelectorAll('.item.app730.context2');
-        doTheSorting(combinedInventories, Array.from(items), method, document.getElementById(`${type}_slots`), type);
-    }
+            let items = activeInventory.querySelectorAll('.item.app730.context2');
+            let offerPages = activeInventory.querySelectorAll('.inventory_page');
+            doTheSorting(combinedInventories, Array.from(items), method, offerPages, type);
+        }
+        else {
+            let items = document.getElementById(`trade_${type}s`).querySelectorAll('.item.app730.context2');
+            doTheSorting(combinedInventories, Array.from(items), method, document.getElementById(`${type}_slots`), type);
+        }
 
-    loadAllItemsProperly();
+        loadAllItemsProperly();
+    }
 }
 
 // forces steam to load the item images
