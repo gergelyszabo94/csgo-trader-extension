@@ -86,7 +86,7 @@ injectToPage(getItems, false, 'getItems');
 MutationObserver = window.MutationObserver;
 
 let observer = new MutationObserver(() => {
-    if (document.querySelector('.games_list_tab.active').getAttribute('href') === '#730'){
+    if (isCSGOInventoryActive('inventory')){
         addElements();
         addFunctionBar();
     }
