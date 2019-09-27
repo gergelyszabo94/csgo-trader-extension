@@ -180,9 +180,13 @@ document.querySelectorAll('.inventory_user_tab').forEach( (inventoryTab) => {
     })
 });
 
-document.getElementById('appselect').addEventListener('click', () => {
-    setTimeout( () => {if (isCSGOInventoryActive('offer')) addItemInfo()}, 2000);
-});
+let inventorySelector = document.getElementById('appselect');
+if (inventorySelector !== null) {
+    document.getElementById('appselect').addEventListener('click', () => {
+        setTimeout( () => {if (isCSGOInventoryActive('offer')) addItemInfo()}, 2000);
+    });
+}
+
 
 document.addEventListener('message', (e) => {
     let inspectLink = e.detail;
