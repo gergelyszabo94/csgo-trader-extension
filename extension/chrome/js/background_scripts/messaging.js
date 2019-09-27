@@ -234,21 +234,31 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
     else if (request.getFloatInfo !== undefined) {
         let inspectLink = request.getFloatInfo;
+        let assetID = getAssetIDFromInspectLink(inspectLink);
+        chrome.storage.local.get('floatCache', (result) => {
+            if (result.floatCache[assetID] !== undefined) sendResponse({floatInfo: result.floatCache[assetID]});
+            else {
+                let getRequest = new Request(`https://api.csgofloat.com/?url=${inspectLink}`);
 
-        let getRequest = new Request(`https://api.csgofloat.com/?url=${inspectLink}`);
-
-        fetch(getRequest).then((response) => {
-            if (!response.ok) {
-                sendResponse('error');
-                console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+                fetch(getRequest).then((response) => {
+                    if (!response.ok) {
+                        sendResponse('error');
+                        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+                    }
+                    else return response.json();
+                }).then((body) => {
+                    if (body.iteminfo.floatvalue !== undefined) {
+                        let newFloatCache = result.floatCache;
+                        newFloatCache[assetID] = body.iteminfo;
+                        chrome.storage.local.set({floatCache: newFloatCache}, ()=>{});
+                        sendResponse({floatInfo: body.iteminfo});
+                    }
+                    else sendResponse('error');
+                }).catch(err => {
+                    console.log(err);
+                    sendResponse('error');
+                });
             }
-            else return response.json();
-        }).then((body) => {
-            if (body.iteminfo.floatvalue !== undefined) sendResponse({floatInfo: body.iteminfo});
-            else sendResponse('error');
-        }).catch(err => {
-            console.log(err);
-            sendResponse('error');
         });
         return true; // async return to signal that it will return later
     }

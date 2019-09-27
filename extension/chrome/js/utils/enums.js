@@ -19904,10 +19904,11 @@ const storageKeys = {
     switchToOtherInventory: false,
     popupLinks: defaultPopupLinks,
     steamIDOfUser: '',
-    customCommentsToReport: []
+    customCommentsToReport: [],
+    floatCache: {}
 };
 
-const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates'];
+const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'floatCache'];
 
 const commentsToReport = [
     'free skins CS:GO(100$)',
