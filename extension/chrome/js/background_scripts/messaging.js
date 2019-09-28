@@ -1,6 +1,6 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.inventory !== undefined) {
-        chrome.storage.local.get(['itemPricing', 'prices', 'currency', 'exchangeRate', 'pricingProvider'], (result) => {
+        chrome.storage.local.get(['itemPricing', 'prices', 'currency', 'exchangeRate', 'pricingProvider', 'floatCache'], (result) => {
             let prices = result.prices;
             let steamID = request.inventory;
 
@@ -18,6 +18,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                 let itemsPropertiesToReturn = [];
                 let duplicates = {};
+                let floatCacheAssetIDs = [];
 
 
                 // counts duplicates
@@ -42,7 +43,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         }
                     }
                 }
-
                 for (let asset in ids) {
                     let assetid = ids[asset].id;
                     let position = ids[asset].pos;
@@ -70,6 +70,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             let owner = steamID;
                             let price = null;
                             let type = getType(items[item].tags);
+                            let floatInfo = null;
+                            if (result.floatCache[assetid] !== undefined) {
+                                floatInfo = result.floatCache[assetid].floatInfo;
+                                floatCacheAssetIDs.push(assetid);
+                            }
+                            let patternInfo = floatInfo !== null ? getPattern(market_hash_name, floatInfo.paintSeed) : null;
 
                             if (result.itemPricing) price = getPrice(market_hash_name, dopplerInfo, prices, result.pricingProvider, result.exchangeRate, result.currency);
                             else{price = {price: '', display: ''}}
@@ -120,13 +126,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 owner: owner,
                                 price: price,
                                 type: type,
-                                floatInfo: null,
-                                patternInfo: null
+                                floatInfo: floatInfo,
+                                patternInfo: patternInfo
                             })
                         }
                     }
                 }
                 sendResponse({inventory: itemsPropertiesToReturn.sort((a, b) => { return a.position - b.position})});
+                updateFloatCache(result.floatCache, floatCacheAssetIDs);
             }).catch(err => {
                     console.log(err);
                     sendResponse({inventory: 'error'});
@@ -236,6 +243,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         let inspectLink = request.getFloatInfo;
         let assetID = getAssetIDFromInspectLink(inspectLink);
         chrome.storage.local.get('floatCache', (result) => {
+            console.log(result.floatCache);
             if (result.floatCache[assetID] !== undefined) {
                 updateFloatCache(result.floatCache, assetID);
                 sendResponse({floatInfo: result.floatCache[assetID].floatInfo});

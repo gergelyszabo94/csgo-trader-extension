@@ -1057,22 +1057,31 @@ function extractUsefulFloatInfo(floatInfo) {
         origin_name: floatInfo.origin_name,
         min: floatInfo.min,
         max: floatInfo.max,
-        stickers: floatInfo.sticker
+        stickers: floatInfo.sticker !== undefined ? floatInfo.sticker : null
     };
 }
 
-function updateFloatCache(floatCache, assetID, floatInfo) {
-    if (floatCache[assetID] === undefined) { // if not in cache at all, adding it
-        floatCache[assetID] = {
-            floatInfo: floatInfo,
-            added: Date.now(),
-            lastUsed: Date.now(),
-            used: 0
+function updateFloatCache(floatCache, assetIDs, floatInfo) {
+    if (typeof assetIDs !== 'object') {
+        let assetID = assetIDs;
+        assetIDs = [];
+        assetIDs.push(assetID);
+    }
+
+    assetIDs.forEach((assetID) => {
+        if (floatCache[assetID] === undefined && assetID !== '') { // if not in cache at all, adding it
+            floatCache[assetID] = {
+                floatInfo: floatInfo,
+                added: Date.now(),
+                lastUsed: Date.now(),
+                used: 0
+            }
         }
-    }
-    else { // update cache
-        floatCache[assetID].lastUsed = Date.now();
-        floatCache[assetID].used = floatCache[assetID].used + 1;
-    }
+        else{ // update cache
+            floatCache[assetID].lastUsed = Date.now();
+            floatCache[assetID].used = floatCache[assetID].used + 1;
+        }
+    });
+
     chrome.storage.local.set({floatCache: floatCache}, ()=>{});
 }

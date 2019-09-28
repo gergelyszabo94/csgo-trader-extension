@@ -747,7 +747,7 @@ function setPatternInfo(patternInfo){
 
 // sticker wear to sticker icon tooltip
 function setStickerInfo(stickers){
-    if (stickers !== null && stickers !== undefined) {
+    if (stickers !== null) {
         stickers.forEach((stickerInfo, index) =>{
             let wear = 100;
             if(stickerInfo.wear !== undefined){
