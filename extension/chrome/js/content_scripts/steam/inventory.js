@@ -745,19 +745,21 @@ function setPatternInfo(patternInfo){
     });
 }
 
+// sticker wear to sticker icon tooltip
 function setStickerInfo(stickers){
-    // sticker wear to sticker icon tooltip
-    stickers.forEach((stickerInfo, index) =>{
-        let wear = 100;
-        if(stickerInfo.wear !== undefined){
-            wear =  Math.trunc(Math.abs( 1 - stickerInfo.wear) * 100);
-        }
-        document.querySelectorAll('.customStickers').forEach(customStickers => {
-            let currentSticker = customStickers.querySelectorAll('.stickerSlot')[index];
-            currentSticker.setAttribute('data-tooltip', `${stickerInfo.name} - Condition: ${wear}%`);
-            currentSticker.querySelector('img').setAttribute('style', `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`);
+    if (stickers !== null && stickers !== undefined) {
+        stickers.forEach((stickerInfo, index) =>{
+            let wear = 100;
+            if(stickerInfo.wear !== undefined){
+                wear =  Math.trunc(Math.abs( 1 - stickerInfo.wear) * 100);
+            }
+            document.querySelectorAll('.customStickers').forEach(customStickers => {
+                let currentSticker = customStickers.querySelectorAll('.stickerSlot')[index];
+                currentSticker.setAttribute('data-tooltip', `${stickerInfo.name} - Condition: ${wear}%`);
+                currentSticker.querySelector('img').setAttribute('style', `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`);
+            });
         });
-    });
+    }
 }
 
 function hideFloatBars(){
