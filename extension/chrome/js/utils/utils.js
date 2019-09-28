@@ -1048,3 +1048,15 @@ function isCSGOInventoryActive(where) {
     if (where === 'offer') return document.getElementById('appselect_activeapp').querySelector('img').src.includes('/730/');
     else if (where === 'inventory') return document.querySelector('.games_list_tab.active').getAttribute('href') === '#730';
 }
+
+function extractUsefulFloatInfo(floatInfo) {
+    return {
+        floatvalue: floatInfo.floatvalue,
+        paintindex: floatInfo.paintindex,
+        paintseed: floatInfo.paintseed,
+        origin_name: floatInfo.origin_name,
+        min: floatInfo.min,
+        max: floatInfo.max,
+        stickers: floatInfo.sticker
+    };
+}

@@ -315,11 +315,12 @@ function addElements(){
                 if(item.inspectLink !== '' && item.inspectLink !== undefined){
                     chrome.runtime.sendMessage({getFloatInfo: item.inspectLink}, (response) => {
                         if (response !== 'error'){
-                            setFloatBarWithData(response.floatInfo);
-                            let patternInfo =  getPattern(item.market_hash_name, response.floatInfo.paintSeed);
+                            let usefulFloatInfo = extractUsefulFloatInfo(response.floatInfo);
+                            setFloatBarWithData(usefulFloatInfo);
+                            let patternInfo =  getPattern(item.market_hash_name, usefulFloatInfo.paintSeed);
                             setPatternInfo(patternInfo);
-                            setStickerInfo(response.floatInfo.stickers);
-                            item.floatInfo = response.floatInfo;
+                            setStickerInfo(usefulFloatInfo.stickers);
+                            item.floatInfo = usefulFloatInfo;
                             item.patternInfo = patternInfo;
                         }
                         else hideFloatBars();

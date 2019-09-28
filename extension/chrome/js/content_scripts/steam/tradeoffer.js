@@ -196,7 +196,7 @@ document.addEventListener('message', (e) => {
     if (item.floatInfo === null){
         chrome.runtime.sendMessage({getFloatInfo: inspectLink}, (response) => {
             if (response !== 'error'){
-                item.floatInfo = response.floatInfo;
+                item.floatInfo = extractUsefulFloatInfo(response.floatInfo);
                 addFloatIndicator(itemElementToAddFloatTo, item.floatInfo);
             }
         });

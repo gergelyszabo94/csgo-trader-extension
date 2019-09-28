@@ -248,10 +248,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     else return response.json();
                 }).then((body) => {
                     if (body.iteminfo.floatvalue !== undefined) {
+                        let usefulFloatInfo = extractUsefulFloatInfo(body.iteminfo);
                         let newFloatCache = result.floatCache;
-                        newFloatCache[assetID] = body.iteminfo;
+                        newFloatCache[assetID] = usefulFloatInfo;
                         chrome.storage.local.set({floatCache: newFloatCache}, ()=>{});
-                        sendResponse({floatInfo: body.iteminfo});
+                        sendResponse({floatInfo: usefulFloatInfo});
                     }
                     else sendResponse('error');
                 }).catch(err => {
