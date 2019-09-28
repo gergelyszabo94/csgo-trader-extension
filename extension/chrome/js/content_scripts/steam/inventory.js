@@ -312,6 +312,7 @@ function addElements(){
                             setStickerInfo(usefulFloatInfo.stickers);
                             item.floatInfo = usefulFloatInfo;
                             item.patternInfo = patternInfo;
+                            addFloatIndicator(findElementByAssetID(item.assetid), item.floatInfo);
                         }
                         else hideFloatBars();
                     });
@@ -322,6 +323,7 @@ function addElements(){
                 setFloatBarWithData(item.floatInfo);
                 setPatternInfo(item.patternInfo);
                 setStickerInfo(item.floatInfo.stickers);
+                addFloatIndicator(findElementByAssetID(item.assetid), item.floatInfo);
             }
 
             // it takes the visible descriptors and checks if the collection includes souvenirs
@@ -755,6 +757,8 @@ function setStickerInfo(stickers){
 function hideFloatBars(){
     document.querySelectorAll('.floatBar').forEach(floatBar => floatBar.classList.add('hidden'));
 }
+
+function findElementByAssetID(assetID){ return document.getElementById(`730_2_${assetID}`)}
 
 // reloads the page on extension update/reload/uninstall
 chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});
