@@ -1060,3 +1060,19 @@ function extractUsefulFloatInfo(floatInfo) {
         stickers: floatInfo.sticker
     };
 }
+
+function updateFloatCache(floatCache, assetID, floatInfo) {
+    if (floatCache[assetID] === undefined) { // if not in cache at all, adding it
+        floatCache[assetID] = {
+            floatInfo: floatInfo,
+            added: Date.now(),
+            lastUsed: Date.now(),
+            used: 0
+        }
+    }
+    else { // update cache
+        floatCache[assetID].lastUsed = Date.now();
+        floatCache[assetID].used = floatCache[assetID].used + 1;
+    }
+    chrome.storage.local.set({floatCache: floatCache}, ()=>{});
+}
