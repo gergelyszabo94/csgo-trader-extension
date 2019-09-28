@@ -1085,3 +1085,31 @@ function updateFloatCache(floatCache, assetIDs, floatInfo) {
 
     chrome.storage.local.set({floatCache: floatCache}, ()=>{});
 }
+
+function addFloatIndicator(itemElement, floatInfo){
+    if (floatInfo !== null) {
+        itemElement.insertAdjacentHTML('beforeend', `<div class="floatIndicator">${floatInfo.floatvalue.toFixed(4)}</div>`);
+    }
+}
+
+function addPriceIndicator(itemElement, priceInfo) {
+    if(priceInfo !== undefined && priceInfo !== 'null' && priceInfo !== null) {
+        itemElement.insertAdjacentHTML('beforeend', `<div class='priceIndicator'>${priceInfo.display}</div>`);
+    }
+}
+
+// adds StatTrak, Souvenir and exterior indicators
+function addSSTandExtIndicators(itemElement, item) {
+    let stattrak = item.isStatrack ? 'ST' : '';
+    let souvenir = item.isSouvenir ? 'S' : '';
+    let exterior = item.exterior !== undefined ? item.exterior.localized_short : '';
+
+    itemElement.insertAdjacentHTML('beforeend', `<div class='exteriorSTInfo'><span class="souvenirYellow">${souvenir}</span><span class="stattrakOrange">${stattrak}</span><span class="exteriorIndicator">${exterior}</span></div>`);
+}
+
+function makeItemColorful(itemElement, item, colorfulItemsEnabled) {
+    if(colorfulItemsEnabled){
+        if (item.dopplerInfo !== undefined) itemElement.setAttribute('style', `background-image: url(); background-color: #${item.dopplerInfo.color}`);
+        else itemElement.setAttribute('style', `background-image: url(); background-color: ${item.quality.backgroundcolor}; border-color: ${item.quality.backgroundcolor}`);
+    }
+}

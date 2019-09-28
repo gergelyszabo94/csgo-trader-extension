@@ -168,22 +168,12 @@ function addPerItemInfo(updating){
                             else if (item.tradability !== 'Not Tradable')  itemElement.insertAdjacentHTML('beforeend', `<div class="perItemDate not_tradable">${item.tradabilityShort}</div>`);
 
                             addDopplerPhase(itemElement, item.dopplerInfo);
+                            makeItemColorful(itemElement, item, result.colorfulItems);
+                            addSSTandExtIndicators(itemElement, item);
+                            addPriceIndicator(itemElement, item.price);
+                            addFloatIndicator(itemElement, item.floatInfo);
 
-                            // changes colors if feature enabled
-                            if(result.colorfulItems){
-                                if (item.dopplerInfo !== undefined) itemElement.setAttribute('style', `background-image: url(); background-color: #${item.dopplerInfo.color}`);
-                                else itemElement.setAttribute('style', `background-image: url(); background-color: ${item.quality.backgroundcolor}; border-color: ${item.quality.backgroundcolor}`);
-                            }
-
-                            let stattrak = item.isStatrack ? 'ST' : '';
-                            let souvenir = item.isSouvenir ? 'S' : '';
-                            let exterior = item.exterior !== undefined ? item.exterior.localized_short : '';
-
-                            // adds StatTrak, Souvenir and exterior indicators
-                            itemElement.insertAdjacentHTML('beforeend', `<div class='exteriorSTInfo'><span class="souvenirYellow">${souvenir}</span><span class="stattrakOrange">${stattrak}</span><span class="exteriorIndicator">${exterior}</span></div>`);
-
-                            // adds price
-                            if(item.price !== undefined && item.price !== "null" && item.price !== null) itemElement.insertAdjacentHTML('beforeend', `<div class='priceIndicator'>${item.price.display}</div>`);
+                            // marks the item "processed" to avoid additional unnecessary work later
                             itemElement.setAttribute('data-processed', 'true');
                         }
                     }
@@ -317,7 +307,7 @@ function addElements(){
                         if (response !== 'error'){
                             let usefulFloatInfo = extractUsefulFloatInfo(response.floatInfo);
                             setFloatBarWithData(usefulFloatInfo);
-                            let patternInfo =  getPattern(item.market_hash_name, usefulFloatInfo.paintSeed);
+                            let patternInfo =  getPattern(item.market_hash_name, usefulFloatInfo.paintseed);
                             setPatternInfo(patternInfo);
                             setStickerInfo(usefulFloatInfo.stickers);
                             item.floatInfo = usefulFloatInfo;

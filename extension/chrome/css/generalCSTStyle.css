@@ -229,12 +229,16 @@ progress {
 }
 
 .floatIndicator{
-    color: white;
-    font-size: 0.8rem;
+    /*color: white;*/
+    color: #b3cae8;
+    /*font-size: 0.8rem;*/
+    font-size: 0.6rem;
     position: absolute;
-    top: 0;
-    left: 0;
-    margin-top: 5px;
+    /*top: 0;*/
+    /*left: 0;*/
+    bottom: 20px;
+    margin-bottom: 0;
+    /*margin-top: 5px;*/
     margin-left: 5px;
 }
 

@@ -154,11 +154,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
     else if (request.addPricesToInventory !== undefined){
         let inventory = request.addPricesToInventory;
-        chrome.storage.local.get(['prices', 'exchangeRate', 'currency', 'itemPricing', 'pricingProvider'], (result) =>{
-            if(result.itemPricing){
-                inventory.forEach(item =>{
-                    if(result.prices[item.market_hash_name] !== undefined && result.prices[item.market_hash_name] !== 'null'){
+        chrome.storage.local.get(['prices', 'exchangeRate', 'currency', 'itemPricing', 'pricingProvider', 'floatCache'], (result) =>{
+            if (result.itemPricing){
+                let floatCacheAssetIDs = [];
+                inventory.forEach(item => {
+                    if (result.prices[item.market_hash_name] !== undefined && result.prices[item.market_hash_name] !== 'null'){
                         item.price =  getPrice(item.market_hash_name, item.dopplerInfo, result.prices, result.pricingProvider, result.exchangeRate, result.currency);
+                    }
+                    if (result.floatCache[item.assetid] !== undefined) {
+                        item.floatInfo = result.floatCache[item.assetid].floatInfo;
+                        item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintSeed);
+                        floatCacheAssetIDs.push(item.assetid);
+                    }
+                    else {
+                        item.floatInfo = null;
+                        item.patternInfo = null;
                     }
                 });
                 sendResponse({addPricesToInventory: inventory});
