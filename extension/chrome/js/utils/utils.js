@@ -1114,10 +1114,10 @@ function makeItemColorful(itemElement, item, colorfulItemsEnabled) {
 }
 
 function arrayFromArrayOrNotArray(arrayOrNotArray) {
-    if (typeof arrayOrNotArray !== 'object') { // TODO modify for objects
-        let string = arrayOrNotArray;
+    if (!Array.isArray(arrayOrNotArray)) {
+        let notArray = arrayOrNotArray;
         arrayOrNotArray = [];
-        arrayOrNotArray.push(string);
+        arrayOrNotArray.push(notArray);
     }
     return arrayOrNotArray
 }
