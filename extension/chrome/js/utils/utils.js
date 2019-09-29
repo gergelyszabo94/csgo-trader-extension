@@ -3,6 +3,11 @@ const sapphire = '<img src="https://steamcommunity-a.akamaihd.net/economy/emotic
 const emerald = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/greenjewel" class="gemIcon">';
 const blackPearl = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/lltqjewel" class="gemIcon">';
 
+let floatQueue = {
+    active: false,
+    jobs: []
+};
+
 function getPattern(name, paint_seed){
     if (/ Marble Fade /i.test(name)){
         let pattern = null;
@@ -1122,61 +1127,43 @@ function arrayFromArrayOrNotArray(arrayOrNotArray) {
     return arrayOrNotArray
 }
 
-function addToFloatQueue(items, from){
-    return new Promise((resolve, reject) => {
-        items = arrayFromArrayOrNotArray(items);
-        let jobs = [];
-
-        items.forEach(item => {
-            jobs.push({
-                from: from,
-                assetID: item.assetID,
-                inspectLink: item.inspectLink,
-                added: Date.now()
-            })
-        });
-
-        chrome.storage.local.get('floatQueue', (result) => {
-            let newFloatQueue = result.floatQueue.concat(jobs);
-            chrome.storage.local.set({floatQueue: newFloatQueue}, () => {resolve('addedToQueue')});
-        });
-    });
-}
-
-function removeFromFloatQueue(job) {
-    return new Promise((resolve, reject) => {
-        chrome.storage.local.get('floatQueue', (result) => {
-            let newFloatQueue = removeFromArray(result.floatQueue, job);
-            chrome.storage.local.set({floatQueue: newFloatQueue}, () => {resolve('removedFromQueue')});
-        });
-    });
-}
-
-function resetFloatQueue() {
-    chrome.storage.local.set({floatQueue: storageKeys.floatQueue}, () => {});
-}
-
-function workOnFloatQueue(from) {
-    chrome.storage.local.get('floatQueue', (result) => {
-        if (result.floatQueue.length !== 0) {
-
-            for (let i = 0; i < result.floatQueue.length; i++) {
-                let job = result.floatQueue[i];
-
-                if (job.from = from) {
-                    chrome.runtime.sendMessage({getFloatInfo: job.inspectLink}, (response) => {
-                        if (response !== 'error') {
-                            if (response !== 'nofloat') {
-                                if (job.from.type === 'inventory' || job.from.type === 'offer') addFloatIndicator(findElementByAssetID(job.assetID), response.floatInfo);
-                                else if (job.from.type === 'market') console.log('market');
-                            }
-                            removeFromFloatQueue(i).then(resolve => workOnFloatQueue(from));
-                        }
-                        else workOnFloatQueue(from);
-                    });
-                    break;
+function workOnFloatQueue() {
+    if (floatQueue.jobs.length !== 0) {
+        if (!floatQueue.active) {
+            let job = floatQueue.jobs.shift();
+            chrome.runtime.sendMessage({getFloatInfo: job.inspectLink}, (response) => {
+                if (response === 'error') {
+                    floatQueue.jobs.push(job);
                 }
-            }
+                else {
+                    if(response !== 'nofloat'){
+                        if (job.type === 'inventory' || job.type === 'offer') addFloatIndicator(findElementByAssetID(job.assetID), response.floatInfo);
+                        else if (job.type === 'market') console.log('market');
+                    }
+                }
+                workOnFloatQueue();
+            });
         }
-    });
+    }
+    else floatQueue.active = false;
+}
+
+function getActivePage(type){
+    let activePage = null;
+    if (type === 'inventory') document.querySelectorAll('.inventory_page').forEach(page => {if (page.style.display !== 'none') activePage = page});
+    else if (type === 'offer') getActiveInventory().querySelectorAll('.inventory_page').forEach(page => {if (page.style.display !== 'none') activePage = page});
+    return activePage;
+}
+
+function addPageControlEventListeners(type){
+    let pageControls = document.getElementById('inventory_pagecontrols');
+    if (pageControls !== null) {
+        pageControls.addEventListener('click', () => {
+            setTimeout(() => {
+                if (type === 'inventory') addFloatIndicatorsToPage(getActivePage());
+                else if (type === 'offer') addFloatIndicatorsToPage('page');
+            }, 500);
+        })
+    }
+    else setTimeout(() => {addPageControlEventListeners()}, 1000);
 }

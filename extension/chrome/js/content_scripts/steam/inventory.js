@@ -123,7 +123,7 @@ function requestInventory(){
             setInventoryTotal(items);
             addFunctionBar();
             loadFullInventory();
-            addPageControlEventListeners();
+            addPageControlEventListeners('inventory');
         }
         else{
             console.log("Wasn't able to get the inventory, it's most likely steam not working properly or you loading inventory pages at the same time");
@@ -625,7 +625,7 @@ function doInitSorting() {
         sortItems(items, result.inventorySortingMode);
         document.querySelector(`#sortingMethod [value="${result.inventorySortingMode}"]`).selected = true;
         document.querySelector(`#generate_sort [value="${result.inventorySortingMode}"]`).selected = true;
-        addFloatIndicatorsToPage(getActivePage());
+        addFloatIndicatorsToPage(getActivePage('inventory'));
     });
 }
 
@@ -756,39 +756,21 @@ function hideFloatBars(){
 function findElementByAssetID(assetID){ return document.getElementById(`730_2_${assetID}`)}
 
 function addFloatIndicatorsToPage(page){
-    let noFloatAssetItems = [];
     page.querySelectorAll('.item.app730.context2').forEach(itemElement => {
         let assetID = getAssetIDOfElement(itemElement);
         let item = getItemByAssetID(items, assetID);
         if (item.inspectLink !== null){
-            if (item.floatInfo === null) noFloatAssetItems.push({
-                assetID: assetID,
-                inspectLink: item.inspectLink
-            });
+            if (item.floatInfo === null) {
+                floatQueue.jobs.push({
+                    type: 'inventory',
+                    assetID: assetID,
+                    inspectLink: item.inspectLink
+                });
+            }
             else addFloatIndicator(itemElement, item.floatInfo);
         }
     });
-
-    let from = {type: 'inventory', id: getInventoryOwnerID(), timestamp: Date.now()};
-    addToFloatQueue(noFloatAssetItems, from).then(
-        result => workOnFloatQueue(from)
-    );
-}
-
-function getActivePage(){
-    let activePage = null;
-    document.getElementById('inventories').querySelectorAll('.inventory_page').forEach(page => {if (page.style.display !== 'none') activePage = page});
-    return activePage;
-}
-
-function addPageControlEventListeners(){
-    let pageControls = document.getElementById('inventory_pagecontrols');
-    if (pageControls !== null) {
-        pageControls.addEventListener('click', () => {
-            setTimeout(() => {addFloatIndicatorsToPage(getActivePage())}, 500);
-        })
-    }
-    else setTimeout(() => {addPageControlEventListeners()}, 1000);
+    workOnFloatQueue();
 }
 
 // reloads the page on extension update/reload/uninstall

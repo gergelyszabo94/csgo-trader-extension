@@ -460,6 +460,9 @@ function doInitSorting() {
         sortItems(result.offerSortingMode, 'offer');
         sortItems(result.offerSortingMode, 'your');
         sortItems(result.offerSortingMode, 'their');
+        addFloatIndicatorsToPage('their');
+        addFloatIndicatorsToPage('page');
+        addFloatIndicatorsToPage('your');
         document.querySelector(`#offer_sorting_mode [value="${result.offerSortingMode}"]`).selected = true;
         document.querySelector(`#offer_your_sorting_mode [value="${result.offerSortingMode}"]`).selected = true;
         document.querySelector(`#offer_their_sorting_mode [value="${result.offerSortingMode}"]`).selected = true;
@@ -550,6 +553,42 @@ function addAPartysFunctionBar(whose){
         });
     });
 }
+
+function addFloatIndicatorsToPage(type) {
+    if (isCSGOInventoryActive('offer')){
+        let itemElements;
+        if (type === 'page'){
+            let page = getActivePage('offer');
+            if (page !== null) {
+                itemElements = page.querySelectorAll('.item.app730.context2');
+            }
+            else setTimeout(() => {addFloatIndicatorsToPage(type)}, 1000);
+        }
+        else {
+            let page = document.getElementById(`trade_${type}s`);
+            if (page !== null) itemElements = page.querySelectorAll('.item.app730.context2');
+            else setTimeout(() => {addFloatIndicatorsToPage(type)}, 1000);
+        }
+        itemElements.forEach(itemElement => {
+            let item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
+            if (item.inspectLink !== null){
+                if (item.floatInfo === null) {
+                    floatQueue.jobs.push({
+                        type: 'offer',
+                        assetID: item.assetid,
+                        inspectLink: item.inspectLink
+                    });
+                }
+                else addFloatIndicator(itemElement, item.floatInfo);
+            }
+        });
+        workOnFloatQueue();
+    }
+}
+
+function getOfferID() {return location.href.split('tradeoffer/')[1].split('/')[0]}
+
+addPageControlEventListeners('offer');
 
 let theirInventoryTab = document.getElementById('inventory_select_their_inventory');
 if (theirInventoryTab !== null) document.getElementById('inventory_select_their_inventory').addEventListener('click', () => {singleClickControlClick()}); // if the offer "active"
