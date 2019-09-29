@@ -253,7 +253,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         let inspectLink = request.getFloatInfo;
         let assetID = getAssetIDFromInspectLink(inspectLink);
         chrome.storage.local.get('floatCache', (result) => {
-            console.log(result.floatCache);
             if (result.floatCache[assetID] !== undefined) {
                 updateFloatCache(result.floatCache, assetID);
                 sendResponse({floatInfo: result.floatCache[assetID].floatInfo});

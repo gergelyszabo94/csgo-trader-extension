@@ -51,7 +51,7 @@ window.addEventListener('message', e => {
 });
 
 //sends the message to the page side to get the info
-const getInventory = function() {
+const getInventory = () => {
     window.postMessage({type: 'requestInventory'}, '*');
     return new Promise(resolve => {inventoryPromise = resolve});
 };
@@ -123,6 +123,7 @@ function requestInventory(){
             setInventoryTotal(items);
             addFunctionBar();
             loadFullInventory();
+            addPageControlEventListeners();
         }
         else{
             console.log("Wasn't able to get the inventory, it's most likely steam not working properly or you loading inventory pages at the same time");
@@ -305,12 +306,11 @@ function addElements(){
                 if(item.inspectLink !== '' && item.inspectLink !== undefined){
                     chrome.runtime.sendMessage({getFloatInfo: item.inspectLink}, (response) => {
                         if (response !== 'error'){
-                            let usefulFloatInfo = extractUsefulFloatInfo(response.floatInfo);
-                            setFloatBarWithData(usefulFloatInfo);
-                            let patternInfo =  getPattern(item.market_hash_name, usefulFloatInfo.paintseed);
+                            setFloatBarWithData(response.floatInfo);
+                            let patternInfo =  getPattern(item.market_hash_name, response.floatInfo.paintseed);
                             setPatternInfo(patternInfo);
-                            setStickerInfo(usefulFloatInfo.stickers);
-                            item.floatInfo = usefulFloatInfo;
+                            setStickerInfo(response.floatInfo.stickers);
+                            item.floatInfo = response.floatInfo;
                             item.patternInfo = patternInfo;
                             addFloatIndicator(findElementByAssetID(item.assetid), item.floatInfo);
                         }
@@ -474,7 +474,7 @@ function setInventoryTotal(items){
     });
 }
 
-let listenSelectClicks = function (event){
+let listenSelectClicks = (event) => {
     if (event.target.parentElement.classList.contains('item') && event.target.parentElement.classList.contains('app730') && event.target.parentElement.classList.contains('context2')) {
         event.target.parentElement.classList.toggle("selected");
         updateSelectedValue();
@@ -629,6 +629,7 @@ function doInitSorting() {
         sortItems(items, result.inventorySortingMode);
         document.querySelector(`#sortingMethod [value="${result.inventorySortingMode}"]`).selected = true;
         document.querySelector(`#generate_sort [value="${result.inventorySortingMode}"]`).selected = true;
+        addFloatIndicatorsToPage(getActivePage());
     });
 }
 
@@ -759,6 +760,40 @@ function hideFloatBars(){
 }
 
 function findElementByAssetID(assetID){ return document.getElementById(`730_2_${assetID}`)}
+
+function addFloatIndicatorsToPage(page){
+    let noFloatAssetItems = [];
+    page.querySelectorAll('.item.app730.context2').forEach(itemElement => {
+        let assetID = getAssetIDOfElement(itemElement);
+        let item = getItemByAssetID(items, assetID);
+        if (item.floatInfo === null) noFloatAssetItems.push({
+            assetID: assetID,
+            inspectLink: item.inspectLink
+        });
+        else addFloatIndicator(itemElement, item.floatInfo);
+
+    });
+    let from = {type: 'inventory', id: getInventoryOwnerID(), timestamp: Date.now()};
+    addToFloatQueue(noFloatAssetItems, from).then(
+        result => workOnFloatQueue(from)
+    );
+}
+
+function getActivePage(){
+    let activePage = null;
+    document.getElementById('inventories').querySelectorAll('.inventory_page').forEach(page => {if (page.style.display !== 'none') activePage = page});
+    return activePage;
+}
+
+function addPageControlEventListeners(){
+    let pageControls = document.getElementById('inventory_pagecontrols');
+    if (pageControls !== null) {
+        pageControls.addEventListener('click', () => {
+            setTimeout(() => {addFloatIndicatorsToPage(getActivePage())}, 500);
+        })
+    }
+    else setTimeout(() => {addPageControlEventListeners()}, 1000);
+}
 
 // reloads the page on extension update/reload/uninstall
 chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});

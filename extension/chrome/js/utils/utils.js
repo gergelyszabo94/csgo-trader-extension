@@ -1062,11 +1062,7 @@ function extractUsefulFloatInfo(floatInfo) {
 }
 
 function updateFloatCache(floatCache, assetIDs, floatInfo) {
-    if (typeof assetIDs !== 'object') {
-        let assetID = assetIDs;
-        assetIDs = [];
-        assetIDs.push(assetID);
-    }
+    assetIDs = arrayFromArrayOrNotArray(assetIDs);
 
     assetIDs.forEach((assetID) => {
         if (floatCache[assetID] === undefined && assetID !== '') { // if not in cache at all, adding it
@@ -1112,4 +1108,63 @@ function makeItemColorful(itemElement, item, colorfulItemsEnabled) {
         if (item.dopplerInfo !== undefined) itemElement.setAttribute('style', `background-image: url(); background-color: #${item.dopplerInfo.color}`);
         else itemElement.setAttribute('style', `background-image: url(); background-color: ${item.quality.backgroundcolor}; border-color: ${item.quality.backgroundcolor}`);
     }
+}
+
+function arrayFromArrayOrNotArray(arrayOrNotArray) {
+    if (typeof arrayOrNotArray !== 'object') { // TODO modify for objects
+        let string = arrayOrNotArray;
+        arrayOrNotArray = [];
+        arrayOrNotArray.push(string);
+    }
+    return arrayOrNotArray
+}
+
+function addToFloatQueue(items, from){
+    return new Promise((resolve, reject) => {
+        items = arrayFromArrayOrNotArray(items);
+        let jobs = [];
+
+        items.forEach(item => {
+            jobs.push({
+                from: from,
+                assetID: item.assetID,
+                inspectLink: item.inspectLink,
+                added: Date.now()
+            })
+        });
+
+        chrome.storage.local.get('floatQueue', (result) => {
+            let newFloatQueue = result.floatQueue.concat(jobs);
+            chrome.storage.local.set({floatQueue: newFloatQueue}, () => {resolve('addedToQueue')});
+        });
+    });
+}
+
+function resetFloatQueue() {
+    chrome.storage.local.set({floatQueue: storageKeys.floatQueue}, () => {});
+}
+
+function workOnFloatQueue(from) {
+    chrome.storage.local.get('floatQueue', (result) => {
+        if (result.floatQueue.length !== 0) {
+
+            for (let i = 0; i < result.floatQueue.length; i++) {
+                let job = result.floatQueue[i];
+
+                if (job.from = from) {
+                    chrome.runtime.sendMessage({getFloatInfo: job.inspectLink}, (response) => {
+                        if (response !== 'error') {
+                            if (job.from.type === 'inventory' || job.from.type === 'offer') addFloatIndicator(findElementByAssetID(job.assetID), response.floatInfo);
+                            let newFloatQueue = removeFromArray(result.floatQueue, i);
+                            chrome.storage.local.set({floatQueue: newFloatQueue}, () => {
+                                workOnFloatQueue(from)
+                            });
+                        }
+                        else workOnFloatQueue(from);
+                    });
+                    break;
+                }
+            }
+        }
+    });
 }

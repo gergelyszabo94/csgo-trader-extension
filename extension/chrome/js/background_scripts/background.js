@@ -12,6 +12,7 @@ chrome.runtime.onInstalled.addListener((details) =>{
         },(notificationId) =>{});
     }
     else if(details.reason === 'update'){
+        resetFloatQueue();
         // sets defaults options for new options that haven't been set yet (for features introduced since the last version - runs when the extension updates or gets reloaded in developer mode)
         // it checks whether the setting has ever been set - I consider removing older ones since there is no one updating from version that old
         let keysArray = [];
