@@ -66,7 +66,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             let quality = getQuality(items[item].tags);
                             let stickers =  parseStickerInfo(items[item].descriptions, 'direct');
                             let nametag = undefined;
-                            let inspectLink = '';
+                            let inspectLink = null;
                             let owner = steamID;
                             let price = null;
                             let type = getType(items[item].tags);
@@ -251,34 +251,38 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
     else if (request.getFloatInfo !== undefined) {
         let inspectLink = request.getFloatInfo;
-        let assetID = getAssetIDFromInspectLink(inspectLink);
-        chrome.storage.local.get('floatCache', (result) => {
-            if (result.floatCache[assetID] !== undefined) {
-                updateFloatCache(result.floatCache, assetID);
-                sendResponse({floatInfo: result.floatCache[assetID].floatInfo});
-            }
-            else {
-                let getRequest = new Request(`https://api.csgofloat.com/?url=${inspectLink}`);
+        if (inspectLink !== null) {
+            let assetID = getAssetIDFromInspectLink(inspectLink);
+            chrome.storage.local.get('floatCache', (result) => {
+                if (result.floatCache[assetID] !== undefined) {
+                    updateFloatCache(result.floatCache, assetID);
+                    sendResponse({floatInfo: result.floatCache[assetID].floatInfo});
+                }
+                else {
+                    let getRequest = new Request(`https://api.csgofloat.com/?url=${inspectLink}`);
 
-                fetch(getRequest).then((response) => {
-                    if (!response.ok) {
+                    fetch(getRequest).then((response) => {
+                        if (!response.ok) {
+                            sendResponse('error');
+                            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+                        }
+                        else return response.json();
+                    }).then((body) => {
+                        if (body.iteminfo.floatvalue !== undefined) {
+                            let usefulFloatInfo = extractUsefulFloatInfo(body.iteminfo);
+                            updateFloatCache(result.floatCache, assetID, usefulFloatInfo);
+                            if (usefulFloatInfo.floatvalue !== 0.0) sendResponse({floatInfo: usefulFloatInfo});
+                            else sendResponse('nofloat');
+                        }
+                        else sendResponse('error');
+                    }).catch(err => {
+                        console.log(err);
                         sendResponse('error');
-                        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-                    }
-                    else return response.json();
-                }).then((body) => {
-                    if (body.iteminfo.floatvalue !== undefined) {
-                        let usefulFloatInfo = extractUsefulFloatInfo(body.iteminfo);
-                        updateFloatCache(result.floatCache, assetID, usefulFloatInfo);
-                        sendResponse({floatInfo: usefulFloatInfo});
-                    }
-                    else sendResponse('error');
-                }).catch(err => {
-                    console.log(err);
-                    sendResponse('error');
-                });
-            }
-        });
+                    });
+                }
+            });
+        }
+        else sendResponse('nofloat');
         return true; // async return to signal that it will return later
     }
     else if (request.getSteamRepInfo !==undefined) {

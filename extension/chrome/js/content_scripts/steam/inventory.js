@@ -301,23 +301,19 @@ function addElements(){
                 document.querySelectorAll(".float_block").forEach(e => e.parentNode.removeChild(e));
                 setTimeout(() =>{document.querySelectorAll(".float_block").forEach(e => e.parentNode.removeChild(e));}, 1000);
             }
-
             if (item.floatInfo === null){
-                if(item.inspectLink !== '' && item.inspectLink !== undefined){
-                    chrome.runtime.sendMessage({getFloatInfo: item.inspectLink}, (response) => {
-                        if (response !== 'error'){
-                            setFloatBarWithData(response.floatInfo);
-                            let patternInfo =  getPattern(item.market_hash_name, response.floatInfo.paintseed);
-                            setPatternInfo(patternInfo);
-                            setStickerInfo(response.floatInfo.stickers);
-                            item.floatInfo = response.floatInfo;
-                            item.patternInfo = patternInfo;
-                            addFloatIndicator(findElementByAssetID(item.assetid), item.floatInfo);
-                        }
-                        else hideFloatBars();
-                    });
-                }
-                else hideFloatBars();
+                chrome.runtime.sendMessage({getFloatInfo: item.inspectLink}, (response) => {
+                    if (!(response === 'error' || response === 'nofloat')){
+                        setFloatBarWithData(response.floatInfo);
+                        let patternInfo =  getPattern(item.market_hash_name, response.floatInfo.paintseed);
+                        setPatternInfo(patternInfo);
+                        setStickerInfo(response.floatInfo.stickers);
+                        item.floatInfo = response.floatInfo;
+                        item.patternInfo = patternInfo;
+                        addFloatIndicator(findElementByAssetID(item.assetid), item.floatInfo);
+                    }
+                    else hideFloatBars();
+                });
             }
             else {
                 setFloatBarWithData(item.floatInfo);
@@ -717,8 +713,6 @@ function setFloatBarWithData(floatInfo){
     let position = floatInfo.floatvalue.toFixed(2)*100-2;
     document.querySelectorAll('.floatToolTip').forEach(floatToolTip => floatToolTip.setAttribute('style', `left: ${position}%`));
     document.querySelectorAll('.floatDropTarget').forEach(floatDropTarget => floatDropTarget.innerText = floatInfo.floatvalue.toFixed(4));
-
-    if(floatInfo.floatvalue === 0) hideFloatBars();
 }
 
 function setPatternInfo(patternInfo){
@@ -766,13 +760,15 @@ function addFloatIndicatorsToPage(page){
     page.querySelectorAll('.item.app730.context2').forEach(itemElement => {
         let assetID = getAssetIDOfElement(itemElement);
         let item = getItemByAssetID(items, assetID);
-        if (item.floatInfo === null) noFloatAssetItems.push({
-            assetID: assetID,
-            inspectLink: item.inspectLink
-        });
-        else addFloatIndicator(itemElement, item.floatInfo);
-
+        if (item.inspectLink !== null){
+            if (item.floatInfo === null) noFloatAssetItems.push({
+                assetID: assetID,
+                inspectLink: item.inspectLink
+            });
+            else addFloatIndicator(itemElement, item.floatInfo);
+        }
     });
+
     let from = {type: 'inventory', id: getInventoryOwnerID(), timestamp: Date.now()};
     addToFloatQueue(noFloatAssetItems, from).then(
         result => workOnFloatQueue(from)

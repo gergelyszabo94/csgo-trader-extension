@@ -21,7 +21,7 @@ window.addEventListener('message', e => {
 });
 
 //sends the message to the page side to get the info
-const getYourInventory = function() {
+const getYourInventory = () => {
     window.postMessage(
         {
             type: 'requestYourInventory'
@@ -33,7 +33,7 @@ const getYourInventory = function() {
     });
 };
 
-const getTheirInventory = function() {
+const getTheirInventory = () => {
     window.postMessage(
         {
             type: 'requestTheirInventory'
@@ -265,7 +265,7 @@ function buildInventoryStructure(inventory) {
         let quality = getQuality(item.tags);
         let stickers =  parseStickerInfo(item.descriptions, 'direct');
         let nametag = undefined;
-        let inspectLink ="";
+        let inspectLink = null;
         let dopplerInfo = /Doppler/.test(item.name) ? getDopplerInfo(item.icon) : undefined;
         let isStatrack = /StatTrak™/.test(item.name);
         let isSouvenir = /Souvenir/.test(item.name);

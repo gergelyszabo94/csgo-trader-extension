@@ -1041,7 +1041,10 @@ function generateRandomString(length) {
     return text;
 }
 
-function getAssetIDFromInspectLink(inspectLink) {return inspectLink.split('A')[1].split('D')[0]}
+function getAssetIDFromInspectLink(inspectLink) {
+    if (inspectLink !== null && inspectLink !== undefined)return inspectLink.split('A')[1].split('D')[0];
+    else return null;
+}
 
 // if CS:GO is selected - active
 function isCSGOInventoryActive(where) {
@@ -1140,6 +1143,15 @@ function addToFloatQueue(items, from){
     });
 }
 
+function removeFromFloatQueue(job) {
+    return new Promise((resolve, reject) => {
+        chrome.storage.local.get('floatQueue', (result) => {
+            let newFloatQueue = removeFromArray(result.floatQueue, job);
+            chrome.storage.local.set({floatQueue: newFloatQueue}, () => {resolve('removedFromQueue')});
+        });
+    });
+}
+
 function resetFloatQueue() {
     chrome.storage.local.set({floatQueue: storageKeys.floatQueue}, () => {});
 }
@@ -1154,11 +1166,11 @@ function workOnFloatQueue(from) {
                 if (job.from = from) {
                     chrome.runtime.sendMessage({getFloatInfo: job.inspectLink}, (response) => {
                         if (response !== 'error') {
-                            if (job.from.type === 'inventory' || job.from.type === 'offer') addFloatIndicator(findElementByAssetID(job.assetID), response.floatInfo);
-                            let newFloatQueue = removeFromArray(result.floatQueue, i);
-                            chrome.storage.local.set({floatQueue: newFloatQueue}, () => {
-                                workOnFloatQueue(from)
-                            });
+                            if (response !== 'nofloat') {
+                                if (job.from.type === 'inventory' || job.from.type === 'offer') addFloatIndicator(findElementByAssetID(job.assetID), response.floatInfo);
+                                else if (job.from.type === 'market') console.log('market');
+                            }
+                            removeFromFloatQueue(i).then(resolve => workOnFloatQueue(from));
                         }
                         else workOnFloatQueue(from);
                     });
