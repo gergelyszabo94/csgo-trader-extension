@@ -1160,7 +1160,7 @@ function addPageControlEventListeners(type){
     if (pageControls !== null) {
         pageControls.addEventListener('click', () => {
             setTimeout(() => {
-                if (type === 'inventory') addFloatIndicatorsToPage(getActivePage());
+                if (type === 'inventory') addFloatIndicatorsToPage(getActivePage('inventory'));
                 else if (type === 'offer') addFloatIndicatorsToPage('page');
             }, 500);
         })
