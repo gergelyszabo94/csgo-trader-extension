@@ -1,119 +1,4 @@
-overridePopulateActions();
-
-updateLoggedInUserID();
-
-const upperModule = `
-<div class="upperModule">
-    <div class="nametag"></div>
-    <div class="descriptor customStickers"></div>
-    <div class="duplicate">x1</div>
-    <div class="floatBar">
-    <div class="floatToolTip">
-        <div>Float: <span class="floatDropTarget">Waiting for csgofloat.com</span></div>
-        <svg class="floatPointer" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path></svg>
-   </div>
-     <div class="progress">
-        <div class="progress-bar floatBarFN" title="Factory New"></div>
-        <div class="progress-bar floatBarMW" title="Minimal Wear"></div>
-        <div class="progress-bar floatBarFT" title="Field-Tested"></div>
-        <div class="progress-bar floatBarWW" title="Well-Worn"></div>
-         <div class="progress-bar floatBarBS" title="Battle-Scarred"></div>
-     </div>
-      <div class="showTechnical">Show Technical</div>
-    </div>
-    <div class="patternInfo"></div>
-</div>
-`;
-
-const lowerModule = `<a class="lowerModule">
-    <div class="descriptor tradability tradabilityDiv"></div>
-    <div class="descriptor countdown"></div>
-    <div class="descriptor tradability bookmark">Bookmark and Notify</div>
-</a>`;
-
-const tradable = '<span class="tradable">Tradable</span>';
-const notTradable = '<span class="not_tradable">Not Tradable</span>';
-const dopplerPhase = '<div class="dopplerPhase"><span></span></div>';
-
-// the promise will be stored here temporarily
-let inventoryPromise = undefined;
-
-//listens to the message events on the extension side of the communication
-window.addEventListener('message', e => {
-    if (e.data.type === 'inventory') {
-        inventoryPromise(e.data);
-        inventoryPromise = undefined;
-    }
-    else if (e.data.type === 'allItemsLoaded') {
-        if (e.data.allItemsLoaded) doInitSorting();
-        else loadFullInventory();
-    }
-});
-
-//sends the message to the page side to get the info
-const getInventory = () => {
-    window.postMessage({type: 'requestInventory'}, '*');
-    return new Promise(resolve => {inventoryPromise = resolve});
-};
-
-//this injected script listens to the messages from the extension side and responds with the page context info needed
-let getItems = `
-    window.addEventListener('message', (e) => {
-        if (e.data.type == 'requestInventory') {
-            let inventory = UserYou.getInventory(730,2);
-            let assets = inventory.m_rgAssets;
-            let assetKeys= Object.keys(assets);
-            let trimmedAssets = [];
-            
-            for(let assetKey of assetKeys){
-                let asset = {
-                    amount: assets[assetKey].amount,
-                    assetid: assets[assetKey].assetid,
-                    contextid: assets[assetKey].contextid,
-                    description: assets[assetKey].description
-                };
-                trimmedAssets.push(asset);
-            }
-            window.postMessage({
-                type: 'inventory',
-                inventory: trimmedAssets
-            }, '*');
-        }
-    });`;
-injectToPage(getItems, false, 'getItems');
-
-// mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
-MutationObserver = window.MutationObserver;
-
-let observer = new MutationObserver(() => {
-    if (isCSGOInventoryActive('inventory')){
-        addElements();
-        addFunctionBar();
-    }
-    else cleanUpElements(true);
-});
-
-let observer2 = new MutationObserver(() => {addPerItemInfo(false)});
-
-// does not execute if inventory is private or failed to load the page (502 for example, mostly when steam is dead)
-if (document.getElementById('no_inventories') === null && document.getElementById('iteminfo0') !== null){
-    observer.observe(document.getElementById('iteminfo0'), {
-        subtree: false,
-        attributes: true
-    });
-
-    observer2.observe(document.getElementById('inventories'),{
-        subtree: false,
-        attributes: true
-    });
-}
-
-chrome.storage.local.get('hideOtherExtensionPrices', (result) => {if (result.hideOtherExtensionPrices) hideOtherExtensionPrices()});
-
 // sends a message to the "back end" to request inventory contents
-
-let items = [];
-
 function requestInventory(){
     chrome.runtime.sendMessage({inventory: getInventoryOwnerID()}, (response) => {
         if (!(response === undefined || response.inventory === undefined || response.inventory === '' || response.inventory === 'error')){
@@ -132,10 +17,6 @@ function requestInventory(){
         }
     });
 }
-requestInventory();
-
-// to refresh the trade lock remaining indicators
-setInterval(() => {if (!document.hidden) addPerItemInfo(true)}, 60000); // true means it's only for updating the time remaining indicators
 
 //adds everything that is per item, like trade lock, exterior, doppler phases, border colors
 function addPerItemInfo(updating){
@@ -185,10 +66,6 @@ function addPerItemInfo(updating){
     // in case the inventory is not loaded yet
     else{setTimeout( () => {addPerItemInfo(false)}, 1000)}
 }
-
-//variables for the countdown recursive logic
-let countingDown = false;
-let countDownID = '';
 
 function addElements(){
     // only add elements if the CS:GO inventory is the active one
@@ -375,7 +252,6 @@ function addElements(){
     else document.querySelectorAll('.countdown').forEach((countdown) => countdown.style.display = 'none');
 }
 
-
 function cleanUpElements(nonCSGOInventory) {
     document.querySelectorAll('.upperModule, .lowerModule, .otherExteriors, .custom_name').forEach((element) => element.parentNode.removeChild(element));
     if (nonCSGOInventory) document.querySelectorAll('.hover_item_name').forEach((name) => name.classList.remove('hidden'));
@@ -469,13 +345,6 @@ function setInventoryTotal(items){
         else setTimeout(() => {setInventoryTotal(items)}, 1000)
     });
 }
-
-let listenSelectClicks = (event) => {
-    if (event.target.parentElement.classList.contains('item') && event.target.parentElement.classList.contains('app730') && event.target.parentElement.classList.contains('context2')) {
-        event.target.parentElement.classList.toggle("selected");
-        updateSelectedValue();
-    }
-};
 
 function addFunctionBar(){
     if(document.getElementById("inventory_function_bar") === null){
@@ -772,6 +641,134 @@ function addFloatIndicatorsToPage(page){
     });
     workOnFloatQueue();
 }
+
+const upperModule = `
+<div class="upperModule">
+    <div class="nametag"></div>
+    <div class="descriptor customStickers"></div>
+    <div class="duplicate">x1</div>
+    <div class="floatBar">
+    <div class="floatToolTip">
+        <div>Float: <span class="floatDropTarget">Waiting for csgofloat.com</span></div>
+        <svg class="floatPointer" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path></svg>
+   </div>
+     <div class="progress">
+        <div class="progress-bar floatBarFN" title="Factory New"></div>
+        <div class="progress-bar floatBarMW" title="Minimal Wear"></div>
+        <div class="progress-bar floatBarFT" title="Field-Tested"></div>
+        <div class="progress-bar floatBarWW" title="Well-Worn"></div>
+         <div class="progress-bar floatBarBS" title="Battle-Scarred"></div>
+     </div>
+      <div class="showTechnical">Show Technical</div>
+    </div>
+    <div class="patternInfo"></div>
+</div>
+`;
+
+const lowerModule = `<a class="lowerModule">
+    <div class="descriptor tradability tradabilityDiv"></div>
+    <div class="descriptor countdown"></div>
+    <div class="descriptor tradability bookmark">Bookmark and Notify</div>
+</a>`;
+
+const tradable = '<span class="tradable">Tradable</span>';
+const notTradable = '<span class="not_tradable">Not Tradable</span>';
+const dopplerPhase = '<div class="dopplerPhase"><span></span></div>';
+
+// the promise will be stored here temporarily
+let inventoryPromise = undefined;
+
+//listens to the message events on the extension side of the communication
+window.addEventListener('message', e => {
+    if (e.data.type === 'inventory') {
+        inventoryPromise(e.data);
+        inventoryPromise = undefined;
+    }
+    else if (e.data.type === 'allItemsLoaded') {
+        if (e.data.allItemsLoaded) doInitSorting();
+        else loadFullInventory();
+    }
+});
+
+//sends the message to the page side to get the info
+const getInventory = () => {
+    window.postMessage({type: 'requestInventory'}, '*');
+    return new Promise(resolve => {inventoryPromise = resolve});
+};
+
+//this injected script listens to the messages from the extension side and responds with the page context info needed
+let getItems = `
+    window.addEventListener('message', (e) => {
+        if (e.data.type == 'requestInventory') {
+            let inventory = UserYou.getInventory(730,2);
+            let assets = inventory.m_rgAssets;
+            let assetKeys= Object.keys(assets);
+            let trimmedAssets = [];
+            
+            for(let assetKey of assetKeys){
+                let asset = {
+                    amount: assets[assetKey].amount,
+                    assetid: assets[assetKey].assetid,
+                    contextid: assets[assetKey].contextid,
+                    description: assets[assetKey].description
+                };
+                trimmedAssets.push(asset);
+            }
+            window.postMessage({
+                type: 'inventory',
+                inventory: trimmedAssets
+            }, '*');
+        }
+    });`;
+injectToPage(getItems, false, 'getItems');
+
+// mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
+MutationObserver = window.MutationObserver;
+
+let observer = new MutationObserver(() => {
+    if (isCSGOInventoryActive('inventory')){
+        addElements();
+        addFunctionBar();
+    }
+    else cleanUpElements(true);
+});
+
+let observer2 = new MutationObserver(() => {addPerItemInfo(false)});
+
+// does not execute if inventory is private or failed to load the page (502 for example, mostly when steam is dead)
+if (document.getElementById('no_inventories') === null && document.getElementById('iteminfo0') !== null){
+    observer.observe(document.getElementById('iteminfo0'), {
+        subtree: false,
+        attributes: true
+    });
+
+    observer2.observe(document.getElementById('inventories'),{
+        subtree: false,
+        attributes: true
+    });
+}
+
+overridePopulateActions();
+updateLoggedInUserID();
+
+chrome.storage.local.get('hideOtherExtensionPrices', (result) => {if (result.hideOtherExtensionPrices) hideOtherExtensionPrices()});
+
+let items = [];
+requestInventory();
+
+// to refresh the trade lock remaining indicators
+setInterval(() => {if (!document.hidden) addPerItemInfo(true)}, 60000); // true means it's only for updating the time remaining indicators
+
+//variables for the countdown recursive logic
+let countingDown = false;
+let countDownID = '';
+
+let listenSelectClicks = (event) => {
+    if (event.target.parentElement.classList.contains('item') && event.target.parentElement.classList.contains('app730') && event.target.parentElement.classList.contains('context2')) {
+        event.target.parentElement.classList.toggle("selected");
+        updateSelectedValue();
+    }
+};
 
 // reloads the page on extension update/reload/uninstall
 chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});

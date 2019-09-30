@@ -1,3 +1,41 @@
+function addPhasesIndicator(){
+    if (/Doppler/.test(window.location.href)) {
+        document.querySelectorAll('.market_listing_item_img_container').forEach(container =>{
+            container.insertAdjacentHTML('beforeend', dopplerPhase);
+            let phase = getDopplerInfo(container.querySelector('img').getAttribute('src').split('economy/image/')[1].split('/')[0]);
+            let dopplerElement = container.querySelector('.dopplerPhaseMarket');
+
+            switch (phase.short){
+                case dopplerPhases.sh.short: dopplerElement.insertAdjacentHTML('beforeend', sapphire); break;
+                case dopplerPhases.rb.short: dopplerElement.insertAdjacentHTML('beforeend', ruby); break;
+                case dopplerPhases.em.short: dopplerElement.insertAdjacentHTML('beforeend', emerald); break;
+                case dopplerPhases.bp.short: dopplerElement.insertAdjacentHTML('beforeend', blackPearl); break;
+                default: dopplerElement.querySelector('span').innerText = phase.short;
+            }
+        });
+    }
+}
+
+function addStickers() {
+    // removes sih sticker info
+    document.querySelectorAll('.sih-images').forEach(image => {image.parentNode.removeChild(image)});
+
+    getItems().then(listings => {
+        document.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listing_row => {
+            if (listing_row.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listing_row.parentNode.parentNode.id !== 'tabContentsMyListings'){
+                let listingID = listing_row.id.split('listing_')[1];
+                listing_row.querySelectorAll('.market_listing_item_name_block').forEach(name_block =>{name_block.insertAdjacentHTML('beforeend', `<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`)});
+
+                let stickers = listings[listingID].asset.stickers;
+
+                stickers.forEach(stickerInfo =>{
+                    document.getElementById(`stickerHolder_${listingID}`).insertAdjacentHTML('beforeend', `<span class="stickerSlotMarket" data-tooltip-market="${stickerInfo.name}"><a href="${stickerInfo.marketURL}" target="_blank"><img src="${stickerInfo.iconURL}" class="stickerIcon"></a></span>`)
+                });
+            }
+        });
+    });
+}
+
 updateLoggedInUserID();
 
 // the promise will be stored here temporarily
@@ -213,45 +251,6 @@ chrome.storage.local.get('numberOfListings', (result) =>{
         injectToPage(loadMoreMarketAssets, true, 'loadMoreMarketAssets', null);
     }
 });
-
-
-function addPhasesIndicator(){
-    if (/Doppler/.test(window.location.href)) {
-        document.querySelectorAll('.market_listing_item_img_container').forEach(container =>{
-            container.insertAdjacentHTML('beforeend', dopplerPhase);
-            let phase = getDopplerInfo(container.querySelector('img').getAttribute('src').split('economy/image/')[1].split('/')[0]);
-            let dopplerElement = container.querySelector('.dopplerPhaseMarket');
-
-            switch (phase.short){
-                case dopplerPhases.sh.short: dopplerElement.insertAdjacentHTML('beforeend', sapphire); break;
-                case dopplerPhases.rb.short: dopplerElement.insertAdjacentHTML('beforeend', ruby); break;
-                case dopplerPhases.em.short: dopplerElement.insertAdjacentHTML('beforeend', emerald); break;
-                case dopplerPhases.bp.short: dopplerElement.insertAdjacentHTML('beforeend', blackPearl); break;
-                default: dopplerElement.querySelector('span').innerText = phase.short;
-            }
-        });
-    }
-}
-
-function addStickers() {
-    // removes sih sticker info
-    document.querySelectorAll('.sih-images').forEach(image => {image.parentNode.removeChild(image)});
-
-    getItems().then(listings => {
-        document.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listing_row => {
-            if (listing_row.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listing_row.parentNode.parentNode.id !== 'tabContentsMyListings'){
-                let listingID = listing_row.id.split('listing_')[1];
-                listing_row.querySelectorAll('.market_listing_item_name_block').forEach(name_block =>{name_block.insertAdjacentHTML('beforeend', `<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`)});
-
-                let stickers = listings[listingID].asset.stickers;
-
-                stickers.forEach(stickerInfo =>{
-                    document.getElementById(`stickerHolder_${listingID}`).insertAdjacentHTML('beforeend', `<span class="stickerSlotMarket" data-tooltip-market="${stickerInfo.name}"><a href="${stickerInfo.marketURL}" target="_blank"><img src="${stickerInfo.iconURL}" class="stickerIcon"></a></span>`)
-                });
-            }
-        });
-    });
-}
 
 // reloads the page on extension update/reload/uninstall
 chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});

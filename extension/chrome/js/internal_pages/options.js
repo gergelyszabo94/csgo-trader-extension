@@ -1,3 +1,17 @@
+function addDeleteClickListener(element){
+    element.addEventListener('click', (event) => {
+        chrome.storage.local.get('customCommentsToReport', (result) => {
+            let newCustomComments = [];
+            result.customCommentsToReport.forEach(comment => {
+                    if (comment.id !== event.target.id) newCustomComments.push(comment)
+                }
+            );
+            chrome.storage.local.set({customCommentsToReport: newCustomComments}, () => {event.target.parentNode.parentNode.removeChild(event.target.parentNode)});
+        });
+    });
+}
+
+
 // simple checkboxes - toggles
 
 const simpleBinaryOptions = ['itemPricing', 'markScammers','colorfulItems', 'showRealStatus', 'flagScamComments', 'quickDeclineOffer', 'openOfferInTab', 'showPlusRepButton',
@@ -192,20 +206,6 @@ customCommentsSave.addEventListener('click', () => {
     }
     else $('#customCommentsToReportModal').modal('hide');
 });
-
-function addDeleteClickListener(element){
-    element.addEventListener('click', (event) => {
-        chrome.storage.local.get('customCommentsToReport', (result) => {
-            let newCustomComments = [];
-            result.customCommentsToReport.forEach(comment => {
-                    if (comment.id !== event.target.id) newCustomComments.push(comment)
-                }
-            );
-            chrome.storage.local.set({customCommentsToReport: newCustomComments}, () => {event.target.parentNode.parentNode.removeChild(event.target.parentNode)});
-        });
-    });
-}
-
 
 // number inputs
 numberoflistings = document.getElementById('numberOfListings');

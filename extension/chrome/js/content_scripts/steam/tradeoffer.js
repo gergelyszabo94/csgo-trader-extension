@@ -1,122 +1,3 @@
-const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
-
-let yourInventory = undefined;
-let theirInventory = undefined;
-let combinedInventories = [];
-
-// the promise will be stored here temporarily
-let yourInventoryPromise = undefined;
-let theirInventoryPromise = undefined;
-
-//listens to the message events on the extension side of the communication
-window.addEventListener('message', e => {
-    if (e.data.type === 'yourInventory') {
-        yourInventoryPromise(e.data);
-        yourInventoryPromise = undefined;
-    }
-    else if (e.data.type === 'theirInventory') {
-        theirInventoryPromise(e.data);
-        theirInventoryPromise = undefined;
-    }
-});
-
-//sends the message to the page side to get the info
-const getYourInventory = () => {
-    window.postMessage(
-        {
-            type: 'requestYourInventory'
-        },
-        '*'
-    );
-    return new Promise(resolve => {
-        yourInventoryPromise = resolve;
-    });
-};
-
-const getTheirInventory = () => {
-    window.postMessage(
-        {
-            type: 'requestTheirInventory'
-        },
-        '*'
-    );
-    return new Promise(resolve => {
-        theirInventoryPromise = resolve;
-    });
-};
-
-//this injected script listens to the messages from the extension side and responds with the page context info needed
-let inventoryAccessScript = `
-    window.addEventListener('message', (e) => {
-        if (e.data.type === 'requestYourInventory' || e.data.type === 'requestTheirInventory') {
-            let inventory = undefined;
-            if(e.data.type === 'requestYourInventory'){
-                inventory = UserYou.getInventory(730,2);
-            }
-            else{
-                inventory = UserThem.getInventory(730,2);
-            }
-            let assets = inventory.rgInventory;
-            let steamID = inventory.owner.strSteamId;
-            if(assets!==null){
-                let assetKeys= Object.keys(assets);
-                let trimmedAssets = [];
-                
-                for(let assetKey of assetKeys){
-                    let asset = {
-                        amount: assets[assetKey].amount,
-                        assetid: assets[assetKey].id,
-                        actions: assets[assetKey].actions,
-                        classid: assets[assetKey].classid,
-                        icon: assets[assetKey].icon_url,
-                        instanceid: assets[assetKey].instanceid,
-                        contextid: assets[assetKey].contextid,
-                        descriptions: assets[assetKey].descriptions,
-                        market_actions: assets[assetKey].market_actions,
-                        market_hash_name: assets[assetKey].market_hash_name,
-                        name: assets[assetKey].name,
-                        name_color: assets[assetKey].name_color,
-                        position: assets[assetKey].pos,
-                        type: assets[assetKey].type,
-                        owner: steamID,
-                        fraudwarnings: assets[assetKey].fraudwarnings,
-                        tags: assets[assetKey].tags
-                    };
-                    trimmedAssets.push(asset);
-                }
-                    if(e.data.type === 'requestYourInventory'){
-                        window.postMessage({
-                            type: 'yourInventory',
-                            inventory: trimmedAssets
-                        }, '*');
-                    }
-                    else{
-                        window.postMessage({
-                            type: 'theirInventory',
-                            inventory: trimmedAssets
-                        }, '*');
-                    }
-                }
-            else{
-                if(e.data.type === 'requestYourInventory'){
-                        window.postMessage({
-                            type: 'yourInventory',
-                            inventory: null
-                        }, '*');
-                    }
-                    else{
-                        window.postMessage({
-                            type: 'theirInventory',
-                            inventory: null
-                        }, '*');
-                    }
-            }
-        }
-    });`;
-injectToPage(inventoryAccessScript, false, 'inventoryAccessScript', null);
-
-let tryGettingInventories = setInterval(getInventories,500);
-
 function getInventories(){
     getYourInventory().then(inventory => {
         if(inventory.inventory!==null){
@@ -151,58 +32,6 @@ function getInventories(){
         });
     }
 }
-
-// adds "get float value" action item
-overrideHandleTradeActionMenu();
-
-updateLoggedInUserID();
-
-// changes background and adds a banner if steamrep banned scammer detected
-chrome.storage.local.get('markScammers', result => {if(result.markScammers) warnOfScammer(getTradePartnerSteamID(), 'offer')});
-
-// this script gets injected, it allows communication between the page context and the content script initiated on the page
-// when the function is called it dispatches a an event that we listen to from the content script
-let sendMessageToContentScript = `
-    function sendMessageToContentScript(message){
-        let event = new CustomEvent('message', { 'detail': message });
-        document.dispatchEvent(event);
-    }`;
-injectToPage(sendMessageToContentScript, false,'sendMessageToContentScript', null);
-
-setInterval(() => {chrome.storage.local.get('hideOtherExtensionPrices', (result) => { if (result.hideOtherExtensionPrices && !document.hidden) removeSIHStuff()})}, 2000);
-
-document.querySelectorAll('.inventory_user_tab').forEach( (inventoryTab) => {
-    inventoryTab.addEventListener('click', () => {
-        addItemInfo();
-        let sortingSelect = document.getElementById('offer_sorting_mode');
-        sortItems(sortingSelect.options[sortingSelect.selectedIndex].value, 'offer');
-    })
-});
-
-let inventorySelector = document.getElementById('appselect');
-if (inventorySelector !== null) {
-    document.getElementById('appselect').addEventListener('click', () => {
-        setTimeout( () => {if (isCSGOInventoryActive('offer')) addItemInfo()}, 2000);
-    });
-}
-
-
-document.addEventListener('message', (e) => {
-    let inspectLink = e.detail;
-    let assetID = getAssetIDFromInspectLink(inspectLink);
-    let itemElementToAddFloatTo = findElementByAssetID(assetID);
-    let item = getItemByAssetID(combinedInventories, assetID);
-    if (item.floatInfo === null){
-        chrome.runtime.sendMessage({getFloatInfo: inspectLink}, (response) => {
-            if (response !== 'error'){
-                item.floatInfo = extractUsefulFloatInfo(response.floatInfo);
-                item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
-                addFloatIndicator(itemElementToAddFloatTo, item.floatInfo);
-            }
-        });
-    }
-    else addFloatIndicator(itemElementToAddFloatTo, item.floatInfo);
-});
 
 function findElementByAssetID(assetID){ return document.getElementById(`item730_2_${assetID}`)}
 
@@ -587,6 +416,178 @@ function addFloatIndicatorsToPage(type) {
 }
 
 function getOfferID() {return location.href.split('tradeoffer/')[1].split('/')[0]}
+
+const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
+
+let yourInventory = undefined;
+let theirInventory = undefined;
+let combinedInventories = [];
+
+// the promise will be stored here temporarily
+let yourInventoryPromise = undefined;
+let theirInventoryPromise = undefined;
+
+//listens to the message events on the extension side of the communication
+window.addEventListener('message', e => {
+    if (e.data.type === 'yourInventory') {
+        yourInventoryPromise(e.data);
+        yourInventoryPromise = undefined;
+    }
+    else if (e.data.type === 'theirInventory') {
+        theirInventoryPromise(e.data);
+        theirInventoryPromise = undefined;
+    }
+});
+
+//sends the message to the page side to get the info
+const getYourInventory = () => {
+    window.postMessage(
+        {
+            type: 'requestYourInventory'
+        },
+        '*'
+    );
+    return new Promise(resolve => {
+        yourInventoryPromise = resolve;
+    });
+};
+
+const getTheirInventory = () => {
+    window.postMessage(
+        {
+            type: 'requestTheirInventory'
+        },
+        '*'
+    );
+    return new Promise(resolve => {
+        theirInventoryPromise = resolve;
+    });
+};
+
+//this injected script listens to the messages from the extension side and responds with the page context info needed
+let inventoryAccessScript = `
+    window.addEventListener('message', (e) => {
+        if (e.data.type === 'requestYourInventory' || e.data.type === 'requestTheirInventory') {
+            let inventory = undefined;
+            if(e.data.type === 'requestYourInventory'){
+                inventory = UserYou.getInventory(730,2);
+            }
+            else{
+                inventory = UserThem.getInventory(730,2);
+            }
+            let assets = inventory.rgInventory;
+            let steamID = inventory.owner.strSteamId;
+            if(assets!==null){
+                let assetKeys= Object.keys(assets);
+                let trimmedAssets = [];
+                
+                for(let assetKey of assetKeys){
+                    let asset = {
+                        amount: assets[assetKey].amount,
+                        assetid: assets[assetKey].id,
+                        actions: assets[assetKey].actions,
+                        classid: assets[assetKey].classid,
+                        icon: assets[assetKey].icon_url,
+                        instanceid: assets[assetKey].instanceid,
+                        contextid: assets[assetKey].contextid,
+                        descriptions: assets[assetKey].descriptions,
+                        market_actions: assets[assetKey].market_actions,
+                        market_hash_name: assets[assetKey].market_hash_name,
+                        name: assets[assetKey].name,
+                        name_color: assets[assetKey].name_color,
+                        position: assets[assetKey].pos,
+                        type: assets[assetKey].type,
+                        owner: steamID,
+                        fraudwarnings: assets[assetKey].fraudwarnings,
+                        tags: assets[assetKey].tags
+                    };
+                    trimmedAssets.push(asset);
+                }
+                    if(e.data.type === 'requestYourInventory'){
+                        window.postMessage({
+                            type: 'yourInventory',
+                            inventory: trimmedAssets
+                        }, '*');
+                    }
+                    else{
+                        window.postMessage({
+                            type: 'theirInventory',
+                            inventory: trimmedAssets
+                        }, '*');
+                    }
+                }
+            else{
+                if(e.data.type === 'requestYourInventory'){
+                        window.postMessage({
+                            type: 'yourInventory',
+                            inventory: null
+                        }, '*');
+                    }
+                    else{
+                        window.postMessage({
+                            type: 'theirInventory',
+                            inventory: null
+                        }, '*');
+                    }
+            }
+        }
+    });`;
+injectToPage(inventoryAccessScript, false, 'inventoryAccessScript', null);
+
+let tryGettingInventories = setInterval(getInventories,500);
+
+
+// adds "get float value" action item
+overrideHandleTradeActionMenu();
+
+updateLoggedInUserID();
+
+// changes background and adds a banner if steamrep banned scammer detected
+chrome.storage.local.get('markScammers', result => {if(result.markScammers) warnOfScammer(getTradePartnerSteamID(), 'offer')});
+
+// this script gets injected, it allows communication between the page context and the content script initiated on the page
+// when the function is called it dispatches a an event that we listen to from the content script
+let sendMessageToContentScript = `
+    function sendMessageToContentScript(message){
+        let event = new CustomEvent('message', { 'detail': message });
+        document.dispatchEvent(event);
+    }`;
+injectToPage(sendMessageToContentScript, false,'sendMessageToContentScript', null);
+
+setInterval(() => {chrome.storage.local.get('hideOtherExtensionPrices', (result) => { if (result.hideOtherExtensionPrices && !document.hidden) removeSIHStuff()})}, 2000);
+
+document.querySelectorAll('.inventory_user_tab').forEach( (inventoryTab) => {
+    inventoryTab.addEventListener('click', () => {
+        addItemInfo();
+        let sortingSelect = document.getElementById('offer_sorting_mode');
+        sortItems(sortingSelect.options[sortingSelect.selectedIndex].value, 'offer');
+    })
+});
+
+let inventorySelector = document.getElementById('appselect');
+if (inventorySelector !== null) {
+    document.getElementById('appselect').addEventListener('click', () => {
+        setTimeout( () => {if (isCSGOInventoryActive('offer')) addItemInfo()}, 2000);
+    });
+}
+
+
+document.addEventListener('message', (e) => {
+    let inspectLink = e.detail;
+    let assetID = getAssetIDFromInspectLink(inspectLink);
+    let itemElementToAddFloatTo = findElementByAssetID(assetID);
+    let item = getItemByAssetID(combinedInventories, assetID);
+    if (item.floatInfo === null){
+        chrome.runtime.sendMessage({getFloatInfo: inspectLink}, (response) => {
+            if (response !== 'error'){
+                item.floatInfo = extractUsefulFloatInfo(response.floatInfo);
+                item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
+                addFloatIndicator(itemElementToAddFloatTo, item.floatInfo);
+            }
+        });
+    }
+    else addFloatIndicator(itemElementToAddFloatTo, item.floatInfo);
+});
 
 addPageControlEventListeners('offer');
 

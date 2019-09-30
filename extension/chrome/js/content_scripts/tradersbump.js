@@ -1,3 +1,12 @@
+function bump(){
+    document.querySelectorAll('.btn.btn-custom.btn-xs').forEach(button =>{
+        let link = button.getAttribute('href');
+        let request = new Request(link);
+
+        fetch(request).then((response) => {})
+    });
+}
+
 chrome.storage.local.get('tradersBump', (result) => {
     if(result.tradersBump){
         // ugly way to wait for the trades to load and become "bumpable"
@@ -8,12 +17,3 @@ chrome.storage.local.get('tradersBump', (result) => {
         setTimeout(() => {location.reload()}, reloadInterval*60*1000);
     }
 });
-
-function bump(){
-    document.querySelectorAll('.btn.btn-custom.btn-xs').forEach(button =>{
-        let link = button.getAttribute('href');
-        let request = new Request(link);
-
-        fetch(request).then((response) => {})
-    });
-}
