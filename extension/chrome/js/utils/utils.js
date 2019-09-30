@@ -1167,3 +1167,19 @@ function addPageControlEventListeners(type){
     }
     else setTimeout(() => {addPageControlEventListeners()}, 1000);
 }
+
+function trimFloatCache() {
+    chrome.storage.local.get('floatCache', (result) => {
+        let floatCache = result.floatCache;
+        let newFloatCache = {};
+
+        for (let assetID in floatCache){
+            let timeSinceLastUsed = (Date.now() - floatCache[assetID].lastUsed) / 1000; // in seconds
+            let used = floatCache[assetID].used;
+
+            // if unused and in cache for over a day, or used but not for over a week, then this whole thing negated because the ones that do not fit this wil remain in the cache
+            if (!((used === 0 && timeSinceLastUsed > 86400) || (used > 0 && timeSinceLastUsed > 604800))) newFloatCache[assetID] = floatCache[assetID];
+        }
+        chrome.storage.local.set({floatCache: newFloatCache}, () => {});
+    });
+}

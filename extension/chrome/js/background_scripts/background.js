@@ -50,6 +50,7 @@ chrome.runtime.onInstalled.addListener((details) =>{
     updateExchangeRates();
     chrome.alarms.create('updatePricesAndExchangeRates', {periodInMinutes: 1440});
     chrome.alarms.create('retryUpdatePricesAndExchangeRates', {periodInMinutes: 1});
+    chrome.alarms.create('trimFloatCache', {periodInMinutes: 1440});
 });
 
 // redirects to feedback survey on uninstall
@@ -86,6 +87,7 @@ chrome.alarms.onAlarm.addListener((alarm) =>{
             else chrome.alarms.clear('retryUpdatePricesAndExchangeRates', (wasCleared) =>{});
         });
     }
+    else if (alarm.name === 'trimFloatCache') trimFloatCache();
     else{
         chrome.browserAction.getBadgeText({}, (result) =>{
             if(result === '' || result === 'U' || result === 'I') chrome.browserAction.setBadgeText({text:'1'});
