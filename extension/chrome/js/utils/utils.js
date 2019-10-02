@@ -1137,8 +1137,31 @@ function workOnFloatQueue() {
                 }
                 else {
                     if(response !== 'nofloat'){
-                        if (job.type === 'inventory' || job.type === 'offer') addFloatIndicator(findElementByAssetID(job.assetID), response.floatInfo);
-                        else if (job.type === 'market') console.log('market');
+                        if (job.type === 'inventory' || job.type === 'inventory_floatbar' || job.type === 'offer') {
+                            addFloatIndicator(findElementByAssetID(job.assetID), response.floatInfo);
+
+                            // add float and pattern info to page variable
+                            let item = (job.type === 'inventory' || job.type === 'inventory_floatbar') ? getItemByAssetID(items, job.assetID) : getItemByAssetID(combinedInventories, job.assetID);
+                            item.floatInfo = response.floatInfo;
+                            item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
+
+                            if (job.type === 'inventory_floatbar'){
+                                if (getAssetIDofActive() === job.assetID) updateFloatAndPatternElements(item);
+                            }
+
+                            // check if there is a floatbar job for the same item and remove it
+                            if (job.type === 'inventory') {
+                                floatQueue.jobs.find((floatJob, index) => {
+                                    if (floatJob.type === 'inventory_floatbar' && job.assetID === floatJob.assetID) {
+                                        updateFloatAndPatternElements(item);
+                                        removeFromArray(floatQueue, index);
+                                    }
+                                })
+                            }
+                        }
+                        else if (job.type === 'market') {
+
+                        }
                     }
                 }
                 workOnFloatQueue();

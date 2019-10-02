@@ -179,23 +179,18 @@ function addElements(){
                 setTimeout(() =>{document.querySelectorAll(".float_block").forEach(e => e.parentNode.removeChild(e));}, 1000);
             }
             if (item.floatInfo === null){
-                chrome.runtime.sendMessage({getFloatInfo: item.inspectLink}, (response) => {
-                    if (!(response === 'error' || response === 'nofloat')){
-                        setFloatBarWithData(response.floatInfo);
-                        let patternInfo =  getPattern(item.market_hash_name, response.floatInfo.paintseed);
-                        setPatternInfo(patternInfo);
-                        setStickerInfo(response.floatInfo.stickers);
-                        item.floatInfo = response.floatInfo;
-                        item.patternInfo = patternInfo;
-                        addFloatIndicator(findElementByAssetID(item.assetid), item.floatInfo);
-                    }
-                    else hideFloatBars();
-                });
+                if (item.inspectLink !== null && item.type !== itemTypes.collectible && item.type !== itemTypes.container && item.type !== itemTypes.graffiti && item.type !== itemTypes.c4 && item.type !== itemTypes.sticker) {
+                    floatQueue.jobs.push({
+                        type: 'inventory_floatbar',
+                        assetID: item.assetid,
+                        inspectLink: item.inspectLink
+                    });
+                    workOnFloatQueue();
+                }
+                else hideFloatBars();
             }
             else {
-                setFloatBarWithData(item.floatInfo);
-                setPatternInfo(item.patternInfo);
-                setStickerInfo(item.floatInfo.stickers);
+                updateFloatAndPatternElements(item);
                 addFloatIndicator(findElementByAssetID(item.assetid), item.floatInfo);
             }
 
@@ -640,6 +635,12 @@ function addFloatIndicatorsToPage(page){
         }
     });
     workOnFloatQueue();
+}
+
+function updateFloatAndPatternElements(item) {
+    setFloatBarWithData(item.floatInfo);
+    setPatternInfo(item.patternInfo);
+    setStickerInfo(item.floatInfo.stickers);
 }
 
 const upperModule = `
