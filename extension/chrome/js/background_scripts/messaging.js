@@ -256,7 +256,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             chrome.storage.local.get('floatCache', (result) => {
                 if (result.floatCache[assetID] !== undefined) {
                     updateFloatCache(result.floatCache, assetID);
-                    sendResponse({floatInfo: result.floatCache[assetID].floatInfo});
+                    if (result.floatCache[assetID].floatInfo.floatvalue !== 0) sendResponse({floatInfo: result.floatCache[assetID].floatInfo});
+                    else sendResponse('nofloat');
                 }
                 else {
                     let getRequest = new Request(`https://api.csgofloat.com/?url=${inspectLink}`);
@@ -271,7 +272,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         if (body.iteminfo.floatvalue !== undefined) {
                             let usefulFloatInfo = extractUsefulFloatInfo(body.iteminfo);
                             updateFloatCache(result.floatCache, assetID, usefulFloatInfo);
-                            if (usefulFloatInfo.floatvalue !== 0.0) sendResponse({floatInfo: usefulFloatInfo});
+                            if (usefulFloatInfo.floatvalue !== 0) sendResponse({floatInfo: usefulFloatInfo});
                             else sendResponse('nofloat');
                         }
                         else sendResponse('error');
