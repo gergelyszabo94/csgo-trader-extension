@@ -628,7 +628,7 @@ function addFloatIndicatorsToPage(page){
     page.querySelectorAll('.item.app730.context2').forEach(itemElement => {
         let assetID = getAssetIDOfElement(itemElement);
         let item = getItemByAssetID(items, assetID);
-        if (item.inspectLink !== null){
+        if (item.inspectLink !== null && item.type !== itemTypes.collectible && item.type !== itemTypes.container && item.type !== itemTypes.graffiti && item.type !== itemTypes.c4 && item.type !== itemTypes.sticker){
             if (item.floatInfo === null) {
                 floatQueue.jobs.push({
                     type: 'inventory',

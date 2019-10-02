@@ -577,7 +577,7 @@ document.addEventListener('message', (e) => {
     let assetID = getAssetIDFromInspectLink(inspectLink);
     let itemElementToAddFloatTo = findElementByAssetID(assetID);
     let item = getItemByAssetID(combinedInventories, assetID);
-    if (item.floatInfo === null){
+    if (item.floatInfo === null && item.type !== itemTypes.collectible && item.type !== itemTypes.container && item.type !== itemTypes.graffiti && item.type !== itemTypes.c4 && item.type !== itemTypes.sticker){
         chrome.runtime.sendMessage({getFloatInfo: inspectLink}, (response) => {
             if (response !== 'error'){
                 item.floatInfo = extractUsefulFloatInfo(response.floatInfo);
