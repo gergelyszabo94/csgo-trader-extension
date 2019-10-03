@@ -36,6 +36,22 @@ function addStickers() {
     });
 }
 
+function addListingsToFloatQueue() {
+    getItems().then(listings => {
+        for (let listing in listings){
+            listing = listings[listing];
+            let assetID = listing.asset.id;
+            floatQueue.jobs.push({
+                type: 'market',
+                assetID: assetID,
+                inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
+                listingID: listing.listingid
+            });
+        }
+        workOnFloatQueue();
+    });
+}
+
 updateLoggedInUserID();
 
 // the promise will be stored here temporarily
@@ -229,10 +245,15 @@ document.getElementById('get_float').addEventListener('click', (event)=>{
 
 addPhasesIndicator();
 addStickers();
+addListingsToFloatQueue();
 
 let observer = new MutationObserver((mutations) =>{
     for(let mutation of mutations) {
-        if (mutation.target.id === 'searchResultsRows') {addPhasesIndicator(); addStickers()}
+        if (mutation.target.id === 'searchResultsRows') {
+            addPhasesIndicator();
+            addStickers();
+            addListingsToFloatQueue();
+        }
     }
 });
 
