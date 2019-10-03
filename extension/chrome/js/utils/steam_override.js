@@ -77,12 +77,8 @@ function overrideHandleTradeActionMenu(){
                 var elItemActions = $J('#trade_action_popup_itemactions');
                 elItemActions.empty();
                 item.actions=item.actions.filter(element => element.id!=="inbrowser");
-                item.actions=item.actions.filter(element => element.id!=="getfloat");
                 let inspectLink = item.actions[0].link;
-                item.actions.push(
-                    {name: "Inspect in Browser...", link: "http://csgo.gallery/"+inspectLink, id: "inbrowser"},
-                    {name: "Get Float Value...", link: "javascript:sendMessageToContentScript('" + inspectLink + "');", id: "getfloat"}
-                    );
+                item.actions.push({name: "Inspect in Browser...", link: "http://csgo.gallery/"+inspectLink, id: "inbrowser"});
                 for ( var action = 0; action < item.actions.length; action++ )
                 {
                     var rgAction = item.actions[action];
@@ -91,10 +87,7 @@ function overrideHandleTradeActionMenu(){
         
                     var strLink = rgAction.link.replace( "%assetid%", item.id ).replace( "%contextid%", item.contextid ).replace( "%owner_steamid%", user.GetSteamId() );
                     elNewAction.attr( 'href', strLink );
-                    
-                    if(rgAction.name==="getfloat"){
-                        elNewAction.attr("data-assetid", item.id );
-                    }
+                   
                     
                     if ( rgAction.link.substr( 0, 6 ) != "steam:" && rgAction.link.substr( 0, 37 ) != "javascript:sendMessageToContentScript")
                     {

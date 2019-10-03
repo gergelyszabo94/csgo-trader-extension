@@ -571,24 +571,6 @@ if (inventorySelector !== null) {
     });
 }
 
-
-document.addEventListener('message', (e) => {
-    let inspectLink = e.detail;
-    let assetID = getAssetIDFromInspectLink(inspectLink);
-    let itemElementToAddFloatTo = findElementByAssetID(assetID);
-    let item = getItemByAssetID(combinedInventories, assetID);
-    if (item.floatInfo === null && item.type !== itemTypes.collectible && item.type !== itemTypes.container && item.type !== itemTypes.graffiti && item.type !== itemTypes.c4 && item.type !== itemTypes.sticker){
-        chrome.runtime.sendMessage({getFloatInfo: inspectLink}, (response) => {
-            if (response !== 'error'){
-                item.floatInfo = extractUsefulFloatInfo(response.floatInfo);
-                item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
-                addFloatIndicator(itemElementToAddFloatTo, item.floatInfo);
-            }
-        });
-    }
-    else addFloatIndicator(itemElementToAddFloatTo, item.floatInfo);
-});
-
 addPageControlEventListeners('offer');
 
 let theirInventoryTab = document.getElementById('inventory_select_their_inventory');
