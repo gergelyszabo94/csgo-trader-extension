@@ -206,8 +206,8 @@ if (originalInspectButton !== null){
 // adds float bars without float data to each item
 addFloatBarSkeletons();
 
-// adds the extra functions to the context menu
-document.getElementById('market_action_popup_itemactions').insertAdjacentHTML('afterend', inBrowserInspectButtonPopupLink + getFloatInfoMenuItem);
+// adds the in-browser inspect button to the context menu
+document.getElementById('market_action_popup_itemactions').insertAdjacentHTML('afterend', inBrowserInspectButtonPopupLink);
 
 // adds the proper link to the context menu before it gets clicked - needed because the context menu resets when clicked
 document.getElementById('inbrowser_inspect').addEventListener('mouseenter', (event)=>{
