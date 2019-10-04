@@ -71,6 +71,15 @@ function addFloatBarSkeletons(){
     else setTimeout(() => {addFloatBarSkeletons()}, 2000);
 }
 
+function populateFloatInfo(listingID, floatInfo){
+    let listingElement = document.getElementById(`listing_${listingID}`);
+    listingElement.querySelector('.floatTechnical').innerHTML = getDataFilledFloatTechnical(floatInfo);
+
+    let position = floatInfo.floatvalue.toFixed(2)*100-2;
+    listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
+    listingElement.querySelector('.floatDropTarget').innerText = floatInfo.floatvalue.toFixed(4);
+}
+
 updateLoggedInUserID();
 
 // the promise will be stored here temporarily

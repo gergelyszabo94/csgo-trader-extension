@@ -1160,7 +1160,7 @@ function workOnFloatQueue() {
                             }
                         }
                         else if (job.type === 'market') {
-
+                            populateFloatInfo(job.listingID, response.floatInfo)
                         }
                     }
                 }
