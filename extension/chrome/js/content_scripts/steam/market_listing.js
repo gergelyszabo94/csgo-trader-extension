@@ -135,9 +135,6 @@ let getItemsScript = `
 injectToPage(getItemsScript, false, 'getItems', null);
 
 const inBrowserInspectButtonPopupLink = `<a class="popup_menu_item" id="inbrowser_inspect" href="http://csgo.gallery/" target="_blank">${chrome.i18n.getMessage("inspect_in_browser")}</a>`;
-const getFloatInfoMenuItem = `<span class="popup_menu_item" id="get_float">${chrome.i18n.getMessage("get_float_info")}</span>`;
-
-
 const dopplerPhase = '<div class="dopplerPhaseMarket"><span></span></div>';
 
 // it takes the visible descriptors and checks if the collection includes souvenirs
@@ -209,71 +206,6 @@ document.getElementById('market_action_popup_itemactions').insertAdjacentHTML('a
 document.getElementById('inbrowser_inspect').addEventListener('mouseenter', (event)=>{
     let inspectLink = document.getElementById('market_action_popup_itemactions').querySelector('a.popup_menu_item').getAttribute('href');
     event.target.setAttribute('href', `http://csgo.gallery/${inspectLink}`);
-});
-
-document.getElementById('get_float').addEventListener('click', (event)=>{
-    let inspectLink = event.target.parentNode.querySelector('a.popup_menu_item').getAttribute('href');
-    let listingID = inspectLink.split('preview%20M')[1].split('A')[0];
-
-    let listingParentElement = document.getElementById(`listing_${listingID}_name`).parentNode;
-
-    if(listingParentElement.getAttribute('data-floatBar-added') === null || listingParentElement.getAttribute('data-floatBar-added') === false){
-        chrome.runtime.sendMessage({getFloatInfo: inspectLink}, (response) =>{
-            try{
-                float = response.floatInfo.floatvalue;
-                paintIndex = response.floatInfo.paintindex;
-                paintSeed = response.floatInfo.paintseed;
-                origin = response.floatInfo.origin_name;
-                min = response.floatInfo.min;
-                max = response.floatInfo.max;
-                stickers = response.floatInfo.stickers;
-
-            }
-            catch{
-
-            }
-
-            let position = float.toFixed(2) * 100 - 2;
-
-            let floatBar = `
-                <div class="floatBarMarket">
-                    <div class="floatToolTip" style="left: ${position}%">
-                        <div>Float: <span id="float1DropTarget">${float.toFixed(4)}</span></div>
-                        <svg id="floatPointer" class="floatPointer" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path></svg>
-                   </div>
-                 <div class="progress">
-                    <div class="progress-bar floatBarFN" title="${exteriors.factory_new.localized_name}"></div>
-                    <div class="progress-bar floatBarMW" title="${exteriors.minimal_wear.localized_name}"></div>
-                    <div class="progress-bar floatBarFT" title="${exteriors.field_tested.localized_name}"></div>
-                    <div class="progress-bar floatBarWW" title="${exteriors.well_worn.localized_name}"></div>
-                     <div class="progress-bar floatBarBS" title="${exteriors.battle_scarred.localized_name}"></div>
-                 </div>
-                  <div class="showTechnical">Show Technical</div>
-                 <div class="floatTechnical hidden">
-                        Technical:<br>
-                        Float Value: ${float}<br>
-                        Paint Index: ${paintIndex}<br>
-                        Paint Seed: ${paintSeed}<br>
-                        Origin: ${origin}<br>
-                        Best Possible Float: ${min}<br>
-                        Worst Possible Float: ${max}<br>
-                        <br>
-                        Float info from <a href="https://csgofloat.com/" target="_blank">csgofloat.com</a>
-                </div>
-                </div>
-            `;
-            //TODO set sticker condition
-            if (float === 0) listingParentElement.insertAdjacentHTML('beforeend', '<div>Could not get Float from csgofloat.com</div>');
-            else{
-                listingParentElement.setAttribute('data-floatBar-added', true);
-                listingParentElement.insertAdjacentHTML('beforeend', floatBar);
-            }
-
-            document.querySelectorAll('.showTechnical').forEach(showTechnical => {
-                showTechnical.addEventListener('click', event =>{ event.target.parentNode.querySelector('.floatTechnical').classList.toggle('hidden')})
-            });
-        });
-    }
 });
 
 addPhasesIndicator();
