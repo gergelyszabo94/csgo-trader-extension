@@ -37,19 +37,38 @@ function addStickers() {
 }
 
 function addListingsToFloatQueue() {
-    getItems().then(listings => {
-        for (let listing in listings){
-            listing = listings[listing];
-            let assetID = listing.asset.id;
-            floatQueue.jobs.push({
-                type: 'market',
-                assetID: assetID,
-                inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
-                listingID: listing.listingid
-            });
-        }
-        workOnFloatQueue();
-    });
+    if (itemWithInspectLink) {
+        getItems().then(listings => {
+            for (let listing in listings) {
+                listing = listings[listing];
+                let assetID = listing.asset.id;
+                floatQueue.jobs.push({
+                    type: 'market',
+                    assetID: assetID,
+                    inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
+                    listingID: listing.listingid
+                });
+            }
+            workOnFloatQueue();
+        });
+    }
+}
+
+function addFloatBarSkeletons(){
+    let listingNameBlocks = document.querySelectorAll('.market_listing_item_name_block');
+    if (listingNameBlocks !== null && itemWithInspectLink) {
+        listingNameBlocks.forEach(listingNameBlock => {
+            if (listingNameBlock.getAttribute('data-floatBar-added') === null || listingNameBlock.getAttribute('data-floatBar-added') === false) {
+                listingNameBlock.insertAdjacentHTML('beforeend', getFloatBarSkeleton('market'));
+                listingNameBlock.setAttribute('data-floatBar-added', true);
+
+                listingNameBlock.querySelector('.showTechnical').addEventListener('click', event => {
+                    event.target.parentNode.querySelector('.floatTechnical').classList.toggle('hidden')
+                })
+            }
+        });
+    }
+    else setTimeout(() => {addFloatBarSkeletons()}, 2000);
 }
 
 updateLoggedInUserID();
@@ -163,11 +182,16 @@ if(fullName.split('(')[1] !== undefined && descriptor !== null) descriptor.inser
 
 // adds the in-browser inspect button to the top of the page
 const originalInspectButton = document.getElementById('largeiteminfo_item_actions').querySelector('.btn_small.btn_grey_white_innerfade'); // some items don't have inspect buttons (like cases)
+let itemWithInspectLink = false;
 if (originalInspectButton !== null){
+    itemWithInspectLink = true;
     const inspectLink = originalInspectButton.getAttribute('href');
     const inBrowserInspectButton =`<a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect_button" href="http://csgo.gallery/${inspectLink}" target="_blank"><span>${chrome.i18n.getMessage("inspect_in_browser")}</span></a>`;
     document.getElementById('largeiteminfo_item_actions').insertAdjacentHTML('beforeend', inBrowserInspectButton);
 }
+
+// adds float bars without float data to each item
+addFloatBarSkeletons();
 
 // adds the extra functions to the context menu
 document.getElementById('market_action_popup_itemactions').insertAdjacentHTML('afterend', inBrowserInspectButtonPopupLink + getFloatInfoMenuItem);

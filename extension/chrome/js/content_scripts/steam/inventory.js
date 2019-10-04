@@ -559,20 +559,9 @@ function generateItemsList(){
 }
 
 function setFloatBarWithData(floatInfo){
-    let floatTechnical = `
-                        <div class="floatTechnical hidden">
-                            Technical:<br>
-                            Float Value: ${floatInfo.floatvalue}<br>
-                            Paint Index: ${floatInfo.paintindex}<br>
-                            Paint Seed: ${floatInfo.paintseed}<br>
-                            Origin: ${floatInfo.origin_name}<br>
-                            Best Possible Float: ${floatInfo.min}<br>
-                            Worst Possible Float: ${floatInfo.max}<br>
-                            <br>
-                            Float info from <a href="https://csgofloat.com/" target="_blank">csgofloat.com</a>
-                        </div>`;
+    let floatTechnicalElement = getDataFilledFloatTechnical(floatInfo);
 
-    document.querySelectorAll('.showTechnical').forEach (showTechnical => showTechnical.insertAdjacentHTML('afterend', floatTechnical));
+    document.querySelectorAll('.floatTechnical').forEach (floatTechnical => floatTechnical.innerHTML = floatTechnicalElement);
 
     let position = floatInfo.floatvalue.toFixed(2)*100-2;
     document.querySelectorAll('.floatToolTip').forEach(floatToolTip => floatToolTip.setAttribute('style', `left: ${position}%`));
@@ -642,26 +631,13 @@ function updateFloatAndPatternElements(item) {
     setPatternInfo(item.patternInfo);
     setStickerInfo(item.floatInfo.stickers);
 }
-
+const floatBar = getFloatBarSkeleton('inventory');
 const upperModule = `
 <div class="upperModule">
     <div class="nametag"></div>
     <div class="descriptor customStickers"></div>
     <div class="duplicate">x1</div>
-    <div class="floatBar">
-    <div class="floatToolTip">
-        <div>Float: <span class="floatDropTarget">Waiting for csgofloat.com</span></div>
-        <svg class="floatPointer" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path></svg>
-   </div>
-     <div class="progress">
-        <div class="progress-bar floatBarFN" title="Factory New"></div>
-        <div class="progress-bar floatBarMW" title="Minimal Wear"></div>
-        <div class="progress-bar floatBarFT" title="Field-Tested"></div>
-        <div class="progress-bar floatBarWW" title="Well-Worn"></div>
-         <div class="progress-bar floatBarBS" title="Battle-Scarred"></div>
-     </div>
-      <div class="showTechnical">Show Technical</div>
-    </div>
+    ${floatBar}
     <div class="patternInfo"></div>
 </div>
 `;
