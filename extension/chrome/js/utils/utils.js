@@ -1163,6 +1163,10 @@ function workOnFloatQueue() {
                             populateFloatInfo(job.listingID, response.floatInfo)
                         }
                     }
+                    else {
+                        if (job.type === 'inventory_floatbar') hideFloatBars();
+                        else if (job.type === 'market') hideFloatBar(job.listingID);
+                    }
                 }
                 workOnFloatQueue();
             });
