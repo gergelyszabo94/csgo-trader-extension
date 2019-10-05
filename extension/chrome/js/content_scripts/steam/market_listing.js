@@ -61,9 +61,14 @@ function addFloatBarSkeletons(){
                 listingNameBlock.insertAdjacentHTML('beforeend', getFloatBarSkeleton('market'));
                 listingNameBlock.setAttribute('data-floatBar-added', true);
 
+                // adds "show technical" hide and show logic
                 listingNameBlock.querySelector('.showTechnical').addEventListener('click', event => {
                     event.target.parentNode.querySelector('.floatTechnical').classList.toggle('hidden')
-                })
+                });
+
+                // sets the overflow of parent elements so sticker popups and float pointers can overlap
+                listingNameBlock.style.overflow = 'visible';
+                listingNameBlock.parentElement.style.overflow = 'visible';
             }
         });
     }
@@ -74,7 +79,7 @@ function populateFloatInfo(listingID, floatInfo){
     let listingElement = getElementByListingID(listingID);
     listingElement.querySelector('.floatTechnical').innerHTML = getDataFilledFloatTechnical(floatInfo);
 
-    let position = floatInfo.floatvalue.toFixed(2)*100-2;
+    let position = (floatInfo.floatvalue.toFixed(2) * 100) - 2;
     listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
     listingElement.querySelector('.floatDropTarget').innerText = floatInfo.floatvalue.toFixed(4);
 }

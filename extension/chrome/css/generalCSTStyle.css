@@ -181,6 +181,12 @@ progress {
     top: -35px;
 }
 
+.floatBarMarket{
+    margin-right: 10px;
+    margin-left: 74px;
+    width: 85%;
+}
+
 .floatBarFN{
     width: 7%;
     background-color: var(--steam-online-blue);
@@ -290,6 +296,7 @@ progress {
 .stickerHolderMarket{
     margin-top: 15px;
     margin-bottom: 15px;
+    text-align: center;
 }
 
 .stattrakOrange{
