@@ -587,10 +587,8 @@ function setPatternInfo(patternInfo){
 function setStickerInfo(stickers){
     if (stickers !== null) {
         stickers.forEach((stickerInfo, index) =>{
-            let wear = 100;
-            if(stickerInfo.wear !== undefined){
-                wear =  Math.trunc(Math.abs( 1 - stickerInfo.wear) * 100);
-            }
+            let wear = stickerInfo.wear !== undefined ? Math.trunc(Math.abs( 1 - stickerInfo.wear) * 100) : 100 ;
+
             document.querySelectorAll('.customStickers').forEach(customStickers => {
                 let currentSticker = customStickers.querySelectorAll('.stickerSlot')[index];
                 currentSticker.setAttribute('data-tooltip', `${stickerInfo.name} - Condition: ${wear}%`);

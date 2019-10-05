@@ -1065,7 +1065,7 @@ function extractUsefulFloatInfo(floatInfo) {
         origin_name: floatInfo.origin_name,
         min: floatInfo.min,
         max: floatInfo.max,
-        stickers: floatInfo.sticker !== undefined ? floatInfo.sticker : null
+        stickers: floatInfo.stickers !== undefined ? floatInfo.stickers : null
     };
 }
 
@@ -1160,7 +1160,8 @@ function workOnFloatQueue() {
                             }
                         }
                         else if (job.type === 'market') {
-                            populateFloatInfo(job.listingID, response.floatInfo)
+                            populateFloatInfo(job.listingID, response.floatInfo);
+                            setStickerInfo(job.listingID, response.floatInfo.stickers);
                         }
                     }
                     else {

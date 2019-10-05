@@ -79,7 +79,7 @@ function populateFloatInfo(listingID, floatInfo){
     let listingElement = getElementByListingID(listingID);
     listingElement.querySelector('.floatTechnical').innerHTML = getDataFilledFloatTechnical(floatInfo);
 
-    let position = (floatInfo.floatvalue.toFixed(2) * 100) - 2;
+    let position = (floatInfo.floatvalue.toFixed(2) * 100) - 1;
     listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
     listingElement.querySelector('.floatDropTarget').innerText = floatInfo.floatvalue.toFixed(4);
 }
@@ -116,6 +116,20 @@ function getListings() {
     }
 
     return listings;
+}
+
+// sticker wear to sticker icon tooltip
+function setStickerInfo(listingID, stickers){
+    if (stickers !== null) {
+        let listingElement = getElementByListingID(listingID);
+        stickers.forEach((stickerInfo, index) =>{
+            let wear = stickerInfo.wear !== undefined ? Math.trunc(Math.abs( 1 - stickerInfo.wear) * 100) : 100 ;
+
+            let currentSticker = listingElement.querySelectorAll('.stickerSlotMarket')[index];
+            currentSticker.setAttribute('data-tooltip-market', `${stickerInfo.name} - Condition: ${wear}%`);
+            currentSticker.querySelector('img').setAttribute('style', `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`);
+        });
+    }
 }
 
 updateLoggedInUserID();
