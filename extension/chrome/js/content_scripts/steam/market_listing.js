@@ -20,37 +20,36 @@ function addStickers() {
     // removes sih sticker info
     document.querySelectorAll('.sih-images').forEach(image => {image.parentNode.removeChild(image)});
 
-    getItems().then(listings => {
-        document.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listing_row => {
-            if (listing_row.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listing_row.parentNode.parentNode.id !== 'tabContentsMyListings'){
-                let listingID = listing_row.id.split('listing_')[1];
-                listing_row.querySelectorAll('.market_listing_item_name_block').forEach(name_block =>{name_block.insertAdjacentHTML('beforeend', `<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`)});
+    let listings = getListings();
+    document.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listing_row => {
+        if (listing_row.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listing_row.parentNode.parentNode.id !== 'tabContentsMyListings'){
+            let listingID = listing_row.id.split('listing_')[1];
+            listing_row.querySelectorAll('.market_listing_item_name_block').forEach(name_block =>{name_block.insertAdjacentHTML('beforeend', `<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`)});
 
-                let stickers = listings[listingID].asset.stickers;
+            let stickers = listings[listingID].asset.stickers;
 
-                stickers.forEach(stickerInfo =>{
-                    document.getElementById(`stickerHolder_${listingID}`).insertAdjacentHTML('beforeend', `<span class="stickerSlotMarket" data-tooltip-market="${stickerInfo.name}"><a href="${stickerInfo.marketURL}" target="_blank"><img src="${stickerInfo.iconURL}" class="stickerIcon"></a></span>`)
-                });
-            }
-        });
+            stickers.forEach(stickerInfo =>{
+                document.getElementById(`stickerHolder_${listingID}`).insertAdjacentHTML('beforeend', `<span class="stickerSlotMarket" data-tooltip-market="${stickerInfo.name}"><a href="${stickerInfo.marketURL}" target="_blank"><img src="${stickerInfo.iconURL}" class="stickerIcon"></a></span>`)
+            });
+        }
     });
 }
 
 function addListingsToFloatQueue() {
     if (itemWithInspectLink) {
-        getItems().then(listings => {
-            for (let listing in listings) {
-                listing = listings[listing];
-                let assetID = listing.asset.id;
-                floatQueue.jobs.push({
-                    type: 'market',
-                    assetID: assetID,
-                    inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
-                    listingID: listing.listingid
-                });
-            }
-            workOnFloatQueue();
-        });
+        let listings = getListings();
+        for (let listing in listings) {
+            listing = listings[listing];
+            let assetID = listing.asset.id;
+            floatQueue.jobs.push({
+                type: 'market',
+                assetID: assetID,
+                inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
+                listingID: listing.listingid
+            });
+        }
+        workOnFloatQueue();
+
     }
 }
 
@@ -87,59 +86,34 @@ function hideFloatBar(listingID){
 
 function getElementByListingID(listingID){return document.getElementById(`listing_${listingID}`)}
 
-updateLoggedInUserID();
+function getListings() {
+    let getListingsScript = `
+    document.querySelector('body').setAttribute('listingsInfo', JSON.stringify({
+        listings: g_rgListingInfo,
+        assets: g_rgAssets
+    }));`;
 
-// the promise will be stored here temporarily
-let itemsPromise = undefined;
+    let listingsInfo = JSON.parse(injectToPage(getListingsScript, true, 'getListings', 'listingsInfo'));
+    let assets = listingsInfo.assets[730][2];
+    let listings = listingsInfo.listings;
 
-//listens to the message events on the extension side of the communication
-window.addEventListener('message', e => {
-    if (e.data.type === 'items') {
-        let assets = e.data.assets[730][2];
-        let listings = e.data.listings;
-        for (let listing in listings){
-            let assetid = listings[listing].asset.id;
+    for (let listing in listings){
+        let assetID = listings[listing].asset.id;
 
-            for(let asset in assets){
-                let stickers = parseStickerInfo(assets[asset].descriptions, 'search');
+        for(let asset in assets){
+            let stickers = parseStickerInfo(assets[asset].descriptions, 'search');
 
-                if(assetid === assets[asset].id){
-                    listings[listing].asset = assets[asset];
-                    listings[listing].asset.stickers = stickers;
-                }
+            if(assetID === assets[asset].id){
+                listings[listing].asset = assets[asset];
+                listings[listing].asset.stickers = stickers;
             }
         }
-        itemsPromise(listings);
-        itemsPromise = undefined;
     }
-});
 
-//sends the message to the page side to get the info
-const getItems = () =>{
-    window.postMessage(
-        {
-            type: 'requestItems'
-        },
-        '*'
-    );
-    return new Promise(resolve => {
-        itemsPromise = resolve;
-    });
-};
+    return listings;
+}
 
-// this injected script listens to the messages from the extension side and responds with the page context info needed
-let getItemsScript = `
-    window.addEventListener('message', (e) => {
-        if (e.data.type == 'requestItems') {
-            window.postMessage({
-                type: 'items',
-                listings: g_rgListingInfo,
-                assets: g_rgAssets
-            }, '*');
-        }
-    });
-    `;
-injectToPage(getItemsScript, false, 'getItems', null);
+updateLoggedInUserID();
 
 const inBrowserInspectButtonPopupLink = `<a class="popup_menu_item" id="inbrowser_inspect" href="http://csgo.gallery/" target="_blank">${chrome.i18n.getMessage("inspect_in_browser")}</a>`;
 const dopplerPhase = '<div class="dopplerPhaseMarket"><span></span></div>';
