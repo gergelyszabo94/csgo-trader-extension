@@ -1,18 +1,8 @@
 function getInventories(){
-    getYourInventory().then(inventory => {
-        if(inventory.inventory!==null){
-            yourInventory = inventory.inventory;
-        }
-    });
+    yourInventory = getItemInfoFromPage('You');
+    theirInventory = getItemInfoFromPage('Them');
 
-    getTheirInventory().then(inventory => {
-        if(inventory.inventory!==null){
-            theirInventory = inventory.inventory;
-        }
-    });
-
-    if(yourInventory !== undefined && theirInventory !== undefined){
-        clearInterval(tryGettingInventories);
+    if(yourInventory !== null && theirInventory !== null){
         let yourBuiltInventory = buildInventoryStructure(yourInventory);
         let theirBuiltInventory = buildInventoryStructure(theirInventory);
 
@@ -31,6 +21,7 @@ function getInventories(){
             });
         });
     }
+    else setTimeout(() => {getInventories()}, 500);
 }
 
 function findElementByAssetID(assetID){ return document.getElementById(`item730_2_${assetID}`)}
@@ -417,72 +408,18 @@ function addFloatIndicatorsToPage(type) {
 
 function getOfferID() {return location.href.split('tradeoffer/')[1].split('/')[0]}
 
-const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
-
-let yourInventory = undefined;
-let theirInventory = undefined;
-let combinedInventories = [];
-
-// the promise will be stored here temporarily
-let yourInventoryPromise = undefined;
-let theirInventoryPromise = undefined;
-
-//listens to the message events on the extension side of the communication
-window.addEventListener('message', e => {
-    if (e.data.type === 'yourInventory') {
-        yourInventoryPromise(e.data);
-        yourInventoryPromise = undefined;
-    }
-    else if (e.data.type === 'theirInventory') {
-        theirInventoryPromise(e.data);
-        theirInventoryPromise = undefined;
-    }
-});
-
-//sends the message to the page side to get the info
-const getYourInventory = () => {
-    window.postMessage(
-        {
-            type: 'requestYourInventory'
-        },
-        '*'
-    );
-    return new Promise(resolve => {
-        yourInventoryPromise = resolve;
-    });
-};
-
-const getTheirInventory = () => {
-    window.postMessage(
-        {
-            type: 'requestTheirInventory'
-        },
-        '*'
-    );
-    return new Promise(resolve => {
-        theirInventoryPromise = resolve;
-    });
-};
-
-//this injected script listens to the messages from the extension side and responds with the page context info needed
-let inventoryAccessScript = `
-    window.addEventListener('message', (e) => {
-        if (e.data.type === 'requestYourInventory' || e.data.type === 'requestTheirInventory') {
-            let inventory = undefined;
-            if(e.data.type === 'requestYourInventory'){
-                inventory = UserYou.getInventory(730,2);
-            }
-            else{
-                inventory = UserThem.getInventory(730,2);
-            }
-            let assets = inventory.rgInventory;
-            let steamID = inventory.owner.strSteamId;
-            if(assets!==null){
-                let assetKeys= Object.keys(assets);
-                let trimmedAssets = [];
+function getItemInfoFromPage(who) {
+    let getItemsSccript = `
+            inventory = User${who}.getInventory(730,2);
+            assets = inventory.rgInventory;
+            steamID = inventory.owner.strSteamId;
+            trimmedAssets = [];
+            
+            if(assets !== null){
+                assetKeys = Object.keys(assets);
                 
                 for(let assetKey of assetKeys){
-                    let asset = {
+                    trimmedAssets.push({
                         amount: assets[assetKey].amount,
                         assetid: assets[assetKey].id,
                         actions: assets[assetKey].actions,
@@ -500,41 +437,22 @@ let inventoryAccessScript = `
                         owner: steamID,
                         fraudwarnings: assets[assetKey].fraudwarnings,
                         tags: assets[assetKey].tags
-                    };
-                    trimmedAssets.push(asset);
+                    });
                 }
-                    if(e.data.type === 'requestYourInventory'){
-                        window.postMessage({
-                            type: 'yourInventory',
-                            inventory: trimmedAssets
-                        }, '*');
-                    }
-                    else{
-                        window.postMessage({
-                            type: 'theirInventory',
-                            inventory: trimmedAssets
-                        }, '*');
-                    }
-                }
-            else{
-                if(e.data.type === 'requestYourInventory'){
-                        window.postMessage({
-                            type: 'yourInventory',
-                            inventory: null
-                        }, '*');
-                    }
-                    else{
-                        window.postMessage({
-                            type: 'theirInventory',
-                            inventory: null
-                        }, '*');
-                    }
-            }
-        }
-    });`;
-injectToPage(inventoryAccessScript, false, 'inventoryAccessScript', null);
+             }
+             else trimmedAssets = null;
+        document.querySelector('body').setAttribute('offerInventoryInfo', JSON.stringify(trimmedAssets));`;
+    return JSON.parse(injectToPage(getItemsSccript, true, 'getOfferItemInfo', 'offerInventoryInfo'));
+}
 
-let tryGettingInventories = setInterval(getInventories,500);
+const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
+
+let yourInventory = null;
+let theirInventory = null;
+let combinedInventories = [];
+
+// initiates all logic that needs access to item info
+getInventories();
 
 
 // adds "get float value" action item
@@ -544,15 +462,6 @@ updateLoggedInUserID();
 
 // changes background and adds a banner if steamrep banned scammer detected
 chrome.storage.local.get('markScammers', result => {if(result.markScammers) warnOfScammer(getTradePartnerSteamID(), 'offer')});
-
-// this script gets injected, it allows communication between the page context and the content script initiated on the page
-// when the function is called it dispatches a an event that we listen to from the content script
-let sendMessageToContentScript = `
-    function sendMessageToContentScript(message){
-        let event = new CustomEvent('message', { 'detail': message });
-        document.dispatchEvent(event);
-    }`;
-injectToPage(sendMessageToContentScript, false,'sendMessageToContentScript', null);
 
 setInterval(() => {chrome.storage.local.get('hideOtherExtensionPrices', (result) => { if (result.hideOtherExtensionPrices && !document.hidden) removeSIHStuff()})}, 2000);
 

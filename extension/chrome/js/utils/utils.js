@@ -1018,7 +1018,7 @@ function injectToPage(scriptString, toRemove, id, executeAndReturn){
     toInject.innerHTML = scriptString;
     (document.head || document.documentElement).appendChild(toInject);
 
-    let simpleAttributeParsing = ['steamidOfLoggedinUser', 'steamidOfProfileOwner', 'tradePartnerSteamID', 'inventoryOwnerID', 'listingsInfo', 'inventoryInfo', 'allItemsLoaded'];
+    let simpleAttributeParsing = ['steamidOfLoggedinUser', 'steamidOfProfileOwner', 'tradePartnerSteamID', 'inventoryOwnerID', 'listingsInfo', 'inventoryInfo', 'allItemsLoaded', 'offerInventoryInfo'];
     let result = simpleAttributeParsing.includes(executeAndReturn) ? document.querySelector('body').getAttribute(executeAndReturn) : null;
 
     if(toRemove) document.head.removeChild(toInject);
