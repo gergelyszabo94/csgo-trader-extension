@@ -21,7 +21,7 @@ function addStickers() {
     document.querySelectorAll('.sih-images').forEach(image => {image.parentNode.removeChild(image)});
 
     let listings = getListings();
-    document.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listing_row => {
+    document.getElementById('searchResultsRows').querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listing_row => {
         if (listing_row.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listing_row.parentNode.parentNode.id !== 'tabContentsMyListings'){
             let listingID = listing_row.id.split('listing_')[1];
             listing_row.querySelectorAll('.market_listing_item_name_block').forEach(name_block =>{name_block.insertAdjacentHTML('beforeend', `<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`)});
@@ -54,7 +54,7 @@ function addListingsToFloatQueue() {
 }
 
 function addFloatBarSkeletons(){
-    let listingNameBlocks = document.querySelectorAll('.market_listing_item_name_block');
+    let listingNameBlocks = document.getElementById('searchResultsRows').querySelectorAll('.market_listing_item_name_block');
     if (listingNameBlocks !== null && itemWithInspectLink) {
         listingNameBlocks.forEach(listingNameBlock => {
             if (listingNameBlock.getAttribute('data-floatBar-added') === null || listingNameBlock.getAttribute('data-floatBar-added') === false) {
@@ -77,11 +77,14 @@ function addFloatBarSkeletons(){
 
 function populateFloatInfo(listingID, floatInfo){
     let listingElement = getElementByListingID(listingID);
-    listingElement.querySelector('.floatTechnical').innerHTML = getDataFilledFloatTechnical(floatInfo);
 
-    let position = (floatInfo.floatvalue.toFixed(2) * 100) - 1;
-    listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
-    listingElement.querySelector('.floatDropTarget').innerText = floatInfo.floatvalue.toFixed(4);
+    if (listingElement !== null) { // if for example the user has changed page and the listing is not there anymore
+        listingElement.querySelector('.floatTechnical').innerHTML = getDataFilledFloatTechnical(floatInfo);
+
+        let position = (floatInfo.floatvalue.toFixed(2) * 100) - 1;
+        listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
+        listingElement.querySelector('.floatDropTarget').innerText = floatInfo.floatvalue.toFixed(4);
+    }
 }
 
 function hideFloatBar(listingID){
@@ -196,9 +199,6 @@ if (originalInspectButton !== null){
     document.getElementById('largeiteminfo_item_actions').insertAdjacentHTML('beforeend', inBrowserInspectButton);
 }
 
-// adds float bars without float data to each item
-addFloatBarSkeletons();
-
 // adds the in-browser inspect button to the context menu
 document.getElementById('market_action_popup_itemactions').insertAdjacentHTML('afterend', inBrowserInspectButtonPopupLink);
 
@@ -208,6 +208,7 @@ document.getElementById('inbrowser_inspect').addEventListener('mouseenter', (eve
     event.target.setAttribute('href', `http://csgo.gallery/${inspectLink}`);
 });
 
+addFloatBarSkeletons();
 addPhasesIndicator();
 addStickers();
 addListingsToFloatQueue();
@@ -216,6 +217,7 @@ let observer = new MutationObserver((mutations) =>{
     for(let mutation of mutations) {
         if (mutation.target.id === 'searchResultsRows') {
             addPhasesIndicator();
+            addFloatBarSkeletons();
             addStickers();
             addListingsToFloatQueue();
         }
