@@ -426,8 +426,8 @@ function addFunctionBar(){
         });
 
         sortingSelect.addEventListener("change", () => {
-            let selected = sortingSelect.options[sortingSelect.selectedIndex].value;
-            sortItems(items, selected);
+            sortItems(items, sortingSelect.options[sortingSelect.selectedIndex].value);
+            addFloatIndicatorsToPage(getActivePage('inventory'));
         });
 
         document.getElementById('generate_list').addEventListener('click', () => {document.getElementById('functionBarGenerateMenu').classList.toggle('hidden')});

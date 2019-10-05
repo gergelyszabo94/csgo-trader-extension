@@ -266,9 +266,18 @@ function addFunctionBars(){
                     theirSortingSelect.appendChild(option.cloneNode(true));
                 }
             }
-            sortingSelect.addEventListener('change', () => {sortItems(sortingSelect.options[sortingSelect.selectedIndex].value, 'offer')});
-            yourSortingSelect.addEventListener('change', () => {sortItems(yourSortingSelect.options[yourSortingSelect.selectedIndex].value, 'your')});
-            theirSortingSelect.addEventListener('change', () => {sortItems(theirSortingSelect.options[theirSortingSelect.selectedIndex].value, 'their')});
+            sortingSelect.addEventListener('change', () => {
+                sortItems(sortingSelect.options[sortingSelect.selectedIndex].value, 'offer');
+                addFloatIndicatorsToPage('page');
+            });
+            yourSortingSelect.addEventListener('change', () => {
+                sortItems(yourSortingSelect.options[yourSortingSelect.selectedIndex].value, 'your');
+                addFloatIndicatorsToPage('your');
+            });
+            theirSortingSelect.addEventListener('change', () => {
+                sortItems(theirSortingSelect.options[theirSortingSelect.selectedIndex].value, 'their');
+                addFloatIndicatorsToPage('their');
+            });
         }
     }
     else setTimeout(() => {addFunctionBars()}, 500);
