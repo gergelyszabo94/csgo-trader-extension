@@ -933,6 +933,40 @@ function doTheSorting(items, itemElements, method, pages, type){
             }
         });
     }
+    else if(method === "float_asc"){
+        itemElements = itemElements.sort((a, b) =>{
+            let floatInfoOfA = getItemByAssetID(items, getAssetIDOfElement(a)).floatInfo;
+            let floatInfoOfB = getItemByAssetID(items, getAssetIDOfElement(b)).floatInfo;
+
+            if (floatInfoOfA === null && floatInfoOfB !== null) return 1;
+            else if (floatInfoOfA !== null && floatInfoOfB === null) return -1;
+            else if (floatInfoOfA === null && floatInfoOfB === null) return 0;
+
+            let floatOfA = parseFloat(floatInfoOfA.floatvalue);
+            let floatOfB = parseFloat(floatInfoOfB.floatvalue);
+
+            if (floatOfA > floatOfB) return 1;
+            if (floatOfA < floatOfB) return -1;
+            return 0;
+        });
+    }
+    else if(method === "float_desc"){
+        itemElements = itemElements.sort((a, b) =>{
+            let floatInfoOfA = getItemByAssetID(items, getAssetIDOfElement(a)).floatInfo;
+            let floatInfoOfB = getItemByAssetID(items, getAssetIDOfElement(b)).floatInfo;
+
+            if (floatInfoOfA === null && floatInfoOfB !== null) return 1;
+            else if (floatInfoOfA !== null && floatInfoOfB === null) return -1;
+            else if (floatInfoOfA === null && floatInfoOfB === null) return 0;
+
+            let floatOfA = parseFloat(floatInfoOfA.floatvalue);
+            let floatOfB = parseFloat(floatInfoOfB.floatvalue);
+
+            if (floatOfA > floatOfB) return -1;
+            if (floatOfA < floatOfB) return 1;
+            return 0;
+        });
+    }
     else if(method === "default"){
         itemElements = itemElements.sort((a, b) =>{
             let positionOfA = parseInt(getItemByAssetID(items, getAssetIDOfElement(a)).position);

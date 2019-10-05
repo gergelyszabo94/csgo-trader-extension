@@ -19829,6 +19829,14 @@ const sortingModes = {
         key: "tradability_asc",
         name: "Tradability (tradable to untradable)"
     },
+    "float_asc":{
+        key: "float_asc",
+        name: "Float (lowest to highest)"
+    },
+    "float_desc":{
+        key: "float_desc",
+        name: "Float (highest to lowest)"
+    }
 };
 
 const defaultPopupLinks = [
