@@ -166,12 +166,8 @@ function addElements(){
 
 
             // adds doppler phase  to the name and makes it a link to the market listings page
-            let name = item.name;
-
-            getInventory().then(inventory => {
-                inventory.inventory.forEach((onPageItem) => {if(onPageItem.assetid === activeID) name = onPageItem.description.name});
-                changeName(name, item.name_color, item.marketlink, item.dopplerInfo);
-            });
+            let name = getItemByAssetID(getItemInfoFromPage(), activeID).description.name;
+            changeName(name, item.name_color, item.marketlink, item.dopplerInfo);
 
             // removes sih "Get Float" button - does not really work since it's loaded after this script..
             if(isSIHActive()){
@@ -468,18 +464,20 @@ function sortItems(items, method) {
 
 function loadFullInventory() {
     if (!isSIHActive()){
-        let loadFullInventory = `
-        g_ActiveInventory.LoadCompleteInventory().done(function () {
-            for (let i = 0; i < g_ActiveInventory.m_cPages; i++) {
-                g_ActiveInventory.m_rgPages[i].EnsurePageItemsCreated();
-                g_ActiveInventory.PreloadPageImages(i);
-            }
-            window.postMessage({
-                type: 'allItemsLoaded',
-                allItemsLoaded: true
-            }, '*');
-        });`;
-        injectToPage(loadFullInventory, true, 'loadFullInventory');
+        if (document.querySelector('body').getAttribute('allItemsLoaded') === null){
+            let loadFullInventoryScript = `
+                g_ActiveInventory.LoadCompleteInventory().done(function () {
+                    for (let i = 0; i < g_ActiveInventory.m_cPages; i++) {
+                        g_ActiveInventory.m_rgPages[i].EnsurePageItemsCreated();
+                        g_ActiveInventory.PreloadPageImages(i);
+                    }
+                    document.querySelector('body').setAttribute('allItemsLoaded', true);
+                });
+                `;
+            if (injectToPage(loadFullInventoryScript, true, 'loadFullInventory', 'allItemsLoaded') === null) setTimeout(() => {loadFullInventory()}, 2000);
+            else doInitSorting();
+        }
+        else doInitSorting();
     }
     else doInitSorting();
 }
@@ -631,6 +629,26 @@ function updateFloatAndPatternElements(item) {
     setPatternInfo(item.patternInfo);
     setStickerInfo(item.floatInfo.stickers);
 }
+
+function getItemInfoFromPage() {
+    let getItemsSccript = `
+        inventory = UserYou.getInventory(730,2);
+        assets = inventory.m_rgAssets;
+        assetKeys= Object.keys(assets);
+        trimmedAssets = [];
+                
+        for(let assetKey of assetKeys){
+            trimmedAssets.push({
+                amount: assets[assetKey].amount,
+                assetid: assets[assetKey].assetid,
+                contextid: assets[assetKey].contextid,
+                description: assets[assetKey].description
+            });
+        }
+        document.querySelector('body').setAttribute('inventoryInfo', JSON.stringify(trimmedAssets));`;
+    return JSON.parse(injectToPage(getItemsSccript, true, 'getInventory', 'inventoryInfo'));
+}
+
 const floatBar = getFloatBarSkeleton('inventory');
 const upperModule = `
 <div class="upperModule">
@@ -651,53 +669,6 @@ const lowerModule = `<a class="lowerModule">
 const tradable = '<span class="tradable">Tradable</span>';
 const notTradable = '<span class="not_tradable">Not Tradable</span>';
 const dopplerPhase = '<div class="dopplerPhase"><span></span></div>';
-
-// the promise will be stored here temporarily
-let inventoryPromise = undefined;
-
-//listens to the message events on the extension side of the communication
-window.addEventListener('message', e => {
-    if (e.data.type === 'inventory') {
-        inventoryPromise(e.data);
-        inventoryPromise = undefined;
-    }
-    else if (e.data.type === 'allItemsLoaded') {
-        if (e.data.allItemsLoaded) doInitSorting();
-        else loadFullInventory();
-    }
-});
-
-//sends the message to the page side to get the info
-const getInventory = () => {
-    window.postMessage({type: 'requestInventory'}, '*');
-    return new Promise(resolve => {inventoryPromise = resolve});
-};
-
-//this injected script listens to the messages from the extension side and responds with the page context info needed
-let getItems = `
-    window.addEventListener('message', (e) => {
-        if (e.data.type == 'requestInventory') {
-            let inventory = UserYou.getInventory(730,2);
-            let assets = inventory.m_rgAssets;
-            let assetKeys= Object.keys(assets);
-            let trimmedAssets = [];
-            
-            for(let assetKey of assetKeys){
-                let asset = {
-                    amount: assets[assetKey].amount,
-                    assetid: assets[assetKey].assetid,
-                    contextid: assets[assetKey].contextid,
-                    description: assets[assetKey].description
-                };
-                trimmedAssets.push(asset);
-            }
-            window.postMessage({
-                type: 'inventory',
-                inventory: trimmedAssets
-            }, '*');
-        }
-    });`;
-injectToPage(getItems, false, 'getItems');
 
 // mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
 MutationObserver = window.MutationObserver;
