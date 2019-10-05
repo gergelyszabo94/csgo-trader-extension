@@ -694,6 +694,7 @@ if (document.getElementById('no_inventories') === null && document.getElementByI
     });
 }
 
+addSearchListener('inventory');
 overridePopulateActions();
 updateLoggedInUserID();
 

@@ -1243,3 +1243,19 @@ function getDataFilledFloatTechnical(floatInfo) {
             <br>
             Float info from <a href="https://csgofloat.com/" target="_blank">csgofloat.com</a>`;
 }
+
+function addSearchListener(type) {
+    let searchElement;
+    if (type === 'inventory') searchElement = document.getElementById('filter_control');
+    else if (type === 'offer') searchElement = document.querySelector('.filter_search_box');
+
+    if (searchElement !== null) {
+        searchElement.addEventListener('input', () => {
+            setTimeout(() => {
+                if (type === 'inventory') addFloatIndicatorsToPage(getActivePage('inventory'));
+                else if (type === 'offer') addFloatIndicatorsToPage('page');
+            }, 1000);
+        });
+    }
+    else setTimeout(() => {addSearchListener(type)}, 1000);
+}

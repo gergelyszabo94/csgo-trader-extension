@@ -482,8 +482,13 @@ if (inventorySelector !== null) {
 
 addPageControlEventListeners('offer');
 
+addSearchListener('offer');
+
 let theirInventoryTab = document.getElementById('inventory_select_their_inventory');
-if (theirInventoryTab !== null) document.getElementById('inventory_select_their_inventory').addEventListener('click', () => {singleClickControlClick()}); // if the offer "active"
+if (theirInventoryTab !== null) document.getElementById('inventory_select_their_inventory').addEventListener('click', () => { // if the offer is "active"
+    singleClickControlClick();
+    setTimeout(() => {addFloatIndicatorsToPage('page')}, 500);
+});
 
 addFunctionBars();
 
