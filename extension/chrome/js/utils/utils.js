@@ -1289,6 +1289,7 @@ function getDataFilledFloatTechnical(floatInfo) {
             Float info from <a href="https://csgofloat.com/" target="_blank">csgofloat.com</a>`;
 }
 
+let searchListenerTimeout = null;
 function addSearchListener(type) {
     let searchElement;
     if (type === 'inventory') searchElement = document.getElementById('filter_control');
@@ -1296,9 +1297,12 @@ function addSearchListener(type) {
 
     if (searchElement !== null) {
         searchElement.addEventListener('input', () => {
-            setTimeout(() => {
+
+            if (searchListenerTimeout !== null) clearTimeout(searchListenerTimeout);
+            searchListenerTimeout = setTimeout(() => {
                 if (type === 'inventory') addFloatIndicatorsToPage(getActivePage('inventory'));
                 else if (type === 'offer') addFloatIndicatorsToPage('page');
+                searchListenerTimeout = null;
             }, 1000);
         });
     }
