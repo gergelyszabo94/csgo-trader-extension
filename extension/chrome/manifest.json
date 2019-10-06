@@ -127,12 +127,16 @@
     {
       "matches": ["*://csgolounge.com/mytrades/*"],
       "run_at" : "document_idle",
-      "js": ["js/content_scripts/loungebump.js"]
+      "js": [
+        "js/utils/utils.js",
+        "js/content_scripts/loungebump.js"]
     },
     {
       "matches": ["*://csgotraders.net/mytrades*"],
       "run_at" : "document_idle",
-      "js": ["js/content_scripts/tradersbump.js"]
+      "js": [
+        "js/utils/utils.js",
+        "js/content_scripts/tradersbump.js"]
     }
   ],
   "web_accessible_resources": [
