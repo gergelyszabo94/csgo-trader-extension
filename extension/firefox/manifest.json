@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "__MSG_application_title__",
   "short_name": "CSGO Trader",
-  "version": "1.19",
+  "version": "1.19.1",
   "default_locale": "en",
   "description": "__MSG_application_description__",
   "homepage_url": "https://csgotrader.app/",
