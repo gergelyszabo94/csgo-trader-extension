@@ -697,6 +697,7 @@ if (document.getElementById('no_inventories') === null && document.getElementByI
 addSearchListener('inventory');
 overridePopulateActions();
 updateLoggedInUserID();
+gaTrackPageView();
 
 chrome.storage.local.get('hideOtherExtensionPrices', (result) => {if (result.hideOtherExtensionPrices) hideOtherExtensionPrices()});
 

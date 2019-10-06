@@ -1293,3 +1293,12 @@ function addSearchListener(type) {
     }
     else setTimeout(() => {addSearchListener(type)}, 1000);
 }
+
+function gaTrackPageView() {
+    let path = location.protocol === 'chrome-extension:' ? location.pathname : location.hostname + location.pathname;
+    let analyticsInfo = {
+        type: 'pageview',
+        path: path
+    };
+    chrome.runtime.sendMessage({gAnalytics: analyticsInfo}, () => {});
+}

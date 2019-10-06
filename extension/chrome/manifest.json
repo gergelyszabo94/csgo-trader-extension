@@ -21,6 +21,7 @@
     "tabs",
     "*://csgolounge.com/*",
     "*://csgotraders.net/*" ],
+  "content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
   "options_page": "html/options.html",
   "background": {
     "scripts": [

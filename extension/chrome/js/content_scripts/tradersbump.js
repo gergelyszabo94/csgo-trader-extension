@@ -7,6 +7,8 @@ function bump(){
     });
 }
 
+gaTrackPageView();
+
 chrome.storage.local.get('tradersBump', (result) => {
     if(result.tradersBump){
         // ugly way to wait for the trades to load and become "bumpable"

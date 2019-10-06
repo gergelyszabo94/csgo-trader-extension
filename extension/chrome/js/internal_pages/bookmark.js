@@ -1,9 +1,11 @@
+gaTrackPageView();
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        if(request.alert !== undefined){
-            alert(`${request.alert} is now tradable!`);
-            sendResponse({alert: request.alert})
-        }
-    });
+    if(request.alert !== undefined){
+        alert(`${request.alert} is now tradable!`);
+        sendResponse({alert: request.alert})
+    }
+});
 
 chrome.storage.local.get('bookmarks', (result) => {
     if (result.bookmarks.length !== 0){
@@ -92,73 +94,73 @@ chrome.storage.local.get('bookmarks', (result) => {
 
         // adds countdowns
         document.querySelectorAll('[data-countdown]').forEach(countdown => {
-           if (countdown.getAttribute('data-countdown') !== 'Tradable' && countdown.getAttribute('data-countdown') !== 'Non-Tradable'){
-               let countdownDate = new Date(countdown.getAttribute('data-countdown'));
+            if (countdown.getAttribute('data-countdown') !== 'Tradable' && countdown.getAttribute('data-countdown') !== 'Non-Tradable'){
+                let countdownDate = new Date(countdown.getAttribute('data-countdown'));
 
-               let x = setInterval(() => {
-                   let distance = countdownDate - Date.now();
+                let x = setInterval(() => {
+                    let distance = countdownDate - Date.now();
 
-                   let days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                   let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                   let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                   let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    let seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                   countdown.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s `;
+                    countdown.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s `;
 
-                   if (distance < 0) {
-                       clearInterval(x);
-                       countdown.classList.add('hidden');
-                   }
-               }, 1000);
-           }
-           else countdown.classList.add('hidden');
+                    if (distance < 0) {
+                        clearInterval(x);
+                        countdown.classList.add('hidden');
+                    }
+                }, 1000);
+            }
+            else countdown.classList.add('hidden');
         });
 
         // handles notification options saving
         document.querySelectorAll('.saveNotifDetails').forEach(detail => {
-           detail.addEventListener('click', (event) => {
-               let index = event.target.getAttribute('data-index');
+            detail.addEventListener('click', (event) => {
+                let index = event.target.getAttribute('data-index');
 
-               let notifType = event.target.parentNode.parentNode.querySelector('.notifType').value;
-               let numberOfMinutesOrHours = event.target.parentNode.parentNode.querySelector('.numberPicker').value;
-               let minutesOrHours = event.target.parentNode.parentNode.querySelector('.minutesOrHours').value;
-               let beforeOrAfter = event.target.parentNode.parentNode.querySelector('.beforeOrAfter').value;
+                let notifType = event.target.parentNode.parentNode.querySelector('.notifType').value;
+                let numberOfMinutesOrHours = event.target.parentNode.parentNode.querySelector('.numberPicker').value;
+                let minutesOrHours = event.target.parentNode.parentNode.querySelector('.minutesOrHours').value;
+                let beforeOrAfter = event.target.parentNode.parentNode.querySelector('.beforeOrAfter').value;
 
-               chrome.storage.local.get('bookmarks', (result) => {
-                   let bookmarks = result.bookmarks;
-                   let tradableDate = result.bookmarks[index].itemInfo.tradability;
-                   bookmarks[index].notifTime = determineNotificationDate(tradableDate,minutesOrHours, numberOfMinutesOrHours, beforeOrAfter).toString();
-                   bookmarks[index].notifType = notifType;
-                   chrome.storage.local.set({bookmarks: bookmarks}, () => {chrome.runtime.sendMessage({setAlarm: {name:  bookmarks[index].itemInfo.assetid, when: bookmarks[index].notifTime}}, (response) => {})});
-               });
-           });
+                chrome.storage.local.get('bookmarks', (result) => {
+                    let bookmarks = result.bookmarks;
+                    let tradableDate = result.bookmarks[index].itemInfo.tradability;
+                    bookmarks[index].notifTime = determineNotificationDate(tradableDate,minutesOrHours, numberOfMinutesOrHours, beforeOrAfter).toString();
+                    bookmarks[index].notifType = notifType;
+                    chrome.storage.local.set({bookmarks: bookmarks}, () => {chrome.runtime.sendMessage({setAlarm: {name:  bookmarks[index].itemInfo.assetid, when: bookmarks[index].notifTime}}, (response) => {})});
+                });
+            });
         });
 
         // remove bookmark logic
         document.querySelectorAll('.remove').forEach(removeButton => {
-           removeButton.addEventListener('click', (event) => {
-               let index = event.target.getAttribute('data-index');
+            removeButton.addEventListener('click', (event) => {
+                let index = event.target.getAttribute('data-index');
 
-               chrome.storage.local.get('bookmarks', (result) => {
-                   let assetID = result.bookmarks[index].itemInfo.assetid;
-                   result.bookmarks.splice(index, 1);
-                   chrome.storage.local.set({'bookmarks': result.bookmarks}, () => {chrome.alarms.clear(assetID, () => {location.reload()})});
-               });
-           })
+                chrome.storage.local.get('bookmarks', (result) => {
+                    let assetID = result.bookmarks[index].itemInfo.assetid;
+                    result.bookmarks.splice(index, 1);
+                    chrome.storage.local.set({'bookmarks': result.bookmarks}, () => {chrome.alarms.clear(assetID, () => {location.reload()})});
+                });
+            })
         });
 
         // comments logic
         document.querySelectorAll('.comment').forEach(commentBox => {
-           commentBox.addEventListener('input', (event) => {
-               let index = event.target.getAttribute('data-index');
+            commentBox.addEventListener('input', (event) => {
+                let index = event.target.getAttribute('data-index');
 
-               let newComment = event.target.value;
-               chrome.storage.local.get('bookmarks', (result) => {
-                   let bookmarks = result.bookmarks;
-                   bookmarks[index].comment = newComment;
-                   chrome.storage.local.set({bookmarks: bookmarks}, () => {});
-               });
-           })
+                let newComment = event.target.value;
+                chrome.storage.local.get('bookmarks', (result) => {
+                    let bookmarks = result.bookmarks;
+                    bookmarks[index].comment = newComment;
+                    chrome.storage.local.set({bookmarks: bookmarks}, () => {});
+                });
+            })
         });
 
         // alarm setting logic

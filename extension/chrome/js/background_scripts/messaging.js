@@ -286,7 +286,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         else sendResponse('nofloat');
         return true; // async return to signal that it will return later
     }
-    else if (request.getSteamRepInfo !==undefined) {
+    else if (request.getSteamRepInfo !== undefined) {
         let steamID = request.getSteamRepInfo;
 
         let getRequest = new Request(`https://steamrep.com/api/beta4/reputation/${steamID}?json=1`);
@@ -304,6 +304,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             sendResponse({SteamRepInfo: 'error'});
         });
         return true; // async return to signal that it will return later
+    }
+    else if (request.gAnalytics !== undefined) {
+        console.log(request.gAnalytics);
+        if (request.gAnalytics.type === 'pageview') ga('send', 'pageview', request.gAnalytics.path);
+        sendResponse({gAnalytics: request.gAnalytics});
     }
 });
 

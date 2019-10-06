@@ -11,6 +11,7 @@ function addDeleteClickListener(element){
     });
 }
 
+gaTrackPageView();
 
 // simple checkboxes - toggles
 

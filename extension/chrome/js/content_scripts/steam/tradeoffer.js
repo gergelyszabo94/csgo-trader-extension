@@ -468,6 +468,7 @@ getInventories();
 overrideHandleTradeActionMenu();
 
 updateLoggedInUserID();
+gaTrackPageView();
 
 // changes background and adds a banner if steamrep banned scammer detected
 chrome.storage.local.get('markScammers', result => {if(result.markScammers) warnOfScammer(getTradePartnerSteamID(), 'offer')});

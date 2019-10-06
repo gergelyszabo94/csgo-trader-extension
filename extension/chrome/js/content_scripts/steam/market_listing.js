@@ -136,6 +136,7 @@ function setStickerInfo(listingID, stickers){
 }
 
 updateLoggedInUserID();
+gaTrackPageView();
 
 const inBrowserInspectButtonPopupLink = `<a class="popup_menu_item" id="inbrowser_inspect" href="http://csgo.gallery/" target="_blank">${chrome.i18n.getMessage("inspect_in_browser")}</a>`;
 const dopplerPhase = '<div class="dopplerPhaseMarket"><span></span></div>';
