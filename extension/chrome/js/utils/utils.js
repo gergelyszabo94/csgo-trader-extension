@@ -619,6 +619,12 @@ function addReplytoCommentsFunctionality() {
 }
 
 function handleReplyToCommentFunctionality(event) {
+    // analytics
+    gaTrackEvent({
+        category: 'Reply to Comment',
+        action: 'CommentReply'
+    });
+
     let commenterName = event.target.parentNode.parentNode.parentNode.querySelector('.commentthread_author_link').querySelector('bdi').innerHTML.split(' <span class="nickname_block">')[0];
     let commentTextarea = document.querySelector('.commentthread_textarea');
     let currentContent = commentTextarea.value;
@@ -651,6 +657,11 @@ function reportComments(){
 
             document.querySelectorAll('.commentthread_comment.responsive_body_text').forEach(comment => {
                 if (spamTextCheck.test(comment.querySelector('.commentthread_comment_text').innerText) && !comment.classList.contains('hidden_post')){
+                    // analytics
+                    gaTrackEvent({
+                        category: 'Abuse Report',
+                        action: 'CommentReported'
+                    });
                     comment.querySelector('a.report_and_hide').querySelector('img').click();
                 }
             });
@@ -1299,6 +1310,17 @@ function gaTrackPageView() {
     let analyticsInfo = {
         type: 'pageview',
         path: path
+    };
+    chrome.runtime.sendMessage({gAnalytics: analyticsInfo}, () => {});
+}
+
+function gaTrackEvent(event) {
+    let path = location.protocol === 'chrome-extension:' ? location.pathname : location.hostname + location.pathname;
+    let analyticsInfo = {
+        type: 'event',
+        category: event.category,
+        action: event.action,
+        label: path
     };
     chrome.runtime.sendMessage({gAnalytics: analyticsInfo}, () => {});
 }

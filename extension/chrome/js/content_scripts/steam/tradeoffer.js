@@ -267,14 +267,32 @@ function addFunctionBars(){
                 }
             }
             sortingSelect.addEventListener('change', () => {
+                // analytics
+                gaTrackEvent({
+                    category: 'Sorting',
+                    action: 'OfferSorting'
+                });
+
                 sortItems(sortingSelect.options[sortingSelect.selectedIndex].value, 'offer');
                 addFloatIndicatorsToPage('page');
             });
             yourSortingSelect.addEventListener('change', () => {
+                // analytics
+                gaTrackEvent({
+                    category: 'Sorting',
+                    action: 'OfferSorting'
+                });
+
                 sortItems(yourSortingSelect.options[yourSortingSelect.selectedIndex].value, 'your');
                 addFloatIndicatorsToPage('your');
             });
             theirSortingSelect.addEventListener('change', () => {
+                // analytics
+                gaTrackEvent({
+                    category: 'Sorting',
+                    action: 'OfferSorting'
+                });
+
                 sortItems(theirSortingSelect.options[theirSortingSelect.selectedIndex].value, 'their');
                 addFloatIndicatorsToPage('their');
             });

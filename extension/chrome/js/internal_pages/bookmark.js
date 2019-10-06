@@ -139,6 +139,12 @@ chrome.storage.local.get('bookmarks', (result) => {
         // remove bookmark logic
         document.querySelectorAll('.remove').forEach(removeButton => {
             removeButton.addEventListener('click', (event) => {
+                // analytics
+                gaTrackEvent({
+                    category: 'Bookmarking',
+                    action: 'RemoveBookmark'
+                });
+
                 let index = event.target.getAttribute('data-index');
 
                 chrome.storage.local.get('bookmarks', (result) => {

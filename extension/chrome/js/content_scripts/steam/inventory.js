@@ -297,6 +297,12 @@ function changeName(name, color, link, dopplerInfo){
 }
 
 function addBookmark(module) {
+    // analytics
+    gaTrackEvent({
+        category: 'Bookmarking',
+        action: 'AddBookmark'
+    });
+
     let item = getItemByAssetID(items, getAssetIDofActive());
     let bookmark = {
         itemInfo: item,
@@ -414,18 +420,36 @@ function addFunctionBar(){
 
         document.getElementById("selectButton").addEventListener("click", (event) => {
             if(event.target.classList.contains("selectionActive")){
+                // analytics
+                gaTrackEvent({
+                    category: 'Item Selection',
+                    action: 'SelectionStopped'
+                });
+
                 unselectAllItems();
                 updateSelectedValue();
                 event.target.classList.remove("selectionActive");
                 document.body.removeEventListener('click', listenSelectClicks, false);
             }
             else{
+                // analytics
+                gaTrackEvent({
+                    category: 'Item Selection',
+                    action: 'SelectionInitiated'
+                });
+
                 document.body.addEventListener('click', listenSelectClicks, false);
                 event.target.classList.add("selectionActive");
             }
         });
 
         sortingSelect.addEventListener("change", () => {
+            // analytics
+            gaTrackEvent({
+                category: 'Sorting',
+                action: 'InventorySorting'
+            });
+
             sortItems(items, sortingSelect.options[sortingSelect.selectedIndex].value);
             addFloatIndicatorsToPage(getActivePage('inventory'));
         });
@@ -492,6 +516,12 @@ function doInitSorting() {
 }
 
 function generateItemsList(){
+    // analytics
+    gaTrackEvent({
+        category: 'Item List Generation',
+        action: 'GenerateList'
+    });
+
     let generateSorting = document.getElementById('generate_sort');
     let sortingMode = generateSorting.options[generateSorting.selectedIndex].value;
     let sortedItems = doTheSorting(items, Array.from(document.querySelectorAll('.item.app730.context2')), sortingMode, null, 'simple_sort');
@@ -591,8 +621,10 @@ function setStickerInfo(stickers){
 
             document.querySelectorAll('.customStickers').forEach(customStickers => {
                 let currentSticker = customStickers.querySelectorAll('.stickerSlot')[index];
-                currentSticker.setAttribute('data-tooltip', `${stickerInfo.name} - Condition: ${wear}%`);
-                currentSticker.querySelector('img').setAttribute('style', `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`);
+                if (currentSticker !== undefined) {
+                    currentSticker.setAttribute('data-tooltip', `${stickerInfo.name} - Condition: ${wear}%`);
+                    currentSticker.querySelector('img').setAttribute('style', `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`);
+                }
             });
         });
     }

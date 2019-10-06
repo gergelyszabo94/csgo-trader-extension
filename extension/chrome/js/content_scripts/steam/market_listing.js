@@ -198,6 +198,13 @@ if (originalInspectButton !== null){
     const inspectLink = originalInspectButton.getAttribute('href');
     const inBrowserInspectButton =`<a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect_button" href="http://csgo.gallery/${inspectLink}" target="_blank"><span>${chrome.i18n.getMessage("inspect_in_browser")}</span></a>`;
     document.getElementById('largeiteminfo_item_actions').insertAdjacentHTML('beforeend', inBrowserInspectButton);
+    document.getElementById('inbrowser_inspect_button').addEventListener('click', () => {
+        // analytics
+        gaTrackEvent({
+            category: 'Inspection',
+            action: 'MarketInspection'
+        });
+    })
 }
 
 // adds the in-browser inspect button to the context menu
@@ -207,6 +214,14 @@ document.getElementById('market_action_popup_itemactions').insertAdjacentHTML('a
 document.getElementById('inbrowser_inspect').addEventListener('mouseenter', (event)=>{
     let inspectLink = document.getElementById('market_action_popup_itemactions').querySelector('a.popup_menu_item').getAttribute('href');
     event.target.setAttribute('href', `http://csgo.gallery/${inspectLink}`);
+});
+
+document.getElementById('inbrowser_inspect').addEventListener('click', () => {
+    // analytics
+    gaTrackEvent({
+        category: 'Inspection',
+        action: 'MarketInspection'
+    });
 });
 
 addFloatBarSkeletons();

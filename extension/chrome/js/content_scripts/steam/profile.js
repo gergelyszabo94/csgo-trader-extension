@@ -27,6 +27,12 @@ if (document.querySelector('body').classList.contains('profile_page')){
                 commentThreadEntryBox.insertAdjacentHTML('afterend', reooccButton);
 
                 document.getElementById('reocc').addEventListener('click', () => {
+                    // analytics
+                    gaTrackEvent({
+                        category: 'Reoccuring Comment',
+                        action: 'ReoccuringCommentPosted'
+                    });
+
                    document.querySelectorAll('.commentthread_comment.responsive_body_text').forEach(commentThread => {
                        // regex: replaces whitespaces and steam text formatting tags
                        let toReplace = '';
@@ -57,6 +63,11 @@ if (document.querySelector('body').classList.contains('profile_page')){
             const textareaToCopy = `<textarea id="text_area_to_copy_permalink" class="hidden-copy-textarea" readonly="">https://steamcommunity.com/profiles/${profileOwnerSteamID}</textarea>`;
 
             document.getElementById('copy_profile_perma_link').addEventListener('click', () => {
+                // analytics
+                gaTrackEvent({
+                    category: 'Profile Permalink',
+                    action: 'ProfilePermalinkCopied'
+                });
                 document.querySelector('body').insertAdjacentHTML('beforeend', textareaToCopy);
                 let textAreaElement = document.getElementById('text_area_to_copy_permalink');
                 textAreaElement.select();
@@ -72,6 +83,11 @@ if (document.querySelector('body').classList.contains('profile_page')){
                     if (commentThreadEntryBox !== null) commentThreadEntryBox.insertAdjacentHTML('afterend', repButton);
 
                     document.getElementById('repper').addEventListener('click', () => {
+                        // analytics
+                        gaTrackEvent({
+                            category: 'Repution Message',
+                            action: 'ReputionMessagePosted'
+                        });
                         document.querySelector('.commentthread_textarea').value = result.reputationMessage;
                         setTimeout(() => {document.querySelectorAll('.btn_green_white_innerfade.btn_small')[1].click()}, 500);
 
