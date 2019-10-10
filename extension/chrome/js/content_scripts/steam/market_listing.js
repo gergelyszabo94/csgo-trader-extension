@@ -36,43 +36,50 @@ function addStickers() {
 }
 
 function addListingsToFloatQueue() {
-    if (itemWithInspectLink) {
-        let listings = getListings();
-        for (let listing in listings) {
-            listing = listings[listing];
-            let assetID = listing.asset.id;
-            floatQueue.jobs.push({
-                type: 'market',
-                assetID: assetID,
-                inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
-                listingID: listing.listingid
-            });
+    chrome.storage.local.get('autoFloatMarket', (result) => {
+        if (result.autoFloatMarket) {
+            if (itemWithInspectLink) {
+                let listings = getListings();
+                for (let listing in listings) {
+                    listing = listings[listing];
+                    let assetID = listing.asset.id;
+                    floatQueue.jobs.push({
+                        type: 'market',
+                        assetID: assetID,
+                        inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
+                        listingID: listing.listingid
+                    });
+                }
+                workOnFloatQueue();
+            }
         }
-        workOnFloatQueue();
-
-    }
+    });
 }
 
 function addFloatBarSkeletons(){
-    let listingNameBlocks = document.getElementById('searchResultsRows').querySelectorAll('.market_listing_item_name_block');
-    if (listingNameBlocks !== null && itemWithInspectLink) {
-        listingNameBlocks.forEach(listingNameBlock => {
-            if (listingNameBlock.getAttribute('data-floatBar-added') === null || listingNameBlock.getAttribute('data-floatBar-added') === false) {
-                listingNameBlock.insertAdjacentHTML('beforeend', getFloatBarSkeleton('market'));
-                listingNameBlock.setAttribute('data-floatBar-added', true);
+    chrome.storage.local.get('autoFloatMarket', (result) => {
+        if (result.autoFloatMarket) {
+            let listingNameBlocks = document.getElementById('searchResultsRows').querySelectorAll('.market_listing_item_name_block');
+            if (listingNameBlocks !== null && itemWithInspectLink) {
+                listingNameBlocks.forEach(listingNameBlock => {
+                    if (listingNameBlock.getAttribute('data-floatBar-added') === null || listingNameBlock.getAttribute('data-floatBar-added') === false) {
+                        listingNameBlock.insertAdjacentHTML('beforeend', getFloatBarSkeleton('market'));
+                        listingNameBlock.setAttribute('data-floatBar-added', true);
 
-                // adds "show technical" hide and show logic
-                listingNameBlock.querySelector('.showTechnical').addEventListener('click', event => {
-                    event.target.parentNode.querySelector('.floatTechnical').classList.toggle('hidden')
+                        // adds "show technical" hide and show logic
+                        listingNameBlock.querySelector('.showTechnical').addEventListener('click', event => {
+                            event.target.parentNode.querySelector('.floatTechnical').classList.toggle('hidden')
+                        });
+
+                        // sets the overflow of parent elements so sticker popups and float pointers can overlap
+                        listingNameBlock.style.overflow = 'visible';
+                        listingNameBlock.parentElement.style.overflow = 'visible';
+                    }
                 });
-
-                // sets the overflow of parent elements so sticker popups and float pointers can overlap
-                listingNameBlock.style.overflow = 'visible';
-                listingNameBlock.parentElement.style.overflow = 'visible';
             }
-        });
-    }
-    else setTimeout(() => {addFloatBarSkeletons()}, 2000);
+            else setTimeout(() => {addFloatBarSkeletons()}, 2000);
+        }
+    });
 }
 
 function populateFloatInfo(listingID, floatInfo){
@@ -228,6 +235,8 @@ addFloatBarSkeletons();
 addPhasesIndicator();
 addStickers();
 addListingsToFloatQueue();
+
+
 
 let observer = new MutationObserver((mutations) =>{
     for(let mutation of mutations) {

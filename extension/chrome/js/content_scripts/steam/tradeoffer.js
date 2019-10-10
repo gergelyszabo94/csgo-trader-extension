@@ -34,7 +34,7 @@ function addItemInfo() {
 
     let itemElements = document.querySelectorAll('.item.app730.context2');
     if (itemElements.length !== 0){
-        chrome.storage.local.get('colorfulItems', (result) => {
+        chrome.storage.local.get(['colorfulItems', 'autoFloatOffer'], (result) => {
             itemElements.forEach(itemElement =>{
                 if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false'){
                     // in case the inventory is not loaded yet it retires in a second
@@ -48,7 +48,7 @@ function addItemInfo() {
                         makeItemColorful(itemElement, item, result.colorfulItems);
                         addSSTandExtIndicators(itemElement, item);
                         addPriceIndicator(itemElement, item.price);
-                        addFloatIndicator(itemElement, item.floatInfo);
+                        if (result.autoFloatOffer) addFloatIndicator(itemElement, item.floatInfo);
 
                         // marks the item "processed" to avoid additional unnecessary work later
                         itemElement.setAttribute('data-processed', 'true');
@@ -402,35 +402,37 @@ function addAPartysFunctionBar(whose){
 }
 
 function addFloatIndicatorsToPage(type) {
-    if (isCSGOInventoryActive('offer')){
-        let itemElements;
-        if (type === 'page'){
-            let page = getActivePage('offer');
-            if (page !== null) {
-                itemElements = page.querySelectorAll('.item.app730.context2');
-            }
-            else setTimeout(() => {addFloatIndicatorsToPage(type)}, 1000);
-        }
-        else {
-            let page = document.getElementById(`trade_${type}s`);
-            if (page !== null) itemElements = page.querySelectorAll('.item.app730.context2');
-            else setTimeout(() => {addFloatIndicatorsToPage(type)}, 1000);
-        }
-        itemElements.forEach(itemElement => {
-            let item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
-            if (item.inspectLink !== null){
-                if (item.floatInfo === null) {
-                    floatQueue.jobs.push({
-                        type: 'offer',
-                        assetID: item.assetid,
-                        inspectLink: item.inspectLink
-                    });
+    chrome.storage.local.get('autoFloatOffer', (result) => {
+        if (result.autoFloatOffer && isCSGOInventoryActive('offer')) {
+            let itemElements;
+            if (type === 'page'){
+                let page = getActivePage('offer');
+                if (page !== null) {
+                    itemElements = page.querySelectorAll('.item.app730.context2');
                 }
-                else addFloatIndicator(itemElement, item.floatInfo);
+                else setTimeout(() => {addFloatIndicatorsToPage(type)}, 1000);
             }
-        });
-        workOnFloatQueue();
-    }
+            else {
+                let page = document.getElementById(`trade_${type}s`);
+                if (page !== null) itemElements = page.querySelectorAll('.item.app730.context2');
+                else setTimeout(() => {addFloatIndicatorsToPage(type)}, 1000);
+            }
+            itemElements.forEach(itemElement => {
+                let item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
+                if (item.inspectLink !== null){
+                    if (item.floatInfo === null) {
+                        floatQueue.jobs.push({
+                            type: 'offer',
+                            assetID: item.assetid,
+                            inspectLink: item.inspectLink
+                        });
+                    }
+                    else addFloatIndicator(itemElement, item.floatInfo);
+                }
+            });
+            workOnFloatQueue();
+        }
+    });
 }
 
 function getOfferID() {return location.href.split('tradeoffer/')[1].split('/')[0]}

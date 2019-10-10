@@ -19913,7 +19913,10 @@ const storageKeys = {
     popupLinks: defaultPopupLinks,
     steamIDOfUser: '',
     customCommentsToReport: [],
-    floatCache: {}
+    floatCache: {},
+    autoFloatMarket: true,
+    autoFloatOffer: true,
+    autoFloatInventory: true
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'floatCache'];

@@ -25,7 +25,7 @@ function addPerItemInfo(updating){
 
     let itemElements = document.querySelectorAll('.item.app730.context2');
     if (itemElements.length !== 0){
-        chrome.storage.local.get('colorfulItems', (result) => {
+        chrome.storage.local.get(['colorfulItems', 'autoFloatInventory'], (result) => {
             itemElements.forEach(itemElement =>{
                 if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false'){
                     // in case the inventory is not loaded yet it retries in a second
@@ -53,7 +53,7 @@ function addPerItemInfo(updating){
                             makeItemColorful(itemElement, item, result.colorfulItems);
                             addSSTandExtIndicators(itemElement, item);
                             addPriceIndicator(itemElement, item.price);
-                            addFloatIndicator(itemElement, item.floatInfo);
+                            if (result.autoFloatInventory) addFloatIndicator(itemElement, item.floatInfo);
 
                             // marks the item "processed" to avoid additional unnecessary work later
                             itemElement.setAttribute('data-processed', 'true');
@@ -637,21 +637,25 @@ function hideFloatBars(){
 function findElementByAssetID(assetID){ return document.getElementById(`730_2_${assetID}`)}
 
 function addFloatIndicatorsToPage(page){
-    page.querySelectorAll('.item.app730.context2').forEach(itemElement => {
-        let assetID = getAssetIDOfElement(itemElement);
-        let item = getItemByAssetID(items, assetID);
-        if (item.inspectLink !== null && item.type !== itemTypes.collectible && item.type !== itemTypes.container && item.type !== itemTypes.graffiti && item.type !== itemTypes.c4 && item.type !== itemTypes.sticker){
-            if (item.floatInfo === null) {
-                floatQueue.jobs.push({
-                    type: 'inventory',
-                    assetID: assetID,
-                    inspectLink: item.inspectLink
-                });
-            }
-            else addFloatIndicator(itemElement, item.floatInfo);
+    chrome.storage.local.get('autoFloatInventory', (result) => {
+        if (result.autoFloatInventory) {
+            page.querySelectorAll('.item.app730.context2').forEach(itemElement => {
+                let assetID = getAssetIDOfElement(itemElement);
+                let item = getItemByAssetID(items, assetID);
+                if (item.inspectLink !== null && item.type !== itemTypes.collectible && item.type !== itemTypes.container && item.type !== itemTypes.graffiti && item.type !== itemTypes.c4 && item.type !== itemTypes.sticker){
+                    if (item.floatInfo === null) {
+                        floatQueue.jobs.push({
+                            type: 'inventory',
+                            assetID: assetID,
+                            inspectLink: item.inspectLink
+                        });
+                    }
+                    else addFloatIndicator(itemElement, item.floatInfo);
+                }
+            });
+            workOnFloatQueue();
         }
     });
-    workOnFloatQueue();
 }
 
 function updateFloatAndPatternElements(item) {
