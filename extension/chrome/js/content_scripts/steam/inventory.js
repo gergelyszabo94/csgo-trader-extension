@@ -20,9 +20,6 @@ function requestInventory(){
 
 //adds everything that is per item, like trade lock, exterior, doppler phases, border colors
 function addPerItemInfo(updating){
-    // moves the nametag warning icon to make space for other elements
-    document.querySelectorAll('.slot_app_fraudwarning').forEach(fraudwarning => {fraudwarning.setAttribute('style', `${fraudwarning.getAttribute('style')}; top: 19px; left: 75px;`)});
-
     let itemElements = document.querySelectorAll('.item.app730.context2');
     if (itemElements.length !== 0){
         chrome.storage.local.get(['colorfulItems', 'autoFloatInventory'], (result) => {

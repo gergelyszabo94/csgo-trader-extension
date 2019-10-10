@@ -370,6 +370,11 @@ progress {
     -webkit-text-fill-color: transparent;
 }
 
+.slot_app_fraudwarning{
+    top: 19px !important;
+    left: 75px !important;
+}
+
 /**
  * Tooltip Styles
  */
