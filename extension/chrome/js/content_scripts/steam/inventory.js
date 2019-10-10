@@ -19,49 +19,59 @@ function requestInventory(){
 }
 
 //adds everything that is per item, like trade lock, exterior, doppler phases, border colors
-function addPerItemInfo(updating){
+function addPerItemInfo(){
     let itemElements = document.querySelectorAll('.item.app730.context2');
-    if (itemElements.length !== 0){
+    if (itemElements.length !== 0) {
         chrome.storage.local.get(['colorfulItems', 'autoFloatInventory'], (result) => {
-            itemElements.forEach(itemElement =>{
-                if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false'){
+            itemElements.forEach(itemElement => {
+                if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') {
                     // in case the inventory is not loaded yet it retries in a second
                     if (itemElement.id === undefined) {
-                        setTimeout( () =>{addPerItemInfo(false)}, 1000);
+                        setTimeout( () => {addPerItemInfo()}, 1000);
                         return false
                     }
                     else{
                         let item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+                        // adds tradability indicator
+                        if (item.tradability === 'Tradable') itemElement.insertAdjacentHTML('beforeend', `<div class="perItemDate tradable">T</div>`);
+                        else if (item.tradability !== 'Not Tradable') itemElement.insertAdjacentHTML('beforeend', `<div class="perItemDate not_tradable">${item.tradabilityShort}</div>`);
 
-                        if (updating){
-                            let itemDateElement = itemElement.querySelector('.perItemDate');
-                            if (itemDateElement !== null){
-                                itemDateElement.innerText =  getShortDate(item.tradability);
-                                itemDateElement.classList.toggle('not_tradable');
-                                itemDateElement.classList.toggle('tradable');
-                            }
-                        }
-                        else{
-                            // adds tradability indicator
-                            if (item.tradability === 'Tradable') itemElement.insertAdjacentHTML('beforeend', `<div class="perItemDate tradable">T</div>`);
-                            else if (item.tradability !== 'Not Tradable')  itemElement.insertAdjacentHTML('beforeend', `<div class="perItemDate not_tradable">${item.tradabilityShort}</div>`);
+                        addDopplerPhase(itemElement, item.dopplerInfo);
+                        makeItemColorful(itemElement, item, result.colorfulItems);
+                        addSSTandExtIndicators(itemElement, item);
+                        addPriceIndicator(itemElement, item.price);
+                        if (result.autoFloatInventory) addFloatIndicator(itemElement, item.floatInfo);
 
-                            addDopplerPhase(itemElement, item.dopplerInfo);
-                            makeItemColorful(itemElement, item, result.colorfulItems);
-                            addSSTandExtIndicators(itemElement, item);
-                            addPriceIndicator(itemElement, item.price);
-                            if (result.autoFloatInventory) addFloatIndicator(itemElement, item.floatInfo);
-
-                            // marks the item "processed" to avoid additional unnecessary work later
-                            itemElement.setAttribute('data-processed', 'true');
-                        }
+                        // marks the item "processed" to avoid additional unnecessary work later
+                        itemElement.setAttribute('data-processed', 'true');
                     }
                 }
             });
         });
     }
     // in case the inventory is not loaded yet
-    else{setTimeout( () => {addPerItemInfo(false)}, 1000)}
+    else{setTimeout( () => {addPerItemInfo()}, 1000)}
+}
+
+function updateTradabilityIndicators() {
+    let itemElements = document.querySelectorAll('.item.app730.context2');
+    if (itemElements.length !== 0) {
+        itemElements.forEach(itemElement => {
+            let item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+            let itemDateElement = itemElement.querySelector('.perItemDate');
+
+            if (itemDateElement !== null) {
+                let previText = itemDateElement.innerText;
+                let newText = getShortDate(item.tradability);
+                itemDateElement.innerText = newText;
+
+                if (previText !== 'T' && newText === 'T') {
+                    itemDateElement.classList.remove('not_tradable');
+                    itemDateElement.classList.add('tradable');
+                }
+            }
+        });
+    }
 }
 
 function addElements(){
@@ -479,7 +489,7 @@ function sortItems(items, method) {
         let itemElements = document.querySelectorAll('.item.app730.context2');
         let inventoryPages = document.getElementById('inventories').querySelectorAll('.inventory_page');
         doTheSorting(items, Array.from(itemElements), method, Array.from(inventoryPages), 'inventory');
-        addPerItemInfo(false);
+        addPerItemInfo();
     }
 }
 
@@ -712,7 +722,7 @@ let observer = new MutationObserver(() => {
     else cleanUpElements(true);
 });
 
-let observer2 = new MutationObserver(() => {addPerItemInfo(false)});
+let observer2 = new MutationObserver(() => {addPerItemInfo()});
 
 // does not execute if inventory is private or failed to load the page (502 for example, mostly when steam is dead)
 if (document.getElementById('no_inventories') === null && document.getElementById('iteminfo0') !== null){
@@ -738,7 +748,7 @@ let items = [];
 requestInventory();
 
 // to refresh the trade lock remaining indicators
-setInterval(() => {if (!document.hidden) addPerItemInfo(true)}, 60000); // true means it's only for updating the time remaining indicators
+setInterval(() => {if (!document.hidden) updateTradabilityIndicators()}, 60000);
 
 //variables for the countdown recursive logic
 let countingDown = false;
