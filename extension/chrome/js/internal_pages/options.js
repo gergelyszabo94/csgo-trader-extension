@@ -95,10 +95,10 @@ loungebump.addEventListener('click', () => {
     if (loungebump.checked){
         chrome.permissions.request({permissions: ['tabs'], origins: ['*://csgolounge.com/*']}, (granted) => {
             loungebump.checked = granted;
-            chrome.storage.local.set({loungebump: granted}, () => {});
+            chrome.storage.local.set({loungeBump: granted}, () => {});
         });
     }
-    else chrome.storage.local.set({loungebump: loungebump.checked}, () => {});
+    else chrome.storage.local.set({loungeBump: loungebump.checked}, () => {});
 });
 
 // textbox modals
