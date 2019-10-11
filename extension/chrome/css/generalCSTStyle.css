@@ -223,6 +223,7 @@ progress {
     top: 7px;
     left: -2%;
     color: white;
+    width: 100px;
 }
 
 .floatTechnical{
