@@ -70,10 +70,6 @@ function addFloatBarSkeletons(){
                         listingNameBlock.querySelector('.showTechnical').addEventListener('click', event => {
                             event.target.parentNode.querySelector('.floatTechnical').classList.toggle('hidden')
                         });
-
-                        // sets the overflow of parent elements so sticker popups and float pointers can overlap
-                        listingNameBlock.style.overflow = 'visible';
-                        listingNameBlock.parentElement.style.overflow = 'visible';
                     }
                 });
             }
@@ -88,7 +84,7 @@ function populateFloatInfo(listingID, floatInfo){
     if (listingElement !== null) { // if for example the user has changed page and the listing is not there anymore
         listingElement.querySelector('.floatTechnical').innerHTML = getDataFilledFloatTechnical(floatInfo);
 
-        let position = (floatInfo.floatvalue.toFixed(2) * 100) - 1;
+        let position = ((floatInfo.floatvalue.toFixed(2) * 100) - 2).toFixed(2);
         listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
         listingElement.querySelector('.floatDropTarget').innerText = floatInfo.floatvalue.toFixed(4);
     }
