@@ -305,18 +305,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
         return true; // async return to signal that it will return later
     }
-    else if (request.gAnalytics !== undefined) {
-        if (request.gAnalytics.type === 'pageview') ga('send', 'pageview', request.gAnalytics.path);
-        else if(request.gAnalytics.type === 'event') {
-            ga('send', 'event', {
-                eventCategory: [request.gAnalytics.category],
-                eventAction: [request.gAnalytics.action],
-                eventLabel: [request.gAnalytics.label],
-                transport: 'beacon'
-            });
-        }
-        sendResponse({gAnalytics: request.gAnalytics});
-    }
 });
 
 chrome.runtime.onConnect.addListener(port => {});
