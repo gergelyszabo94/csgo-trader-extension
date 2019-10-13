@@ -1,6 +1,6 @@
 function bump(){document.querySelectorAll('.btn-bump___1-VFc').forEach(bumpButton => {bumpButton.click()})}
 
-gaTrackPageView();
+trackPageView();
 
 chrome.storage.local.get('loungeBump', (result) => {
     if(result.loungeBump){

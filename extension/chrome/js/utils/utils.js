@@ -620,7 +620,7 @@ function addReplytoCommentsFunctionality() {
 
 function handleReplyToCommentFunctionality(event) {
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Reply to Comment',
         action: 'CommentReply'
     });
@@ -658,7 +658,7 @@ function reportComments(){
             document.querySelectorAll('.commentthread_comment.responsive_body_text').forEach(comment => {
                 if (spamTextCheck.test(comment.querySelector('.commentthread_comment_text').innerText) && !comment.classList.contains('hidden_post')){
                     // analytics
-                    gaTrackEvent({
+                    trackEvent({
                         category: 'Abuse Report',
                         action: 'CommentReported'
                     });
@@ -1309,22 +1309,32 @@ function addSearchListener(type) {
     else setTimeout(() => {addSearchListener(type)}, 1000);
 }
 
-function gaTrackPageView() {
+function trackPageView() {
     let path = location.protocol === 'chrome-extension:' ? location.pathname : location.hostname + location.pathname;
     let analyticsInfo = {
         type: 'pageview',
-        path: path
+        path: path,
+        timestamp: Date.now()
     };
-    chrome.runtime.sendMessage({gAnalytics: analyticsInfo}, () => {});
+
+    chrome.storage.local.get('analyticsEvents', (result) => {
+        result.analyticsEvents.push(analyticsInfo);
+        chrome.storage.local.set({analyticsEvents: result.analyticsEvents}, () => {});
+    });
 }
 
-function gaTrackEvent(event) {
+function trackEvent(event) {
     let path = location.protocol === 'chrome-extension:' ? location.pathname : location.hostname + location.pathname;
     let analyticsInfo = {
         type: 'event',
         category: event.category,
         action: event.action,
-        label: path
+        path: path,
+        timestamp: Date.now()
     };
-    chrome.runtime.sendMessage({gAnalytics: analyticsInfo}, () => {});
+
+    chrome.storage.local.get('analyticsEvents', (result) => {
+        result.analyticsEvents.push(analyticsInfo);
+        chrome.storage.local.set({analyticsEvents: result.analyticsEvents}, () => {});
+    });
 }

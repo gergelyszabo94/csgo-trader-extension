@@ -265,7 +265,7 @@ function addFunctionBars(){
             }
             sortingSelect.addEventListener('change', () => {
                 // analytics
-                gaTrackEvent({
+                trackEvent({
                     category: 'Sorting',
                     action: 'OfferSorting'
                 });
@@ -275,7 +275,7 @@ function addFunctionBars(){
             });
             yourSortingSelect.addEventListener('change', () => {
                 // analytics
-                gaTrackEvent({
+                trackEvent({
                     category: 'Sorting',
                     action: 'OfferSorting'
                 });
@@ -285,7 +285,7 @@ function addFunctionBars(){
             });
             theirSortingSelect.addEventListener('change', () => {
                 // analytics
-                gaTrackEvent({
+                trackEvent({
                     category: 'Sorting',
                     action: 'OfferSorting'
                 });
@@ -485,7 +485,7 @@ getInventories();
 overrideHandleTradeActionMenu();
 
 updateLoggedInUserID();
-gaTrackPageView();
+trackPageView();
 
 // changes background and adds a banner if steamrep banned scammer detected
 chrome.storage.local.get('markScammers', result => {if(result.markScammers) warnOfScammer(getTradePartnerSteamID(), 'offer')});

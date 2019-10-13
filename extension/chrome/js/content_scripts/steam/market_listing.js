@@ -139,7 +139,7 @@ function setStickerInfo(listingID, stickers){
 }
 
 updateLoggedInUserID();
-gaTrackPageView();
+trackPageView();
 
 const inBrowserInspectButtonPopupLink = `<a class="popup_menu_item" id="inbrowser_inspect" href="http://csgo.gallery/" target="_blank">${chrome.i18n.getMessage("inspect_in_browser")}</a>`;
 const dopplerPhase = '<div class="dopplerPhaseMarket"><span></span></div>';
@@ -203,7 +203,7 @@ if (originalInspectButton !== null){
     document.getElementById('largeiteminfo_item_actions').insertAdjacentHTML('beforeend', inBrowserInspectButton);
     document.getElementById('inbrowser_inspect_button').addEventListener('click', () => {
         // analytics
-        gaTrackEvent({
+        trackEvent({
             category: 'Inspection',
             action: 'MarketInspection'
         });
@@ -221,7 +221,7 @@ document.getElementById('inbrowser_inspect').addEventListener('mouseenter', (eve
 
 document.getElementById('inbrowser_inspect').addEventListener('click', () => {
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Inspection',
         action: 'MarketInspection'
     });

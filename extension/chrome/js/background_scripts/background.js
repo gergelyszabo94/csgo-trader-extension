@@ -1,18 +1,13 @@
-// Standard Google Universal Analytics code
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-48407333-5', 'auto');
-ga('set', 'checkProtocolTask', function(){}); // Removes failing protocol check. @see: http://stackoverflow.com/a/22152353/1958200
-ga('require', 'displayfeatures');
-ga('send', 'pageview', 'background_page');
-
-
 // handles install and update events
 chrome.runtime.onInstalled.addListener((details) =>{
     if(details.reason === 'install'){
+        let installEvent = {
+            type:'install',
+            timestamp: Date.now()
+        };
+
+        trackEvent(installEvent);
+
         // sets the default options for first run (on install from the webstore/amo or when loaded in developer mode)
         for (let key in storageKeys) {chrome.storage.local.set({[key]: storageKeys[key]}, () =>{});}
 
@@ -25,6 +20,13 @@ chrome.runtime.onInstalled.addListener((details) =>{
         },(notificationId) =>{});
     }
     else if(details.reason === 'update'){
+        let updateEvent = {
+            type:'update',
+            timestamp: Date.now()
+        };
+
+        trackEvent(updateEvent);
+
         // sets defaults options for new options that haven't been set yet (for features introduced since the last version - runs when the extension updates or gets reloaded in developer mode)
         // it checks whether the setting has ever been set - I consider removing older ones since there is no one updating from version that old
         let keysArray = [];

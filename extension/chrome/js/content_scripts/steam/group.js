@@ -2,6 +2,6 @@ addReplytoCommentsFunctionality();
 addCommentsMutationObserver();
 reportComments();
 updateLoggedInUserID();
-gaTrackPageView();
+trackPageView();
 
 setInterval( () =>{if(/#announcements|#comments/.test(window.location.href))addReplytoCommentsFunctionality()}, 2000);

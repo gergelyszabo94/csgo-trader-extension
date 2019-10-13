@@ -1,4 +1,4 @@
-gaTrackPageView();
+trackPageView();
 
 // sets extension version
 let version = chrome.runtime.getManifest().version;

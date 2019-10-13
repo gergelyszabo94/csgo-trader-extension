@@ -1,4 +1,4 @@
-gaTrackPageView();
+trackPageView();
 
 // if there is any badge text it gets removed
 chrome.runtime.sendMessage({badgetext: ""}, (response) => {});

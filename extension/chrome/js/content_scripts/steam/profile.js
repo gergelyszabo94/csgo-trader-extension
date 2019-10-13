@@ -1,7 +1,7 @@
 // ensures that we are on a profile page, it's not possible with simple regex
 if (document.querySelector('body').classList.contains('profile_page')){
     updateLoggedInUserID();
-    gaTrackPageView();
+    trackPageView();
     const profileOwnerSteamID = getProfileOwnerSteamID();
     const loggedInUserID =  getUserSteamID();
 
@@ -28,7 +28,7 @@ if (document.querySelector('body').classList.contains('profile_page')){
 
                 document.getElementById('reocc').addEventListener('click', () => {
                     // analytics
-                    gaTrackEvent({
+                    trackEvent({
                         category: 'Reoccuring Comment',
                         action: 'ReoccuringCommentPosted'
                     });
@@ -64,7 +64,7 @@ if (document.querySelector('body').classList.contains('profile_page')){
 
             document.getElementById('copy_profile_perma_link').addEventListener('click', () => {
                 // analytics
-                gaTrackEvent({
+                trackEvent({
                     category: 'Profile Permalink',
                     action: 'ProfilePermalinkCopied'
                 });
@@ -84,7 +84,7 @@ if (document.querySelector('body').classList.contains('profile_page')){
 
                     document.getElementById('repper').addEventListener('click', () => {
                         // analytics
-                        gaTrackEvent({
+                        trackEvent({
                             category: 'Repution Message',
                             action: 'ReputionMessagePosted'
                         });

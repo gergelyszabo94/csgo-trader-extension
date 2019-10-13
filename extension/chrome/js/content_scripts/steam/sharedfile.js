@@ -2,4 +2,4 @@ addReplytoCommentsFunctionality();
 addCommentsMutationObserver();
 reportComments();
 updateLoggedInUserID();
-gaTrackPageView();
+trackPageView();

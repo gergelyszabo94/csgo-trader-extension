@@ -1,4 +1,4 @@
-gaTrackPageView();
+trackPageView();
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if(request.alert !== undefined){
@@ -140,7 +140,7 @@ chrome.storage.local.get('bookmarks', (result) => {
         document.querySelectorAll('.remove').forEach(removeButton => {
             removeButton.addEventListener('click', (event) => {
                 // analytics
-                gaTrackEvent({
+                trackEvent({
                     category: 'Bookmarking',
                     action: 'RemoveBookmark'
                 });

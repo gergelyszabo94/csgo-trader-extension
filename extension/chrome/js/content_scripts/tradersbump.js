@@ -7,7 +7,7 @@ function bump(){
     });
 }
 
-gaTrackPageView();
+trackPageView();
 
 chrome.storage.local.get('tradersBump', (result) => {
     if(result.tradersBump){

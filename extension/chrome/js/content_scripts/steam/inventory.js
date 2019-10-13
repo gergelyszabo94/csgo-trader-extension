@@ -305,7 +305,7 @@ function changeName(name, color, link, dopplerInfo){
 
 function addBookmark(module) {
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Bookmarking',
         action: 'AddBookmark'
     });
@@ -428,7 +428,7 @@ function addFunctionBar(){
         document.getElementById("selectButton").addEventListener("click", (event) => {
             if(event.target.classList.contains("selectionActive")){
                 // analytics
-                gaTrackEvent({
+                trackEvent({
                     category: 'Item Selection',
                     action: 'SelectionStopped'
                 });
@@ -440,7 +440,7 @@ function addFunctionBar(){
             }
             else{
                 // analytics
-                gaTrackEvent({
+                trackEvent({
                     category: 'Item Selection',
                     action: 'SelectionInitiated'
                 });
@@ -452,7 +452,7 @@ function addFunctionBar(){
 
         sortingSelect.addEventListener("change", () => {
             // analytics
-            gaTrackEvent({
+            trackEvent({
                 category: 'Sorting',
                 action: 'InventorySorting'
             });
@@ -524,7 +524,7 @@ function doInitSorting() {
 
 function generateItemsList(){
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Item List Generation',
         action: 'GenerateList'
     });
@@ -740,7 +740,7 @@ if (document.getElementById('no_inventories') === null && document.getElementByI
 addSearchListener('inventory');
 overridePopulateActions();
 updateLoggedInUserID();
-gaTrackPageView();
+trackPageView();
 
 chrome.storage.local.get('hideOtherExtensionPrices', (result) => {if (result.hideOtherExtensionPrices) hideOtherExtensionPrices()});
 

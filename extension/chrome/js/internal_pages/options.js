@@ -11,7 +11,7 @@ function addDeleteClickListener(element){
     });
 }
 
-gaTrackPageView();
+trackPageView();
 
 // simple checkboxes - toggles
 
@@ -25,7 +25,7 @@ simpleBinaryOptions.forEach(option => {
 
    optionCheckbox.addEventListener('click', (event) => {
        // analytics
-       gaTrackEvent({
+       trackEvent({
            category: 'Options',
            action: `${event.target.id}Changed`
        });
@@ -42,7 +42,7 @@ chrome.permissions.contains({permissions: ['tabs']}, (result) => {tabsAPI.checke
 
 tabsAPI.addEventListener("click", () =>{
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Options',
         action: 'tabsAPIChanged'
     });
@@ -62,7 +62,7 @@ chrome.storage.local.get('tradersBump', (result) => {
 
 tradersbump.addEventListener("click", () => {
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Options',
         action: 'tradersBumpChanged'
     });
@@ -87,7 +87,7 @@ chrome.storage.local.get('loungeBump', (result) => {
 
 loungebump.addEventListener('click', () => {
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Options',
         action: 'loungebumpChanged'
     });
@@ -114,7 +114,7 @@ chrome.storage.local.get(['reputationMessage'], (result) => {
 
 repmessagesave.addEventListener('click', () => {
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Options',
         action: 'reputationMessageChanged'
     });
@@ -135,7 +135,7 @@ chrome.storage.local.get(['reoccuringMessage'], (result) => {
 
 reoccmessagesave.addEventListener('click', () => {
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Options',
         action: 'reoccuringMessageChanged'
     });
@@ -162,7 +162,7 @@ chrome.storage.local.get(['steamAPIKey', 'apiKeyValid'], (result) => {
 
 apikeysave.addEventListener('click', () => {
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Options',
         action: 'steamAPIKeyChanged'
     });
@@ -218,7 +218,7 @@ chrome.storage.local.get('customCommentsToReport', (result) => {
 
 customCommentsSave.addEventListener('click', () => {
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Options',
         action: 'customCommentsToReportChanged'
     });
@@ -267,7 +267,7 @@ numberoflistings.addEventListener('input', () => {
     else if (number > 100) number = 100;
     chrome.storage.local.set({numberOfListings: number}, () => {
         // analytics
-        gaTrackEvent({
+        trackEvent({
             category: 'Options',
             action: 'customCommentsToReportChanged'
         });
@@ -292,7 +292,7 @@ chrome.storage.local.get('currency', (result) => {
 
 currencySelect.addEventListener('click', () => {
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Options',
         action: 'currencyChanged'
     });
@@ -333,7 +333,7 @@ chrome.storage.local.get(['pricingProvider', 'pricingMode'], (result) => {
 
 pricingProviderSelect.addEventListener('click', () => {
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Options',
         action: 'pricingProviderChanged'
     });
@@ -368,7 +368,7 @@ pricingProviderSelect.addEventListener('click', () => {
 
 pricingModeSelect.addEventListener('click', () => {
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Options',
         action: 'pricingModeChanged'
     });
@@ -396,7 +396,7 @@ chrome.storage.local.get('inventorySortingMode', (result) => {
 
 inventorySortingSelect.addEventListener('click', () => {
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Options',
         action: 'inventorySortingChanged'
     });
@@ -421,7 +421,7 @@ chrome.storage.local.get('offerSortingMode', (result) => {
 
 offerSortingSelect.addEventListener('click', () => {
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Options',
         action: 'offerSortingChanged'
     });
@@ -487,7 +487,7 @@ chrome.storage.local.get('popupLinks', (result) => {
 
 document.getElementById('savePopupLink').addEventListener('click', () =>{
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Options',
         action: 'popupLinksChanged'
     });
@@ -552,7 +552,7 @@ let importPrefInput = document.getElementById('import_preferences');
 
 importPrefInput.addEventListener('change', event => {
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Options',
         action: 'preferencesImported'
     });
@@ -579,7 +579,7 @@ let importBookmarksInput = document.getElementById('import_bookmarks');
 
 importBookmarksInput.addEventListener('change', event => {
     // analytics
-    gaTrackEvent({
+    trackEvent({
         category: 'Options',
         action: 'bookmarkImported'
     });
