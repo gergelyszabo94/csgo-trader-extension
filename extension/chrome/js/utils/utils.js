@@ -1338,3 +1338,47 @@ function trackEvent(event) {
         chrome.storage.local.set({analyticsEvents: result.analyticsEvents}, () => {});
     });
 }
+
+function sendTelemetry() {
+    let settingsStorageKeys = [];
+    for (let key in storageKeys) if (!nonSettingStorageKeys.includes(key)) settingsStorageKeys.push(key);
+    let storageKeysForTelemetry = settingsStorageKeys;
+    storageKeysForTelemetry.push('analyticsEvents');
+
+    chrome.storage.local.get(storageKeysForTelemetry, (result) => {
+        console.log(result.analyticsEvents);
+
+        let preferences = {};
+
+        settingsStorageKeys.forEach(setting => {preferences[setting] = result[setting]});
+
+        let requestBody = {
+            user: result.steamIDOfUser,
+            events: result.analyticsEvents,
+            preferences: preferences
+        };
+
+        let getRequest = new Request('https://api.csgotrader.app/analytics/putevents', {
+                method: 'POST',
+                body: JSON.stringify(requestBody)
+            });
+
+        fetch(getRequest).then((response) => {
+            if (!response.ok) {
+                console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+            }
+            else return response.json();
+        }).then((body) => {
+            if (body.body.success === 'true') {
+                console.log('success');
+                //chrome.storage.local.set({analyticsEvents: []}, () => {});
+            }
+            else {
+                console.log('failure');
+                //TODO: implement retry logic
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+    });
+}
