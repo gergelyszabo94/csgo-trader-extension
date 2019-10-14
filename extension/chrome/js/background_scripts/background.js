@@ -1,15 +1,16 @@
 // handles install and update events
 chrome.runtime.onInstalled.addListener((details) =>{
     if(details.reason === 'install'){
+
+        // sets the default options for first run (on install from the webstore/amo or when loaded in developer mode)
+        for (let key in storageKeys) {chrome.storage.local.set({[key]: storageKeys[key]}, () =>{});}
+
         let installEvent = {
             type:'install',
             timestamp: Date.now()
         };
 
         trackEvent(installEvent);
-
-        // sets the default options for first run (on install from the webstore/amo or when loaded in developer mode)
-        for (let key in storageKeys) {chrome.storage.local.set({[key]: storageKeys[key]}, () =>{});}
 
         chrome.browserAction.setBadgeText({text: 'I'});
         chrome.notifications.create('installed', {
@@ -20,13 +21,6 @@ chrome.runtime.onInstalled.addListener((details) =>{
         },(notificationId) =>{});
     }
     else if(details.reason === 'update'){
-        let updateEvent = {
-            type:'update',
-            timestamp: Date.now()
-        };
-
-        trackEvent(updateEvent);
-
         // sets defaults options for new options that haven't been set yet (for features introduced since the last version - runs when the extension updates or gets reloaded in developer mode)
         // it checks whether the setting has ever been set - I consider removing older ones since there is no one updating from version that old
         let keysArray = [];
@@ -35,6 +29,13 @@ chrome.runtime.onInstalled.addListener((details) =>{
         chrome.storage.local.get(keysArray, (result) =>{
             for (let key in storageKeys) { if (result[key] === undefined) chrome.storage.local.set({[key]: storageKeys[key]}, () =>{}) }
         });
+
+        let updateEvent = {
+            type:'update',
+            timestamp: Date.now()
+        };
+
+        trackEvent(updateEvent);
 
         chrome.browserAction.setBadgeText({text: 'U'});
 
