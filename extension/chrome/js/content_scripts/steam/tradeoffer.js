@@ -484,6 +484,11 @@ getInventories();
 // adds "get float value" action item
 overrideHandleTradeActionMenu();
 
+injectStyle(`
+    .slot_app_fraudwarning{
+        top: 19px !important;
+        left: 75px !important;
+    }`, 'nametagWarning');
 updateLoggedInUserID();
 trackPageView();
 

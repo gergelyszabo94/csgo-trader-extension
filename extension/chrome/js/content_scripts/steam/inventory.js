@@ -737,6 +737,11 @@ if (document.getElementById('no_inventories') === null && document.getElementByI
     });
 }
 
+injectStyle(`
+    .slot_app_fraudwarning{
+        top: 19px !important;
+        left: 75px !important;
+    }`, 'nametagWarning');
 addSearchListener('inventory');
 overridePopulateActions();
 updateLoggedInUserID();

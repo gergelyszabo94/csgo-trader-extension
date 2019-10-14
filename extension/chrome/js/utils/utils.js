@@ -1382,3 +1382,10 @@ function sendTelemetry() {
         });
     });
 }
+
+function injectStyle(styleString, elementID) {
+    let styleElement = document.createElement('style');
+    styleElement.id = elementID;
+    styleElement.innerHTML = styleString;
+    document.querySelector('body').appendChild(styleElement);
+}
