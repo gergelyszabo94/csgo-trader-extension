@@ -75,7 +75,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 floatInfo = result.floatCache[assetid].floatInfo;
                                 floatCacheAssetIDs.push(assetid);
                             }
-                            let patternInfo = floatInfo !== null ? getPattern(market_hash_name, floatInfo.paintSeed) : null;
+                            let patternInfo = (floatInfo !== null) ? getPattern(market_hash_name, floatInfo.paintseed) : null;
 
                             if (result.itemPricing) price = getPrice(market_hash_name, dopplerInfo, prices, result.pricingProvider, result.exchangeRate, result.currency);
                             else{price = {price: '', display: ''}}
