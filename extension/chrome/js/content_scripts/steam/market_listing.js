@@ -21,18 +21,22 @@ function addStickers() {
     document.querySelectorAll('.sih-images').forEach(image => {image.parentNode.removeChild(image)});
 
     let listings = getListings();
-    document.getElementById('searchResultsRows').querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listing_row => {
-        if (listing_row.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listing_row.parentNode.parentNode.id !== 'tabContentsMyListings'){
-            let listingID = listing_row.id.split('listing_')[1];
-            listing_row.querySelectorAll('.market_listing_item_name_block').forEach(name_block =>{name_block.insertAdjacentHTML('beforeend', `<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`)});
+    let listingsSection = document.getElementById('searchResultsRows');
 
-            let stickers = listings[listingID].asset.stickers;
+    if (listingsSection !== null) { // so it does not throw any errors when it can't find it on commodity items
+        listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listing_row => {
+            if (listing_row.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listing_row.parentNode.parentNode.id !== 'tabContentsMyListings'){
+                let listingID = listing_row.id.split('listing_')[1];
+                listing_row.querySelectorAll('.market_listing_item_name_block').forEach(name_block =>{name_block.insertAdjacentHTML('beforeend', `<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`)});
 
-            stickers.forEach(stickerInfo =>{
-                document.getElementById(`stickerHolder_${listingID}`).insertAdjacentHTML('beforeend', `<span class="stickerSlotMarket" data-tooltip-market="${stickerInfo.name}"><a href="${stickerInfo.marketURL}" target="_blank"><img src="${stickerInfo.iconURL}" class="stickerIcon"></a></span>`)
-            });
-        }
-    });
+                let stickers = listings[listingID].asset.stickers;
+
+                stickers.forEach(stickerInfo =>{
+                    document.getElementById(`stickerHolder_${listingID}`).insertAdjacentHTML('beforeend', `<span class="stickerSlotMarket" data-tooltip-market="${stickerInfo.name}"><a href="${stickerInfo.marketURL}" target="_blank"><img src="${stickerInfo.iconURL}" class="stickerIcon"></a></span>`)
+                });
+            }
+        });
+    }
 }
 
 function addListingsToFloatQueue() {
@@ -59,21 +63,27 @@ function addListingsToFloatQueue() {
 function addFloatBarSkeletons(){
     chrome.storage.local.get('autoFloatMarket', (result) => {
         if (result.autoFloatMarket) {
-            let listingNameBlocks = document.getElementById('searchResultsRows').querySelectorAll('.market_listing_item_name_block');
-            if (listingNameBlocks !== null && itemWithInspectLink) {
-                listingNameBlocks.forEach(listingNameBlock => {
-                    if (listingNameBlock.getAttribute('data-floatBar-added') === null || listingNameBlock.getAttribute('data-floatBar-added') === false) {
-                        listingNameBlock.insertAdjacentHTML('beforeend', getFloatBarSkeleton('market'));
-                        listingNameBlock.setAttribute('data-floatBar-added', true);
+            let listingsSection = document.getElementById('searchResultsRows');
 
-                        // adds "show technical" hide and show logic
-                        listingNameBlock.querySelector('.showTechnical').addEventListener('click', event => {
-                            event.target.parentNode.querySelector('.floatTechnical').classList.toggle('hidden')
-                        });
-                    }
-                });
+            if (listingsSection !== null) { // so it does not throw any errors when it can't find it on commodity items
+                let listingNameBlocks = listingsSection.querySelectorAll('.market_listing_item_name_block');
+                if (listingNameBlocks !== null && itemWithInspectLink) {
+                    listingNameBlocks.forEach(listingNameBlock => {
+                        if (listingNameBlock.getAttribute('data-floatBar-added') === null || listingNameBlock.getAttribute('data-floatBar-added') === false) {
+                            listingNameBlock.insertAdjacentHTML('beforeend', getFloatBarSkeleton('market'));
+                            listingNameBlock.setAttribute('data-floatBar-added', true);
+
+                            // adds "show technical" hide and show logic
+                            listingNameBlock.querySelector('.showTechnical').addEventListener('click', event => {
+                                event.target.parentNode.querySelector('.floatTechnical').classList.toggle('hidden')
+                            });
+                        }
+                    });
+                }
+                else setTimeout(() => {
+                    addFloatBarSkeletons()
+                }, 2000);
             }
-            else setTimeout(() => {addFloatBarSkeletons()}, 2000);
         }
     });
 }
@@ -90,9 +100,12 @@ function populateFloatInfo(listingID, floatInfo){
     }
 }
 
-function hideFloatBar(listingID){
+function hideFloatBar(listingID) {
     let listingElement = getElementByListingID(listingID);
-    listingElement.querySelector('.floatBar').classList.add('hidden');
+
+    if (listingElement !== null) {
+        listingElement.querySelector('.floatBar').classList.add('hidden');
+    }
 }
 
 function getElementByListingID(listingID){return document.getElementById(`listing_${listingID}`)}
