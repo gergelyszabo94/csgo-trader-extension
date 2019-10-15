@@ -3,7 +3,10 @@ chrome.runtime.onInstalled.addListener((details) =>{
     if(details.reason === 'install'){
 
         // sets the default options for first run (on install from the webstore/amo or when loaded in developer mode)
-        for (let key in storageKeys) {chrome.storage.local.set({[key]: storageKeys[key]}, () =>{});}
+        for (let key in storageKeys) {
+            if (key === 'clientID') chrome.storage.local.set({[key]: uuidv4()}, () =>{}); // id generated to identify the extension installation - a user can use use multiple installations of the extension
+            else chrome.storage.local.set({[key]: storageKeys[key]}, () =>{});
+        }
 
         let installEvent = {
             type:'install',
@@ -27,7 +30,10 @@ chrome.runtime.onInstalled.addListener((details) =>{
         for (let key in storageKeys) {keysArray.push(key)}
 
         chrome.storage.local.get(keysArray, (result) =>{
-            for (let key in storageKeys) { if (result[key] === undefined) chrome.storage.local.set({[key]: storageKeys[key]}, () =>{}) }
+            for (let key in storageKeys) { if (result[key] === undefined) {
+                if (key === 'clientID') chrome.storage.local.set({[key]: uuidv4()}, () =>{}); // id generated to identify the extension installation - a user can use use multiple installations of the extension
+                else chrome.storage.local.set({[key]: storageKeys[key]}, () =>{})
+            } }
         });
 
         let updateEvent = {

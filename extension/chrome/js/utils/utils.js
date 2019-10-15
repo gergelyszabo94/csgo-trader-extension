@@ -1348,7 +1348,7 @@ function sendTelemetry() {
     for (let key in storageKeys) if (!keysNotToGet.includes(key)) settingsStorageKeys.push(key);
 
     let storageKeysForTelemetry = settingsStorageKeys;
-    storageKeysForTelemetry.push('analyticsEvents');
+    storageKeysForTelemetry.push('analyticsEvents', 'clientID');
 
     chrome.storage.local.get(storageKeysForTelemetry, (result) => {
         console.log(result.analyticsEvents);
@@ -1359,6 +1359,9 @@ function sendTelemetry() {
 
         let requestBody = {
             user: result.steamIDOfUser,
+            userAgent: navigator.userAgent,
+            browserLanguage: navigator.language,
+            clientID: result.clientID,
             events: result.analyticsEvents,
             preferences: preferences
         };
@@ -1393,4 +1396,10 @@ function injectStyle(styleString, elementID) {
     styleElement.id = elementID;
     styleElement.innerHTML = styleString;
     document.querySelector('body').appendChild(styleElement);
+}
+
+function uuidv4() {
+    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
 }
