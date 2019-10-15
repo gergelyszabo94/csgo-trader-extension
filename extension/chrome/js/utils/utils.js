@@ -1342,7 +1342,11 @@ function trackEvent(event) {
 
 function sendTelemetry() {
     let settingsStorageKeys = [];
-    for (let key in storageKeys) if (!nonSettingStorageKeys.includes(key)) settingsStorageKeys.push(key);
+    let keysNotToGet = nonSettingStorageKeys;
+    keysNotToGet.push('steamAPIKey');
+
+    for (let key in storageKeys) if (!keysNotToGet.includes(key)) settingsStorageKeys.push(key);
+
     let storageKeysForTelemetry = settingsStorageKeys;
     storageKeysForTelemetry.push('analyticsEvents');
 
