@@ -427,7 +427,7 @@ function addFloatIndicatorsToPage(type) {
                     else addFloatIndicator(itemElement, item.floatInfo);
                 }
             });
-            workOnFloatQueue();
+            if (!floatQueue.active) workOnFloatQueue();
         }
     });
 }

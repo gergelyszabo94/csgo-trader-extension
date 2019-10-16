@@ -188,7 +188,7 @@ function addElements(){
                         assetID: item.assetid,
                         inspectLink: item.inspectLink
                     });
-                    workOnFloatQueue();
+                    if (!floatQueue.active) workOnFloatQueue();
                 }
                 else hideFloatBars();
             }
@@ -660,7 +660,7 @@ function addFloatIndicatorsToPage(page){
                     else addFloatIndicator(itemElement, item.floatInfo);
                 }
             });
-            workOnFloatQueue();
+            if (!floatQueue.active) workOnFloatQueue();
         }
     });
 }

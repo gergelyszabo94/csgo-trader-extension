@@ -54,7 +54,7 @@ function addListingsToFloatQueue() {
                         listingID: listing.listingid
                     });
                 }
-                workOnFloatQueue();
+                if (!floatQueue.active) workOnFloatQueue();
             }
         }
     });
