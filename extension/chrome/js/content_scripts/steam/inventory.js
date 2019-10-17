@@ -182,7 +182,7 @@ function addElements(){
                 setTimeout(() =>{document.querySelectorAll(".float_block").forEach(e => e.parentNode.removeChild(e));}, 1000);
             }
             if (item.floatInfo === null){
-                if (item.inspectLink !== null && item.type !== itemTypes.collectible && item.type !== itemTypes.container && item.type !== itemTypes.graffiti && item.type !== itemTypes.c4 && item.type !== itemTypes.sticker) {
+                if (item.inspectLink !== null && itemTypes[item.type.key].float) {
                     floatQueue.jobs.push({
                         type: 'inventory_floatbar',
                         assetID: item.assetid,
@@ -649,7 +649,7 @@ function addFloatIndicatorsToPage(page){
             page.querySelectorAll('.item.app730.context2').forEach(itemElement => {
                 let assetID = getAssetIDOfElement(itemElement);
                 let item = getItemByAssetID(items, assetID);
-                if (item.inspectLink !== null && item.type !== itemTypes.collectible && item.type !== itemTypes.container && item.type !== itemTypes.graffiti && item.type !== itemTypes.c4 && item.type !== itemTypes.sticker){
+                if (item.inspectLink !== null && itemTypes[item.type.key].float){
                     if (item.floatInfo === null) {
                         floatQueue.jobs.push({
                             type: 'inventory',

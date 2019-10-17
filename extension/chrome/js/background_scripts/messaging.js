@@ -71,7 +71,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             let price = null;
                             let type = getType(items[item].tags);
                             let floatInfo = null;
-                            if (result.floatCache[assetid] !== undefined) {
+                            if (result.floatCache[assetid] !== undefined && itemTypes[type.key].float) {
                                 floatInfo = result.floatCache[assetid].floatInfo;
                                 floatCacheAssetIDs.push(assetid);
                             }
@@ -135,9 +135,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 sendResponse({inventory: itemsPropertiesToReturn.sort((a, b) => { return a.position - b.position})});
                 updateFloatCache(result.floatCache, floatCacheAssetIDs);
             }).catch(err => {
-                    console.log(err);
-                    sendResponse({inventory: 'error'});
-                });
+                console.log(err);
+                sendResponse({inventory: 'error'});
+            });
         });
         return true; // async return to signal that it will return later
     }
@@ -165,10 +165,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         item.floatInfo = result.floatCache[item.assetid].floatInfo;
                         item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintSeed);
                         floatCacheAssetIDs.push(item.assetid);
-                    }
-                    else {
-                        item.floatInfo = null;
-                        item.patternInfo = null;
                     }
                 });
                 sendResponse({addPricesToInventory: inventory});
@@ -215,9 +211,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 sendResponse({valid: false});
             }
         }).catch(err => {
-                console.log(err);
-                sendResponse({valid: false});
-            });
+            console.log(err);
+            sendResponse({valid: false});
+        });
         return true; // async return to signal that it will return later
     }
     else if (request.GetPlayerSummaries !== undefined) {
@@ -253,34 +249,25 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         let inspectLink = request.getFloatInfo;
         if (inspectLink !== null) {
             let assetID = getAssetIDFromInspectLink(inspectLink);
-            chrome.storage.local.get('floatCache', (result) => {
-                if (result.floatCache[assetID] !== undefined) {
-                    updateFloatCache(result.floatCache, assetID);
-                    if (result.floatCache[assetID].floatInfo.floatvalue !== 0) sendResponse({floatInfo: result.floatCache[assetID].floatInfo});
+            let getRequest = new Request(`https://api.csgofloat.com/?url=${inspectLink}`);
+
+            fetch(getRequest).then((response) => {
+                if (!response.ok) {
+                    sendResponse('error');
+                    console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+                }
+                else return response.json();
+            }).then((body) => {
+                if (body.iteminfo.floatvalue !== undefined) {
+                    let usefulFloatInfo = extractUsefulFloatInfo(body.iteminfo);
+                    chrome.storage.local.get('floatCache', (result) => {updateFloatCache(result.floatCache, assetID, usefulFloatInfo)});
+                    if (usefulFloatInfo.floatvalue !== 0) sendResponse({floatInfo: usefulFloatInfo});
                     else sendResponse('nofloat');
                 }
-                else {
-                    let getRequest = new Request(`https://api.csgofloat.com/?url=${inspectLink}`);
-
-                    fetch(getRequest).then((response) => {
-                        if (!response.ok) {
-                            sendResponse('error');
-                            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-                        }
-                        else return response.json();
-                    }).then((body) => {
-                        if (body.iteminfo.floatvalue !== undefined) {
-                            let usefulFloatInfo = extractUsefulFloatInfo(body.iteminfo);
-                            updateFloatCache(result.floatCache, assetID, usefulFloatInfo);
-                            if (usefulFloatInfo.floatvalue !== 0) sendResponse({floatInfo: usefulFloatInfo});
-                            else sendResponse('nofloat');
-                        }
-                        else sendResponse('error');
-                    }).catch(err => {
-                        console.log(err);
-                        sendResponse('error');
-                    });
-                }
+                else sendResponse('error');
+            }).catch(err => {
+                console.log(err);
+                sendResponse('error');
             });
         }
         else sendResponse('nofloat');

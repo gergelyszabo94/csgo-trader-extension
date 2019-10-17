@@ -404,20 +404,16 @@ function addFloatIndicatorsToPage(type) {
             let itemElements;
             if (type === 'page'){
                 let page = getActivePage('offer');
-                if (page !== null) {
-                    itemElements = page.querySelectorAll('.item.app730.context2');
-                }
-                else setTimeout(() => {addFloatIndicatorsToPage(type)}, 1000);
-            }
+                if (page !== null) itemElements = page.querySelectorAll('.item.app730.context2');
+                else setTimeout(() => {addFloatIndicatorsToPage(type)}, 1000)}
             else {
                 let page = document.getElementById(`trade_${type}s`);
                 if (page !== null) itemElements = page.querySelectorAll('.item.app730.context2');
-                else setTimeout(() => {addFloatIndicatorsToPage(type)}, 1000);
-            }
+                else setTimeout(() => {addFloatIndicatorsToPage(type)}, 1000)}
             itemElements.forEach(itemElement => {
                 let item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
                 if (item.inspectLink !== null){
-                    if (item.floatInfo === null) {
+                    if (item.floatInfo === null && itemTypes[item.type.key].float) {
                         floatQueue.jobs.push({
                             type: 'offer',
                             assetID: item.assetid,
