@@ -161,7 +161,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     if (result.prices[item.market_hash_name] !== undefined && result.prices[item.market_hash_name] !== 'null'){
                         item.price =  getPrice(item.market_hash_name, item.dopplerInfo, result.prices, result.pricingProvider, result.exchangeRate, result.currency);
                     }
-                    if (result.floatCache[item.assetid] !== undefined) {
+                    if (result.floatCache[item.assetid] !== undefined && itemTypes[item.type.key].float) {
                         item.floatInfo = result.floatCache[item.assetid].floatInfo;
                         item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintSeed);
                         floatCacheAssetIDs.push(item.assetid);
