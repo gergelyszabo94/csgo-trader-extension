@@ -1325,12 +1325,9 @@ function trackPageView() {
 }
 
 function trackEvent(event) {
-    let path = location.protocol === 'chrome-extension:' ? location.pathname : location.hostname + location.pathname;
     let analyticsInfo = {
         type: 'event',
-        category: event.category,
         action: event.action,
-        path: path,
         timestamp: Date.now()
     };
 
@@ -1343,7 +1340,7 @@ function trackEvent(event) {
 function sendTelemetry() {
     let settingsStorageKeys = [];
     let keysNotToGet = nonSettingStorageKeys;
-    keysNotToGet.push('steamAPIKey');
+    keysNotToGet.push('steamAPIKey', 'steamIDOfUser');
 
     for (let key in storageKeys) if (!keysNotToGet.includes(key)) settingsStorageKeys.push(key);
 
@@ -1353,16 +1350,46 @@ function sendTelemetry() {
     chrome.storage.local.get(storageKeysForTelemetry, (result) => {
         console.log(result.analyticsEvents);
 
+        let eventsSummary = {
+            events: {},
+            pageviews: {}
+        };
+
+        result.analyticsEvents.push({path: "steamcommunity.com/id/gergelyszabo/inventory/", timestamp: 1571599237198, type: "pageview"});
+
+        result.analyticsEvents.forEach(event => {
+            let date = new Date(event.timestamp).toISOString().split('T')[0];
+
+            if (eventsSummary.events[date] === undefined && eventsSummary.pageviews[date] === undefined) {
+                eventsSummary.events[date] = {};
+                eventsSummary.pageviews[date] = {};
+            }
+
+            if (event.type === 'pageview') {
+                eventsSummary.pageviews[date][event.path] !== undefined ? eventsSummary.pageviews[date][event.path]++ : eventsSummary.pageviews[date][event.path] = 1;
+            }
+            else {
+                eventsSummary.events[date][event.action] !== undefined ? eventsSummary.events[date][event.action]++ : eventsSummary.events[date][event.action] = 1;
+            }
+        });
+
+
         let preferences = {};
 
-        settingsStorageKeys.forEach(setting => {preferences[setting] = result[setting]});
+        settingsStorageKeys.forEach(setting => {
+            let customOrDefault = ['customCommentsToReport', 'popupLinks', 'reoccuringMessage', 'reputationMessage'];
+            let toIgnore = ['analyticsEvents', 'clientID', 'exchangeRate'];
+
+            if (customOrDefault.includes(setting)) preferences[setting] = JSON.stringify(result[setting]) === JSON.stringify(storageKeys[setting]) ? 'default' : 'custom';
+            else if (toIgnore.includes(setting)) {}
+            else preferences[setting] = result[setting]
+        });
 
         let requestBody = {
-            user: result.steamIDOfUser,
             userAgent: navigator.userAgent,
             browserLanguage: navigator.language,
             clientID: result.clientID,
-            events: result.analyticsEvents,
+            events: eventsSummary,
             preferences: preferences
         };
 
@@ -1379,7 +1406,7 @@ function sendTelemetry() {
         }).then((body) => {
             if (body.body.success === 'true') {
                 console.log('success');
-                //chrome.storage.local.set({analyticsEvents: []}, () => {});
+                chrome.storage.local.set({analyticsEvents: []}, () => {});
             }
             else {
                 console.log('failure');
