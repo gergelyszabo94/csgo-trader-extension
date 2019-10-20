@@ -1,6 +1,6 @@
 trackEvent({
     type: 'pageview',
-    action: 'CSGOTRADERBookmarksView'
+    action: 'ExtensionBookmarksView'
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -144,7 +144,7 @@ chrome.storage.local.get('bookmarks', (result) => {
             removeButton.addEventListener('click', (event) => {
                 // analytics
                 trackEvent({
-                    category: 'Bookmarking',
+                    type: 'event',
                     action: 'RemoveBookmark'
                 });
 

@@ -32,7 +32,7 @@ if (document.querySelector('body').classList.contains('profile_page')){
                 document.getElementById('reocc').addEventListener('click', () => {
                     // analytics
                     trackEvent({
-                        category: 'Reoccuring Comment',
+                        type: 'event',
                         action: 'ReoccuringCommentPosted'
                     });
 
@@ -68,7 +68,7 @@ if (document.querySelector('body').classList.contains('profile_page')){
             document.getElementById('copy_profile_perma_link').addEventListener('click', () => {
                 // analytics
                 trackEvent({
-                    category: 'Profile Permalink',
+                    type: 'event',
                     action: 'ProfilePermalinkCopied'
                 });
                 document.querySelector('body').insertAdjacentHTML('beforeend', textareaToCopy);
@@ -88,7 +88,7 @@ if (document.querySelector('body').classList.contains('profile_page')){
                     document.getElementById('repper').addEventListener('click', () => {
                         // analytics
                         trackEvent({
-                            category: 'Repution Message',
+                            type: 'event',
                             action: 'ReputionMessagePosted'
                         });
                         document.querySelector('.commentthread_textarea').value = result.reputationMessage;

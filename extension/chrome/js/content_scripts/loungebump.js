@@ -1,4 +1,13 @@
-function bump(){document.querySelectorAll('.btn-bump___1-VFc').forEach(bumpButton => {bumpButton.click()})}
+function bump(){
+    document.querySelectorAll('.btn-bump___1-VFc').forEach(bumpButton => {
+        bumpButton.click();
+    });
+
+    trackEvent({
+        type: 'event',
+        action: 'LoungeBump'
+    });
+}
 
 trackEvent({
     type: 'pageview',

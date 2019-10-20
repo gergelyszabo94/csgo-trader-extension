@@ -5,6 +5,11 @@ function bump(){
 
         fetch(request).then((response) => {})
     });
+
+    trackEvent({
+        type: 'event',
+        action: 'TradersBump'
+    });
 }
 
 trackEvent({

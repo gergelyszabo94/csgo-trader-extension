@@ -13,7 +13,10 @@ chrome.runtime.onInstalled.addListener((details) =>{
             timestamp: Date.now()
         };
 
-        trackEvent(installEvent);
+        trackEvent({
+            type:'event',
+            action: 'ExtensionInstall'
+        });
 
         chrome.browserAction.setBadgeText({text: 'I'});
         chrome.notifications.create('installed', {
@@ -36,12 +39,10 @@ chrome.runtime.onInstalled.addListener((details) =>{
             } }
         });
 
-        let updateEvent = {
-            type:'update',
-            timestamp: Date.now()
-        };
-
-        trackEvent(updateEvent);
+        trackEvent({
+            type:'event',
+            action: 'ExtensionUpdate'
+        });
 
         chrome.browserAction.setBadgeText({text: 'U'});
 
@@ -146,4 +147,9 @@ chrome.alarms.onAlarm.addListener((alarm) =>{
             }
         });
     }
+});
+
+trackEvent({
+    type:'event',
+    action: 'ExtensionRun'
 });

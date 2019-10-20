@@ -1,6 +1,6 @@
 trackEvent({
     type: 'pageview',
-    action: 'CSGOTRADERPopupView'
+    action: 'ExtensionPopupView'
 });
 
 // if there is any badge text it gets removed

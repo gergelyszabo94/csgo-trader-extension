@@ -13,7 +13,7 @@ function addDeleteClickListener(element){
 
 trackEvent({
     type: 'pageview',
-    action: 'CSGOTRADEROptionsView'
+    action: 'ExtensionOptionsView'
 });
 
 // simple checkboxes - toggles
@@ -27,12 +27,6 @@ simpleBinaryOptions.forEach(option => {
    chrome.storage.local.get(option, (result) => {optionCheckbox.checked = result[option]});
 
    optionCheckbox.addEventListener('click', (event) => {
-       // analytics
-       trackEvent({
-           category: 'Options',
-           action: `${event.target.id}Changed`
-       });
-
        chrome.storage.local.set({[event.target.id]: event.target.checked}, () => {})
    });
 });
@@ -44,12 +38,6 @@ let tabsAPI = document.getElementById('tabsAPI');
 chrome.permissions.contains({permissions: ['tabs']}, (result) => {tabsAPI.checked = result});
 
 tabsAPI.addEventListener("click", () =>{
-    // analytics
-    trackEvent({
-        category: 'Options',
-        action: 'tabsAPIChanged'
-    });
-
     if (tabsAPI.checked) chrome.permissions.request({permissions: ['tabs']}, (granted) => {tabsAPI.checked = granted});
     else chrome.permissions.remove({permissions: ['tabs']}, (removed) => {});
 });
@@ -64,12 +52,6 @@ chrome.storage.local.get('tradersBump', (result) => {
 });
 
 tradersbump.addEventListener("click", () => {
-    // analytics
-    trackEvent({
-        category: 'Options',
-        action: 'tradersBumpChanged'
-    });
-
     if (tradersbump.checked){
         chrome.permissions.request({permissions: ['tabs'], origins: ['*://csgotraders.net/*']}, (granted) => {
             tradersbump.checked = granted;
@@ -89,12 +71,6 @@ chrome.storage.local.get('loungeBump', (result) => {
 });
 
 loungebump.addEventListener('click', () => {
-    // analytics
-    trackEvent({
-        category: 'Options',
-        action: 'loungebumpChanged'
-    });
-
     if (loungebump.checked){
         chrome.permissions.request({permissions: ['tabs'], origins: ['*://csgolounge.com/*']}, (granted) => {
             loungebump.checked = granted;
@@ -116,12 +92,6 @@ chrome.storage.local.get(['reputationMessage'], (result) => {
 });
 
 repmessagesave.addEventListener('click', () => {
-    // analytics
-    trackEvent({
-        category: 'Options',
-        action: 'reputationMessageChanged'
-    });
-
     let newmessage = repmessage.value;
     repmessageprint.textContent = newmessage.substring(0,8) + '...';
     chrome.storage.local.set({reputationMessage: newmessage}, () => {});
@@ -137,12 +107,6 @@ chrome.storage.local.get(['reoccuringMessage'], (result) => {
 });
 
 reoccmessagesave.addEventListener('click', () => {
-    // analytics
-    trackEvent({
-        category: 'Options',
-        action: 'reoccuringMessageChanged'
-    });
-
     let newmessage = reoccmessage.value;
     reoccmessageprint.textContent = newmessage.substring(0,8) + '...';
     chrome.storage.local.set({reoccuringMessage: newmessage}, () => {});
@@ -164,12 +128,6 @@ chrome.storage.local.get(['steamAPIKey', 'apiKeyValid'], (result) => {
 });
 
 apikeysave.addEventListener('click', () => {
-    // analytics
-    trackEvent({
-        category: 'Options',
-        action: 'steamAPIKeyChanged'
-    });
-
     let newapikey = apikey.value;
     chrome.runtime.sendMessage({apikeytovalidate: newapikey}, (response) => {
         if(response.valid){
@@ -220,12 +178,6 @@ chrome.storage.local.get('customCommentsToReport', (result) => {
 });
 
 customCommentsSave.addEventListener('click', () => {
-    // analytics
-    trackEvent({
-        category: 'Options',
-        action: 'customCommentsToReportChanged'
-    });
-
     if (customComments.value !== '' && customComments.value !== null){
         chrome.storage.local.get('customCommentsToReport', (result) => {
             let newCustomComments = result.customCommentsToReport;
@@ -268,13 +220,7 @@ numberoflistings.addEventListener('input', () => {
     let number = parseInt(this.value);
     if (number < 10) number = 10;
     else if (number > 100) number = 100;
-    chrome.storage.local.set({numberOfListings: number}, () => {
-        // analytics
-        trackEvent({
-            category: 'Options',
-            action: 'customCommentsToReportChanged'
-        });
-    });
+    chrome.storage.local.set({numberOfListings: number}, () => {});
 });
 
 //select
@@ -294,12 +240,6 @@ chrome.storage.local.get('currency', (result) => {
 });
 
 currencySelect.addEventListener('click', () => {
-    // analytics
-    trackEvent({
-        category: 'Options',
-        action: 'currencyChanged'
-    });
-
     let currency = currencySelect.options[currencySelect.selectedIndex].value;
     chrome.storage.local.set({currency: currency}, () => { updateExchangeRates()});
 });
@@ -335,12 +275,6 @@ chrome.storage.local.get(['pricingProvider', 'pricingMode'], (result) => {
 });
 
 pricingProviderSelect.addEventListener('click', () => {
-    // analytics
-    trackEvent({
-        category: 'Options',
-        action: 'pricingProviderChanged'
-    });
-
     let provider = pricingProviderSelect.options[pricingProviderSelect.selectedIndex].value;
     aboutTheProvider.innerText = pricingProviders[provider].description;
     chrome.storage.local.get('pricingProvider', (result) => {
@@ -370,12 +304,6 @@ pricingProviderSelect.addEventListener('click', () => {
 });
 
 pricingModeSelect.addEventListener('click', () => {
-    // analytics
-    trackEvent({
-        category: 'Options',
-        action: 'pricingModeChanged'
-    });
-
     let mode = pricingModeSelect.options[pricingModeSelect.selectedIndex].value;
     let provider = pricingProviderSelect.options[pricingProviderSelect.selectedIndex].value;
     aboutTheMode.innerText = pricingProviders[provider].pricing_modes[mode].description;
@@ -398,12 +326,6 @@ chrome.storage.local.get('inventorySortingMode', (result) => {
 });
 
 inventorySortingSelect.addEventListener('click', () => {
-    // analytics
-    trackEvent({
-        category: 'Options',
-        action: 'inventorySortingChanged'
-    });
-
     let inventorySortingMode = inventorySortingSelect.options[inventorySortingSelect.selectedIndex].value;
     chrome.storage.local.set({inventorySortingMode: inventorySortingMode}, () => {});
 });
@@ -423,12 +345,6 @@ chrome.storage.local.get('offerSortingMode', (result) => {
 });
 
 offerSortingSelect.addEventListener('click', () => {
-    // analytics
-    trackEvent({
-        category: 'Options',
-        action: 'offerSortingChanged'
-    });
-
     let offerSortingMode = offerSortingSelect.options[offerSortingSelect.selectedIndex].value;
     chrome.storage.local.set({offerSortingMode: offerSortingMode}, () => {});
 });
@@ -489,12 +405,6 @@ chrome.storage.local.get('popupLinks', (result) => {
 // form
 
 document.getElementById('savePopupLink').addEventListener('click', () =>{
-    // analytics
-    trackEvent({
-        category: 'Options',
-        action: 'popupLinksChanged'
-    });
-
     let linkName = document.getElementById('popupLinkName').value;
     let linkID = linkName.replace(/\W/g, '').toLowerCase();  // removes non-alphanumeric chars - https://stackoverflow.com/questions/9364400/remove-not-alphanumeric-characters-from-string-having-trouble-with-the-char
     let linkURL = document.getElementById('popupLinURL').value;
@@ -554,12 +464,6 @@ chrome.storage.local.get('bookmarks', (result) =>{
 let importPrefInput = document.getElementById('import_preferences');
 
 importPrefInput.addEventListener('change', event => {
-    // analytics
-    trackEvent({
-        category: 'Options',
-        action: 'preferencesImported'
-    });
-
     let file = event.target.files[0];
     let fr = new FileReader();
 
@@ -581,12 +485,6 @@ importPrefInput.addEventListener('change', event => {
 let importBookmarksInput = document.getElementById('import_bookmarks');
 
 importBookmarksInput.addEventListener('change', event => {
-    // analytics
-    trackEvent({
-        category: 'Options',
-        action: 'bookmarkImported'
-    });
-
     let file = event.target.files[0];
     let fr = new FileReader();
 

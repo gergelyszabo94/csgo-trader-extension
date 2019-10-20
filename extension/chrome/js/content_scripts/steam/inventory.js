@@ -306,7 +306,7 @@ function changeName(name, color, link, dopplerInfo){
 function addBookmark(module) {
     // analytics
     trackEvent({
-        category: 'Bookmarking',
+        type: 'event',
         action: 'AddBookmark'
     });
 
@@ -429,7 +429,7 @@ function addFunctionBar(){
             if(event.target.classList.contains("selectionActive")){
                 // analytics
                 trackEvent({
-                    category: 'Item Selection',
+                    type: 'event',
                     action: 'SelectionStopped'
                 });
 
@@ -441,7 +441,7 @@ function addFunctionBar(){
             else{
                 // analytics
                 trackEvent({
-                    category: 'Item Selection',
+                    type: 'event',
                     action: 'SelectionInitiated'
                 });
 
@@ -453,7 +453,7 @@ function addFunctionBar(){
         sortingSelect.addEventListener("change", () => {
             // analytics
             trackEvent({
-                category: 'Sorting',
+                type: 'event',
                 action: 'InventorySorting'
             });
 
@@ -525,7 +525,7 @@ function doInitSorting() {
 function generateItemsList(){
     // analytics
     trackEvent({
-        category: 'Item List Generation',
+        type: 'event',
         action: 'GenerateList'
     });
 

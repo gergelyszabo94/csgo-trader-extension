@@ -229,7 +229,7 @@ if (originalInspectButton !== null){
     document.getElementById('inbrowser_inspect_button').addEventListener('click', () => {
         // analytics
         trackEvent({
-            category: 'Inspection',
+            type: 'event',
             action: 'MarketInspection'
         });
     })
@@ -247,7 +247,7 @@ document.getElementById('inbrowser_inspect').addEventListener('mouseenter', (eve
 document.getElementById('inbrowser_inspect').addEventListener('click', () => {
     // analytics
     trackEvent({
-        category: 'Inspection',
+        type: 'event',
         action: 'MarketInspection'
     });
 });

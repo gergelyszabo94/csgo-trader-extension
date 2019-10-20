@@ -1,6 +1,6 @@
 trackEvent({
     type: 'pageview',
-    action: 'CSGOTRADERAboutView'
+    action: 'ExtensionAboutView'
 });
 
 // sets extension version

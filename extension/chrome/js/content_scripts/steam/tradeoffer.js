@@ -266,7 +266,7 @@ function addFunctionBars(){
             sortingSelect.addEventListener('change', () => {
                 // analytics
                 trackEvent({
-                    category: 'Sorting',
+                    type: 'event',
                     action: 'OfferSorting'
                 });
 
@@ -276,7 +276,7 @@ function addFunctionBars(){
             yourSortingSelect.addEventListener('change', () => {
                 // analytics
                 trackEvent({
-                    category: 'Sorting',
+                    type: 'event',
                     action: 'OfferSorting'
                 });
 
@@ -286,7 +286,7 @@ function addFunctionBars(){
             theirSortingSelect.addEventListener('change', () => {
                 // analytics
                 trackEvent({
-                    category: 'Sorting',
+                    type: 'event',
                     action: 'OfferSorting'
                 });
 
