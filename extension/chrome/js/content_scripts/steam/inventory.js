@@ -745,7 +745,10 @@ injectStyle(`
 addSearchListener('inventory');
 overridePopulateActions();
 updateLoggedInUserID();
-trackPageView();
+trackEvent({
+    type: 'pageview',
+    action: 'InventoryView'
+});
 
 chrome.storage.local.get('hideOtherExtensionPrices', (result) => {if (result.hideOtherExtensionPrices) hideOtherExtensionPrices()});
 

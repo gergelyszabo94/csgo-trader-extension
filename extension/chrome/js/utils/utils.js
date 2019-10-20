@@ -1310,23 +1310,9 @@ function addSearchListener(type) {
     else setTimeout(() => {addSearchListener(type)}, 1000);
 }
 
-function trackPageView() {
-    let path = location.protocol === 'chrome-extension:' ? location.pathname : location.hostname + location.pathname;
-    let analyticsInfo = {
-        type: 'pageview',
-        path: path,
-        timestamp: Date.now()
-    };
-
-    chrome.storage.local.get('analyticsEvents', (result) => {
-        result.analyticsEvents.push(analyticsInfo);
-        chrome.storage.local.set({analyticsEvents: result.analyticsEvents}, () => {});
-    });
-}
-
 function trackEvent(event) {
     let analyticsInfo = {
-        type: 'event',
+        type: event.type,
         action: event.action,
         timestamp: Date.now()
     };
@@ -1365,14 +1351,8 @@ function sendTelemetry() {
                 eventsSummary.pageviews[date] = {};
             }
 
-            if (event.type === 'pageview') {
-                eventsSummary.pageviews[date][event.path] !== undefined ? eventsSummary.pageviews[date][event.path]++ : eventsSummary.pageviews[date][event.path] = 1;
-            }
-            else {
-                eventsSummary.events[date][event.action] !== undefined ? eventsSummary.events[date][event.action]++ : eventsSummary.events[date][event.action] = 1;
-            }
+            eventsSummary[`${event.type}s`][date][event.action] !== undefined ? eventsSummary[`${event.type}s`][date][event.action]++ : eventsSummary[`${event.type}s`][date][event.action] = 1;
         });
-
 
         let preferences = {};
 

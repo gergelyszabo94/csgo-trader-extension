@@ -1,4 +1,7 @@
-trackPageView();
+trackEvent({
+    type: 'pageview',
+    action: 'CSGOTRADERBookmarksView'
+});
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if(request.alert !== undefined){

@@ -7,7 +7,10 @@ function bump(){
     });
 }
 
-trackPageView();
+trackEvent({
+    type: 'pageview',
+    action: 'TradersTradesView'
+});
 
 chrome.storage.local.get('tradersBump', (result) => {
     if(result.tradersBump){

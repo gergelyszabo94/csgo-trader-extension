@@ -1,4 +1,7 @@
-trackPageView();
+trackEvent({
+    type: 'pageview',
+    action: 'CSGOTRADERPopupView'
+});
 
 // if there is any badge text it gets removed
 chrome.runtime.sendMessage({badgetext: ""}, (response) => {});

@@ -2,4 +2,7 @@ addReplytoCommentsFunctionality();
 addCommentsMutationObserver();
 reportComments();
 updateLoggedInUserID();
-trackPageView();
+trackEvent({
+    type: 'pageview',
+    action: 'SharedFileView'
+});

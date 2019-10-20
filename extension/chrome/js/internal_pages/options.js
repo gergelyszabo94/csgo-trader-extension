@@ -11,7 +11,10 @@ function addDeleteClickListener(element){
     });
 }
 
-trackPageView();
+trackEvent({
+    type: 'pageview',
+    action: 'CSGOTRADEROptionsView'
+});
 
 // simple checkboxes - toggles
 
