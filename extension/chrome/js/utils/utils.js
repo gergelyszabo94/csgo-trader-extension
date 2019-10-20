@@ -1335,66 +1335,69 @@ function sendTelemetry() {
 
     chrome.storage.local.get(storageKeysForTelemetry, (result) => {
         console.log(result.analyticsEvents);
+        if (result.telemetryOn) {
+            console.log(result.analyticsEvents);
+            let eventsSummary = {
+                events: {},
+                pageviews: {}
+            };
 
-        let eventsSummary = {
-            events: {},
-            pageviews: {}
-        };
+            result.analyticsEvents.push({path: "steamcommunity.com/id/gergelyszabo/inventory/", timestamp: 1571599237198, type: "pageview"});
 
-        result.analyticsEvents.push({path: "steamcommunity.com/id/gergelyszabo/inventory/", timestamp: 1571599237198, type: "pageview"});
+            result.analyticsEvents.forEach(event => {
+                let date = new Date(event.timestamp).toISOString().split('T')[0];
 
-        result.analyticsEvents.forEach(event => {
-            let date = new Date(event.timestamp).toISOString().split('T')[0];
+                if (eventsSummary.events[date] === undefined && eventsSummary.pageviews[date] === undefined) {
+                    eventsSummary.events[date] = {};
+                    eventsSummary.pageviews[date] = {};
+                }
 
-            if (eventsSummary.events[date] === undefined && eventsSummary.pageviews[date] === undefined) {
-                eventsSummary.events[date] = {};
-                eventsSummary.pageviews[date] = {};
-            }
+                eventsSummary[`${event.type}s`][date][event.action] !== undefined ? eventsSummary[`${event.type}s`][date][event.action]++ : eventsSummary[`${event.type}s`][date][event.action] = 1;
+            });
 
-            eventsSummary[`${event.type}s`][date][event.action] !== undefined ? eventsSummary[`${event.type}s`][date][event.action]++ : eventsSummary[`${event.type}s`][date][event.action] = 1;
-        });
+            let preferences = {};
 
-        let preferences = {};
+            settingsStorageKeys.forEach(setting => {
+                let customOrDefault = ['customCommentsToReport', 'popupLinks', 'reoccuringMessage', 'reputationMessage'];
+                let toIgnore = ['analyticsEvents', 'clientID', 'exchangeRate'];
 
-        settingsStorageKeys.forEach(setting => {
-            let customOrDefault = ['customCommentsToReport', 'popupLinks', 'reoccuringMessage', 'reputationMessage'];
-            let toIgnore = ['analyticsEvents', 'clientID', 'exchangeRate'];
+                if (customOrDefault.includes(setting)) preferences[setting] = JSON.stringify(result[setting]) === JSON.stringify(storageKeys[setting]) ? 'default' : 'custom';
+                else if (toIgnore.includes(setting)) {}
+                else preferences[setting] = result[setting]
+            });
 
-            if (customOrDefault.includes(setting)) preferences[setting] = JSON.stringify(result[setting]) === JSON.stringify(storageKeys[setting]) ? 'default' : 'custom';
-            else if (toIgnore.includes(setting)) {}
-            else preferences[setting] = result[setting]
-        });
+            let requestBody = {
+                userAgent: navigator.userAgent,
+                browserLanguage: navigator.language,
+                clientID: result.clientID,
+                events: eventsSummary,
+                preferences: preferences
+            };
 
-        let requestBody = {
-            userAgent: navigator.userAgent,
-            browserLanguage: navigator.language,
-            clientID: result.clientID,
-            events: eventsSummary,
-            preferences: preferences
-        };
+            let getRequest = new Request('https://api.csgotrader.app/analytics/putevents', {
+                method: 'POST',
+                body: JSON.stringify(requestBody)
+            });
 
-        let getRequest = new Request('https://api.csgotrader.app/analytics/putevents', {
-            method: 'POST',
-            body: JSON.stringify(requestBody)
-        });
-
-        fetch(getRequest).then((response) => {
-            if (!response.ok) {
-                console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-            }
-            else return response.json();
-        }).then((body) => {
-            if (body.body.success === 'true') {
-                console.log('success');
-                chrome.storage.local.set({analyticsEvents: []}, () => {});
-            }
-            else {
-                console.log('failure');
-                //TODO: implement retry logic
-            }
-        }).catch((err) => {
-            console.log(err);
-        });
+            fetch(getRequest).then((response) => {
+                if (!response.ok) {
+                    console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+                }
+                else return response.json();
+            }).then((body) => {
+                if (body.body.success === 'true') {
+                    console.log('success');
+                    chrome.storage.local.set({analyticsEvents: []}, () => {});
+                }
+                else {
+                    console.log('failure');
+                    //TODO: implement retry logic
+                }
+            }).catch((err) => {
+                console.log(err);
+            });
+        }
+        else chrome.storage.local.set({analyticsEvents: []}, () => {});
     });
 }
 
