@@ -71,7 +71,7 @@ chrome.runtime.onInstalled.addListener((details) =>{
     // updates the prices and exchange rates - retries periodically if it's the first time (on install) and it fails to update prices/exchange rates
     updatePrices();
     updateExchangeRates();
-    sendTelemetry(0);
+    trimFloatCache();
     chrome.alarms.create('updatePricesAndExchangeRates', {periodInMinutes: 1440});
     chrome.alarms.create('retryUpdatePricesAndExchangeRates', {periodInMinutes: 1});
     chrome.alarms.create('trimFloatCache', {periodInMinutes: 1440});
