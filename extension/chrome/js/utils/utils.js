@@ -621,7 +621,7 @@ function addReplytoCommentsFunctionality() {
 function handleReplyToCommentFunctionality(event) {
     // analytics
     trackEvent({
-        category: 'Reply to Comment',
+        type: 'event',
         action: 'CommentReply'
     });
 
@@ -659,7 +659,7 @@ function reportComments(){
                 if (spamTextCheck.test(comment.querySelector('.commentthread_comment_text').innerText) && !comment.classList.contains('hidden_post')){
                     // analytics
                     trackEvent({
-                        category: 'Abuse Report',
+                        type: 'event',
                         action: 'CommentReported'
                     });
                     comment.querySelector('a.report_and_hide').querySelector('img').click();
@@ -1323,7 +1323,7 @@ function trackEvent(event) {
     });
 }
 
-function sendTelemetry() {
+function sendTelemetry(retries) {
     let settingsStorageKeys = [];
     let keysNotToGet = nonSettingStorageKeys;
     keysNotToGet.push('steamAPIKey', 'steamIDOfUser');
@@ -1334,15 +1334,11 @@ function sendTelemetry() {
     storageKeysForTelemetry.push('analyticsEvents', 'clientID');
 
     chrome.storage.local.get(storageKeysForTelemetry, (result) => {
-        console.log(result.analyticsEvents);
         if (result.telemetryOn) {
-            console.log(result.analyticsEvents);
             let eventsSummary = {
                 events: {},
                 pageviews: {}
             };
-
-            result.analyticsEvents.push({path: "steamcommunity.com/id/gergelyszabo/inventory/", timestamp: 1571599237198, type: "pageview"});
 
             result.analyticsEvents.forEach(event => {
                 let date = new Date(event.timestamp).toISOString().split('T')[0];
@@ -1386,12 +1382,14 @@ function sendTelemetry() {
                 else return response.json();
             }).then((body) => {
                 if (body.body.success === 'true') {
-                    console.log('success');
                     chrome.storage.local.set({analyticsEvents: []}, () => {});
                 }
                 else {
-                    console.log('failure');
-                    //TODO: implement retry logic
+                    if (retries < 5) setTimeout(() => {sendTelemetry(++retries)}, 6000*5);
+                    else {
+                        let newAnalyticsEvents = result.analyticsEvents.filter(event => event.timestamp > (Date.now() - (1000*60*60*24*7)));
+                        chrome.storage.local.set({analyticsEvents: newAnalyticsEvents}, () => {});
+                    }
                 }
             }).catch((err) => {
                 console.log(err);
