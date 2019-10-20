@@ -1,14 +1,22 @@
 import json
 import boto3
+from botocore.exceptions import ClientError
 import os
-from datetime import date
-
-result_s3_bucket = os.environ['RESULTS_BUCKET']
+import decimal
 
 
 def lambda_handler(event, context):
-    if 'user' in event and 'events' in event and 'preferences' in event and 'clientID' in event:
-        push_to_s3(event)
+    if 'events' in event and 'preferences' in event and 'clientID' in event and 'userAgent' in event and 'browserLanguage' in event:
+        dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
+        events_table = dynamodb.Table(os.environ['EVENTS_TABLE'])
+        pageviews_table = dynamodb.Table(os.environ['PAGVEVIEWS_TABLE'])
+
+        events = event['events']['events']
+        pageviews = event['events']['pageviews']
+
+        go_through_events('events', events, events_table, pageviews_table)
+        go_through_events('pageviews', pageviews, events_table, pageviews_table)
+
         return {
             'statusCode': 200,
             'body': {'success': 'true'}
@@ -20,31 +28,51 @@ def lambda_handler(event, context):
         }
 
 
-def push_to_s3(content):
-    user = content.get('user') if content.get('user') != '' else 'no_user'
-    clientid = content.get('clientID')
+# Helper class to convert a DynamoDB item to JSON.
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, decimal.Decimal):
+            if o % 1 > 0:
+                return float(o)
+            else:
+                return int(o)
+        return super(DecimalEncoder, self).default(o)
 
-    today = date.today()
-    year = today.strftime("%Y")
-    month = today.strftime("%m")
-    day = today.strftime("%d")
 
-    s3 = boto3.resource('s3')
+def update_db(date, type, upd_exp, exp_attr_nam, exp_attr_val, events_table, pageviews_table):
+    table = events_table if type == 'events' else pageviews_table
+    try:
+        response = table.update_item(
+            Key={'date': date},
+            UpdateExpression=upd_exp,
+            ExpressionAttributeNames=exp_attr_nam,
+            ExpressionAttributeValues=exp_attr_val,
+            ReturnValues="UPDATED_NEW"
+        )
+    except ClientError as e:
+        if e.response['Error']['Code'] == 'ValidationException':
+            print(e.response)
+        else:
+            raise
+    print(json.dumps(response, indent=4, cls=DecimalEncoder))
 
-    print(f'Uploading extension/{user}/{clientid}/{year}/{month}/{day}/events.json')
-    s3.Object(result_s3_bucket, f'extension/{user}/{clientid}/{year}/{month}/{day}/events.json').put(
-        Body=(bytes(json.dumps(content.get('events')).encode('UTF-8')))
-    )
 
-    clientinfo = {
-        'user': user,
-        'userAgent': content.get('userAgent'),
-        'browserLanguage': content.get('browserLanguage'),
-        'clientID': clientid,
-        'preferences': content.get('preferences')
-    }
+def go_through_events(type, events, events_table, pageviews_table):
+    if events:  # if not empty
+        for date in events:
+            print(date)
+            update_expression = 'SET '
+            exp_attr_val = {
+                ':start': 0,
+            }
+            exp_attr_nam = {}
+            i = 0
 
-    print(f'Uploading extension/{user}/{clientid}{year}/{month}/{day}/clientInfo.json')
-    s3.Object(result_s3_bucket, f'extension/{user}/{clientid}/{year}/{month}/{day}/clientInfo.json').put(
-        Body=(bytes(json.dumps(clientinfo).encode('UTF-8')))
-    )
+            if events[date]:  # if not empty
+                for event in events[date]:
+                    i += 1
+                    update_expression += f'#AttrName{i} = if_not_exists(#AttrName{i}, :start) + :{event}_inc, '
+                    exp_attr_nam[f'#AttrName{i}'] = event
+                    exp_attr_val[f':{event}_inc'] = decimal.Decimal(events[date][event])
+                update_expression = update_expression[:-2]  # removes the last 2 chars ", "
+                update_db(date, type, update_expression, exp_attr_nam, exp_attr_val, events_table, pageviews_table)
