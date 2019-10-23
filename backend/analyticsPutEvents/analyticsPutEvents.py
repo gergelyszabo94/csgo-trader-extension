@@ -6,13 +6,17 @@ import decimal
 
 
 def lambda_handler(event, context):
-    if 'events' in event and 'preferences' in event and 'clientID' in event and 'userAgent' in event and 'browserLanguage' in event:
-        dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
-        events_table = dynamodb.Table(os.environ['EVENTS_TABLE'])
-        pageviews_table = dynamodb.Table(os.environ['PAGVEVIEWS_TABLE'])
+    body = event['body-json']
+    staging_variables = event['stage-variables']
+    stage = staging_variables['DEPLOYMENT_STAGE']
 
-        events = event['events']['events']
-        pageviews = event['events']['pageviews']
+    if 'events' in body and 'preferences' in body and 'clientID' in body and 'userAgent' in body and 'browserLanguage' in body:
+        dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
+        events_table = dynamodb.Table(staging_variables['EVENTS_TABLE'])
+        pageviews_table = dynamodb.Table(staging_variables['PAGVEVIEWS_TABLE'])
+
+        events = body['events']['events']
+        pageviews = body['events']['pageviews']
 
         go_through_events('events', events, events_table, pageviews_table)
         go_through_events('pageviews', pageviews, events_table, pageviews_table)
