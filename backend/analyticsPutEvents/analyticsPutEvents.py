@@ -12,14 +12,21 @@ def lambda_handler(event, context):
 
     if 'events' in body and 'preferences' in body and 'clientID' in body and 'userAgent' in body and 'browserLanguage' in body:
         dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
-        events_table = dynamodb.Table(staging_variables['EVENTS_TABLE'])
-        pageviews_table = dynamodb.Table(staging_variables['PAGVEVIEWS_TABLE'])
+        tables = {
+            'events': dynamodb.Table(staging_variables['EVENTS_TABLE']),
+            'pageviews': dynamodb.Table(staging_variables['PAGEVIEWS_TABLE']),
+            'preferences': dynamodb.Table(staging_variables['PREFERENCES_TABLE'])
+        }
 
         events = body['events']['events']
         pageviews = body['events']['pageviews']
+        preferences = body['preferences']
+        user_agent = body['userAgent']
+        browser_language = body['browserLanguage']
+        client_id = body['clientID']
 
-        go_through_events('events', events, events_table, pageviews_table)
-        go_through_events('pageviews', pageviews, events_table, pageviews_table)
+        go_through_events('events', events, tables)
+        go_through_events('pageviews', pageviews, tables)
 
         return {
             'statusCode': 200,
@@ -43,8 +50,9 @@ class DecimalEncoder(json.JSONEncoder):
         return super(DecimalEncoder, self).default(o)
 
 
-def update_db(date, type, upd_exp, exp_attr_nam, exp_attr_val, events_table, pageviews_table):
-    table = events_table if type == 'events' else pageviews_table
+def update_db(date, type, upd_exp, exp_attr_nam, exp_attr_val, tables):
+    print(type)
+    table = tables[type]
     try:
         response = table.update_item(
             Key={'date': date},
@@ -61,7 +69,7 @@ def update_db(date, type, upd_exp, exp_attr_nam, exp_attr_val, events_table, pag
     print(json.dumps(response, indent=4, cls=DecimalEncoder))
 
 
-def go_through_events(type, events, events_table, pageviews_table):
+def go_through_events(type, events, tables):
     if events:  # if not empty
         for date in events:
             print(date)
@@ -79,4 +87,4 @@ def go_through_events(type, events, events_table, pageviews_table):
                     exp_attr_nam[f'#AttrName{i}'] = event
                     exp_attr_val[f':{event}_inc'] = decimal.Decimal(events[date][event])
                 update_expression = update_expression[:-2]  # removes the last 2 chars ", "
-                update_db(date, type, update_expression, exp_attr_nam, exp_attr_val, events_table, pageviews_table)
+                update_db(date, type, update_expression, exp_attr_nam, exp_attr_val, tables)
