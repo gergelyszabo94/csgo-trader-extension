@@ -1365,6 +1365,7 @@ function sendTelemetry(retries) {
             let requestBody = {
                 browserLanguage: navigator.language,
                 clientID: result.clientID,
+                client_version: chrome.runtime.getManifest().version,
                 events: eventsSummary,
                 preferences: preferences
             };

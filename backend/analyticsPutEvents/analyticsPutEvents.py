@@ -3,6 +3,7 @@ import boto3
 from botocore.exceptions import ClientError
 import os
 import decimal
+from datetime import date
 
 
 def lambda_handler(event, context):
@@ -18,15 +19,40 @@ def lambda_handler(event, context):
             'preferences': dynamodb.Table(staging_variables['PREFERENCES_TABLE'])
         }
 
-        events = body['events']['events']
-        pageviews = body['events']['pageviews']
-        preferences = body['preferences']
-        browser = 'chrome' if 'chrome-extension' in event['params']['header']['origin'] else 'firefox'
-        browser_language = body['browserLanguage']
-        client_id = body['clientID']
+        print('Updating the events table')
+        go_through_events('events', body['events']['events'], tables)
+        print('Events table updated')
 
-        go_through_events('events', events, tables)
-        go_through_events('pageviews', pageviews, tables)
+        print('Updating the pageviews table')
+        go_through_events('pageviews', body['events']['pageviews'], tables)
+        print('Pageviews table updated')
+
+        today = date.today()
+        year = today.strftime("%Y")
+        month = today.strftime("%m")
+        day = today.strftime("%d")
+        lambda_date_iso = f'{year}-{month}-{day}'
+        print('Updating preferences table')
+
+        version = '<=1.19.2'
+        try:
+            version = body['client_version']
+        except:
+            print('No version info from client')
+
+        tables['preferences'].put_item(
+            Item={
+                'date': lambda_date_iso,
+                'clientID': body['clientID'],
+                'extension_version': version,
+                'country': event['params']['header']['CloudFront-Viewer-Country'],
+                'browser': 'chrome' if 'chrome-extension' in event['params']['header']['origin'] else 'firefox',
+                'browser_language': body['browserLanguage'],
+                'preferences': body['preferences']
+            }
+        )
+
+        print('Preferences table updated')
 
         return {
             'statusCode': 200,
@@ -51,7 +77,6 @@ class DecimalEncoder(json.JSONEncoder):
 
 
 def update_db(date, type, upd_exp, exp_attr_nam, exp_attr_val, tables):
-    print(type)
     table = tables[type]
     try:
         response = table.update_item(
@@ -66,13 +91,11 @@ def update_db(date, type, upd_exp, exp_attr_nam, exp_attr_val, tables):
             print(e.response)
         else:
             raise
-    print(json.dumps(response, indent=4, cls=DecimalEncoder))
 
 
 def go_through_events(type, events, tables):
     if events:  # if not empty
         for date in events:
-            print(date)
             update_expression = 'SET '
             exp_attr_val = {
                 ':start': 0,
