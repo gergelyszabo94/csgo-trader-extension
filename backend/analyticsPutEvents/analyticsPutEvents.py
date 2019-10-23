@@ -10,7 +10,7 @@ def lambda_handler(event, context):
     staging_variables = event['stage-variables']
     stage = staging_variables['DEPLOYMENT_STAGE']
 
-    if 'events' in body and 'preferences' in body and 'clientID' in body and 'userAgent' in body and 'browserLanguage' in body:
+    if 'events' in body and 'preferences' in body and 'clientID' in body and 'browserLanguage' in body:
         dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
         tables = {
             'events': dynamodb.Table(staging_variables['EVENTS_TABLE']),
@@ -21,7 +21,7 @@ def lambda_handler(event, context):
         events = body['events']['events']
         pageviews = body['events']['pageviews']
         preferences = body['preferences']
-        user_agent = body['userAgent']
+        browser = 'chrome' if 'chrome-extension' in event['params']['header']['origin'] else 'firefox'
         browser_language = body['browserLanguage']
         client_id = body['clientID']
 

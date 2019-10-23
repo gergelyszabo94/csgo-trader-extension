@@ -1363,7 +1363,6 @@ function sendTelemetry(retries) {
             });
 
             let requestBody = {
-                userAgent: navigator.userAgent,
                 browserLanguage: navigator.language,
                 clientID: result.clientID,
                 events: eventsSummary,
