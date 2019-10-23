@@ -1381,15 +1381,15 @@ function sendTelemetry(retries) {
                 }
                 else return response.json();
             }).then((body) => {
-                if (body.body.success === 'true') {
-                    chrome.storage.local.set({analyticsEvents: []}, () => {});
-                }
-                else {
-                    if (retries < 5) setTimeout(() => {sendTelemetry(++retries)}, 6000*5);
+                if (body.body === undefined || body.body.success === 'false') {
+                    if (retries < 5) setTimeout(() => {sendTelemetry(++retries)}, 600*5);
                     else {
                         let newAnalyticsEvents = result.analyticsEvents.filter(event => event.timestamp > (Date.now() - (1000*60*60*24*7)));
                         chrome.storage.local.set({analyticsEvents: newAnalyticsEvents}, () => {});
                     }
+                }
+                else if (body.body.success === 'true'){
+                    chrome.storage.local.set({analyticsEvents: []}, () => {});
                 }
             }).catch((err) => {
                 console.log(err);
