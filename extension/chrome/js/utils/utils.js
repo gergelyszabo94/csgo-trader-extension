@@ -1159,6 +1159,17 @@ function updateFloatCache(floatCache, assetIDs, floatInfo) {
     chrome.storage.local.set({floatCache: floatCache}, ()=>{});
 }
 
+function addToFloatCache(assetID, floatInfo) {
+    chrome.storage.local.set({[`floatCache_${assetID}`]:
+            {
+                floatInfo: floatInfo,
+                added: Date.now(),
+                lastUsed: Date.now(),
+                used: 0
+            }
+    }, () => {});
+}
+
 function addFloatIndicator(itemElement, floatInfo){
     if (floatInfo !== null && itemElement.querySelector('div.floatIndicator') === null) {
         itemElement.insertAdjacentHTML('beforeend', `<div class="floatIndicator">${floatInfo.floatvalue.toFixed(4)}</div>`);

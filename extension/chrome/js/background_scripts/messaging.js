@@ -260,7 +260,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             }).then((body) => {
                 if (body.iteminfo.floatvalue !== undefined) {
                     let usefulFloatInfo = extractUsefulFloatInfo(body.iteminfo);
-                    chrome.storage.local.get('floatCache', (result) => {updateFloatCache(result.floatCache, assetID, usefulFloatInfo)});
+                    addToFloatCache(assetID, usefulFloatInfo);
                     if (usefulFloatInfo.floatvalue !== 0) sendResponse({floatInfo: usefulFloatInfo});
                     else sendResponse('nofloat');
                 }
