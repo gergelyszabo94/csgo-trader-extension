@@ -62,7 +62,7 @@ function addListingsToFloatQueue() {
                         });
                     }
                 }
-                updateFloatCache(result.floatCache, floatCacheUsed, null);
+                updateFloatCache(floatCacheUsed);
                 if (!floatQueue.active) workOnFloatQueue();
             }
         }

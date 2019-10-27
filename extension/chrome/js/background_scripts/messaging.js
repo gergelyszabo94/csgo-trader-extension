@@ -133,7 +133,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     }
                 }
                 sendResponse({inventory: itemsPropertiesToReturn.sort((a, b) => { return a.position - b.position})});
-                updateFloatCache(result.floatCache, floatCacheAssetIDs);
+                updateFloatCache(floatCacheAssetIDs);
             }).catch(err => {
                 console.log(err);
                 sendResponse({inventory: 'error'});

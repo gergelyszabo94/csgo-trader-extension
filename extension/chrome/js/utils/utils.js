@@ -1115,48 +1115,20 @@ function extractUsefulFloatInfo(floatInfo) {
     };
 }
 
-function updateFloatCache(floatCache, assetIDs, floatInfo) {
+function updateFloatCache(assetIDs) {
     assetIDs = arrayFromArrayOrNotArray(assetIDs);
 
     let floatStorageKeys = [];
     assetIDs.forEach( ID => {floatStorageKeys.push(`floatCache_${ID}`)});
-    floatStorageKeys.push('floatCacheKeys');
 
     chrome.storage.local.get([floatStorageKeys], (result) => {
-        assetIDs.forEach((assetID) => {
-            if (result[`floatCache_${assetID}`] === undefined && assetID !== '') { // if not in cache at all, adding it
-                chrome.storage.local.set({[`floatCache_${assetID}`]:
-                        {
-                            floatInfo: floatInfo,
-                            added: Date.now(),
-                            lastUsed: Date.now(),
-                            used: 0
-                        }
-                }, () => {});
-            }
-            else{ // update cache
-                result[`floatCache_${assetID}`].lastUsed = Date.now();
-                result[`floatCache_${assetID}`].used = floatCache[assetID].used + 1;
-            }
-        });
+        for (let floatKey in result) {
+            console.log(floatKey);
+            result[floatKey].lastUsed = Date.now();
+            result[floatKey].used = floatCache[assetID].used + 1;
+            chrome.storage.local.set({[floatKey]: result[floatKey]}, () => {});
+        }
     });
-
-    // assetIDs.forEach((assetID) => {
-    //     if (floatCache[assetID] === undefined && assetID !== '') { // if not in cache at all, adding it
-    //         floatCache[assetID] = {
-    //             floatInfo: floatInfo,
-    //             added: Date.now(),
-    //             lastUsed: Date.now(),
-    //             used: 0
-    //         }
-    //     }
-    //     else{ // update cache
-    //         floatCache[assetID].lastUsed = Date.now();
-    //         floatCache[assetID].used = floatCache[assetID].used + 1;
-    //     }
-    // });
-
-    chrome.storage.local.set({floatCache: floatCache}, ()=>{});
 }
 
 function addToFloatCache(assetID, floatInfo) {
@@ -1277,32 +1249,17 @@ function addPageControlEventListeners(type){
 }
 
 function trimFloatCache() {
-    // chrome.storage.local.get('floatCache', (result) => {
-    //     let floatCache = result.floatCache;
-    //     let newFloatCache = {};
-    //
-    //     for (let assetID in floatCache){
-    //         let timeSinceLastUsed = (Date.now() - floatCache[assetID].lastUsed) / 1000; // in seconds
-    //         let used = floatCache[assetID].used;
-    //
-    //         // if unused and in cache for over a day, or used but not for over a week, then this whole thing negated because the ones that do not fit this wil remain in the cache
-    //         if (!((used === 0 && timeSinceLastUsed > 86400) || (used > 0 && timeSinceLastUsed > 604800))) newFloatCache[assetID] = floatCache[assetID];
-    //     }
-    //     chrome.storage.local.set({floatCache: newFloatCache}, () => {});
-    // });
-
-    chrome.storage.local.get('floatCacheKeys', (result) => {
-        result.floatCacheKeys.forEach(assetID => {
-            chrome.storage.local.get([`floatCache_${assetID}`], (result) => {
-                let timeSinceLastUsed = (Date.now() - result[`floatCache_${assetID}`].lastUsed) / 1000; // in seconds
-                let used = result[`floatCache_${assetID}`].used;
+    chrome.storage.local.get(null, (result) => { // gets all storage
+        for (let storageKey in result)
+            if (storageKey.substring(0, 10) === 'floatCache_') {
+                let timeSinceLastUsed = (Date.now() - result[storageKey].lastUsed) / 1000; // in seconds
+                let used = result[storageKey].used;
 
                 // if unused and in cache for over a day, or used but not for over a week, then this whole thing negated because the ones that do not fit this wil remain in the cache
                 if ((used === 0 && timeSinceLastUsed > 86400) || (used > 0 && timeSinceLastUsed > 604800)) {
-                    chrome.storage.local.remove([`floatCache_${assetID}`], () => {});
+                    chrome.storage.local.remove([storageKey], () => {});
                 }
-            });
-        });
+            }
     });
 }
 

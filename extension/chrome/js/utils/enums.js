@@ -19951,17 +19951,15 @@ const storageKeys = {
     popupLinks: defaultPopupLinks,
     steamIDOfUser: '',
     customCommentsToReport: [],
-    floatCache: {},
     autoFloatMarket: true,
     autoFloatOffer: true,
     autoFloatInventory: true,
     analyticsEvents: [],
     clientID: '',
-    telemetryOn: true,
-    floatCacheKeys: []
+    telemetryOn: true
 };
 
-const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'floatCache', 'analyticsEvents', 'clientID', 'floatCacheKeys', 'floatCacheContent'];
+const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID'];
 
 const commentsToReport = [
     'free skins CS:GO(100$)',
