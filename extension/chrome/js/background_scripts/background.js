@@ -39,6 +39,16 @@ chrome.runtime.onInstalled.addListener((details) =>{
             } }
         });
 
+        // moves float cache from under a single storage key to individual keys TODO: remove these lines after a few new versions
+        chrome.storage.local.get('floatCache', (result) =>{
+            if (result.floatCache !== undefined && result.floatCache !== null) {
+                for (let assetID in result.floatCache) {
+                    chrome.storage.local.set({[`floatCache_${assetID}`]: result.floatCache[assetID]}, () => {});
+                }
+                chrome.storage.local.remove('floatCache', () => {});
+            }
+        });
+
         trackEvent({
             type:'event',
             action: 'ExtensionUpdate'
@@ -71,7 +81,6 @@ chrome.runtime.onInstalled.addListener((details) =>{
     // updates the prices and exchange rates - retries periodically if it's the first time (on install) and it fails to update prices/exchange rates
     updatePrices();
     updateExchangeRates();
-    trimFloatCache();
     chrome.alarms.create('updatePricesAndExchangeRates', {periodInMinutes: 1440});
     chrome.alarms.create('retryUpdatePricesAndExchangeRates', {periodInMinutes: 1});
     chrome.alarms.create('trimFloatCache', {periodInMinutes: 1440});
