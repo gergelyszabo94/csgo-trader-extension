@@ -245,8 +245,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
         return true; // async return to signal that it will return later
     }
-    else if (request.getFloatInfo !== undefined) {
-        let inspectLink = request.getFloatInfo;
+    else if (request.fetchFloatInfo !== undefined) {
+        let inspectLink = request.fetchFloatInfo;
         if (inspectLink !== null) {
             let assetID = getAssetIDFromInspectLink(inspectLink);
             let getRequest = new Request(`https://api.csgofloat.com/?url=${inspectLink}`);

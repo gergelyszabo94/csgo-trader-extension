@@ -1201,7 +1201,7 @@ function workOnFloatQueue() {
         floatQueue.active = true;
         let job = floatQueue.jobs.shift();
 
-        chrome.runtime.sendMessage({getFloatInfo: job.inspectLink}, (response) => {
+        chrome.runtime.sendMessage({fetchFloatInfo: job.inspectLink}, (response) => {
             if (response === 'error') {
                 floatQueue.jobs.push(job);
             }
@@ -1281,7 +1281,6 @@ function trimFloatCache() {
     // });
 
     chrome.storage.local.get('floatCacheKeys', (result) => {
-
         result.floatCacheKeys.forEach(assetID => {
             chrome.storage.local.get([`floatCache_${assetID}`], (result) => {
                 let timeSinceLastUsed = (Date.now() - result[`floatCache_${assetID}`].lastUsed) / 1000; // in seconds
