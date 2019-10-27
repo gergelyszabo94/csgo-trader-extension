@@ -19957,10 +19957,11 @@ const storageKeys = {
     autoFloatInventory: true,
     analyticsEvents: [],
     clientID: '',
-    telemetryOn: true
+    telemetryOn: true,
+    floatCacheKeys: []
 };
 
-const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'floatCache', 'analyticsEvents', 'clientID'];
+const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'floatCache', 'analyticsEvents', 'clientID', 'floatCacheKeys', 'floatCacheContent'];
 
 const commentsToReport = [
     'free skins CS:GO(100$)',
