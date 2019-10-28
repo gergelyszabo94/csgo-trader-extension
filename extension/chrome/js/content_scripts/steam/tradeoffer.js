@@ -6,10 +6,10 @@ function getInventories(){
         let yourBuiltInventory = buildInventoryStructure(yourInventory);
         let theirBuiltInventory = buildInventoryStructure(theirInventory);
 
-        chrome.runtime.sendMessage({addPricesToInventory: yourBuiltInventory}, (response) => {
-            let yourInventoryWithPrices = response.addPricesToInventory;
-            chrome.runtime.sendMessage({addPricesToInventory: theirBuiltInventory}, (response) => {
-                let theirInventoryWithPrices = response.addPricesToInventory;
+        chrome.runtime.sendMessage({addPricesAndFloatsToInventory: yourBuiltInventory}, (response) => {
+            let yourInventoryWithPrices = response.addPricesAndFloatsToInventory;
+            chrome.runtime.sendMessage({addPricesAndFloatsToInventory: theirBuiltInventory}, (response) => {
+                let theirInventoryWithPrices = response.addPricesAndFloatsToInventory;
                 for (let assetid in yourInventoryWithPrices) combinedInventories.push(yourInventoryWithPrices[assetid]);
                 for (let assetid in theirInventoryWithPrices) combinedInventories.push(theirInventoryWithPrices[assetid]);
                 addItemInfo();

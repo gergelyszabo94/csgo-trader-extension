@@ -40,29 +40,22 @@ function addStickers() {
 }
 
 function addListingsToFloatQueue() {
-    chrome.storage.local.get(['autoFloatMarket', 'floatCache'], (result) => {
+    chrome.storage.local.get('autoFloatMarket', (result) => {
         if (result.autoFloatMarket) {
             if (itemWithInspectLink) {
                 let listings = getListings();
-                let floatCacheUsed = [];
                 for (let listing in listings) {
                     listing = listings[listing];
                     let assetID = listing.asset.id;
-                    if (result.floatCache[assetID] !== undefined) {
-                        floatCacheUsed.push(assetID);
-                        populateFloatInfo(listing.listingid, result.floatCache[assetID].floatInfo);
-                        setStickerInfo(listing.listingid, result.floatCache[assetID].floatInfo.stickers);
-                    }
-                    else {
-                        floatQueue.jobs.push({
-                            type: 'market',
-                            assetID: assetID,
-                            inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
-                            listingID: listing.listingid
-                        });
-                    }
+
+                    floatQueue.jobs.push({
+                        type: 'market',
+                        assetID: assetID,
+                        inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
+                        listingID: listing.listingid
+                    });
+
                 }
-                updateFloatCache(result.floatCache, floatCacheUsed, null);
                 if (!floatQueue.active) workOnFloatQueue();
             }
         }

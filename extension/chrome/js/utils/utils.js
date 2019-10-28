@@ -1115,25 +1115,34 @@ function extractUsefulFloatInfo(floatInfo) {
     };
 }
 
-function updateFloatCache(floatCache, assetIDs, floatInfo) {
+function updateFloatCache(assetIDs) {
     assetIDs = arrayFromArrayOrNotArray(assetIDs);
 
-    assetIDs.forEach((assetID) => {
-        if (floatCache[assetID] === undefined && assetID !== '') { // if not in cache at all, adding it
-            floatCache[assetID] = {
+    let floatStorageKeys = [];
+    assetIDs.forEach( ID => {floatStorageKeys.push(`floatCache_${ID}`)});
+
+    chrome.storage.local.get(floatStorageKeys, (result) => {
+        for (let floatKey in result) {
+            let itemFloatInfo = result[floatKey];
+
+            if (itemFloatInfo !== undefined && itemFloatInfo !== null) {
+                itemFloatInfo.lastUsed = Date.now();
+                itemFloatInfo.used = itemFloatInfo.used + 1;
+                chrome.storage.local.set({[floatKey]: itemFloatInfo}, () => {});
+            }
+        }
+    });
+}
+
+function addToFloatCache(assetID, floatInfo) {
+    chrome.storage.local.set({[`floatCache_${assetID}`]:
+            {
                 floatInfo: floatInfo,
                 added: Date.now(),
                 lastUsed: Date.now(),
                 used: 0
             }
-        }
-        else{ // update cache
-            floatCache[assetID].lastUsed = Date.now();
-            floatCache[assetID].used = floatCache[assetID].used + 1;
-        }
-    });
-
-    chrome.storage.local.set({floatCache: floatCache}, ()=>{});
+    }, () => {});
 }
 
 function addFloatIndicator(itemElement, floatInfo){
@@ -1178,48 +1187,82 @@ function workOnFloatQueue() {
         floatQueue.active = true;
         let job = floatQueue.jobs.shift();
 
-        chrome.runtime.sendMessage({getFloatInfo: job.inspectLink}, (response) => {
-            if (response === 'error') {
-                floatQueue.jobs.push(job);
-            }
-            else {
-                if(response !== 'nofloat'){
-                    if (job.type === 'inventory' || job.type === 'inventory_floatbar' || job.type === 'offer') {
-                        addFloatIndicator(findElementByAssetID(job.assetID), response.floatInfo);
-
-                        // add float and pattern info to page variable
-                        let item = (job.type === 'inventory' || job.type === 'inventory_floatbar') ? getItemByAssetID(items, job.assetID) : getItemByAssetID(combinedInventories, job.assetID);
-                        item.floatInfo = response.floatInfo;
-                        item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
-
-                        if (job.type === 'inventory_floatbar'){
-                            if (getAssetIDofActive() === job.assetID) updateFloatAndPatternElements(item);
-                        }
-
-                        // check if there is a floatbar job for the same item and remove it
-                        if (job.type === 'inventory') {
-                            floatQueue.jobs.find((floatJob, index) => {
-                                if (floatJob.type === 'inventory_floatbar' && job.assetID === floatJob.assetID) {
-                                    updateFloatAndPatternElements(item);
-                                    removeFromArray(floatQueue, index);
-                                }
-                            })
-                        }
-                    }
-                    else if (job.type === 'market') {
-                        populateFloatInfo(job.listingID, response.floatInfo);
-                        setStickerInfo(job.listingID, response.floatInfo.stickers);
-                    }
+        getFloatInfoFromCache(job.assetID).then(
+            floatInfo => {
+                if (floatInfo[job.assetID] !== null) {
+                    addFloatDataToPage(job, floatQueue, floatInfo[job.assetID]);
+                    workOnFloatQueue();
                 }
                 else {
-                    if (job.type === 'inventory_floatbar') hideFloatBars();
-                    else if (job.type === 'market') hideFloatBar(job.listingID);
+                    chrome.runtime.sendMessage({fetchFloatInfo: job.inspectLink}, (response) => {
+                        if (response === 'error') floatQueue.jobs.push(job);
+                        else {
+                            if (response !== 'nofloat') addFloatDataToPage(job, floatQueue, response.floatInfo);
+                            else {
+                                if (job.type === 'inventory_floatbar') hideFloatBars();
+                                else if (job.type === 'market') hideFloatBar(job.listingID);
+                            }
+                        }
+                        workOnFloatQueue();
+                    });
                 }
             }
-            workOnFloatQueue();
-        });
+        );
     }
     else floatQueue.active = false;
+}
+
+function addFloatDataToPage(job, floatQueue, floatInfo) {
+    if (job.type === 'inventory' || job.type === 'inventory_floatbar' || job.type === 'offer') {
+        addFloatIndicator(findElementByAssetID(job.assetID), floatInfo);
+
+        // add float and pattern info to page variable
+        let item = (job.type === 'inventory' || job.type === 'inventory_floatbar') ? getItemByAssetID(items, job.assetID) : getItemByAssetID(combinedInventories, job.assetID);
+        item.floatInfo = floatInfo;
+        item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
+
+        if (job.type === 'inventory_floatbar'){
+            if (getAssetIDofActive() === job.assetID) updateFloatAndPatternElements(item);
+        }
+
+        // check if there is a floatbar job for the same item and remove it
+        if (job.type === 'inventory') {
+            floatQueue.jobs.find((floatJob, index) => {
+                if (floatJob.type === 'inventory_floatbar' && job.assetID === floatJob.assetID) {
+                    updateFloatAndPatternElements(item);
+                    removeFromArray(floatQueue, index);
+                }
+            })
+        }
+    }
+    else if (job.type === 'market') {
+        populateFloatInfo(job.listingID, floatInfo);
+        setStickerInfo(job.listingID, floatInfo.stickers);
+    }
+}
+
+function getFloatInfoFromCache(assetIDs) {
+    return new Promise((resolve, reject) => {
+        assetIDs = arrayFromArrayOrNotArray(assetIDs);
+
+        let floatInfoToReturn = {};
+        let floatStorageKeys = [];
+        assetIDs.forEach( ID => {floatStorageKeys.push(`floatCache_${ID}`)});
+
+        chrome.storage.local.get(floatStorageKeys, (result) => {
+            assetIDs.forEach( assetID => {
+                let storageKey = `floatCache_${assetID}`;
+                let itemFloatCache = result[storageKey];
+
+                if (itemFloatCache !== undefined && itemFloatCache !== null) {
+                    floatInfoToReturn[assetID] = itemFloatCache.floatInfo;
+                }
+                else floatInfoToReturn[assetID] = null;
+            });
+            updateFloatCache(assetIDs);
+            resolve(floatInfoToReturn)
+        });
+    });
 }
 
 function getActivePage(type){
@@ -1243,18 +1286,18 @@ function addPageControlEventListeners(type){
 }
 
 function trimFloatCache() {
-    chrome.storage.local.get('floatCache', (result) => {
-        let floatCache = result.floatCache;
-        let newFloatCache = {};
+    chrome.storage.local.get(null, (result) => { // gets all storage
+        for (let storageKey in result) {
+            if (storageKey.substring(0, 11) === 'floatCache_') {
+                let timeSinceLastUsed = (Date.now() - result[storageKey].lastUsed) / 1000; // in seconds
+                let used = result[storageKey].used;
 
-        for (let assetID in floatCache){
-            let timeSinceLastUsed = (Date.now() - floatCache[assetID].lastUsed) / 1000; // in seconds
-            let used = floatCache[assetID].used;
-
-            // if unused and in cache for over a day, or used but not for over a week, then this whole thing negated because the ones that do not fit this wil remain in the cache
-            if (!((used === 0 && timeSinceLastUsed > 86400) || (used > 0 && timeSinceLastUsed > 604800))) newFloatCache[assetID] = floatCache[assetID];
+                // if unused and in cache for over a day, or used but not for over a week, then this whole thing negated because the ones that do not fit this wil remain in the cache
+                if ((used === 0 && timeSinceLastUsed > 86400) || (used > 0 && timeSinceLastUsed > 604800)) {
+                    chrome.storage.local.remove([storageKey], () => {});
+                }
+            }
         }
-        chrome.storage.local.set({floatCache: newFloatCache}, () => {});
     });
 }
 

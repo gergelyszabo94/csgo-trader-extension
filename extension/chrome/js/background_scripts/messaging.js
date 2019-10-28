@@ -1,6 +1,6 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.inventory !== undefined) {
-        chrome.storage.local.get(['itemPricing', 'prices', 'currency', 'exchangeRate', 'pricingProvider', 'floatCache'], (result) => {
+        chrome.storage.local.get(['itemPricing', 'prices', 'currency', 'exchangeRate', 'pricingProvider'], (result) => {
             let prices = result.prices;
             let steamID = request.inventory;
 
@@ -24,6 +24,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 // counts duplicates
                 for (let asset in ids) {
                     let assetid = ids[asset].id;
+                    floatCacheAssetIDs.push(assetid);
 
                     for (let item in items) {
                         if (ids[asset].classid === items[item].classid && ids[asset].instanceid === items[item].instanceid) {
@@ -43,97 +44,100 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         }
                     }
                 }
-                for (let asset in ids) {
-                    let assetid = ids[asset].id;
-                    let position = ids[asset].pos;
+                getFloatInfoFromCache(floatCacheAssetIDs).then(
+                    floatCache => {
+                        for (let asset in ids) {
+                            let assetid = ids[asset].id;
+                            let position = ids[asset].pos;
 
-                    for (let item in items) {
-                        if (ids[asset].classid === items[item].classid && ids[asset].instanceid === items[item].instanceid) {
-                            let name = items[item].name;
-                            let market_hash_name = items[item].market_hash_name;
-                            let name_color = items[item].name_color;
-                            let marketlink = `https://steamcommunity.com/market/listings/730/${items[item].market_hash_name}`;
-                            let classid = items[item].classid;
-                            let instanceid = items[item].instanceid;
-                            let exterior = getExteriorFromTags(items[item].tags);
-                            let tradability = 'Tradable';
-                            let tradabilityShort = 'T';
-                            let icon = items[item].icon_url;
-                            let dopplerInfo = /Doppler/.test(items[item].name) ? getDopplerInfo(icon) : undefined;
-                            let isStatrack = /StatTrak™/.test(items[item].name);
-                            let isSouvenir = /Souvenir/.test(items[item].name);
-                            let starInName = /★/.test(items[item].name);
-                            let quality = getQuality(items[item].tags);
-                            let stickers =  parseStickerInfo(items[item].descriptions, 'direct');
-                            let nametag = undefined;
-                            let inspectLink = null;
-                            let owner = steamID;
-                            let price = null;
-                            let type = getType(items[item].tags);
-                            let floatInfo = null;
-                            if (result.floatCache[assetid] !== undefined && itemTypes[type.key].float) {
-                                floatInfo = result.floatCache[assetid].floatInfo;
-                                floatCacheAssetIDs.push(assetid);
-                            }
-                            let patternInfo = (floatInfo !== null) ? getPattern(market_hash_name, floatInfo.paintseed) : null;
+                            for (let item in items) {
+                                if (ids[asset].classid === items[item].classid && ids[asset].instanceid === items[item].instanceid) {
+                                    let name = items[item].name;
+                                    let market_hash_name = items[item].market_hash_name;
+                                    let name_color = items[item].name_color;
+                                    let marketlink = `https://steamcommunity.com/market/listings/730/${items[item].market_hash_name}`;
+                                    let classid = items[item].classid;
+                                    let instanceid = items[item].instanceid;
+                                    let exterior = getExteriorFromTags(items[item].tags);
+                                    let tradability = 'Tradable';
+                                    let tradabilityShort = 'T';
+                                    let icon = items[item].icon_url;
+                                    let dopplerInfo = /Doppler/.test(items[item].name) ? getDopplerInfo(icon) : undefined;
+                                    let isStatrack = /StatTrak™/.test(items[item].name);
+                                    let isSouvenir = /Souvenir/.test(items[item].name);
+                                    let starInName = /★/.test(items[item].name);
+                                    let quality = getQuality(items[item].tags);
+                                    let stickers =  parseStickerInfo(items[item].descriptions, 'direct');
+                                    let nametag = undefined;
+                                    let inspectLink = null;
+                                    let owner = steamID;
+                                    let price = null;
+                                    let type = getType(items[item].tags);
+                                    let floatInfo = null;
+                                    if (floatCache[assetid] !== undefined && floatCache[assetid] !== null && itemTypes[type.key].float) {
+                                        floatInfo = floatCache[assetid];
+                                    }
+                                    let patternInfo = (floatInfo !== null) ? getPattern(market_hash_name, floatInfo.paintseed) : null;
 
-                            if (result.itemPricing) price = getPrice(market_hash_name, dopplerInfo, prices, result.pricingProvider, result.exchangeRate, result.currency);
-                            else{price = {price: '', display: ''}}
+                                    if (result.itemPricing) price = getPrice(market_hash_name, dopplerInfo, prices, result.pricingProvider, result.exchangeRate, result.currency);
+                                    else{price = {price: '', display: ''}}
 
-                            try {if (items[item].fraudwarnings !== undefined || items[item].fraudwarnings[0] !== undefined) nametag = items[item].fraudwarnings[0].split('Name Tag: ')[1]}
-                            catch(error){}
+                                    try {if (items[item].fraudwarnings !== undefined || items[item].fraudwarnings[0] !== undefined) nametag = items[item].fraudwarnings[0].split('Name Tag: ')[1]}
+                                    catch(error){}
 
-                            if (items[item].tradable === 0) {
-                                tradability = items[item].cache_expiration;
-                                tradabilityShort = getShortDate(tradability);
-                            }
-                            if (items[item].marketable === 0) {
-                                tradability = 'Not Tradable';
-                                tradabilityShort = '';
-                            }
+                                    if (items[item].tradable === 0) {
+                                        tradability = items[item].cache_expiration;
+                                        tradabilityShort = getShortDate(tradability);
+                                    }
+                                    if (items[item].marketable === 0) {
+                                        tradability = 'Not Tradable';
+                                        tradabilityShort = '';
+                                    }
 
-                            try {
-                                if (items[item].actions !== undefined && items[item].actions[0] !== undefined){
-                                    let beggining = items[item].actions[0].link.split('%20S')[0];
-                                    let end = items[item].actions[0].link.split('%assetid%')[1];
-                                    inspectLink = (`${beggining}%20S${owner}A${assetid}${end}`);
+                                    try {
+                                        if (items[item].actions !== undefined && items[item].actions[0] !== undefined){
+                                            let beggining = items[item].actions[0].link.split('%20S')[0];
+                                            let end = items[item].actions[0].link.split('%assetid%')[1];
+                                            inspectLink = (`${beggining}%20S${owner}A${assetid}${end}`);
+                                        }
+                                    }
+                                    catch(error) {}
+
+                                    itemsPropertiesToReturn.push({
+                                        name: name,
+                                        market_hash_name: market_hash_name,
+                                        name_color: name_color,
+                                        marketlink: marketlink,
+                                        classid: classid,
+                                        instanceid: instanceid,
+                                        assetid: assetid,
+                                        position: position,
+                                        tradability: tradability,
+                                        tradabilityShort: tradabilityShort,
+                                        dopplerInfo: dopplerInfo,
+                                        exterior: exterior,
+                                        iconURL: icon,
+                                        inspectLink: inspectLink,
+                                        quality: quality,
+                                        isStatrack: isStatrack,
+                                        isSouvenir: isSouvenir,
+                                        starInName: starInName,
+                                        stickers: stickers,
+                                        nametag: nametag,
+                                        duplicates: duplicates[market_hash_name],
+                                        owner: owner,
+                                        price: price,
+                                        type: type,
+                                        floatInfo: floatInfo,
+                                        patternInfo: patternInfo
+                                    })
                                 }
                             }
-                            catch(error) {}
-
-                            itemsPropertiesToReturn.push({
-                                name: name,
-                                market_hash_name: market_hash_name,
-                                name_color: name_color,
-                                marketlink: marketlink,
-                                classid: classid,
-                                instanceid: instanceid,
-                                assetid: assetid,
-                                position: position,
-                                tradability: tradability,
-                                tradabilityShort: tradabilityShort,
-                                dopplerInfo: dopplerInfo,
-                                exterior: exterior,
-                                iconURL: icon,
-                                inspectLink: inspectLink,
-                                quality: quality,
-                                isStatrack: isStatrack,
-                                isSouvenir: isSouvenir,
-                                starInName: starInName,
-                                stickers: stickers,
-                                nametag: nametag,
-                                duplicates: duplicates[market_hash_name],
-                                owner: owner,
-                                price: price,
-                                type: type,
-                                floatInfo: floatInfo,
-                                patternInfo: patternInfo
-                            })
                         }
+                        sendResponse({inventory: itemsPropertiesToReturn.sort((a, b) => { return a.position - b.position})});
                     }
-                }
-                sendResponse({inventory: itemsPropertiesToReturn.sort((a, b) => { return a.position - b.position})});
-                updateFloatCache(result.floatCache, floatCacheAssetIDs);
+                );
+
             }).catch(err => {
                 console.log(err);
                 sendResponse({inventory: 'error'});
@@ -152,24 +156,28 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
         return true;
     }
-    else if (request.addPricesToInventory !== undefined){
-        let inventory = request.addPricesToInventory;
-        chrome.storage.local.get(['prices', 'exchangeRate', 'currency', 'itemPricing', 'pricingProvider', 'floatCache'], (result) =>{
+    else if (request.addPricesAndFloatsToInventory !== undefined){
+        let inventory = request.addPricesAndFloatsToInventory;
+        chrome.storage.local.get(['prices', 'exchangeRate', 'currency', 'itemPricing', 'pricingProvider'], (result) =>{
             if (result.itemPricing){
                 let floatCacheAssetIDs = [];
-                inventory.forEach(item => {
-                    if (result.prices[item.market_hash_name] !== undefined && result.prices[item.market_hash_name] !== 'null'){
-                        item.price =  getPrice(item.market_hash_name, item.dopplerInfo, result.prices, result.pricingProvider, result.exchangeRate, result.currency);
+                inventory.forEach(item => {floatCacheAssetIDs.push(item.assetid)});
+                getFloatInfoFromCache(floatCacheAssetIDs).then(
+                    floatCache => {
+                        inventory.forEach(item => {
+                            if (result.prices[item.market_hash_name] !== undefined && result.prices[item.market_hash_name] !== 'null'){
+                                item.price =  getPrice(item.market_hash_name, item.dopplerInfo, result.prices, result.pricingProvider, result.exchangeRate, result.currency);
+                            }
+                            if (floatCache[item.assetid] !== undefined && floatCache[item.assetid] !== null && itemTypes[item.type.key].float) {
+                                item.floatInfo = floatCache[item.assetid];
+                                item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintSeed);
+                            }
+                        });
+                        sendResponse({addPricesAndFloatsToInventory: inventory});
                     }
-                    if (result.floatCache[item.assetid] !== undefined && itemTypes[item.type.key].float) {
-                        item.floatInfo = result.floatCache[item.assetid].floatInfo;
-                        item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintSeed);
-                        floatCacheAssetIDs.push(item.assetid);
-                    }
-                });
-                sendResponse({addPricesToInventory: inventory});
+                );
             }
-            else sendResponse({addPricesToInventory: inventory});
+            else sendResponse({addPricesAndFloatsToInventory: inventory});
         });
         return true;
     }
@@ -245,8 +253,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
         return true; // async return to signal that it will return later
     }
-    else if (request.getFloatInfo !== undefined) {
-        let inspectLink = request.getFloatInfo;
+    else if (request.fetchFloatInfo !== undefined) {
+        let inspectLink = request.fetchFloatInfo;
         if (inspectLink !== null) {
             let assetID = getAssetIDFromInspectLink(inspectLink);
             let getRequest = new Request(`https://api.csgofloat.com/?url=${inspectLink}`);
@@ -260,7 +268,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             }).then((body) => {
                 if (body.iteminfo.floatvalue !== undefined) {
                     let usefulFloatInfo = extractUsefulFloatInfo(body.iteminfo);
-                    chrome.storage.local.get('floatCache', (result) => {updateFloatCache(result.floatCache, assetID, usefulFloatInfo)});
+                    addToFloatCache(assetID, usefulFloatInfo);
                     if (usefulFloatInfo.floatvalue !== 0) sendResponse({floatInfo: usefulFloatInfo});
                     else sendResponse('nofloat');
                 }
