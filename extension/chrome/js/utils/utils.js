@@ -1121,12 +1121,15 @@ function updateFloatCache(assetIDs) {
     let floatStorageKeys = [];
     assetIDs.forEach( ID => {floatStorageKeys.push(`floatCache_${ID}`)});
 
-    chrome.storage.local.get([floatStorageKeys], (result) => {
+    chrome.storage.local.get(floatStorageKeys, (result) => {
         for (let floatKey in result) {
-            console.log(floatKey);
-            result[floatKey].lastUsed = Date.now();
-            result[floatKey].used = floatCache[assetID].used + 1;
-            chrome.storage.local.set({[floatKey]: result[floatKey]}, () => {});
+            let itemFloatInfo = result[floatKey];
+
+            if (itemFloatInfo !== undefined && itemFloatInfo !== null) {
+                itemFloatInfo.lastUsed = Date.now();
+                itemFloatInfo.used = itemFloatInfo.used + 1;
+                chrome.storage.local.set({[floatKey]: itemFloatInfo}, () => {});
+            }
         }
     });
 }
@@ -1184,48 +1187,82 @@ function workOnFloatQueue() {
         floatQueue.active = true;
         let job = floatQueue.jobs.shift();
 
-        chrome.runtime.sendMessage({fetchFloatInfo: job.inspectLink}, (response) => {
-            if (response === 'error') {
-                floatQueue.jobs.push(job);
-            }
-            else {
-                if(response !== 'nofloat'){
-                    if (job.type === 'inventory' || job.type === 'inventory_floatbar' || job.type === 'offer') {
-                        addFloatIndicator(findElementByAssetID(job.assetID), response.floatInfo);
-
-                        // add float and pattern info to page variable
-                        let item = (job.type === 'inventory' || job.type === 'inventory_floatbar') ? getItemByAssetID(items, job.assetID) : getItemByAssetID(combinedInventories, job.assetID);
-                        item.floatInfo = response.floatInfo;
-                        item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
-
-                        if (job.type === 'inventory_floatbar'){
-                            if (getAssetIDofActive() === job.assetID) updateFloatAndPatternElements(item);
-                        }
-
-                        // check if there is a floatbar job for the same item and remove it
-                        if (job.type === 'inventory') {
-                            floatQueue.jobs.find((floatJob, index) => {
-                                if (floatJob.type === 'inventory_floatbar' && job.assetID === floatJob.assetID) {
-                                    updateFloatAndPatternElements(item);
-                                    removeFromArray(floatQueue, index);
-                                }
-                            })
-                        }
-                    }
-                    else if (job.type === 'market') {
-                        populateFloatInfo(job.listingID, response.floatInfo);
-                        setStickerInfo(job.listingID, response.floatInfo.stickers);
-                    }
+        getFloatInfoFromCache(job.assetID).then(
+            floatInfo => {
+                if (floatInfo[job.assetID] !== null) {
+                    addFloatDataToPage(job, floatQueue, floatInfo[job.assetID]);
+                    workOnFloatQueue();
                 }
                 else {
-                    if (job.type === 'inventory_floatbar') hideFloatBars();
-                    else if (job.type === 'market') hideFloatBar(job.listingID);
+                    chrome.runtime.sendMessage({fetchFloatInfo: job.inspectLink}, (response) => {
+                        if (response === 'error') floatQueue.jobs.push(job);
+                        else {
+                            if (response !== 'nofloat') addFloatDataToPage(job, floatQueue, response.floatInfo);
+                            else {
+                                if (job.type === 'inventory_floatbar') hideFloatBars();
+                                else if (job.type === 'market') hideFloatBar(job.listingID);
+                            }
+                        }
+                        workOnFloatQueue();
+                    });
                 }
             }
-            workOnFloatQueue();
-        });
+        );
     }
     else floatQueue.active = false;
+}
+
+function addFloatDataToPage(job, floatQueue, floatInfo) {
+    if (job.type === 'inventory' || job.type === 'inventory_floatbar' || job.type === 'offer') {
+        addFloatIndicator(findElementByAssetID(job.assetID), floatInfo);
+
+        // add float and pattern info to page variable
+        let item = (job.type === 'inventory' || job.type === 'inventory_floatbar') ? getItemByAssetID(items, job.assetID) : getItemByAssetID(combinedInventories, job.assetID);
+        item.floatInfo = floatInfo;
+        item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
+
+        if (job.type === 'inventory_floatbar'){
+            if (getAssetIDofActive() === job.assetID) updateFloatAndPatternElements(item);
+        }
+
+        // check if there is a floatbar job for the same item and remove it
+        if (job.type === 'inventory') {
+            floatQueue.jobs.find((floatJob, index) => {
+                if (floatJob.type === 'inventory_floatbar' && job.assetID === floatJob.assetID) {
+                    updateFloatAndPatternElements(item);
+                    removeFromArray(floatQueue, index);
+                }
+            })
+        }
+    }
+    else if (job.type === 'market') {
+        populateFloatInfo(job.listingID, floatInfo);
+        setStickerInfo(job.listingID, floatInfo.stickers);
+    }
+}
+
+function getFloatInfoFromCache(assetIDs) {
+    return new Promise((resolve, reject) => {
+        assetIDs = arrayFromArrayOrNotArray(assetIDs);
+
+        let floatInfoToReturn = {};
+        let floatStorageKeys = [];
+        assetIDs.forEach( ID => {floatStorageKeys.push(`floatCache_${ID}`)});
+
+        chrome.storage.local.get(floatStorageKeys, (result) => {
+            assetIDs.forEach( assetID => {
+                let storageKey = `floatCache_${assetID}`;
+                let itemFloatCache = result[storageKey];
+
+                if (itemFloatCache !== undefined && itemFloatCache !== null) {
+                    floatInfoToReturn[assetID] = itemFloatCache.floatInfo;
+                }
+                else floatInfoToReturn[assetID] = null;
+            });
+            updateFloatCache(assetIDs);
+            resolve(floatInfoToReturn)
+        });
+    });
 }
 
 function getActivePage(type){
@@ -1250,8 +1287,8 @@ function addPageControlEventListeners(type){
 
 function trimFloatCache() {
     chrome.storage.local.get(null, (result) => { // gets all storage
-        for (let storageKey in result)
-            if (storageKey.substring(0, 10) === 'floatCache_') {
+        for (let storageKey in result) {
+            if (storageKey.substring(0, 11) === 'floatCache_') {
                 let timeSinceLastUsed = (Date.now() - result[storageKey].lastUsed) / 1000; // in seconds
                 let used = result[storageKey].used;
 
@@ -1260,6 +1297,7 @@ function trimFloatCache() {
                     chrome.storage.local.remove([storageKey], () => {});
                 }
             }
+        }
     });
 }
 
