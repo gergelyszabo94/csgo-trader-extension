@@ -21,3 +21,13 @@ let intervalID = setInterval(() =>{
 
 // makes the middle of the active trade offers a bit bigger making it the same size as a declined offer so it does not jerk the page when declining
 document.querySelectorAll('.tradeoffer_items_rule').forEach(rule => {rule.style.height = '46px'});
+
+getOffersFromAPI().then(
+    offers => {
+        // console.log(offers);
+    }, (error) => {
+        if (error !== 'apiKeyInvalid') {
+            // TODO retry logic because this should be happening if the error is Steam's side
+        }
+    }
+);

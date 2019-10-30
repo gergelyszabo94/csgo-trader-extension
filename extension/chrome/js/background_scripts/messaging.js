@@ -300,6 +300,34 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
         return true; // async return to signal that it will return later
     }
+    else if (request.getTradeOffers !== undefined) {
+        chrome.storage.local.get(['apiKeyValid', 'steamAPIKey'], (result) => {
+            if(result.apiKeyValid){
+                let apiKey = result.steamAPIKey;
+
+                let getRequest = new Request(`https://api.steampowered.com/IEconService/GetTradeOffers/v1/?get_received_offers=1&get_sent_offers=1&active_only=1&get_descriptions=1&language=english&key=${apiKey}`);
+
+                fetch(getRequest).then((response) => {
+                    if (!response.ok) {
+                        sendResponse('error');
+                        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+                    }
+                    else return response.json();
+                }).then((body) => {
+                    try {sendResponse({offers: body.response, apiKeyValid: true})}
+                    catch (e) {
+                        console.log(e);
+                        sendResponse('error');
+                    }
+                }).catch(err => {
+                    console.log(err);
+                    sendResponse('error');
+                });
+            }
+            else sendResponse({apiKeyValid: false});
+        });
+        return true; // async return to signal that it will return later
+    }
 });
 
 chrome.runtime.onConnect.addListener(port => {});

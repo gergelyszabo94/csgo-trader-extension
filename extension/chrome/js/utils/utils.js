@@ -1454,3 +1454,16 @@ function uuidv4() {
         (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
     );
 }
+
+// sends a message to the "back end" to request active received and sent trade offers
+function getOffersFromAPI(){
+    return new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage({getTradeOffers: 'getTradeOffers'}, (response) => {
+            if (response.apiKeyValid === false) reject('apiKeyInvalid');
+            else {
+                if (!(response === undefined || response.offers === undefined || response === 'error')) resolve(response.offers);
+                else reject('steamError');
+            }
+        });
+    });
+}
