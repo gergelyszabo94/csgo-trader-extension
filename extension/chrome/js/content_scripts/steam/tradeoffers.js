@@ -80,13 +80,10 @@ function getItemByIDs(items, IDs) {
 function addItemInfo(items) {
     let activeItemElements = [];
     document.querySelectorAll('.tradeoffer').forEach(offerElement => {
-        let offerID = offerElement.id.split('_')[1];
         let offerItemsElement = offerElement.querySelector('.tradeoffer_items_ctn');
         let offerActive = offerItemsElement.classList.contains('active');
 
         if (offerActive) {
-            //console.log(offers.trade_offers_received.find(offer => offer.tradeofferid === offerID));
-            //console.log(offerID);
             let offerItems = offerItemsElement.querySelectorAll('.trade_item');
             offerItems.forEach(item => {
                 activeItemElements.push(item);
@@ -107,6 +104,30 @@ function addItemInfo(items) {
                 // marks the item "processed" to avoid additional unnecessary work later
                 itemElement.setAttribute('data-processed', 'true');
             }
+        });
+    });
+}
+
+function addTotals(offers, items){
+    chrome.storage.local.get('currency', (result) => {
+        offers.trade_offers_received.forEach(offer => {
+            let yourItemsTotal = 0.0;
+            let theirItemTotal = 0.0;
+
+            if (offer.items_to_give !== undefined) offer.items_to_give.forEach(item => {
+                let itemWithAllInfo = getItemByAssetID(items, item.assetid);
+                if (itemWithAllInfo !== undefined) yourItemsTotal += parseFloat(itemWithAllInfo.price.price);
+            });
+            if (offer.items_to_receive !== undefined) offer.items_to_receive.forEach(item => {
+                let itemWithAllInfo = getItemByAssetID(items, item.assetid);
+                if (itemWithAllInfo !== undefined) theirItemTotal += parseFloat(itemWithAllInfo.price.price);
+            });
+
+            let offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
+            let primaryHeader = offerElement.querySelector('.tradeoffer_items.primary').querySelector('.tradeoffer_items_header');
+            primaryHeader.innerText += ` ${prettyPrintPrice(result.currency, (theirItemTotal).toFixed(2))}`;
+            let secondaryHeader = offerElement.querySelector('.tradeoffer_items.secondary').querySelector('.tradeoffer_items_header');
+            secondaryHeader.innerText += ` ${prettyPrintPrice(result.currency, (yourItemsTotal).toFixed(2))}`;
         });
     });
 }
@@ -150,8 +171,9 @@ getOffersFromAPI().then(
         let matchedItems = matchItemsWithDescriptions(itemsWithMoreInfo);
 
         chrome.runtime.sendMessage({addPricesAndFloatsToInventory: matchedItems}, (response) => {
-            console.log(response.addPricesAndFloatsToInventory);
-            addItemInfo(response.addPricesAndFloatsToInventory);
+            let itemsWithAllInfo = response.addPricesAndFloatsToInventory;
+            addItemInfo(itemsWithAllInfo);
+            addTotals(offers, itemsWithAllInfo);
         });
 
     }, (error) => {
