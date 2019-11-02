@@ -1467,3 +1467,14 @@ function getOffersFromAPI(){
         });
     });
 }
+
+function extractItemsFromOffers(offers){
+    let itemsToReturn = [];
+
+    offers.forEach(offer => {
+        offer.items_to_give.forEach(item => {itemsToReturn.push(item)});
+        offer.items_to_receive.forEach(item => {itemsToReturn.push(item)});
+    });
+
+    return itemsToReturn;
+}
