@@ -8,7 +8,7 @@ function matchItemsWithDescriptions(items) {
             let stickers = parseStickerInfo(item.descriptions, 'direct');
             let nametag = undefined;
             let inspectLink = null;
-            let dopplerInfo = /Doppler/.test(item.name) ? getDopplerInfo(item.icon) : undefined;
+            let dopplerInfo = /Doppler/.test(item.name) ? getDopplerInfo(item.icon_url) : undefined;
             let isStatrack = /StatTrak™/.test(item.name);
             let isSouvenir = /Souvenir/.test(item.name);
             let starInName = /★/.test(item.name);
@@ -41,7 +41,7 @@ function matchItemsWithDescriptions(items) {
                 position: item.position,
                 dopplerInfo: dopplerInfo,
                 exterior: exterior,
-                iconURL: item.icon,
+                iconURL: item.icon_url,
                 inspectLink: inspectLink,
                 quality: quality,
                 isStatrack: isStatrack,
@@ -65,16 +65,11 @@ function isCSGOItemElement(element) {
 }
 
 function getIDsFromElement(element) {
-    let IDs = null;
-
     let splitString = element.getAttribute('data-economy-item').split('/');
-    IDs = {
+    return {
         classid: splitString[2] === undefined ? null : splitString[2],
         instanceid: splitString[3] === undefined ? null : splitString[3]
     };
-
-
-    return IDs;
 }
 
 function getItemByIDs(items, IDs) {
