@@ -60,6 +60,62 @@ function matchItemsWithDescriptions(items) {
     return itemsToReturn;
 }
 
+function isCSGOItemElement(element) {
+    return element.getAttribute('data-economy-item').includes('classinfo/730/');
+}
+
+function getIDsFromElement(element) {
+    let IDs = null;
+
+    let splitString = element.getAttribute('data-economy-item').split('/');
+    IDs = {
+        classid: splitString[2] === undefined ? null : splitString[2],
+        instanceid: splitString[3] === undefined ? null : splitString[3]
+    };
+
+
+    return IDs;
+}
+
+function getItemByIDs(items, IDs) {
+    if (IDs.instanceid !== null) return items.filter(item => item.classid === IDs.classid && item.instanceid === IDs.instanceid)[0];
+    else return items.filter(item => item.classid === IDs.classid)[0];
+}
+
+function addItemInfo(items) {
+    let activeItemElements = [];
+    document.querySelectorAll('.tradeoffer').forEach(offerElement => {
+        let offerID = offerElement.id.split('_')[1];
+        let offerItemsElement = offerElement.querySelector('.tradeoffer_items_ctn');
+        let offerActive = offerItemsElement.classList.contains('active');
+
+        if (offerActive) {
+            //console.log(offers.trade_offers_received.find(offer => offer.tradeofferid === offerID));
+            //console.log(offerID);
+            let offerItems = offerItemsElement.querySelectorAll('.trade_item');
+            offerItems.forEach(item => {
+                activeItemElements.push(item);
+            });
+        }
+    });
+
+    chrome.storage.local.get(['colorfulItems', 'autoFloatOffer'], (result) => {
+        activeItemElements.forEach(itemElement => {
+            if ((itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') && isCSGOItemElement(itemElement)){
+                let item = getItemByIDs(items, getIDsFromElement(itemElement));
+                addDopplerPhase(itemElement, item.dopplerInfo);
+                makeItemColorful(itemElement, item, result.colorfulItems);
+                addSSTandExtIndicators(itemElement, item);
+                addPriceIndicator(itemElement, item.price);
+                if (result.autoFloatOffer) addFloatIndicator(itemElement, item.floatInfo);
+
+                // marks the item "processed" to avoid additional unnecessary work later
+                itemElement.setAttribute('data-processed', 'true');
+            }
+        });
+    });
+}
+
 overrideDecline();
 overrideShowTradeOffer();
 updateLoggedInUserID();
@@ -86,6 +142,7 @@ document.querySelectorAll('.tradeoffer_items_rule').forEach(rule => {rule.style.
 
 getOffersFromAPI().then(
     offers => {
+        console.log(offers);
         let allItemsInOffer = extractItemsFromOffers(offers.trade_offers_sent);
         allItemsInOffer = allItemsInOffer.concat(extractItemsFromOffers(offers.trade_offers_received));
 
@@ -98,7 +155,8 @@ getOffersFromAPI().then(
         let matchedItems = matchItemsWithDescriptions(itemsWithMoreInfo);
 
         chrome.runtime.sendMessage({addPricesAndFloatsToInventory: matchedItems}, (response) => {
-            //console.log(response.addPricesAndFloatsToInventory);
+            console.log(response.addPricesAndFloatsToInventory);
+            addItemInfo(response.addPricesAndFloatsToInventory);
         });
 
     }, (error) => {
