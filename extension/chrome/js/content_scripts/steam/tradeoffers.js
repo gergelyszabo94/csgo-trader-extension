@@ -81,7 +81,10 @@ function addItemInfo(items) {
     let activeItemElements = [];
     document.querySelectorAll('.tradeoffer').forEach(offerElement => {
         let offerItemsElement = offerElement.querySelector('.tradeoffer_items_ctn');
-        let offerActive = offerItemsElement.classList.contains('active');
+        let offerActive = false;
+        if (offerItemsElement !== null) {
+            offerActive = offerItemsElement.classList.contains('active');
+        }
 
         if (offerActive) {
             let offerItems = offerItemsElement.querySelectorAll('.trade_item');
