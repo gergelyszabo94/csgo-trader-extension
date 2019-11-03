@@ -19956,7 +19956,8 @@ const storageKeys = {
     autoFloatInventory: true,
     analyticsEvents: [],
     clientID: '',
-    telemetryOn: true
+    telemetryOn: true,
+    tradeOffersLargerItems: true
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID'];

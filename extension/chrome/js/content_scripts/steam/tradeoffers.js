@@ -164,6 +164,26 @@ let intervalID = setInterval(() =>{
     thisManyTimes--;
 }, 1000);
 
+// makes our items the same size (larger) as their items
+chrome.storage.local.get('tradeOffersLargerItems', (result) => {
+    if (result.tradeOffersLargerItems) {
+        injectStyle(`.tradeoffer_items.secondary .trade_item{
+                     width: 96px;
+                     height: 96px;
+                     margin-right: 8px;
+                     margin-bottom: 8px;`, 'itemsSameSize');
+
+        // adjust the icon sizes accordingly
+        document.querySelectorAll('.tradeoffer_items.secondary').forEach(secondaryElement => {
+            secondaryElement.querySelectorAll('.trade_item').forEach(itemElement => {
+                let iconElement = itemElement.querySelector('img');
+                iconElement.src = iconElement.src.replace('73fx73f', '96fx96f');
+                iconElement.setAttribute('srcset', iconElement.getAttribute('srcset').replace('73fx73f', '96fx96f'));
+            });
+        });
+    }
+});
+
 // makes the middle of the active trade offers a bit bigger making it the same size as a declined offer so it does not jerk the page when declining
 document.querySelectorAll('.tradeoffer_items_rule').forEach(rule => {rule.style.height = '46px'});
 
