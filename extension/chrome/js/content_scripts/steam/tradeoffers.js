@@ -161,6 +161,9 @@ let intervalID = setInterval(() =>{
 // makes the middle of the active trade offers a bit bigger making it the same size as a declined offer so it does not jerk the page when declining
 document.querySelectorAll('.tradeoffer_items_rule').forEach(rule => {rule.style.height = '46px'});
 
+// adds trade offer summary/help bar
+document.querySelector('.profile_leftcol').insertAdjacentHTML('afterbegin', `<div id="tradeoffers_summary" class="tradeoffer">Waiting for Steam API...</div>`);
+
 getOffersFromAPI().then(
     offers => {
         console.log(offers);
@@ -179,11 +182,16 @@ getOffersFromAPI().then(
             let itemsWithAllInfo = response.addPricesAndFloatsToInventory;
             addItemInfo(itemsWithAllInfo);
             addTotals(offers, itemsWithAllInfo);
+            document.getElementById('tradeoffers_summary').innerHTML = `<b>Trade offer summary:</b>`;
         });
 
     }, (error) => {
         if (error !== 'apiKeyInvalid') {
             // TODO retry logic because this should be happening if the error is Steam's side
+        }
+        else {
+            document.getElementById('tradeoffers_summary').innerHTML = `<b>CSGOTrader Extension:</b> You don't have your Steam API key set.<br> 
+            For more functionality on this page open the options page and set your API key in the General category.`;
         }
     }
 );
