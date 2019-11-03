@@ -8,11 +8,6 @@ chrome.runtime.onInstalled.addListener((details) =>{
             else chrome.storage.local.set({[key]: storageKeys[key]}, () =>{});
         }
 
-        let installEvent = {
-            type:'install',
-            timestamp: Date.now()
-        };
-
         trackEvent({
             type:'event',
             action: 'ExtensionInstall'
@@ -159,7 +154,9 @@ chrome.alarms.onAlarm.addListener((alarm) =>{
     }
 });
 
-trackEvent({
-    type:'event',
-    action: 'ExtensionRun'
-});
+setTimeout(() => {
+    trackEvent({
+        type:'event',
+        action: 'ExtensionRun'
+    });
+}, 500);
