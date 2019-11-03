@@ -115,27 +115,30 @@ function addTotals(offers, items){
     chrome.storage.local.get('currency', (result) => {
         offers.trade_offers_received.forEach(offer => {
             let yourItemsTotal = 0.0;
-            let theirItemTotal = 0.0;
+            let theirItemsTotal = 0.0;
+            let yourIncludesItemWIthNoPrice = false;
+            let theirIncludesItemWIthNoPrice = false;
 
             if (offer.items_to_give !== undefined) offer.items_to_give.forEach(item => {
                 if (item.appid === 730) {
                     let itemWithAllInfo = getItemByAssetID(items, item.assetid);
                     if (itemWithAllInfo !== undefined && itemWithAllInfo.price !== undefined) yourItemsTotal += parseFloat(itemWithAllInfo.price.price);
-                    // TODO add warning text about items with no price
+                    else yourIncludesItemWIthNoPrice = true;
                 }
             });
             if (offer.items_to_receive !== undefined) offer.items_to_receive.forEach(item => {
                 if (item.appid === 730) {
                     let itemWithAllInfo = getItemByAssetID(items, item.assetid);
-                    if (itemWithAllInfo !== undefined && itemWithAllInfo.price !== undefined) theirItemTotal += parseFloat(itemWithAllInfo.price.price);
+                    if (itemWithAllInfo !== undefined && itemWithAllInfo.price !== undefined) theirItemsTotal += parseFloat(itemWithAllInfo.price.price);
+                    else theirIncludesItemWIthNoPrice = true;
                 }
             });
 
             let offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
             let primaryHeader = offerElement.querySelector('.tradeoffer_items.primary').querySelector('.tradeoffer_items_header');
-            primaryHeader.innerText += ` ${prettyPrintPrice(result.currency, (theirItemTotal).toFixed(2))}`;
+            primaryHeader.innerText += ` ${prettyPrintPrice(result.currency, (theirItemsTotal).toFixed(2))} ${yourIncludesItemWIthNoPrice ? '- includes items with no price' : ''}`;
             let secondaryHeader = offerElement.querySelector('.tradeoffer_items.secondary').querySelector('.tradeoffer_items_header');
-            secondaryHeader.innerText += ` ${prettyPrintPrice(result.currency, (yourItemsTotal).toFixed(2))}`;
+            secondaryHeader.innerText += ` ${prettyPrintPrice(result.currency, (yourItemsTotal).toFixed(2))} ${theirIncludesItemWIthNoPrice ? '- includes items with no price' : ''}`;
         });
     });
 }
