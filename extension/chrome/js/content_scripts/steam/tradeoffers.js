@@ -115,12 +115,17 @@ function addTotals(offers, items){
             let theirItemTotal = 0.0;
 
             if (offer.items_to_give !== undefined) offer.items_to_give.forEach(item => {
-                let itemWithAllInfo = getItemByAssetID(items, item.assetid);
-                if (itemWithAllInfo !== undefined) yourItemsTotal += parseFloat(itemWithAllInfo.price.price);
+                if (item.appid === 730) {
+                    let itemWithAllInfo = getItemByAssetID(items, item.assetid);
+                    if (itemWithAllInfo !== undefined && itemWithAllInfo.price !== undefined) yourItemsTotal += parseFloat(itemWithAllInfo.price.price);
+                    // TODO add warning text about items with no price
+                }
             });
             if (offer.items_to_receive !== undefined) offer.items_to_receive.forEach(item => {
-                let itemWithAllInfo = getItemByAssetID(items, item.assetid);
-                if (itemWithAllInfo !== undefined) theirItemTotal += parseFloat(itemWithAllInfo.price.price);
+                if (item.appid === 730) {
+                    let itemWithAllInfo = getItemByAssetID(items, item.assetid);
+                    if (itemWithAllInfo !== undefined && itemWithAllInfo.price !== undefined) theirItemTotal += parseFloat(itemWithAllInfo.price.price);
+                }
             });
 
             let offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
