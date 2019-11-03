@@ -868,7 +868,9 @@ function updateExchangeRates(){
 
 function prettyPrintPrice(currency, price){
     let nf = new Intl.NumberFormat();
-    return currencies[currency].sign + nf.format(price);
+
+    if (price >= 0) return currencies[currency].sign + nf.format(price);
+    else return `-${currencies[currency].sign}${nf.format(Math.abs(price))}`
 }
 
 function getAssetIDOfElement(element){return element.id.split('730_2_')[1];}
@@ -1084,8 +1086,8 @@ function getItemByAssetID(items, assetIDToFind){
 }
 
 function generateRandomString(length) {
-    let text = "";
-    let allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let text = '';
+    let allowedChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
     for (let i = 0; i < length; i++) text += allowedChars.charAt(Math.floor(Math.random() * allowedChars.length));
 
