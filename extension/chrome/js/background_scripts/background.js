@@ -18,7 +18,7 @@ chrome.runtime.onInstalled.addListener((details) =>{
             type: 'basic',
             iconUrl: '/images/cstlogo128.png',
             title: 'Extension installed!',
-            message: 'Go to the options to set your preferences and customize your experience!'
+            message: 'Go to the options to set your Steam API key and customize your experience!'
         },(notificationId) =>{});
     }
     else if(details.reason === 'update'){
