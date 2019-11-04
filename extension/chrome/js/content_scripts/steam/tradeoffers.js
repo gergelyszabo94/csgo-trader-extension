@@ -81,12 +81,8 @@ function addItemInfo(items) {
     let activeItemElements = [];
     document.querySelectorAll('.tradeoffer').forEach(offerElement => {
         let offerItemsElement = offerElement.querySelector('.tradeoffer_items_ctn');
-        let offerActive = false;
-        if (offerItemsElement !== null) {
-            offerActive = offerItemsElement.classList.contains('active');
-        }
 
-        if (offerActive) {
+        if (isOfferActive(offerElement)) {
             let offerItems = offerItemsElement.querySelectorAll('.trade_item');
             offerItems.forEach(item => {
                 activeItemElements.push(item);
@@ -148,6 +144,43 @@ function addTotals(offers, items){
     });
 }
 
+function sortOffers(sortingMode){
+    let activeOffers = [...document.querySelectorAll('.tradeoffer')].filter(offerElement => isOfferActive(offerElement));
+    let sortedOffers = [];
+
+    if (sortingMode === 'profit_amount') {
+        sortedOffers = activeOffers.sort((a, b) => {
+            let profitOnA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-profit-or-loss'));
+            let profitOnB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-profit-or-loss'));
+            return profitOnB - profitOnA;
+        });
+    }
+    else if (sortingMode === 'loss_amount') {
+        sortedOffers = activeOffers.sort((a, b) => {
+            let profitOnA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-profit-or-loss'));
+            let profitOnB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-profit-or-loss'));
+            return profitOnA - profitOnB;
+        });
+    }
+
+    sortedOffers.reverse();
+
+    // removes offer elements
+    activeOffers.forEach(offer => {offer.parentNode.removeChild(offer)});
+
+    // adds sorted offer elements to page
+    let offerSection = document.querySelector('.profile_leftcol');
+    sortedOffers.forEach(offer => {
+        offerSection.querySelector('.tradeoffer').insertAdjacentElement('beforebegin', offer);
+    });
+}
+
+function isOfferActive(offerElement){
+    let offerItemsElement = offerElement.querySelector('.tradeoffer_items_ctn');
+    if (offerItemsElement !== null) return offerItemsElement.classList.contains('active');
+    else return false
+}
+
 overrideDecline();
 overrideShowTradeOffer();
 updateLoggedInUserID();
@@ -198,9 +231,34 @@ document.querySelectorAll('.playerAvatar').forEach(avatarDiv => {
 // makes the middle of the active trade offers a bit bigger making it the same size as a declined offer so it does not jerk the page when declining
 document.querySelectorAll('.tradeoffer_items_rule').forEach(rule => {rule.style.height = '46px'});
 
-// adds trade offer summary/help bar
+// adds trade offer summary/help bar and sorting
 let tradeOffersList = document.querySelector('.profile_leftcol');
-if (tradeOffersList !== null) tradeOffersList.insertAdjacentHTML('afterbegin', `<div id="tradeoffers_summary" class="tradeoffer">Waiting for Steam API...</div>`); // if page loaded properly
+if (tradeOffersList !== null) {
+    tradeOffersList.insertAdjacentHTML('afterbegin', `
+        <div id="tradeoffers_summary" class="trade_offers_module">Waiting for Steam API...</div>
+        <div id="tradeOffersSortingMenu" class="trade_offers_module hidden"><span>Sorting: </span><select id="sortingMethod"></select></div>`);
+}
+
+// populates and adds listener to sorting select
+let sortingSelect = document.getElementById('sortingMethod');
+let keys = Object.keys(offersSortingModes);
+
+for (let key of keys) {
+    let option = document.createElement("option");
+    option.value = offersSortingModes[key].key;
+    option.text = offersSortingModes[key].name;
+    sortingSelect.add(option);
+}
+
+sortingSelect.addEventListener("change", () => {
+    // analytics
+    trackEvent({
+        type: 'event',
+        action: 'TradeOffersPageSorting'
+    });
+
+    sortOffers(sortingSelect.options[sortingSelect.selectedIndex].value);
+});
 
 getOffersFromAPI().then(
     offers => {
@@ -221,6 +279,7 @@ getOffersFromAPI().then(
             addItemInfo(itemsWithAllInfo);
             addTotals(offers, itemsWithAllInfo);
             document.getElementById('tradeoffers_summary').innerHTML = `<b>Trade offer summary:</b>`;
+            document.getElementById('tradeOffersSortingMenu').classList.remove('hidden');
         });
 
     }, (error) => {

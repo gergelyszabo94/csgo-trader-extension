@@ -19877,6 +19877,33 @@ const sortingModes = {
     }
 };
 
+const offersSortingModes = {
+    "default":{
+        key: "default",
+        name: "Default (received last to first)"
+    },
+    "reverse":{
+        key: "reverse",
+        name: "Reverse (received first to last)"
+    },
+    "profit_amount":{
+        key: "profit_amount",
+        name: "Profit amount (most profitable to biggest loss)"
+    },
+    "loss_amount":{
+        key: "loss_amount",
+        name: "Loss amount (biggest loss to most profitable)"
+    },
+    "profit_percentage":{
+        key: "profit_percentage",
+        name: "Profit percentage (highest to lowest)"
+    },
+    "loss_percentage":{
+        key: "loss_percentage",
+        name: "Loss percentage (lowest to highest)"
+    },
+};
+
 const defaultPopupLinks = [
     {
         active: true,
@@ -19957,7 +19984,8 @@ const storageKeys = {
     analyticsEvents: [],
     clientID: '',
     telemetryOn: true,
-    tradeOffersLargerItems: true
+    tradeOffersLargerItems: true,
+    tradeOffersSortingMode: offersSortingModes.default.key
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID'];

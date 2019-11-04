@@ -91,6 +91,11 @@ progress {
     }
 }
 
+.trade_offers_module{
+    padding-top: 24px;
+    padding-left: 48px;
+}
+
 .hidden-copy-textarea{
     position: absolute;
     left: -9999px
