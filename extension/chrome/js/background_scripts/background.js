@@ -92,12 +92,8 @@ chrome.notifications.onClicked.addListener((notificationID) =>{
         permissions: ['tabs']
     }, (result) =>{
         if (result) {
-            if(notificationID === 'installed') goToInternalPage('/html/options.html');
-            else if(notificationID === 'updated') chrome.tabs.create({url: 'https://csgotrader.app/changelog/'});
+            if (notificationID === 'updated') chrome.tabs.create({url: 'https://csgotrader.app/changelog/'});
             else goToInternalPage('/html/bookmarks.html');
-        }
-        else{
-            if (notificationID === 'installed') chrome.runtime.openOptionsPage(() =>{});
         }
     });
 });
