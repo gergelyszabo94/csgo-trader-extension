@@ -193,7 +193,8 @@ chrome.storage.local.get('tradeOffersLargerItems', (result) => {
 document.querySelectorAll('.tradeoffer_items_rule').forEach(rule => {rule.style.height = '46px'});
 
 // adds trade offer summary/help bar
-document.querySelector('.profile_leftcol').insertAdjacentHTML('afterbegin', `<div id="tradeoffers_summary" class="tradeoffer">Waiting for Steam API...</div>`);
+let tradeOffersList = document.querySelector('.profile_leftcol');
+if (tradeOffersList !== null) tradeOffersList.insertAdjacentHTML('afterbegin', `<div id="tradeoffers_summary" class="tradeoffer">Waiting for Steam API...</div>`); // if page loaded properly
 
 getOffersFromAPI().then(
     offers => {
