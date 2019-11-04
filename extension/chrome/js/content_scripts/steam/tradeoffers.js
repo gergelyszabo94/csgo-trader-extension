@@ -189,6 +189,12 @@ chrome.storage.local.get('tradeOffersLargerItems', (result) => {
     }
 });
 
+// makes clicking on profile avatars open profiles on a new tab
+document.querySelectorAll('.playerAvatar').forEach(avatarDiv => {
+    let link = avatarDiv.querySelector('a');
+    if (link !== null) link.setAttribute('target', '_blank');
+});
+
 // makes the middle of the active trade offers a bit bigger making it the same size as a declined offer so it does not jerk the page when declining
 document.querySelectorAll('.tradeoffer_items_rule').forEach(rule => {rule.style.height = '46px'});
 
