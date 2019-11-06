@@ -140,7 +140,7 @@ function addTotals(offers, items){
 
             let profitOrLoss = theirItemsTotal - yourItemsTotal;
             let PLPercentage = theirItemsTotal / yourItemsTotal;
-            offerElement.querySelector('.tradeoffer_header').insertAdjacentHTML('beforeend', `<span class="profitOrLoss" data-profit-or-loss="${profitOrLoss}" data-p-l-percentage"${PLPercentage}">${prettyPrintPrice(result.currency, (profitOrLoss).toFixed(2))}</span>`);
+            offerElement.querySelector('.tradeoffer_header').insertAdjacentHTML('beforeend', `<span class="profitOrLoss" data-profit-or-loss="${profitOrLoss}" data-p-l-percentage="${PLPercentage}">${prettyPrintPrice(result.currency, (profitOrLoss).toFixed(2))}</span>`);
         });
     });
 }
@@ -167,14 +167,14 @@ function sortOffers(sortingMode){
         sortedOffers = activeOffers.sort((a, b) => {
             let pLA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
             let pLB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
-            return pLA - pLB;
+            return pLB - pLA;
         });
     }
     else if (sortingMode === 'loss_percentage') {
         sortedOffers = activeOffers.sort((a, b) => {
             let pLA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
             let pLB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
-            return pLB - pLA;
+            return pLA - pLB
         });
     }
 
