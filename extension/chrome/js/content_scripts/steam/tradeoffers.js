@@ -139,7 +139,8 @@ function addTotals(offers, items){
             yourIncludesItemWIthNoPrice ? secondaryHeader.innerText += ' - includes items with no price' : null;
 
             let profitOrLoss = theirItemsTotal - yourItemsTotal;
-            offerElement.querySelector('.tradeoffer_header').insertAdjacentHTML('beforeend', `<span class="profitOrLoss" data-profit-or-loss="${profitOrLoss}">${prettyPrintPrice(result.currency, (profitOrLoss).toFixed(2))}</span>`);
+            let PLPercentage = theirItemsTotal / yourItemsTotal;
+            offerElement.querySelector('.tradeoffer_header').insertAdjacentHTML('beforeend', `<span class="profitOrLoss" data-profit-or-loss="${profitOrLoss}" data-p-l-percentage"${PLPercentage}">${prettyPrintPrice(result.currency, (profitOrLoss).toFixed(2))}</span>`);
         });
     });
 }
@@ -160,6 +161,20 @@ function sortOffers(sortingMode){
             let profitOnA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-profit-or-loss'));
             let profitOnB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-profit-or-loss'));
             return profitOnA - profitOnB;
+        });
+    }
+    else if (sortingMode === 'profit_percentage') {
+        sortedOffers = activeOffers.sort((a, b) => {
+            let pLA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
+            let pLB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
+            return pLA - pLB;
+        });
+    }
+    else if (sortingMode === 'loss_percentage') {
+        sortedOffers = activeOffers.sort((a, b) => {
+            let pLA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
+            let pLB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
+            return pLB - pLA;
         });
     }
 
