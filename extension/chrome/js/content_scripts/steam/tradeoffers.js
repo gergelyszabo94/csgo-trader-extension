@@ -308,7 +308,11 @@ getOffersFromAPI().then(
             addItemInfo(itemsWithAllInfo);
             addTotals(offers, itemsWithAllInfo);
             document.getElementById('tradeoffers_summary').innerHTML = `<b>Trade offer summary:</b>`;
-            document.getElementById('tradeOffersSortingMenu').classList.remove('hidden');
+            chrome.storage.local.get('tradeOffersSortingMode', (result) => {
+                document.querySelector(`#sortingMethod [value="${result.tradeOffersSortingMode}"]`).selected = true;
+                sortOffers(result.tradeOffersSortingMode);
+                document.getElementById('tradeOffersSortingMenu').classList.remove('hidden');
+            });
         });
 
     }, (error) => {

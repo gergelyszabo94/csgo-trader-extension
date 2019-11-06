@@ -223,15 +223,14 @@ numberoflistings.addEventListener('input', () => {
     chrome.storage.local.set({numberOfListings: number}, () => {});
 });
 
-//select
+// selects
 
 let currencySelect = document.getElementById('currency');
-let keys = Object.keys(currencies);
 
-for (let key of keys){
+for (let currency of Object.keys(currencies)){
     let option = document.createElement('option');
-    option.value = currencies[key].short;
-    option.text = `${currencies[key].short} - ${currencies[key].long}`;
+    option.value = currencies[currency].short;
+    option.text = `${currencies[currency].short} - ${currencies[currency].long}`;
     currencySelect.add(option);
 }
 
@@ -248,9 +247,8 @@ let pricingProviderSelect = document.getElementById('pricingProvider');
 let aboutTheProvider = document.getElementById('aboutTheProvider');
 let pricingModeSelect = document.getElementById('pricingMode');
 let aboutTheMode = document.getElementById('aboutTheMode');
-let providers = Object.keys(pricingProviders);
 
-for (let provider of providers){
+for (let provider of Object.keys(pricingProviders)){
     let option = document.createElement('option');
     option.value = pricingProviders[provider].name;
     option.text = pricingProviders[provider].long;
@@ -261,9 +259,8 @@ chrome.storage.local.get(['pricingProvider', 'pricingMode'], (result) => {
     let provider = result.pricingProvider;
     document.querySelector(`#pricingProvider [value='${provider}']`).selected = true;
     aboutTheProvider.innerText = pricingProviders[provider].description;
-    let modes = Object.keys(pricingProviders[provider].pricing_modes);
 
-    for (let mode of modes){
+    for (let mode of Object.keys(pricingProviders[provider].pricing_modes)){
         let option = document.createElement('option');
         option.value = pricingProviders[provider].pricing_modes[mode].name;
         option.text = pricingProviders[provider].pricing_modes[mode].long;
@@ -312,9 +309,8 @@ pricingModeSelect.addEventListener('click', () => {
 
 
 let inventorySortingSelect = document.getElementById('inventorySortingMethod');
-let inventorySortingModes = Object.keys(sortingModes);
 
-for (let modes of inventorySortingModes){
+for (let modes of Object.keys(sortingModes)){
     let option = document.createElement('option');
     option.value = sortingModes[modes].key;
     option.text = sortingModes[modes].name;
@@ -331,9 +327,8 @@ inventorySortingSelect.addEventListener('click', () => {
 });
 
 let offerSortingSelect = document.getElementById('offerSortingMode');
-let offerSortingModes = Object.keys(sortingModes);
 
-for (let modes of offerSortingModes){
+for (let modes of Object.keys(sortingModes)){
     let option = document.createElement('option');
     option.value = sortingModes[modes].key;
     option.text = sortingModes[modes].name;
@@ -350,7 +345,26 @@ offerSortingSelect.addEventListener('click', () => {
 });
 
 
-// list
+let tradeOfferSortingSelect = document.getElementById('tradeOffersSortingMode');
+
+for (let modes of Object.keys(offersSortingModes)){
+    let option = document.createElement('option');
+    option.value = offersSortingModes[modes].key;
+    option.text = offersSortingModes[modes].name;
+    tradeOfferSortingSelect.add(option);
+}
+
+chrome.storage.local.get('tradeOffersSortingMode', (result) => {
+    document.querySelector(`#tradeOffersSortingMode [value='${result.tradeOffersSortingMode}']`).selected = true;
+});
+
+tradeOfferSortingSelect.addEventListener('click', () => {
+    let tradeOfferSortingMode = tradeOfferSortingSelect.options[tradeOfferSortingSelect.selectedIndex].value;
+    chrome.storage.local.set({tradeOffersSortingMode: tradeOfferSortingMode}, () => {});
+});
+
+
+// lists
 
 let popupLinksToShow = document.getElementById('popupLinksToShow');
 
