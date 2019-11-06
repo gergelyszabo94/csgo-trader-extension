@@ -140,7 +140,7 @@ function addTotals(offers, items){
 
             let profitOrLoss = theirItemsTotal - yourItemsTotal;
             let PLPercentage = theirItemsTotal / yourItemsTotal;
-            offerElement.querySelector('.tradeoffer_header').insertAdjacentHTML('beforeend', `<span class="profitOrLoss" data-profit-or-loss="${profitOrLoss}" data-p-l-percentage="${PLPercentage}">${prettyPrintPrice(result.currency, (profitOrLoss).toFixed(2))}</span>`);
+            offerElement.querySelector('.tradeoffer_header').insertAdjacentHTML('beforeend', `<span class="profitOrLoss" data-profit-or-loss="${profitOrLoss}" data-p-l-percentage="${PLPercentage}" data-updated="${offer.time_updated}">${prettyPrintPrice(result.currency, (profitOrLoss).toFixed(2))}</span>`);
         });
     });
 }
@@ -175,6 +175,20 @@ function sortOffers(sortingMode){
             let pLA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
             let pLB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
             return pLA - pLB
+        });
+    }
+    else if (sortingMode === 'default') {
+        sortedOffers = activeOffers.sort((a, b) => {
+            let updatedA = parseInt(a.querySelector('.profitOrLoss').getAttribute('data-updated'));
+            let updatedB = parseInt(b.querySelector('.profitOrLoss').getAttribute('data-updated'));
+            return updatedB - updatedA;
+        });
+    }
+    else if (sortingMode === 'reverse') {
+        sortedOffers = activeOffers.sort((a, b) => {
+            let updatedA = parseInt(a.querySelector('.profitOrLoss').getAttribute('data-updated'));
+            let updatedB = parseInt(b.querySelector('.profitOrLoss').getAttribute('data-updated'));
+            return updatedA - updatedB;
         });
     }
 
