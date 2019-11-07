@@ -285,7 +285,30 @@ let acceptTradeScriptString = `
                             "body":'sessionid=' + g_sessionID + '&serverid=1&tradeofferid=' + offerID + '&partner=' + partnerID + '&captcha=',
                             "headers": myHeaders,
                             "method":"POST"}
-                    );
+                    ).then((response) => {
+                        if (!response.ok) {
+                            console.log('error');
+                        }
+                        else return response.json();
+                    }).then((body) => {
+                        let offerElement = document.getElementById('tradeofferid_' + offerID);
+                        let offerContent = offerElement.querySelector('.tradeoffer_items_ctn');
+                        offerContent.classList.remove('active');
+                        offerContent.classList.add('inactive');
+                        let middleElement = offerContent.querySelector('.tradeoffer_items_rule');
+                        middleElement.classList.remove('tradeoffer_items_rule');
+                        middleElement.classList.add('tradeoffer_items_banner');
+                        middleElement.style.height = '';
+                        offerElement.querySelector('.tradeoffer_footer').style.display = 'none';
+                
+                        if (body.needs_email_confirmation || body.needs_mobile_confirmation)  middleElement.innerText = 'Accepted - Awaiting Confirmation';
+                        else  {
+                            middleElement.innerText = 'Trade Accepted';
+                            middleElement.classList.add('accepted');
+                        }
+                    }).catch(err => {
+                        console.log(err);
+                    });
                 }`;
 injectToPage(acceptTradeScriptString, false, 'acceptTradeScript', false);
 
