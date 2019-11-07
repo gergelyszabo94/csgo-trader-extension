@@ -131,16 +131,20 @@ function addTotals(offers, items){
             });
 
             let offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
-            let primaryHeader = offerElement.querySelector('.tradeoffer_items.primary').querySelector('.tradeoffer_items_header');
-            primaryHeader.innerText += ` ${prettyPrintPrice(result.currency, (theirItemsTotal).toFixed(2))}`;
-            theirIncludesItemWIthNoPrice ? primaryHeader.innerText += ' - includes items with no price' : null;
-            let secondaryHeader = offerElement.querySelector('.tradeoffer_items.secondary').querySelector('.tradeoffer_items_header');
-            secondaryHeader.innerText += ` ${prettyPrintPrice(result.currency, (yourItemsTotal).toFixed(2))}`;
-            yourIncludesItemWIthNoPrice ? secondaryHeader.innerText += ' - includes items with no price' : null;
+            if (isOfferActive(offerElement)) {
+                let primaryHeader = offerElement.querySelector('.tradeoffer_items.primary').querySelector('.tradeoffer_items_header');
+                primaryHeader.innerText += ` ${prettyPrintPrice(result.currency, (theirItemsTotal).toFixed(2))}`;
+                theirIncludesItemWIthNoPrice ? primaryHeader.innerText += ' - includes items with no price' : null;
+                let secondaryHeader = offerElement.querySelector('.tradeoffer_items.secondary').querySelector('.tradeoffer_items_header');
+                secondaryHeader.innerText += ` ${prettyPrintPrice(result.currency, (yourItemsTotal).toFixed(2))}`;
+                yourIncludesItemWIthNoPrice ? secondaryHeader.innerText += ' - includes items with no price' : null;
 
-            let profitOrLoss = theirItemsTotal - yourItemsTotal;
-            let PLPercentage = theirItemsTotal / yourItemsTotal;
-            offerElement.querySelector('.tradeoffer_header').insertAdjacentHTML('beforeend', `<span class="profitOrLoss" data-profit-or-loss="${profitOrLoss}" data-p-l-percentage="${PLPercentage}" data-updated="${offer.time_updated}">${prettyPrintPrice(result.currency, (profitOrLoss).toFixed(2))}</span>`);
+                let profitOrLoss = theirItemsTotal - yourItemsTotal;
+                let PLPercentage = theirItemsTotal / yourItemsTotal;
+                offerElement.querySelector('.tradeoffer_header').insertAdjacentHTML('beforeend', `
+                    <span class="profitOrLoss" data-profit-or-loss="${profitOrLoss}" data-p-l-percentage="${PLPercentage}" data-updated="${offer.time_updated}">
+                    ${prettyPrintPrice(result.currency, (profitOrLoss).toFixed(2))}</span>`);
+            }
         });
     });
 }
