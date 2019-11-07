@@ -520,6 +520,9 @@ function reverseWhenNotifDetails(tradability, notifTime){
 // there are many different kinds of SteamID formats , this function converts the 64bit into the ones used in trade offers
 function getOfferStyleSteamID(steamID64){return Number(steamID64.split('7656')[1]) - Number(1197960265728)}
 
+// converts shitty annoying trade offer style SteamID to proper SteamID64
+function getPoperStyleSteamIDFromOfferStyle(offerStyleID){ return '7656' + (Number(offerStyleID) + Number(1197960265728))}
+
 // gets the steam id of the user that's profile this script is run on
 function getProfileOwnerSteamID(){
     let steamidOfProfileOwnerScript = `document.querySelector('body').setAttribute('steamidOfProfileOwner', g_rgProfileData.steamid);`;

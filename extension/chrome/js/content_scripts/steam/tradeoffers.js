@@ -264,6 +264,31 @@ document.querySelectorAll('.playerAvatar').forEach(avatarDiv => {
 // makes the middle of the active trade offers a bit bigger making it the same size as a declined offer so it does not jerk the page when declining
 document.querySelectorAll('.tradeoffer_items_rule').forEach(rule => {rule.style.height = '46px'});
 
+// adds "accept trade" action to offers
+document.querySelectorAll('.tradeoffer').forEach( offerElement => {
+    if (isOfferActive(offerElement)) {
+        let offerID = offerElement.id.split('tradeofferid_')[1];
+        let partnerID = getPoperStyleSteamIDFromOfferStyle(offerElement.querySelector('.playerAvatar').getAttribute('data-miniprofile'));
+        offerElement.querySelector('.tradeoffer_footer_actions').insertAdjacentHTML('afterbegin', `<a href="javascript:AcceptTradeOffer( '${offerID}', '${partnerID}' );" class="whiteLink">Accept Trade</a> | `)
+    }
+});
+
+// injects accept trade functionality to page
+let acceptTradeScriptString = `
+                function AcceptTradeOffer(offerID, partnerID){
+                    let myHeaders = new Headers();
+                    myHeaders.append('Content-Type', 'application/x-www-form-urlencoded');
+                    
+                    fetch(
+                        'https://steamcommunity.com/tradeoffer/' + offerID + '/accept',
+                        {"referrer":'https://steamcommunity.com/tradeoffer/' + offerID + '/',
+                            "body":'sessionid=' + g_sessionID + '&serverid=1&tradeofferid=' + offerID + '&partner=' + partnerID + '&captcha=',
+                            "headers": myHeaders,
+                            "method":"POST"}
+                    );
+                }`;
+injectToPage(acceptTradeScriptString, false, 'acceptTradeScript', false);
+
 // adds trade offer summary/help bar and sorting
 let tradeOffersList = document.querySelector('.profile_leftcol');
 if (tradeOffersList !== null) {
