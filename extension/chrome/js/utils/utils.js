@@ -79,72 +79,123 @@ function getPattern(name, paint_seed){
 }
 
 function getQuality(tags){
-    for (let tag of tags) if(tag.category === 'Rarity'){
-        switch(tag.internal_name){
-            case rarities.common.internal_name: return qualities[rarities.common.name];
-            case rarities.common_weapon.internal_name: return qualities[rarities.common_weapon.name];
-            case rarities.uncommon.internal_name: return qualities[rarities.uncommon.name];
-            case rarities.uncommon_weapon.internal_name: return qualities[rarities.uncommon_weapon.name];
-            case rarities.rare.internal_name: return qualities[rarities.rare.name];
-            case rarities.rare_weapon.internal_name: return qualities[rarities.rare_weapon.name];
-            case rarities.mythical.internal_name: return qualities[rarities.mythical.name];
-            case rarities.mythical_weapon.internal_name: return qualities[rarities.mythical_weapon.name];
-            case rarities.legendary.internal_name: return qualities[rarities.legendary.name];
-            case rarities.legendary_weapon.internal_name: return qualities[rarities.legendary_weapon.name];
-            case rarities.ancient.internal_name: return qualities[rarities.ancient.name];
-            case rarities.ancient_weapon.internal_name: return qualities[rarities.ancient_weapon.name];
-            case rarities.contraband.internal_name: return qualities[rarities.contraband.name];
-            case rarities.contraband_weapon.internal_name: return qualities[rarities.contraband_weapon.name];
-            case rarities.default.internal_name: return qualities[rarities.default.name];
-            case rarities.default_weapon.internal_name: return qualities[rarities.default_weapon.name];
-            default: console.log(tag.internal_name); return qualities.stock;
+    if (tags !== undefined) {
+        for (let tag of tags) if (tag.category === 'Rarity') {
+            switch (tag.internal_name) {
+                case rarities.common.internal_name:
+                    return qualities[rarities.common.name];
+                case rarities.common_weapon.internal_name:
+                    return qualities[rarities.common_weapon.name];
+                case rarities.uncommon.internal_name:
+                    return qualities[rarities.uncommon.name];
+                case rarities.uncommon_weapon.internal_name:
+                    return qualities[rarities.uncommon_weapon.name];
+                case rarities.rare.internal_name:
+                    return qualities[rarities.rare.name];
+                case rarities.rare_weapon.internal_name:
+                    return qualities[rarities.rare_weapon.name];
+                case rarities.mythical.internal_name:
+                    return qualities[rarities.mythical.name];
+                case rarities.mythical_weapon.internal_name:
+                    return qualities[rarities.mythical_weapon.name];
+                case rarities.legendary.internal_name:
+                    return qualities[rarities.legendary.name];
+                case rarities.legendary_weapon.internal_name:
+                    return qualities[rarities.legendary_weapon.name];
+                case rarities.ancient.internal_name:
+                    return qualities[rarities.ancient.name];
+                case rarities.ancient_weapon.internal_name:
+                    return qualities[rarities.ancient_weapon.name];
+                case rarities.contraband.internal_name:
+                    return qualities[rarities.contraband.name];
+                case rarities.contraband_weapon.internal_name:
+                    return qualities[rarities.contraband_weapon.name];
+                case rarities.default.internal_name:
+                    return qualities[rarities.default.name];
+                case rarities.default_weapon.internal_name:
+                    return qualities[rarities.default_weapon.name];
+                default:
+                    console.log(tag.internal_name);
+                    return qualities.stock;
+            }
         }
     }
     return null;
 }
 
 function getType(tags) {
-    for (let tag of tags) if(tag.category === 'Type'){
-        switch(tag.internal_name){
-            case itemTypes.collectible.internal_name: return itemTypes.collectible;
-            case itemTypes.graffiti.internal_name: return itemTypes.graffiti;
-            case itemTypes.c4.internal_name: return itemTypes.c4;
-            case itemTypes.sniper.internal_name: return itemTypes.sniper;
-            case itemTypes.rifle.internal_name: return itemTypes.rifle;
-            case itemTypes.pistol.internal_name: return itemTypes.pistol;
-            case itemTypes.smg.internal_name: return itemTypes.smg;
-            case itemTypes.gloves.internal_name: return itemTypes.gloves;
-            case itemTypes.key.internal_name: return itemTypes.key;
-            case itemTypes.music_kit.internal_name: return itemTypes.music_kit;
-            case itemTypes.nametag.internal_name: return itemTypes.nametag;
-            case itemTypes.container.internal_name: return itemTypes.container;
-            case itemTypes.knife.internal_name: return itemTypes.knife;
-            case itemTypes.shotgun.internal_name: return itemTypes.shotgun;
-            case itemTypes.machinegun.internal_name: return itemTypes.machinegun;
-            case itemTypes.sticker.internal_name: return itemTypes.sticker;
-            case itemTypes.ticket.internal_name: return itemTypes.ticket;
-            case itemTypes.tool.internal_name: return itemTypes.tool;
-            case itemTypes.gift_package.internal_name: return itemTypes.gift_package;
-            default: console.log(tag.internal_name); return null;
+    if (tags !== undefined) {
+        for (let tag of tags) if (tag.category === 'Type') {
+            switch (tag.internal_name) {
+                case itemTypes.collectible.internal_name:
+                    return itemTypes.collectible;
+                case itemTypes.graffiti.internal_name:
+                    return itemTypes.graffiti;
+                case itemTypes.c4.internal_name:
+                    return itemTypes.c4;
+                case itemTypes.sniper.internal_name:
+                    return itemTypes.sniper;
+                case itemTypes.rifle.internal_name:
+                    return itemTypes.rifle;
+                case itemTypes.pistol.internal_name:
+                    return itemTypes.pistol;
+                case itemTypes.smg.internal_name:
+                    return itemTypes.smg;
+                case itemTypes.gloves.internal_name:
+                    return itemTypes.gloves;
+                case itemTypes.key.internal_name:
+                    return itemTypes.key;
+                case itemTypes.music_kit.internal_name:
+                    return itemTypes.music_kit;
+                case itemTypes.nametag.internal_name:
+                    return itemTypes.nametag;
+                case itemTypes.container.internal_name:
+                    return itemTypes.container;
+                case itemTypes.knife.internal_name:
+                    return itemTypes.knife;
+                case itemTypes.shotgun.internal_name:
+                    return itemTypes.shotgun;
+                case itemTypes.machinegun.internal_name:
+                    return itemTypes.machinegun;
+                case itemTypes.sticker.internal_name:
+                    return itemTypes.sticker;
+                case itemTypes.ticket.internal_name:
+                    return itemTypes.ticket;
+                case itemTypes.tool.internal_name:
+                    return itemTypes.tool;
+                case itemTypes.gift_package.internal_name:
+                    return itemTypes.gift_package;
+                default:
+                    console.log(tag.internal_name);
+                    return null;
+            }
         }
     }
     return null;
 }
 
 function getExteriorFromTags(tags) {
-    for (let tag of tags) {
-        if(tag.category === 'Exterior'){
-            switch(tag.internal_name){
-                case exteriors.factory_new.internal_name: return exteriors.factory_new;
-                case exteriors.minimal_wear.internal_name: return exteriors.minimal_wear;
-                case exteriors.field_tested.internal_name: return exteriors.field_tested;
-                case exteriors.well_worn.internal_name: return exteriors.well_worn;
-                case exteriors.battle_scarred.internal_name: return exteriors.battle_scarred;
-                default: return undefined;
+    if (tags !== undefined) {
+        for (let tag of tags) {
+            if (tag.category === 'Exterior') {
+                switch (tag.internal_name) {
+                    case exteriors.factory_new.internal_name:
+                        return exteriors.factory_new;
+                    case exteriors.minimal_wear.internal_name:
+                        return exteriors.minimal_wear;
+                    case exteriors.field_tested.internal_name:
+                        return exteriors.field_tested;
+                    case exteriors.well_worn.internal_name:
+                        return exteriors.well_worn;
+                    case exteriors.battle_scarred.internal_name:
+                        return exteriors.battle_scarred;
+                    default:
+                        return null;
+                }
             }
         }
     }
-    return undefined;
+    return null;
 }
 
 function getDopplerInfo(icon){
@@ -562,27 +613,31 @@ function warnOfScammer(steamID, page) {
 }
 
 function parseStickerInfo(descriptions, linkType){
-    let stickers = [];
-    let link = linkType === 'search' ? 'https://steamcommunity.com/market/search?q=' : 'https://steamcommunity.com/market/listings/730/Sticker%20%7C%20';
+    if (descriptions !== undefined && linkType !== undefined) {
+        let stickers = [];
+        let link = linkType === 'search' ? 'https://steamcommunity.com/market/search?q=' : 'https://steamcommunity.com/market/listings/730/Sticker%20%7C%20';
 
-    descriptions.forEach((description) => {
-        if (/sticker_info/.test(description.value)){
-            let names = description.value.split('><br>')[1].split(': ')[1].split('</center>')[0].split(', ');
-            names = handleStickerNamesWithCommas(names);
-            let iconURLs = description.value.split('src="');
-            iconURLs.shift();
-            iconURLs.forEach((iconURL, index) => {iconURLs[index] = iconURL.split('><')[0]});
-            names.forEach((name, index) => {
-                stickers.push({
-                    name: name,
-                    iconURL: iconURLs[index],
-                    marketURL: link + name
+        descriptions.forEach((description) => {
+            if (/sticker_info/.test(description.value)) {
+                let names = description.value.split('><br>')[1].split(': ')[1].split('</center>')[0].split(', ');
+                names = handleStickerNamesWithCommas(names);
+                let iconURLs = description.value.split('src="');
+                iconURLs.shift();
+                iconURLs.forEach((iconURL, index) => {
+                    iconURLs[index] = iconURL.split('><')[0]
                 });
-            });
-        }
-    });
-
-    return stickers;
+                names.forEach((name, index) => {
+                    stickers.push({
+                        name: name,
+                        iconURL: iconURLs[index],
+                        marketURL: link + name
+                    });
+                });
+            }
+        });
+        return stickers;
+    }
+    else return null
 }
 
 function handleStickerNamesWithCommas(names){
