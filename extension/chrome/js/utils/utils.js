@@ -1,3 +1,14 @@
+Number.prototype.toFixedNoRounding = function(n) {
+    const reg = new RegExp('^-?\\d+(?:\\.\\d{0,' + n + '})?', 'g');
+    const a = this.toString().match(reg)[0];
+    const dot = a.indexOf('.');
+    if (dot === -1) { // integer, insert decimal dot and pad up zeros
+        return a + '.' + '0'.repeat(n);
+    }
+    const b = n - (a.length - dot) + 1;
+    return b > 0 ? (a + '0'.repeat(b)) : a;
+};
+
 const ruby = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/redjewel" class="gemIcon">';
 const sapphire = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/bluejewel" class="gemIcon">';
 const emerald = '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/greenjewel" class="gemIcon">';
@@ -1207,7 +1218,7 @@ function addToFloatCache(assetID, floatInfo) {
 
 function addFloatIndicator(itemElement, floatInfo){
     if (floatInfo !== null && itemElement.querySelector('div.floatIndicator') === null) {
-        itemElement.insertAdjacentHTML('beforeend', `<div class="floatIndicator">${floatInfo.floatvalue.toFixed(4)}</div>`);
+        itemElement.insertAdjacentHTML('beforeend', `<div class="floatIndicator">${floatInfo.floatvalue.toFixedNoRounding(4)}</div>`);
     }
 }
 
@@ -1221,7 +1232,7 @@ function addPriceIndicator(itemElement, priceInfo) {
 function addSSTandExtIndicators(itemElement, item) {
     let stattrak = item.isStatrack ? 'ST' : '';
     let souvenir = item.isSouvenir ? 'S' : '';
-    let exterior = item.exterior !== undefined ? item.exterior.localized_short : '';
+    let exterior = item.exterior !== null ? item.exterior.localized_short : '';
 
     itemElement.insertAdjacentHTML('beforeend', `<div class='exteriorSTInfo'><span class="souvenirYellow">${souvenir}</span><span class="stattrakOrange">${stattrak}</span><span class="exteriorIndicator">${exterior}</span></div>`);
 }

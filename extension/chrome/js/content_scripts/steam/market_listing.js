@@ -96,9 +96,9 @@ function populateFloatInfo(listingID, floatInfo){
     if (listingElement !== null) { // if for example the user has changed page and the listing is not there anymore
         listingElement.querySelector('.floatTechnical').innerHTML = getDataFilledFloatTechnical(floatInfo);
 
-        let position = ((floatInfo.floatvalue.toFixed(2) * 100) - 2).toFixed(2);
+        let position = ((floatInfo.floatvalue.toFixedNoRounding(2) * 100) - 2).toFixedNoRounding(2);
         listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
-        listingElement.querySelector('.floatDropTarget').innerText = floatInfo.floatvalue.toFixed(4);
+        listingElement.querySelector('.floatDropTarget').innerText = floatInfo.floatvalue.toFixedNoRounding(4);
     }
 }
 

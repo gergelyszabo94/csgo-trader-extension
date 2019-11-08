@@ -598,9 +598,9 @@ function setFloatBarWithData(floatInfo){
 
     document.querySelectorAll('.floatTechnical').forEach (floatTechnical => floatTechnical.innerHTML = floatTechnicalElement);
 
-    let position = (floatInfo.floatvalue.toFixed(2) * 100) - 2;
+    let position = (floatInfo.floatvalue.toFixedNoRounding(2) * 100) - 2;
     document.querySelectorAll('.floatToolTip').forEach(floatToolTip => floatToolTip.setAttribute('style', `left: ${position}%`));
-    document.querySelectorAll('.floatDropTarget').forEach(floatDropTarget => floatDropTarget.innerText = floatInfo.floatvalue.toFixed(4));
+    document.querySelectorAll('.floatDropTarget').forEach(floatDropTarget => floatDropTarget.innerText = floatInfo.floatvalue.toFixedNoRounding(4));
 }
 
 function setPatternInfo(patternInfo){
