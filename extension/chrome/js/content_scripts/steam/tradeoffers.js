@@ -200,6 +200,7 @@ function sortOffers(sortingMode){
 
     // removes offer elements
     activeOffers.forEach(offer => {offer.parentNode.removeChild(offer)});
+    document.querySelector('.profile_leftcol').querySelectorAll('.tradeoffer_rule').forEach( rulerElement => rulerElement.parentNode.removeChild(rulerElement));
 
     // adds sorted offer elements to page
     let offerSection = document.querySelector('.profile_leftcol');
