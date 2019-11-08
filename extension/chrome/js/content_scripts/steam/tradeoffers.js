@@ -109,6 +109,10 @@ function addItemInfo(items) {
 
 function addTotals(offers, items){
     chrome.storage.local.get('currency', (result) => {
+        let totalProfit = 0.0;
+        let activeOfferCount = 0;
+        let numberOfProfitableOffers = 0;
+
         offers.trade_offers_received.forEach(offer => {
             let yourItemsTotal = 0.0;
             let theirItemsTotal = 0.0;
@@ -132,6 +136,7 @@ function addTotals(offers, items){
 
             let offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
             if (isOfferActive(offerElement)) {
+                activeOfferCount++;
                 let primaryHeader = offerElement.querySelector('.tradeoffer_items.primary').querySelector('.tradeoffer_items_header');
                 primaryHeader.innerText += ` ${prettyPrintPrice(result.currency, (theirItemsTotal).toFixed(2))}`;
                 theirIncludesItemWIthNoPrice ? primaryHeader.innerText += ' - includes items with no price' : null;
@@ -141,11 +146,21 @@ function addTotals(offers, items){
 
                 let profitOrLoss = theirItemsTotal - yourItemsTotal;
                 let PLPercentage = theirItemsTotal / yourItemsTotal;
+                if (profitOrLoss > 0.0) {
+                    totalProfit += profitOrLoss;
+                    numberOfProfitableOffers++;
+                }
                 offerElement.querySelector('.tradeoffer_header').insertAdjacentHTML('beforeend', `
                     <span class="profitOrLoss" data-profit-or-loss="${profitOrLoss}" data-p-l-percentage="${PLPercentage}" data-updated="${offer.time_updated}">
                     ${prettyPrintPrice(result.currency, (profitOrLoss).toFixed(2))}</span>`);
             }
         });
+
+        document.getElementById('tradeoffers_summary').innerHTML = `
+                                                                   <div id="active_offers_count"><b>Active Offers: </b>${activeOfferCount}</div>
+                                                                   <div id="profitable_offers_count"><b>Profitable Offers: </b>${numberOfProfitableOffers}</div>
+                                                                   <div id="potential_profit"><b>Potential profit: </b>${prettyPrintPrice(result.currency, (totalProfit).toFixed(2))}</div>
+                                                                    `;
     });
 }
 
@@ -318,11 +333,11 @@ let tradeOffersList = document.querySelector('.profile_leftcol');
 if (tradeOffersList !== null) {
     tradeOffersList.insertAdjacentHTML('afterbegin', `
         <div id="tradeoffers_summary" class="trade_offers_module">Waiting for Steam API...</div>
-        <div id="tradeOffersSortingMenu" class="trade_offers_module hidden"><span>Sorting: </span><select id="sortingMethod"></select></div>`);
+        <div id="tradeOffersSortingMenu" class="trade_offers_module hidden"><span>Sorting: </span><select id="offerSortingMethod"></select></div>`);
 }
 
 // populates and adds listener to sorting select
-let sortingSelect = document.getElementById('sortingMethod');
+let sortingSelect = document.getElementById('offerSortingMethod');
 let keys = Object.keys(offersSortingModes);
 
 for (let key of keys) {
@@ -362,7 +377,7 @@ getOffersFromAPI().then(
             addTotals(offers, itemsWithAllInfo);
             document.getElementById('tradeoffers_summary').innerHTML = `<b>Trade offer summary:</b>`;
             chrome.storage.local.get('tradeOffersSortingMode', (result) => {
-                document.querySelector(`#sortingMethod [value="${result.tradeOffersSortingMode}"]`).selected = true;
+                document.querySelector(`#offerSortingMethod [value="${result.tradeOffersSortingMode}"]`).selected = true;
                 sortOffers(result.tradeOffersSortingMode);
                 document.getElementById('tradeOffersSortingMenu').classList.remove('hidden');
             });
