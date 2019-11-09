@@ -338,6 +338,9 @@ function hideOtherExtensionPrices(){
     // sih
     if (!document.hidden && isSIHActive()) document.querySelectorAll(".price_flag").forEach((price) => {price.remove()});
     setTimeout(() =>{hideOtherExtensionPrices()}, 2000);
+
+    // csgofloat
+    document.querySelectorAll('.csgofloat-itemfloat, .csgofloat-itemseed').forEach( csFElement => csFElement.style.display = 'none');
 }
 
 function setInventoryTotal(items){
