@@ -1182,7 +1182,8 @@ function extractUsefulFloatInfo(floatInfo) {
         origin_name: floatInfo.origin_name,
         min: floatInfo.min,
         max: floatInfo.max,
-        stickers: floatInfo.stickers !== undefined ? floatInfo.stickers : null
+        stickers: floatInfo.stickers !== undefined ? floatInfo.stickers : null,
+        low_rank: floatInfo.low_rank !== undefined ? floatInfo.low_rank : null
     };
 }
 
@@ -1392,6 +1393,7 @@ function getFloatBarSkeleton(type) {
 }
 
 function getDataFilledFloatTechnical(floatInfo) {
+    let floatRankLine = (floatInfo.low_rank !== undefined && floatInfo.low_rank !== null) ? `Low Rank: ${floatInfo.low_rank}<br>` : '';
     return `
             Technical:<br>
             Float Value: ${floatInfo.floatvalue}<br>
@@ -1400,6 +1402,7 @@ function getDataFilledFloatTechnical(floatInfo) {
             Origin: ${floatInfo.origin_name}<br>
             Best Possible Float: ${floatInfo.min}<br>
             Worst Possible Float: ${floatInfo.max}<br>
+            ${floatRankLine}
             <br>
             Float info from <a href="https://csgofloat.com/" target="_blank">csgofloat.com</a>`;
 }
