@@ -12,6 +12,8 @@ function bump(){
     });
 }
 
+logExtensionPresence();
+
 trackEvent({
     type: 'pageview',
     action: 'TradersTradesView'

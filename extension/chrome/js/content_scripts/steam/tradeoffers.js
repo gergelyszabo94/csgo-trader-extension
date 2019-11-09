@@ -230,6 +230,7 @@ function isOfferActive(offerElement){
     else return false
 }
 
+logExtensionPresence();
 overrideDecline();
 overrideShowTradeOffer();
 updateLoggedInUserID();

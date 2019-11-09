@@ -473,6 +473,8 @@ let yourInventory = null;
 let theirInventory = null;
 let combinedInventories = [];
 
+logExtensionPresence();
+
 // initiates all logic that needs access to item info
 getInventories();
 

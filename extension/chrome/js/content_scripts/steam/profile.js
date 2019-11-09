@@ -1,5 +1,6 @@
 // ensures that we are on a profile page, it's not possible with simple regex
 if (document.querySelector('body').classList.contains('profile_page')){
+    logExtensionPresence();
     updateLoggedInUserID();
     trackEvent({
         type: 'pageview',
@@ -139,7 +140,7 @@ if (document.querySelector('body').classList.contains('profile_page')){
             }
         }
     });
-}
 
-// reloads the page on extension update/reload/uninstall
-chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});
+    // reloads the page on extension update/reload/uninstall
+    chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});
+}

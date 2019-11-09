@@ -711,6 +711,8 @@ const tradable = '<span class="tradable">Tradable</span>';
 const notTradable = '<span class="not_tradable">Not Tradable</span>';
 const dopplerPhase = '<div class="dopplerPhase"><span></span></div>';
 
+logExtensionPresence();
+
 // mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
 MutationObserver = window.MutationObserver;
 

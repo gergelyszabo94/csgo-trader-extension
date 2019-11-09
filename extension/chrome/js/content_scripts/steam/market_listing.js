@@ -153,6 +153,7 @@ function setStickerInfo(listingID, stickers){
     }
 }
 
+logExtensionPresence();
 updateLoggedInUserID();
 trackEvent({
     type: 'pageview',

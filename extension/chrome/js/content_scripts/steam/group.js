@@ -1,3 +1,4 @@
+logExtensionPresence();
 addReplytoCommentsFunctionality();
 addCommentsMutationObserver();
 reportComments();
