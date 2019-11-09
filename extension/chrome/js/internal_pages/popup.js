@@ -79,6 +79,8 @@ betweenNumbers.innerText = ' - ';
 calculator.appendChild(betweenNumbers);
 calculator.appendChild(numberInputRight);
 
+document.getElementById('toggleCalc').addEventListener('click', () => {calculator.classList.toggle('hidden')});
+
 chrome.storage.local.get('currency', (result) => {
     currenciesLeft.querySelector(`[value='${result.currency}']`).selected = true;
 });
