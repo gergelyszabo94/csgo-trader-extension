@@ -226,16 +226,34 @@ numberoflistings.addEventListener('input', () => {
 // selects
 
 let currencySelect = document.getElementById('currency');
+let defaultConverterCurrency1Select = document.getElementById('defaultConverterCurrency1');
+let defaultConverterCurrency2Select = document.getElementById('defaultConverterCurrency2');
 
 for (let currency of Object.keys(currencies)){
     let option = document.createElement('option');
     option.value = currencies[currency].short;
     option.text = `${currencies[currency].short} - ${currencies[currency].long}`;
     currencySelect.add(option);
+    defaultConverterCurrency1Select.add(option.cloneNode(true));
+    defaultConverterCurrency2Select.add(option.cloneNode(true));
 }
 
-chrome.storage.local.get('currency', (result) => {
-    document.querySelector(`#currency [value='${result.currency}']`).selected = true;
+let currencySelects = ['currency', 'defaultConverterCurrency1', 'defaultConverterCurrency2'];
+
+chrome.storage.local.get(currencySelects, (result) => {
+    currencySelects.forEach( storageKey => {
+        document.querySelector(`#${storageKey} [value='${result[storageKey]}']`).selected = true;
+    });
+});
+
+defaultConverterCurrency1Select.addEventListener('click', () => {
+    let currency = defaultConverterCurrency1Select.options[defaultConverterCurrency1Select.selectedIndex].value;
+    chrome.storage.local.set({defaultConverterCurrency1: currency}, () => { updateExchangeRates()});
+});
+
+defaultConverterCurrency2Select.addEventListener('click', () => {
+    let currency = defaultConverterCurrency2Select.options[defaultConverterCurrency2Select.selectedIndex].value;
+    chrome.storage.local.set({defaultConverterCurrency2: currency}, () => { updateExchangeRates()});
 });
 
 currencySelect.addEventListener('click', () => {

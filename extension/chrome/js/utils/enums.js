@@ -19985,7 +19985,9 @@ const storageKeys = {
     clientID: '',
     telemetryOn: true,
     tradeOffersLargerItems: true,
-    tradeOffersSortingMode: offersSortingModes.default.key
+    tradeOffersSortingMode: offersSortingModes.default.key,
+    defaultConverterCurrency1: currencies.USD.short,
+    defaultConverterCurrency2: currencies.EUR.short
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID'];
