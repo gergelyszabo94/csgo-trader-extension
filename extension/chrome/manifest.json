@@ -11,6 +11,7 @@
     "storage",
     "notifications",
     "alarms",
+    "unlimitedStorage",
     "*://steamcommunity.com/*",
     "*://api.steampowered.com/*",
     "*://api.csgotrader.app/*",
