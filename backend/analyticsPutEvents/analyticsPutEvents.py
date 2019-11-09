@@ -40,6 +40,13 @@ def lambda_handler(event, context):
         except:
             print('No version info from client')
 
+        os = 'unknown'
+        try:
+            os = body['os']
+        except:
+            print('No OS info from client')
+
+
         tables['preferences'].put_item(
             Item={
                 'date': lambda_date_iso,
@@ -48,7 +55,8 @@ def lambda_handler(event, context):
                 'country': event['params']['header']['CloudFront-Viewer-Country'],
                 'browser': 'chrome' if 'chrome-extension' in event['params']['header']['origin'] else 'firefox',
                 'browser_language': body['browserLanguage'],
-                'preferences': body['preferences']
+                'preferences': body['preferences'],
+                'os': os
             }
         )
 

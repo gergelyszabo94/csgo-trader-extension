@@ -1476,37 +1476,42 @@ function sendTelemetry(retries) {
                 else preferences[setting] = result[setting]
             });
 
-            let requestBody = {
-                browserLanguage: navigator.language,
-                clientID: result.clientID,
-                client_version: chrome.runtime.getManifest().version,
-                events: eventsSummary,
-                preferences: preferences
-            };
+            chrome.runtime.getPlatformInfo((platformInfo) => {
+                let os = platformInfo.os;
 
-            let getRequest = new Request('https://api.csgotrader.app/analytics/putevents', {
-                method: 'POST',
-                body: JSON.stringify(requestBody)
-            });
+                let requestBody = {
+                    browserLanguage: navigator.language,
+                    clientID: result.clientID,
+                    client_version: chrome.runtime.getManifest().version,
+                    events: eventsSummary,
+                    preferences: preferences,
+                    os: os
+                };
 
-            fetch(getRequest).then((response) => {
-                if (!response.ok) {
-                    console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-                }
-                else return response.json();
-            }).then((body) => {
-                if (body.body === undefined || body.body.success === 'false') {
-                    if (retries < 5) setTimeout(() => {sendTelemetry(++retries)}, 600*5);
-                    else {
-                        let newAnalyticsEvents = result.analyticsEvents.filter(event => event.timestamp > (Date.now() - (1000*60*60*24*7)));
-                        chrome.storage.local.set({analyticsEvents: newAnalyticsEvents}, () => {});
+                let getRequest = new Request('https://api.csgotrader.app/analytics/putevents', {
+                    method: 'POST',
+                    body: JSON.stringify(requestBody)
+                });
+
+                fetch(getRequest).then((response) => {
+                    if (!response.ok) {
+                        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
                     }
-                }
-                else if (body.body.success === 'true'){
-                    chrome.storage.local.set({analyticsEvents: []}, () => {});
-                }
-            }).catch((err) => {
-                console.log(err);
+                    else return response.json();
+                }).then((body) => {
+                    if (body.body === undefined || body.body.success === 'false') {
+                        if (retries < 5) setTimeout(() => {sendTelemetry(++retries)}, 600*5);
+                        else {
+                            let newAnalyticsEvents = result.analyticsEvents.filter(event => event.timestamp > (Date.now() - (1000*60*60*24*7)));
+                            chrome.storage.local.set({analyticsEvents: newAnalyticsEvents}, () => {});
+                        }
+                    }
+                    else if (body.body.success === 'true'){
+                        chrome.storage.local.set({analyticsEvents: []}, () => {});
+                    }
+                }).catch((err) => {
+                    console.log(err);
+                });
             });
         }
         else chrome.storage.local.set({analyticsEvents: []}, () => {});
