@@ -56,8 +56,6 @@ let currenciesLeft = currenciesRight.cloneNode(true);
 currenciesRight.id = 'currenciesRight';
 currenciesLeft.id = 'currenciesLeft';
 let calculator = document.getElementById('calculator');
-calculator.style.fontSize = '0.7rem';
-calculator.style.marginTop = '10px';
 let spanBetween = document.createElement('span');
 spanBetween.style.margin = '5px';
 spanBetween.innerText = ' to ';
@@ -79,7 +77,34 @@ betweenNumbers.innerText = ' - ';
 calculator.appendChild(betweenNumbers);
 calculator.appendChild(numberInputRight);
 
-document.getElementById('toggleCalc').addEventListener('click', () => {calculator.classList.toggle('hidden')});
+let percentageCalc = document.getElementById('percentageCalculator');
+
+
+document.getElementById('result1').addEventListener('click', (event) => {
+    let percentage = parseInt(document.getElementById('percentage1').value);
+    let number = parseInt(document.getElementById('percentage2').value);
+    event.target.innerText = number * (percentage / 100);
+});
+
+document.getElementById('result2').addEventListener('click', (event) => {
+    let percentage = parseInt(document.getElementById('percentage4').value);
+    let number = parseInt(document.getElementById('percentage3').value);
+    event.target.innerText = number / (percentage / 100);
+});
+
+document.getElementById('result3').addEventListener('click', (event) => {
+    let percentage = parseInt(document.getElementById('percentage5').value);
+    let number = parseInt(document.getElementById('percentage6').value);
+    let incOrDecElement = document.getElementById('inc_dec');
+    let incOrDec = incOrDecElement.options[incOrDecElement.selectedIndex].value;
+    if (incOrDec === 'inc') event.target.innerText = number / ((percentage / 100) + 1.0);
+    if (incOrDec === 'dec') event.target.innerText = number / (1.0 - (percentage / 100));
+});
+
+document.getElementById('toggleCalc').addEventListener('click', () => {
+    calculator.classList.toggle('hidden');
+    percentageCalc.classList.toggle('hidden');
+});
 
 chrome.storage.local.get('currency', (result) => {
     currenciesLeft.querySelector(`[value='${result.currency}']`).selected = true;
