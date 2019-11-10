@@ -385,12 +385,10 @@ getOffersFromAPI().then(
         });
 
     }, (error) => {
-        if (error !== 'apiKeyInvalid') {
-            // TODO retry logic because this should be happening if the error is Steam's side
-        }
-        else {
+        if (error === 'apiKeyInvalid') {
             document.getElementById('tradeoffers_summary').innerHTML = `<b>CSGOTrader Extension:</b> You don't have your Steam API key set.<br> 
-            For more functionality on this page open the options page and set your API key in the General category.`;
+            For more functionality on this page open the options page and set your API key in the General category.
+            Check what you are missing in the <a href="https://csgotrader.app/release-notes#1.20" target="_blank">Release Notes</a>`;
         }
     }
 );

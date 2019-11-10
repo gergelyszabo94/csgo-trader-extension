@@ -16,12 +16,12 @@
     <meta name="author" content="Gergely Szabo">
     <meta name="theme-color" content="#ee7600">
 
-    <meta property="og:title" content="Steam Group - Steam Trading Enhancer Extension" />
+    <meta property="og:title" content="Release Notes - Steam Trading Enhancer Extension" />
     <meta property="og:type" content="website"/>
-    <meta property="og:url" content="https://csgotrader.app/group" />
+    <meta property="og:url" content="https://csgotrader.app/release-notes" />
     <meta property="og:image" content="https://csgotrader.app/img/features/cstdopplers.jpg" />
 
-    <meta property="og:description" content="Steam Group - Steam Trading Enhancer Extension for Chrome and Firefox that is designed to help with CS:GO trading." />
+    <meta property="og:description" content="Release Notes" />
     <meta property="og:determiner" content="" />
     <meta property="og:locale" content="en_GB" />
     <meta property="og:site_name" content="CSGOTrader" />
@@ -36,7 +36,7 @@
 <body>
 <script type="text/javascript" src="/js/thirdparty/jquery-3.4.1.slim.js"></script>
 <script type="text/javascript" src="/js/thirdparty/bootstrap.bundle.min.js"></script>
-<div class="col-lg-10 col-md-10 mx-auto" id="changelog">
+<div class="col-lg-10 col-md-10 mx-auto" id="release-notes">
     <nav class="navbar navbar-expand-lg navbar-dark">
         <a class="navbar-brand orange" href="/"><img class="navlogo" src="/img/cstlogo48.png">CSGO Trader Extension</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,11 +47,11 @@
                 <li class="nav-item">
                     <a class="nav-link orange" href="/changelog">Changelog</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link orange" href="/release-notes">Release-Notes</a>
-                </li>
                 <li class="nav-item active">
-                <a class="nav-link active" href="/group">Steam Group</a>
+                    <a class="nav-link active" href="/release-notes">Release-Notes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link orange" href="/group">Steam Group</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link orange" href="/prices">Prices</a>
@@ -59,12 +59,23 @@
             </ul>
         </div>
     </nav>
-    <h1>Steam Group</h1>
-    <div class="buildingBlock">
-        Join <a href="https://steamcommunity.com/groups/csgotraderextension" target="_blank">CSGO Trader Chrome Extension Steam Group</a> for discussions surrounding the extension. <br>
-        Report bugs in the <a href="https://steamcommunity.com/groups/csgotraderextension/discussions/0/1630790506917547249/" target="_blank">bug reports topic</a> <br>
-        Share your ideas in the <a href="https://steamcommunity.com/groups/csgotraderextension/discussions/0/1630790506917551589/" target="_blank">feature requests topic</a>
-
+    <h1>Release Notes</h1>
+    <div class="buildingBlock" id="1.20">
+        <h2>1.20 - Incoming trade offers features</h2>
+        <p>I have worked quite a bit on this and I think it ended up pretty nice and useful so I want as many people to use it as possible.
+        Unfortunately to do so you have to add your Steam API key in the options first.
+        I tried solving this without that but it's not really possible to do so while offering appropriate user experience.
+            If you don't have your API key set then all you will notice is a note on top of the trade offers page advising to add your API key and linking to this page.</p>
+        <p>These are the features that you are missing if you don't have it set:</p>
+        <ul>
+            <li>Incoming offers summary showing the number of profitable offers and potential profit</li>
+            <li>Option to sort by profit, loss, received time, etc. </li>
+            <li>Prices, total per side, profit or loss per trade shown</li>
+            <li>Exteriors, doppler phases, colors, etc.</li>
+            <li>Float values in case they were loaded for those items previously</li>
+        </ul>
+        Illustrated in the bellow screenshot:
+        <img src="/img/release-notes/incomingoffersfeaturesfull_annotated.jpg" class="showCaseImage" title="Incoming offers features" alt="Incoming offers features">
     </div>
 
 </div>
