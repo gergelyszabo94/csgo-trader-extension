@@ -1194,15 +1194,16 @@ function updateFloatCache(assetIDs) {
     assetIDs.forEach( ID => {floatStorageKeys.push(`floatCache_${ID}`)});
 
     chrome.storage.local.get(floatStorageKeys, (result) => {
+        let itemFloatInfos = {};
         for (let floatKey in result) {
             let itemFloatInfo = result[floatKey];
-
             if (itemFloatInfo !== undefined && itemFloatInfo !== null) {
                 itemFloatInfo.lastUsed = Date.now();
                 itemFloatInfo.used = itemFloatInfo.used + 1;
-                chrome.storage.local.set({[floatKey]: itemFloatInfo}, () => {});
+                itemFloatInfos[floatKey] = itemFloatInfo;
             }
         }
+        chrome.storage.local.set(itemFloatInfos, () => {});
     });
 }
 
