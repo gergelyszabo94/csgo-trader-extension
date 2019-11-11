@@ -239,6 +239,13 @@ trackEvent({
     action: 'TradeOffersPageView'
 });
 
+let activePage = 'incoming_offers';
+if (location.href.includes('/tradeoffers/?history=1')) activePage ='incoming_offers_history';
+else if (location.href.includes('/tradeoffers/sent/?history=1')) activePage ='sent_offers_history';
+else if (location.href.includes('/tradeoffers/sent/')) activePage ='sent_offers';
+
+console.log(activePage);
+
 // chrome background tab throttling causes steam's own js files to load later than the these injections, so it does not override the functions
 // this only happens when the tab is opened in the background, https://www.chromestatus.com/feature/5527160148197376
 // this is a dirty but working fix for that
@@ -253,24 +260,26 @@ let intervalID = setInterval(() =>{
 }, 1000);
 
 // makes our items the same size (larger) as their items
-chrome.storage.local.get('tradeOffersLargerItems', (result) => {
-    if (result.tradeOffersLargerItems) {
-        injectStyle(`.tradeoffer_items.secondary .trade_item{
+if (activePage === 'incoming_offers') {
+    chrome.storage.local.get('tradeOffersLargerItems', (result) => {
+        if (result.tradeOffersLargerItems) {
+            injectStyle(`.tradeoffer_items.secondary .trade_item{
                      width: 96px;
                      height: 96px;
                      margin-right: 8px;
                      margin-bottom: 8px;`, 'itemsSameSize');
 
-        // adjust the icon sizes accordingly
-        document.querySelectorAll('.tradeoffer_items.secondary').forEach(secondaryElement => {
-            secondaryElement.querySelectorAll('.trade_item').forEach(itemElement => {
-                let iconElement = itemElement.querySelector('img');
-                iconElement.src = iconElement.src.replace('73fx73f', '96fx96f');
-                iconElement.setAttribute('srcset', iconElement.getAttribute('srcset').replace('73fx73f', '96fx96f'));
+            // adjust the icon sizes accordingly
+            document.querySelectorAll('.tradeoffer_items.secondary').forEach(secondaryElement => {
+                secondaryElement.querySelectorAll('.trade_item').forEach(itemElement => {
+                    let iconElement = itemElement.querySelector('img');
+                    iconElement.src = iconElement.src.replace('73fx73f', '96fx96f');
+                    iconElement.setAttribute('srcset', iconElement.getAttribute('srcset').replace('73fx73f', '96fx96f'));
+                });
             });
-        });
-    }
-});
+        }
+    });
+}
 
 // makes clicking on profile avatars open profiles on a new tab
 document.querySelectorAll('.playerAvatar').forEach(avatarDiv => {
@@ -279,16 +288,18 @@ document.querySelectorAll('.playerAvatar').forEach(avatarDiv => {
 });
 
 // makes the middle of the active trade offers a bit bigger making it the same size as a declined offer so it does not jerk the page when declining
-document.querySelectorAll('.tradeoffer_items_rule').forEach(rule => {rule.style.height = '46px'});
+if (activePage === 'incoming_offers') document.querySelectorAll('.tradeoffer_items_rule').forEach(rule => {rule.style.height = '46px'});
 
 // adds "accept trade" action to offers
-document.querySelectorAll('.tradeoffer').forEach( offerElement => {
-    if (isOfferActive(offerElement)) {
-        let offerID = offerElement.id.split('tradeofferid_')[1];
-        let partnerID = getPoperStyleSteamIDFromOfferStyle(offerElement.querySelector('.playerAvatar').getAttribute('data-miniprofile'));
-        offerElement.querySelector('.tradeoffer_footer_actions').insertAdjacentHTML('afterbegin', `<a href="javascript:AcceptTradeOffer( '${offerID}', '${partnerID}' );" class="whiteLink">Accept Trade</a> | `)
-    }
-});
+if (activePage === 'incoming_offers') {
+    document.querySelectorAll('.tradeoffer').forEach(offerElement => {
+        if (isOfferActive(offerElement)) {
+            let offerID = offerElement.id.split('tradeofferid_')[1];
+            let partnerID = getPoperStyleSteamIDFromOfferStyle(offerElement.querySelector('.playerAvatar').getAttribute('data-miniprofile'));
+            offerElement.querySelector('.tradeoffer_footer_actions').insertAdjacentHTML('afterbegin', `<a href="javascript:AcceptTradeOffer( '${offerID}', '${partnerID}' );" class="whiteLink">Accept Trade</a> | `)
+        }
+    });
+}
 
 // injects accept trade functionality to page
 let acceptTradeScriptString = `
@@ -327,68 +338,73 @@ let acceptTradeScriptString = `
                         console.log(err);
                     });
                 }`;
-injectToPage(acceptTradeScriptString, false, 'acceptTradeScript', false);
+if (activePage === 'incoming_offers') injectToPage(acceptTradeScriptString, false, 'acceptTradeScript', false);
 
 // adds trade offer summary/help bar and sorting
-let tradeOffersList = document.querySelector('.profile_leftcol');
-if (tradeOffersList !== null) {
-    tradeOffersList.insertAdjacentHTML('afterbegin', `
+if (activePage === 'incoming_offers') { // || activePage === 'sent_offers' for later
+    let tradeOffersList = document.querySelector('.profile_leftcol');
+    if (tradeOffersList !== null) {
+        tradeOffersList.insertAdjacentHTML('afterbegin', `
         <div id="tradeoffers_summary" class="trade_offers_module">Waiting for Steam API...</div>
         <div id="tradeOffersSortingMenu" class="trade_offers_module hidden"><span>Sorting: </span><select id="offerSortingMethod"></select></div>`);
-}
+    }
 
-// populates and adds listener to sorting select
-let sortingSelect = document.getElementById('offerSortingMethod');
-let keys = Object.keys(offersSortingModes);
+    // populates and adds listener to sorting select
+    let sortingSelect = document.getElementById('offerSortingMethod');
+    let keys = Object.keys(offersSortingModes);
 
-for (let key of keys) {
-    let option = document.createElement("option");
-    option.value = offersSortingModes[key].key;
-    option.text = offersSortingModes[key].name;
-    sortingSelect.add(option);
-}
+    for (let key of keys) {
+        let option = document.createElement("option");
+        option.value = offersSortingModes[key].key;
+        option.text = offersSortingModes[key].name;
+        sortingSelect.add(option);
+    }
 
-sortingSelect.addEventListener("change", () => {
-    // analytics
-    trackEvent({
-        type: 'event',
-        action: 'TradeOffersPageSorting'
+    sortingSelect.addEventListener("change", () => {
+        // analytics
+        trackEvent({
+            type: 'event',
+            action: 'TradeOffersPageSorting'
+        });
+
+        sortOffers(sortingSelect.options[sortingSelect.selectedIndex].value);
     });
 
-    sortOffers(sortingSelect.options[sortingSelect.selectedIndex].value);
-});
+    getOffersFromAPI().then(
+        offers => {
+            console.log(offers);
+            let allItemsInOffer = extractItemsFromOffers(offers.trade_offers_sent);
+            allItemsInOffer = allItemsInOffer.concat(extractItemsFromOffers(offers.trade_offers_received));
 
-getOffersFromAPI().then(
-    offers => {
-        console.log(offers);
-        let allItemsInOffer = extractItemsFromOffers(offers.trade_offers_sent);
-        allItemsInOffer = allItemsInOffer.concat(extractItemsFromOffers(offers.trade_offers_received));
-
-        let itemsWithMoreInfo = [];
-        allItemsInOffer.forEach(item => {
-            let itemDescription = offers.descriptions.find(description => description.classid === item.classid && description.instanceid === item.instanceid);
-            itemsWithMoreInfo.push({...item, ...itemDescription}); // combines the properties of the two objects in a new object
-        });
-
-        let matchedItems = matchItemsWithDescriptions(itemsWithMoreInfo);
-
-        chrome.runtime.sendMessage({addPricesAndFloatsToInventory: matchedItems}, (response) => {
-            let itemsWithAllInfo = response.addPricesAndFloatsToInventory;
-            addItemInfo(itemsWithAllInfo);
-            addTotals(offers, itemsWithAllInfo);
-            document.getElementById('tradeoffers_summary').innerHTML = `<b>Trade offer summary:</b>`;
-            chrome.storage.local.get('tradeOffersSortingMode', (result) => {
-                document.querySelector(`#offerSortingMethod [value="${result.tradeOffersSortingMode}"]`).selected = true;
-                sortOffers(result.tradeOffersSortingMode);
-                document.getElementById('tradeOffersSortingMenu').classList.remove('hidden');
+            let itemsWithMoreInfo = [];
+            allItemsInOffer.forEach(item => {
+                let itemDescription = offers.descriptions.find(description => description.classid === item.classid && description.instanceid === item.instanceid);
+                itemsWithMoreInfo.push({...item, ...itemDescription}); // combines the properties of the two objects in a new object
             });
-        });
 
-    }, (error) => {
-        if (error === 'apiKeyInvalid') {
-            document.getElementById('tradeoffers_summary').innerHTML = `<b>CSGOTrader Extension:</b> You don't have your Steam API key set.<br> 
+            let matchedItems = matchItemsWithDescriptions(itemsWithMoreInfo);
+
+            chrome.runtime.sendMessage({addPricesAndFloatsToInventory: matchedItems}, (response) => {
+                let itemsWithAllInfo = response.addPricesAndFloatsToInventory;
+                addItemInfo(itemsWithAllInfo);
+                addTotals(offers, itemsWithAllInfo);
+                document.getElementById('tradeoffers_summary').innerHTML = `<b>Trade offer summary:</b>`;
+                chrome.storage.local.get('tradeOffersSortingMode', (result) => {
+                    document.querySelector(`#offerSortingMethod [value="${result.tradeOffersSortingMode}"]`).selected = true;
+                    sortOffers(result.tradeOffersSortingMode);
+                    document.getElementById('tradeOffersSortingMenu').classList.remove('hidden');
+                });
+            });
+
+        }, (error) => {
+            if (error === 'apiKeyInvalid') {
+                document.getElementById('tradeoffers_summary').innerHTML = `<b>CSGOTrader Extension:</b> You don't have your Steam API key set.<br> 
             For more functionality on this page open the options page and set your API key in the General category.
             Check what you are missing in the <a href="https://csgotrader.app/release-notes#1.20" target="_blank">Release Notes</a>`;
+            }
         }
-    }
-);
+    );
+}
+
+// reloads the page on extension update/reload/uninstall
+chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});
