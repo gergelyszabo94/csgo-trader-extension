@@ -1541,7 +1541,7 @@ function getOffersFromAPI(){
         chrome.runtime.sendMessage({getTradeOffers: 'getTradeOffers'}, (response) => {
             if (response.apiKeyValid === false) reject('apiKeyInvalid');
             else {
-                if (!(response === undefined || response.offers === undefined || response === 'error')) resolve(response.offers);
+                if (!(response.offers === undefined || response === 'error')) resolve(response.offers);
                 else reject('steamError');
             }
         });

@@ -113,7 +113,7 @@ function addTotals(offers, items){
         let activeOfferCount = 0;
         let numberOfProfitableOffers = 0;
 
-        offers.trade_offers_received.forEach(offer => {
+        offers.forEach(offer => {
             let yourItemsTotal = 0.0;
             let theirItemsTotal = 0.0;
             let yourIncludesItemWIthNoPrice = false;
@@ -226,7 +226,7 @@ function sortOffers(sortingMode){
 
 function isOfferActive(offerElement){
     let offerItemsElement = offerElement.querySelector('.tradeoffer_items_ctn');
-    if (offerItemsElement !== null) return offerItemsElement.classList.contains('active');
+    if (offerItemsElement !== null) return !offerItemsElement.classList.contains('inactive');
     else return false
 }
 
@@ -244,8 +244,6 @@ if (location.href.includes('/tradeoffers/?history=1')) activePage ='incoming_off
 else if (location.href.includes('/tradeoffers/sent/?history=1')) activePage ='sent_offers_history';
 else if (location.href.includes('/tradeoffers/sent/')) activePage ='sent_offers';
 
-console.log(activePage);
-
 // chrome background tab throttling causes steam's own js files to load later than the these injections, so it does not override the functions
 // this only happens when the tab is opened in the background, https://www.chromestatus.com/feature/5527160148197376
 // this is a dirty but working fix for that
@@ -260,7 +258,7 @@ let intervalID = setInterval(() =>{
 }, 1000);
 
 // makes our items the same size (larger) as their items
-if (activePage === 'incoming_offers') {
+if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
     chrome.storage.local.get('tradeOffersLargerItems', (result) => {
         if (result.tradeOffersLargerItems) {
             injectStyle(`.tradeoffer_items.secondary .trade_item{
@@ -341,7 +339,7 @@ let acceptTradeScriptString = `
 if (activePage === 'incoming_offers') injectToPage(acceptTradeScriptString, false, 'acceptTradeScript', false);
 
 // adds trade offer summary/help bar and sorting
-if (activePage === 'incoming_offers') { // || activePage === 'sent_offers' for later
+if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
     let tradeOffersList = document.querySelector('.profile_leftcol');
     if (tradeOffersList !== null) {
         tradeOffersList.insertAdjacentHTML('afterbegin', `
@@ -372,7 +370,6 @@ if (activePage === 'incoming_offers') { // || activePage === 'sent_offers' for l
 
     getOffersFromAPI().then(
         offers => {
-            console.log(offers);
             let allItemsInOffer = extractItemsFromOffers(offers.trade_offers_sent);
             allItemsInOffer = allItemsInOffer.concat(extractItemsFromOffers(offers.trade_offers_received));
 
@@ -387,7 +384,8 @@ if (activePage === 'incoming_offers') { // || activePage === 'sent_offers' for l
             chrome.runtime.sendMessage({addPricesAndFloatsToInventory: matchedItems}, (response) => {
                 let itemsWithAllInfo = response.addPricesAndFloatsToInventory;
                 addItemInfo(itemsWithAllInfo);
-                addTotals(offers, itemsWithAllInfo);
+                if (activePage === 'incoming_offers') addTotals(offers.trade_offers_received, itemsWithAllInfo);
+                else if (activePage === 'sent_offers') addTotals(offers.trade_offers_sent, itemsWithAllInfo);
                 document.getElementById('tradeoffers_summary').innerHTML = `<b>Trade offer summary:</b>`;
                 chrome.storage.local.get('tradeOffersSortingMode', (result) => {
                     document.querySelector(`#offerSortingMethod [value="${result.tradeOffersSortingMode}"]`).selected = true;
