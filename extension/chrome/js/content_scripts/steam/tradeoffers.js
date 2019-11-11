@@ -220,7 +220,9 @@ function sortOffers(sortingMode){
     // adds sorted offer elements to page
     let offerSection = document.querySelector('.profile_leftcol');
     sortedOffers.forEach(offer => {
-        offerSection.querySelector('.tradeoffer').insertAdjacentElement('beforebegin', offer);
+        let currentTopOffer = offerSection.querySelector('.tradeoffer');
+        if (currentTopOffer !== null) currentTopOffer.insertAdjacentElement('beforebegin', offer);
+        else offerSection.insertAdjacentElement('beforeend', offer);
     });
 }
 
