@@ -376,10 +376,12 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
             allItemsInOffer = allItemsInOffer.concat(extractItemsFromOffers(offers.trade_offers_received));
 
             let itemsWithMoreInfo = [];
-            allItemsInOffer.forEach(item => {
-                let itemDescription = offers.descriptions.find(description => description.classid === item.classid && description.instanceid === item.instanceid);
-                itemsWithMoreInfo.push({...item, ...itemDescription}); // combines the properties of the two objects in a new object
-            });
+            if (allItemsInOffer) {
+                allItemsInOffer.forEach(item => {
+                    let itemDescription = offers.descriptions.find(description => description.classid === item.classid && description.instanceid === item.instanceid);
+                    itemsWithMoreInfo.push({...item, ...itemDescription}); // combines the properties of the two objects in a new object
+                });
+            }
 
             let matchedItems = matchItemsWithDescriptions(itemsWithMoreInfo);
 

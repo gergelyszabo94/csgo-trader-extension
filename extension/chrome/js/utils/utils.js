@@ -1550,11 +1550,16 @@ function getOffersFromAPI(){
 
 function extractItemsFromOffers(offers){
     let itemsToReturn = [];
-
-    offers.forEach(offer => {
-        if (offer.items_to_give !== undefined) offer.items_to_give.forEach(item => {itemsToReturn.push(item)});
-        if (offer.items_to_receive !== undefined) offer.items_to_receive.forEach(item => {itemsToReturn.push(item)});
-    });
+    if (offers !== undefined || null) {
+        offers.forEach(offer => {
+            if (offer.items_to_give !== undefined) offer.items_to_give.forEach(item => {
+                itemsToReturn.push(item)
+            });
+            if (offer.items_to_receive !== undefined) offer.items_to_receive.forEach(item => {
+                itemsToReturn.push(item)
+            });
+        });
+    }
 
     return itemsToReturn;
 }
