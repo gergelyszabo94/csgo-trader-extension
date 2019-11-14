@@ -143,13 +143,15 @@ function getListings() {
 function setStickerInfo(listingID, stickers){
     if (stickers !== null) {
         let listingElement = getElementByListingID(listingID);
-        stickers.forEach((stickerInfo, index) =>{
-            let wear = stickerInfo.wear !== undefined ? Math.trunc(Math.abs( 1 - stickerInfo.wear) * 100) : 100 ;
+        if (listingElement !== null) {
+            stickers.forEach((stickerInfo, index) => {
+                let wear = stickerInfo.wear !== undefined ? Math.trunc(Math.abs(1 - stickerInfo.wear) * 100) : 100;
 
-            let currentSticker = listingElement.querySelectorAll('.stickerSlotMarket')[index];
-            currentSticker.setAttribute('data-tooltip-market', `${stickerInfo.name} - Condition: ${wear}%`);
-            currentSticker.querySelector('img').setAttribute('style', `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`);
-        });
+                let currentSticker = listingElement.querySelectorAll('.stickerSlotMarket')[index];
+                currentSticker.setAttribute('data-tooltip-market', `${stickerInfo.name} - Condition: ${wear}%`);
+                currentSticker.querySelector('img').setAttribute('style', `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`);
+            });
+        }
     }
 }
 
