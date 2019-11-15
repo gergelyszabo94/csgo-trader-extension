@@ -26,14 +26,16 @@ function addStickers() {
     if (listingsSection !== null) { // so it does not throw any errors when it can't find it on commodity items
         listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listing_row => {
             if (listing_row.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listing_row.parentNode.parentNode.id !== 'tabContentsMyListings'){
-                let listingID = listing_row.id.split('listing_')[1];
-                listing_row.querySelectorAll('.market_listing_item_name_block').forEach(name_block =>{name_block.insertAdjacentHTML('beforeend', `<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`)});
+                let listingID = getListingIDFromElement(listing_row);
+                if (listing_row.querySelector('.stickerHolderMarket') === null) { // if stickers elements not added already
+                    listing_row.querySelector('.market_listing_item_name_block').insertAdjacentHTML('beforeend', `<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`);
 
-                let stickers = listings[listingID].asset.stickers;
+                    let stickers = listings[listingID].asset.stickers;
 
-                stickers.forEach(stickerInfo =>{
-                    document.getElementById(`stickerHolder_${listingID}`).insertAdjacentHTML('beforeend', `<span class="stickerSlotMarket" data-tooltip-market="${stickerInfo.name}"><a href="${stickerInfo.marketURL}" target="_blank"><img src="${stickerInfo.iconURL}" class="stickerIcon"></a></span>`)
-                });
+                    stickers.forEach(stickerInfo =>{
+                        listing_row.querySelector('.stickerHolderMarket').insertAdjacentHTML('beforeend', `<span class="stickerSlotMarket" data-tooltip-market="${stickerInfo.name}"><a href="${stickerInfo.marketURL}" target="_blank"><img src="${stickerInfo.iconURL}" class="stickerIcon"></a></span>`)
+                    });
+                }
             }
         });
     }
