@@ -216,8 +216,8 @@ numberoflistings = document.getElementById('numberOfListings');
 
 chrome.storage.local.get('numberOfListings', (result) => {numberoflistings.value = result.numberOfListings});
 
-numberoflistings.addEventListener('input', () => {
-    let number = parseInt(this.value);
+numberoflistings.addEventListener('input', (event) => {
+    let number = parseInt(event.target.value);
     if (number < 10) number = 10;
     else if (number > 100) number = 100;
     chrome.storage.local.set({numberOfListings: number}, () => {});
