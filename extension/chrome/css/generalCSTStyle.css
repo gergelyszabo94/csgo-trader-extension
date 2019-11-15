@@ -374,6 +374,10 @@ progress {
     -webkit-text-fill-color: transparent;
 }
 
+.market_sorting{
+    margin-top: 5px;
+}
+
 /**
  * Tooltip Styles
  */

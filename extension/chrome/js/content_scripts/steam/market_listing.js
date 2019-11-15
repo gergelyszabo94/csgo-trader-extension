@@ -112,6 +112,9 @@ function hideFloatBar(listingID) {
 
 function getElementByListingID(listingID){return document.getElementById(`listing_${listingID}`)}
 
+function getListingIDFromElement(listingElement) {return listingElement.id.split('listing_')[1]}
+
+
 function getListings() {
     let getListingsScript = `
     document.querySelector('body').setAttribute('listingsInfo', JSON.stringify({
@@ -153,6 +156,49 @@ function setStickerInfo(listingID, stickers){
             });
         }
     }
+}
+
+function sortListings(sortingMode) {
+    let listingElements = [...document.getElementById('searchResultsTable').querySelectorAll('.market_listing_row.market_recent_listing_row')];
+    let listingsData = getListings();
+    let sortedElements = [];
+
+    if (sortingMode === 'price_asc') {
+        sortedElements = listingElements.sort((a, b) => {
+            let priceOfA = parseInt(listingsData[getListingIDFromElement(a)].converted_price);
+            let priceOfB = parseInt(listingsData[getListingIDFromElement(b)].converted_price);
+            return priceOfA - priceOfB;
+        });
+    }
+    else if (sortingMode === 'price_desc') {
+        sortedElements = listingElements.sort((a, b) => {
+            let priceOfA = parseInt(listingsData[getListingIDFromElement(a)].converted_price);
+            let priceOfB = parseInt(listingsData[getListingIDFromElement(b)].converted_price);
+            return priceOfB - priceOfA;
+        });
+    }
+    else if (sortingMode === 'float_asc') {
+        sortedElements = listingElements.sort((a, b) => {
+            let floatOfA = parseFloat(a.querySelector('.floatDropTarget').innerText);
+            let floatOfB = parseFloat(b.querySelector('.floatDropTarget').innerText);
+            return floatOfA - floatOfB;
+        });
+    }
+    else if (sortingMode === 'float_desc') {
+        sortedElements = listingElements.sort((a, b) => {
+            let floatOfA = parseFloat(a.querySelector('.floatDropTarget').innerText);
+            let floatOfB = parseFloat(b.querySelector('.floatDropTarget').innerText);
+            return floatOfB - floatOfA;
+        });
+    }
+
+    // remove all listings from page
+    listingElements.forEach(listingElement => {listingElement.parentNode.removeChild(listingElement)});
+
+    let listingsContainer = document.getElementById('searchResultsRows');
+    sortedElements.forEach(listingElement => {
+        listingsContainer.insertAdjacentElement('beforeend', listingElement);
+    });
 }
 
 logExtensionPresence();
@@ -247,6 +293,25 @@ document.getElementById('inbrowser_inspect').addEventListener('click', () => {
         action: 'MarketInspection'
     });
 });
+
+// adds sorting menu to market pages with individual listings
+let searchBar = document.querySelector('.market_listing_filter_contents');
+if (searchBar !== null) {
+    searchBar.insertAdjacentHTML('beforeend', `
+                                                            <div class="market_sorting">
+                                                                <span class="market_listing_filter_searchhint">Sort on page by:</span>
+                                                                <select id="sortSelect">
+                                                                    <option value="price_asc">Cheapest to most expensive</option>
+                                                                    <option value="price_desc">Most expensive to cheapest</option>
+                                                                    <option value="float_asc">Float lowest to highest</option>
+                                                                    <option value="float_desc">Float highest to lowest</option>
+                                                                </select>
+                                                            </div>`);
+
+    document.getElementById('sortSelect').addEventListener('change', (event) =>{
+        sortListings(event.target.options[event.target.selectedIndex].value);
+    });
+}
 
 addFloatBarSkeletons();
 addPhasesIndicator();
