@@ -1134,7 +1134,7 @@ function injectToPage(scriptString, toRemove, id, executeAndReturn){
     toInject.innerHTML = scriptString;
     (document.head || document.documentElement).appendChild(toInject);
 
-    let simpleAttributeParsing = ['steamidOfLoggedinUser', 'steamidOfProfileOwner', 'tradePartnerSteamID', 'inventoryOwnerID', 'listingsInfo', 'inventoryInfo', 'allItemsLoaded', 'offerInventoryInfo'];
+    let simpleAttributeParsing = ['steamidOfLoggedinUser', 'steamidOfProfileOwner', 'tradePartnerSteamID', 'inventoryOwnerID', 'listingsInfo', 'inventoryInfo', 'allItemsLoaded', 'offerInventoryInfo', 'steamWalletCurrency'];
     let result = simpleAttributeParsing.includes(executeAndReturn) ? document.querySelector('body').getAttribute(executeAndReturn) : null;
     document.querySelector('body').setAttribute(executeAndReturn, '');
 
@@ -1568,4 +1568,10 @@ function logExtensionPresence() {
     let version = chrome.runtime.getManifest().version;
     console.log(`CSGO Trader - Steam Trading Enhancer ${version} is running on this page. Changelog at: https://csgotrader.app/changelog/`);
     console.log('If you see any errors that seem related to the extension please email support@csgotrader.app')
+}
+
+// tested and works in inventories, offers and market pages, does not work on profiles and incoming offers page
+function getSteamWalletCurrency() {
+    let getCurrencyScript = `document.querySelector('body').setAttribute('steamWalletCurrency', GetCurrencyCode(g_rgWalletInfo.wallet_currency));`;
+    return injectToPage(getCurrencyScript, true, 'steamWalletCurrencyScript', 'steamWalletCurrency');
 }
