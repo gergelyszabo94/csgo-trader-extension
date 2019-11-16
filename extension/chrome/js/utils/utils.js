@@ -942,7 +942,10 @@ function prettyPrintPrice(currency, price){
     else return `-${currencies[currency].sign}${nf.format(Math.abs(price))}`
 }
 
-function getAssetIDOfElement(element){return element.id.split('730_2_')[1];}
+function getAssetIDOfElement(element){
+    let assetID = element.id.split('730_2_')[1];
+    return assetID === undefined ? null : assetID;
+}
 
 function doTheSorting(items, itemElements, method, pages, type){
     if(method === "price_asc"){
@@ -1134,7 +1137,8 @@ function injectToPage(scriptString, toRemove, id, executeAndReturn){
     toInject.innerHTML = scriptString;
     (document.head || document.documentElement).appendChild(toInject);
 
-    let simpleAttributeParsing = ['steamidOfLoggedinUser', 'steamidOfProfileOwner', 'tradePartnerSteamID', 'inventoryOwnerID', 'listingsInfo', 'inventoryInfo', 'allItemsLoaded', 'offerInventoryInfo', 'steamWalletCurrency'];
+    let simpleAttributeParsing = ['steamidOfLoggedinUser', 'steamidOfProfileOwner', 'tradePartnerSteamID', 'inventoryOwnerID', 'listingsInfo',
+        'inventoryInfo', 'allItemsLoaded', 'offerInventoryInfo', 'steamWalletCurrency', 'steamWallet'];
     let result = simpleAttributeParsing.includes(executeAndReturn) ? document.querySelector('body').getAttribute(executeAndReturn) : null;
     document.querySelector('body').setAttribute(executeAndReturn, '');
 
@@ -1571,7 +1575,33 @@ function logExtensionPresence() {
 }
 
 // tested and works in inventories, offers and market pages, does not work on profiles and incoming offers page
+function getSteamWalletInfo() {
+    let getWalletInfoScript = `document.querySelector('body').setAttribute('steamWallet', JSON.stringify(g_rgWalletInfo));`;
+   return JSON.parse(injectToPage(getWalletInfoScript, true, 'steamWalletScript', 'steamWallet'));
+}
+
 function getSteamWalletCurrency() {
-    let getCurrencyScript = `document.querySelector('body').setAttribute('steamWalletCurrency', GetCurrencyCode(g_rgWalletInfo.wallet_currency));`;
+    let getCurrencyScript = `document.querySelector('body').setAttribute('steamWalletCurrency', GetCurrencyCode(${getSteamWalletInfo().wallet_currency}));`;
     return injectToPage(getCurrencyScript, true, 'steamWalletCurrencyScript', 'steamWalletCurrency');
+}
+
+function getPriceOverview(market_hash_name) {
+    return new Promise((resolve, reject) => {
+        let currencyID = getSteamWalletInfo().wallet_currency;
+        let request = new Request(`https://steamcommunity.com/market/priceoverview/?appid=730&country=US&currency=${currencyID}&market_hash_name=${market_hash_name}`);
+
+        fetch(request).then((response) => {
+            if (!response.ok) {
+                console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+                reject({status:response.status, statusText: response.statusText});
+            }
+            return response.json();
+        }).then((priceOverviewJSON) => {
+            if (priceOverviewJSON.success === true) resolve(priceOverviewJSON);
+            else reject ('success:false');
+        }).catch((err) => {
+            console.log(err);
+            reject(err);
+        });
+    });
 }

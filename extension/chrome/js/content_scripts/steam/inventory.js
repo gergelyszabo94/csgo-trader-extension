@@ -76,182 +76,184 @@ function updateTradabilityIndicators() {
 
 function addElements(){
     // only add elements if the CS:GO inventory is the active one
-    if(isCSGOInventoryActive('inventory')){
-        let activeID = undefined;
-        try {activeID = getAssetIDofActive()}
-        catch (e) { console.log("Could not get assetID of active item"); return false}
-        let item = getItemByAssetID(items, activeID);
+    if (isCSGOInventoryActive('inventory')) {
+        let activeID = getAssetIDofActive();
+        if (activeID !== null) {
+            let item = getItemByAssetID(items, activeID);
 
-        // removes "tags" and "tradable after" in one's own inventory
-        document.querySelectorAll("#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors").forEach((tagsElement) => tagsElement.parentNode.removeChild(tagsElement));
+            // removes "tags" and "tradable after" in one's own inventory
+            document.querySelectorAll("#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors").forEach((tagsElement) => tagsElement.parentNode.removeChild(tagsElement));
 
-        // cleans up previously added elements
-        cleanUpElements(false);
+            // cleans up previously added elements
+            cleanUpElements(false);
 
-        // removes previously added listeners
-        document.querySelectorAll(".showTechnical, .lowerModule").forEach(element => element.removeEventListener('click'));
+            // removes previously added listeners
+            document.querySelectorAll(".showTechnical, .lowerModule").forEach(element => element.removeEventListener('click'));
 
-        // adds float bar, sticker info, nametag
-        document.querySelectorAll(".item_desc_icon").forEach((icon) =>{icon.insertAdjacentHTML("afterend", upperModule)});
+            // adds float bar, sticker info, nametag
+            document.querySelectorAll(".item_desc_icon").forEach((icon) => icon.insertAdjacentHTML("afterend", upperModule));
 
-        // listens to click on "show technical"
-        document.querySelectorAll(".showTechnical").forEach(showTechnical => {
-            showTechnical.addEventListener("click", () =>{
-                document.querySelectorAll(".floatTechnical").forEach(floatTechnical => floatTechnical.classList.toggle("hidden"));
-            })
-        });
-
-        // allows the float pointer's text to go outside the boundaries of the item - they would not be visible otherwise on high-float items
-        // also removes background from the right side of the page
-        document.querySelectorAll(".item_desc_content").forEach((item_desc_content) => item_desc_content.setAttribute("style", "overflow: visible; background-image: url()"));
-
-        // adds the lower module that includes tradability, countdown  and bookmarking
-        document.querySelectorAll("#iteminfo1_item_actions, #iteminfo0_item_actions").forEach((action) => action.insertAdjacentHTML("afterend", lowerModule));
-
-        document.querySelectorAll('.lowerModule').forEach(module => {
-            module.addEventListener('click', event => {addBookmark(event.target)})
-        });
-
-        if(item){
-            // adds the nametag text to nametags
-            document.querySelectorAll(".nametag").forEach((nametag) =>{
-                if(item.nametag !== undefined){
-                    nametag.innerText = item.nametag;
-                    document.querySelectorAll(".fraud_warning").forEach((fraud_warning) => fraud_warning.outerHTML = "");
-                }
-                else{
-                    nametag.style.display = "none";
-                }
-            });
-
-            // repositions stickers
-            if(item.stickers.length !== 0){
-                // removes the original stickers elements
-                let originalStickers = document.getElementById("sticker_info");
-                if(originalStickers !== null) originalStickers.outerHTML = "";
-
-                // sometimes it is added slowly so it does not get removed the first time..
-                setTimeout(() =>{if(originalStickers !== null && originalStickers.parentNode !== null) originalStickers.outerHTML = ""}, 1000);
-
-                // adds own sticker elements
-                item.stickers.forEach((stickerInfo) =>{
-                    document.querySelectorAll(".customStickers").forEach((customStickers) =>{
-                        customStickers.innerHTML = customStickers.innerHTML + `
-                        <div class="stickerSlot" data-tooltip="${stickerInfo.name}">
-                            <a href="${stickerInfo.marketURL}" target="_blank">
-                                <img src="${stickerInfo.iconURL}" class="stickerIcon">
-                            </a>
-                        </div>
-                        `
-                    });
+            // listens to click on "show technical"
+            document.querySelectorAll(".showTechnical").forEach(showTechnical => {
+                showTechnical.addEventListener("click", () => {
+                    document.querySelectorAll(".floatTechnical").forEach(floatTechnical => floatTechnical.classList.toggle("hidden"));
                 })
-            }
-
-            // adds duplicates counts
-            document.querySelectorAll(".duplicate").forEach (duplicate => {
-                duplicate.style.display = "block";
-                duplicate.innerText = "x" + item.duplicates.num;
             });
 
-            // sets the tradability info
-            document.querySelectorAll(".tradabilityDiv").forEach (tradabilityDiv => {
-                if(item.tradability === "Tradable"){
-                    tradabilityDiv.innerHTML = tradable;
-                    document.querySelectorAll(".countdown").forEach((countdown) => countdown.style.display = "none");
+            // allows the float pointer's text to go outside the boundaries of the item - they would not be visible otherwise on high-float items
+            // also removes background from the right side of the page
+            document.querySelectorAll(".item_desc_content").forEach((item_desc_content) => item_desc_content.setAttribute("style", "overflow: visible; background-image: url()"));
+
+            // adds the lower module that includes tradability, countdown  and bookmarking
+            document.querySelectorAll("#iteminfo1_item_actions, #iteminfo0_item_actions").forEach((action) => action.insertAdjacentHTML("afterend", lowerModule));
+
+            document.querySelectorAll('.lowerModule').forEach(module => {
+                module.addEventListener('click', event => addBookmark(event.target))
+            });
+
+            if (item) {
+                // adds the nametag text to nametags
+                document.querySelectorAll(".nametag").forEach((nametag) => {
+                    if (item.nametag !== undefined) {
+                        nametag.innerText = item.nametag;
+                        document.querySelectorAll(".fraud_warning").forEach((fraud_warning) => fraud_warning.outerHTML = '');
+                    }
+                    else nametag.style.display = 'none';
+                });
+
+                // repositions stickers
+                if (item.stickers.length !== 0) {
+                    // removes the original stickers elements
+                    let originalStickers = document.getElementById('sticker_info');
+                    if (originalStickers !== null) originalStickers.outerHTML = '';
+
+                    // sometimes it is added slowly so it does not get removed the first time..
+                    setTimeout(() => {if(originalStickers !== null && originalStickers.parentNode !== null) originalStickers.outerHTML = ''}, 1000);
+
+                    // adds own sticker elements
+                    item.stickers.forEach((stickerInfo) => {
+                        document.querySelectorAll('.customStickers').forEach((customStickers) => {
+                                customStickers.innerHTML = customStickers.innerHTML + `
+                                    <div class="stickerSlot" data-tooltip="${stickerInfo.name}">
+                                        <a href="${stickerInfo.marketURL}" target="_blank">
+                                            <img src="${stickerInfo.iconURL}" class="stickerIcon">
+                                        </a>
+                                    </div>
+                                    `
+                                });
+                    })
                 }
-                else if(item.tradability === "Not Tradable"){
-                    tradabilityDiv.innerHTML = notTradable;
-                    document.querySelectorAll(".countdown").forEach((countdown) => countdown.style.display = "none");
+
+                // adds duplicates counts
+                document.querySelectorAll('.duplicate').forEach (duplicate => {
+                    duplicate.style.display = 'block';
+                    duplicate.innerText = `x${item.duplicates.num}`;
+                });
+
+                // sets the tradability info
+                document.querySelectorAll(".tradabilityDiv").forEach (tradabilityDiv => {
+                    if (item.tradability === 'Tradable') {
+                        tradabilityDiv.innerHTML = tradable;
+                        document.querySelectorAll(".countdown").forEach((countdown) => countdown.style.display = 'none');
+                    }
+                    else if (item.tradability === 'Not Tradable'){
+                        tradabilityDiv.innerHTML = notTradable;
+                        document.querySelectorAll('.countdown').forEach((countdown) => countdown.style.display = 'none');
+                    }
+                    else {
+                        let tradableAt = new Date(item.tradability).toString().split('GMT')[0];
+                        tradabilityDiv.innerHTML = `<span class='not_tradable'>Tradable After ${tradableAt}</span>`;
+                        countDown(tradableAt);
+                        document.querySelectorAll('.countdown').forEach((countdown) => countdown.style.display = 'block');
+                    }
+                });
+
+
+                // adds doppler phase  to the name and makes it a link to the market listings page
+                let name = getItemByAssetID(getItemInfoFromPage(), activeID).description.name;
+                changeName(name, item.name_color, item.marketlink, item.dopplerInfo);
+
+                // removes sih "Get Float" button - does not really work since it's loaded after this script..
+                if(isSIHActive()){
+                    document.querySelectorAll(".float_block").forEach(e => e.parentNode.removeChild(e));
+                    setTimeout(() =>{document.querySelectorAll(".float_block").forEach(e => e.parentNode.removeChild(e));}, 1000);
                 }
+                if (item.floatInfo === null){
+                    if (item.inspectLink !== null && itemTypes[item.type.key].float) {
+                        floatQueue.jobs.push({
+                            type: 'inventory_floatbar',
+                            assetID: item.assetid,
+                            inspectLink: item.inspectLink
+                        });
+                        if (!floatQueue.active) workOnFloatQueue();
+                    }
+                    else hideFloatBars();
+                }
+                else {
+                    updateFloatAndPatternElements(item);
+                    addFloatIndicator(findElementByAssetID(item.assetid), item.floatInfo);
+                }
+
+                // it takes the visible descriptors and checks if the collection includes souvenirs
+                let textOfDescriptors = '';
+                document.querySelectorAll('.descriptor').forEach(descriptor => {
+                    if(descriptor.parentNode.classList.contains('item_desc_descriptors') && descriptor.parentNode.parentNode.parentNode.parentNode.style.display !== 'none'){
+                        textOfDescriptors += descriptor.innerText;
+                    }
+
+                });
+                let thereSouvenirForThisItem =  souvenirExists(textOfDescriptors);
+
+                let genericMarketLink = 'https://steamcommunity.com/market/listings/730/';
+                let weaponName = '';
+                let stattrak = 'StatTrak%E2%84%A2%20';
+                let stattrakPretty = 'StatTrak™';
+                let souvenir = 'Souvenir ';
+                let star = item.starInName ? '%E2%98%85%20' : '';
+
+                if (item.isStatrack) weaponName = item.market_hash_name.split('StatTrak™ ')[1].split('(')[0];
+                else if (item.isSouvenir) weaponName = item.market_hash_name.split('Souvenir ')[1].split('(')[0];
                 else{
-                    let tradableAt = new Date(item.tradability).toString().split("GMT")[0];
-                    tradabilityDiv.innerHTML = `<span class='not_tradable'>Tradable After ${tradableAt}</span>`;
-                    countDown(tradableAt);
-                    document.querySelectorAll(".countdown").forEach((countdown) => countdown.style.display = "block");
-                }
-            });
-
-
-            // adds doppler phase  to the name and makes it a link to the market listings page
-            let name = getItemByAssetID(getItemInfoFromPage(), activeID).description.name;
-            changeName(name, item.name_color, item.marketlink, item.dopplerInfo);
-
-            // removes sih "Get Float" button - does not really work since it's loaded after this script..
-            if(isSIHActive()){
-                document.querySelectorAll(".float_block").forEach(e => e.parentNode.removeChild(e));
-                setTimeout(() =>{document.querySelectorAll(".float_block").forEach(e => e.parentNode.removeChild(e));}, 1000);
-            }
-            if (item.floatInfo === null){
-                if (item.inspectLink !== null && itemTypes[item.type.key].float) {
-                    floatQueue.jobs.push({
-                        type: 'inventory_floatbar',
-                        assetID: item.assetid,
-                        inspectLink: item.inspectLink
-                    });
-                    if (!floatQueue.active) workOnFloatQueue();
-                }
-                else hideFloatBars();
-            }
-            else {
-                updateFloatAndPatternElements(item);
-                addFloatIndicator(findElementByAssetID(item.assetid), item.floatInfo);
-            }
-
-            // it takes the visible descriptors and checks if the collection includes souvenirs
-            let textOfDescriptors = '';
-            document.querySelectorAll('.descriptor').forEach(descriptor => {
-                if(descriptor.parentNode.classList.contains('item_desc_descriptors') && descriptor.parentNode.parentNode.parentNode.parentNode.style.display !== 'none'){
-                    textOfDescriptors += descriptor.innerText;
+                    weaponName = item.market_hash_name.split('(')[0].split('★ ')[1];
+                    if (weaponName === undefined) weaponName = item.market_hash_name.split('(')[0];
                 }
 
-            });
-            let thereSouvenirForThisItem =  souvenirExists(textOfDescriptors);
+                let stOrSv = stattrakPretty;
+                let stOrSvClass = 'stattrakOrange';
+                let linkMidPart = star + stattrak;
+                if (item.isSouvenir || thereSouvenirForThisItem){
+                    stOrSvClass = 'souvenirYellow';
+                    stOrSv = souvenir;
+                    linkMidPart = souvenir;
+                }
 
-            let genericMarketLink = 'https://steamcommunity.com/market/listings/730/';
-            let weaponName = '';
-            let stattrak = 'StatTrak%E2%84%A2%20';
-            let stattrakPretty = 'StatTrak™';
-            let souvenir = 'Souvenir ';
-            let star = item.starInName ? '%E2%98%85%20' : '';
+                let otherExteriors = `
+                    <div class="descriptor otherExteriors">
+                        <span>${chrome.i18n.getMessage("links_to_other_exteriors")}:</span>
+                        <ul>
+                            <li><a href="${genericMarketLink + star + weaponName + "%28Factory%20New%29"}" target="_blank">${exteriors.factory_new.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Factory%20New%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.factory_new.localized_name}</span></a></li>
+                            <li><a href="${genericMarketLink + star + weaponName + "%28Minimal%20Wear%29"}"" target="_blank">${exteriors.minimal_wear.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Minimal%20Wear%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.minimal_wear.localized_name}</span></a></li>
+                            <li><a href="${genericMarketLink + star + weaponName + "%28Field-Tested%29"}"" target="_blank">${exteriors.field_tested.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Field-Tested%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.field_tested.localized_name}</span></a></li>
+                            <li><a href="${genericMarketLink + star + weaponName + "%28Well-Worn%29"}"" target="_blank">${exteriors.well_worn.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Well-Worn%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.well_worn.localized_name}</span></a></li>
+                            <li><a href="${genericMarketLink + star + weaponName + "%28Battle-Scarred%29"}"" target="_blank">${exteriors.battle_scarred.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Battle-Scarred%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.battle_scarred.localized_name}</span></a></li>
+                        </ul>
+                        <span>${chrome.i18n.getMessage("not_every_available")}</span>
+                    </div>
+                    `;
 
-            if (item.isStatrack) weaponName = item.market_hash_name.split('StatTrak™ ')[1].split('(')[0];
-            else if (item.isSouvenir) weaponName = item.market_hash_name.split('Souvenir ')[1].split('(')[0];
-            else{
-                weaponName = item.market_hash_name.split('(')[0].split('★ ')[1];
-                if (weaponName === undefined) weaponName = item.market_hash_name.split('(')[0];
+                if (item.exterior !== undefined) document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors').forEach((descriptor) => descriptor.insertAdjacentHTML('afterend', otherExteriors));
+
+                // adds "starting at" and sales volume to everyone's inventory
+                if (!isOwnInventory()) addStartingAtPrice(item.market_hash_name);
             }
-
-            let stOrSv = stattrakPretty;
-            let stOrSvClass = 'stattrakOrange';
-            let linkMidPart = star + stattrak;
-            if (item.isSouvenir || thereSouvenirForThisItem){
-                stOrSvClass = 'souvenirYellow';
-                stOrSv = souvenir;
-                linkMidPart = souvenir;
-            }
-
-            let otherExteriors = `
-            <div class="descriptor otherExteriors">
-                <span>${chrome.i18n.getMessage("links_to_other_exteriors")}:</span>
-                <ul>
-                    <li><a href="${genericMarketLink + star + weaponName + "%28Factory%20New%29"}" target="_blank">${exteriors.factory_new.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Factory%20New%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.factory_new.localized_name}</span></a></li>
-                    <li><a href="${genericMarketLink + star + weaponName + "%28Minimal%20Wear%29"}"" target="_blank">${exteriors.minimal_wear.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Minimal%20Wear%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.minimal_wear.localized_name}</span></a></li>
-                    <li><a href="${genericMarketLink + star + weaponName + "%28Field-Tested%29"}"" target="_blank">${exteriors.field_tested.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Field-Tested%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.field_tested.localized_name}</span></a></li>
-                    <li><a href="${genericMarketLink + star + weaponName + "%28Well-Worn%29"}"" target="_blank">${exteriors.well_worn.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Well-Worn%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.well_worn.localized_name}</span></a></li>
-                    <li><a href="${genericMarketLink + star + weaponName + "%28Battle-Scarred%29"}"" target="_blank">${exteriors.battle_scarred.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Battle-Scarred%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.battle_scarred.localized_name}</span></a></li>
-                </ul>
-                <span>${chrome.i18n.getMessage("not_every_available")}</span>
-            </div>
-            `;
-
-            if(item.exterior !== undefined) document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors').forEach((descriptor) => descriptor.insertAdjacentHTML('afterend', otherExteriors));
         }
+        else console.log("Could not get assetID of active item");
     }
     else document.querySelectorAll('.countdown').forEach((countdown) => countdown.style.display = 'none');
 }
 
 function cleanUpElements(nonCSGOInventory) {
-    document.querySelectorAll('.upperModule, .lowerModule, .otherExteriors, .custom_name').forEach((element) => element.parentNode.removeChild(element));
+    document.querySelectorAll('.upperModule, .lowerModule, .otherExteriors, .custom_name, .startingAtVolume').forEach((element) => element.parentNode.removeChild(element));
     if (nonCSGOInventory) document.querySelectorAll('.hover_item_name').forEach((name) => name.classList.remove('hidden'));
 }
 
@@ -295,11 +297,11 @@ function countDown(dateToCountDownTo){
 function changeName(name, color, link, dopplerInfo){
     let newNameElement = `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name}</a>`;
 
-    if(dopplerInfo !== undefined) newNameElement = `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name} (${dopplerInfo.name})</a>`;
+    if (dopplerInfo !== undefined) newNameElement = `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name} (${dopplerInfo.name})</a>`;
 
-    document.querySelectorAll(".hover_item_name").forEach((name) => {
-        name.insertAdjacentHTML("afterend", newNameElement);
-        name.classList.add("hidden");
+    document.querySelectorAll('.hover_item_name').forEach((name) => {
+        name.insertAdjacentHTML('afterend', newNameElement);
+        name.classList.add('hidden');
     });
 }
 
@@ -700,6 +702,32 @@ function getItemInfoFromPage() {
         document.querySelector('body').setAttribute('inventoryInfo', JSON.stringify(trimmedAssets));`;
     return JSON.parse(injectToPage(getItemsSccript, true, 'getInventory', 'inventoryInfo'));
 }
+
+function addStartingAtPrice(market_hash_name) {
+    getPriceOverview(market_hash_name).then(
+        priceOverview => {
+            // removes previous leftover elements
+            document.querySelectorAll('.startingAtVolume').forEach(previousElement => previousElement.parentNode.removeChild(previousElement));
+
+            // adds new elemenets
+            document.querySelectorAll('.item_owner_actions').forEach(marketActions => {
+                marketActions.style.display = 'block';
+                let startingAt = priceOverview.lowest_price === undefined ? 'Unknown' : priceOverview.lowest_price;
+                let volume = priceOverview.volume === undefined ? 'Unknown amount' : priceOverview.volume;
+
+                marketActions.insertAdjacentHTML('afterbegin', `
+                    <div class="startingAtVolume">
+                        <div style="height: 24px;"><a href="https://steamcommunity.com/market/listings/730/${market_hash_name}">View in Community Market</a></div>
+                        <div style="min-height: 3em; margin-left: 1em;">Starting at: ${startingAt}<br>Volume: ${volume} sold in the last 24 hours<br></div>
+                    </div>
+                `);
+            });
+        }, (error) => {console.log(error)}
+    );
+}
+
+// works in inventory and profile pages
+function isOwnInventory() {return getUserSteamID() === getInventoryOwnerID()}
 
 const floatBar = getFloatBarSkeleton('inventory');
 const upperModule = `
