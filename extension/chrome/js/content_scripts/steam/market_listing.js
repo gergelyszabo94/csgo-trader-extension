@@ -218,8 +218,8 @@ function addPricesInOtherCurrencies() {
                     let currencyID = parseInt(listings[listingID].currencyid) - 2000;
                     listing_row.querySelector('.market_table_value').insertAdjacentHTML('beforeend',
                         `<div class="originalPrice" data-currency-id="${currencyID}">
-                                    <div class="market_listing_price market_listing_price_original_before_fees">${price}</div>
-                                    <div class="market_listing_price market_listing_price_original_after_fees">${priceWithFees}</div>
+                                    <div class="market_listing_price_original_after_fees">${priceWithFees}</div>
+                                    <div class="market_listing_price_original_before_fees">${price}</div>
                                 </div>`);
                 }
             }

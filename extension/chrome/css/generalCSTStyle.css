@@ -378,6 +378,10 @@ progress {
     margin-top: 5px;
 }
 
+.originalPrice{
+    font-size: 0.7rem;
+}
+
 /**
  * Tooltip Styles
  */
