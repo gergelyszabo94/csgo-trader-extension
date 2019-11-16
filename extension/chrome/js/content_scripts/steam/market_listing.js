@@ -214,15 +214,29 @@ function addPricesInOtherCurrencies() {
                 let listingID = getListingIDFromElement(listing_row);
                 if (listing_row.querySelector('.originalPrice') === null) { // if stickers elements not added already
                     let price = parseInt(listings[listingID].price);
-                    let priceWithFees = price + parseInt(listings[listingID].publisher_fee) + parseInt(listings[listingID].publisher_fee_app)
+                    let priceWithFees = price + parseInt(listings[listingID].fee);
+                    let currencyID = parseInt(listings[listingID].currencyid) - 2000;
                     listing_row.querySelector('.market_table_value').insertAdjacentHTML('beforeend',
-                        `<div class="originalPrice">
-                                    <div class="market_listing_price">${price}</div>
-                                    <div class="market_listing_price">${priceWithFees}</div>
+                        `<div class="originalPrice" data-currency-id="${currencyID}">
+                                    <div class="market_listing_price market_listing_price_original_before_fees">${price}</div>
+                                    <div class="market_listing_price market_listing_price_original_after_fees">${priceWithFees}</div>
                                 </div>`);
                 }
             }
         });
+
+        let currencyConverterScript = `
+            document.getElementById('searchResultsRows').querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listing_row => {
+                let currencyCode = GetCurrencyCode(parseInt(listing_row.querySelector('.originalPrice').getAttribute('data-currency-id')));
+                let priceWithoutFeesElement = listing_row.querySelector('.market_listing_price_original_before_fees');
+                let priceWithoutFees = parseInt(priceWithoutFeesElement.innerText);
+                priceWithoutFeesElement.innerText = v_currencyformat(priceWithoutFees, currencyCode);
+                let priceWithFeesElement = listing_row.querySelector('.market_listing_price_original_after_fees');
+                let priceWithFee = parseInt(priceWithFeesElement.innerText);
+                priceWithFeesElement.innerText = v_currencyformat(priceWithFee, currencyCode);
+            });`;
+
+        injectToPage(currencyConverterScript, true, 'currencyConverter', false);
     }
 }
 
