@@ -413,6 +413,9 @@ function addFunctionBar(){
                             </div>
                             <textarea class="hidden-copy-textarea" id="generated_list_copy_textarea"></textarea>
                     </div>
+                    <div id="selectionMenu" class="functionBarRow hidden">
+                        <span>Selected <span id="numberOfSelectedItems"></span> items</span>
+                    </div>
                 </div>
                 `);
 
@@ -437,8 +440,9 @@ function addFunctionBar(){
                 });
 
                 unselectAllItems();
-                updateSelectedValue();
+                updateSelectedItemsSummary();
                 event.target.classList.remove("selectionActive");
+                document.getElementById('selectionMenu').classList.add('hidden');
                 document.body.removeEventListener('click', listenSelectClicks, false);
             }
             else{
@@ -450,6 +454,7 @@ function addFunctionBar(){
 
                 document.body.addEventListener('click', listenSelectClicks, false);
                 event.target.classList.add("selectionActive");
+                document.getElementById('selectionMenu').classList.remove('hidden');
             }
         });
 
@@ -471,9 +476,12 @@ function addFunctionBar(){
     else setTimeout(() => {setInventoryTotal(items)}, 1000);
 }
 
-function updateSelectedValue(){
+function updateSelectedItemsSummary(){
     let selectedItems = document.querySelectorAll('.item.app730.context2.selected');
+    let numberOfSelectedItems = selectedItems.length;
     let selectedTotal = 0;
+
+    document.getElementById('numberOfSelectedItems').innerText = numberOfSelectedItems.toString();
 
     selectedItems.forEach(itemElement =>{
         let item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
@@ -769,8 +777,16 @@ let countDownID = '';
 
 let listenSelectClicks = (event) => {
     if (event.target.parentElement.classList.contains('item') && event.target.parentElement.classList.contains('app730') && event.target.parentElement.classList.contains('context2')) {
-        event.target.parentElement.classList.toggle("selected");
-        updateSelectedValue();
+        if (event.ctrlKey) {
+            let marketHashNameToLookFor = getItemByAssetID(items, getAssetIDOfElement(event.target.parentNode)).market_hash_name;
+            document.querySelectorAll('.item.app730.context2').forEach(item => {
+                if (getItemByAssetID(items, getAssetIDOfElement(item)).market_hash_name === marketHashNameToLookFor){
+                    item.classList.toggle('selected');
+                }
+            });
+        }
+        else event.target.parentElement.classList.toggle('selected');
+        updateSelectedItemsSummary();
     }
 };
 
