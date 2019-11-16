@@ -19,7 +19,8 @@ trackEvent({
 // simple checkboxes - toggles
 
 const simpleBinaryOptions = ['itemPricing', 'markScammers','colorfulItems', 'showRealStatus', 'flagScamComments', 'quickDeclineOffer', 'openOfferInTab', 'showPlusRepButton',
-    'showReoccButton', 'nsfwFilter', 'hideOtherExtensionPrices', 'updateNotifications', 'switchToOtherInventory', 'autoFloatMarket', 'autoFloatOffer', 'autoFloatInventory', 'telemetryOn', 'tradeOffersLargerItems'];
+    'showReoccButton', 'nsfwFilter', 'hideOtherExtensionPrices', 'updateNotifications', 'switchToOtherInventory', 'autoFloatMarket', 'autoFloatOffer', 'autoFloatInventory', 'telemetryOn',
+    'tradeOffersLargerItems', 'marketOriginalPrice'];
 
 simpleBinaryOptions.forEach(option => {
    let optionCheckbox = document.getElementById(option);
