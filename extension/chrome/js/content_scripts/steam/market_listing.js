@@ -203,6 +203,29 @@ function sortListings(sortingMode) {
     });
 }
 
+function addPricesInOtherCurrencies() {
+    let listings = getListings();
+    let listingsSection = document.getElementById('searchResultsRows');
+    console.log(listings);
+
+    if (listingsSection !== null) { // so it does not throw any errors when it can't find it on commodity items
+        listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listing_row => {
+            if (listing_row.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listing_row.parentNode.parentNode.id !== 'tabContentsMyListings'){
+                let listingID = getListingIDFromElement(listing_row);
+                if (listing_row.querySelector('.originalPrice') === null) { // if stickers elements not added already
+                    let price = parseInt(listings[listingID].price);
+                    let priceWithFees = price + parseInt(listings[listingID].publisher_fee) + parseInt(listings[listingID].publisher_fee_app)
+                    listing_row.querySelector('.market_table_value').insertAdjacentHTML('beforeend',
+                        `<div class="originalPrice">
+                                    <div class="market_listing_price">${price}</div>
+                                    <div class="market_listing_price">${priceWithFees}</div>
+                                </div>`);
+                }
+            }
+        });
+    }
+}
+
 logExtensionPresence();
 updateLoggedInUserID();
 trackEvent({
@@ -319,6 +342,7 @@ addFloatBarSkeletons();
 addPhasesIndicator();
 addStickers();
 addListingsToFloatQueue();
+addPricesInOtherCurrencies();
 
 
 
@@ -329,6 +353,7 @@ let observer = new MutationObserver((mutations) =>{
             addFloatBarSkeletons();
             addStickers();
             addListingsToFloatQueue();
+            addPricesInOtherCurrencies();
         }
     }
 });
