@@ -116,6 +116,7 @@ reoccmessagesave.addEventListener('click', () => {
 apikey = document.getElementById('steamAPIKeyValue');
 apikeyprint = document.getElementById('steamAPIKeyPrinted');
 apikeysave = document.getElementById('steamAPIKeyValueSave');
+apikeyremove = document.getElementById('steamAPIKeyRemove');
 
 chrome.storage.local.get(['steamAPIKey', 'apiKeyValid'], (result) => {
     if (result.apiKeyValid){
@@ -147,6 +148,14 @@ apikeysave.addEventListener('click', () => {
             invalidDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span class="warning">Could not validate your API key, it\'s either incorrect or Steam is down at the moment</span>';
             apikey.parentNode.insertBefore(invalidDiv, apikey.nextSibling);
         }
+    });
+});
+
+apikeyremove.addEventListener('click', () => {
+    chrome.storage.local.set({steamAPIKey: '', apiKeyValid: false}, () => {
+        apikey.value = '';
+        apikeyprint.innerText = 'Not set';
+        $('#steamAPIkeyModal').modal('hide'); // TODO figure out how to lose jquery here
     });
 });
 
