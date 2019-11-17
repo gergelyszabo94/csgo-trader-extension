@@ -415,8 +415,21 @@ function addFunctionBar(){
                             </div>
                             <textarea class="hidden-copy-textarea" id="generated_list_copy_textarea"></textarea>
                     </div>
-                    <div id="massListing" class="functionBarRow hidden">
+                    <div id="massListing" class="hidden">
                         <span>Selected <span id="numberOfSelectedItems"></span> items</span>
+                        <table id="listingTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Quantity</th>
+                                    <th>Extension price</th>
+                                    <th>Starting at</th>
+                                    <th>Your price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 `);
@@ -488,6 +501,7 @@ function updateSelectedItemsSummary(){
     selectedItems.forEach(itemElement =>{
         let item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
         selectedTotal += parseFloat(item.price.price);
+        addListingRow(item);
     });
 
     chrome.storage.local.get('currency', (result) =>{
@@ -732,6 +746,22 @@ function isOwnInventory() {return getUserSteamID() === getInventoryOwnerID()}
 function sellItem(assetID, price) {
     let callSellItemOnPageScript = `sellItemOnPage(${price}, ${assetID})`;
     injectToPage(callSellItemOnPageScript, true, 'callSellItemOnPage', false);
+}
+
+function addListingRow(item) {
+    let listingsTable = document.getElementById('listingTable');
+
+    if (listingsTable.querySelector(`[data-assetid="${item.assetid}"]`) === null) { // only add if not present yet
+        let row = `
+        <tr data-assetid="${item.assetid}">
+            <td>${item.market_hash_name}</td>
+            <td>1</td>
+            <td>${item.price.display}</td>
+            <td>Loading...</td>
+            <td><input type="number"></td>
+        </tr>`;
+        listingsTable.querySelector('tbody').insertAdjacentHTML('beforeend', row);
+    }
 }
 
 const floatBar = getFloatBarSkeleton('inventory');
