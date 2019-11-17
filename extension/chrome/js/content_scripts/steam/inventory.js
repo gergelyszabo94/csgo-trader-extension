@@ -415,7 +415,7 @@ function addFunctionBar(){
                             </div>
                             <textarea class="hidden-copy-textarea" id="generated_list_copy_textarea"></textarea>
                     </div>
-                    <div id="selectionMenu" class="functionBarRow hidden">
+                    <div id="massListing" class="functionBarRow hidden">
                         <span>Selected <span id="numberOfSelectedItems"></span> items</span>
                     </div>
                 </div>
@@ -444,7 +444,7 @@ function addFunctionBar(){
                 unselectAllItems();
                 updateSelectedItemsSummary();
                 event.target.classList.remove("selectionActive");
-                document.getElementById('selectionMenu').classList.add('hidden');
+                document.getElementById('massListing').classList.add('hidden');
                 document.body.removeEventListener('click', listenSelectClicks, false);
             }
             else{
@@ -456,7 +456,7 @@ function addFunctionBar(){
 
                 document.body.addEventListener('click', listenSelectClicks, false);
                 event.target.classList.add("selectionActive");
-                document.getElementById('selectionMenu').classList.remove('hidden');
+                if (isOwnInventory())  document.getElementById('massListing').classList.remove('hidden');
             }
         });
 
