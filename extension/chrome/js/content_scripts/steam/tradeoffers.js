@@ -354,13 +354,13 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
     let keys = Object.keys(offersSortingModes);
 
     for (let key of keys) {
-        let option = document.createElement("option");
+        let option = document.createElement('option');
         option.value = offersSortingModes[key].key;
         option.text = offersSortingModes[key].name;
         sortingSelect.add(option);
     }
 
-    sortingSelect.addEventListener("change", () => {
+    sortingSelect.addEventListener('change', () => {
         // analytics
         trackEvent({
             type: 'event',
@@ -401,7 +401,8 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
         }, (error) => {
             if (error === 'apiKeyInvalid') {
                 document.getElementById('tradeoffers_summary').innerHTML = `<b>CSGOTrader Extension:</b> You don't have your Steam API key set.<br> 
-            For more functionality on this page open the options page and set your API key in the General category.
+            For more functionality on this page you must set your API key.
+             You can do so by <a href="https://steamcommunity.com/dev/apikey" target="_blank">clicking here</a>.
             Check what you are missing in the <a href="https://csgotrader.app/release-notes#1.20" target="_blank">Release Notes</a>`;
             }
         }
