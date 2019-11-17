@@ -19680,7 +19680,7 @@ const currencies = {
     AUD:{
         short: "AUD",
         long: "Australian dollar",
-        name: "A$"
+        sign: "A$"
     },
     HKD:{
         short: "HKD",
