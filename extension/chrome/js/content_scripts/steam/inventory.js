@@ -457,7 +457,7 @@ function addFunctionBar(){
                 unselectAllItems();
                 updateSelectedItemsSummary();
                 event.target.classList.remove("selectionActive");
-                document.getElementById('massListing').classList.add('hidden');
+                // if (isOwnInventory()) document.getElementById('massListing').classList.add('hidden');
                 document.body.removeEventListener('click', listenSelectClicks, false);
             }
             else{
@@ -469,7 +469,7 @@ function addFunctionBar(){
 
                 document.body.addEventListener('click', listenSelectClicks, false);
                 event.target.classList.add("selectionActive");
-                if (isOwnInventory())  document.getElementById('massListing').classList.remove('hidden');
+                // if (isOwnInventory())  document.getElementById('massListing').classList.remove('hidden');    -- work in progress on #69, hidden for release 1.21
             }
         });
 
