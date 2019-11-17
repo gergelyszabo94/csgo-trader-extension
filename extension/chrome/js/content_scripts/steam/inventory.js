@@ -729,6 +729,11 @@ function addStartingAtPrice(market_hash_name) {
 // works in inventory and profile pages
 function isOwnInventory() {return getUserSteamID() === getInventoryOwnerID()}
 
+function sellItem(assetID, price) {
+    let callSellItemOnPageScript = `sellItemOnPage(${price}, ${assetID})`;
+    injectToPage(callSellItemOnPageScript, true, 'callSellItemOnPage', false);
+}
+
 const floatBar = getFloatBarSkeleton('inventory');
 const upperModule = `
 <div class="upperModule">
@@ -790,6 +795,34 @@ trackEvent({
     type: 'pageview',
     action: 'InventoryView'
 });
+
+// injects selling script if own inventory
+if (isOwnInventory()) {
+    let sellItemScriptString = `
+        function sellItemOnPage(price, assetID){
+            let myHeaders = new Headers();
+            myHeaders.append('Content-Type', 'application/x-www-form-urlencoded');
+        
+            fetch(
+                'https://steamcommunity.com/market/sellitem/',
+                {
+                    "body":'sessionid=' + g_sessionID + '&appid=730&contextid=2&amount=1&assetid=' + assetID + '&price=' + price,
+                    "headers": myHeaders,
+                    "method":"POST"
+                }
+            ).then((response) => {
+                if (!response.ok) {
+                    console.log('error');
+                }
+                else return response.json();
+            }).then((body) => {
+                console.log(body);
+            }).catch(err => {
+                console.log(err);
+            });
+        }`;
+    injectToPage(sellItemScriptString, false, 'sellItemScript', false);
+}
 
 chrome.storage.local.get('hideOtherExtensionPrices', (result) => {if (result.hideOtherExtensionPrices) hideOtherExtensionPrices()});
 
