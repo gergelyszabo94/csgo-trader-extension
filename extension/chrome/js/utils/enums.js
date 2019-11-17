@@ -19988,7 +19988,8 @@ const storageKeys = {
     tradeOffersSortingMode: offersSortingModes.default.key,
     defaultConverterCurrency1: currencies.USD.short,
     defaultConverterCurrency2: currencies.EUR.short,
-    marketOriginalPrice: true
+    marketOriginalPrice: true,
+    autoSetSteamAPIKey: true
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID'];
