@@ -943,6 +943,7 @@ function prettyPrintPrice(currency, price){
 }
 
 function getAssetIDOfElement(element){
+    if (element === null) return null;
     let assetID = element.id.split('730_2_')[1];
     return assetID === undefined ? null : assetID;
 }

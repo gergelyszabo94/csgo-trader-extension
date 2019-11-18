@@ -457,7 +457,7 @@ function addFunctionBar(){
                 unselectAllItems();
                 updateSelectedItemsSummary();
                 event.target.classList.remove("selectionActive");
-                // if (isOwnInventory()) document.getElementById('massListing').classList.add('hidden');
+                if (isOwnInventory()) document.getElementById('massListing').classList.add('hidden');
                 document.body.removeEventListener('click', listenSelectClicks, false);
             }
             else{
@@ -469,7 +469,7 @@ function addFunctionBar(){
 
                 document.body.addEventListener('click', listenSelectClicks, false);
                 event.target.classList.add("selectionActive");
-                // if (isOwnInventory())  document.getElementById('massListing').classList.remove('hidden');    -- work in progress on #69, hidden for release 1.21
+                if (isOwnInventory())  document.getElementById('massListing').classList.remove('hidden');
             }
         });
 
@@ -751,7 +751,7 @@ function sellItem(assetID, price) {
 function addListingRow(item) {
     let listingsTable = document.getElementById('listingTable');
 
-    if (listingsTable.querySelector(`[data-assetid="${item.assetid}"]`) === null) { // only add if not present yet
+    if (listingsTable.querySelector(`[data-assetid="${item.assetid}"]`) === null && item.marketable === 1) { // only add if not present yet
         let row = `
         <tr data-assetid="${item.assetid}">
             <td>${item.market_hash_name}</td>

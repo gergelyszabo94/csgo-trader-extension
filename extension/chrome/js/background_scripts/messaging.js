@@ -114,6 +114,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                         position: position,
                                         tradability: tradability,
                                         tradabilityShort: tradabilityShort,
+                                        marketable: items[item].marketable,
                                         dopplerInfo: dopplerInfo,
                                         exterior: exterior,
                                         iconURL: icon,
