@@ -416,7 +416,6 @@ function addFunctionBar(){
                             <textarea class="hidden-copy-textarea" id="generated_list_copy_textarea"></textarea>
                     </div>
                     <div id="massListing" class="hidden">
-                        <span>Selected <span id="numberOfSelectedItems"></span> items</span>
                         <table id="listingTable">
                             <thead>
                                 <tr>
@@ -424,12 +423,14 @@ function addFunctionBar(){
                                     <th>Quantity</th>
                                     <th>Extension price</th>
                                     <th>Starting at</th>
+                                    <th>Quick sell</th>
                                     <th>Your price</th>
                                 </tr>
                             </thead>
                             <tbody>
                             </tbody>
                         </table>
+                        <span><span id="numberOfItemsToSell">0</span> items to sell for <span id="saleTotal">0</span> <span id="sellButton">Start Selling</span></span>
                     </div>
                 </div>
                 `);
@@ -496,7 +497,7 @@ function updateSelectedItemsSummary(){
     let numberOfSelectedItems = selectedItems.length;
     let selectedTotal = 0;
 
-    document.getElementById('numberOfSelectedItems').innerText = numberOfSelectedItems.toString();
+    document.getElementById('numberOfItemsToSell').innerText = numberOfSelectedItems.toString();
 
     selectedItems.forEach(itemElement =>{
         let item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
@@ -506,6 +507,7 @@ function updateSelectedItemsSummary(){
 
     chrome.storage.local.get('currency', (result) =>{
         document.getElementById('selectedTotalValue').innerText = prettyPrintPrice(result.currency, selectedTotal);
+        document.getElementById('saleTotal').innerText = prettyPrintPrice(result.currency, selectedTotal);
     });
 }
 
@@ -757,6 +759,7 @@ function addListingRow(item) {
             <td>${item.market_hash_name}</td>
             <td>1</td>
             <td>${item.price.display}</td>
+            <td>Loading...</td>
             <td>Loading...</td>
             <td><input type="number"></td>
         </tr>`;

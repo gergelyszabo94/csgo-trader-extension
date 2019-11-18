@@ -329,6 +329,13 @@ progress {
     height: 20px;
 }
 
+#listingTable{
+    border-bottom: solid;
+    border-width: 1px;
+    margin-bottom: 5px;
+    width: 100%;
+}
+
 .nametag{
     color: var(--steam-nametag-red);
     font-size: 1.2rem;
