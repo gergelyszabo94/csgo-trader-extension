@@ -1606,3 +1606,16 @@ function getPriceOverview(market_hash_name) {
         });
     });
 }
+
+// to convert the formatted price string that the price overview api call returns to cent int (for market listing)
+function steamFormattedPriceToCents(formattedPrice) {
+    if (formattedPrice.includes('€')) { // EUR - Example input: 683,40€
+        if (formattedPrice.includes('--')) { // when the decimals would be 00 it's -- instead, example: 690,--€
+            return parseInt(formattedPrice.split(',--')[0] + '00');
+        }
+        else {
+            let parts = formattedPrice.split('€')[0].split(',');
+            return parseInt(parts[0] + parts[1]);
+        }
+    }
+}

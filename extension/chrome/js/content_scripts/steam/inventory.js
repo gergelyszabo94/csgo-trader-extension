@@ -133,14 +133,14 @@ function addElements(){
                     // adds own sticker elements
                     item.stickers.forEach((stickerInfo) => {
                         document.querySelectorAll('.customStickers').forEach((customStickers) => {
-                                customStickers.innerHTML = customStickers.innerHTML + `
+                            customStickers.innerHTML = customStickers.innerHTML + `
                                     <div class="stickerSlot" data-tooltip="${stickerInfo.name}">
                                         <a href="${stickerInfo.marketURL}" target="_blank">
                                             <img src="${stickerInfo.iconURL}" class="stickerIcon">
                                         </a>
                                     </div>
                                     `
-                                });
+                        });
                     })
                 }
 
@@ -503,6 +503,20 @@ function updateSelectedItemsSummary(){
         let item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
         selectedTotal += parseFloat(item.price.price);
         addListingRow(item);
+        getPriceOverview(item.market_hash_name).then(
+            priceOverview => {
+                document.getElementById('listingTable').querySelectorAll('.itemName').forEach(itemNameElement => {
+                    if (itemNameElement.innerText === item.market_hash_name) {
+                        if (priceOverview.lowest_price !== undefined) {
+                            let startingAt = itemNameElement.parentNode.querySelector('.itemStartingAt');
+                            startingAt.innerText = priceOverview.lowest_price;
+                            startingAt.setAttribute('data-price-set', true);
+                            startingAt.setAttribute('data-price-in-cents', steamFormattedPriceToCents(priceOverview.lowest_price));
+                        }
+                    }
+                });
+            }, (error) => {console.log(error)}
+        );
     });
 
     chrome.storage.local.get('currency', (result) =>{
@@ -719,6 +733,7 @@ function getItemInfoFromPage() {
     return JSON.parse(injectToPage(getItemsSccript, true, 'getInventory', 'inventoryInfo'));
 }
 
+// adds market info in other inventories
 function addStartingAtPrice(market_hash_name) {
     getPriceOverview(market_hash_name).then(
         priceOverview => {
@@ -756,12 +771,12 @@ function addListingRow(item) {
     if (listingsTable.querySelector(`[data-assetid="${item.assetid}"]`) === null && item.marketable === 1) { // only add if not present yet
         let row = `
         <tr data-assetid="${item.assetid}">
-            <td>${item.market_hash_name}</td>
-            <td>1</td>
-            <td>${item.price.display}</td>
-            <td>Loading...</td>
-            <td>Loading...</td>
-            <td><input type="number"></td>
+            <td class="itemName">${item.market_hash_name}</td>
+            <td class="itemAmount">1</td>
+            <td class="itemExtensionPrice">${item.price.display}</td>
+            <td class="itemStartingAt">Loading...</td>
+            <td class="itemQuickSell">Loading...</td>
+            <td class="itemUserPrice"><input type="number"></td>
         </tr>`;
         listingsTable.querySelector('tbody').insertAdjacentHTML('beforeend', row);
     }
