@@ -19228,6 +19228,11 @@ const rarities = {
         name: "rare",
         prettyName: "Rare Weapon"
     },
+    rare_character: {
+        internal_name: "Rarity_Rare_Character",
+        name: "rare",
+        prettyName: "Distinguished Agent"
+    },
     mythical: {
         internal_name: "Rarity_Mythical",
         name: "mythical",
@@ -19237,6 +19242,11 @@ const rarities = {
         internal_name: "Rarity_Mythical_Weapon",
         name: "mythical",
         prettyName: "Mythical Weapon"
+    },
+    mythical_character: {
+        internal_name: "Rarity_Mythical_Character",
+        name: "mythical",
+        prettyName: "Exceptional Agent"
     },
     legendary: {
         internal_name: "Rarity_Legendary",
@@ -19248,6 +19258,11 @@ const rarities = {
         name: "legendary",
         prettyName: "Legendary Weapon"
     },
+    legendary_character: {
+        internal_name: "Rarity_Legendary_Character",
+        name: "legendary",
+        prettyName: "Superior Agent"
+    },
     ancient: {
         internal_name: "Rarity_Ancient",
         name: "ancient",
@@ -19257,6 +19272,11 @@ const rarities = {
         internal_name: "Rarity_Ancient_Weapon",
         name: "ancient",
         prettyName: "Ancient Weapon"
+    },
+    ancient_character: {
+        internal_name: "Rarity_Ancient_Character",
+        name: "ancient",
+        prettyName: "Master Agent"
     },
     contraband: {
         internal_name: "Rarity_Contraband",
@@ -19510,6 +19530,18 @@ const itemTypes = {
         key: 'gift_package',
         name: "Gift Package",
         internal_name: "CSGO_Tool_GiftTag",
+        float: false
+    },
+    unknown_type:{
+        key: 'unknown_type',
+        name: "Unknown Type",
+        internal_name: "Unknown",
+        float: false
+    },
+    custom_player:{
+        key: 'custom_player',
+        name: "Custom Player",
+        internal_name: "Type_CustomPlayer",
         float: false
     }
 };

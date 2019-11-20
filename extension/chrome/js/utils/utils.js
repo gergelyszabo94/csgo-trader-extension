@@ -105,18 +105,26 @@ function getQuality(tags){
                     return qualities[rarities.rare.name];
                 case rarities.rare_weapon.internal_name:
                     return qualities[rarities.rare_weapon.name];
+                case rarities.rare_character.internal_name:
+                    return qualities[rarities.rare_character.name];
                 case rarities.mythical.internal_name:
                     return qualities[rarities.mythical.name];
                 case rarities.mythical_weapon.internal_name:
                     return qualities[rarities.mythical_weapon.name];
+                case rarities.mythical_character.internal_name:
+                    return qualities[rarities.mythical_character.name];
                 case rarities.legendary.internal_name:
                     return qualities[rarities.legendary.name];
                 case rarities.legendary_weapon.internal_name:
                     return qualities[rarities.legendary_weapon.name];
+                case rarities.legendary_character.internal_name:
+                    return qualities[rarities.legendary_character.name];
                 case rarities.ancient.internal_name:
                     return qualities[rarities.ancient.name];
                 case rarities.ancient_weapon.internal_name:
                     return qualities[rarities.ancient_weapon.name];
+                case rarities.ancient_character.internal_name:
+                    return qualities[rarities.ancient_character.name];
                 case rarities.contraband.internal_name:
                     return qualities[rarities.contraband.name];
                 case rarities.contraband_weapon.internal_name:
@@ -174,11 +182,13 @@ function getType(tags) {
                     return itemTypes.ticket;
                 case itemTypes.tool.internal_name:
                     return itemTypes.tool;
+                case itemTypes.custom_player.internal_name:
+                    return itemTypes.custom_player;
                 case itemTypes.gift_package.internal_name:
                     return itemTypes.gift_package;
                 default:
                     console.log(tag.internal_name);
-                    return null;
+                    return itemTypes.unknown_type;
             }
         }
     }
