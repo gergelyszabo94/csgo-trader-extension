@@ -2,9 +2,7 @@ Number.prototype.toFixedNoRounding = function(n) {
     const reg = new RegExp('^-?\\d+(?:\\.\\d{0,' + n + '})?', 'g');
     const a = this.toString().match(reg)[0];
     const dot = a.indexOf('.');
-    if (dot === -1) { // integer, insert decimal dot and pad up zeros
-        return a + '.' + '0'.repeat(n);
-    }
+    if (dot === -1) return a + '.' + '0'.repeat(n); // integer, insert decimal dot and pad up zeros
     const b = n - (a.length - dot) + 1;
     return b > 0 ? (a + '0'.repeat(b)) : a;
 };
@@ -19,8 +17,8 @@ let floatQueue = {
     jobs: []
 };
 
-function getPattern(name, paint_seed){
-    if (/ Marble Fade /i.test(name)){
+function getPattern(name, paint_seed) {
+    if (/ Marble Fade /i.test(name)) {
         let pattern = null;
         if (/Karambit/i.test(name)) pattern = patterns.marble_fades.karambit[paint_seed];
         else if (/Butterfly/i.test(name)) pattern = patterns.marble_fades.butterfly[paint_seed];
@@ -63,7 +61,7 @@ function getPattern(name, paint_seed){
         if(percentage !== null && percentage !== undefined) return {type: 'fade', value: `${percentage}% Fade`};
         else return null;
     }
-    else if (/ Case Hardened/i.test(name)){
+    else if (/ Case Hardened/i.test(name)) {
         let pattern = null;
         if (/AK-47/i.test(name)) pattern = patterns.case_hardeneds.ak[paint_seed];
         else if (/Butterfly/i.test(name)) pattern = patterns.case_hardeneds.butterfly[paint_seed];
@@ -89,54 +87,16 @@ function getPattern(name, paint_seed){
     else return null;
 }
 
-function getQuality(tags){
+function getQuality(tags) {
     if (tags !== undefined) {
         for (let tag of tags) if (tag.category === 'Rarity') {
-            switch (tag.internal_name) {
-                case rarities.common.internal_name:
-                    return qualities[rarities.common.name];
-                case rarities.common_weapon.internal_name:
-                    return qualities[rarities.common_weapon.name];
-                case rarities.uncommon.internal_name:
-                    return qualities[rarities.uncommon.name];
-                case rarities.uncommon_weapon.internal_name:
-                    return qualities[rarities.uncommon_weapon.name];
-                case rarities.rare.internal_name:
-                    return qualities[rarities.rare.name];
-                case rarities.rare_weapon.internal_name:
-                    return qualities[rarities.rare_weapon.name];
-                case rarities.rare_character.internal_name:
-                    return qualities[rarities.rare_character.name];
-                case rarities.mythical.internal_name:
-                    return qualities[rarities.mythical.name];
-                case rarities.mythical_weapon.internal_name:
-                    return qualities[rarities.mythical_weapon.name];
-                case rarities.mythical_character.internal_name:
-                    return qualities[rarities.mythical_character.name];
-                case rarities.legendary.internal_name:
-                    return qualities[rarities.legendary.name];
-                case rarities.legendary_weapon.internal_name:
-                    return qualities[rarities.legendary_weapon.name];
-                case rarities.legendary_character.internal_name:
-                    return qualities[rarities.legendary_character.name];
-                case rarities.ancient.internal_name:
-                    return qualities[rarities.ancient.name];
-                case rarities.ancient_weapon.internal_name:
-                    return qualities[rarities.ancient_weapon.name];
-                case rarities.ancient_character.internal_name:
-                    return qualities[rarities.ancient_character.name];
-                case rarities.contraband.internal_name:
-                    return qualities[rarities.contraband.name];
-                case rarities.contraband_weapon.internal_name:
-                    return qualities[rarities.contraband_weapon.name];
-                case rarities.default.internal_name:
-                    return qualities[rarities.default.name];
-                case rarities.default_weapon.internal_name:
-                    return qualities[rarities.default_weapon.name];
-                default:
-                    console.log(tag.internal_name);
-                    return qualities.stock;
+            for (let rarity in rarities) {
+                if (rarities[rarity].internal_name === tag.internal_name) return qualities[rarities[rarity].name];
             }
+
+            // if the rarity is unknown to the extension
+            console.log(tag.internal_name);
+            return qualities.stock;
         }
     }
     return null;
@@ -145,51 +105,13 @@ function getQuality(tags){
 function getType(tags) {
     if (tags !== undefined) {
         for (let tag of tags) if (tag.category === 'Type') {
-            switch (tag.internal_name) {
-                case itemTypes.collectible.internal_name:
-                    return itemTypes.collectible;
-                case itemTypes.graffiti.internal_name:
-                    return itemTypes.graffiti;
-                case itemTypes.c4.internal_name:
-                    return itemTypes.c4;
-                case itemTypes.sniper.internal_name:
-                    return itemTypes.sniper;
-                case itemTypes.rifle.internal_name:
-                    return itemTypes.rifle;
-                case itemTypes.pistol.internal_name:
-                    return itemTypes.pistol;
-                case itemTypes.smg.internal_name:
-                    return itemTypes.smg;
-                case itemTypes.gloves.internal_name:
-                    return itemTypes.gloves;
-                case itemTypes.key.internal_name:
-                    return itemTypes.key;
-                case itemTypes.music_kit.internal_name:
-                    return itemTypes.music_kit;
-                case itemTypes.nametag.internal_name:
-                    return itemTypes.nametag;
-                case itemTypes.container.internal_name:
-                    return itemTypes.container;
-                case itemTypes.knife.internal_name:
-                    return itemTypes.knife;
-                case itemTypes.shotgun.internal_name:
-                    return itemTypes.shotgun;
-                case itemTypes.machinegun.internal_name:
-                    return itemTypes.machinegun;
-                case itemTypes.sticker.internal_name:
-                    return itemTypes.sticker;
-                case itemTypes.ticket.internal_name:
-                    return itemTypes.ticket;
-                case itemTypes.tool.internal_name:
-                    return itemTypes.tool;
-                case itemTypes.custom_player.internal_name:
-                    return itemTypes.custom_player;
-                case itemTypes.gift_package.internal_name:
-                    return itemTypes.gift_package;
-                default:
-                    console.log(tag.internal_name);
-                    return itemTypes.unknown_type;
+            for (let itemType in itemTypes) {
+                if (itemTypes[itemType].internal_name === tag.internal_name) return itemTypes[itemType];
             }
+
+            // if the category is unknown to the extension - for example a new item type was introduced
+            console.log(tag.internal_name);
+            return itemTypes.unknown_type;
         }
     }
     return null;
@@ -199,28 +121,21 @@ function getExteriorFromTags(tags) {
     if (tags !== undefined) {
         for (let tag of tags) {
             if (tag.category === 'Exterior') {
-                switch (tag.internal_name) {
-                    case exteriors.factory_new.internal_name:
-                        return exteriors.factory_new;
-                    case exteriors.minimal_wear.internal_name:
-                        return exteriors.minimal_wear;
-                    case exteriors.field_tested.internal_name:
-                        return exteriors.field_tested;
-                    case exteriors.well_worn.internal_name:
-                        return exteriors.well_worn;
-                    case exteriors.battle_scarred.internal_name:
-                        return exteriors.battle_scarred;
-                    default:
-                        return null;
+                for (let exterior in exteriors) {
+                    if (exteriors[exterior].internal_name === tag.internal_name) return exteriors[exterior];
                 }
+
+                // no exterior
+                console.log(tag.internal_name);
+                return null;
             }
         }
     }
     return null;
 }
 
-function getDopplerInfo(icon){
-    switch (icon){
+function getDopplerInfo(icon) {
+    switch (icon) {
         // guts
         case "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1ObcTjxP09i5hJCHkuXLI7PQhW4A18l4jeHVu9703Azs-hA_MTuncNWWIVU-aF7Z_1a7k-bo0cW_v8_OyXVqvyAqsy3D30vgdDGy9vw":
             return dopplerPhases.p1;
@@ -507,7 +422,7 @@ function getDopplerInfo(icon){
     }
 }
 
-function getShortDate(tradabibilityDate){
+function getShortDate(tradabibilityDate) {
     if (tradabibilityDate === 'Tradable' || tradabibilityDate === '') return 'T';
     let now = new Date().getTime();
     let distance = new Date(tradabibilityDate) - now;
@@ -517,9 +432,9 @@ function getShortDate(tradabibilityDate){
     let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     let seconds = Math.floor((distance % (1000 * 60)) / 1000);
-    if (days === 0){
-        if (hours === 0){
-            if (minutes === 0){
+    if (days === 0) {
+        if (hours === 0) {
+            if (minutes === 0) {
                 if (seconds === 0) return '';
                 else return `${seconds}s`;
             }
@@ -554,7 +469,7 @@ function souvenirExists(iteminfo) {
 }
 
 function goToInternalPage(targetURL) {
-    chrome.tabs.query({}, (tabs) =>{
+    chrome.tabs.query({}, (tabs) => {
         for (let i = 0, tab; tab = tabs[i]; i++) {
             if (tab.url === ('chrome-extension://'+ chrome.runtime.id + targetURL)) { // TODO make this work in firefox or remove the whole thing
                 chrome.tabs.reload(tab.id, {}, () => {});
@@ -566,16 +481,16 @@ function goToInternalPage(targetURL) {
     });
 }
 
-function determineNotificationDate(tradableDate, minutesOrHours, numberOfMinutesOrHours, beforeOrAfter){
+function determineNotificationDate(tradableDate, minutesOrHours, numberOfMinutesOrHours, beforeOrAfter) {
     let baseTimeUnit = 0;
     if (minutesOrHours === 'minutes') baseTimeUnit = 60;
     else if (minutesOrHours === 'hours') baseTimeUnit = 3600;
     if (beforeOrAfter === 'before') baseTimeUnit *= -1;
     let timeDifference = numberOfMinutesOrHours * baseTimeUnit;
-    return new Date((parseInt((new Date(tradableDate).getTime() / 1000).toFixed(0)) + timeDifference)*1000);
+    return new Date((parseInt((new Date(tradableDate).getTime() / 1000).toFixed(0)) + timeDifference) * 1000);
 }
 
-function reverseWhenNotifDetails(tradability, notifTime){
+function reverseWhenNotifDetails(tradability, notifTime) {
     let difference = (parseInt(new Date(notifTime).getTime() / 1000).toFixed(0)) - (parseInt(new Date(tradability).getTime() / 1000).toFixed(0));
     let differenceAbs =  Math.abs(difference);
     let beforeOrAfter = difference >= 0 ? 'after' : 'before';
@@ -590,38 +505,38 @@ function reverseWhenNotifDetails(tradability, notifTime){
 }
 
 // there are many different kinds of SteamID formats , this function converts the 64bit into the ones used in trade offers
-function getOfferStyleSteamID(steamID64){return Number(steamID64.split('7656')[1]) - Number(1197960265728)}
+function getOfferStyleSteamID(steamID64) {return Number(steamID64.split('7656')[1]) - Number(1197960265728)}
 
 // converts shitty annoying trade offer style SteamID to proper SteamID64
-function getPoperStyleSteamIDFromOfferStyle(offerStyleID){ return '7656' + (Number(offerStyleID) + Number(1197960265728))}
+function getPoperStyleSteamIDFromOfferStyle(offerStyleID) { return '7656' + (Number(offerStyleID) + Number(1197960265728))}
 
 // gets the steam id of the user that's profile this script is run on
-function getProfileOwnerSteamID(){
+function getProfileOwnerSteamID() {
     let steamidOfProfileOwnerScript = `document.querySelector('body').setAttribute('steamidOfProfileOwner', g_rgProfileData.steamid);`;
     return injectToPage(steamidOfProfileOwnerScript, true, 'steamidOfProfileOwner', 'steamidOfProfileOwner');
 }
 
 // gets SteamID of the user logged into steam (returns false if there is no user logged in)
-function getUserSteamID(){
+function getUserSteamID() {
     let getUserSteamIDScript = `document.querySelector('body').setAttribute('steamidOfLoggedinUser', g_steamID);`;
     return injectToPage(getUserSteamIDScript, true, 'steamidOfLoggedinUser', 'steamidOfLoggedinUser');
 }
 
 // gets the other party's steam id in a trade offer
-function getTradePartnerSteamID(){
+function getTradePartnerSteamID() {
     let tradePartnerSteamIDScript = `document.querySelector('body').setAttribute('tradePartnerSteamID', g_ulTradePartnerSteamID);`;
     return injectToPage(tradePartnerSteamIDScript, true, 'tradePartnerSteamID', 'tradePartnerSteamID')
 }
 
-function getInventoryOwnerID(){
+function getInventoryOwnerID() {
     let inventoryOwnerIDScript = `document.querySelector('body').setAttribute('inventoryOwnerID', UserYou.GetSteamId());`;
     return injectToPage(inventoryOwnerIDScript, true, 'inventoryOwnerID', 'inventoryOwnerID')
 }
 
 function warnOfScammer(steamID, page) {
     chrome.runtime.sendMessage({getSteamRepInfo: steamID}, (response) => {
-        if(response.SteamRepInfo !== 'error'){
-            if (response.SteamRepInfo.reputation.summary === 'SCAMMER'){
+        if(response.SteamRepInfo !== 'error') {
+            if (response.SteamRepInfo.reputation.summary === 'SCAMMER') {
                 let backgroundURL = chrome.runtime.getURL('images/scammerbackground.jpg');
                 document.querySelector('body').insertAdjacentHTML('beforebegin', `<div style="background-color: red; color: white; padding: 5px; text-align: center;" class="scammerWarning"><span>Watch out, this user was banned on SteamRep for scamming! You can check the details of what they did on <a style="color: black; font-weight: bold" href='https://steamrep.com/profiles/${steamID}'>steamrep.com</a></span></div>`);
 
@@ -629,11 +544,11 @@ function warnOfScammer(steamID, page) {
                 else if (page === 'profile') document.querySelector('.no_header.profile_page').setAttribute('style', `background-image: url('${backgroundURL}')`);
             }
         }
-        else console.log('Could not get steamrep info');
+        else console.log('Could not get SteamRep info');
     });
 }
 
-function parseStickerInfo(descriptions, linkType){
+function parseStickerInfo(descriptions, linkType) {
     if (descriptions !== undefined && linkType !== undefined) {
         let stickers = [];
         let link = linkType === 'search' ? 'https://steamcommunity.com/market/search?q=' : 'https://steamcommunity.com/market/listings/730/Sticker%20%7C%20';
@@ -661,11 +576,11 @@ function parseStickerInfo(descriptions, linkType){
     else return null
 }
 
-function handleStickerNamesWithCommas(names){
+function handleStickerNamesWithCommas(names) {
     let nameWithCommaFound = false;
 
     names.forEach((name, index) => {
-        if(name === 'Don\'t Worry' && names[index+1] === 'I\'m Pro'){
+        if(name === 'Don\'t Worry' && names[index + 1] === 'I\'m Pro') {
             names[index] = 'Don\'t Worry, I\'m Pro';
             names = removeFromArray(names, index + 1);
             nameWithCommaFound = true;
@@ -676,7 +591,7 @@ function handleStickerNamesWithCommas(names){
     else return names;
 }
 
-function removeFromArray(array, arrayIndex){
+function removeFromArray(array, arrayIndex) {
     let newArray = [];
     array.forEach((element, index) => {if (index !== arrayIndex) newArray.push(element)});
     return newArray;
@@ -684,7 +599,7 @@ function removeFromArray(array, arrayIndex){
 
 function addReplytoCommentsFunctionality() {
     document.querySelectorAll('.commentthread_comment_actions').forEach(commentThread => {
-        if (commentThread.querySelector('.replybutton') === null){
+        if (commentThread.querySelector('.replybutton') === null) {
             commentThread.insertAdjacentHTML('beforeend', `<a class="actionlink replybutton" data-tooltip-text="Reply"><img style="height: 16px; width: 16px" src="${chrome.runtime.getURL("images/reply.png")}"></a>`);
         }
     });
@@ -714,12 +629,12 @@ function handleReplyToCommentFunctionality(event) {
     commentTextarea.focus();
 }
 
-function addCommentsMutationObserver(){
+function addCommentsMutationObserver() {
     let observer = new MutationObserver(() => {addReplytoCommentsFunctionality()});
 
     let commentThread = document.querySelector('.commentthread_comments');
 
-    if (commentThread  !== null){
+    if (commentThread  !== null) {
         observer.observe(commentThread, {
             subtree: true,
             attributes: false,
@@ -728,9 +643,9 @@ function addCommentsMutationObserver(){
     }
 }
 
-function reportComments(){
+function reportComments() {
     chrome.storage.local.get(['flagScamComments', 'customCommentsToReport'], (result) => {
-        if(result.flagScamComments) {
+        if (result.flagScamComments) {
             let mergedStringToReport = result.customCommentsToReport.concat(commentsToReport);
             let spamTextCheck = new RegExp(mergedStringToReport.join('|'), 'i');
 
@@ -748,12 +663,12 @@ function reportComments(){
     });
 }
 
-function addDopplerPhase(item, dopplerInfo){
-    if(dopplerInfo !== undefined){
+function addDopplerPhase(item, dopplerInfo) {
+    if (dopplerInfo !== undefined) {
         let dopplerDiv = document.createElement('div');
         dopplerDiv.classList.add('dopplerPhase');
 
-        switch (dopplerInfo.short){
+        switch (dopplerInfo.short) {
             case 'SH': dopplerDiv.insertAdjacentHTML('beforeend', sapphire); break;
             case 'RB': dopplerDiv.insertAdjacentHTML('beforeend', ruby); break;
             case 'EM': dopplerDiv.insertAdjacentHTML('beforeend', emerald); break;
@@ -765,7 +680,7 @@ function addDopplerPhase(item, dopplerInfo){
     }
 }
 
-function updatePrices(){
+function updatePrices() {
     let headers = new Headers();
     headers.append('Accept-Encoding', 'gzip');
     let init = { method: 'GET',
@@ -776,17 +691,15 @@ function updatePrices(){
     let request = new Request('https://prices.csgotrader.app/latest/prices_v2.json', init);
 
     fetch(request).then((response) => {
-        if (!response.ok) {
-            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-        }
+        if (!response.ok) console.log(`Error code: ${response.status} Status: ${response.statusText}`);
         return response.json();
     }).then((fullPricesJSON) => {
         chrome.storage.local.get(['itemPricing', 'pricingProvider', 'pricingMode'], (result) => {
-            if(result.itemPricing){
+            if(result.itemPricing) {
                 let prices = {};
                 const keys = Object.keys(fullPricesJSON);
-                if(result.pricingProvider === pricingProviders.csgobackpack.name){
-                    if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["7_days_average"].name){
+                if (result.pricingProvider === pricingProviders.csgobackpack.name) {
+                    if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["7_days_average"].name) {
                         for (const key of keys) {
                             if (fullPricesJSON[key][result.pricingProvider]["7_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
                                 prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["7_days"]["average"]};
@@ -797,7 +710,7 @@ function updatePrices(){
                             }
                         }
                     }
-                    else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["7_days_median"].name){
+                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["7_days_median"].name) {
                         for (const key of keys) {
                             if (fullPricesJSON[key][result.pricingProvider]["7_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
                                 prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["7_days"]["median"]};
@@ -808,7 +721,7 @@ function updatePrices(){
                             }
                         }
                     }
-                    else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["24_hours_average"].name){
+                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["24_hours_average"].name) {
                         for (const key of keys) {
                             if (fullPricesJSON[key][result.pricingProvider]["24_hours"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
                                 prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["24_hours"]["average"]};
@@ -819,7 +732,7 @@ function updatePrices(){
                             }
                         }
                     }
-                    else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["24_hours_median"].name){
+                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["24_hours_median"].name){
                         for (const key of keys) {
                             if (fullPricesJSON[key][result.pricingProvider]["24_hours"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
                                 prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["24_hours"]["median"]};
@@ -830,7 +743,7 @@ function updatePrices(){
                             }
                         }
                     }
-                    else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["30_days_average"].name){
+                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["30_days_average"].name) {
                         for (const key of keys) {
                             if (fullPricesJSON[key][result.pricingProvider]["30_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
                                 prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["30_days"]["average"]};
@@ -841,7 +754,7 @@ function updatePrices(){
                             }
                         }
                     }
-                    else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["30_days_median"].name){
+                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["30_days_median"].name) {
                         for (const key of keys) {
                             if (fullPricesJSON[key][result.pricingProvider]["30_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
                                 prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["30_days"]["median"]};
@@ -852,7 +765,7 @@ function updatePrices(){
                             }
                         }
                     }
-                    else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["all_time_average"].name){
+                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["all_time_average"].name) {
                         for (const key of keys) {
                             if (fullPricesJSON[key][result.pricingProvider]["all_time"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
                                 prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["all_time"]["average"]};
@@ -863,7 +776,7 @@ function updatePrices(){
                             }
                         }
                     }
-                    else if(result.pricingMode === pricingProviders.csgobackpack.pricing_modes["all_time_median"].name){
+                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["all_time_median"].name) {
                         for (const key of keys) {
                             if (fullPricesJSON[key][result.pricingProvider]["all_time"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
                                 prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["all_time"]["median"]}
@@ -879,8 +792,8 @@ function updatePrices(){
                         console.log(key);
                     }
                 }
-                else if(result.pricingProvider === pricingProviders.bitskins.name){
-                    if(result.pricingMode === pricingProviders.bitskins.pricing_modes.bitskins.name){
+                else if (result.pricingProvider === pricingProviders.bitskins.name) {
+                    if (result.pricingMode === pricingProviders.bitskins.pricing_modes.bitskins.name) {
                         for (const key of keys) {
                             if (fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined && fullPricesJSON[key][result.pricingProvider]["price"] !== undefined) {
                                 prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["price"]};
@@ -891,7 +804,7 @@ function updatePrices(){
                             }
                         }
                     }
-                    else if(result.pricingMode === pricingProviders.bitskins.pricing_modes.instant_sale.name){
+                    else if (result.pricingMode === pricingProviders.bitskins.pricing_modes.instant_sale.name) {
                         for (const key of keys) {
                             if (fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined && fullPricesJSON[key][result.pricingProvider]["instant_sale_price"] !== undefined) {
                                 prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["instant_sale_price"]};
@@ -903,9 +816,9 @@ function updatePrices(){
                         }
                     }
                 }
-                else if(result.pricingProvider === pricingProviders.lootfarm.name || result.pricingProvider === pricingProviders.csgotm.name){
+                else if (result.pricingProvider === pricingProviders.lootfarm.name || result.pricingProvider === pricingProviders.csgotm.name) {
                     for (const key of keys) {
-                        if(fullPricesJSON[key][result.pricingProvider] !== undefined){
+                        if (fullPricesJSON[key][result.pricingProvider] !== undefined) {
                             prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]};
                         }
                         else{
@@ -913,11 +826,11 @@ function updatePrices(){
                         }
                     }
                 }
-                else if(result.pricingProvider === pricingProviders.csmoney.name || result.pricingProvider === pricingProviders.csgotrader.name){
+                else if (result.pricingProvider === pricingProviders.csmoney.name || result.pricingProvider === pricingProviders.csgotrader.name) {
                     for (const key of keys) {
                         prices[key] = {"price": "null", "doppler": "null"};
-                        if(fullPricesJSON[key][result.pricingProvider] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null"){
-                            if(fullPricesJSON[key][result.pricingProvider]["doppler"] !== "null" && fullPricesJSON[key][result.pricingProvider]["doppler"] !== undefined){
+                        if (fullPricesJSON[key][result.pricingProvider] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null") {
+                            if (fullPricesJSON[key][result.pricingProvider]["doppler"] !== "null" && fullPricesJSON[key][result.pricingProvider]["doppler"] !== undefined) {
                                 prices[key]["doppler"] = fullPricesJSON[key][result.pricingProvider]["doppler"];
                             }
                             prices[key]["price"] =  fullPricesJSON[key][result.pricingProvider]["price"];
@@ -931,13 +844,11 @@ function updatePrices(){
     }).catch((err) => {console.log(err)});
 }
 
-function updateExchangeRates(){
+function updateExchangeRates() {
     let request = new Request('https://prices.csgotrader.app/latest/exchange_rates.json');
 
     fetch(request).then((response) => {
-        if (!response.ok) {
-            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-        }
+        if (!response.ok) console.log(`Error code: ${response.status} Status: ${response.statusText}`);
         return response.json();
     }).then((exchangeRatesJSON) => {
         chrome.storage.local.set({exchangeRates: exchangeRatesJSON}, () =>{});
@@ -945,92 +856,92 @@ function updateExchangeRates(){
     }).catch((err) => {console.log(err)});
 }
 
-function prettyPrintPrice(currency, price){
+function prettyPrintPrice(currency, price) {
     let nf = new Intl.NumberFormat();
 
     if (price >= 0) return currencies[currency].sign + nf.format(price);
     else return `-${currencies[currency].sign}${nf.format(Math.abs(price))}`
 }
 
-function getAssetIDOfElement(element){
+function getAssetIDOfElement(element) {
     if (element === null) return null;
     let assetID = element.id.split('730_2_')[1];
     return assetID === undefined ? null : assetID;
 }
 
-function doTheSorting(items, itemElements, method, pages, type){
-    if(method === "price_asc"){
+function doTheSorting(items, itemElements, method, pages, type) {
+    if (method === "price_asc") {
         itemElements = itemElements.sort((a, b) => {
             let priceOfA = getItemByAssetID(items, getAssetIDOfElement(a)).price !== undefined ?  parseFloat(getItemByAssetID(items, getAssetIDOfElement(a)).price.price) : 0.0;
             let priceOfB = getItemByAssetID(items, getAssetIDOfElement(b)).price !== undefined ?  parseFloat(getItemByAssetID(items, getAssetIDOfElement(b)).price.price) : 0.0;
             return priceOfA - priceOfB;
         });
     }
-    else if(method === "price_desc"){
+    else if (method === "price_desc") {
         itemElements = itemElements.sort((a, b) => {
             let priceOfA = getItemByAssetID(items, getAssetIDOfElement(a)).price !== undefined ?  parseFloat(getItemByAssetID(items, getAssetIDOfElement(a)).price.price) : 0.0;
             let priceOfB = getItemByAssetID(items, getAssetIDOfElement(b)).price !== undefined ?  parseFloat(getItemByAssetID(items, getAssetIDOfElement(b)).price.price) : 0.0;
             return priceOfB - priceOfA;
         });
     }
-    else if(method === "name_asc"){
+    else if (method === "name_asc") {
         itemElements = itemElements.sort((a, b) => {
             let nameOfA = getItemByAssetID(items, getAssetIDOfElement(a)).market_hash_name.toLowerCase();
             let nameOfB = getItemByAssetID(items, getAssetIDOfElement(b)).market_hash_name.toLowerCase();
-            if (nameOfA < nameOfB) {return -1;}
-            if (nameOfA > nameOfB) {return 1;}
+            if (nameOfA < nameOfB) return -1;
+            if (nameOfA > nameOfB) return 1;
             return 0;
         });
     }
-    else if(method === "name_desc"){
+    else if (method === "name_desc") {
         itemElements = itemElements.sort((a, b) => {
             let nameOfA = getItemByAssetID(items, getAssetIDOfElement(a)).market_hash_name.toLowerCase();
             let nameOfB = getItemByAssetID(items, getAssetIDOfElement(b)).market_hash_name.toLowerCase();
-            if (nameOfA > nameOfB) {return -1;}
-            if (nameOfA < nameOfB) {return 1;}
+            if (nameOfA > nameOfB) return -1;
+            if (nameOfA < nameOfB) return 1;
             return 0;
         });
     }
-    else if(method === "tradability_asc"){
+    else if (method === "tradability_asc") {
         itemElements = itemElements.sort((a, b) => {
             let tradabilityOfA = getItemByAssetID(items, getAssetIDOfElement(a)).tradability;
             let tradabilityOfB = getItemByAssetID(items, getAssetIDOfElement(b)).tradability;
-            if(tradabilityOfA === "Tradable"){return -1}
-            else if(tradabilityOfA === "Not Tradable"){return 1}
-            else if(tradabilityOfB === "Tradable"){return 1}
-            else if(tradabilityOfB === "Not Tradable"){return -1}
-            else{
+            if (tradabilityOfA === "Tradable") return -1;
+            else if (tradabilityOfA === "Not Tradable") return 1;
+            else if (tradabilityOfB === "Tradable") return 1;
+            else if (tradabilityOfB === "Not Tradable")return -1;
+            else {
                 let tradabilityOfATime = new Date(tradabilityOfA);
                 tradabilityOfATime = tradabilityOfATime.getTime();
                 let tradabilityOfBTime = new Date(tradabilityOfB);
                 tradabilityOfBTime = tradabilityOfBTime.getTime();
-                if (tradabilityOfATime < tradabilityOfBTime) {return -1;}
-                if (tradabilityOfATime > tradabilityOfBTime) {return 1;}
+                if (tradabilityOfATime < tradabilityOfBTime) return -1;
+                if (tradabilityOfATime > tradabilityOfBTime) return 1;
                 return 0;
             }
         });
     }
-    else if(method === "tradability_desc"){
+    else if (method === "tradability_desc") {
         itemElements = itemElements.sort((a, b) => {
             let tradabilityOfA = getItemByAssetID(items, getAssetIDOfElement(a)).tradability;
             let tradabilityOfB = getItemByAssetID(items, getAssetIDOfElement(b)).tradability;
-            if(tradabilityOfA === "Tradable"){return 1}
-            else if(tradabilityOfA === "Not Tradable"){return -1}
-            else if(tradabilityOfB === "Tradable"){return -1}
-            else if(tradabilityOfB === "Not Tradable"){return 1}
-            else{
+            if (tradabilityOfA === "Tradable") return 1;
+            else if(tradabilityOfA === "Not Tradable") return -1;
+            else if(tradabilityOfB === "Tradable") return -1;
+            else if(tradabilityOfB === "Not Tradable") return 1;
+            else {
                 let tradabilityOfATime = new Date(tradabilityOfA);
                 tradabilityOfATime = tradabilityOfATime.getTime();
                 let tradabilityOfBTime = new Date(tradabilityOfB);
                 tradabilityOfBTime = tradabilityOfBTime.getTime();
-                if (tradabilityOfATime > tradabilityOfBTime) {return -1;}
-                if (tradabilityOfATime < tradabilityOfBTime) {return 1;}
+                if (tradabilityOfATime > tradabilityOfBTime) return -1;
+                if (tradabilityOfATime < tradabilityOfBTime) return 1;
                 return 0;
             }
         });
     }
-    else if(method === "float_asc"){
-        itemElements = itemElements.sort((a, b) =>{
+    else if (method === "float_asc") {
+        itemElements = itemElements.sort((a, b) => {
             let floatInfoOfA = getItemByAssetID(items, getAssetIDOfElement(a)).floatInfo;
             let floatInfoOfB = getItemByAssetID(items, getAssetIDOfElement(b)).floatInfo;
 
@@ -1046,8 +957,8 @@ function doTheSorting(items, itemElements, method, pages, type){
             return 0;
         });
     }
-    else if(method === "float_desc"){
-        itemElements = itemElements.sort((a, b) =>{
+    else if (method === "float_desc") {
+        itemElements = itemElements.sort((a, b) => {
             let floatInfoOfA = getItemByAssetID(items, getAssetIDOfElement(a)).floatInfo;
             let floatInfoOfB = getItemByAssetID(items, getAssetIDOfElement(b)).floatInfo;
 
@@ -1063,41 +974,41 @@ function doTheSorting(items, itemElements, method, pages, type){
             return 0;
         });
     }
-    else if(method === "default"){
-        itemElements = itemElements.sort((a, b) =>{
+    else if (method === "default") {
+        itemElements = itemElements.sort((a, b) => {
             let positionOfA = parseInt(getItemByAssetID(items, getAssetIDOfElement(a)).position);
             let positionOfB = parseInt(getItemByAssetID(items, getAssetIDOfElement(b)).position);
 
-            if (positionOfA > positionOfB) {return 1;}
-            if (positionOfA < positionOfB) {return -1;}
+            if (positionOfA > positionOfB) return 1;
+            if (positionOfA < positionOfB) return -1;
             return 0;
         });
     }
-    else if(method === "reverse"){
-        itemElements = itemElements.sort((a, b) =>{
+    else if (method === "reverse") {
+        itemElements = itemElements.sort((a, b) => {
             let positionOfA = parseInt(getItemByAssetID(items, getAssetIDOfElement(a)).position);
             let positionOfB = parseInt(getItemByAssetID(items, getAssetIDOfElement(b)).position);
 
-            if (positionOfA > positionOfB) {return -1;}
-            if (positionOfA < positionOfB) {return 1;}
+            if (positionOfA > positionOfB) return -1;
+            if (positionOfA < positionOfB) return 1;
             return 0;
         });
     }
 
-    if (type === 'offer' || type === 'inventory'){
+    if (type === 'offer' || type === 'inventory') {
         itemElements.reverse();
 
         let numberOfItemsPerPage = type === 'offer' ? 16 : 25;
 
         pages.forEach((page) => {
             page.innerHTML = '';
-            for( let i = 0; i < numberOfItemsPerPage ; i++){
+            for ( let i = 0; i < numberOfItemsPerPage ; i++) {
                 let item = itemElements.pop();
                 if (item !== undefined) page.appendChild(item.parentElement);
             }
         });
     }
-    else if (type === 'your' || type === 'their'){
+    else if (type === 'your' || type === 'their') {
         itemElements.reverse();
         itemElements.forEach(itemElement => {
             document.getElementById(`${type}_slots`).insertAdjacentElement('afterbegin', itemElement.parentNode.parentNode);
@@ -1106,30 +1017,26 @@ function doTheSorting(items, itemElements, method, pages, type){
     else return itemElements;
 }
 
-function isSIHActive(){
+function isSIHActive() {
     let SIHSwitch = document.getElementById("switchPanel");
     let SIHSwitcherCheckbox = document.getElementById("switcher");
     return (SIHSwitch !== null && SIHSwitcherCheckbox !== null && SIHSwitcherCheckbox.checked)
 }
 
-function getPrice(market_hash_name, dopplerInfo, prices, provider, exchange_rate, currency){
+function getPrice(market_hash_name, dopplerInfo, prices, provider, exchange_rate, currency) {
     let price = 0.0;
-    if(provider === pricingProviders.csgotrader.name || provider === pricingProviders.csmoney.name){
-        if(dopplerInfo !== undefined){
-            if(prices[market_hash_name] !== undefined && prices[market_hash_name]["doppler"] !== undefined && prices[market_hash_name]["doppler"] !== "null" && prices[market_hash_name]["doppler"][dopplerInfo.name] !== "null" && prices[market_hash_name]["doppler"][dopplerInfo.name] !== undefined){
+    if (provider === pricingProviders.csgotrader.name || provider === pricingProviders.csmoney.name){
+        if (dopplerInfo !== undefined) {
+            if (prices[market_hash_name] !== undefined && prices[market_hash_name]["doppler"] !== undefined && prices[market_hash_name]["doppler"] !== "null" && prices[market_hash_name]["doppler"][dopplerInfo.name] !== "null" && prices[market_hash_name]["doppler"][dopplerInfo.name] !== undefined){
                 price = (prices[market_hash_name]["doppler"][dopplerInfo.name] * exchange_rate).toFixed(2);
             }
-            else if(prices[market_hash_name] !== undefined && (prices[market_hash_name]["doppler"] === undefined || prices[market_hash_name]["doppler"][dopplerInfo.name] === undefined || prices[market_hash_name]["doppler"] === "null" || prices[market_hash_name]["doppler"][dopplerInfo.name] === "null") && prices[market_hash_name]["price"] !== "null"){
+            else if (prices[market_hash_name] !== undefined && (prices[market_hash_name]["doppler"] === undefined || prices[market_hash_name]["doppler"][dopplerInfo.name] === undefined || prices[market_hash_name]["doppler"] === "null" || prices[market_hash_name]["doppler"][dopplerInfo.name] === "null") && prices[market_hash_name]["price"] !== "null"){
                 price = (prices[market_hash_name]["price"] * exchange_rate).toFixed(2)
             }
         }
-        else{
-            price =  prices[market_hash_name] === undefined || prices[market_hash_name] === "null" || prices[market_hash_name] === null || prices[market_hash_name]["price"] === undefined || prices[market_hash_name]["price"] === "null" ? 0.0 : (prices[market_hash_name]["price"] * exchange_rate).toFixed(2);
-        }
+        else price =  prices[market_hash_name] === undefined || prices[market_hash_name] === "null" || prices[market_hash_name] === null || prices[market_hash_name]["price"] === undefined || prices[market_hash_name]["price"] === "null" ? 0.0 : (prices[market_hash_name]["price"] * exchange_rate).toFixed(2);
     }
-    else{
-        price =  prices[market_hash_name] === undefined || prices[market_hash_name] === "null" || prices[market_hash_name] === null || prices[market_hash_name]["price"] === undefined || prices[market_hash_name]["price"] === "null" ? 0.0 : (prices[market_hash_name]["price"] * exchange_rate).toFixed(2);
-    }
+    else price =  prices[market_hash_name] === undefined || prices[market_hash_name] === "null" || prices[market_hash_name] === null || prices[market_hash_name]["price"] === undefined || prices[market_hash_name]["price"] === "null" ? 0.0 : (prices[market_hash_name]["price"] * exchange_rate).toFixed(2);
 
     return {
         price: price,
@@ -1138,10 +1045,10 @@ function getPrice(market_hash_name, dopplerInfo, prices, provider, exchange_rate
 }
 
 // inject scripts from content scripts the the page context, usually to access variables or override functionality
-function injectToPage(scriptString, toRemove, id, executeAndReturn){
+function injectToPage(scriptString, toRemove, id, executeAndReturn) {
     // removes previously added instance of the script
     let elementFromBefore = document.getElementById(id);
-    if(elementFromBefore !== null) elementFromBefore.parentElement.removeChild(elementFromBefore);
+    if (elementFromBefore !== null) elementFromBefore.parentElement.removeChild(elementFromBefore);
 
     let toInject = document.createElement('script');
     toInject.id = id;
@@ -1160,11 +1067,11 @@ function injectToPage(scriptString, toRemove, id, executeAndReturn){
 // updates the SteamID of the extension's user in storage
 function updateLoggedInUserID(){
     let steamID = getUserSteamID();
-    if(steamID !== 'false' && steamID !== false) chrome.storage.local.set({steamIDOfUser: steamID}, () =>{});
+    if (steamID !== 'false' && steamID !== false) chrome.storage.local.set({steamIDOfUser: steamID}, () =>{});
 }
 
 // gets the details of an item by matching the passed asset id with the ones from the api call
-function getItemByAssetID(items, assetIDToFind){
+function getItemByAssetID(items, assetIDToFind) {
     if (items === undefined || items.length === 0) return null;
     return items.filter(item => item.assetid === assetIDToFind)[0];
 }
@@ -1233,14 +1140,14 @@ function addToFloatCache(assetID, floatInfo) {
     }, () => {});
 }
 
-function addFloatIndicator(itemElement, floatInfo){
+function addFloatIndicator(itemElement, floatInfo) {
     if (floatInfo !== null && itemElement.querySelector('div.floatIndicator') === null) {
         itemElement.insertAdjacentHTML('beforeend', `<div class="floatIndicator">${floatInfo.floatvalue.toFixedNoRounding(4)}</div>`);
     }
 }
 
 function addPriceIndicator(itemElement, priceInfo) {
-    if(priceInfo !== undefined && priceInfo !== 'null' && priceInfo !== null) {
+    if (priceInfo !== undefined && priceInfo !== 'null' && priceInfo !== null) {
         itemElement.insertAdjacentHTML('beforeend', `<div class='priceIndicator'>${priceInfo.display}</div>`);
     }
 }
@@ -1255,7 +1162,7 @@ function addSSTandExtIndicators(itemElement, item) {
 }
 
 function makeItemColorful(itemElement, item, colorfulItemsEnabled) {
-    if(colorfulItemsEnabled){
+    if (colorfulItemsEnabled) {
         if (item.dopplerInfo !== undefined) itemElement.setAttribute('style', `background-image: url(); background-color: #${item.dopplerInfo.color}`);
         else itemElement.setAttribute('style', `background-image: url(); background-color: ${item.quality.backgroundcolor}; border-color: ${item.quality.backgroundcolor}`);
     }
@@ -1309,7 +1216,7 @@ function addFloatDataToPage(job, floatQueue, floatInfo) {
         item.floatInfo = floatInfo;
         item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
 
-        if (job.type === 'inventory_floatbar'){
+        if (job.type === 'inventory_floatbar') {
             if (getAssetIDofActive() === job.assetID) updateFloatAndPatternElements(item);
         }
 
@@ -1353,14 +1260,14 @@ function getFloatInfoFromCache(assetIDs) {
     });
 }
 
-function getActivePage(type){
+function getActivePage(type) {
     let activePage = null;
     if (type === 'inventory') document.querySelectorAll('.inventory_page').forEach(page => {if (page.style.display !== 'none') activePage = page});
     else if (type === 'offer') getActiveInventory().querySelectorAll('.inventory_page').forEach(page => {if (page.style.display !== 'none') activePage = page});
     return activePage;
 }
 
-function addPageControlEventListeners(type){
+function addPageControlEventListeners(type) {
     let pageControls = document.getElementById('inventory_pagecontrols');
     if (pageControls !== null) {
         pageControls.addEventListener('click', () => {
@@ -1551,7 +1458,7 @@ function uuidv4() {
 }
 
 // sends a message to the "back end" to request active received and sent trade offers
-function getOffersFromAPI(){
+function getOffersFromAPI() {
     return new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({getTradeOffers: 'getTradeOffers'}, (response) => {
             if (response.apiKeyValid === false) reject('apiKeyInvalid');
@@ -1563,7 +1470,7 @@ function getOffersFromAPI(){
     });
 }
 
-function extractItemsFromOffers(offers){
+function extractItemsFromOffers(offers) {
     let itemsToReturn = [];
     if (offers !== undefined || null) {
         offers.forEach(offer => {
