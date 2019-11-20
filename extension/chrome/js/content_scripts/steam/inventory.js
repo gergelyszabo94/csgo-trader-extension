@@ -440,15 +440,15 @@ function addFunctionBar(){
 
         let keys = Object.keys(sortingModes);
         for (let key of keys){
-            let option = document.createElement("option");
+            let option = document.createElement('option');
             option.value = sortingModes[key].key;
             option.text = sortingModes[key].name;
             sortingSelect.add(option);
             generateSortingSelect.add(option.cloneNode(true));
         }
 
-        document.getElementById("selectButton").addEventListener("click", (event) => {
-            if(event.target.classList.contains("selectionActive")){
+        document.getElementById('selectButton').addEventListener('click', (event) => {
+            if (event.target.classList.contains('selectionActive')) {
                 // analytics
                 trackEvent({
                     type: 'event',
@@ -457,8 +457,12 @@ function addFunctionBar(){
 
                 unselectAllItems();
                 updateSelectedItemsSummary();
-                event.target.classList.remove("selectionActive");
-                if (isOwnInventory()) document.getElementById('massListing').classList.add('hidden');
+                event.target.classList.remove('selectionActive');
+
+                if (isOwnInventory()) {
+                    document.getElementById('massListing').classList.add('hidden');
+                    document.getElementById('listingTable').querySelector('tbody').innerHTML = '';
+                }
                 document.body.removeEventListener('click', listenSelectClicks, false);
             }
             else{
@@ -470,7 +474,7 @@ function addFunctionBar(){
 
                 document.body.addEventListener('click', listenSelectClicks, false);
                 event.target.classList.add("selectionActive");
-                if (isOwnInventory())  document.getElementById('massListing').classList.remove('hidden');
+                if (isOwnInventory()) document.getElementById('massListing').classList.remove('hidden');
             }
         });
 
@@ -499,25 +503,20 @@ function updateSelectedItemsSummary(){
 
     document.getElementById('numberOfItemsToSell').innerText = numberOfSelectedItems.toString();
 
-    selectedItems.forEach(itemElement =>{
+    selectedItems.forEach(itemElement => {
         let item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
         selectedTotal += parseFloat(item.price.price);
-        addListingRow(item);
-        getPriceOverview(item.market_hash_name).then(
-            priceOverview => {
-                document.getElementById('listingTable').querySelectorAll('.itemName').forEach(itemNameElement => {
-                    if (itemNameElement.innerText === item.market_hash_name) {
-                        if (priceOverview.lowest_price !== undefined) {
-                            let startingAt = itemNameElement.parentNode.querySelector('.itemStartingAt');
-                            startingAt.innerText = priceOverview.lowest_price;
-                            startingAt.setAttribute('data-price-set', true);
-                            startingAt.setAttribute('data-price-in-cents', steamFormattedPriceToCents(priceOverview.lowest_price));
-                        }
-                    }
-                });
-            }, (error) => {console.log(error)}
-        );
+
+        if (item.marketable === 1) {
+            let listingRow = getListingRowByAssetID(item.assetid);
+
+            if (listingRow === null) {
+                addListingRow(item);
+                addStartingAtAndQuickSellPrice(item);
+            }
+        }
     });
+    removeUnselectedItemsFromTable();
 
     chrome.storage.local.get('currency', (result) =>{
         document.getElementById('selectedTotalValue').innerText = prettyPrintPrice(result.currency, selectedTotal);
@@ -766,10 +765,7 @@ function sellItem(assetID, price) {
 }
 
 function addListingRow(item) {
-    let listingsTable = document.getElementById('listingTable');
-
-    if (listingsTable.querySelector(`[data-assetid="${item.assetid}"]`) === null && item.marketable === 1) { // only add if not present yet
-        let row = `
+    let row = `
         <tr data-assetid="${item.assetid}">
             <td class="itemName">${item.market_hash_name}</td>
             <td class="itemAmount">1</td>
@@ -778,8 +774,66 @@ function addListingRow(item) {
             <td class="itemQuickSell">Loading...</td>
             <td class="itemUserPrice"><input type="number"></td>
         </tr>`;
-        listingsTable.querySelector('tbody').insertAdjacentHTML('beforeend', row);
+    document.getElementById('listingTable').querySelector('tbody').insertAdjacentHTML('beforeend', row);
+}
+
+function getListingRowByAssetID(assetID) {
+    return document.getElementById('listingTable').querySelector(`[data-assetid="${assetID}"]`);
+}
+
+function addStartingAtAndQuickSellPrice(item) {
+    let listingRow = getListingRowByAssetID(item.assetid);
+    let startingAtElement = listingRow.querySelector('.itemStartingAt');
+    startingAtElement.setAttribute('data-price-in-progress', true);
+    if (startingAtElement.getAttribute('data-price-set') !== true) { // check if price is already set
+        // check if there is another listing with the same market_hash_name that has a price already set or requesting is in progress
+        let priceFromOtherListing = null;
+        let otherInProgress = false;
+
+        document.getElementById('listingTable').querySelectorAll('.itemName').forEach(itemNameElement => {
+            if (itemNameElement.innerText === item.market_hash_name) {
+                let startingAt = itemNameElement.parentNode.querySelector('.itemStartingAt');
+                if (startingAt.getAttribute('data-price-set') === true) priceFromOtherListing = startingAt.innerText;
+                else if (startingAt.getAttribute('data-price-in-progress') === true) otherInProgress = true;
+            }
+        });
+
+        if (priceFromOtherListing !== null) {
+            startingAtElement.setAttribute('data-price-in-progress', false);
+            startingAtElement.setAttribute('data-price-set', true);
+        }
+        else if (!otherInProgress) {
+            getPriceOverview(item.market_hash_name).then(
+                priceOverview => {
+                    document.getElementById('listingTable').querySelectorAll('.itemName').forEach(itemNameElement => {
+                        if (itemNameElement.innerText === item.market_hash_name) {
+                            if (priceOverview.lowest_price !== undefined) {
+                                let startingAt = itemNameElement.parentNode.querySelector('.itemStartingAt');
+                                startingAt.innerText = priceOverview.lowest_price;
+                                startingAt.setAttribute('data-price-set', true);
+                                startingAt.setAttribute('data-price-in-cents', steamFormattedPriceToCents(priceOverview.lowest_price));
+                            }
+                            else {
+                                startingAtElement.setAttribute('data-price-in-progress', false);
+                                startingAt.setAttribute('data-price-set', false);
+                            }
+                        }
+                    });
+                }, (error) => {console.log(error)}
+            );
+        }
     }
+    // document.getElementById('listingTable').querySelectorAll('.itemStartingAt').forEach(startingAtElement => { // looks for rows that don't have their price set yet
+    //     if (startingAtElement.getAttribute('data-price-set') !== true) {
+    //
+    //     }
+    // });
+}
+
+function removeUnselectedItemsFromTable() {
+    document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr').forEach(listingRow => {
+        if (!findElementByAssetID(listingRow.getAttribute('data-assetid')).classList.contains('selected')) listingRow.parentNode.removeChild(listingRow);
+    });
 }
 
 const floatBar = getFloatBarSkeleton('inventory');
