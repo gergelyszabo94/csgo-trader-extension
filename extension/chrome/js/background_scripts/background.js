@@ -1,6 +1,6 @@
 // handles install and update events
-chrome.runtime.onInstalled.addListener((details) =>{
-    if(details.reason === 'install'){
+chrome.runtime.onInstalled.addListener((details) => {
+    if (details.reason === 'install') {
 
         // sets the default options for first run (on install from the webstore/amo or when loaded in developer mode)
         for (let key in storageKeys) {
@@ -21,13 +21,13 @@ chrome.runtime.onInstalled.addListener((details) =>{
             message: 'Go to the options to set your Steam API key and customize your experience!'
         },(notificationId) =>{});
     }
-    else if(details.reason === 'update'){
+    else if (details.reason === 'update') {
         // sets defaults options for new options that haven't been set yet (for features introduced since the last version - runs when the extension updates or gets reloaded in developer mode)
         // it checks whether the setting has ever been set - I consider removing older ones since there is no one updating from version that old
         let keysArray = [];
         for (let key in storageKeys) {keysArray.push(key)}
 
-        chrome.storage.local.get(keysArray, (result) =>{
+        chrome.storage.local.get(keysArray, (result) => {
             for (let key in storageKeys) { if (result[key] === undefined) {
                 if (key === 'clientID') chrome.storage.local.set({[key]: uuidv4()}, () =>{}); // id generated to identify the extension installation - a user can use use multiple installations of the extension
                 else chrome.storage.local.set({[key]: storageKeys[key]}, () =>{})
@@ -35,7 +35,7 @@ chrome.runtime.onInstalled.addListener((details) =>{
         });
 
         // moves float cache from under a single storage key to individual keys TODO: remove these lines after a few new versions
-        chrome.storage.local.get('floatCache', (result) =>{
+        chrome.storage.local.get('floatCache', (result) => {
             if (result.floatCache !== undefined && result.floatCache !== null) {
                 for (let assetID in result.floatCache) {
                     chrome.storage.local.set({[`floatCache_${assetID}`]: result.floatCache[assetID]}, () => {});
@@ -52,12 +52,12 @@ chrome.runtime.onInstalled.addListener((details) =>{
         chrome.browserAction.setBadgeText({text: 'U'});
 
         // notifies the user when the extension is updated
-        chrome.storage.local.get('updateNotifications', (result) =>{
+        chrome.storage.local.get('updateNotifications', (result) => {
             if(result.updateNotifications){
                 let thisVersion = chrome.runtime.getManifest().version;
                 chrome.permissions.contains({
                     permissions: ['tabs']
-                }, (result) =>{
+                }, (result) => {
                     let message = 'Check the changelog for the hot new stuff!';
                     if (result) {
                         message = 'You can check the changelog by clicking here!';
@@ -71,6 +71,8 @@ chrome.runtime.onInstalled.addListener((details) =>{
                 });
             }
         });
+        // send telemetry on update
+        sendTelemetry();
     }
 
     // updates the prices and exchange rates - retries periodically if it's the first time (on install) and it fails to update prices/exchange rates
