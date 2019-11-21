@@ -459,10 +459,11 @@ function addFunctionBar(){
                 updateSelectedItemsSummary();
                 event.target.classList.remove('selectionActive');
 
-                if (isOwnInventory()) {
-                    document.getElementById('massListing').classList.add('hidden');
-                    document.getElementById('listingTable').querySelector('tbody').innerHTML = '';
-                }
+                // hidden for release 1.21.1
+                // if (isOwnInventory()) {
+                //     document.getElementById('massListing').classList.add('hidden');
+                //     document.getElementById('listingTable').querySelector('tbody').innerHTML = '';
+                // }
                 document.body.removeEventListener('click', listenSelectClicks, false);
             }
             else{
@@ -474,7 +475,8 @@ function addFunctionBar(){
 
                 document.body.addEventListener('click', listenSelectClicks, false);
                 event.target.classList.add("selectionActive");
-                if (isOwnInventory()) document.getElementById('massListing').classList.remove('hidden');
+                // hidden for release 1.21.1
+                // if (isOwnInventory()) document.getElementById('massListing').classList.remove('hidden');
             }
         });
 
@@ -506,17 +508,18 @@ function updateSelectedItemsSummary(){
     selectedItems.forEach(itemElement => {
         let item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
         selectedTotal += parseFloat(item.price.price);
-
-        if (item.marketable === 1) {
-            let listingRow = getListingRowByAssetID(item.assetid);
-
-            if (listingRow === null) {
-                addListingRow(item);
-                addStartingAtAndQuickSellPrice(item);
-            }
-        }
+        // hidden for release 1.21.1
+        // if (item.marketable === 1) {
+        //     let listingRow = getListingRowByAssetID(item.assetid);
+        //
+        //     if (listingRow === null) {
+        //         addListingRow(item);
+        //         addStartingAtAndQuickSellPrice(item);
+        //     }
+        // }
     });
-    removeUnselectedItemsFromTable();
+    // hidden for release 1.21.1
+    // removeUnselectedItemsFromTable();
 
     chrome.storage.local.get('currency', (result) =>{
         document.getElementById('selectedTotalValue').innerText = prettyPrintPrice(result.currency, selectedTotal);
@@ -685,7 +688,7 @@ function hideFloatBars(){
 
 function findElementByAssetID(assetID){ return document.getElementById(`730_2_${assetID}`)}
 
-function addFloatIndicatorsToPage(page){
+function addFloatIndicatorsToPage(page) {
     chrome.storage.local.get('autoFloatInventory', (result) => {
         if (result.autoFloatInventory) {
             page.querySelectorAll('.item.app730.context2').forEach(itemElement => {
