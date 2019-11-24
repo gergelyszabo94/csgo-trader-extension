@@ -201,7 +201,7 @@ function loadAllItemsProperly(){
 }
 
 function addFunctionBars(){
-    if(document.getElementById('responsivetrade_itemfilters') !== null) {
+    if (document.getElementById('responsivetrade_itemfilters') !== null) {
         if (document.getElementById('offer_function_bar') === null) {
             // inserts left side function bar
             document.getElementById('responsivetrade_itemfilters').insertAdjacentHTML('beforebegin', `
@@ -216,6 +216,8 @@ function addFunctionBars(){
                     <span class="offer_action" id="take_everything_button">Everything</span>
                     <input type="number" id="take_number_of_keys" class="keyNumberInput">
                     <span class="offer_action" id="take_keys">Keys</span>
+                    <input type="number" id="take_number_of_selected" class="keyNumberInput">
+                    <span class="offer_action" id="take_selected">Selected</span>
                 </div>
             </div>
             `);
@@ -241,6 +243,28 @@ function addFunctionBars(){
                     if (keysTaken < numberOfKeys && getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).type.internal_name === itemTypes.key.internal_name){
                         moveItem(item);
                         keysTaken++;
+                    }
+                });
+            });
+
+            // add selected functionality
+            document.getElementById('take_selected').addEventListener('click', () => {
+                let numberOfSelected = document.getElementById('take_number_of_selected').value;
+                let selectedItems = [];
+                let selectedTaken = 0;
+
+                let itemElements = getActiveInventory().querySelectorAll('.item');
+
+                itemElements.forEach((item) => { // goes through the items and collects the names of the selected ones
+                    if (item.classList.contains('selected')) {
+                        selectedItems.push(getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name);
+                    }
+                });
+
+                itemElements.forEach((item) => {
+                    if (selectedTaken < numberOfSelected && selectedItems.includes(getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name)){
+                        moveItem(item);
+                        selectedTaken++;
                     }
                 });
             });
@@ -474,9 +498,8 @@ function getItemInfoFromPage(who) {
 
 function rightClickControlHandler(event) {
     if (event.ctrlKey) {
-        event.preventDefault(); // prevents normal behavior from happening that would be the context menu appearing
-        let marketHashNameToLookFor = getItemByAssetID(combinedInventories, getAssetIDOfElement(event.target.parentNode)).market_hash_name;
-        event.target.parentNode.classList.add('selected');
+        event.preventDefault(); // prevents the default behavior from happening - which would be the context menu appearing in this case
+        event.target.parentNode.classList.toggle('selected');
         return false;
     }
 }
