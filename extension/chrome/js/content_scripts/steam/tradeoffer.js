@@ -403,17 +403,19 @@ function addAPartysFunctionBar(whose){
                     <span class="offer_action" id="remove_${whose}_everything_button">Everything</span>
                     <input type="number" id="remove_${whose}_number_of_keys" class="keyNumberInput">
                     <span class="offer_action" id="remove_${whose}_keys">Keys</span>
+                    <input type="number" id="remove_${whose}_number_of_selected" class="keyNumberInput">
+                    <span class="offer_action" id="remove_${whose}_selected">Selected</span>
                 </div>
             </div>
             `);
 
-    // remove "your" everything functionality
+    // remove your/their everything functionality
     document.getElementById(`remove_${whose}_everything_button`).addEventListener('click', () => {
         document.getElementById(`trade_${whose}s`).querySelectorAll('.item').forEach(item => {moveItem(item)});
         removeLeftOverSlots();
     });
 
-    // remove your keys functionality
+    // remove your/their keys functionality
     document.getElementById(`remove_${whose}_keys`).addEventListener('click', () => {
         let numberOfKeys = document.getElementById(`remove_${whose}_number_of_keys`).value;
         let keysRemoved = 0;
@@ -421,6 +423,25 @@ function addAPartysFunctionBar(whose){
             if (keysRemoved < numberOfKeys && getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).type.internal_name === itemTypes.key.internal_name){
                 moveItem(item);
                 keysRemoved++;
+            }
+            removeLeftOverSlots();
+        });
+    });
+
+    // remove your/their selected items functionality
+    document.getElementById(`remove_${whose}_selected`).addEventListener('click', () => {
+        let numberOfSelected = document.getElementById(`remove_${whose}_number_of_selected`).value;
+        let selectedRemoved = 0;
+        let selectedItems = [];
+        let itemElements = document.getElementById(`trade_${whose}s`).querySelectorAll('.item');
+        itemElements.forEach((item) => {
+            if (item.classList.contains('selected')) selectedItems.push(getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name);
+        });
+
+        itemElements.forEach((item) => {
+            if (selectedRemoved < numberOfSelected && selectedItems.includes(getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name)){
+                moveItem(item);
+                selectedRemoved++;
             }
             removeLeftOverSlots();
         });
