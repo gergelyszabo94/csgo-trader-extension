@@ -126,7 +126,6 @@ function getExteriorFromTags(tags) {
                 }
 
                 // no exterior
-                console.log(tag.internal_name);
                 return null;
             }
         }

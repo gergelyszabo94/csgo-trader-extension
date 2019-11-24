@@ -327,12 +327,17 @@ function moveItem(item){
     item.dispatchEvent (clickEvent);
 }
 
-// single click move, move same with ctrl+click
+// single click move, move same with ctrl+click, ctrl +right click to select item for mass moving
 function singleClickControlClick(){
-    document.querySelectorAll('.item.app730.context2').forEach(item => {item.removeEventListener('click', singleClickControlClickHandler)});
+    document.querySelectorAll('.item.app730.context2').forEach(item => {
+        item.removeEventListener('click', singleClickControlClickHandler);
+        item.removeEventListener('click', singleClickControlClickHandler, false);
+
+    });
 
     document.querySelectorAll('.item.app730.context2').forEach(item => {
         item.addEventListener('click', singleClickControlClickHandler);
+        item.addEventListener('contextmenu', rightClickControlHandler, false);
     });
 }
 
@@ -465,6 +470,15 @@ function getItemInfoFromPage(who) {
              else trimmedAssets = null;
         document.querySelector('body').setAttribute('offerInventoryInfo', JSON.stringify(trimmedAssets));`;
     return JSON.parse(injectToPage(getItemsSccript, true, 'getOfferItemInfo', 'offerInventoryInfo'));
+}
+
+function rightClickControlHandler(event) {
+    if (event.ctrlKey) {
+        event.preventDefault(); // prevents normal behavior from happening that would be the context menu appearing
+        let marketHashNameToLookFor = getItemByAssetID(combinedInventories, getAssetIDOfElement(event.target.parentNode)).market_hash_name;
+        event.target.parentNode.classList.add('selected');
+        return false;
+    }
 }
 
 const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
