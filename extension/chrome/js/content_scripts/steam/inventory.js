@@ -459,11 +459,10 @@ function addFunctionBar(){
                 updateSelectedItemsSummary();
                 event.target.classList.remove('selectionActive');
 
-                // hidden for release 1.21.1
-                // if (isOwnInventory()) {
-                //     document.getElementById('massListing').classList.add('hidden');
-                //     document.getElementById('listingTable').querySelector('tbody').innerHTML = '';
-                // }
+                if (isOwnInventory()) {
+                    document.getElementById('massListing').classList.add('hidden');
+                    document.getElementById('listingTable').querySelector('tbody').innerHTML = '';
+                }
                 document.body.removeEventListener('click', listenSelectClicks, false);
             }
             else{
@@ -475,8 +474,7 @@ function addFunctionBar(){
 
                 document.body.addEventListener('click', listenSelectClicks, false);
                 event.target.classList.add("selectionActive");
-                // hidden for release 1.21.1
-                // if (isOwnInventory()) document.getElementById('massListing').classList.remove('hidden');
+                if (isOwnInventory()) document.getElementById('massListing').classList.remove('hidden');
             }
         });
 
@@ -508,18 +506,17 @@ function updateSelectedItemsSummary(){
     selectedItems.forEach(itemElement => {
         let item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
         selectedTotal += parseFloat(item.price.price);
-        // hidden for release 1.21.1
-        // if (item.marketable === 1) {
-        //     let listingRow = getListingRowByAssetID(item.assetid);
-        //
-        //     if (listingRow === null) {
-        //         addListingRow(item);
-        //         addStartingAtAndQuickSellPrice(item);
-        //     }
-        // }
+
+        if (item.marketable === 1) {
+            let listingRow = getListingRowByAssetID(item.assetid);
+
+            if (listingRow === null) {
+                addListingRow(item);
+                addStartingAtAndQuickSellPrice(item);
+            }
+        }
     });
-    // hidden for release 1.21.1
-    // removeUnselectedItemsFromTable();
+    removeUnselectedItemsFromTable();
 
     chrome.storage.local.get('currency', (result) =>{
         document.getElementById('selectedTotalValue').innerText = prettyPrintPrice(result.currency, selectedTotal);
@@ -812,9 +809,15 @@ function addStartingAtAndQuickSellPrice(item) {
                         if (itemNameElement.innerText === item.market_hash_name) {
                             if (priceOverview.lowest_price !== undefined) {
                                 let startingAt = itemNameElement.parentNode.querySelector('.itemStartingAt');
+                                let quickSell = itemNameElement.parentNode.querySelector('.itemQuickSell');
+                                let priceInCents = steamFormattedPriceToCents(priceOverview.lowest_price);
+                                let quickSellPrice = steamFormattedPriceToCents(priceOverview.lowest_price) - 1;
+
                                 startingAt.innerText = priceOverview.lowest_price;
                                 startingAt.setAttribute('data-price-set', true);
-                                startingAt.setAttribute('data-price-in-cents', steamFormattedPriceToCents(priceOverview.lowest_price));
+                                startingAt.setAttribute('data-price-in-cents', priceInCents);
+                                quickSell.setAttribute('data-price-in-cents', quickSellPrice);
+                                quickSell.innerText = quickSellPrice;
                             }
                             else {
                                 startingAtElement.setAttribute('data-price-in-progress', false);
