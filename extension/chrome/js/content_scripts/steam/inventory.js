@@ -817,7 +817,7 @@ function addStartingAtAndQuickSellPrice(item) {
                                 startingAt.setAttribute('data-price-set', true);
                                 startingAt.setAttribute('data-price-in-cents', priceInCents);
                                 quickSell.setAttribute('data-price-in-cents', quickSellPrice);
-                                quickSell.innerText = quickSellPrice;
+                                quickSell.innerText = centsToSteamFormattedPrice(quickSellPrice);
                             }
                             else {
                                 startingAtElement.setAttribute('data-price-in-progress', false);

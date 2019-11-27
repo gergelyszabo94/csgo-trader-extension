@@ -1055,7 +1055,7 @@ function injectToPage(scriptString, toRemove, id, executeAndReturn) {
     (document.head || document.documentElement).appendChild(toInject);
 
     let simpleAttributeParsing = ['steamidOfLoggedinUser', 'steamidOfProfileOwner', 'tradePartnerSteamID', 'inventoryOwnerID', 'listingsInfo',
-        'inventoryInfo', 'allItemsLoaded', 'offerInventoryInfo', 'steamWalletCurrency', 'steamWallet', 'formattedToInt'];
+        'inventoryInfo', 'allItemsLoaded', 'offerInventoryInfo', 'steamWalletCurrency', 'steamWallet', 'formattedToInt', 'intToFormatted'];
     let result = simpleAttributeParsing.includes(executeAndReturn) ? document.querySelector('body').getAttribute(executeAndReturn) : null;
     document.querySelector('body').setAttribute(executeAndReturn, '');
 
@@ -1527,4 +1527,10 @@ function getPriceOverview(market_hash_name) {
 function steamFormattedPriceToCents(formattedPrice) {
     let formattedToIntScript = `document.querySelector('body').setAttribute('formattedToInt', GetPriceValueAsInt('${formattedPrice}'));`;
     return injectToPage(formattedToIntScript, true, 'formattedToIntScript', 'formattedToInt');
+}
+
+// converts cent integers to pretty formatted string
+function centsToSteamFormattedPrice(centsPrice) {
+    let intToFormattedScript = `document.querySelector('body').setAttribute('intToFormatted', v_currencyformat(${centsPrice}, GetCurrencyCode(g_rgWalletInfo.wallet_currency)));`;
+    return injectToPage(intToFormattedScript, true, 'intToFormattedScript', 'intToFormatted');
 }
