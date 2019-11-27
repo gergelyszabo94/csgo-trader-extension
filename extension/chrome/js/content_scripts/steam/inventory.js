@@ -416,6 +416,8 @@ function addFunctionBar(){
                             <textarea class="hidden-copy-textarea" id="generated_list_copy_textarea"></textarea>
                     </div>
                     <div id="massListing" class="hidden">
+                    <h2>Mass Market Listing - Select Items to Start (BETA)</h2>
+                    <div class="hidden not_tradable" id="currency_mismatch_warning">Warning: Your Steam Wallet currency and CSGO Trader currency are not the same. <span class="underline" id="changeCurrency">Click here to fix this</span></div>
                         <table id="listingTable">
                             <thead>
                                 <tr>
@@ -434,6 +436,17 @@ function addFunctionBar(){
                     </div>
                 </div>
                 `);
+
+        // shows currency mismatch warning and option to change currency
+        chrome.storage.local.get('currency', (result) => {
+            let walletCurrency = getSteamWalletCurrency();
+            if (walletCurrency !== result.currency) {
+                document.getElementById('currency_mismatch_warning').classList.remove('hidden');
+                document.getElementById('changeCurrency').addEventListener('click', () => {
+                    chrome.storage.local.set({'currency': walletCurrency}, () => location.reload());
+                });
+            }
+        });
 
         let sortingSelect = document.getElementById('sortingMethod');
         let generateSortingSelect = document.getElementById('generate_sort');

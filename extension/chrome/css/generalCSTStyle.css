@@ -389,6 +389,10 @@ progress {
     font-size: 0.7rem;
 }
 
+.underline{
+    text-decoration: underline;
+}
+
 /**
  * Tooltip Styles
  */
