@@ -1534,3 +1534,17 @@ function centsToSteamFormattedPrice(centsPrice) {
     let intToFormattedScript = `document.querySelector('body').setAttribute('intToFormatted', v_currencyformat(${centsPrice}, GetCurrencyCode(g_rgWalletInfo.wallet_currency)));`;
     return injectToPage(intToFormattedScript, true, 'intToFormattedScript', 'intToFormatted');
 }
+
+function userPriceToProperPrice(userInput) {
+    let strippedFromExtraChars = userInput.replace(/[^0-9.,]/g, '');
+    let splitChar =  strippedFromExtraChars.includes('.') ? '.' : strippedFromExtraChars.includes(',') ? ',' : '';
+    if (splitChar === '') return parseInt(strippedFromExtraChars + '00'); // whole number
+
+    let parts = strippedFromExtraChars.split(splitChar);
+    let wholePart = parts[0];
+    let decimalPart = parts[1] === undefined ? '00' : parts[1];
+
+    if (decimalPart.length === 1) decimalPart += '0'; // turns 0.3 into 0.30
+    else if (decimalPart.length > 2) decimalPart = decimalPart.substr(0, 2); // turns 0.0003 into 0.00
+    return parseInt(wholePart + decimalPart);
+}

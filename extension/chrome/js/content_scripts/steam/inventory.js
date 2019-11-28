@@ -785,9 +785,14 @@ function addListingRow(item) {
             <td class="itemExtensionPrice">${item.price.display}</td>
             <td class="itemStartingAt">Loading...</td>
             <td class="itemQuickSell">Loading...</td>
-            <td class="itemUserPrice"><input type="number"></td>
+            <td class="itemUserPrice"><input type="text"></td>
         </tr>`;
     document.getElementById('listingTable').querySelector('tbody').insertAdjacentHTML('beforeend', row);
+    getListingRowByAssetID(item.assetid).querySelector('.itemUserPrice').querySelector('input[type=text]').addEventListener('change', (event) => {
+        let priceInt = userPriceToProperPrice(event.target.value);
+        event.target.parentElement.setAttribute('data-price-in-cents', priceInt);
+        event.target.value = centsToSteamFormattedPrice(priceInt);
+    });
 }
 
 function getListingRowByAssetID(assetID) {
