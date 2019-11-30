@@ -536,11 +536,13 @@ function updateSelectedItemsSummary(){
             }
         }
     });
+
     removeUnselectedItemsFromTable();
+    updateMassSaleTotal();
 
     chrome.storage.local.get('currency', (result) =>{
         document.getElementById('selectedTotalValue').innerText = prettyPrintPrice(result.currency, selectedTotal);
-        document.getElementById('saleTotal').innerText = prettyPrintPrice(result.currency, selectedTotal);
+        //document.getElementById('saleTotal').innerText = prettyPrintPrice(result.currency, selectedTotal);
     });
 }
 
@@ -789,7 +791,7 @@ function addListingRow(item) {
         <tr data-assetids="${item.assetid}" data-item-name="${item.market_hash_name}">
             <td class="itemName">${item.market_hash_name}</td>
             <td class="itemAmount">1</td>
-            <td class="itemExtensionPrice selected">${item.price.display}</td>
+            <td class="itemExtensionPrice selected" data-price-in-cents="${userPriceToProperPrice(item.price.price)}">${item.price.display}</td>
             <td class="itemStartingAt">Loading...</td>
             <td class="itemQuickSell">Loading...</td>
             <td class="itemUserPrice"><input type="text"></td>
@@ -803,6 +805,7 @@ function addListingRow(item) {
         event.target.value = centsToSteamFormattedPrice(priceInt);
         event.target.parentElement.classList.add('selected');
         event.target.parentElement.parentElement.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell').forEach(priceType => priceType.classList.remove('selected'));
+        updateMassSaleTotal();
     });
 
     listingRow.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell').forEach(priceType => {
@@ -810,7 +813,8 @@ function addListingRow(item) {
             event.target.classList.add('selected');
             event.target.parentNode.querySelectorAll('td').forEach(column => {
                 if (column !== event.target) column.classList.remove('selected');
-            })
+            });
+            updateMassSaleTotal();
         });
     });
 }
@@ -885,6 +889,14 @@ function removeUnselectedItemsFromTable() {
             listingRow.querySelector('.itemAmount').innerText = remainingIDs.length;
         }
     });
+}
+
+function updateMassSaleTotal() {
+    let total = 0;
+    document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr').forEach(listingRow => {
+        total += parseInt(listingRow.querySelector('.selected').getAttribute('data-price-in-cents')) * parseInt(listingRow.querySelector('.itemAmount').innerText)
+    });
+    document.getElementById('saleTotal').innerText = centsToSteamFormattedPrice(total);
 }
 
 const floatBar = getFloatBarSkeleton('inventory');
