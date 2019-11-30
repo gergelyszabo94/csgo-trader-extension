@@ -789,16 +789,29 @@ function addListingRow(item) {
         <tr data-assetids="${item.assetid}" data-item-name="${item.market_hash_name}">
             <td class="itemName">${item.market_hash_name}</td>
             <td class="itemAmount">1</td>
-            <td class="itemExtensionPrice">${item.price.display}</td>
+            <td class="itemExtensionPrice selected">${item.price.display}</td>
             <td class="itemStartingAt">Loading...</td>
             <td class="itemQuickSell">Loading...</td>
             <td class="itemUserPrice"><input type="text"></td>
         </tr>`;
     document.getElementById('listingTable').querySelector('tbody').insertAdjacentHTML('beforeend', row);
-    getListingRow(item.market_hash_name).querySelector('.itemUserPrice').querySelector('input[type=text]').addEventListener('change', (event) => {
+    let listingRow = getListingRow(item.market_hash_name);
+
+    listingRow.querySelector('.itemUserPrice').querySelector('input[type=text]').addEventListener('change', (event) => {
         let priceInt = userPriceToProperPrice(event.target.value);
         event.target.parentElement.setAttribute('data-price-in-cents', priceInt);
         event.target.value = centsToSteamFormattedPrice(priceInt);
+        event.target.parentElement.classList.add('selected');
+        event.target.parentElement.parentElement.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell').forEach(priceType => priceType.classList.remove('selected'));
+    });
+
+    listingRow.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell').forEach(priceType => {
+        priceType.addEventListener('click', (event) => {
+            event.target.classList.add('selected');
+            event.target.parentNode.querySelectorAll('td').forEach(column => {
+                if (column !== event.target) column.classList.remove('selected');
+            })
+        });
     });
 }
 
