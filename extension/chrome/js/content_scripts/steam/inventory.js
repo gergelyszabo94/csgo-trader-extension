@@ -521,11 +521,18 @@ function updateSelectedItemsSummary(){
         selectedTotal += parseFloat(item.price.price);
 
         if (item.marketable === 1) {
-            let listingRow = getListingRowByAssetID(item.assetid);
+            let listingRow = getListingRow(item.market_hash_name);
 
             if (listingRow === null) {
                 addListingRow(item);
                 addStartingAtAndQuickSellPrice(item);
+            }
+            else {
+                let previIDs = listingRow.getAttribute('data-assetids');
+                if (!previIDs.includes(item.assetid)) {
+                    listingRow.setAttribute('data-assetids', `${previIDs},${item.assetid}`);
+                    listingRow.querySelector('.itemAmount').innerText = previIDs.split(',').length + 1;
+                }
             }
         }
     });
@@ -779,7 +786,7 @@ function sellItem(assetID, price) {
 
 function addListingRow(item) {
     let row = `
-        <tr data-assetid="${item.assetid}">
+        <tr data-assetids="${item.assetid}" data-item-name="${item.market_hash_name}">
             <td class="itemName">${item.market_hash_name}</td>
             <td class="itemAmount">1</td>
             <td class="itemExtensionPrice">${item.price.display}</td>
@@ -788,19 +795,19 @@ function addListingRow(item) {
             <td class="itemUserPrice"><input type="text"></td>
         </tr>`;
     document.getElementById('listingTable').querySelector('tbody').insertAdjacentHTML('beforeend', row);
-    getListingRowByAssetID(item.assetid).querySelector('.itemUserPrice').querySelector('input[type=text]').addEventListener('change', (event) => {
+    getListingRow(item.market_hash_name).querySelector('.itemUserPrice').querySelector('input[type=text]').addEventListener('change', (event) => {
         let priceInt = userPriceToProperPrice(event.target.value);
         event.target.parentElement.setAttribute('data-price-in-cents', priceInt);
         event.target.value = centsToSteamFormattedPrice(priceInt);
     });
 }
 
-function getListingRowByAssetID(assetID) {
-    return document.getElementById('listingTable').querySelector(`[data-assetid="${assetID}"]`);
+function getListingRow(name) {
+    return document.getElementById('listingTable').querySelector(`[data-item-name="${name}"]`);
 }
 
 function addStartingAtAndQuickSellPrice(item) {
-    let listingRow = getListingRowByAssetID(item.assetid);
+    let listingRow = getListingRow(item.market_hash_name);
     let startingAtElement = listingRow.querySelector('.itemStartingAt');
     startingAtElement.setAttribute('data-price-in-progress', true);
     if (startingAtElement.getAttribute('data-price-set') !== true) { // check if price is already set
@@ -856,7 +863,14 @@ function addStartingAtAndQuickSellPrice(item) {
 
 function removeUnselectedItemsFromTable() {
     document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr').forEach(listingRow => {
-        if (!findElementByAssetID(listingRow.getAttribute('data-assetid')).classList.contains('selected')) listingRow.parentNode.removeChild(listingRow);
+        let assetIDs = listingRow.getAttribute('data-assetids').split(',');
+        let remainingIDs = assetIDs.filter(assetID => findElementByAssetID(assetID).classList.contains('selected'));
+
+        if (remainingIDs.length === 0) listingRow.parentNode.removeChild(listingRow);
+        else {
+            listingRow.setAttribute('data-assetids', remainingIDs.toString());
+            listingRow.querySelector('.itemAmount').innerText = remainingIDs.length;
+        }
     });
 }
 
