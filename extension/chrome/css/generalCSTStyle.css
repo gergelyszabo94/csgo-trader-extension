@@ -68,6 +68,13 @@
     text-decoration: underline;
 }
 
+#sellButton{
+    font-size: 1rem;
+    font-weight: bold;
+    float: right;
+    margin-right: 20px;
+}
+
 /*bootstrap progress bar*/
 progress {
     vertical-align: baseline;
@@ -391,6 +398,10 @@ progress {
 
 .underline{
     text-decoration: underline;
+}
+
+.strikethrough{
+    text-decoration: line-through;
 }
 
 /**

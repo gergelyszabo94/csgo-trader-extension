@@ -432,10 +432,15 @@ function addFunctionBar(){
                             <tbody>
                             </tbody>
                         </table>
-                        <span><span id="numberOfItemsToSell">0</span> items to sell for <span id="saleTotal">0</span> <span id="sellButton">Start Selling</span></span>
+                        <span><span style="font-weight: bold">Total:</span> <span id="numberOfItemsToSell">0</span> items worth <span id="saleTotal">0</span> <span id="sellButton">Start Selling</span></span>
                     </div>
                 </div>
                 `);
+
+        document.getElementById('sellButton').addEventListener('click', () => {
+            let startSellingScript = `sellNext()`;
+            injectToPage(startSellingScript, true, 'startSelling', false);
+        });
 
         // shows currency mismatch warning and option to change currency
         chrome.storage.local.get('currency', (result) => {
@@ -788,7 +793,7 @@ function sellItem(assetID, price) {
 
 function addListingRow(item) {
     let row = `
-        <tr data-assetids="${item.assetid}" data-item-name="${item.market_hash_name}">
+        <tr data-assetids="${item.assetid}" data-sold-ids="" data-item-name="${item.market_hash_name}">
             <td class="itemName">${item.market_hash_name}</td>
             <td class="itemAmount">1</td>
             <td class="itemExtensionPrice selected" data-price-in-cents="${userPriceToProperPrice(item.price.price)}">${item.price.display}</td>
@@ -964,7 +969,7 @@ trackEvent({
 // injects selling script if own inventory
 if (isOwnInventory()) {
     let sellItemScriptString = `
-        function sellItemOnPage(price, assetID){
+        function sellItemOnPage(name, assetID, price) {
             let myHeaders = new Headers();
             myHeaders.append('Content-Type', 'application/x-www-form-urlencoded');
         
@@ -981,9 +986,36 @@ if (isOwnInventory()) {
                 }
                 else return response.json();
             }).then((body) => {
-                console.log(body);
+                if (body.success) {
+                    let soldFromRow = document.getElementById('listingTable').querySelector('tbody').querySelector('[data-item-name="' + name + '"]');
+                    let assetIDs = soldFromRow.getAttribute('data-assetids').split(',');
+                    let soldIDs = soldFromRow.getAttribute('data-sold-ids').split(',');
+                    soldIDs = soldIDs[0] === '' ? [] : soldIDs;
+            
+                    soldIDs.push(assetID);
+                    if (assetIDs.toString() === soldIDs.toString()) soldFromRow.classList.add('strikethrough');
+                    soldFromRow.querySelector('.itemAmount').innerText = parseInt(soldFromRow.querySelector('.itemAmount').innerText) - 1;
+                    soldFromRow.setAttribute('data-sold-ids', soldIDs.toString());
+            
+                    sellNext();
+                 }
+                 else console.log(body);
             }).catch(err => {
                 console.log(err);
+            });
+        }
+        
+        function sellNext() {
+            document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr').forEach(listingRow => {
+                let assetIDs = listingRow.getAttribute('data-assetids').split(',');
+                let soldIDs = listingRow.getAttribute('data-sold-ids').split(',');
+        
+                for (let assetID of assetIDs) {
+                    if (!soldIDs.includes(assetID)) {
+                        sellItemOnPage(listingRow.getAttribute('data-item-name'), assetID, listingRow.querySelector('.selected').getAttribute('data-price-in-cents'));
+                        return;
+                    }
+                }
             });
         }`;
     injectToPage(sellItemScriptString, false, 'sellItemScript', false);
