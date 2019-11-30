@@ -994,8 +994,17 @@ if (isOwnInventory()) {
             
                     soldIDs.push(assetID);
                     if (assetIDs.toString() === soldIDs.toString()) soldFromRow.classList.add('strikethrough');
-                    soldFromRow.querySelector('.itemAmount').innerText = parseInt(soldFromRow.querySelector('.itemAmount').innerText) - 1;
+                    let quantityElement = soldFromRow.querySelector('.itemAmount');
+                    quantityElement.innerText = parseInt(quantityElement.innerText) - 1;
+                    
+                    // flashing the quantity as a visual feedback when it changes
+                    quantityElement.classList.add('whiteBackground');
+                    setTimeout(() => quantityElement.classList.remove('whiteBackground'), 200);
+                    
                     soldFromRow.setAttribute('data-sold-ids', soldIDs.toString());
+                    let itemElement = document.getElementById('730_2_' + assetID);
+                    itemElement.classList.add('sold');
+                    itemElement.classList.remove('selected');
             
                     sellNext();
                  }

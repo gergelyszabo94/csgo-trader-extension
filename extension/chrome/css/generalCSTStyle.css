@@ -404,6 +404,14 @@ progress {
     text-decoration: line-through;
 }
 
+.sold{
+    opacity: 30%;
+}
+
+.whiteBackground{
+    background-color: white;
+}
+
 /**
  * Tooltip Styles
  */
