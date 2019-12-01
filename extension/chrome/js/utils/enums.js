@@ -19864,6 +19864,76 @@ const currencies = {
         long: "Finney (0.001 of an Ether)",
         sign: "fΞ"
     },
+    AED:{
+        short: "AED",
+        long: "United Arab Emirates Dirham",
+        sign: "د.إ"
+    },
+    ARS:{
+        short: "ARS",
+        long: "Argentine Peso",
+        sign: "AP$"
+    },
+    CLP:{
+        short: "CLP",
+        long: "Chilean Peso",
+        sign: "CP$"
+    },
+    COP:{
+        short: "COP",
+        long: "Colombian Peso",
+        sign: "COL$"
+    },
+    CRC:{
+        short: "CRC",
+        long: "Costa Rican Colón",
+        sign: "₡"
+    },
+    KWD:{
+        short: "KWD",
+        long: "Kuwaiti Dinar",
+        sign: "د.ك"
+    },
+    KZT:{
+        short: "KZT",
+        long: "Kazakhstani Tenge",
+        sign: "₸"
+    },
+    PEN:{
+        short: "PEN",
+        long: "Peruvian Nuevo Sol",
+        sign: "S/"
+    },
+    QAR:{
+        short: "QAR",
+        long: "Qatari Riyal",
+        sign: "ر.ق"
+    },
+    SAR:{
+        short: "SAR",
+        long: "Saudi Riyal",
+        sign: "﷼"
+    },
+    TWD:{
+        short: "TWD",
+        long: "New Taiwan Dollar",
+        sign: "NT$"
+    },
+    UAH:{
+        short: "UAH",
+        long: "Ukrainian Hryvnia",
+        sign: "₴"
+    },
+    UYU:{
+        short: "UYU",
+        long: "Uruguayan Peso",
+        sign: "$U"
+    },
+    VND:{
+        short: "VND",
+        long: "Vietnamese Dong",
+        sign: "₫"
+    }
 };
 
 const sortingModes = {
