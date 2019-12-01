@@ -433,6 +433,7 @@ function addFunctionBar(){
                             </tbody>
                         </table>
                         <span><span style="font-weight: bold">Total:</span> To list <span id="numberOfItemsToSell">0</span> item(s) worth <span id="saleTotal">0</span> and receive <span id="saleTotalAfterFees">0</span> after fees <span id="sellButton">Start Mass Listing</span></span>
+                        <div id="massSellError" class="hidden not_tradable"></div>
                     </div>
                 </div>
                 `);
@@ -1015,7 +1016,14 @@ if (isOwnInventory()) {
             
                     sellNext();
                  }
-                 else console.log(body);
+                 else {
+                    console.log(body);
+                    if (body.message.includes('The price entered plus the sum of outstanding listings')) {
+                        let warningElement = document.getElementById('massSellError');
+                        warningElement.innerText = body.message;
+                        warningElement.classList.remove('hidden');
+                    }
+                 }
             }).catch(err => {
                 console.log(err);
             });
