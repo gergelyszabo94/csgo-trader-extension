@@ -9,12 +9,19 @@ result_s3_bucket = os.environ['RESULTS_BUCKET']
 sns_topic = os.environ['SNS_TOPIC_ARN']
 cloudfront_dist_id = os.environ['CLOUDFRONT_DIST_ID']
 stage = os.environ['STAGE']
+fixerio_api_key = os.environ['FIXERIO_API_KEY']
+
+symbols = ['USD', 'EUR', 'GBP', 'CNY', 'JPY', 'CAD', 'AUD', 'HKD', 'ISK', 'PHP', 'DKK', 'HUF', 'CZK', 'RON', 'SEK',
+           'IDR', 'INR', 'BRL', 'RUB', 'HRK', 'THB', 'CHF', 'MYR', 'BGN', 'TRY', 'NOK', 'NZD', 'ZAR', 'MXN', 'SGD',
+           'ILS', 'KRW', 'PLN', 'AED', 'ARS', 'CLP', 'COP', 'CRC', 'KWD', 'KZT', 'PEN', 'QAR', 'SAR', 'TWD', 'UAH',
+           'UYU', 'VND']
 
 
 def lambda_handler(event, context):
-    print("Requesting exchange rates from exchangeratesapi.io")
+    print("Requesting exchange rates from fixer.io")
     try:
-        response = requests.get("https://api.exchangeratesapi.io/latest?base=USD")
+        # http is not a mistake, https is not supported in the free plan
+        response = requests.get("http://data.fixer.io/api/latest?access_key=" + fixerio_api_key + "&symbols=" + ','.join(str(e) for e in symbols))
     except Exception as e:
             print(e)
             error = "Error during request"
@@ -23,7 +30,7 @@ def lambda_handler(event, context):
                 'statusCode': 500,
                 'body': error
             }
-    print("Response from exchangeratesapi.io")
+    print("Response from fixer.io")
     try:
         rates = response.json()['rates']
     except Exception as e:
@@ -34,6 +41,12 @@ def lambda_handler(event, context):
             'statusCode': 500,
             'body': error
         }
+
+    # only EUR is supported as a base currency in the fixer.io free tier so everything has to be converted to USD
+    usd_rate = rates.get("USD")
+    for rate in rates:
+        rates[rate] = rates.get(rate) / usd_rate
+
     rates["KEY"] = 0.4  # 1/2.5
 
     print("Requesting cryptocurrency exchange rates from coincap.io")
