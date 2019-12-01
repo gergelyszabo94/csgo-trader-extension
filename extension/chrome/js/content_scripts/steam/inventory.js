@@ -432,12 +432,13 @@ function addFunctionBar(){
                             <tbody>
                             </tbody>
                         </table>
-                        <span><span style="font-weight: bold">Total:</span> <span id="numberOfItemsToSell">0</span> items worth <span id="saleTotal">0</span> <span id="sellButton">Start Selling</span></span>
+                        <span><span style="font-weight: bold">Total:</span> <span id="numberOfItemsToSell">0</span> item(s) worth <span id="saleTotal">0</span> <span id="sellButton">Start Mass Listing</span></span>
                     </div>
                 </div>
                 `);
 
-        document.getElementById('sellButton').addEventListener('click', () => {
+        document.getElementById('sellButton').addEventListener('click', (event) => {
+            event.target.innerText = 'Mass Listing in Progress...';
             let startSellingScript = `sellNext()`;
             injectToPage(startSellingScript, true, 'startSelling', false);
         });
@@ -1015,7 +1016,7 @@ if (isOwnInventory()) {
         }
         
         function sellNext() {
-            document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr').forEach(listingRow => {
+            for (let listingRow of document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr')) {
                 let assetIDs = listingRow.getAttribute('data-assetids').split(',');
                 let soldIDs = listingRow.getAttribute('data-sold-ids').split(',');
         
@@ -1025,7 +1026,8 @@ if (isOwnInventory()) {
                         return;
                     }
                 }
-            });
+            }
+            document.getElementById('sellButton').innerText = 'Start Mass Listing';
         }`;
     injectToPage(sellItemScriptString, false, 'sellItemScript', false);
 }
