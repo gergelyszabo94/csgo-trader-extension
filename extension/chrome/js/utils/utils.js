@@ -1055,7 +1055,8 @@ function injectToPage(scriptString, toRemove, id, executeAndReturn) {
     (document.head || document.documentElement).appendChild(toInject);
 
     let simpleAttributeParsing = ['steamidOfLoggedinUser', 'steamidOfProfileOwner', 'tradePartnerSteamID', 'inventoryOwnerID', 'listingsInfo',
-        'inventoryInfo', 'allItemsLoaded', 'offerInventoryInfo', 'steamWalletCurrency', 'steamWallet', 'formattedToInt', 'intToFormatted'];
+        'inventoryInfo', 'allItemsLoaded', 'offerInventoryInfo', 'steamWalletCurrency', 'steamWallet', 'formattedToInt', 'intToFormatted',
+        'priceAfterFees'];
     let result = simpleAttributeParsing.includes(executeAndReturn) ? document.querySelector('body').getAttribute(executeAndReturn) : null;
     document.querySelector('body').setAttribute(executeAndReturn, '');
 
@@ -1547,4 +1548,11 @@ function userPriceToProperPrice(userInput) {
     if (decimalPart.length === 1) decimalPart += '0'; // turns 0.3 into 0.30
     else if (decimalPart.length > 2) decimalPart = decimalPart.substr(0, 2); // turns 0.0003 into 0.00
     return parseInt(wholePart + decimalPart);
+}
+
+function getPriceAfterFees(priceBeforeFees) {
+    // TODO get the publisher fee dynamically
+    let priceAfterFeesScript = `
+        document.querySelector('body').setAttribute('priceAfterFees', ${priceBeforeFees} - CalculateFeeAmount( ${priceBeforeFees}, g_rgWalletInfo['wallet_publisher_fee_percent_default'] ).fees);`;
+    return parseInt(injectToPage(priceAfterFeesScript, true, 'priceAfterFeesScript', 'priceAfterFees'));
 }

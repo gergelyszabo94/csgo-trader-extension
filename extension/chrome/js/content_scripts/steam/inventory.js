@@ -432,7 +432,7 @@ function addFunctionBar(){
                             <tbody>
                             </tbody>
                         </table>
-                        <span><span style="font-weight: bold">Total:</span> <span id="numberOfItemsToSell">0</span> item(s) worth <span id="saleTotal">0</span> <span id="sellButton">Start Mass Listing</span></span>
+                        <span><span style="font-weight: bold">Total:</span> To list <span id="numberOfItemsToSell">0</span> item(s) worth <span id="saleTotal">0</span> and receive <span id="saleTotalAfterFees">0</span> after fees <span id="sellButton">Start Mass Listing</span></span>
                     </div>
                 </div>
                 `);
@@ -797,7 +797,7 @@ function addListingRow(item) {
         <tr data-assetids="${item.assetid}" data-sold-ids="" data-item-name="${item.market_hash_name}">
             <td class="itemName">${item.market_hash_name}</td>
             <td class="itemAmount">1</td>
-            <td class="itemExtensionPrice selected" data-price-in-cents="${userPriceToProperPrice(item.price.price)}">${item.price.display}</td>
+            <td class="itemExtensionPrice selected" data-price-in-cents="${userPriceToProperPrice(item.price.price)}" data-listing-price="${getPriceAfterFees(userPriceToProperPrice(item.price.price))}">${item.price.display}</td>
             <td class="itemStartingAt">Loading...</td>
             <td class="itemQuickSell">Loading...</td>
             <td class="itemUserPrice"><input type="text"></td>
@@ -808,6 +808,7 @@ function addListingRow(item) {
     listingRow.querySelector('.itemUserPrice').querySelector('input[type=text]').addEventListener('change', (event) => {
         let priceInt = userPriceToProperPrice(event.target.value);
         event.target.parentElement.setAttribute('data-price-in-cents', priceInt);
+        event.target.parentElement.setAttribute('data-listing-price', getPriceAfterFees(priceInt));
         event.target.value = centsToSteamFormattedPrice(priceInt);
         event.target.parentElement.classList.add('selected');
         event.target.parentElement.parentElement.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell').forEach(priceType => priceType.classList.remove('selected'));
@@ -864,7 +865,9 @@ function addStartingAtAndQuickSellPrice(item) {
                                 startingAt.innerText = priceOverview.lowest_price;
                                 startingAt.setAttribute('data-price-set', true);
                                 startingAt.setAttribute('data-price-in-cents', priceInCents);
+                                startingAt.setAttribute('data-listing-price', getPriceAfterFees(priceInCents));
                                 quickSell.setAttribute('data-price-in-cents', quickSellPrice);
+                                quickSell.setAttribute('data-listing-price', getPriceAfterFees(quickSellPrice));
                                 quickSell.innerText = centsToSteamFormattedPrice(quickSellPrice);
                             }
                             else {
@@ -899,10 +902,13 @@ function removeUnselectedItemsFromTable() {
 
 function updateMassSaleTotal() {
     let total = 0;
+    let totalAfterFees = 0;
     document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr').forEach(listingRow => {
         total += parseInt(listingRow.querySelector('.selected').getAttribute('data-price-in-cents')) * parseInt(listingRow.querySelector('.itemAmount').innerText)
+        totalAfterFees += parseInt(listingRow.querySelector('.selected').getAttribute('data-listing-price')) * parseInt(listingRow.querySelector('.itemAmount').innerText)
     });
     document.getElementById('saleTotal').innerText = centsToSteamFormattedPrice(total);
+    document.getElementById('saleTotalAfterFees').innerText = centsToSteamFormattedPrice(totalAfterFees);
 }
 
 const floatBar = getFloatBarSkeleton('inventory');
@@ -1022,7 +1028,7 @@ if (isOwnInventory()) {
         
                 for (let assetID of assetIDs) {
                     if (!soldIDs.includes(assetID)) {
-                        sellItemOnPage(listingRow.getAttribute('data-item-name'), assetID, listingRow.querySelector('.selected').getAttribute('data-price-in-cents'));
+                        sellItemOnPage(listingRow.getAttribute('data-item-name'), assetID, listingRow.querySelector('.selected').getAttribute('data-listing-price'));
                         return;
                     }
                 }
