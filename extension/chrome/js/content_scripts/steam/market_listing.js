@@ -204,7 +204,7 @@ function sortListings(sortingMode) {
 }
 
 function addPricesInOtherCurrencies() {
-    chrome.storage.local.get('marketOriginalPrice', (result) =>{
+    chrome.storage.local.get('marketOriginalPrice', (result) => {
         if (result.marketOriginalPrice){
 
             let listings = getListings();
@@ -242,6 +242,17 @@ function addPricesInOtherCurrencies() {
             }
         }
     });
+}
+
+function addPatterns(listingID, floatInfo) {
+    let patternInfo = getPattern(fullName, floatInfo.paintseed);
+    if (patternInfo !== null) {
+        let listingElement = getElementByListingID(listingID);
+        if (listingElement !== null) {
+            let patternClass = patternInfo.type === 'marble_fade' ? 'marbleFadeGradient' : 'fadeGradient';
+            listingElement.querySelector('.market_listing_item_name').insertAdjacentHTML('afterend', `<span class="${patternClass}"> ${patternInfo.value}</span>`)
+        }
+    }
 }
 
 logExtensionPresence();

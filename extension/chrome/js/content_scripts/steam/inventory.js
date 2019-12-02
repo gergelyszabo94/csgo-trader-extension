@@ -677,16 +677,10 @@ function setFloatBarWithData(floatInfo){
 
 function setPatternInfo(patternInfo){
     document.querySelectorAll('.patternInfo').forEach(patternInfoElement => {
-        if(patternInfo !== null){
-            if(patternInfo.type === 'fade'){
-                patternInfoElement.classList.add('fadeGradient');
-            }
-            else if(patternInfo.type === 'marble_fade'){
-                patternInfoElement.classList.add('marbleFadeGradient');
-            }
-            else if(patternInfo.type === 'case_hardened'){
-                patternInfoElement.classList.add('caseHardenedGradient');
-            }
+        if (patternInfo !== null) {
+            if (patternInfo.type === 'fade') patternInfoElement.classList.add('fadeGradient');
+            else if (patternInfo.type === 'marble_fade') patternInfoElement.classList.add('marbleFadeGradient');
+            else if (patternInfo.type === 'case_hardened') patternInfoElement.classList.add('caseHardenedGradient');
             patternInfoElement.innerText = `Pattern: ${patternInfo.value}`;
         }
     });

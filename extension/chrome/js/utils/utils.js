@@ -1233,6 +1233,7 @@ function addFloatDataToPage(job, floatQueue, floatInfo) {
     else if (job.type === 'market') {
         populateFloatInfo(job.listingID, floatInfo);
         setStickerInfo(job.listingID, floatInfo.stickers);
+        addPatterns(job.listingID, floatInfo);
     }
 }
 
