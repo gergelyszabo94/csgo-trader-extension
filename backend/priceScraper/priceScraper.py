@@ -12,9 +12,20 @@ bitskins_api_key = os.environ['BITSKINS_API_KEY']
 result_s3_bucket = os.environ['RESULTS_BUCKET']
 sns_topic = os.environ['SNS_TOPIC_ARN']
 stage = os.environ['STAGE']
+own_prices_table = os.environ['OWN_PRICES_TABLE']
 
 
 def lambda_handler(event, context):
+    dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
+    table = dynamodb.Table(own_prices_table)
+
+    print("Getting own prices from Dynamo")
+
+    response = table.scan(ProjectionExpression="market_hash_name, price")
+    own_prices = {}
+
+    for item in response['Items']:
+        own_prices[item.get('market_hash_name')] = float(item.get('price'))
 
     print("Requesting prices from csgobackpack.net")
     try:
@@ -508,6 +519,24 @@ def lambda_handler(event, context):
             'body': json.dumps(error)
         }
 
+    print('Adding own prices that are not present yet')
+    for item in own_prices:
+        if item not in extract:
+            extract[item] = {
+                "csgobackpack": "null",
+                "bitskins": "null",
+                "lootfarm": "null",
+                "csgotm": "null",
+                "csmoney": {
+                    'price': "null",
+                    'doppler': "null"
+                },
+                "csgotrader": {
+                    "price": own_prices[item],
+                    "doppler": "null"
+                }
+            }
+
     print("Creates own pricing")
     print("Calculate market trends")
 
@@ -548,10 +577,11 @@ def lambda_handler(event, context):
 
     for item in extract:
         csgobackpack_aggregate = get_csgobackpack_price(item, extract, week_to_day, month_to_week)
-        extract[item]["csgotrader"] = {
-            "price": "null",
-            "doppler": "null"
-        }
+        if "csgotrader" not in extract[item]:
+            extract[item]["csgotrader"] = {
+                "price": "null",
+                "doppler": "null"
+            }
         if csgobackpack_aggregate != "null":
             extract[item]["csgotrader"]["price"] = float("{0:.2f}".format(csgobackpack_aggregate))
         elif extract[item]["csmoney"]["price"] != "null" and extract[item]["csmoney"]["price"] != 0:
@@ -559,7 +589,9 @@ def lambda_handler(event, context):
         elif "price" in extract[item]["bitskins"] and extract[item]["bitskins"]["price"] != "null":
             extract[item]["csgotrader"]["price"] = float("{0:.2f}".format(float(extract[item]["bitskins"]["price"]) * csb_bit * week_to_day))  # case G
         else:
-            extract[item]["csgotrader"]["price"] = "null"  # case H
+            if "csgotrader" not in extract[item]:
+                    extract[item]["csgotrader"]["price"] = "null"  # case H
+
 
         if "Doppler" in item:
             extract[item]["csgotrader"]["doppler"] = {}
