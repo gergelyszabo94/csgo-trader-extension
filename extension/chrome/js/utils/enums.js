@@ -20091,7 +20091,8 @@ const storageKeys = {
     defaultConverterCurrency1: currencies.USD.short,
     defaultConverterCurrency2: currencies.EUR.short,
     marketOriginalPrice: true,
-    autoSetSteamAPIKey: true
+    autoSetSteamAPIKey: true,
+    autoOpenIDLogin: false
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID'];
