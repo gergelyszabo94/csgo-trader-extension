@@ -60,7 +60,6 @@ def lambda_handler(event, context):
                 }
 
         print("Pricing information extracted")
-        push_to_s3(extract, "false")
 
     else:
         error = "Could not get items from csgobackpack.net"
@@ -179,7 +178,6 @@ def lambda_handler(event, context):
             except KeyError:
                 extract[item]['bitskins'] = "null"
         print("Pricing info extracted")
-        push_to_s3(extract, "false")
     elif response.status_code == 401:
         error = "Could not get items from bitskins, it's most likely an authentication problem"
         alert_via_sns(error)
@@ -232,7 +230,6 @@ def lambda_handler(event, context):
             except KeyError:
                 extract[item]['lootfarm'] = "null"
         print("Pricing information extracted")
-        push_to_s3(extract, "false")
 
     else:
         error = "Could not get items from loot.farm"
@@ -275,7 +272,6 @@ def lambda_handler(event, context):
             except KeyError:
                 extract[item]['csgotm'] = "null"
         print("Pricing information extracted")
-        push_to_s3(extract, "false")
 
     else:
         error = "Could not get items from csgo.tm"
@@ -509,7 +505,6 @@ def lambda_handler(event, context):
                         "doppler": "null"
                     }
         print("Pricing information extracted")
-        push_to_s3(extract, "false")
     else:
         error = "Could not get items from cs.money"
         alert_via_sns(error)
@@ -590,7 +585,7 @@ def lambda_handler(event, context):
             extract[item]["csgotrader"]["price"] = float("{0:.2f}".format(float(extract[item]["bitskins"]["price"]) * csb_bit * week_to_day))  # case G
         else:
             if "csgotrader" not in extract[item]:
-                    extract[item]["csgotrader"]["price"] = "null"  # case H
+                extract[item]["csgotrader"]["price"] = "null"  # case H
 
 
         if "Doppler" in item:
@@ -599,14 +594,14 @@ def lambda_handler(event, context):
                 extract[item]["csgotrader"]["doppler"][phase] = float("{0:.2f}".format(float(extract[item]["csmoney"]["doppler"][phase]) * csb_csm))  # case I
         else:
             extract[item]["csgotrader"]["doppler"] = "null"
-    push_to_s3(extract, "true")
+    push_to_s3(extract)
     return {
         'statusCode': 200,
         'body': json.dumps('Success!')
     }
 
 
-def push_to_s3(content, latest):
+def push_to_s3(content):
     print("Getting date for result path")
 
     today = date.today()
@@ -617,13 +612,12 @@ def push_to_s3(content, latest):
     s3 = boto3.resource('s3')
 
     if stage == "prod":
-        if latest == "true":
-            print("Updating latest/prices_v2.json in s3")
-            s3.Object(result_s3_bucket, 'latest/prices_v2.json').put(
-                Body=(gzip.compress(bytes(json.dumps(content).encode('UTF-8')), 9)),
-                ContentEncoding='gzip'
-            )
-            print("latest.json updated")
+        print("Updating latest/prices_v2.json in s3")
+        s3.Object(result_s3_bucket, 'latest/prices_v2.json').put(
+            Body=(gzip.compress(bytes(json.dumps(content).encode('UTF-8')), 9)),
+            ContentEncoding='gzip'
+        )
+        print("latest.json updated")
         print(f'Uploading prices to {year}/{month}/{day}/prices_v2.json')
         s3.Object(result_s3_bucket, f'{year}/{month}/{day}/prices_v2.json').put(
             Body=(gzip.compress(bytes(json.dumps(content).encode('UTF-8')), 9)),
