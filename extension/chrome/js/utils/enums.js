@@ -20092,7 +20092,8 @@ const storageKeys = {
     defaultConverterCurrency2: currencies.EUR.short,
     marketOriginalPrice: true,
     autoSetSteamAPIKey: true,
-    autoOpenIDLogin: false
+    autoOpenIDLogin: false,
+    csgotradersAutoLogin: false
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID'];

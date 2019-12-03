@@ -163,6 +163,13 @@
       "js": [
         "js/utils/utils.js",
         "js/content_scripts/tradersbump.js"]
+    },
+    {
+      "matches": ["*://csgotraders.net/*"],
+      "run_at" : "document_idle",
+      "js": [
+        "js/utils/utils.js",
+        "js/content_scripts/traders_autologin.js"]
     }
   ],
   "web_accessible_resources": [
