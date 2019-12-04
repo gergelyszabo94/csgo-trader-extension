@@ -226,7 +226,8 @@ function sortOffers(sortingMode){
     });
 }
 
-function isOfferActive(offerElement){
+function isOfferActive(offerElement) {
+    if (offerElement === null) return null;
     let offerItemsElement = offerElement.querySelector('.tradeoffer_items_ctn');
     if (offerItemsElement !== null) return !offerItemsElement.classList.contains('inactive');
     else return false
@@ -343,70 +344,69 @@ if (activePage === 'incoming_offers') injectToPage(acceptTradeScriptString, fals
 // adds trade offer summary/help bar and sorting
 if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
     let tradeOffersList = document.querySelector('.profile_leftcol');
-    if (tradeOffersList !== null) {
+    if (tradeOffersList !== null && document.querySelector('.profile_fatalerror') === null) {
         tradeOffersList.insertAdjacentHTML('afterbegin', `
         <div id="tradeoffers_summary" class="trade_offers_module">Waiting for Steam API...</div>
         <div id="tradeOffersSortingMenu" class="trade_offers_module hidden"><span>Sorting: </span><select id="offerSortingMethod"></select></div>`);
-    }
+        // populates and adds listener to sorting select
+        let sortingSelect = document.getElementById('offerSortingMethod');
+        let keys = Object.keys(offersSortingModes);
 
-    // populates and adds listener to sorting select
-    let sortingSelect = document.getElementById('offerSortingMethod');
-    let keys = Object.keys(offersSortingModes);
+        for (let key of keys) {
+            let option = document.createElement('option');
+            option.value = offersSortingModes[key].key;
+            option.text = offersSortingModes[key].name;
+            sortingSelect.add(option);
+        }
 
-    for (let key of keys) {
-        let option = document.createElement('option');
-        option.value = offersSortingModes[key].key;
-        option.text = offersSortingModes[key].name;
-        sortingSelect.add(option);
-    }
-
-    sortingSelect.addEventListener('change', () => {
-        // analytics
-        trackEvent({
-            type: 'event',
-            action: 'TradeOffersPageSorting'
-        });
-
-        sortOffers(sortingSelect.options[sortingSelect.selectedIndex].value);
-    });
-
-    getOffersFromAPI().then(
-        offers => {
-            let allItemsInOffer = extractItemsFromOffers(offers.trade_offers_sent);
-            allItemsInOffer = allItemsInOffer.concat(extractItemsFromOffers(offers.trade_offers_received));
-
-            let itemsWithMoreInfo = [];
-            if (allItemsInOffer) {
-                allItemsInOffer.forEach(item => {
-                    let itemDescription = offers.descriptions.find(description => description.classid === item.classid && description.instanceid === item.instanceid);
-                    itemsWithMoreInfo.push({...item, ...itemDescription}); // combines the properties of the two objects in a new object
-                });
-            }
-
-            let matchedItems = matchItemsWithDescriptions(itemsWithMoreInfo);
-
-            chrome.runtime.sendMessage({addPricesAndFloatsToInventory: matchedItems}, (response) => {
-                let itemsWithAllInfo = response.addPricesAndFloatsToInventory;
-                addItemInfo(itemsWithAllInfo);
-                if (activePage === 'incoming_offers') addTotals(offers.trade_offers_received, itemsWithAllInfo);
-                else if (activePage === 'sent_offers') addTotals(offers.trade_offers_sent, itemsWithAllInfo);
-                document.getElementById('tradeoffers_summary').innerHTML = `<b>Trade offer summary:</b>`;
-                chrome.storage.local.get('tradeOffersSortingMode', (result) => {
-                    document.querySelector(`#offerSortingMethod [value="${result.tradeOffersSortingMode}"]`).selected = true;
-                    sortOffers(result.tradeOffersSortingMode);
-                    document.getElementById('tradeOffersSortingMenu').classList.remove('hidden');
-                });
+        sortingSelect.addEventListener('change', () => {
+            // analytics
+            trackEvent({
+                type: 'event',
+                action: 'TradeOffersPageSorting'
             });
 
-        }, (error) => {
-            if (error === 'apiKeyInvalid') {
-                document.getElementById('tradeoffers_summary').innerHTML = `<b>CSGOTrader Extension:</b> You don't have your Steam API key set.<br> 
+            sortOffers(sortingSelect.options[sortingSelect.selectedIndex].value);
+        });
+
+        getOffersFromAPI().then(
+            offers => {
+                let allItemsInOffer = extractItemsFromOffers(offers.trade_offers_sent);
+                allItemsInOffer = allItemsInOffer.concat(extractItemsFromOffers(offers.trade_offers_received));
+
+                let itemsWithMoreInfo = [];
+                if (allItemsInOffer) {
+                    allItemsInOffer.forEach(item => {
+                        let itemDescription = offers.descriptions.find(description => description.classid === item.classid && description.instanceid === item.instanceid);
+                        itemsWithMoreInfo.push({...item, ...itemDescription}); // combines the properties of the two objects in a new object
+                    });
+                }
+
+                let matchedItems = matchItemsWithDescriptions(itemsWithMoreInfo);
+
+                chrome.runtime.sendMessage({addPricesAndFloatsToInventory: matchedItems}, (response) => {
+                    let itemsWithAllInfo = response.addPricesAndFloatsToInventory;
+                    addItemInfo(itemsWithAllInfo);
+                    if (activePage === 'incoming_offers') addTotals(offers.trade_offers_received, itemsWithAllInfo);
+                    else if (activePage === 'sent_offers') addTotals(offers.trade_offers_sent, itemsWithAllInfo);
+                    document.getElementById('tradeoffers_summary').innerHTML = `<b>Trade offer summary:</b>`;
+                    chrome.storage.local.get('tradeOffersSortingMode', (result) => {
+                        document.querySelector(`#offerSortingMethod [value="${result.tradeOffersSortingMode}"]`).selected = true;
+                        sortOffers(result.tradeOffersSortingMode);
+                        document.getElementById('tradeOffersSortingMenu').classList.remove('hidden');
+                    });
+                });
+
+            }, (error) => {
+                if (error === 'apiKeyInvalid') {
+                    document.getElementById('tradeoffers_summary').innerHTML = `<b>CSGOTrader Extension:</b> You don't have your Steam API key set.<br> 
             For more functionality on this page you must set your API key.
              You can do so by <a href="https://steamcommunity.com/dev/apikey" target="_blank">clicking here</a>.
             Check what you are missing in the <a href="https://csgotrader.app/release-notes#1.20" target="_blank">Release Notes</a>`;
+                }
             }
-        }
-    );
+        );
+    }
 }
 
 // reloads the page on extension update/reload/uninstall
