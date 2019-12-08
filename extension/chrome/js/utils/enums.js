@@ -19933,6 +19933,11 @@ const currencies = {
         short: "VND",
         long: "Vietnamese Dong",
         sign: "₫"
+    },
+    GEL:{
+        short: "GEL",
+        long: "Georgian Lari",
+        sign: "₾"
     }
 };
 

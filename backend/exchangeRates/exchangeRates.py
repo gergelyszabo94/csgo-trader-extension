@@ -14,7 +14,7 @@ fixerio_api_key = os.environ['FIXERIO_API_KEY']
 symbols = ['USD', 'EUR', 'GBP', 'CNY', 'JPY', 'CAD', 'AUD', 'HKD', 'ISK', 'PHP', 'DKK', 'HUF', 'CZK', 'RON', 'SEK',
            'IDR', 'INR', 'BRL', 'RUB', 'HRK', 'THB', 'CHF', 'MYR', 'BGN', 'TRY', 'NOK', 'NZD', 'ZAR', 'MXN', 'SGD',
            'ILS', 'KRW', 'PLN', 'AED', 'ARS', 'CLP', 'COP', 'CRC', 'KWD', 'KZT', 'PEN', 'QAR', 'SAR', 'TWD', 'UAH',
-           'UYU', 'VND']
+           'UYU', 'VND', 'GEL']
 
 
 def lambda_handler(event, context):
