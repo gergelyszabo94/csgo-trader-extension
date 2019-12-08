@@ -865,6 +865,10 @@ function addStartingAtAndQuickSellPrice(item) {
                                 quickSell.setAttribute('data-price-in-cents', quickSellPrice);
                                 quickSell.setAttribute('data-listing-price', getPriceAfterFees(quickSellPrice));
                                 quickSell.innerText = centsToSteamFormattedPrice(quickSellPrice);
+
+                                // if the quicksell price is higher than the extension price then select that one as default instead
+                                let extensionPrice = parseInt(itemNameElement.parentNode.querySelector('.itemExtensionPrice').getAttribute('data-price-in-cents'));
+                                if (extensionPrice < quickSellPrice) quickSell.click();
                             }
                             else {
                                 startingAtElement.setAttribute('data-price-in-progress', false);
