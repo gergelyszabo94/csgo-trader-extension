@@ -433,11 +433,13 @@ function addFunctionBar(){
                             <tbody>
                             </tbody>
                         </table>
-                        <span><span style="font-weight: bold">Total:</span> To list <span id="numberOfItemsToSell">0</span> item(s) worth <span id="saleTotal">0</span> and receive <span id="saleTotalAfterFees">0</span> after fees <span id="sellButton">Start Mass Listing</span></span>
+                        <span><span style="font-weight: bold">Total:</span> To list <span id="numberOfItemsToSell">0</span> item(s) worth <span id="saleTotal">0</span> and receive <span id="saleTotalAfterFees">0</span> after fees <span id="retryStartingAt" class="hidden">Retry Loading Starting At Price</span> <span id="sellButton">Start Mass Listing</span></span>
                         <div id="massSellError" class="hidden not_tradable"></div>
                     </div>
                 </div>
                 `);
+
+        document.getElementById('retryStartingAt').addEventListener('click', retryLoadingMarketPrice);
 
         document.getElementById('sellButton').addEventListener('click', (event) => {
             event.target.innerText = 'Mass Listing in Progress...';
@@ -823,68 +825,47 @@ function addListingRow(item) {
 }
 
 function getListingRow(name) {
-    return document.getElementById('listingTable').querySelector(`[data-item-name="${name}"]`);
+    return document.getElementById('listingTable').querySelector(`tr[data-item-name="${name}"]`);
 }
 
 function addStartingAtAndQuickSellPrice(item) {
     let listingRow = getListingRow(item.market_hash_name);
     let startingAtElement = listingRow.querySelector('.itemStartingAt');
-    startingAtElement.setAttribute('data-price-in-progress', true);
-    if (startingAtElement.getAttribute('data-price-set') !== true) { // check if price is already set
-        // check if there is another listing with the same market_hash_name that has a price already set or requesting is in progress
-        let priceFromOtherListing = null;
-        let otherInProgress = false;
+    if (startingAtElement.getAttribute('data-price-set') !== true && startingAtElement.getAttribute('data-price-in-progress') !== true) { // check if price is already set or in progress
+        startingAtElement.setAttribute('data-price-in-progress', true);
 
-        document.getElementById('listingTable').querySelectorAll('.itemName').forEach(itemNameElement => {
-            if (itemNameElement.innerText === item.market_hash_name) {
-                let startingAt = itemNameElement.parentNode.querySelector('.itemStartingAt');
-                if (startingAt.getAttribute('data-price-set') === true) priceFromOtherListing = startingAt.innerText;
-                else if (startingAt.getAttribute('data-price-in-progress') === true) otherInProgress = true;
-            }
-        });
+        getPriceOverview(item.market_hash_name).then(
+            priceOverview => {
+                if (priceOverview.lowest_price !== undefined) {
+                    let quickSell = listingRow.querySelector('.itemQuickSell');
+                    let priceInCents = steamFormattedPriceToCents(priceOverview.lowest_price);
+                    let quickSellPrice = steamFormattedPriceToCents(priceOverview.lowest_price) - 1;
 
-        if (priceFromOtherListing !== null) {
-            startingAtElement.setAttribute('data-price-in-progress', false);
-            startingAtElement.setAttribute('data-price-set', true);
-        }
-        else if (!otherInProgress) {
-            getPriceOverview(item.market_hash_name).then(
-                priceOverview => {
-                    document.getElementById('listingTable').querySelectorAll('.itemName').forEach(itemNameElement => {
-                        if (itemNameElement.innerText === item.market_hash_name) {
-                            if (priceOverview.lowest_price !== undefined) {
-                                let startingAt = itemNameElement.parentNode.querySelector('.itemStartingAt');
-                                let quickSell = itemNameElement.parentNode.querySelector('.itemQuickSell');
-                                let priceInCents = steamFormattedPriceToCents(priceOverview.lowest_price);
-                                let quickSellPrice = steamFormattedPriceToCents(priceOverview.lowest_price) - 1;
+                    startingAtElement.innerText = priceOverview.lowest_price;
+                    startingAtElement.setAttribute('data-price-set', true);
+                    startingAtElement.setAttribute('data-price-in-cents', priceInCents);
+                    startingAtElement.setAttribute('data-listing-price', getPriceAfterFees(priceInCents));
+                    quickSell.setAttribute('data-price-in-cents', quickSellPrice);
+                    quickSell.setAttribute('data-listing-price', getPriceAfterFees(quickSellPrice));
+                    quickSell.innerText = centsToSteamFormattedPrice(quickSellPrice);
 
-                                startingAt.innerText = priceOverview.lowest_price;
-                                startingAt.setAttribute('data-price-set', true);
-                                startingAt.setAttribute('data-price-in-cents', priceInCents);
-                                startingAt.setAttribute('data-listing-price', getPriceAfterFees(priceInCents));
-                                quickSell.setAttribute('data-price-in-cents', quickSellPrice);
-                                quickSell.setAttribute('data-listing-price', getPriceAfterFees(quickSellPrice));
-                                quickSell.innerText = centsToSteamFormattedPrice(quickSellPrice);
-
-                                // if the quicksell price is higher than the extension price then select that one as default instead
-                                let extensionPrice = parseInt(itemNameElement.parentNode.querySelector('.itemExtensionPrice').getAttribute('data-price-in-cents'));
-                                if (extensionPrice < quickSellPrice) quickSell.click();
-                            }
-                            else {
-                                startingAtElement.setAttribute('data-price-in-progress', false);
-                                startingAt.setAttribute('data-price-set', false);
-                            }
-                        }
-                    });
-                }, (error) => {console.log(error)}
-            );
-        }
+                    // if the quicksell price is higher than the extension price then select that one as default instead
+                    let extensionPrice = parseInt(listingRow.querySelector('.itemExtensionPrice').getAttribute('data-price-in-cents'));
+                    if (extensionPrice < quickSellPrice) quickSell.click();
+                }
+                else {
+                    startingAtElement.setAttribute('data-price-set', false);
+                    document.getElementById('retryStartingAt').classList.remove('hidden');
+                }
+                // startingAtElement.setAttribute('data-price-in-progress', false);
+            },
+            (error) => {console.log(error)}
+        )
+            .finally(
+                startingAtElement.setAttribute('data-price-in-progress', false),
+                document.getElementById('retryStartingAt').classList.remove('hidden')
+            )
     }
-    // document.getElementById('listingTable').querySelectorAll('.itemStartingAt').forEach(startingAtElement => { // looks for rows that don't have their price set yet
-    //     if (startingAtElement.getAttribute('data-price-set') !== true) {
-    //
-    //     }
-    // });
 }
 
 function removeUnselectedItemsFromTable() {
@@ -909,6 +890,15 @@ function updateMassSaleTotal() {
     });
     document.getElementById('saleTotal').innerText = centsToSteamFormattedPrice(total);
     document.getElementById('saleTotalAfterFees').innerText = centsToSteamFormattedPrice(totalAfterFees);
+}
+
+function retryLoadingMarketPrice() {
+    document.getElementById('listingTable').querySelectorAll('.itemStartingAt').forEach(startingAtElement => { // looks for rows that don't have their price set yet
+        if (startingAtElement.getAttribute('data-price-set') !== 'true') {
+            let itemName = startingAtElement.parentNode.getAttribute('data-item-name');
+            addStartingAtAndQuickSellPrice({market_hash_name: itemName})
+        }
+    });
 }
 
 const floatBar = getFloatBarSkeleton('inventory');

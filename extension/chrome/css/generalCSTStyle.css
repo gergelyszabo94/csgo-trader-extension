@@ -75,6 +75,12 @@
     margin-right: 20px;
 }
 
+#retryStartingAt{
+    font-weight: bold;
+    float: right;
+    margin-right: 10px;
+}
+
 /*bootstrap progress bar*/
 progress {
     vertical-align: baseline;

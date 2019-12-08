@@ -1516,7 +1516,8 @@ function getPriceOverview(market_hash_name) {
             }
             return response.json();
         }).then((priceOverviewJSON) => {
-            if (priceOverviewJSON.success === true) resolve(priceOverviewJSON);
+            if (priceOverviewJSON === null) reject ('success:false');
+            else if (priceOverviewJSON.success === true) resolve(priceOverviewJSON);
             else reject ('success:false');
         }).catch((err) => {
             console.log(err);
