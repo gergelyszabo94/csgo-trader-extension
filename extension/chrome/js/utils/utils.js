@@ -1458,10 +1458,10 @@ function uuidv4() {
     );
 }
 
-// sends a message to the "back end" to request active received and sent trade offers
-function getOffersFromAPI() {
+// sends a message to the "back end" to request offers (history or active only with descriptions)
+function getOffersFromAPI(type) {
     return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage({getTradeOffers: 'getTradeOffers'}, (response) => {
+        chrome.runtime.sendMessage({getTradeOffers: type}, (response) => {
             if (response.apiKeyValid === false) reject('apiKeyInvalid');
             else {
                 if (!(response.offers === undefined || response === 'error')) resolve(response.offers);
@@ -1557,4 +1557,16 @@ function getPriceAfterFees(priceBeforeFees) {
     let priceAfterFeesScript = `
         document.querySelector('body').setAttribute('priceAfterFees', ${priceBeforeFees} - CalculateFeeAmount( ${priceBeforeFees}, g_rgWalletInfo['wallet_publisher_fee_percent_default'] ).fees);`;
     return parseInt(injectToPage(priceAfterFeesScript, true, 'priceAfterFeesScript', 'priceAfterFees'));
+}
+
+function updateOfferHistoryData() {
+    getOffersFromAPI('historical').then(
+        offers => {
+            console.log(offers);
+        }, (error) => {
+            if (error === 'apiKeyInvalid') {
+
+            }
+        }
+    );
 }

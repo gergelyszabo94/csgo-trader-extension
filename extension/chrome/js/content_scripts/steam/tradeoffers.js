@@ -369,7 +369,7 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
             sortOffers(sortingSelect.options[sortingSelect.selectedIndex].value);
         });
 
-        getOffersFromAPI().then(
+        getOffersFromAPI('active').then(
             offers => {
                 let allItemsInOffer = extractItemsFromOffers(offers.trade_offers_sent);
                 allItemsInOffer = allItemsInOffer.concat(extractItemsFromOffers(offers.trade_offers_received));
@@ -406,6 +406,8 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
                 }
             }
         );
+
+        updateOfferHistoryData();
     }
 }
 
