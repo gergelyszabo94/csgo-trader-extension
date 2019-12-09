@@ -20098,7 +20098,8 @@ const storageKeys = {
     marketOriginalPrice: true,
     autoSetSteamAPIKey: true,
     autoOpenIDLogin: false,
-    csgotradersAutoLogin: false
+    csgotradersAutoLogin: false,
+    tradeHistoryLastUpdate: null
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID'];
