@@ -1563,12 +1563,11 @@ function updateOfferHistoryData() {
     getOffersFromAPI('historical').then(
         offers => {
             chrome.storage.local.get('tradeHistoryLastUpdate', (result) => {
-                let historyLastUpdate = result.tradeHistoryLastUpdate === null ? 0 : result.tradeHistoryLastUpdate; // if it's the first time, it's set to the epoch
                 let allOffers = offers.trade_offers_received.concat(offers.trade_offers_sent);
                 let offerHistoryToAdd = {};
 
                 allOffers.forEach(offer => {
-                    if (offer.time_updated > historyLastUpdate) {
+                    if (offer.time_updated > result.tradeHistoryLastUpdate) {
                         let partnerID = getPoperStyleSteamIDFromOfferStyle(offer.accountid_other);
                         let offerSummary = {
                             timestamp: offer.time_updated,
@@ -1582,7 +1581,7 @@ function updateOfferHistoryData() {
                     }
                 });
                 console.log(offerHistoryToAdd);
-                chrome.storage.local.set({tradeHistoryLastUpdate: Date.now()}, () => {});
+                chrome.storage.local.set({tradeHistoryLastUpdate: Math.floor(Date.now() / 1000)}, () => {});
             });
 
         }, (error) => {

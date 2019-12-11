@@ -20099,7 +20099,7 @@ const storageKeys = {
     autoSetSteamAPIKey: true,
     autoOpenIDLogin: false,
     csgotradersAutoLogin: false,
-    tradeHistoryLastUpdate: null
+    tradeHistoryLastUpdate: 0
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID'];
