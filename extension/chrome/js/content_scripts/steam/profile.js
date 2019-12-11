@@ -58,7 +58,12 @@ if (document.querySelector('body').classList.contains('profile_page')){
         });
     }
     else{ // when on someone else's profile
-        if (!isProfilePrivate){
+        if (!isProfilePrivate) {
+            // prints trade offer history summary
+            chrome.storage.local.get(`offerHistory_${profileOwnerSteamID}`, (result) => {
+                console.log(result[`offerHistory_${profileOwnerSteamID}`])
+            });
+
             // adds "copy profile permalink" to the context menu
             const copyPermalink = `<a class="popup_menu_item" href="#" id="copy_profile_perma_link"><img style="width: 16px; height: 16px" src="${chrome.runtime.getURL("images/paperclip.png")}">&nbsp; Copy Profile Permalink</a>`;
             profileActionPopup.querySelector('.popup_body.popup_menu.shadow_content').insertAdjacentHTML('beforeend', copyPermalink);

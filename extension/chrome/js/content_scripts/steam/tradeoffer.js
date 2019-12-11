@@ -554,6 +554,11 @@ trackEvent({
 // changes background and adds a banner if steamrep banned scammer detected
 chrome.storage.local.get('markScammers', result => {if(result.markScammers) warnOfScammer(getTradePartnerSteamID(), 'offer')});
 
+// prints trade offer history summary
+chrome.storage.local.get(`offerHistory_${getTradePartnerSteamID()}`, (result) => {
+    console.log(result[`offerHistory_${getTradePartnerSteamID()}`])
+});
+
 setInterval(() => {chrome.storage.local.get('hideOtherExtensionPrices', (result) => { if (result.hideOtherExtensionPrices && !document.hidden) removeSIHStuff()})}, 2000);
 
 document.querySelectorAll('.inventory_user_tab').forEach( (inventoryTab) => {

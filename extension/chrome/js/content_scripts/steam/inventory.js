@@ -1035,6 +1035,13 @@ if (isOwnInventory()) {
     injectToPage(sellItemScriptString, false, 'sellItemScript', false);
 }
 
+if (!isOwnInventory()) {
+    // prints trade offer history summary
+    chrome.storage.local.get(`offerHistory_${getInventoryOwnerID()}`, (result) => {
+        console.log(result[`offerHistory_${getInventoryOwnerID()}`])
+    });
+}
+
 chrome.storage.local.get('hideOtherExtensionPrices', (result) => {if (result.hideOtherExtensionPrices) hideOtherExtensionPrices()});
 
 let items = [];

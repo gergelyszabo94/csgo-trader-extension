@@ -1572,14 +1572,59 @@ function updateOfferHistoryData() {
                         let offerSummary = {
                             timestamp: offer.time_updated,
                             partner: partnerID,
-                            ours:  offer.is_our_offer,
-                            id: offer.tradeofferid
+                            ours:  offer.is_our_offer
                         };
 
                         if (offerHistoryToAdd[partnerID] !== undefined) offerHistoryToAdd[partnerID].push(offerSummary);
                         else offerHistoryToAdd[partnerID] = [offerSummary];
                     }
                 });
+
+                for (let steamID in offerHistoryToAdd) {
+                    let offersToAdd = offerHistoryToAdd[steamID];
+                    let storageKey = `offerHistory_${steamID}`;
+
+                    let received = 0;
+                    let last_received = 0;
+                    let sent = 0;
+                    let last_sent = 0;
+
+                    offersToAdd.forEach(offer => {
+                        if (offer.ours) {
+                            sent++;
+                            last_sent = offer.timestamp > last_sent ? offer.timestamp : last_sent;
+                        }
+                        else {
+                            received++;
+                            last_received = offer.timestamp > last_received ? offer.timestamp : last_received;
+                        }
+                    });
+
+                    chrome.storage.local.get(storageKey, (result) => {
+                        let offerSummaryFromStorage = result[storageKey];
+
+                        if (offerSummaryFromStorage === undefined) {
+                            chrome.storage.local.set({
+                                [storageKey]: {
+                                    offers_received: received,
+                                    offers_sent: sent,
+                                    last_received: last_received,
+                                    last_sent: last_sent
+                                }
+                            }, () => {});
+                        }
+                        else {
+                            chrome.storage.local.set({
+                                [storageKey]: {
+                                    offers_received: offerSummaryFromStorage.offers_received + received,
+                                    offers_sent: offerSummaryFromStorage.offers_sent + sent,
+                                    last_received: offerSummaryFromStorage.last_received + last_received,
+                                    last_sent: offerSummaryFromStorage.last_sent + last_sent
+                                }
+                            }, () => {});
+                        }
+                    });
+                }
                 console.log(offerHistoryToAdd);
                 chrome.storage.local.set({tradeHistoryLastUpdate: Math.floor(Date.now() / 1000)}, () => {});
             });
