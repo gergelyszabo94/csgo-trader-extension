@@ -418,6 +418,10 @@ progress {
     background-color: white;
 }
 
+.offerHistory{
+    color: lightgray
+}
+
 /**
  * Tooltip Styles
  */

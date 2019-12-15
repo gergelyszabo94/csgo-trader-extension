@@ -243,17 +243,13 @@ function addPartnerOfferSummary(offers) {
                 let offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
 
                 if (isOfferActive(offerElement)) {
-                    if (offerHistorySummary.offers_received !== 0) {
-                        let receivedElement = `<span>Received: ${offerHistorySummary.offers_received} Last: ${dateToISODisplay(offerHistorySummary.last_received)}</span>`;
-                        offerElement.querySelector('.tradeoffer_items.primary').insertAdjacentHTML('afterbegin', receivedElement);
-                    }
-                    else offerElement.querySelector('.tradeoffer_items.primary').insertAdjacentHTML('afterbegin', `<span>Received: 0</span>`);
+                    let receivedElement = `<span class="offerHistory">Received: ${offerHistorySummary.offers_received} Last: ${dateToISODisplay(offerHistorySummary.last_received)}</span>`;
+                    if (offerHistorySummary.offers_received === 0) receivedElement = `<span  class="offerHistory">Received: 0</span>`;
+                    offerElement.querySelector('.tradeoffer_items.primary').insertAdjacentHTML('beforeend', receivedElement);
 
-                    if (offerHistorySummary.offers_sent !== 0) {
-                        let sentElement = `<span>Sent: ${offerHistorySummary.offers_sent} Last: ${dateToISODisplay(offerHistorySummary.last_received)}</span>`;
-                        offerElement.querySelector('.tradeoffer_items.secondary').insertAdjacentHTML('afterbegin', sentElement);
-                    }
-                    else offerElement.querySelector('.tradeoffer_items.secondary').insertAdjacentHTML('afterbegin', `<span>Sent: 0</span>`);
+                    let sentElement = `<span  class="offerHistory">Sent: ${offerHistorySummary.offers_sent} Last: ${dateToISODisplay(offerHistorySummary.last_received)}</span>`;
+                    if (offerHistorySummary.offers_sent === 0) sentElement = `<span  class="offerHistory">Sent: 0</span>`;
+                    offerElement.querySelector('.tradeoffer_items.secondary').insertAdjacentHTML('beforeend', sentElement);
                 }
             }
         });
