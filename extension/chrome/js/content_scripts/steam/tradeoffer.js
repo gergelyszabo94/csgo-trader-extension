@@ -554,10 +554,24 @@ trackEvent({
 // changes background and adds a banner if steamrep banned scammer detected
 chrome.storage.local.get('markScammers', result => {if(result.markScammers) warnOfScammer(getTradePartnerSteamID(), 'offer')});
 
-// prints trade offer history summary
-chrome.storage.local.get(`offerHistory_${getTradePartnerSteamID()}`, (result) => {
-    console.log(result[`offerHistory_${getTradePartnerSteamID()}`])
-});
+// add an info card to the top of the offer about offer history with the user (sent/received)
+function addPartnerOfferSummary() {
+    chrome.storage.local.get('tradeHistoryOffers', (result) => {
+        if (result.tradeHistoryOffers) {
+            chrome.storage.local.get(`offerHistory_${getTradePartnerSteamID()}`, (result) => {
+                let offerHistory = result[`offerHistory_${getTradePartnerSteamID()}`];
+                let headline = document.querySelector('.trade_partner_headline');
+                if (headline !== null) {
+                    headline.insertAdjacentHTML('afterend', `
+                        <div class="trade_partner_info_block offerHistoryCard"> 
+                            <div>Offers Received: ${offerHistory.offers_received} Last:  ${offerHistory.offers_received !== 0 ? dateToISODisplay(offerHistory.last_received) : '-'}</div>
+                            <div>Offers Sent: ${offerHistory.offers_sent} Last:  ${offerHistory.offers_sent !== 0 ? dateToISODisplay(offerHistory.last_sent) : '-'}</div>
+                        </div>`);
+                }
+            });
+        }
+    });
+}
 
 setInterval(() => {chrome.storage.local.get('hideOtherExtensionPrices', (result) => { if (result.hideOtherExtensionPrices && !document.hidden) removeSIHStuff()})}, 2000);
 
@@ -587,6 +601,7 @@ if (theirInventoryTab !== null) document.getElementById('inventory_select_their_
 });
 
 addFunctionBars();
+addPartnerOfferSummary();
 
 // reloads the page on extension update/reload/uninstall
 chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});
