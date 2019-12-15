@@ -233,6 +233,34 @@ function isOfferActive(offerElement) {
     else return false
 }
 
+function addPartnerOfferSummary(offers) {
+    offers.forEach(offer => {
+        let partnerID = getPoperStyleSteamIDFromOfferStyle(offer.accountid_other);
+        let storageKey = `offerHistory_${partnerID}`;
+        chrome.storage.local.get(storageKey, (result) => {
+            let offerHistorySummary = result[storageKey];
+            if (offerHistorySummary !== undefined) {
+                console.log(offerHistorySummary);
+                let offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
+
+                if (isOfferActive(offerElement)) {
+                    if (offerHistorySummary.offers_received !== 0) {
+                        let receivedElement = `<span>Received: ${offerHistorySummary.offers_received} Last: ${(new Date(offerHistorySummary.last_received)).toISOString()}</span>`;
+                        offerElement.querySelector('.tradeoffer_items.primary').insertAdjacentHTML('afterbegin', receivedElement);
+                    }
+                    else offerElement.querySelector('.tradeoffer_items.primary').insertAdjacentHTML('afterbegin', `<span>Received: 0</span>`);
+
+                    if (offerHistorySummary.offers_sent !== 0) {
+                        let sentElement = `<span>Sent: ${offerHistorySummary.offers_sent} Last: ${(new Date(offerHistorySummary.last_sent)).toISOString()}</span>`;
+                        offerElement.querySelector('.tradeoffer_items.secondary').insertAdjacentHTML('afterbegin', sentElement);
+                    }
+                    else offerElement.querySelector('.tradeoffer_items.secondary').insertAdjacentHTML('afterbegin', `<span>Sent: 0</span>`);
+                }
+            }
+        });
+    });
+}
+
 logExtensionPresence();
 overrideDecline();
 overrideShowTradeOffer();
@@ -387,9 +415,18 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
                 chrome.runtime.sendMessage({addPricesAndFloatsToInventory: matchedItems}, (response) => {
                     let itemsWithAllInfo = response.addPricesAndFloatsToInventory;
                     addItemInfo(itemsWithAllInfo);
-                    if (activePage === 'incoming_offers') addTotals(offers.trade_offers_received, itemsWithAllInfo);
-                    else if (activePage === 'sent_offers') addTotals(offers.trade_offers_sent, itemsWithAllInfo);
+
+                    if (activePage === 'incoming_offers') {
+                        addTotals(offers.trade_offers_received, itemsWithAllInfo);
+                        addPartnerOfferSummary(offers.trade_offers_received);
+                    }
+                    else if (activePage === 'sent_offers') {
+                        addTotals(offers.trade_offers_sent, itemsWithAllInfo);
+                        addPartnerOfferSummary(offers.trade_offers_sent);
+                    }
+
                     document.getElementById('tradeoffers_summary').innerHTML = `<b>Trade offer summary:</b>`;
+
                     chrome.storage.local.get('tradeOffersSortingMode', (result) => {
                         document.querySelector(`#offerSortingMethod [value="${result.tradeOffersSortingMode}"]`).selected = true;
                         sortOffers(result.tradeOffersSortingMode);

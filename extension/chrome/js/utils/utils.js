@@ -1625,7 +1625,6 @@ function updateOfferHistoryData() {
                         }
                     });
                 }
-                console.log(offerHistoryToAdd);
                 chrome.storage.local.set({tradeHistoryLastUpdate: Math.floor(Date.now() / 1000)}, () => {});
             });
 
