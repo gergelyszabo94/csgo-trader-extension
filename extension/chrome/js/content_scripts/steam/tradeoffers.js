@@ -244,13 +244,13 @@ function addPartnerOfferSummary(offers) {
 
                 if (isOfferActive(offerElement)) {
                     if (offerHistorySummary.offers_received !== 0) {
-                        let receivedElement = `<span>Received: ${offerHistorySummary.offers_received} Last: ${(new Date(offerHistorySummary.last_received * 1000)).toISOString()}</span>`;
+                        let receivedElement = `<span>Received: ${offerHistorySummary.offers_received} Last: ${dateToISODisplay(offerHistorySummary.last_received)}</span>`;
                         offerElement.querySelector('.tradeoffer_items.primary').insertAdjacentHTML('afterbegin', receivedElement);
                     }
                     else offerElement.querySelector('.tradeoffer_items.primary').insertAdjacentHTML('afterbegin', `<span>Received: 0</span>`);
 
                     if (offerHistorySummary.offers_sent !== 0) {
-                        let sentElement = `<span>Sent: ${offerHistorySummary.offers_sent} Last: ${(new Date(offerHistorySummary.last_sent * 1000)).toISOString()}</span>`;
+                        let sentElement = `<span>Sent: ${offerHistorySummary.offers_sent} Last: ${dateToISODisplay(offerHistorySummary.last_received)}</span>`;
                         offerElement.querySelector('.tradeoffer_items.secondary').insertAdjacentHTML('afterbegin', sentElement);
                     }
                     else offerElement.querySelector('.tradeoffer_items.secondary').insertAdjacentHTML('afterbegin', `<span>Sent: 0</span>`);

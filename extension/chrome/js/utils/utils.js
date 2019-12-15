@@ -1635,3 +1635,10 @@ function updateOfferHistoryData() {
         }
     );
 }
+
+function dateToISODisplay(unixTimestamp) {
+    let unformatted = (new Date(unixTimestamp * 1000)).toISOString();
+    let date = unformatted.split('T')[0];
+    let time = unformatted.split('T')[1].substr(0, 5);
+    return `${date} ${time}`
+}
