@@ -1618,8 +1618,8 @@ function updateOfferHistoryData() {
                                 [storageKey]: {
                                     offers_received: offerSummaryFromStorage.offers_received + received,
                                     offers_sent: offerSummaryFromStorage.offers_sent + sent,
-                                    last_received: offerSummaryFromStorage.last_received + last_received,
-                                    last_sent: offerSummaryFromStorage.last_sent + last_sent
+                                    last_received: last_received > offerSummaryFromStorage.last_received ? last_received : offerSummaryFromStorage.last_received,
+                                    last_sent: last_sent > offerSummaryFromStorage.last_sent ? last_sent : offerSummaryFromStorage.last_sent
                                 }
                             }, () => {});
                         }
