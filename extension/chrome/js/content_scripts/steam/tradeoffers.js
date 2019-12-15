@@ -234,25 +234,29 @@ function isOfferActive(offerElement) {
 }
 
 function addPartnerOfferSummary(offers) {
-    offers.forEach(offer => {
-        let partnerID = getPoperStyleSteamIDFromOfferStyle(offer.accountid_other);
-        let storageKey = `offerHistory_${partnerID}`;
-        chrome.storage.local.get(storageKey, (result) => {
-            let offerHistorySummary = result[storageKey];
-            if (offerHistorySummary !== undefined) {
-                let offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
+    chrome.storage.local.get('tradeHistoryOffers', (result) => {
+        if (result.tradeHistoryOffers) {
+            offers.forEach(offer => {
+                let partnerID = getPoperStyleSteamIDFromOfferStyle(offer.accountid_other);
+                let storageKey = `offerHistory_${partnerID}`;
+                chrome.storage.local.get(storageKey, (result) => {
+                    let offerHistorySummary = result[storageKey];
+                    if (offerHistorySummary !== undefined) {
+                        let offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
 
-                if (isOfferActive(offerElement)) {
-                    let receivedElement = `<span class="offerHistory">Received: ${offerHistorySummary.offers_received} Last: ${dateToISODisplay(offerHistorySummary.last_received)}</span>`;
-                    if (offerHistorySummary.offers_received === 0) receivedElement = `<span  class="offerHistory">Received: 0</span>`;
-                    offerElement.querySelector('.tradeoffer_items.primary').insertAdjacentHTML('beforeend', receivedElement);
+                        if (isOfferActive(offerElement)) {
+                            let receivedElement = `<span class="offerHistory">Received: ${offerHistorySummary.offers_received} Last: ${dateToISODisplay(offerHistorySummary.last_received)}</span>`;
+                            if (offerHistorySummary.offers_received === 0) receivedElement = `<span  class="offerHistory">Received: 0</span>`;
+                            offerElement.querySelector('.tradeoffer_items.primary').insertAdjacentHTML('beforeend', receivedElement);
 
-                    let sentElement = `<span  class="offerHistory">Sent: ${offerHistorySummary.offers_sent} Last: ${dateToISODisplay(offerHistorySummary.last_received)}</span>`;
-                    if (offerHistorySummary.offers_sent === 0) sentElement = `<span  class="offerHistory">Sent: 0</span>`;
-                    offerElement.querySelector('.tradeoffer_items.secondary').insertAdjacentHTML('beforeend', sentElement);
-                }
-            }
-        });
+                            let sentElement = `<span  class="offerHistory">Sent: ${offerHistorySummary.offers_sent} Last: ${dateToISODisplay(offerHistorySummary.last_received)}</span>`;
+                            if (offerHistorySummary.offers_sent === 0) sentElement = `<span  class="offerHistory">Sent: 0</span>`;
+                            offerElement.querySelector('.tradeoffer_items.secondary').insertAdjacentHTML('beforeend', sentElement);
+                        }
+                    }
+                });
+            });
+        }
     });
 }
 

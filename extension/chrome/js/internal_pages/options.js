@@ -20,7 +20,7 @@ trackEvent({
 
 const simpleBinaryOptions = ['itemPricing', 'markScammers','colorfulItems', 'showRealStatus', 'flagScamComments', 'quickDeclineOffer', 'openOfferInTab', 'showPlusRepButton',
     'showReoccButton', 'nsfwFilter', 'hideOtherExtensionPrices', 'updateNotifications', 'switchToOtherInventory', 'autoFloatMarket', 'autoFloatOffer', 'autoFloatInventory', 'telemetryOn',
-    'tradeOffersLargerItems', 'marketOriginalPrice', 'autoSetSteamAPIKey', 'autoOpenIDLogin', 'csgotradersAutoLogin'];
+    'tradeOffersLargerItems', 'marketOriginalPrice', 'autoSetSteamAPIKey', 'autoOpenIDLogin', 'csgotradersAutoLogin', 'tradeHistoryOffers'];
 
 simpleBinaryOptions.forEach(option => {
    let optionCheckbox = document.getElementById(option);

@@ -20099,10 +20099,12 @@ const storageKeys = {
     autoSetSteamAPIKey: true,
     autoOpenIDLogin: false,
     csgotradersAutoLogin: false,
-    tradeHistoryLastUpdate: 0
+    tradeHistoryLastUpdate: 0,
+    tradeHistoryOffers: true
+
 };
 
-const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID'];
+const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID', 'tradeHistoryLastUpdate'];
 
 const commentsToReport = [
     'free skins CS:GO(100$)',
