@@ -59,14 +59,10 @@ if (document.querySelector('body').classList.contains('profile_page')){
     }
     else{ // when on someone else's profile
         if (!isProfilePrivate) {
-            // prints trade offer history summary
-            chrome.storage.local.get(`offerHistory_${profileOwnerSteamID}`, (result) => {
-                console.log(result[`offerHistory_${profileOwnerSteamID}`])
-            });
-
-            // adds "copy profile permalink" to the context menu
+            // adds "copy profile permalink" and "show offer history" to the context menu
             const copyPermalink = `<a class="popup_menu_item" href="#" id="copy_profile_perma_link"><img style="width: 16px; height: 16px" src="${chrome.runtime.getURL("images/paperclip.png")}">&nbsp; Copy Profile Permalink</a>`;
-            profileActionPopup.querySelector('.popup_body.popup_menu.shadow_content').insertAdjacentHTML('beforeend', copyPermalink);
+            const showOfferSummary = `<a class="popup_menu_item" href="#" id="show_offer_history"><img style="width: 16px; height: 16px" src="https://steamcommunity-a.akamaihd.net/public/images/profile/icon_tradeoffers.png">&nbsp; Show Offer History</a>`;
+            profileActionPopup.querySelector('.popup_body.popup_menu.shadow_content').insertAdjacentHTML('beforeend', copyPermalink + showOfferSummary);
 
             // this is a workaround to only being able to copy text to the clipboard that is selected in a textbox
             const textareaToCopy = `<textarea id="text_area_to_copy_permalink" class="hidden-copy-textarea" readonly="">https://steamcommunity.com/profiles/${profileOwnerSteamID}</textarea>`;
@@ -82,6 +78,42 @@ if (document.querySelector('body').classList.contains('profile_page')){
                 textAreaElement.select();
                 document.execCommand('copy');
                 textAreaElement.parentNode.removeChild(textAreaElement);
+
+                // for the context menu to go away
+                document.querySelector('.playerAvatarAutoSizeInner').click();
+            });
+
+            document.getElementById('show_offer_history').addEventListener('click', () => {
+                // analytics
+                trackEvent({
+                    type: 'event',
+                    action: 'ProfileOfferHistoryChecked'
+                });
+                // prints trade offer history summary
+                chrome.storage.local.get(`offerHistory_${profileOwnerSteamID}`, (result) => {
+                    let offerHistory = result[`offerHistory_${profileOwnerSteamID}`];
+                    if (offerHistory === undefined) {
+                        offerHistory = {
+                            offers_received: 0,
+                            offers_sent: 0,
+                            last_received: 0,
+                            last_sent: 0
+                        }
+                    }
+                    let offerSummaryElement = `
+                        <div class="trade_partner_info_block" style="color: lightgray"> 
+                            <div>Offers Received: ${offerHistory.offers_received} Last:  ${offerHistory.offers_received !== 0 ? dateToISODisplay(offerHistory.last_received) : '-'}</div>
+                            <div>Offers Sent: ${offerHistory.offers_sent} Last:  ${offerHistory.offers_sent !== 0 ? dateToISODisplay(offerHistory.last_sent) : '-'}</div>
+                        </div>`;
+
+                    let profileStatusElement = document.querySelector('.responsive_status_info');
+
+                    if (profileStatusElement !== null) profileStatusElement.insertAdjacentHTML('beforeend', offerSummaryElement);
+                    else document.querySelector('.profile_header_badgeinfo').insertAdjacentHTML('beforeend', offerSummaryElement);
+
+                    // for the context menu to go away
+                    document.querySelector('.playerAvatarAutoSizeInner').click();
+                });
             });
 
             // handles rep button related stuff
