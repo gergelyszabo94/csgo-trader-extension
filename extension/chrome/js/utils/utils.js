@@ -1235,6 +1235,9 @@ function addFloatDataToPage(job, floatQueue, floatInfo) {
         setStickerInfo(job.listingID, floatInfo.stickers);
         addPatterns(job.listingID, floatInfo);
     }
+    else if (job.type === 'offersPage') {
+        addFloatIndicator(selectItemElementByIDs(job.classid, job.instanceid), floatInfo);
+    }
 }
 
 function getFloatInfoFromCache(assetIDs) {
@@ -1476,9 +1479,11 @@ function extractItemsFromOffers(offers) {
     if (offers !== undefined || null) {
         offers.forEach(offer => {
             if (offer.items_to_give !== undefined) offer.items_to_give.forEach(item => {
+                item.owner = getPoperStyleSteamIDFromOfferStyle(offer.accountid_other);
                 itemsToReturn.push(item)
             });
             if (offer.items_to_receive !== undefined) offer.items_to_receive.forEach(item => {
+                item.owner = getPoperStyleSteamIDFromOfferStyle(offer.accountid_other);
                 itemsToReturn.push(item)
             });
         });
@@ -1659,6 +1664,6 @@ function prettyTimeAgo(unixTimestamp) {
     else if (differenceSeconds >= (86400 * 30) && differenceSeconds < (86400 * 60)) prettyString = 'Over a month ago';
     else if (differenceSeconds >= (86400 * 60) && differenceSeconds < (86400 * 365)) prettyString = `${Math.trunc(differenceSeconds / (86400 * 30))} months ago`;
     else prettyString = 'Over a year ago';
-    
+
     return prettyString;
 }

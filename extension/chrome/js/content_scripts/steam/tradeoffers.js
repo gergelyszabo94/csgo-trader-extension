@@ -72,6 +72,10 @@ function getIDsFromElement(element) {
     };
 }
 
+function selectItemElementByIDs(classid, instanceid) {
+    return document.querySelector(`[data-economy-item="classinfo/730/${classid}/${instanceid}"`);
+}
+
 function getItemByIDs(items, IDs) {
     if (IDs.instanceid !== null) return items.filter(item => item.classid === IDs.classid && item.instanceid === IDs.instanceid)[0];
     else return items.filter(item => item.classid === IDs.classid)[0];
@@ -98,7 +102,20 @@ function addItemInfo(items) {
                 makeItemColorful(itemElement, item, result.colorfulItems);
                 addSSTandExtIndicators(itemElement, item);
                 addPriceIndicator(itemElement, item.price);
-                if (result.autoFloatOffer) addFloatIndicator(itemElement, item.floatInfo);
+
+                if (result.autoFloatOffer && item.inspectLink !== null) {
+                    if (item.floatInfo === null && itemTypes[item.type.key].float) {
+                        floatQueue.jobs.push({
+                            type: 'offersPage',
+                            assetID: item.assetid,
+                            classid: item.classid,
+                            instanceid: item.instanceid,
+                            inspectLink: item.inspectLink
+                        });
+                        if (!floatQueue.active) workOnFloatQueue();
+                    }
+                    else addFloatIndicator(itemElement, item.floatInfo);
+                }
 
                 // marks the item "processed" to avoid additional unnecessary work later
                 itemElement.setAttribute('data-processed', 'true');

@@ -262,8 +262,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
             fetch(getRequest).then((response) => {
                 if (!response.ok) {
-                    sendResponse('error');
                     console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+                    sendResponse('error');
                 }
                 else return response.json();
             }).then((body) => {
