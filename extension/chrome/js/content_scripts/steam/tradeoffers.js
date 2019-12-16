@@ -233,30 +233,37 @@ function isOfferActive(offerElement) {
     else return false
 }
 
-function addPartnerOfferSummary(offers) {
-    chrome.storage.local.get('tradeHistoryOffers', (result) => {
-        if (result.tradeHistoryOffers) {
-            offers.forEach(offer => {
-                let partnerID = getPoperStyleSteamIDFromOfferStyle(offer.accountid_other);
-                let storageKey = `offerHistory_${partnerID}`;
-                chrome.storage.local.get(storageKey, (result) => {
-                    let offerHistorySummary = result[storageKey];
-                    if (offerHistorySummary !== undefined) {
-                        let offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
-                        if (isOfferActive(offerElement)) {
-                            let receivedElement = `<span class="offerHistory">Received: ${offerHistorySummary.offers_received} Last: ${prettyTimeAgo(offerHistorySummary.last_received)}</span>`;
-                            if (offerHistorySummary.offers_received === 0) receivedElement = `<span  class="offerHistory">Received: 0</span>`;
-                            offerElement.querySelector('.tradeoffer_items.primary').insertAdjacentHTML('beforeend', receivedElement);
+function addPartnerOfferSummary(offers, nthRun) {
+    if (nthRun < 2) {
+        chrome.storage.local.get('tradeHistoryOffers', (result) => {
+            if (result.tradeHistoryOffers) {
+                offers.forEach(offer => {
+                    let partnerID = getPoperStyleSteamIDFromOfferStyle(offer.accountid_other);
+                    let storageKey = `offerHistory_${partnerID}`;
+                    chrome.storage.local.get(storageKey, (result) => {
+                        let offerHistorySummary = result[storageKey];
+                        if (offerHistorySummary !== undefined) {
+                            let offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
 
-                            let sentElement = `<span  class="offerHistory">Sent: ${offerHistorySummary.offers_sent} Last: ${prettyTimeAgo(offerHistorySummary.last_received)}</span>`;
-                            if (offerHistorySummary.offers_sent === 0) sentElement = `<span  class="offerHistory">Sent: 0</span>`;
-                            offerElement.querySelector('.tradeoffer_items.secondary').insertAdjacentHTML('beforeend', sentElement);
+                            // removes elements from previous runs
+                            offerElement.querySelectorAll('.offerHistory').forEach(offerHistoryElement =>  offerHistoryElement.parentNode.removeChild(offerHistoryElement));
+
+                            if (isOfferActive(offerElement)) {
+                                let receivedElement = `<span class="offerHistory">Received: ${offerHistorySummary.offers_received} Last: ${prettyTimeAgo(offerHistorySummary.last_received)}</span>`;
+                                if (offerHistorySummary.offers_received === 0) receivedElement = `<span  class="offerHistory">Received: 0</span>`;
+                                offerElement.querySelector('.tradeoffer_items.primary').insertAdjacentHTML('beforeend', receivedElement);
+
+                                let sentElement = `<span  class="offerHistory">Sent: ${offerHistorySummary.offers_sent} Last: ${prettyTimeAgo(offerHistorySummary.last_received)}</span>`;
+                                if (offerHistorySummary.offers_sent === 0) sentElement = `<span  class="offerHistory">Sent: 0</span>`;
+                                offerElement.querySelector('.tradeoffer_items.secondary').insertAdjacentHTML('beforeend', sentElement);
+                            }
                         }
-                    }
+                    });
                 });
-            });
-        }
-    });
+            }
+        });
+        if (nthRun === 0) setTimeout(() => {addPartnerOfferSummary(offers, 1)}, 30000);
+    }
 }
 
 logExtensionPresence();
@@ -417,11 +424,11 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
 
                     if (activePage === 'incoming_offers') {
                         addTotals(offers.trade_offers_received, itemsWithAllInfo);
-                        addPartnerOfferSummary(offers.trade_offers_received);
+                        addPartnerOfferSummary(offers.trade_offers_received, 0);
                     }
                     else if (activePage === 'sent_offers') {
                         addTotals(offers.trade_offers_sent, itemsWithAllInfo);
-                        addPartnerOfferSummary(offers.trade_offers_sent);
+                        addPartnerOfferSummary(offers.trade_offers_sent, 0);
                     }
 
                     document.getElementById('tradeoffers_summary').innerHTML = `<b>Trade offer summary:</b>`;
