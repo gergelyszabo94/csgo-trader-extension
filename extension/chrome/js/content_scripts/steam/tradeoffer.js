@@ -28,7 +28,7 @@ function findElementByAssetID(assetID){ return document.getElementById(`item730_
 
 function addItemInfo() {
     removeSIHStuff();
-    
+
     let itemElements = document.querySelectorAll('.item.app730.context2');
     if (itemElements.length !== 0){
         chrome.storage.local.get(['colorfulItems', 'autoFloatOffer'], (result) => {
@@ -556,19 +556,26 @@ chrome.storage.local.get('markScammers', result => {if(result.markScammers) warn
 
 // add an info card to the top of the offer about offer history with the user (sent/received)
 function addPartnerOfferSummary() {
-    chrome.storage.local.get('tradeHistoryOffers', (result) => {
+    chrome.storage.local.get(['tradeHistoryOffers', `offerHistory_${getTradePartnerSteamID()}`], (result) => {
+        let offerHistory = result[`offerHistory_${getTradePartnerSteamID()}`];
         if (result.tradeHistoryOffers) {
-            chrome.storage.local.get(`offerHistory_${getTradePartnerSteamID()}`, (result) => {
-                let offerHistory = result[`offerHistory_${getTradePartnerSteamID()}`];
-                let headline = document.querySelector('.trade_partner_headline');
-                if (headline !== null) {
-                    headline.insertAdjacentHTML('afterend', `
+            if (offerHistory === undefined) {
+                offerHistory = {
+                    offers_received: 0,
+                    offers_sent: 0,
+                    last_received: 0,
+                    last_sent: 0
+                }
+            }
+
+            let headline = document.querySelector('.trade_partner_headline');
+            if (headline !== null) {
+                headline.insertAdjacentHTML('afterend', `
                         <div class="trade_partner_info_block offerHistoryCard"> 
                             <div>Offers Received: ${offerHistory.offers_received} Last:  ${offerHistory.offers_received !== 0 ? dateToISODisplay(offerHistory.last_received) : '-'}</div>
                             <div>Offers Sent: ${offerHistory.offers_sent} Last:  ${offerHistory.offers_sent !== 0 ? dateToISODisplay(offerHistory.last_sent) : '-'}</div>
                         </div>`);
-                }
-            });
+            }
         }
     });
 }
