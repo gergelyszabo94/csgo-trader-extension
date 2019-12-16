@@ -270,7 +270,7 @@ function addPartnerOfferSummary(offers, nthRun) {
                                 if (offerHistorySummary.offers_received === 0) receivedElement = `<span  class="offerHistory">Received: 0</span>`;
                                 offerElement.querySelector('.tradeoffer_items.primary').insertAdjacentHTML('beforeend', receivedElement);
 
-                                let sentElement = `<span  class="offerHistory">Sent: ${offerHistorySummary.offers_sent} Last: ${prettyTimeAgo(offerHistorySummary.last_received)}</span>`;
+                                let sentElement = `<span  class="offerHistory">Sent: ${offerHistorySummary.offers_sent} Last: ${prettyTimeAgo(offerHistorySummary.last_sent)}</span>`;
                                 if (offerHistorySummary.offers_sent === 0) sentElement = `<span  class="offerHistory">Sent: 0</span>`;
                                 offerElement.querySelector('.tradeoffer_items.secondary').insertAdjacentHTML('beforeend', sentElement);
                             }
