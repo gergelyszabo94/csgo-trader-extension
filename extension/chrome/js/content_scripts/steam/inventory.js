@@ -1036,9 +1036,28 @@ if (isOwnInventory()) {
 }
 
 if (!isOwnInventory()) {
-    // prints trade offer history summary
-    chrome.storage.local.get(`offerHistory_${getInventoryOwnerID()}`, (result) => {
-        console.log(result[`offerHistory_${getInventoryOwnerID()}`])
+    // shows trade offer history summary
+    chrome.storage.local.get(['tradeHistoryInventory', `offerHistory_${getInventoryOwnerID()}`], (result) => {
+        let offerHistory = result[`offerHistory_${getInventoryOwnerID()}`];
+        if (result.tradeHistoryInventory) {
+            if (offerHistory === undefined) {
+                offerHistory = {
+                    offers_received: 0,
+                    offers_sent: 0,
+                    last_received: 0,
+                    last_sent: 0
+                }
+            }
+
+            let header = document.querySelector('.profile_small_header_text');
+            if (header !== null) {
+                header.insertAdjacentHTML('beforeend', `
+                        <div class="trade_partner_info_block"> 
+                            <div>Offers Received: ${offerHistory.offers_received} Last:  ${offerHistory.offers_received !== 0 ? dateToISODisplay(offerHistory.last_received) : '-'}</div>
+                            <div>Offers Sent: ${offerHistory.offers_sent} Last:  ${offerHistory.offers_sent !== 0 ? dateToISODisplay(offerHistory.last_sent) : '-'}</div>
+                        </div>`);
+            }
+        }
     });
 }
 

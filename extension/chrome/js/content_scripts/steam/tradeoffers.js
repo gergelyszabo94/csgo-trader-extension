@@ -372,6 +372,7 @@ if (activePage === 'incoming_offers') injectToPage(acceptTradeScriptString, fals
 if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
     let tradeOffersList = document.querySelector('.profile_leftcol');
     if (tradeOffersList !== null && document.querySelector('.profile_fatalerror') === null) {
+        updateOfferHistoryData();
         tradeOffersList.insertAdjacentHTML('afterbegin', `
         <div id="tradeoffers_summary" class="trade_offers_module">Waiting for Steam API...</div>
         <div id="tradeOffersSortingMenu" class="trade_offers_module hidden"><span>Sorting: </span><select id="offerSortingMethod"></select></div>`);
@@ -442,8 +443,6 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
                 }
             }
         );
-
-        updateOfferHistoryData();
     }
 }
 

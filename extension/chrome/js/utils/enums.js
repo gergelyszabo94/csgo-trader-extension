@@ -20100,7 +20100,8 @@ const storageKeys = {
     autoOpenIDLogin: false,
     csgotradersAutoLogin: false,
     tradeHistoryLastUpdate: 0,
-    tradeHistoryOffers: true
+    tradeHistoryOffers: true,
+    tradeHistoryInventory: true
 
 };
 
