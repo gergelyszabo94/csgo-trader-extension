@@ -89,18 +89,19 @@ if (document.querySelector('body').classList.contains('profile_page')){
                 if(result.showPlusRepButton){
                     let repButton = `<div style="float: right; text-align: center; margin-top: 6px;" class="commentthread_user_avatar playerAvatar"><span class="btn_green_white_innerfade btn_small" id="repper" style="padding: 5px;">+rep<span></div>`;
 
-                    if (commentThreadEntryBox !== null) commentThreadEntryBox.insertAdjacentHTML('afterend', repButton);
+                    if (commentThreadEntryBox !== null) {
+                        commentThreadEntryBox.insertAdjacentHTML('afterend', repButton);
+                        document.getElementById('repper').addEventListener('click', () => {
+                            // analytics
+                            trackEvent({
+                                type: 'event',
+                                action: 'ReputionMessagePosted'
+                            });
+                            document.querySelector('.commentthread_textarea').value = result.reputationMessage;
+                            setTimeout(() => {document.querySelectorAll('.btn_green_white_innerfade.btn_small')[1].click()}, 500);
 
-                    document.getElementById('repper').addEventListener('click', () => {
-                        // analytics
-                        trackEvent({
-                            type: 'event',
-                            action: 'ReputionMessagePosted'
                         });
-                        document.querySelector('.commentthread_textarea').value = result.reputationMessage;
-                        setTimeout(() => {document.querySelectorAll('.btn_green_white_innerfade.btn_small')[1].click()}, 500);
-
-                    });
+                    }
                 }
             });
             reportComments();
@@ -124,24 +125,25 @@ if (document.querySelector('body').classList.contains('profile_page')){
 
     // shows actual steam chat status if set in options
     chrome.storage.local.get('showRealStatus', (result) => {
-        if(result.showRealStatus && !isProfilePrivate){
+        if(result.showRealStatus && !isProfilePrivate) {
             let statusDiv = document.querySelector('.profile_in_game.persona');
+            if (statusDiv !== null) { // when there is right info column (sometimes profiles are not private but set to not have that by the user)
+                if (statusDiv.classList.contains('online')) {
+                    let textDiv = statusDiv.querySelector('.profile_in_game_header');
 
-            if (statusDiv.classList.contains('online')){
-                let textDiv = statusDiv.querySelector('.profile_in_game_header');
-
-                chrome.runtime.sendMessage({GetPlayerSummaries: profileOwnerSteamID}, (response) => {
-                    if(response.apiKeyValid){
-                        switch(response.personastate){
-                            case 1: break;
-                            case 2: textDiv.innerText = ('Currently Busy'); break;
-                            case 3: textDiv.innerText = ('Currently Away'); break;
-                            case 4: textDiv.innerText = ('Currently Snooze'); break;
-                            case 5: textDiv.innerText = ('Currently Looking to Trade'); break;
-                            case 6: textDiv.innerText = ('Currently Looking to Play'); break;
+                    chrome.runtime.sendMessage({GetPlayerSummaries: profileOwnerSteamID}, (response) => {
+                        if(response.apiKeyValid){
+                            switch(response.personastate){
+                                case 1: break;
+                                case 2: textDiv.innerText = ('Currently Busy'); break;
+                                case 3: textDiv.innerText = ('Currently Away'); break;
+                                case 4: textDiv.innerText = ('Currently Snooze'); break;
+                                case 5: textDiv.innerText = ('Currently Looking to Trade'); break;
+                                case 6: textDiv.innerText = ('Currently Looking to Play'); break;
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         }
     });
