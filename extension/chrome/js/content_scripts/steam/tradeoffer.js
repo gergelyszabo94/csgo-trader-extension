@@ -556,8 +556,10 @@ chrome.storage.local.get('markScammers', result => {if(result.markScammers) warn
 
 // add an info card to the top of the offer about offer history with the user (sent/received)
 function addPartnerOfferSummary() {
-    chrome.storage.local.get(['tradeHistoryOffers', `offerHistory_${getTradePartnerSteamID()}`], (result) => {
+    chrome.storage.local.get(['tradeHistoryOffers', `offerHistory_${getTradePartnerSteamID()}`, 'apiKeyValid'], (result) => {
         let offerHistory = result[`offerHistory_${getTradePartnerSteamID()}`];
+        let headline = document.querySelector('.trade_partner_headline');
+
         if (result.tradeHistoryOffers) {
             if (offerHistory === undefined) {
                 offerHistory = {
@@ -568,13 +570,21 @@ function addPartnerOfferSummary() {
                 }
             }
 
-            let headline = document.querySelector('.trade_partner_headline');
             if (headline !== null) {
-                headline.insertAdjacentHTML('afterend', `
+                if (result.apiKeyValid) {
+                    headline.insertAdjacentHTML('afterend', `
                         <div class="trade_partner_info_block" style="color: lightgray"> 
                             <div title="${dateToISODisplay(offerHistory.last_received)}">Offers Received: ${offerHistory.offers_received} Last:  ${offerHistory.offers_received !== 0 ? prettyTimeAgo(offerHistory.last_received) : '-'}</div>
                             <div title="${dateToISODisplay(offerHistory.last_sent)}">Offers Sent: ${offerHistory.offers_sent} Last:  ${offerHistory.offers_sent !== 0 ? prettyTimeAgo(offerHistory.last_sent) : '-'}</div>
                         </div>`);
+                }
+                else {
+                    headline.insertAdjacentHTML('afterend', `
+                        <div class="trade_partner_info_block" style="color: lightgray"> 
+                            <div><b>CSGOTrader Extension:</b> It looks like you don't have your Steam API Key set yet.</div>
+                            <div>If you had that you would see partner offer history here. Check the <a href="https://csgotrader.app/release-notes#1.23">Release Notes</a> for more info.</div>
+                        </div>`);
+                }
             }
         }
     });

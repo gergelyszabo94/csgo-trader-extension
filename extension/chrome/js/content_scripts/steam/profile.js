@@ -37,21 +37,21 @@ if (document.querySelector('body').classList.contains('profile_page')){
                         action: 'ReoccuringCommentPosted'
                     });
 
-                   document.querySelectorAll('.commentthread_comment.responsive_body_text').forEach(commentThread => {
-                       // regex: replaces whitespaces and steam text formatting tags
-                       let toReplace = '';
-                       steamTextFormatingTags.forEach(tag => {
-                          toReplace += tag.replace('[','\\[').replace(']', '\\]') + '|';
-                       });
-                       toReplace += '\\s';
-                       let toReplaceRegex = new RegExp(toReplace, 'g');
+                    document.querySelectorAll('.commentthread_comment.responsive_body_text').forEach(commentThread => {
+                        // regex: replaces whitespaces and steam text formatting tags
+                        let toReplace = '';
+                        steamTextFormatingTags.forEach(tag => {
+                            toReplace += tag.replace('[','\\[').replace(']', '\\]') + '|';
+                        });
+                        toReplace += '\\s';
+                        let toReplaceRegex = new RegExp(toReplace, 'g');
 
-                       if (commentThread.querySelector('.commentthread_comment_text').innerText.replace(toReplaceRegex,'') === result.reoccuringMessage.replace(toReplaceRegex,'')){
-                           commentThread.querySelectorAll('img')[1].click();
-                       }
+                        if (commentThread.querySelector('.commentthread_comment_text').innerText.replace(toReplaceRegex,'') === result.reoccuringMessage.replace(toReplaceRegex,'')){
+                            commentThread.querySelectorAll('img')[1].click();
+                        }
                     });
-                   document.querySelector('.commentthread_textarea').value = result.reoccuringMessage;
-                   setTimeout(() => {document.querySelectorAll('.btn_green_white_innerfade.btn_small')[1].click()}, 2000);
+                    document.querySelector('.commentthread_textarea').value = result.reoccuringMessage;
+                    setTimeout(() => {document.querySelectorAll('.btn_green_white_innerfade.btn_small')[1].click()}, 2000);
 
                 });
             }
@@ -90,21 +90,32 @@ if (document.querySelector('body').classList.contains('profile_page')){
                     action: 'ProfileOfferHistoryChecked'
                 });
                 // prints trade offer history summary
-                chrome.storage.local.get(`offerHistory_${profileOwnerSteamID}`, (result) => {
+                chrome.storage.local.get([`offerHistory_${profileOwnerSteamID}`, 'apiKeyValid'], (result) => {
                     let offerHistory = result[`offerHistory_${profileOwnerSteamID}`];
-                    if (offerHistory === undefined) {
-                        offerHistory = {
-                            offers_received: 0,
-                            offers_sent: 0,
-                            last_received: 0,
-                            last_sent: 0
+                    let offerSummaryElement = '';
+
+                    if (result.apiKeyValid) {
+                        if (offerHistory === undefined) {
+                            offerHistory = {
+                                offers_received: 0,
+                                offers_sent: 0,
+                                last_received: 0,
+                                last_sent: 0
+                            }
                         }
-                    }
-                    let offerSummaryElement = `
+                        offerSummaryElement = `
                         <div class="trade_partner_info_block" style="color: lightgray"> 
                             <div>Offers Received: ${offerHistory.offers_received} Last:  ${offerHistory.offers_received !== 0 ? dateToISODisplay(offerHistory.last_received) : '-'}</div>
                             <div>Offers Sent: ${offerHistory.offers_sent} Last:  ${offerHistory.offers_sent !== 0 ? dateToISODisplay(offerHistory.last_sent) : '-'}</div>
                         </div>`;
+                    }
+                    else {
+                        offerSummaryElement = `
+                        <div class="trade_partner_info_block" style="color: lightgray"> 
+                            <div><b>CSGOTrader Extension:</b> It looks like you don't have your Steam API Key set yet.</div>
+                            <div>If you had that you would see partner offer history here. Check the <a href="https://csgotrader.app/release-notes#1.23">Release Notes</a> for more info.</div>
+                        </div>`
+                    }
 
                     let profileStatusElement = document.querySelector('.responsive_status_info');
 

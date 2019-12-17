@@ -416,7 +416,7 @@ function addFunctionBar(){
                             <textarea class="hidden-copy-textarea" id="generated_list_copy_textarea"></textarea>
                     </div>
                     <div id="massListing" class="hidden">
-                    <h2>Mass Market Listing - Select Items to Start (BETA)</h2>
+                    <h2>Mass Market Listing - Select Items to Start</h2>
                     <h3>Check out the <a href="https://csgotrader.app/release-notes#1.22" target="_blank">Release Notes</a> for a quick guide about the Mass Listing feature</h3>
                     <div class="hidden not_tradable" id="currency_mismatch_warning">Warning: Your Steam Wallet currency and CSGO Trader currency are not the same. <span class="underline" id="changeCurrency">Click here to fix this</span></div>
                         <table id="listingTable">
@@ -1037,8 +1037,10 @@ if (isOwnInventory()) {
 
 if (!isOwnInventory()) {
     // shows trade offer history summary
-    chrome.storage.local.get(['tradeHistoryInventory', `offerHistory_${getInventoryOwnerID()}`], (result) => {
+    chrome.storage.local.get(['tradeHistoryInventory', `offerHistory_${getInventoryOwnerID()}`, 'apiKeyValid'], (result) => {
         let offerHistory = result[`offerHistory_${getInventoryOwnerID()}`];
+        let header = document.querySelector('.profile_small_header_text');
+
         if (result.tradeHistoryInventory) {
             if (offerHistory === undefined) {
                 offerHistory = {
@@ -1049,13 +1051,21 @@ if (!isOwnInventory()) {
                 }
             }
 
-            let header = document.querySelector('.profile_small_header_text');
             if (header !== null) {
-                header.insertAdjacentHTML('beforeend', `
+                if (result.apiKeyValid) {
+                    header.insertAdjacentHTML('beforeend', `
                         <div class="trade_partner_info_block"> 
                             <div title="${dateToISODisplay(offerHistory.last_received)}">Offers Received: ${offerHistory.offers_received} Last:  ${offerHistory.offers_received !== 0 ? prettyTimeAgo(offerHistory.last_received) : '-'}</div>
                             <div title="${dateToISODisplay(offerHistory.last_sent)}">Offers Sent: ${offerHistory.offers_sent} Last:  ${offerHistory.offers_sent !== 0 ? prettyTimeAgo(offerHistory.last_sent) : '-'}</div>
                         </div>`);
+                }
+                else {
+                    header.insertAdjacentHTML('beforeend', `
+                        <div class="trade_partner_info_block" style="color: lightgray"> 
+                            <div><b>CSGOTrader Extension:</b> It looks like you don't have your Steam API Key set yet.</div>
+                            <div>If you had that you would see partner offer history here. Check the <a href="https://csgotrader.app/release-notes#1.23">Release Notes</a> for more info.</div>
+                        </div>`);
+                }
             }
         }
     });
