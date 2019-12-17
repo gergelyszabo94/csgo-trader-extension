@@ -279,7 +279,7 @@ function addPartnerOfferSummary(offers, nthRun) {
                 });
             }
         });
-        if (nthRun === 0) setTimeout(() => {addPartnerOfferSummary(offers, 1)}, 30000);
+        if (nthRun === 0) setTimeout(() => {addPartnerOfferSummary(offers, 1)}, 15000);
     }
 }
 

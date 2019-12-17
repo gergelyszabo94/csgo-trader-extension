@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "__MSG_application_title__",
   "short_name": "CSGO Trader",
-  "version": "1.22",
+  "version": "1.23",
   "default_locale": "en",
   "description": "__MSG_application_description__",
   "homepage_url": "https://csgotrader.app/",
@@ -137,6 +137,18 @@
       "css": ["/css/generalCSTStyle.css"]
     },
     {
+      "matches": [
+        "*://steamcommunity.com/openid/login*"
+      ],
+      "run_at" : "document_idle",
+      "js": [
+        "js/utils/steam_override.js",
+        "js/utils/enums.js",
+        "js/utils/utils.js",
+        "js/content_scripts/steam/openid_login.js"],
+      "css": ["/css/generalCSTStyle.css"]
+    },
+    {
       "matches": ["*://csgolounge.com/mytrades/*"],
       "run_at" : "document_idle",
       "js": [
@@ -149,6 +161,13 @@
       "js": [
         "js/utils/utils.js",
         "js/content_scripts/tradersbump.js"]
+    },
+    {
+      "matches": ["*://csgotraders.net/*"],
+      "run_at" : "document_idle",
+      "js": [
+        "js/utils/utils.js",
+        "js/content_scripts/traders_autologin.js"]
     }
   ],
   "web_accessible_resources": [
