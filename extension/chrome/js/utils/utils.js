@@ -1667,3 +1667,16 @@ function prettyTimeAgo(unixTimestamp) {
 
     return prettyString;
 }
+
+function getHighestBuyOrder(market_hash_name) {
+    return new Promise((resolve, reject) => {
+        let currencyID = getSteamWalletInfo().wallet_currency;
+        chrome.runtime.sendMessage({getBuyOrderInfo: {
+                currencyID: currencyID,
+                market_hash_name: market_hash_name
+            }}, (response) => {
+            if (response.getBuyOrderInfo !== 'error') resolve(response.getBuyOrderInfo.highest_buy_order);
+            else reject('error');
+        });
+    });
+}

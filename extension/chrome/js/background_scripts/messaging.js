@@ -331,6 +331,45 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
         return true; // async return to signal that it will return later
     }
+    else if (request.getBuyOrderInfo !== undefined) {
+
+        let getRequest = new Request(`https://steamcommunity.com/market/listings/730/${request.getBuyOrderInfo.market_hash_name}`);
+
+        fetch(getRequest).then((response) => {
+            if (!response.ok) {
+                sendResponse('error');
+                console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+            }
+            else return response.text();
+        }).then((body) => {
+            let item_nameid = '';
+            try{item_nameid = body.split('Market_LoadOrderSpread( ')[1].split(' ')[0]}
+            catch (e) {
+                console.log(e);
+                console.log(body);
+                sendResponse('error');
+            }
+            let getRequest2 = new Request(`https://steamcommunity.com/market/itemordershistogram?country=US&language=english&currency=${request.getBuyOrderInfo.currencyID}&item_nameid=${item_nameid}`);
+            fetch(getRequest2).then((response) => {
+                if (!response.ok) {
+                    sendResponse('error');
+                    console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+                }
+                else return response.json();
+            }).then((body) => {
+                sendResponse({getBuyOrderInfo: body});
+            }).catch(err => {
+                console.log(err);
+                sendResponse('error');
+            });
+
+        }).catch(err => {
+            console.log(err);
+            sendResponse('error');
+        });
+
+        return true; // async return to signal that it will return later
+    }
 });
 
 chrome.runtime.onConnect.addListener(port => {});

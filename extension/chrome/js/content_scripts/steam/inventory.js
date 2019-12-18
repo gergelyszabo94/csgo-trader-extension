@@ -536,6 +536,9 @@ function updateSelectedItemsSummary(){
             if (listingRow === null) {
                 addListingRow(item);
                 addStartingAtAndQuickSellPrice(item);
+                getHighestBuyOrder(item.market_hash_name).then(highest_order =>
+                    console.log(highest_order)
+                )
             }
             else {
                 let previIDs = listingRow.getAttribute('data-assetids');
@@ -552,7 +555,6 @@ function updateSelectedItemsSummary(){
 
     chrome.storage.local.get('currency', (result) =>{
         document.getElementById('selectedTotalValue').innerText = prettyPrintPrice(result.currency, selectedTotal);
-        //document.getElementById('saleTotal').innerText = prettyPrintPrice(result.currency, selectedTotal);
     });
 }
 
@@ -885,8 +887,8 @@ function updateMassSaleTotal() {
     let total = 0;
     let totalAfterFees = 0;
     document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr').forEach(listingRow => {
-        total += parseInt(listingRow.querySelector('.selected').getAttribute('data-price-in-cents')) * parseInt(listingRow.querySelector('.itemAmount').innerText)
-        totalAfterFees += parseInt(listingRow.querySelector('.selected').getAttribute('data-listing-price')) * parseInt(listingRow.querySelector('.itemAmount').innerText)
+        total += parseInt(listingRow.querySelector('.selected').getAttribute('data-price-in-cents')) * parseInt(listingRow.querySelector('.itemAmount').innerText);
+        totalAfterFees += parseInt(listingRow.querySelector('.selected').getAttribute('data-listing-price')) * parseInt(listingRow.querySelector('.itemAmount').innerText);
     });
     document.getElementById('saleTotal').innerText = centsToSteamFormattedPrice(total);
     document.getElementById('saleTotalAfterFees').innerText = centsToSteamFormattedPrice(totalAfterFees);
