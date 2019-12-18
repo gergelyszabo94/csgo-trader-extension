@@ -13,6 +13,9 @@ chrome.runtime.onInstalled.addListener((details) => {
             action: 'ExtensionInstall'
         });
 
+        // tries to set the api key - only works if the user has already generated one before
+        scrapeSteamAPIkey();
+
         chrome.browserAction.setBadgeText({text: 'I'});
         chrome.notifications.create('installed', {
             type: 'basic',

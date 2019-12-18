@@ -1680,3 +1680,62 @@ function getHighestBuyOrder(market_hash_name) {
         });
     });
 }
+
+function scrapeSteamAPIkey() {
+    let getRequest = new Request('https://steamcommunity.com/dev/apikey');
+
+    fetch(getRequest).then((response) => {
+        if (!response.ok) {
+            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+        }
+        else return response.text();
+    }).then((body) => {
+        let html = document.createElement('html');
+        html.innerHTML = body;
+        let apiKey = null;
+        try {apiKey =  html.querySelector('#bodyContents_ex').querySelector('p').innerText.split(': ')[1]}
+        catch (e) {
+            console.log(e);
+            console.log(body);
+        }
+        console.log(apiKey);
+
+        validateSteamAPIKey(apiKey).then(
+            apiKeyValid => {
+                if (apiKeyValid) {
+                    console.log('api key valid');
+                    chrome.storage.local.set({steamAPIKey: apiKey, apiKeyValid: true}, () => {});
+                }
+            }, (error) => {
+                console.log(error);
+            });
+    }).catch(err => {
+        console.log(err);
+    });
+}
+
+function validateSteamAPIKey(apiKey) {
+    return new Promise((resolve, reject) => {
+        let getRequest = new Request(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=76561198036030455`);
+
+        fetch(getRequest).then((response) => {
+            if (!response.ok) {
+                console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+                reject(response.status)
+            }
+            else return response.json();
+        }).then((body) => {
+            try {
+                if (body.response.players[0].steamid === '76561198036030455') resolve(true);
+                else resolve(false)
+            }
+            catch (e) {
+                console.log(e);
+                reject(e)
+            }
+        }).catch(err => {
+            console.log(err);
+            reject(err)
+        });
+    });
+}

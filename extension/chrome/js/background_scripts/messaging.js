@@ -202,27 +202,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse({setAlarm: request.setAlarm})
     }
     else if (request.apikeytovalidate !== undefined) {
-        let getRequest = new Request(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${request.apikeytovalidate}&steamids=76561198036030455`);
-
-        fetch(getRequest).then((response) => {
-            if (!response.ok) {
+        validateSteamAPIKey(request.apikeytovalidate).then(
+            apiKeyValid => {
+                sendResponse({valid: apiKeyValid});
+            }, (error) => {
+                console.log(error);
                 sendResponse('error');
-                console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-            }
-            else return response.json();
-        }).then((body) => {
-            try {
-                if (body.response.players[0].steamid === '76561198036030455') sendResponse({valid: true});
-                else sendResponse({valid: false});
-            }
-            catch (e) {
-                console.log(e);
-                sendResponse({valid: false});
-            }
-        }).catch(err => {
-            console.log(err);
-            sendResponse({valid: false});
-        });
+            });
         return true; // async return to signal that it will return later
     }
     else if (request.GetPlayerSummaries !== undefined) {
