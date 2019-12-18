@@ -794,7 +794,7 @@ function sellItem(assetID, price) {
 function addListingRow(item) {
     let row = `
         <tr data-assetids="${item.assetid}" data-sold-ids="" data-item-name="${item.market_hash_name}">
-            <td class="itemName">${item.market_hash_name}</td>
+            <td class="itemName"><a href="https://steamcommunity.com/market/listings/730/${item.market_hash_name}" target="_blank">${item.market_hash_name}</a></td>
             <td class="itemAmount">1</td>
             <td class="itemExtensionPrice selected" data-price-in-cents="${userPriceToProperPrice(item.price.price)}" data-listing-price="${getPriceAfterFees(userPriceToProperPrice(item.price.price))}">${item.price.display}</td>
             <td class="itemStartingAt">Loading...</td>
