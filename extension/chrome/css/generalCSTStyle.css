@@ -422,6 +422,10 @@ progress {
     color: lightgray
 }
 
+.userPriceInput{
+    width: 50px;
+}
+
 /**
  * Tooltip Styles
  */
