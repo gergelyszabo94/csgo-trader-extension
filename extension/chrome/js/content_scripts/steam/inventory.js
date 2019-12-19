@@ -367,10 +367,10 @@ function addFunctionBar(){
                     </div>
                     <div id="functionBarActions" class="functionBarRow">
                         <span id="selectMenu">
-                            <img id ="selectButton" src="${hand_pointer}">
+                            <img id ="selectButton" class="clickable" src="${hand_pointer}" title="Start Selecting Items">
                         </span>
                         <span id="generate_menu">
-                            <img id ="generate_list" src="${table}">
+                            <img id ="generate_list" class="clickable" src="${table}" title="Generate list of inventory items"
                         </span>
                         <div id="sortingMenu">
                             <span>Sorting:</span>
@@ -381,7 +381,7 @@ function addFunctionBar(){
                     <div id="functionBarGenerateMenu" class="functionBarRow hidden">
                         <div>
                             <span>Generate list of inventory items (for posting in groups, trading forums, etc.) </span>
-                            <span id="generate_button">Click here to generate</span> 
+                            <span id="generate_button" class="clickable">Generate</span> 
                         </div>
                             
                             <div id="generate_options">
@@ -434,7 +434,11 @@ function addFunctionBar(){
                             <tbody>
                             </tbody>
                         </table>
-                        <span><span style="font-weight: bold">Total:</span> To list <span id="numberOfItemsToSell">0</span> item(s) worth <span id="saleTotal">0</span> and receive <span id="saleTotalAfterFees">0</span> after fees <span id="retryStartingAt" class="hidden">Retry Loading Starting At Price</span> <span id="sellButton">Start Mass Listing</span></span>
+                        <span>
+                            <span style="font-weight: bold">Total:</span> To list <span id="numberOfItemsToSell">0</span> item(s) worth <span id="saleTotal">0</span>
+                            and receive <span id="saleTotalAfterFees">0</span> after fees <span id="retryStartingAt" class="hidden">Retry Loading Starting At Price</span> 
+                            <span id="sellButton" class="clickable">Start Mass Listing</span>
+                        </span>
                         <div id="massSellError" class="hidden not_tradable"></div>
                     </div>
                 </div>
@@ -796,10 +800,10 @@ function addListingRow(item) {
         <tr data-assetids="${item.assetid}" data-sold-ids="" data-item-name="${item.market_hash_name}">
             <td class="itemName"><a href="https://steamcommunity.com/market/listings/730/${item.market_hash_name}" target="_blank">${item.market_hash_name}</a></td>
             <td class="itemAmount">1</td>
-            <td class="itemExtensionPrice selected" data-price-in-cents="${userPriceToProperPrice(item.price.price)}" data-listing-price="${getPriceAfterFees(userPriceToProperPrice(item.price.price))}">${item.price.display}</td>
-            <td class="itemStartingAt">Loading...</td>
-            <td class="itemQuickSell">Loading...</td>
-            <td class="itemInstantSell">Loading...</td>
+            <td class="itemExtensionPrice selected clickable" data-price-in-cents="${userPriceToProperPrice(item.price.price)}" data-listing-price="${getPriceAfterFees(userPriceToProperPrice(item.price.price))}">${item.price.display}</td>
+            <td class="itemStartingAt clickable">Loading...</td>
+            <td class="itemQuickSell clickable">Loading...</td>
+            <td class="itemInstantSell clickable">Loading...</td>
             <td class="itemUserPrice"><input type="text" class="userPriceInput"></td>
         </tr>`;
     document.getElementById('listingTable').querySelector('tbody').insertAdjacentHTML('beforeend', row);

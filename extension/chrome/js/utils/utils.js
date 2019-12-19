@@ -1314,7 +1314,7 @@ function getFloatBarSkeleton(type) {
         <div class="progress-bar floatBarWW" title="${exteriors.well_worn.localized_name}"></div>
         <div class="progress-bar floatBarBS" title="${exteriors.battle_scarred.localized_name}"></div>
      </div>
-     <div class="showTechnical">Show Technical</div>
+     <div class="showTechnical clickable" title="Show Float Technical Information">Show Technical</div>
      <div class="floatTechnical hidden"></div>
     </div>`
 }

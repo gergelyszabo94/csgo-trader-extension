@@ -212,12 +212,12 @@ function addFunctionBars(){
                 </div>
                 <div id="offer_take">
                     <span>Take: </span>
-                    <span class="offer_action" id="take_all_button">All page</span>
-                    <span class="offer_action" id="take_everything_button">Everything</span>
+                    <span class="offer_action clickable" id="take_all_button">All page</span>
+                    <span class="offer_action clickable" id="take_everything_button">Everything</span>
                     <input type="number" id="take_number_of_keys" class="keyNumberInput">
-                    <span class="offer_action" id="take_keys">Keys</span>
+                    <span class="offer_action clickable" id="take_keys">Keys</span>
                     <input type="number" id="take_number_of_selected" class="keyNumberInput">
-                    <span class="offer_action" id="take_selected">Selected</span>
+                    <span class="offer_action clickable" id="take_selected" title="Select items with Ctrl + Right Click">Selected</span>
                 </div>
             </div>
             `);
@@ -400,11 +400,11 @@ function addAPartysFunctionBar(whose){
                 </div>
                 <div id="offer_${whose}_remove">
                     <span>Remove: </span>
-                    <span class="offer_action" id="remove_${whose}_everything_button">Everything</span>
+                    <span class="offer_action clickable" id="remove_${whose}_everything_button">Everything</span>
                     <input type="number" id="remove_${whose}_number_of_keys" class="keyNumberInput">
-                    <span class="offer_action" id="remove_${whose}_keys">Keys</span>
+                    <span class="offer_action clickable" id="remove_${whose}_keys">Keys</span>
                     <input type="number" id="remove_${whose}_number_of_selected" class="keyNumberInput">
-                    <span class="offer_action" id="remove_${whose}_selected">Selected</span>
+                    <span class="offer_action clickable" id="remove_${whose}_selected" title="Select items with Ctrl + Right Click">Selected</span>
                 </div>
             </div>
             `);
