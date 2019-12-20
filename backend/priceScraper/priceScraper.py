@@ -13,6 +13,7 @@ result_s3_bucket = os.environ['RESULTS_BUCKET']
 sns_topic = os.environ['SNS_TOPIC_ARN']
 stage = os.environ['STAGE']
 own_prices_table = os.environ['OWN_PRICES_TABLE']
+steam_apis_key = os.environ['STEAM_APIS_COM_API_KEY']
 
 
 def lambda_handler(event, context):
@@ -27,48 +28,32 @@ def lambda_handler(event, context):
     for item in response['Items']:
         own_prices[item.get('market_hash_name')] = float(item.get('price'))
 
-    print("Requesting prices from csgobackpack.net")
+    print('Getting Prices from Steam APIs')
     try:
-        response = requests.get("http://csgobackpack.net/api/GetItemsList/v2/")
+        response = requests.get("https://api.steamapis.com/market/items/730?api_key=" + steam_apis_key)
     except Exception as e:
         print(e)
-        error = "Error during csgobackpack request"
+        error = "Error during steam apis request"
         alert_via_sns(f'{error}: {e}')
         return {
             'statusCode': 500,
             'body': error
         }
 
-    print("Received response from csgobackpack.net")
+    print('Received response from steamapis.com')
 
-    if response.status_code == 200 and response.json()['success']:
-        print("Valid response from csgobackpack.net")
-        items = response.json()['items_list']
+    if response.status_code == 200:
+        print("Valid response from steamapis.com")
+        items = response.json()['data']
         extract = {}
         print("Extracting pricing information")
-        for key, value in items.items():
-            name = items.get(key).get('name').replace("&#39", "'")
-            price = items.get(key).get('price')
 
-            if price:
-                extract[name] = {
-                    "csgobackpack": price
-                }
-            else:
-                extract[name] = {
-                    "csgobackpack": "null"
-                }
+        for item in items:
+            extract[item["market_hash_name"]] = {
+                "steam": item["prices"]
+            }
 
         print("Pricing information extracted")
-
-    else:
-        error = "Could not get items from csgobackpack.net"
-        alert_via_sns(error)
-        print(error, " status code: ", response.status_code)
-        return {
-            'statusCode': response.status_code,
-            'body': json.dumps(error)
-        }
 
     print('Requesting bitskins prices')
     try:
@@ -164,7 +149,7 @@ def lambda_handler(event, context):
             except KeyError:
                 print(name + " was not previously present, added")
                 extract[name] = {
-                    "csgobackpack": "null",
+                    "steam": "null",
                     "bitskins": {
                         "pricing_mode": pricing_mode,
                         "price": price,
@@ -303,7 +288,7 @@ def lambda_handler(event, context):
                         "★ StatTrak™ Navaja Knife | Doppler (Minimal Wear)"]
                 except:
                     extract["★ StatTrak™ Navaja Knife | Doppler (Minimal Wear)"] = {
-                        "csgobackpack": "null",
+                        "steam": "null",
                         "bitskins": "null",
                         "lootfarm": "null",
                         "csgotm": "null",
@@ -318,7 +303,7 @@ def lambda_handler(event, context):
                         "★ StatTrak™ Talon Knife | Doppler (Minimal Wear)"]
                 except:
                     extract["★ StatTrak™ Talon Knife | Doppler (Minimal Wear)"] = {
-                        "csgobackpack": "null",
+                        "steam": "null",
                         "bitskins": "null",
                         "lootfarm": "null",
                         "csgotm": "null",
@@ -333,7 +318,7 @@ def lambda_handler(event, context):
                         "★ StatTrak™ Stiletto Knife | Doppler (Minimal Wear)"]
                 except:
                     extract["★ StatTrak™ Stiletto Knife | Doppler (Minimal Wear)"] = {
-                        "csgobackpack": "null",
+                        "steam": "null",
                         "bitskins": "null",
                         "lootfarm": "null",
                         "csgotm": "null",
@@ -484,7 +469,7 @@ def lambda_handler(event, context):
                 except KeyError:
                     print(name + " was not previously present, added")
                     extract[name] = {
-                        "csgobackpack": "null",
+                        "steam": "null",
                         "bitskins": "null",
                         "lootfarm": "null",
                         "csgotm": "null",
@@ -518,7 +503,7 @@ def lambda_handler(event, context):
     for item in own_prices:
         if item not in extract:
             extract[item] = {
-                "csgobackpack": "null",
+                "steam": "null",
                 "bitskins": "null",
                 "lootfarm": "null",
                 "csgotm": "null",
@@ -539,11 +524,11 @@ def lambda_handler(event, context):
     month_to_week = 0
     count = 0
     for item in extract:
-        if "csgobackpack" in extract[item] and "24_hours" in extract[item]["csgobackpack"] and "7_days" in \
-                extract[item]["csgobackpack"] and "30_days" in extract[item]["csgobackpack"]:
-            daily = float(extract[item]["csgobackpack"]["24_hours"]["average"])
-            weekly = float(extract[item]["csgobackpack"]["7_days"]["average"])
-            monthly = float(extract[item]["csgobackpack"]["30_days"]["average"])
+        if "steam" in extract[item] and "safe_ts" in extract[item]["steam"] and "last_24h" in extract[item]["steam"]["safe_ts"] and "last_7d" in \
+                extract[item]["steam"]["safe_ts"] and "last_30d" in extract[item]["steam"]["safe_ts"]:
+            daily = float(extract[item]["steam"]["safe_ts"]["last_24h"])
+            weekly = float(extract[item]["steam"]["safe_ts"]["last_7d"])
+            monthly = float(extract[item]["steam"]["safe_ts"]["last_30d"])
             if (daily != 0 and weekly != 0 and monthly != 0) and (daily != 0.03 and weekly != 0.03 and monthly != 0.03):
                 week_to_day += (daily / weekly)
                 month_to_week += (weekly / monthly)
@@ -552,37 +537,38 @@ def lambda_handler(event, context):
     month_to_week = month_to_week / count
     print("Market trends: WtD: " + str(week_to_day) + " MtW: " + str(month_to_week))
 
-    print("Getting price difference ratio between csgopbackback:bitskins and csgobackpack:csmoney")
-    csb_bit = 0
-    csb_csm = 0
+    print("Getting price difference ratio between steam:bitskins and steam:csmoney")
+    st_bit = 0
+    st_csm = 0
     count = 0
 
     for item in extract:
-        if "csgobackpack" in extract[item] and "7_days" in extract[item]["csgobackpack"] and "bitskins" in extract[item] and "price" in extract[item]["bitskins"] and "csmoney" in extract[item] and "price" in extract[item]["csmoney"]:
-            csb_weekly = float(extract[item]["csgobackpack"]["7_days"]["average"])
+        if "steam" in extract[item] and "safe_ts" in extract[item]["steam"] and "last_7d" in extract[item]["steam"]["safe_ts"] and "bitskins" in extract[item] and "price" in extract[item]["bitskins"] \
+                and "csmoney" in extract[item] and "price" in extract[item]["csmoney"] and extract[item]["csmoney"]["price"] != "" and extract[item]["csmoney"]["price"] != "null":
+            st_weekly = float(extract[item]["steam"]["safe_ts"]["last_7d"])
             bit = float(extract[item]["bitskins"]["price"])
             csm = float(extract[item]["csmoney"]["price"])
-            if (csb_weekly != 0 and bit != 0 and csm != 0) and (csb_weekly != 0.03 and bit != 0.03 and csm != 0.03):
-                csb_bit += (csb_weekly / bit)
-                csb_csm += (csb_weekly / csm)
+            if (st_weekly != 0 and bit != 0 and csm != 0) and (st_weekly != 0.03 and bit != 0.03 and csm != 0.03):
+                st_bit += (st_weekly / bit)
+                st_csm += (st_weekly / csm)
                 count += 1
-    csb_bit = csb_bit / count
-    csb_csm = csb_csm / count
-    print("Backpack:Bitskins: " + str(csb_bit) + " Backpack:Csmoney:  " + str(csb_csm))
+    st_bit = st_bit / count
+    st_csm = st_csm / count
+    print("Steam:Bitskins: " + str(st_bit) + " Steam:Csmoney:  " + str(st_csm))
 
     for item in extract:
-        csgobackpack_aggregate = get_csgobackpack_price(item, extract, week_to_day, month_to_week)
+        steam_aggregate = get_steam_price(item, extract, week_to_day, month_to_week)
         if "csgotrader" not in extract[item]:
             extract[item]["csgotrader"] = {
                 "price": "null",
                 "doppler": "null"
             }
-        if csgobackpack_aggregate != "null":
-            extract[item]["csgotrader"]["price"] = float("{0:.2f}".format(csgobackpack_aggregate))
+        if steam_aggregate != "null":
+            extract[item]["csgotrader"]["price"] = float("{0:.2f}".format(steam_aggregate))
         elif extract[item]["csmoney"]["price"] != "null" and extract[item]["csmoney"]["price"] != 0:
-            extract[item]["csgotrader"]["price"] = float("{0:.2f}".format(float(extract[item]["csmoney"]["price"]) * csb_csm * week_to_day))  # case F
+            extract[item]["csgotrader"]["price"] = float("{0:.2f}".format(float(extract[item]["csmoney"]["price"]) * st_csm * week_to_day))  # case F
         elif "price" in extract[item]["bitskins"] and extract[item]["bitskins"]["price"] != "null":
-            extract[item]["csgotrader"]["price"] = float("{0:.2f}".format(float(extract[item]["bitskins"]["price"]) * csb_bit * week_to_day))  # case G
+            extract[item]["csgotrader"]["price"] = float("{0:.2f}".format(float(extract[item]["bitskins"]["price"]) * st_bit * week_to_day))  # case G
         else:
             if "csgotrader" not in extract[item]:
                 extract[item]["csgotrader"]["price"] = "null"  # case H
@@ -591,7 +577,7 @@ def lambda_handler(event, context):
         if "Doppler" in item:
             extract[item]["csgotrader"]["doppler"] = {}
             for phase in extract[item]["csmoney"]["doppler"]:
-                extract[item]["csgotrader"]["doppler"][phase] = float("{0:.2f}".format(float(extract[item]["csmoney"]["doppler"][phase]) * csb_csm))  # case I
+                extract[item]["csgotrader"]["doppler"][phase] = float("{0:.2f}".format(float(extract[item]["csmoney"]["doppler"][phase]) * st_csm))  # case I
         else:
             extract[item]["csgotrader"]["doppler"] = "null"
     push_to_s3(extract)
@@ -645,31 +631,32 @@ def alert_via_sns(error):
     print(response)
 
 
-def get_csgobackpack_price(item, extract, daily_trend, weekly_trend):
-    if "csgobackpack" in extract[item]:
-        if "24_hours" in extract[item]["csgobackpack"] and "sold" in extract[item]["csgobackpack"]["24_hours"] and \
-                extract[item]["csgobackpack"]["24_hours"]["sold"] != "" and float(
-            extract[item]["csgobackpack"]["24_hours"]["sold"]) >= 5.0:
-            if abs(1 - float(extract[item]["csgobackpack"]["24_hours"]["average"]) / float(
-                    extract[item]["csgobackpack"]["7_days"]["average"])) <= 0.1:
-                return extract[item]["csgobackpack"]["24_hours"]["average"]  # case A
-            elif abs(1 - float(extract[item]["csgobackpack"]["24_hours"]["median"]) / float(
-                    extract[item]["csgobackpack"]["7_days"]["average"])) <= 0.1:
-                return extract[item]["csgobackpack"]["24_hours"]["median"]  # case B
-            else:
-                return float(extract[item]["csgobackpack"]["7_days"]["average"]) * daily_trend  # case C
-        elif "7_days" in extract[item]["csgobackpack"]:
-            if float(extract[item]["csgobackpack"]["30_days"]["average"]) != 0.0 and abs(
-                    1 - float(extract[item]["csgobackpack"]["7_days"]["average"]) / float(
-                        extract[item]["csgobackpack"]["30_days"]["average"])) <= 0.1 and float(
-                extract[item]["csgobackpack"]["7_days"]["sold"]) >= 5.0:
-                return float(extract[item]["csgobackpack"]["7_days"]["average"]) * daily_trend  # case D
-            else:
-                return float(extract[item]["csgobackpack"]["30_days"]["average"]) * weekly_trend * daily_trend  # case E
-        elif "30_days" in extract[item]["csgobackpack"]:
-            return float(extract[item]["csgobackpack"]["30_days"]["average"]) * weekly_trend * daily_trend  # case E
-        else:
-            return "null"
+def get_steam_price(item, extract, daily_trend, weekly_trend):
+    if "steam" in extract[item] and "safe" in extract[item]["steam"]:
+        return extract[item]["steam"]["safe"]
+        # if "24_hours" in extract[item]["csgobackpack"] and "sold" in extract[item]["csgobackpack"]["24_hours"] and \
+        #         extract[item]["csgobackpack"]["24_hours"]["sold"] != "" and float(
+        #     extract[item]["csgobackpack"]["24_hours"]["sold"]) >= 5.0:
+        #     if abs(1 - float(extract[item]["csgobackpack"]["24_hours"]["average"]) / float(
+        #             extract[item]["csgobackpack"]["7_days"]["average"])) <= 0.1:
+        #         return extract[item]["csgobackpack"]["24_hours"]["average"]  # case A
+        #     elif abs(1 - float(extract[item]["csgobackpack"]["24_hours"]["median"]) / float(
+        #             extract[item]["csgobackpack"]["7_days"]["average"])) <= 0.1:
+        #         return extract[item]["csgobackpack"]["24_hours"]["median"]  # case B
+        #     else:
+        #         return float(extract[item]["csgobackpack"]["7_days"]["average"]) * daily_trend  # case C
+        # elif "7_days" in extract[item]["csgobackpack"]:
+        #     if float(extract[item]["csgobackpack"]["30_days"]["average"]) != 0.0 and abs(
+        #             1 - float(extract[item]["csgobackpack"]["7_days"]["average"]) / float(
+        #                 extract[item]["csgobackpack"]["30_days"]["average"])) <= 0.1 and float(
+        #         extract[item]["csgobackpack"]["7_days"]["sold"]) >= 5.0:
+        #         return float(extract[item]["csgobackpack"]["7_days"]["average"]) * daily_trend  # case D
+        #     else:
+        #         return float(extract[item]["csgobackpack"]["30_days"]["average"]) * weekly_trend * daily_trend  # case E
+        # elif "30_days" in extract[item]["csgobackpack"]:
+        #     return float(extract[item]["csgobackpack"]["30_days"]["average"]) * weekly_trend * daily_trend  # case E
+        # else:
+        #     return "null"
     else:
         return "null"
 
