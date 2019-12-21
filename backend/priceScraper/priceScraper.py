@@ -427,7 +427,7 @@ def lambda_handler(event, context):
             daily = float(steam_prices[item]["safe_ts"]["last_24h"])
             weekly = float(steam_prices[item]["safe_ts"]["last_7d"])
             monthly = float(steam_prices[item]["safe_ts"]["last_30d"])
-            if (daily != 0 and weekly != 0 and monthly != 0) and (daily != 0.03 and weekly != 0.03 and monthly != 0.03):
+            if (daily != 0 and weekly != 0 and monthly != 0) and (daily > 0.1 and weekly > 0.1 and monthly > 0.1):
                 week_to_day += (daily / weekly)
                 month_to_week += (weekly / monthly)
                 count += 1
@@ -447,7 +447,7 @@ def lambda_handler(event, context):
             st_weekly = float(steam_prices[item]["safe_ts"]["last_7d"])
             bit = float(bitskins_prices[item]["price"])
             csm = float(csmoney_prices[item]["price"])
-            if (st_weekly != 0 and bit != 0 and csm != 0) and (st_weekly != 0.03 and bit != 0.03 and csm != 0.03):
+            if (st_weekly != 0 and bit != 0 and csm != 0) and (st_weekly > 0.1 and bit > 0.1 and csm > 0.1):
                 st_bit += (st_weekly / bit)
                 st_csm += (st_weekly / csm)
                 count += 1
