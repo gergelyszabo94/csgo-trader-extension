@@ -82,65 +82,6 @@ def lambda_handler(event, context):
             add_to_master_list(master_list, name, True)
             instant_sale_price = item.get('instant_sale_price')
 
-            if name == "M4A1-S | Icarus Fell (Field-Tested)":
-                continue
-            elif "M4A4 | Emperor" in name:
-                name = name.replace("M4A4 | Emperor", 'M4A4 | The Emperor')
-            elif name == "Music Kit | Damjan Mravunac, The Talos Principal":
-                name = "Music Kit | Damjan Mravunac, The Talos Principle"
-            elif name == "Sticker | AdreN (Foil) | MLG Columbus 2016":
-                name = "Sticker | AdreN (Foil)  | MLG Columbus 2016"
-            elif name == "Sticker | Boom(Foil)":
-                name = "Sticker | Boom (Foil)"
-            elif name == "Sticker | Boom(Holo)":
-                name = "Sticker | Boom (Holo)"
-            elif name == "Sticker | Countdown(Foil)":
-                name = "Sticker | Countdown (Foil)"
-            elif name == "Sticker | Coutdown (Holo)" or name == "Sticker | Coutdown(Holo)":  # check which one has valid pricing info
-                name = "Sticker | Countdown (Holo)"
-            elif name == "Sticker | Don't Worry(Foil)":
-                name = "Sticker | Don't Worry (Foil)"
-            elif name == "Sticker | Don't Worry(Holo)":
-                name = "Sticker | Don't Worry (Holo)"
-            elif name == "Sticker | Hard Cluck Life(Foil)":
-                name = "Sticker | Hard Cluck Life (Foil)"
-            elif name == "Sticker | Hard Cluck Life(Holo)":
-                name = "Sticker | Hard Cluck Life (Holo)"
-            elif name == "Sticker | Ivette(Holo)":
-                name = "Sticker | Ivette (Holo)"
-            elif name == "Sticker | Kimberly(Holo)":
-                name = "Sticker | Kimberly (Holo)"
-            elif name == "Sticker | MIXWELL | Cologne 2016":
-                name = "Sticker | mixwell | Cologne 2016"
-            elif name == "Sticker | MIXWELL (Foil) | Cologne 2016":
-                name = "Sticker | mixwell (Foil) | Cologne 2016"
-            elif name == "Sticker | Martha(Holo)":
-                name = "Sticker | Martha (Holo)"
-            elif name == "Sticker | Merietta(Holo)":
-                name = "Sticker | Merietta (Holo)"
-            elif name == "Sticker | Move It(Foil)":
-                name = "Sticker | Move It (Foil)"
-            elif name == "Sticker | Move It(Holo)":
-                name = "Sticker | Move It (Holo)"
-            elif name == "Sticker | Rush (Foil) | Cologne 2016":
-                name = "Sticker | RUSH (Foil) | Cologne 2016"
-            elif name == "Sticker | Rush | Cologne 2016":
-                name = "Sticker | RUSH | Cologne 2016"
-            elif name == "Sticker | STANISLAW (Foil) | Cologne 2016":
-                name = "Sticker | stanislaw (Foil) | Cologne 2016"
-            elif name == "Sticker | STANISLAW | Cologne 2016":
-                name = "Sticker | stanislaw | Cologne 2016"
-            elif name == "Sticker | Sherry(Holo)":
-                name = "Sticker | Sherry (Holo)"
-            elif name == "Sticker | Snyper (Foil) | Cologne 2015":
-                name = "Sticker | SnypeR (Foil) | Cologne 2015"
-            elif name == "Sticker | Snyper | Cologne 2015":
-                name = "Sticker | SnypeR | Cologne 2015"
-            elif name == "Sticker | Tamara(Holo)":
-                name = "Sticker | Tamara (Holo)"
-            elif name == "Sticker | The Pro(Foil)":
-                name = "Sticker | The Pro (Foil)"
-
             if instant_sale_price == "None":
                 instant_sale_price = "null"
 
@@ -226,15 +167,6 @@ def lambda_handler(event, context):
             name = item.get('market_hash_name')
             price = item.get('price')
 
-            if name == "Sticker | Boom(Foil)":
-                name = "Sticker | Boom (Foil)"
-            elif name == "Sticker | Don't Worry(Foil)":
-                name = "Sticker | Don't Worry (Foil)"
-            elif name == "Sticker | Move It(Foil)":
-                name = "Sticker | Move It (Foil)"
-            elif name == "Ninjas in Pyjamas (Holo) | DreamHack 201":
-                name = "Ninjas in Pyjamas (Holo) | DreamHack 2014"
-
             csgotm_prices[name] = price
             add_to_master_list(master_list, name, True)
 
@@ -262,127 +194,6 @@ def lambda_handler(event, context):
             item = items.get(item)
             name = item.get('m').replace("/", '-')
             price = item.get('a')
-
-            if "M4A4 | Emperor" in name:
-                name = name.replace("M4A4 | Emperor", 'M4A4 | The Emperor')
-            elif name == "Music Kit | Damjan Mravunac, The Talos Principal" or name == "Music Kit | Damjan Mravunac The Talos Principle":
-                name = "Music Kit | Damjan Mravunac, The Talos Principle"
-            elif name == "Sticker | Coutdown (Holo)":
-                name = "Sticker | Countdown (Holo)"
-            elif name == "Sealed Graffiti | GGWP (Battle-Scarred)":
-                name = "Sealed Graffiti | GGWP (Battle Green)"
-            elif name == "Sealed Graffiti | Karambit (Battle-Scarred)":
-                name = "Sealed Graffiti | Karambit (Battle Green)"
-            elif name == "Sealed Graffiti | Ninja (Battle-Scarred)":
-                name = "Sealed Graffiti | Ninja (Battle Green)"
-            elif name == "Music Kit | Austin Wintory Desert Fire":
-                name = "Music Kit | Austin Wintory, Desert Fire"
-            elif name == "Music Kit | AWOLNATION I Am":
-                name = "Music Kit | AWOLNATION, I Am"
-            elif name == "Music Kit | Beartooth Disgusting":
-                name = "Music Kit | Beartooth, Disgusting"
-            elif name == "Music Kit | Daniel Sadowski Crimson Assault":
-                name = "Music Kit | Daniel Sadowski, Crimson Assault"
-            elif name == "Music Kit | Daniel Sadowski The 8-Bit Kit":
-                name = "Music Kit | Daniel Sadowski, The 8-Bit Kit"
-            elif name == "Music Kit | Daniel Sadowski Total Domination":
-                name = "Music Kit | Daniel Sadowski, Total Domination"
-            elif name == "Music Kit | Darude Moments CSGO":
-                name = "Music Kit | Darude, Moments CSGO"
-            elif name == "Music Kit | Dren Death's Head Demolition":
-                name = "Music Kit | Dren, Death's Head Demolition"
-            elif name == "Music Kit | Feed Me High Noon":
-                name = "Music Kit | Feed Me, High Noon"
-            elif name == "Music Kit | Ian Hultquist Lion's Mouth":
-                name = "Music Kit | Ian Hultquist, Lion's Mouth"
-            elif name == "Music Kit | Kelly Bailey Hazardous Environments":
-                name = "Music Kit | Kelly Bailey, Hazardous Environments"
-            elif name == "Music Kit | Ki:Theory MOLOTOV":
-                name = "Music Kit | Ki:Theory, MOLOTOV"
-            elif name == "Music Kit | Lennie Moore Java Havana Funkaloo":
-                name = "Music Kit | Lennie Moore, Java Havana Funkaloo"
-            elif name == "Music Kit | Mateo Messina For No Mankind":
-                name = "Music Kit | Mateo Messina, For No Mankind"
-            elif name == "Music Kit | Matt Lange IsoRhythm":
-                name = "Music Kit | Matt Lange, IsoRhythm"
-            elif name == "Music Kit | Michael Bross Invasion!":
-                name = "Music Kit | Michael Bross, Invasion!"
-            elif name == "Music Kit | Mord Fustang Diamonds":
-                name = "Music Kit | Mord Fustang, Diamonds"
-            elif name == "Music Kit | New Beat Fund Sponge Fingerz":
-                name = "Music Kit | New Beat Fund, Sponge Fingerz"
-            elif name == "Music Kit | Noisia Sharpened":
-                name = "Music Kit | Noisia, Sharpened"
-            elif name == "Music Kit | Proxy Battlepack":
-                name = "Music Kit | Proxy, Battlepack"
-            elif name == "Music Kit | Robert Allaire Insurgency":
-                name = "Music Kit | Robert Allaire, Insurgency"
-            elif name == "Music Kit | Sasha LNOE":
-                name = "Music Kit | Sasha, LNOE"
-            elif name == "Music Kit | Sean Murray A*D*8":
-                name = "Music Kit | Sean Murray, A*D*8"
-            elif name == "Music Kit | Skog II-Headshot":
-                name = "Music Kit | Skog, II-Headshot"
-            elif name == "Music Kit | Skog Metal":
-                name = "Music Kit | Skog, Metal"
-            elif name == "Music Kit | Troels Folmann Uber Blasto Phone":
-                name = "Music Kit | Troels Folmann, Uber Blasto Phone"
-            elif name == "Music Kit | Various Artists Hotline Miami":
-                name = "Music Kit | Various Artists, Hotline Miami"
-            elif name == "StatTrak™ Music Kit | Austin Wintory Desert Fire":
-                name = "StatTrak™ Music Kit | Austin Wintory, Desert Fire"
-            elif name == "StatTrak™ Music Kit | AWOLNATION I Am":
-                name = "StatTrak™ Music Kit | AWOLNATION, I Am"
-            elif name == "StatTrak™ Music Kit | Beartooth Disgusting":
-                name = "StatTrak™ Music Kit | Beartooth, Disgusting"
-            elif name == "StatTrak™ Music Kit | Daniel Sadowski Crimson Assault":
-                name = "StatTrak™ Music Kit | Daniel Sadowski, Crimson Assault"
-            elif name == "StatTrak™ Music Kit | Daniel Sadowski The 8-Bit Kit":
-                name = "StatTrak™ Music Kit | Daniel Sadowski, The 8-Bit Kit"
-            elif name == "StatTrak™ Music Kit | Daniel Sadowski Total Domination":
-                name = "StatTrak™ Music Kit | Daniel Sadowski, Total Domination"
-            elif name == "StatTrak™ Music Kit | Darude Moments CSGO":
-                name = "StatTrak™ Music Kit | Darude, Moments CSGO"
-            elif name == "StatTrak™ Music Kit | Dren Death's Head Demolition":
-                name = "StatTrak™ Music Kit | Dren, Death's Head Demolition"
-            elif name == "StatTrak™ Music Kit | Feed Me High Noon":
-                name = "StatTrak™ Music Kit | Feed Me, High Noon"
-            elif name == "StatTrak™ Music Kit | Ian Hultquist Lion's Mouth":
-                name = "StatTrak™ Music Kit | Ian Hultquist, Lion's Mouth"
-            elif name == "StatTrak™ Music Kit | Kelly Bailey Hazardous Environments":
-                name = "StatTrak™ Music Kit | Kelly Bailey, Hazardous Environments"
-            elif name == "StatTrak™ Music Kit | Ki:Theory MOLOTOV":
-                name = "StatTrak™ Music Kit | Ki:Theory, MOLOTOV"
-            elif name == "StatTrak™ Music Kit | Lennie Moore Java Havana Funkaloo":
-                name = "StatTrak™ Music Kit | Lennie Moore, Java Havana Funkaloo"
-            elif name == "StatTrak™ Music Kit | Mateo Messina For No Mankind":
-                name = "StatTrak™ Music Kit | Mateo Messina, For No Mankind"
-            elif name == "StatTrak™ Music Kit | Matt Lange IsoRhythm":
-                name = "StatTrak™ Music Kit | Matt Lange, IsoRhythm"
-            elif name == "StatTrak™ Music Kit | Michael Bross Invasion!":
-                name = "StatTrak™ Music Kit | Michael Bross, Invasion!"
-            elif name == "StatTrak™ Music Kit | Mord Fustang Diamonds":
-                name = "StatTrak™ Music Kit | Mord Fustang, Diamonds"
-            elif name == "StatTrak™ Music Kit | New Beat Fund Sponge Fingerz":
-                name = "StatTrak™ Music Kit | New Beat Fund, Sponge Fingerz"
-            elif name == "StatTrak™ Music Kit | Noisia Sharpened":
-                name = "StatTrak™ Music Kit | Noisia, Sharpened"
-            elif name == "StatTrak™ Music Kit | Proxy Battlepack":
-                name = "StatTrak™ Music Kit | Proxy, Battlepack"
-            elif name == "StatTrak™ Music Kit | Robert Allaire Insurgency":
-                name = "StatTrak™ Music Kit | Robert Allaire, Insurgency"
-            elif name == "StatTrak™ Music Kit | Sasha LNOE":
-                name = "StatTrak™ Music Kit | Sasha, LNOE"
-            elif name == "StatTrak™ Music Kit | Sean Murray A*D*8":
-                name = "StatTrak™ Music Kit | Sean Murray, A*D*8"
-            elif name == "StatTrak™ Music Kit | Skog II-Headshot":
-                name = "StatTrak™ Music Kit | Skog, II-Headshot"
-            elif name == "StatTrak™ Music Kit | Skog Metal":
-                name = "StatTrak™ Music Kit | Skog, Metal"
-            elif name == "StatTrak™ Music Kit | Troels Folmann Uber Blasto Phone":
-                name = "StatTrak™ Music Kit | Troels Folmann, Uber Blasto Phone"
-            elif name == "StatTrak™ Music Kit | Various Artists Hotline Miami":
-                name = "StatTrak™ Music Kit | Various Artists, Hotline Miami"
 
             if "Doppler" in name:
                 phase = name.split("Doppler ")[1].split(" (")[0]
