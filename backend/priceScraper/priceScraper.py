@@ -15,8 +15,12 @@ stage = os.environ['STAGE']
 own_prices_table = os.environ['OWN_PRICES_TABLE']
 steam_apis_key = os.environ['STEAM_APIS_COM_API_KEY']
 
+special_phases = ["Ruby", "Sapphire", "Black Pearl", "Emerald"]
+
 
 def lambda_handler(event, context):
+    master_list = []
+
     dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
     table = dynamodb.Table(own_prices_table)
 
@@ -26,7 +30,9 @@ def lambda_handler(event, context):
     own_prices = {}
 
     for item in response['Items']:
-        own_prices[item.get('market_hash_name')] = float(item.get('price'))
+        name = item["market_hash_name"]
+        own_prices[name] = float(item["price"])
+        add_to_master_list(master_list, name, False)
 
     print('Getting Prices from Steam APIs')
     try:
@@ -45,13 +51,13 @@ def lambda_handler(event, context):
     if response.status_code == 200:
         print("Valid response from steamapis.com")
         items = response.json()['data']
-        extract = {}
+        steam_prices = {}
         print("Extracting pricing information")
 
         for item in items:
-            extract[item["market_hash_name"]] = {
-                "steam": item["prices"]
-            }
+            name = item["market_hash_name"]
+            steam_prices[name] = item["prices"]
+            add_to_master_list(master_list, name, False)
 
         print("Pricing information extracted")
 
@@ -68,14 +74,13 @@ def lambda_handler(event, context):
         }
 
     if response.status_code == 200 and response.json()['status'] == "success":
+        bitskins_prices = {}
         print("Extracting pricing info")
         items = response.json()['prices']
         for item in items:
             name = item.get('market_hash_name').replace('\xe2\x98\x85', '\u2605').replace("/", '-')
-            pricing_mode = item.get('pricing_mode')
-            price = item.get('price')
+            add_to_master_list(master_list, name, True)
             instant_sale_price = item.get('instant_sale_price')
-            skewness = item.get('skewness')
 
             if name == "M4A1-S | Icarus Fell (Field-Tested)":
                 continue
@@ -139,29 +144,12 @@ def lambda_handler(event, context):
             if instant_sale_price == "None":
                 instant_sale_price = "null"
 
-            try:
-                extract[name]['bitskins'] = {
-                    "pricing_mode": pricing_mode,
-                    "price": price,
-                    "instant_sale_price": instant_sale_price,
-                    "skewness": skewness
-                }
-            except KeyError:
-                print(name + " was not previously present, added")
-                extract[name] = {
-                    "steam": "null",
-                    "bitskins": {
-                        "pricing_mode": pricing_mode,
-                        "price": price,
-                        "instant_sale_price": instant_sale_price,
-                        "skewness": skewness
-                    }
-                }
-        for item in extract:
-            try:
-                extract[item]['bitskins'] = extract[item]['bitskins']
-            except KeyError:
-                extract[item]['bitskins'] = "null"
+            bitskins_prices[name] = {
+                "pricing_mode": item["pricing_mode"],
+                "price": item["price"],
+                "instant_sale_price": item["instant_sale_price"],
+                "skewness": item["skewness"]
+            }
         print("Pricing info extracted")
     elif response.status_code == 401:
         error = "Could not get items from bitskins, it's most likely an authentication problem"
@@ -196,6 +184,7 @@ def lambda_handler(event, context):
     if response.status_code == 200:
         print("Valid response from loot.farm")
         items = response.json()
+        lootfarm_prices = {}
         print("Extracting pricing information")
         for item in items:
             name = item.get('name')
@@ -204,16 +193,15 @@ def lambda_handler(event, context):
             if "M4A4 | Emperor" in name:
                 name = name.replace("M4A4 | Emperor", 'M4A4 | The Emperor')
 
-            try:
-                extract[name]['lootfarm'] = price
-            except KeyError:
-                print(name)
-
-        for item in extract:
-            try:
-                extract[item]['lootfarm'] = extract[item]['lootfarm']
-            except KeyError:
-                extract[item]['lootfarm'] = "null"
+            if "Doppler" in name:
+                phase = name.split("Doppler ")[1].split(" (")[0]
+                name = name.replace(phase + " ", "")
+                if phase not in special_phases:
+                    lootfarm_prices[name] = price
+                    add_to_master_list(master_list, name, True)
+            else:
+                lootfarm_prices[name] = price
+                add_to_master_list(master_list, name, True)
         print("Pricing information extracted")
 
     else:
@@ -233,6 +221,7 @@ def lambda_handler(event, context):
         print("Valid response from csgo.tm")
         items = response.json()['items']
         print("Extracting pricing information")
+        csgotm_prices = {}
         for item in items:
             name = item.get('market_hash_name')
             price = item.get('price')
@@ -246,16 +235,9 @@ def lambda_handler(event, context):
             elif name == "Ninjas in Pyjamas (Holo) | DreamHack 201":
                 name = "Ninjas in Pyjamas (Holo) | DreamHack 2014"
 
-            try:
-                extract[name]['csgotm'] = price
-            except KeyError:
-                print(name)
+            csgotm_prices[name] = price
+            add_to_master_list(master_list, name, True)
 
-        for item in extract:
-            try:
-                extract[item]['csgotm'] = extract[item]['csgotm']
-            except KeyError:
-                extract[item]['csgotm'] = "null"
         print("Pricing information extracted")
 
     else:
@@ -275,6 +257,7 @@ def lambda_handler(event, context):
         print("Valid response from cs.money")
         items = json.loads(response.content.decode().split("skinsBaseList[730] = ")[1])
         print("Extracting pricing information")
+        csmoney_prices = {}
         for item in items:
             item = items.get(item)
             name = item.get('m').replace("/", '-')
@@ -282,51 +265,6 @@ def lambda_handler(event, context):
 
             if "M4A4 | Emperor" in name:
                 name = name.replace("M4A4 | Emperor", 'M4A4 | The Emperor')
-            elif name == "★ StatTrak™ Navaja Knife | Doppler Phase 1 (Minimal Wear)" or name == "★ StatTrak™ Navaja Knife | Doppler Phase 2 (Minimal Wear)" or name == "★ StatTrak™ Navaja Knife | Doppler Phase 3 (Minimal Wear)" or name == "★ StatTrak™ Navaja Knife | Doppler Phase 4 (Minimal Wear)" or name == "★ StatTrak™ Navaja Knife | Doppler Ruby (Minimal Wear)" or name == "★ StatTrak™ Navaja Knife | Doppler Sapphire (Minimal Wear)" or name == "★ StatTrak™ Navaja Knife | Doppler Black Pearl (Minimal Wear)":
-                try:
-                    extract["★ StatTrak™ Navaja Knife | Doppler (Minimal Wear)"] = extract[
-                        "★ StatTrak™ Navaja Knife | Doppler (Minimal Wear)"]
-                except:
-                    extract["★ StatTrak™ Navaja Knife | Doppler (Minimal Wear)"] = {
-                        "steam": "null",
-                        "bitskins": "null",
-                        "lootfarm": "null",
-                        "csgotm": "null",
-                        "csmoney": {
-                            'price': "null",
-                            'doppler': {}
-                        }
-                    }
-            elif name == "★ StatTrak™ Talon Knife | Doppler Phase 1 (Minimal Wear)" or name == "★ StatTrak™ Talon Knife | Doppler Phase 2 (Minimal Wear)" or name == "★ StatTrak™ Talon Knife | Doppler Phase 3 (Minimal Wear)" or name == "★ StatTrak™ Talon Knife | Doppler Phase 4 (Minimal Wear)" or name == "★ StatTrak™ Talon Knife | Doppler Ruby (Minimal Wear)" or name == "★ StatTrak™ Talon Knife | Doppler Sapphire (Minimal Wear)" or name == "★ StatTrak™ Talon Knife | Doppler Black Pearl (Minimal Wear)":
-                try:
-                    extract["★ StatTrak™ Talon Knife | Doppler (Minimal Wear)"] = extract[
-                        "★ StatTrak™ Talon Knife | Doppler (Minimal Wear)"]
-                except:
-                    extract["★ StatTrak™ Talon Knife | Doppler (Minimal Wear)"] = {
-                        "steam": "null",
-                        "bitskins": "null",
-                        "lootfarm": "null",
-                        "csgotm": "null",
-                        "csmoney": {
-                            'price': "null",
-                            'doppler': {}
-                        }
-                    }
-            elif name == "★ StatTrak™ Stiletto Knife | Doppler Phase 1 (Minimal Wear)" or name == "★ StatTrak™ Stiletto Knife | Doppler Phase 2 (Minimal Wear)" or name == "★ StatTrak™ Stiletto Knife | Doppler Phase 3 (Minimal Wear)" or name == "★ StatTrak™ Stiletto Knife | Doppler Phase 4 (Minimal Wear)" or name == "★ StatTrak™ Stiletto Knife | Doppler Ruby (Minimal Wear)" or name == "★ StatTrak™ Stiletto Knife | Doppler Sapphire (Minimal Wear)" or name == "★ StatTrak™ Stiletto Knife | Doppler Black Pearl (Minimal Wear)":
-                try:
-                    extract["★ StatTrak™ Stiletto Knife | Doppler (Minimal Wear)"] = extract[
-                        "★ StatTrak™ Stiletto Knife | Doppler (Minimal Wear)"]
-                except:
-                    extract["★ StatTrak™ Stiletto Knife | Doppler (Minimal Wear)"] = {
-                        "steam": "null",
-                        "bitskins": "null",
-                        "lootfarm": "null",
-                        "csgotm": "null",
-                        "csmoney": {
-                            'price': "null",
-                            'doppler': {}
-                        }
-                    }
             elif name == "Music Kit | Damjan Mravunac, The Talos Principal" or name == "Music Kit | Damjan Mravunac The Talos Principle":
                 name = "Music Kit | Damjan Mravunac, The Talos Principle"
             elif name == "Sticker | Coutdown (Holo)":
@@ -449,46 +387,24 @@ def lambda_handler(event, context):
             if "Doppler" in name:
                 phase = name.split("Doppler ")[1].split(" (")[0]
                 name = name.replace(phase + " ", "")
+                add_to_master_list(master_list, name, True)
                 try:
-                    extract[name]['csmoney']['doppler'][phase] = price
+                    csmoney_prices[name]['doppler'][phase] = price
                 except KeyError:
-                    extract[name]['csmoney'] = {
+                    csmoney_prices[name] = {
                         'price': price,
                         'doppler': {
                             phase: price
                         }
                     }
                 if phase == "Phase 3":
-                    extract[name]['csmoney']['price'] = price
+                    csmoney_prices[name]['price'] = price
             else:
-                try:
-                    extract[name]['csmoney'] = {
-                        'price': price,
-                        'doppler': "null"
-                    }
-                except KeyError:
-                    print(name + " was not previously present, added")
-                    extract[name] = {
-                        "steam": "null",
-                        "bitskins": "null",
-                        "lootfarm": "null",
-                        "csgotm": "null",
-                        "csmoney": {
-                            'price': price,
-                            'doppler': "null"
-                        }
-                    }
-
-        for item in extract:
-            try:
-                extract[item]['csmoney'] = extract[item]['csmoney']
-            except KeyError:
-                if "Doppler" not in item:
-                    print(item)
-                    extract[item]['csmoney'] = {
-                        "price": "null",
-                        "doppler": "null"
-                    }
+                add_to_master_list(master_list, name, True)
+                csmoney_prices[name] = {
+                    'price': price,
+                    'doppler': "null"
+                }
         print("Pricing information extracted")
     else:
         error = "Could not get items from cs.money"
@@ -499,23 +415,23 @@ def lambda_handler(event, context):
             'body': json.dumps(error)
         }
 
-    print('Adding own prices that are not present yet')
-    for item in own_prices:
-        if item not in extract:
-            extract[item] = {
-                "steam": "null",
-                "bitskins": "null",
-                "lootfarm": "null",
-                "csgotm": "null",
-                "csmoney": {
-                    'price': "null",
-                    'doppler': "null"
-                },
-                "csgotrader": {
-                    "price": own_prices[item],
-                    "doppler": "null"
-                }
-            }
+    #print('Adding own prices that are not present yet')
+
+    # for item in master_list:
+    #     {
+    #         "steam": "null",
+    #         "bitskins": "null",
+    #         "lootfarm": "null",
+    #         "csgotm": "null",
+    #         "csmoney": {
+    #             'price': "null",
+    #             'doppler': "null"
+    #         },
+    #         "csgotrader": {
+    #             "price": "null",
+    #             "doppler": "null"
+    #         }
+    #     }
 
     print("Creates own pricing")
     print("Calculate market trends")
@@ -523,12 +439,12 @@ def lambda_handler(event, context):
     week_to_day = 0
     month_to_week = 0
     count = 0
-    for item in extract:
-        if "steam" in extract[item] and "safe_ts" in extract[item]["steam"] and "last_24h" in extract[item]["steam"]["safe_ts"] and "last_7d" in \
-                extract[item]["steam"]["safe_ts"] and "last_30d" in extract[item]["steam"]["safe_ts"]:
-            daily = float(extract[item]["steam"]["safe_ts"]["last_24h"])
-            weekly = float(extract[item]["steam"]["safe_ts"]["last_7d"])
-            monthly = float(extract[item]["steam"]["safe_ts"]["last_30d"])
+    for item in master_list:
+        if item in steam_prices and "safe_ts" in steam_prices[item] and "last_24h" in steam_prices[item]["safe_ts"] \
+                and "last_7d" in steam_prices[item]["safe_ts"] and "last_30d" in steam_prices[item]["safe_ts"]:
+            daily = float(steam_prices[item]["safe_ts"]["last_24h"])
+            weekly = float(steam_prices[item]["safe_ts"]["last_7d"])
+            monthly = float(steam_prices[item]["safe_ts"]["last_30d"])
             if (daily != 0 and weekly != 0 and monthly != 0) and (daily != 0.03 and weekly != 0.03 and monthly != 0.03):
                 week_to_day += (daily / weekly)
                 month_to_week += (weekly / monthly)
@@ -542,12 +458,13 @@ def lambda_handler(event, context):
     st_csm = 0
     count = 0
 
-    for item in extract:
-        if "steam" in extract[item] and "safe_ts" in extract[item]["steam"] and "last_7d" in extract[item]["steam"]["safe_ts"] and "bitskins" in extract[item] and "price" in extract[item]["bitskins"] \
-                and "csmoney" in extract[item] and "price" in extract[item]["csmoney"] and extract[item]["csmoney"]["price"] != "" and extract[item]["csmoney"]["price"] != "null":
-            st_weekly = float(extract[item]["steam"]["safe_ts"]["last_7d"])
-            bit = float(extract[item]["bitskins"]["price"])
-            csm = float(extract[item]["csmoney"]["price"])
+    for item in master_list:
+        if item in steam_prices and "safe_ts" in steam_prices[item] and "last_7d" in steam_prices[item]["safe_ts"] \
+                and item in bitskins_prices and "price" in bitskins_prices[item] \
+                and item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "" and csmoney_prices[item]["price"] != "null":
+            st_weekly = float(steam_prices[item]["safe_ts"]["last_7d"])
+            bit = float(bitskins_prices[item]["price"])
+            csm = float(csmoney_prices[item]["price"])
             if (st_weekly != 0 and bit != 0 and csm != 0) and (st_weekly != 0.03 and bit != 0.03 and csm != 0.03):
                 st_bit += (st_weekly / bit)
                 st_csm += (st_weekly / csm)
@@ -556,30 +473,64 @@ def lambda_handler(event, context):
     st_csm = st_csm / count
     print("Steam:Bitskins: " + str(st_bit) + " Steam:Csmoney:  " + str(st_csm))
 
-    for item in extract:
-        steam_aggregate = get_steam_price(item, extract, week_to_day, month_to_week)
-        if "csgotrader" not in extract[item]:
-            extract[item]["csgotrader"] = {
-                "price": "null",
-                "doppler": "null"
-            }
+    print("Creating csgotrader prices")
+    csgotrader_prices = {}
+
+    for item in master_list:
+        steam_aggregate = get_steam_price(item, steam_prices, week_to_day, month_to_week)
+        price = "null"  # stays this if case H
         if steam_aggregate != "null":
-            extract[item]["csgotrader"]["price"] = float("{0:.2f}".format(steam_aggregate))
-        elif extract[item]["csmoney"]["price"] != "null" and extract[item]["csmoney"]["price"] != 0:
-            extract[item]["csgotrader"]["price"] = float("{0:.2f}".format(float(extract[item]["csmoney"]["price"]) * st_csm * week_to_day))  # case F
-        elif "price" in extract[item]["bitskins"] and extract[item]["bitskins"]["price"] != "null":
-            extract[item]["csgotrader"]["price"] = float("{0:.2f}".format(float(extract[item]["bitskins"]["price"]) * st_bit * week_to_day))  # case G
-        else:
-            if "csgotrader" not in extract[item]:
-                extract[item]["csgotrader"]["price"] = "null"  # case H
+            price = float("{0:.2f}".format(steam_aggregate))
+        elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and csmoney_prices[item]["price"] != 0:
+            price = float("{0:.2f}".format(float(csmoney_prices[item]["price"]) * st_csm * week_to_day))  # case F
+        elif item in bitskins_prices and "price" in bitskins_prices[item] and bitskins_prices[item]["price"] != "null":
+            price = float("{0:.2f}".format(float(bitskins_prices[item]["price"]) * st_bit * week_to_day))  # case G
 
-
+        doppler = "null"
         if "Doppler" in item:
-            extract[item]["csgotrader"]["doppler"] = {}
-            for phase in extract[item]["csmoney"]["doppler"]:
-                extract[item]["csgotrader"]["doppler"][phase] = float("{0:.2f}".format(float(extract[item]["csmoney"]["doppler"][phase]) * st_csm))  # case I
+            doppler = {}
+            for phase in csmoney_prices[item]["doppler"]:
+                doppler[phase] = float("{0:.2f}".format(float(csmoney_prices[item]["doppler"][phase]) * st_csm))  # case I
+
+        csgotrader_prices[item] = {
+            "price": price,
+            "doppler": doppler
+        }
+
+    print("Putting together the final prices dict")
+    extract = {}
+
+    for item in master_list:
+        extract[item] = {}
+        if item in steam_prices and "safe_ts" in steam_prices[item]:
+            extract[item]["steam"] = steam_prices[item]["safe_ts"]
         else:
-            extract[item]["csgotrader"]["doppler"] = "null"
+            extract[item]["steam"] = {
+                "last_90d": "null",
+                "last_30d": "null",
+                "last_7d": "null",
+                "last_24h": "null"
+            }
+        if item in bitskins_prices:
+            extract[item]["bitskins"] = bitskins_prices[item]
+        else:
+            extract[item]["bitskins"] = "null"
+        if item in lootfarm_prices:
+            extract[item]["lootfarm"] = lootfarm_prices[item]
+        else:
+            extract[item]["lootfarm"] = "null"
+        if item in csgotm_prices:
+            extract[item]["csgotm"] = csgotm_prices[item]
+        else:
+            extract[item]["csgotm"] = "null"
+        if item in csmoney_prices:
+            extract[item]["csmoney"] = csmoney_prices[item]
+        else:
+            extract[item]["csmoney"] = "null"
+        if item in csgotrader_prices:
+            extract[item]["csgotrader"] = csgotrader_prices[item]
+        else:
+            extract[item]["csgotrader"] = "null"
     push_to_s3(extract)
     return {
         'statusCode': 200,
@@ -631,9 +582,9 @@ def alert_via_sns(error):
     print(response)
 
 
-def get_steam_price(item, extract, daily_trend, weekly_trend):
-    if "steam" in extract[item] and "safe" in extract[item]["steam"]:
-        return extract[item]["steam"]["safe"]
+def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
+    if item in steam_prices and "safe" in steam_prices[item]:
+        return steam_prices[item]["safe"]
         # if "24_hours" in extract[item]["csgobackpack"] and "sold" in extract[item]["csgobackpack"]["24_hours"] and \
         #         extract[item]["csgobackpack"]["24_hours"]["sold"] != "" and float(
         #     extract[item]["csgobackpack"]["24_hours"]["sold"]) >= 5.0:
@@ -659,4 +610,11 @@ def get_steam_price(item, extract, daily_trend, weekly_trend):
         #     return "null"
     else:
         return "null"
+
+
+def add_to_master_list(master_list, name, to_log):
+    if name not in master_list:
+        master_list.append(name)
+        if to_log:
+            print(name + " was not seen before, adding it to master list")
 
