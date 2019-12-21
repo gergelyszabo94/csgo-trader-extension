@@ -415,24 +415,6 @@ def lambda_handler(event, context):
             'body': json.dumps(error)
         }
 
-    #print('Adding own prices that are not present yet')
-
-    # for item in master_list:
-    #     {
-    #         "steam": "null",
-    #         "bitskins": "null",
-    #         "lootfarm": "null",
-    #         "csgotm": "null",
-    #         "csmoney": {
-    #             'price': "null",
-    #             'doppler': "null"
-    #         },
-    #         "csgotrader": {
-    #             "price": "null",
-    #             "doppler": "null"
-    #         }
-    #     }
-
     print("Creates own pricing")
     print("Calculate market trends")
 
@@ -485,6 +467,9 @@ def lambda_handler(event, context):
             price = float("{0:.2f}".format(float(csmoney_prices[item]["price"]) * st_csm * week_to_day))  # case F
         elif item in bitskins_prices and "price" in bitskins_prices[item] and bitskins_prices[item]["price"] != "null":
             price = float("{0:.2f}".format(float(bitskins_prices[item]["price"]) * st_bit * week_to_day))  # case G
+        elif item in own_prices:
+            price = own_prices[item]
+
 
         doppler = "null"
         if "Doppler" in item:
