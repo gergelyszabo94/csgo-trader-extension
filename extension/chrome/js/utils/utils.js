@@ -663,7 +663,7 @@ function reportComments() {
 }
 
 function addDopplerPhase(item, dopplerInfo) {
-    if (dopplerInfo !== undefined) {
+    if (dopplerInfo !== null) {
         let dopplerDiv = document.createElement('div');
         dopplerDiv.classList.add('dopplerPhase');
 
@@ -825,15 +825,18 @@ function updatePrices() {
                         }
                     }
                 }
-                else if (result.pricingProvider === pricingProviders.csmoney.name || result.pricingProvider === pricingProviders.csgotrader.name) {
+                else if (result.pricingProvider === pricingProviders.csmoney.name || pricingProviders.csgotrader.name) {
                     for (const key of keys) {
-                        prices[key] = {"price": "null", "doppler": "null"};
-                        if (fullPricesJSON[key][result.pricingProvider] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null") {
-                            if (fullPricesJSON[key][result.pricingProvider]["doppler"] !== "null" && fullPricesJSON[key][result.pricingProvider]["doppler"] !== undefined) {
-                                prices[key]["doppler"] = fullPricesJSON[key][result.pricingProvider]["doppler"];
+                        if (fullPricesJSON[key][result.pricingProvider] !== undefined || "null") {
+                            if (fullPricesJSON[key][result.pricingProvider]["doppler"] !== undefined) {
+                                prices[key] = {
+                                    price: fullPricesJSON[key][result.pricingProvider]["price"],
+                                    doppler: fullPricesJSON[key][result.pricingProvider]["doppler"]
+                                };
                             }
-                            prices[key]["price"] =  fullPricesJSON[key][result.pricingProvider]["price"];
+                            else prices[key] = {price: fullPricesJSON[key][result.pricingProvider]["price"]};
                         }
+                        else prices[key] = {"price": "null"};
                     }
                 }
                 console.log(prices);
@@ -1024,22 +1027,24 @@ function isSIHActive() {
 
 function getPrice(market_hash_name, dopplerInfo, prices, provider, exchange_rate, currency) {
     let price = 0.0;
-    if (provider === pricingProviders.csgotrader.name || provider === pricingProviders.csmoney.name){
-        if (dopplerInfo !== undefined) {
-            if (prices[market_hash_name] !== undefined && prices[market_hash_name]["doppler"] !== undefined && prices[market_hash_name]["doppler"] !== "null" && prices[market_hash_name]["doppler"][dopplerInfo.name] !== "null" && prices[market_hash_name]["doppler"][dopplerInfo.name] !== undefined){
-                price = (prices[market_hash_name]["doppler"][dopplerInfo.name] * exchange_rate).toFixed(2);
+    if (prices[market_hash_name] !== undefined && prices[market_hash_name] !== 'null' && prices[market_hash_name] !== null && prices[market_hash_name]['price'] !== undefined && prices[market_hash_name]['price'] !== 'null') {
+        // csgotrader and csmoney have doppler phase prices so they are handled differently
+        if ((provider === pricingProviders.csgotrader.name || provider === pricingProviders.csmoney.name)) {
+            if (dopplerInfo !== null) {
+                // when there is price for the specific dopper phase take that
+                if (prices[market_hash_name]['doppler'] !== undefined && prices[market_hash_name]['doppler'] !== 'null' && prices[market_hash_name]['doppler'][dopplerInfo.name] !== 'null' && prices[market_hash_name]['doppler'][dopplerInfo.name] !== undefined) {
+                    price = (prices[market_hash_name]['doppler'][dopplerInfo.name] * exchange_rate).toFixed(2);
+                }
+                else price = (prices[market_hash_name]['price'] * exchange_rate).toFixed(2);
             }
-            else if (prices[market_hash_name] !== undefined && (prices[market_hash_name]["doppler"] === undefined || prices[market_hash_name]["doppler"][dopplerInfo.name] === undefined || prices[market_hash_name]["doppler"] === "null" || prices[market_hash_name]["doppler"][dopplerInfo.name] === "null") && prices[market_hash_name]["price"] !== "null"){
-                price = (prices[market_hash_name]["price"] * exchange_rate).toFixed(2)
-            }
+            else price = (prices[market_hash_name]['price'] * exchange_rate).toFixed(2);
         }
-        else price =  prices[market_hash_name] === undefined || prices[market_hash_name] === "null" || prices[market_hash_name] === null || prices[market_hash_name]["price"] === undefined || prices[market_hash_name]["price"] === "null" ? 0.0 : (prices[market_hash_name]["price"] * exchange_rate).toFixed(2);
+        // other providers have no doppler phase info
+        else price = (prices[market_hash_name]['price'] * exchange_rate).toFixed(2);
     }
-    else price =  prices[market_hash_name] === undefined || prices[market_hash_name] === "null" || prices[market_hash_name] === null || prices[market_hash_name]["price"] === undefined || prices[market_hash_name]["price"] === "null" ? 0.0 : (prices[market_hash_name]["price"] * exchange_rate).toFixed(2);
-
     return {
         price: price,
-        display: price === 0.0 ? "" : currencies[currency].sign + price
+        display: price === 0.0 ? '' : currencies[currency].sign + price
     };
 }
 
@@ -1163,7 +1168,7 @@ function addSSTandExtIndicators(itemElement, item) {
 
 function makeItemColorful(itemElement, item, colorfulItemsEnabled) {
     if (colorfulItemsEnabled) {
-        if (item.dopplerInfo !== undefined) itemElement.setAttribute('style', `background-image: url(); background-color: #${item.dopplerInfo.color}`);
+        if (item.dopplerInfo !== null) itemElement.setAttribute('style', `background-image: url(); background-color: #${item.dopplerInfo.color}`);
         else itemElement.setAttribute('style', `background-image: url(); background-color: ${item.quality.backgroundcolor}; border-color: ${item.quality.backgroundcolor}`);
     }
 }
