@@ -687,7 +687,16 @@ function updatePrices() {
         mode: 'cors',
         cache: 'default' };
 
-    let request = new Request('https://prices.csgotrader.app/latest/prices_v2.json', init);
+    chrome.storage.local.get(['pricingProvider', 'pricingMode'], (result) => {
+        if (result.pricingProvider === pricingProviders.csgobackpack.name) {
+            let newPiricingMode = 'last_24h';
+            if (result.pricingMode === '7_days_average' || result.pricingMode === '7_days_median') newPiricingMode = 'last_7d';
+            if (result.pricingMode === '30_days_average' || result.pricingMode === '30_days_median' || result.pricingMode === 'all_time_average' || result.pricingMode === 'all_time_median') newPiricingMode = 'last_30d';
+            chrome.storage.local.set({'pricingProvider': 'steam', 'pricingMode': newPiricingMode})
+        }
+    });
+
+    let request = new Request('https://prices.csgotrader.app/test/prices.json', init);
 
     fetch(request).then((response) => {
         if (!response.ok) console.log(`Error code: ${response.status} Status: ${response.statusText}`);
@@ -697,98 +706,16 @@ function updatePrices() {
             if(result.itemPricing) {
                 let prices = {};
                 const keys = Object.keys(fullPricesJSON);
-                if (result.pricingProvider === pricingProviders.csgobackpack.name) {
-                    if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["7_days_average"].name) {
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider]["7_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["7_days"]["average"]};
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
+
+                if (result.pricingProvider === pricingProviders.steam.name) {
+                    for (const key of keys) {
+                        if (fullPricesJSON[key][result.pricingProvider] !== 'null' && fullPricesJSON[key][result.pricingProvider][result.pricingMode] !== undefined) {
+                            prices[key] = {'price': fullPricesJSON[key][result.pricingProvider][result.pricingMode]};
                         }
-                    }
-                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["7_days_median"].name) {
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider]["7_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["7_days"]["median"]};
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
+                        else {
+                            prices[key] = {'price': 'null'};
+                            console.log(key);
                         }
-                    }
-                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["24_hours_average"].name) {
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider]["24_hours"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["24_hours"]["average"]};
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
-                        }
-                    }
-                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["24_hours_median"].name){
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider]["24_hours"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["24_hours"]["median"]};
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
-                        }
-                    }
-                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["30_days_average"].name) {
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider]["30_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["30_days"]["average"]};
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
-                        }
-                    }
-                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["30_days_median"].name) {
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider]["30_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["30_days"]["median"]};
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
-                        }
-                    }
-                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["all_time_average"].name) {
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider]["all_time"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["all_time"]["average"]};
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
-                        }
-                    }
-                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["all_time_median"].name) {
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider]["all_time"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["all_time"]["median"]}
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
-                        }
-                    }
-                    else {
-                        prices[key] = {"price": "null"};
-                        console.log(key);
                     }
                 }
                 else if (result.pricingProvider === pricingProviders.bitskins.name) {

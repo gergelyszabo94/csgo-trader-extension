@@ -19561,71 +19561,27 @@ const pricingProviders = {
             }
         }
     },
-    csgobackpack: {
-        name: "csgobackpack",
-        long: "CS:GO BACKPACK",
-        short: "CB",
-        url: "https://csgobackpack.net/",
-        description: "CS:GO BACKPACK is a site dedicated to checking Steam user's inventories and their total value. They are also tracking Steam Community Market sales and provide this sales data through their API.",
+    steam: {
+        name: "steam",
+        long: "Steam Market",
+        short: "SM",
+        url: "https://steamcommunity.com/market/",
+        description: "Steam Community Market sales history.",
         pricing_modes: {
-            "24_hours_average": {
-                description: "The average of the sales from the past 24 hours",
-                name: "24_hours_average",
-                long: "24 Hour Average"
+            "last_24h": {
+                description: "Sales from the past 24 hours",
+                name: "last_24h",
+                long: "Last 24 Hours"
             },
-            "24_hours_median":  {
-                description: "The median of the sales from the past 24 hours",
-                name: "24_hours_median",
-                long: "24 Hour Median"
+            "last_7d": {
+                description: "Sales from the past 7 days",
+                name: "last_7d",
+                long: "Last 7 days"
             },
-            "7_days_average": {
-                description: "The average of the sales from the past 7 days",
-                name: "7_days_average",
-                long: "7 Days Average"
-            },
-            "7_days_median": {
-                description: "The median of the sales from the past 7 days",
-                name: "7_days_median",
-                long: "7 Days Median"
-            },
-            "30_days_average": {
-                description: "The average of the sales from the past 30 days",
-                name: "30_days_average",
-                long: "30 Days Average"
-            },
-            "30_days_median": {
-                description: "The median of the sales from the past 30 days",
-                name: "30_days_median",
-                long: "30 Days Median"
-            },
-            "all_time_average": {
-                description: "The average of of all time sales",
-                name: "all_time_average",
-                long: "All The Time Average"
-            },
-            "all_time_median": {
-                description: "The median of of all time sales",
-                name: "all_time_median",
-                long: "All The Time Median"
-            }
-        }
-    },
-    bitskins: {
-        name: "bitskins",
-        long: "BITSKINS",
-        short: "BS",
-        url: "https://bitskins.com/",
-        description: 'BITSKINS is a "real money" marketplace where you can buy and sell skins. They provide sales data through their API.',
-        pricing_modes: {
-            "bitskins": {
-                description: "Standard BITSKINS price, I am not sure how they calculate it",
-                name: "bitskins",
-                long: "Standard BITSKINS price"
-            },
-            "instant_sale": {
-                description: "Instant sale - what bitskins pays for your item when they buy it themselves",
-                name: "instant_sale",
-                long: "Instant sale price"
+            "last_30d": {
+                description: "Sales from the past 30 days",
+                name: "last_30d",
+                long: "Last 30 days"
             }
         }
     },
