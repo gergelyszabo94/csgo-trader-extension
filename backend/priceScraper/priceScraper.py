@@ -380,30 +380,20 @@ def alert_via_sns(error):
 
 def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
     if item in steam_prices and "safe" in steam_prices[item]:
-        return steam_prices[item]["safe"]
-        # if "24_hours" in extract[item]["csgobackpack"] and "sold" in extract[item]["csgobackpack"]["24_hours"] and \
-        #         extract[item]["csgobackpack"]["24_hours"]["sold"] != "" and float(
-        #     extract[item]["csgobackpack"]["24_hours"]["sold"]) >= 5.0:
-        #     if abs(1 - float(extract[item]["csgobackpack"]["24_hours"]["average"]) / float(
-        #             extract[item]["csgobackpack"]["7_days"]["average"])) <= 0.1:
-        #         return extract[item]["csgobackpack"]["24_hours"]["average"]  # case A
-        #     elif abs(1 - float(extract[item]["csgobackpack"]["24_hours"]["median"]) / float(
-        #             extract[item]["csgobackpack"]["7_days"]["average"])) <= 0.1:
-        #         return extract[item]["csgobackpack"]["24_hours"]["median"]  # case B
-        #     else:
-        #         return float(extract[item]["csgobackpack"]["7_days"]["average"]) * daily_trend  # case C
-        # elif "7_days" in extract[item]["csgobackpack"]:
-        #     if float(extract[item]["csgobackpack"]["30_days"]["average"]) != 0.0 and abs(
-        #             1 - float(extract[item]["csgobackpack"]["7_days"]["average"]) / float(
-        #                 extract[item]["csgobackpack"]["30_days"]["average"])) <= 0.1 and float(
-        #         extract[item]["csgobackpack"]["7_days"]["sold"]) >= 5.0:
-        #         return float(extract[item]["csgobackpack"]["7_days"]["average"]) * daily_trend  # case D
-        #     else:
-        #         return float(extract[item]["csgobackpack"]["30_days"]["average"]) * weekly_trend * daily_trend  # case E
-        # elif "30_days" in extract[item]["csgobackpack"]:
-        #     return float(extract[item]["csgobackpack"]["30_days"]["average"]) * weekly_trend * daily_trend  # case E
-        # else:
-        #     return "null"
+        if "safe_ts" in steam_prices[item] and "sold" in steam_prices[item]:
+            if float(steam_prices[item]["sold"]["last_24h"]) >= 5.0:
+                if abs(1 - float(steam_prices[item]["safe_ts"]["last_24h"]) / float(steam_prices[item]["safe_ts"]["last_7d"])) <= 0.1:
+                    return steam_prices[item]["safe_ts"]["last_24h"]  # case A
+                else:
+                    return float(steam_prices[item]["safe_ts"]["last_7d"]) * daily_trend  # case C
+            elif float(steam_prices[item]["safe_ts"]["last_7d"]) != 0.0 and float(steam_prices[item]["safe_ts"]["last_30d"]) != 0.0:
+                if abs(1 - float(steam_prices[item]["safe_ts"]["last_7d"]) / float(steam_prices[item]["safe_ts"]["last_30d"])) <= 0.1 \
+                        and float(steam_prices[item]["sold"]["last_7d"]) >= 5.0:
+                    return float(steam_prices[item]["safe_ts"]["last_7d"]) * daily_trend  # case D
+                else:
+                    return float(steam_prices[item]["safe_ts"]["last_30d"]) * weekly_trend * daily_trend  # case E
+
+        return steam_prices[item]["safe"] * weekly_trend * daily_trend
     else:
         return "null"
 
