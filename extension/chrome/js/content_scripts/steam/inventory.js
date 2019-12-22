@@ -297,7 +297,7 @@ function countDown(dateToCountDownTo){
 function changeName(name, color, link, dopplerInfo){
     let newNameElement = `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name}</a>`;
 
-    if (dopplerInfo !== undefined) newNameElement = `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name} (${dopplerInfo.name})</a>`;
+    if (dopplerInfo !== null) newNameElement = `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name} (${dopplerInfo.name})</a>`;
 
     document.querySelectorAll('.hover_item_name').forEach((name) => {
         name.insertAdjacentHTML('afterend', newNameElement);
