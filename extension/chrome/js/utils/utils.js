@@ -688,7 +688,7 @@ function updatePrices() {
         cache: 'default' };
 
     chrome.storage.local.get(['pricingProvider', 'pricingMode'], (result) => {
-        if (result.pricingProvider === pricingProviders.csgobackpack.name) {
+        if (result.pricingProvider === 'csgobackpack') {
             let newPiricingMode = 'last_24h';
             if (result.pricingMode === '7_days_average' || result.pricingMode === '7_days_median') newPiricingMode = 'last_7d';
             if (result.pricingMode === '30_days_average' || result.pricingMode === '30_days_median' || result.pricingMode === 'all_time_average' || result.pricingMode === 'all_time_median') newPiricingMode = 'last_30d';
@@ -707,10 +707,14 @@ function updatePrices() {
                 let prices = {};
                 const keys = Object.keys(fullPricesJSON);
 
-                if (result.pricingProvider === pricingProviders.steam.name) {
+                if (result.pricingProvider === pricingProviders.steam.name || result.pricingProvider === pricingProviders.bitskins.name) {
+                    let pricingMode = result.pricingMode;
+                    if (result.pricingMode === pricingProviders.bitskins.pricing_modes.bitskins.name) pricingMode = 'price';
+                    else if (result.pricingMode === pricingProviders.bitskins.pricing_modes.instant_sale.name) pricingMode = 'instant_sale_price';
+
                     for (const key of keys) {
-                        if (fullPricesJSON[key][result.pricingProvider] !== 'null' && fullPricesJSON[key][result.pricingProvider][result.pricingMode] !== undefined) {
-                            prices[key] = {'price': fullPricesJSON[key][result.pricingProvider][result.pricingMode]};
+                        if (fullPricesJSON[key][result.pricingProvider] !== 'null' && fullPricesJSON[key][result.pricingProvider][pricingMode] !== undefined) {
+                            prices[key] = {'price': fullPricesJSON[key][result.pricingProvider][pricingMode]};
                         }
                         else {
                             prices[key] = {'price': 'null'};
@@ -718,52 +722,24 @@ function updatePrices() {
                         }
                     }
                 }
-                else if (result.pricingProvider === pricingProviders.bitskins.name) {
-                    if (result.pricingMode === pricingProviders.bitskins.pricing_modes.bitskins.name) {
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined && fullPricesJSON[key][result.pricingProvider]["price"] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["price"]};
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
-                        }
-                    }
-                    else if (result.pricingMode === pricingProviders.bitskins.pricing_modes.instant_sale.name) {
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined && fullPricesJSON[key][result.pricingProvider]["instant_sale_price"] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["instant_sale_price"]};
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
-                        }
-                    }
-                }
                 else if (result.pricingProvider === pricingProviders.lootfarm.name || result.pricingProvider === pricingProviders.csgotm.name) {
                     for (const key of keys) {
-                        if (fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                            prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]};
-                        }
-                        else{
-                            prices[key] = {"price": "null"};
-                        }
+                        if (fullPricesJSON[key][result.pricingProvider] !== undefined) prices[key] = {'price': fullPricesJSON[key][result.pricingProvider]};
+                        else prices[key] = {'price': 'null'};
                     }
                 }
-                else if (result.pricingProvider === pricingProviders.csmoney.name || pricingProviders.csgotrader.name) {
+                else if (result.pricingProvider === pricingProviders.csmoney.name || result.pricingProvider === pricingProviders.csgotrader.name) {
                     for (const key of keys) {
-                        if (fullPricesJSON[key][result.pricingProvider] !== undefined || "null") {
-                            if (fullPricesJSON[key][result.pricingProvider]["doppler"] !== undefined) {
+                        if (fullPricesJSON[key][result.pricingProvider] !== undefined || 'null') {
+                            if (fullPricesJSON[key][result.pricingProvider]['doppler'] !== undefined) {
                                 prices[key] = {
-                                    price: fullPricesJSON[key][result.pricingProvider]["price"],
-                                    doppler: fullPricesJSON[key][result.pricingProvider]["doppler"]
+                                    price: fullPricesJSON[key][result.pricingProvider]['price'],
+                                    doppler: fullPricesJSON[key][result.pricingProvider]['doppler']
                                 };
                             }
-                            else prices[key] = {price: fullPricesJSON[key][result.pricingProvider]["price"]};
+                            else prices[key] = {price: fullPricesJSON[key][result.pricingProvider]['price']};
                         }
-                        else prices[key] = {"price": "null"};
+                        else prices[key] = {'price': 'null'};
                     }
                 }
                 console.log(prices);
