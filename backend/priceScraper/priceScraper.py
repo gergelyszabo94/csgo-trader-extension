@@ -212,10 +212,7 @@ def lambda_handler(event, context):
                     csmoney_prices[name]['price'] = price
             else:
                 add_to_master_list(master_list, name, True)
-                csmoney_prices[name] = {
-                    'price': price,
-                    'doppler': "null"
-                }
+                csmoney_prices[name] = {'price': price}
         print("Pricing information extracted")
     else:
         error = "Could not get items from cs.money"
@@ -281,17 +278,16 @@ def lambda_handler(event, context):
         elif item in own_prices:
             price = own_prices[item]
 
-
-        doppler = "null"
         if "Doppler" in item:
             doppler = {}
             for phase in csmoney_prices[item]["doppler"]:
                 doppler[phase] = float("{0:.2f}".format(float(csmoney_prices[item]["doppler"][phase]) * st_csm))  # case I
-
-        csgotrader_prices[item] = {
-            "price": price,
-            "doppler": doppler
-        }
+            csgotrader_prices[item] = {
+                "price": price,
+                "doppler": doppler
+            }
+        else:
+            csgotrader_prices[item] = {"price": price}
 
     print("Putting together the final prices dict")
     extract = {}
