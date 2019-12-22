@@ -86,10 +86,8 @@ def lambda_handler(event, context):
                 instant_sale_price = "null"
 
             bitskins_prices[name] = {
-                "pricing_mode": item["pricing_mode"],
                 "price": item["price"],
-                "instant_sale_price": item["instant_sale_price"],
-                "skewness": item["skewness"]
+                "instant_sale_price": item["instant_sale_price"]
             }
         print("Pricing info extracted")
     elif response.status_code == 401:
