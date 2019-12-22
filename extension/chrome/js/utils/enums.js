@@ -19561,6 +19561,25 @@ const pricingProviders = {
             }
         }
     },
+    bitskins: {
+        name: "bitskins",
+        long: "BITSKINS",
+        short: "BS",
+        url: "https://bitskins.com/",
+        description: 'BITSKINS is a "real money" marketplace where you can buy and sell skins. They provide sales data through their API.',
+        pricing_modes: {
+            "bitskins": {
+                description: "Standard BITSKINS price, I am not sure how they calculate it",
+                name: "bitskins",
+                long: "Standard BITSKINS price"
+            },
+            "instant_sale": {
+                description: "Instant sale - what bitskins pays for your item when they buy it themselves",
+                name: "instant_sale",
+                long: "Instant sale price"
+            }
+        }
+    },
     steam: {
         name: "steam",
         long: "Steam Market",
