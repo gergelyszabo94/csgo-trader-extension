@@ -297,7 +297,7 @@ function countDown(dateToCountDownTo){
 function changeName(name, color, link, dopplerInfo){
     let newNameElement = `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name}</a>`;
 
-    if (dopplerInfo !== undefined) newNameElement = `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name} (${dopplerInfo.name})</a>`;
+    if (dopplerInfo !== null) newNameElement = `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name} (${dopplerInfo.name})</a>`;
 
     document.querySelectorAll('.hover_item_name').forEach((name) => {
         name.insertAdjacentHTML('afterend', newNameElement);
@@ -1031,11 +1031,9 @@ if (isOwnInventory()) {
                  }
                  else {
                     console.log(body);
-                    if (body.message.includes('The price entered plus the sum of outstanding listings')) {
-                        let warningElement = document.getElementById('massSellError');
-                        warningElement.innerText = body.message;
-                        warningElement.classList.remove('hidden');
-                    }
+                    let warningElement = document.getElementById('massSellError');
+                    warningElement.innerText = body.message;
+                    warningElement.classList.remove('hidden');
                  }
             }).catch(err => {
                 console.log(err);

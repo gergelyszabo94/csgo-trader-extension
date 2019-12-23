@@ -8,7 +8,7 @@ function matchItemsWithDescriptions(items) {
             let stickers = parseStickerInfo(item.descriptions, 'direct');
             let nametag = undefined;
             let inspectLink = null;
-            let dopplerInfo = /Doppler/.test(item.name) ? getDopplerInfo(item.icon_url) : undefined;
+            let dopplerInfo = /Doppler/.test(item.name) ? getDopplerInfo(item.icon_url) : null;
             let isStatrack = /StatTrak™/.test(item.name);
             let isSouvenir = /Souvenir/.test(item.name);
             let starInName = /★/.test(item.name);

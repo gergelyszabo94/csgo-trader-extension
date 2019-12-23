@@ -663,7 +663,7 @@ function reportComments() {
 }
 
 function addDopplerPhase(item, dopplerInfo) {
-    if (dopplerInfo !== undefined) {
+    if (dopplerInfo !== null) {
         let dopplerDiv = document.createElement('div');
         dopplerDiv.classList.add('dopplerPhase');
 
@@ -680,167 +680,72 @@ function addDopplerPhase(item, dopplerInfo) {
 }
 
 function updatePrices() {
-    let headers = new Headers();
-    headers.append('Accept-Encoding', 'gzip');
-    let init = { method: 'GET',
-        headers: headers,
-        mode: 'cors',
-        cache: 'default' };
+    // TODO remove this after a while
+    chrome.storage.local.get(['pricingProvider', 'pricingMode'], (result) => {
+        if (result.pricingProvider === 'csgobackpack') {
+            let newPiricingMode = 'last_24h';
+            if (result.pricingMode === '7_days_average' || result.pricingMode === '7_days_median') newPiricingMode = 'last_7d';
+            if (result.pricingMode === '30_days_average' || result.pricingMode === '30_days_median' || result.pricingMode === 'all_time_average' || result.pricingMode === 'all_time_median') newPiricingMode = 'last_30d';
+            chrome.storage.local.set({'pricingProvider': 'steam', 'pricingMode': newPiricingMode})
+        }
+    });
 
-    let request = new Request('https://prices.csgotrader.app/latest/prices_v2.json', init);
+    chrome.storage.local.get(['itemPricing', 'pricingProvider', 'pricingMode'], (result) => {
+        let provider = result.pricingProvider;
+        let mode = result.pricingMode;
+        let headers = new Headers();
+        headers.append('Accept-Encoding', 'gzip');
+        let init = { method: 'GET',
+            headers: headers,
+            mode: 'cors',
+            cache: 'default' };
 
-    fetch(request).then((response) => {
-        if (!response.ok) console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-        return response.json();
-    }).then((fullPricesJSON) => {
-        chrome.storage.local.get(['itemPricing', 'pricingProvider', 'pricingMode'], (result) => {
+        let request = new Request(`https://prices.csgotrader.app/latest/${provider}.json`, init);
+        fetch(request).then((response) => {
+            if (!response.ok) console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+            return response.json();
+        }).then((pricesJSON) => {
             if(result.itemPricing) {
                 let prices = {};
-                const keys = Object.keys(fullPricesJSON);
-                if (result.pricingProvider === pricingProviders.csgobackpack.name) {
-                    if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["7_days_average"].name) {
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider]["7_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["7_days"]["average"]};
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
-                        }
-                    }
-                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["7_days_median"].name) {
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider]["7_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["7_days"]["median"]};
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
-                        }
-                    }
-                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["24_hours_average"].name) {
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider]["24_hours"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["24_hours"]["average"]};
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
-                        }
-                    }
-                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["24_hours_median"].name){
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider]["24_hours"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["24_hours"]["median"]};
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
-                        }
-                    }
-                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["30_days_average"].name) {
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider]["30_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["30_days"]["average"]};
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
-                        }
-                    }
-                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["30_days_median"].name) {
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider]["30_days"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["30_days"]["median"]};
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
-                        }
-                    }
-                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["all_time_average"].name) {
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider]["all_time"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["all_time"]["average"]};
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
-                        }
-                    }
-                    else if (result.pricingMode === pricingProviders.csgobackpack.pricing_modes["all_time_median"].name) {
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider]["all_time"] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["all_time"]["median"]}
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
-                        }
-                    }
-                    else {
-                        prices[key] = {"price": "null"};
-                        console.log(key);
-                    }
-                }
-                else if (result.pricingProvider === pricingProviders.bitskins.name) {
-                    if (result.pricingMode === pricingProviders.bitskins.pricing_modes.bitskins.name) {
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined && fullPricesJSON[key][result.pricingProvider]["price"] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["price"]};
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
-                        }
-                    }
-                    else if (result.pricingMode === pricingProviders.bitskins.pricing_modes.instant_sale.name) {
-                        for (const key of keys) {
-                            if (fullPricesJSON[key][result.pricingProvider] !== "null" && fullPricesJSON[key][result.pricingProvider] !== undefined && fullPricesJSON[key][result.pricingProvider]["instant_sale_price"] !== undefined) {
-                                prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]["instant_sale_price"]};
-                            }
-                            else {
-                                prices[key] = {"price": "null"};
-                                console.log(key);
-                            }
-                        }
-                    }
-                }
-                else if (result.pricingProvider === pricingProviders.lootfarm.name || result.pricingProvider === pricingProviders.csgotm.name) {
+                const keys = Object.keys(pricesJSON);
+
+                if (provider === pricingProviders.steam.name || provider === pricingProviders.bitskins.name) {
+                    let pricingMode = mode;
+                    if (mode === pricingProviders.bitskins.pricing_modes.bitskins.name) pricingMode = 'price';
+                    else if (mode === pricingProviders.bitskins.pricing_modes.instant_sale.name) pricingMode = 'instant_sale_price';
+
                     for (const key of keys) {
-                        if (fullPricesJSON[key][result.pricingProvider] !== undefined) {
-                            prices[key] = {"price": fullPricesJSON[key][result.pricingProvider]};
+                        if (pricesJSON[key][pricingMode] !== undefined) {
+                            prices[key] = {'price': pricesJSON[key][pricingMode]};
                         }
-                        else{
-                            prices[key] = {"price": "null"};
+                        else {
+                            prices[key] = {'price': 'null'};
+                            console.log(key);
                         }
                     }
                 }
-                else if (result.pricingProvider === pricingProviders.csmoney.name || result.pricingProvider === pricingProviders.csgotrader.name) {
+                else if (provider === pricingProviders.lootfarm.name || provider === pricingProviders.csgotm.name) {
                     for (const key of keys) {
-                        prices[key] = {"price": "null", "doppler": "null"};
-                        if (fullPricesJSON[key][result.pricingProvider] !== undefined && fullPricesJSON[key][result.pricingProvider] !== "null") {
-                            if (fullPricesJSON[key][result.pricingProvider]["doppler"] !== "null" && fullPricesJSON[key][result.pricingProvider]["doppler"] !== undefined) {
-                                prices[key]["doppler"] = fullPricesJSON[key][result.pricingProvider]["doppler"];
-                            }
-                            prices[key]["price"] =  fullPricesJSON[key][result.pricingProvider]["price"];
+                        prices[key] = {'price': pricesJSON[key]};
+                    }
+                }
+                else if (provider === pricingProviders.csmoney.name || provider === pricingProviders.csgotrader.name) {
+                    for (const key of keys) {
+                        if (pricesJSON[key]['doppler'] !== undefined) {
+                            prices[key] = {
+                                price: pricesJSON[key]['price'],
+                                doppler: pricesJSON[key]['doppler']
+                            };
                         }
+                        else prices[key] = {price: pricesJSON[key]['price']};
                     }
                 }
                 console.log(prices);
                 chrome.storage.local.set({prices: prices}, () => {});
             }
-        });
-    }).catch((err) => {console.log(err)});
+        }).catch((err) => {console.log(err)});
+
+    });
 }
 
 function updateExchangeRates() {
@@ -1024,22 +929,24 @@ function isSIHActive() {
 
 function getPrice(market_hash_name, dopplerInfo, prices, provider, exchange_rate, currency) {
     let price = 0.0;
-    if (provider === pricingProviders.csgotrader.name || provider === pricingProviders.csmoney.name){
-        if (dopplerInfo !== undefined) {
-            if (prices[market_hash_name] !== undefined && prices[market_hash_name]["doppler"] !== undefined && prices[market_hash_name]["doppler"] !== "null" && prices[market_hash_name]["doppler"][dopplerInfo.name] !== "null" && prices[market_hash_name]["doppler"][dopplerInfo.name] !== undefined){
-                price = (prices[market_hash_name]["doppler"][dopplerInfo.name] * exchange_rate).toFixed(2);
+    if (prices[market_hash_name] !== undefined && prices[market_hash_name] !== 'null' && prices[market_hash_name] !== null && prices[market_hash_name]['price'] !== undefined && prices[market_hash_name]['price'] !== 'null') {
+        // csgotrader and csmoney have doppler phase prices so they are handled differently
+        if ((provider === pricingProviders.csgotrader.name || provider === pricingProviders.csmoney.name)) {
+            if (dopplerInfo !== null) {
+                // when there is price for the specific dopper phase take that
+                if (prices[market_hash_name]['doppler'] !== undefined && prices[market_hash_name]['doppler'] !== 'null' && prices[market_hash_name]['doppler'][dopplerInfo.name] !== 'null' && prices[market_hash_name]['doppler'][dopplerInfo.name] !== undefined) {
+                    price = (prices[market_hash_name]['doppler'][dopplerInfo.name] * exchange_rate).toFixed(2);
+                }
+                else price = (prices[market_hash_name]['price'] * exchange_rate).toFixed(2);
             }
-            else if (prices[market_hash_name] !== undefined && (prices[market_hash_name]["doppler"] === undefined || prices[market_hash_name]["doppler"][dopplerInfo.name] === undefined || prices[market_hash_name]["doppler"] === "null" || prices[market_hash_name]["doppler"][dopplerInfo.name] === "null") && prices[market_hash_name]["price"] !== "null"){
-                price = (prices[market_hash_name]["price"] * exchange_rate).toFixed(2)
-            }
+            else price = (prices[market_hash_name]['price'] * exchange_rate).toFixed(2);
         }
-        else price =  prices[market_hash_name] === undefined || prices[market_hash_name] === "null" || prices[market_hash_name] === null || prices[market_hash_name]["price"] === undefined || prices[market_hash_name]["price"] === "null" ? 0.0 : (prices[market_hash_name]["price"] * exchange_rate).toFixed(2);
+        // other providers have no doppler phase info
+        else price = (prices[market_hash_name]['price'] * exchange_rate).toFixed(2);
     }
-    else price =  prices[market_hash_name] === undefined || prices[market_hash_name] === "null" || prices[market_hash_name] === null || prices[market_hash_name]["price"] === undefined || prices[market_hash_name]["price"] === "null" ? 0.0 : (prices[market_hash_name]["price"] * exchange_rate).toFixed(2);
-
     return {
         price: price,
-        display: price === 0.0 ? "" : currencies[currency].sign + price
+        display: price === 0.0 ? '' : currencies[currency].sign + price
     };
 }
 
@@ -1163,7 +1070,7 @@ function addSSTandExtIndicators(itemElement, item) {
 
 function makeItemColorful(itemElement, item, colorfulItemsEnabled) {
     if (colorfulItemsEnabled) {
-        if (item.dopplerInfo !== undefined) itemElement.setAttribute('style', `background-image: url(); background-color: #${item.dopplerInfo.color}`);
+        if (item.dopplerInfo !== null) itemElement.setAttribute('style', `background-image: url(); background-color: #${item.dopplerInfo.color}`);
         else itemElement.setAttribute('style', `background-image: url(); background-color: ${item.quality.backgroundcolor}; border-color: ${item.quality.backgroundcolor}`);
     }
 }

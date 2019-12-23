@@ -314,8 +314,8 @@ pricingProviderSelect.addEventListener('click', () => {
                 pricingModeSelect.add(option);
             }
 
-            if (provider === pricingProviders.csgobackpack.name){
-                document.querySelector('#pricingMode [value="7_days_average"]').selected = true;
+            if (provider === pricingProviders.steam.name){
+                document.querySelector('#pricingMode [value="last_7d"]').selected = true;
             }
             else if (provider === pricingProviders.bitskins.name){
                 document.querySelector('#pricingMode [value="bitskins"]').selected = true;
