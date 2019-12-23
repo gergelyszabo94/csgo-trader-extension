@@ -11,7 +11,6 @@ bitskins_token = pyotp.TOTP(bitskins_secret)
 bitskins_api_key = os.environ['BITSKINS_API_KEY']
 result_s3_bucket = os.environ['RESULTS_BUCKET']
 sns_topic = os.environ['SNS_TOPIC_ARN']
-stage = os.environ['STAGE']
 own_prices_table = os.environ['OWN_PRICES_TABLE']
 steam_apis_key = os.environ['STEAM_APIS_COM_API_KEY']
 
@@ -19,6 +18,10 @@ special_phases = ["Ruby", "Sapphire", "Black Pearl", "Emerald"]
 
 
 def lambda_handler(event, context):
+    arn_split = context.invoked_function_arn.split(':')
+    stage_candidate = arn_split[len(arn_split) - 1]
+    stage = 'dev' if stage_candidate == 'priceScraper' else 'prod'
+
     master_list = []
 
     dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
@@ -328,7 +331,7 @@ def lambda_handler(event, context):
     }
 
 
-def push_to_s3(content):
+def push_to_s3(content, stage):
     print("Getting date for result path")
 
     today = date.today()
@@ -339,14 +342,14 @@ def push_to_s3(content):
     s3 = boto3.resource('s3')
 
     if stage == "prod":
-        print("Updating latest/prices_v2.json in s3")
-        s3.Object(result_s3_bucket, 'latest/prices_v2.json').put(
+        print("Updating latest/prices_v3.json in s3")
+        s3.Object(result_s3_bucket, 'latest/prices_v3.json').put(
             Body=(gzip.compress(bytes(json.dumps(content).encode('UTF-8')), 9)),
             ContentEncoding='gzip'
         )
         print("latest.json updated")
-        print(f'Uploading prices to {year}/{month}/{day}/prices_v2.json')
-        s3.Object(result_s3_bucket, f'{year}/{month}/{day}/prices_v2.json').put(
+        print(f'Uploading prices to {year}/{month}/{day}/prices_v3.json')
+        s3.Object(result_s3_bucket, f'{year}/{month}/{day}/prices_v3.json').put(
             Body=(gzip.compress(bytes(json.dumps(content).encode('UTF-8')), 9)),
             ContentEncoding='gzip'
         )
@@ -373,7 +376,7 @@ def alert_via_sns(error):
 
 
 def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
-    if item in steam_prices and "safe" in steam_prices[item]:
+    if item in steam_prices and hasattr(steam_prices[item], "safe"):
         if "safe_ts" in steam_prices[item] and "sold" in steam_prices[item]:
             if float(steam_prices[item]["sold"]["last_24h"]) >= 5.0:
                 if abs(1 - float(steam_prices[item]["safe_ts"]["last_24h"]) / float(steam_prices[item]["safe_ts"]["last_7d"])) <= 0.1:
@@ -387,7 +390,7 @@ def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
                 else:
                     return float(steam_prices[item]["safe_ts"]["last_30d"]) * weekly_trend * daily_trend  # case E
 
-        return steam_prices[item]["safe"] * weekly_trend * daily_trend
+        return float(steam_prices[item]["safe"]) * weekly_trend * daily_trend
     else:
         return "null"
 
