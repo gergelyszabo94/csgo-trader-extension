@@ -1031,11 +1031,9 @@ if (isOwnInventory()) {
                  }
                  else {
                     console.log(body);
-                    if (body.message.includes('The price entered plus the sum of outstanding listings')) {
-                        let warningElement = document.getElementById('massSellError');
-                        warningElement.innerText = body.message;
-                        warningElement.classList.remove('hidden');
-                    }
+                    let warningElement = document.getElementById('massSellError');
+                    warningElement.innerText = body.message;
+                    warningElement.classList.remove('hidden');
                  }
             }).catch(err => {
                 console.log(err);
