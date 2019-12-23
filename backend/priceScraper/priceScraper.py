@@ -282,7 +282,7 @@ def lambda_handler(event, context):
 
     for item in master_list:
         steam_aggregate = get_steam_price(item, steam_prices, week_to_day, month_to_week)
-        price = "null"  # stays this if case H
+        price = "null"  # stays this if case I
         if steam_aggregate != "null":
             price = float("{0:.2f}".format(steam_aggregate))
         elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and csmoney_prices[item]["price"] != 0:
@@ -290,7 +290,7 @@ def lambda_handler(event, context):
         elif item in bitskins_prices and "price" in bitskins_prices[item] and bitskins_prices[item]["price"] != "null":
             price = float("{0:.2f}".format(float(bitskins_prices[item]["price"]) * st_bit * week_to_day))  # case G
         elif item in own_prices:
-            price = own_prices[item]
+            price = own_prices[item]  # case H
 
         if "Doppler" in item:
             doppler = {}
@@ -399,15 +399,15 @@ def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
                 if abs(1 - float(steam_prices[item]["safe_ts"]["last_24h"]) / float(steam_prices[item]["safe_ts"]["last_7d"])) <= 0.1:
                     return steam_prices[item]["safe_ts"]["last_24h"]  # case A
                 else:
-                    return float(steam_prices[item]["safe_ts"]["last_7d"]) * daily_trend  # case C
+                    return float(steam_prices[item]["safe_ts"]["last_7d"]) * daily_trend  # case B
             elif float(steam_prices[item]["safe_ts"]["last_7d"]) != 0.0 and float(steam_prices[item]["safe_ts"]["last_30d"]) != 0.0:
                 if abs(1 - float(steam_prices[item]["safe_ts"]["last_7d"]) / float(steam_prices[item]["safe_ts"]["last_30d"])) <= 0.1 \
                         and float(steam_prices[item]["sold"]["last_7d"]) >= 5.0:
-                    return float(steam_prices[item]["safe_ts"]["last_7d"]) * daily_trend  # case D
+                    return float(steam_prices[item]["safe_ts"]["last_7d"]) * daily_trend  # case C
                 else:
-                    return float(steam_prices[item]["safe_ts"]["last_30d"]) * weekly_trend * daily_trend  # case E
+                    return float(steam_prices[item]["safe_ts"]["last_30d"]) * weekly_trend * daily_trend  # case D
 
-        return float(steam_prices[item]["safe"]) * weekly_trend * daily_trend
+        return float(steam_prices[item]["safe"]) * weekly_trend * daily_trend  # case E
     else:
         return "null"
 

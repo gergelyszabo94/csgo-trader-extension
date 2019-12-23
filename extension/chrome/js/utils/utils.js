@@ -700,7 +700,7 @@ function updatePrices() {
             mode: 'cors',
             cache: 'default' };
 
-        let request = new Request(`https://prices.csgotrader.app/test/${provider}.json`, init);
+        let request = new Request(`https://prices.csgotrader.app/latest/${provider}.json`, init);
         fetch(request).then((response) => {
             if (!response.ok) console.log(`Error code: ${response.status} Status: ${response.statusText}`);
             return response.json();
