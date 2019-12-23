@@ -61,12 +61,12 @@ def lambda_handler(event, context):
         for item in items:
             name = item["market_hash_name"]
             steam_prices[name] = item["prices"]
-            if hasattr(item["prices"], "safe_ts"):
+            if "safe_ts" in item["prices"]:
                 steam_prices_only[name] = item["prices"]["safe_ts"]
             add_to_master_list(master_list, name, False)
 
         print("Pricing information extracted")
-        push_to_s3(steam_prices, 'steam', stage)
+        push_to_s3(steam_prices_only, 'steam', stage)
 
     print('Requesting bitskins prices')
     try:
@@ -411,7 +411,7 @@ def alert_via_sns(error):
 
 
 def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
-    if item in steam_prices and hasattr(steam_prices[item], "safe"):
+    if item in steam_prices and "safe" in steam_prices[item] and steam_prices[item]["safe"] is not None:
         if "safe_ts" in steam_prices[item] and "sold" in steam_prices[item]:
             if float(steam_prices[item]["sold"]["last_24h"]) >= 5.0:
                 if abs(1 - float(steam_prices[item]["safe_ts"]["last_24h"]) / float(steam_prices[item]["safe_ts"]["last_7d"])) <= 0.1:
