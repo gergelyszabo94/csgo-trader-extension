@@ -20,7 +20,7 @@ special_phases = ["Ruby", "Sapphire", "Black Pearl", "Emerald"]
 def lambda_handler(event, context):
     arn_split = context.invoked_function_arn.split(':')
     stage_candidate = arn_split[len(arn_split) - 1]
-    stage = 'dev' if stage_candidate == 'priceScraper' else 'prod'
+    stage = 'dev' if stage_candidate == 'priceScraper' else 'prod'  # if there is an alias it's prod
 
     master_list = []
 
@@ -55,14 +55,18 @@ def lambda_handler(event, context):
         print("Valid response from steamapis.com")
         items = response.json()['data']
         steam_prices = {}
+        steam_prices_only = {}
         print("Extracting pricing information")
 
         for item in items:
             name = item["market_hash_name"]
             steam_prices[name] = item["prices"]
+            if hasattr(item["prices"], "safe_ts"):
+                steam_prices_only[name] = item["prices"]["safe_ts"]
             add_to_master_list(master_list, name, False)
 
         print("Pricing information extracted")
+        push_to_s3(steam_prices, 'steam', stage)
 
     print('Requesting bitskins prices')
     try:
@@ -93,6 +97,7 @@ def lambda_handler(event, context):
                 "instant_sale_price": item["instant_sale_price"]
             }
         print("Pricing info extracted")
+        push_to_s3(bitskins_prices, 'bitskins', stage)
     elif response.status_code == 401:
         error = "Could not get items from bitskins, it's most likely an authentication problem"
         alert_via_sns(error)
@@ -128,6 +133,7 @@ def lambda_handler(event, context):
         items = response.json()
         lootfarm_prices = {}
         print("Extracting pricing information")
+
         for item in items:
             name = item.get('name')
             price = item.get('price') / 100
@@ -144,7 +150,9 @@ def lambda_handler(event, context):
             else:
                 lootfarm_prices[name] = price
                 add_to_master_list(master_list, name, True)
+
         print("Pricing information extracted")
+        push_to_s3(lootfarm_prices, 'lootfarm', stage)
 
     else:
         error = "Could not get items from loot.farm"
@@ -163,6 +171,7 @@ def lambda_handler(event, context):
         print("Valid response from csgo.tm")
         items = response.json()['items']
         print("Extracting pricing information")
+
         csgotm_prices = {}
         for item in items:
             name = item.get('market_hash_name')
@@ -172,6 +181,7 @@ def lambda_handler(event, context):
             add_to_master_list(master_list, name, True)
 
         print("Pricing information extracted")
+        push_to_s3(csgotm_prices, 'csgotm', stage)
 
     else:
         error = "Could not get items from csgo.tm"
@@ -190,6 +200,7 @@ def lambda_handler(event, context):
         print("Valid response from cs.money")
         items = json.loads(response.content.decode().split("skinsBaseList[730] = ")[1])
         print("Extracting pricing information")
+
         csmoney_prices = {}
         for item in items:
             item = items.get(item)
@@ -214,7 +225,9 @@ def lambda_handler(event, context):
             else:
                 add_to_master_list(master_list, name, True)
                 csmoney_prices[name] = {'price': price}
+
         print("Pricing information extracted")
+        push_to_s3(csmoney_prices, 'csmoney', stage)
     else:
         error = "Could not get items from cs.money"
         alert_via_sns(error)
@@ -290,6 +303,9 @@ def lambda_handler(event, context):
         else:
             csgotrader_prices[item] = {"price": price}
 
+    print("csgotrader prices created")
+    push_to_s3(csgotrader_prices, 'csgotrader', stage)
+
     print("Putting together the final prices dict")
     extract = {}
 
@@ -324,39 +340,40 @@ def lambda_handler(event, context):
             extract[item]["csgotrader"] = csgotrader_prices[item]
         else:
             extract[item]["csgotrader"] = "null"
-    push_to_s3(extract)
+
+    push_to_s3(extract, 'prices_v3', stage)
     return {
         'statusCode': 200,
         'body': json.dumps('Success!')
     }
 
 
-def push_to_s3(content, stage):
-    print("Getting date for result path")
-
-    today = date.today()
-    year = today.strftime("%Y")
-    month = today.strftime("%m")
-    day = today.strftime("%d")
-
+def push_to_s3(content, provider, stage):
     s3 = boto3.resource('s3')
 
     if stage == "prod":
-        print("Updating latest/prices_v3.json in s3")
-        s3.Object(result_s3_bucket, 'latest/prices_v3.json').put(
+        print("Getting date for result path")
+
+        today = date.today()
+        year = today.strftime("%Y")
+        month = today.strftime("%m")
+        day = today.strftime("%d")
+
+        print(f"Updating latest/{provider}.json in s3")
+        s3.Object(result_s3_bucket, f'latest/{provider}.json').put(
             Body=(gzip.compress(bytes(json.dumps(content).encode('UTF-8')), 9)),
             ContentEncoding='gzip'
         )
-        print("latest.json updated")
-        print(f'Uploading prices to {year}/{month}/{day}/prices_v3.json')
-        s3.Object(result_s3_bucket, f'{year}/{month}/{day}/prices_v3.json').put(
+        print(f"latest/{provider}.json updated")
+        print(f'Uploading prices to {year}/{month}/{day}/{provider}.json')
+        s3.Object(result_s3_bucket, f'{year}/{month}/{day}/{provider}.json').put(
             Body=(gzip.compress(bytes(json.dumps(content).encode('UTF-8')), 9)),
             ContentEncoding='gzip'
         )
         print("Upload complete")
     elif stage == "dev":
-        print("Updating test/prices.json in s3")
-        s3.Object(result_s3_bucket, 'test/prices.json').put(
+        print(f"Updating test/{provider}.json in s3")
+        s3.Object(result_s3_bucket, f'test/{provider}.json').put(
             Body=(gzip.compress(bytes(json.dumps(content, indent=2).encode('UTF-8')), 9)),
             ContentEncoding='gzip'
         )
