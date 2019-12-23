@@ -282,23 +282,41 @@ def lambda_handler(event, context):
 
     for item in master_list:
         steam_aggregate = get_steam_price(item, steam_prices, week_to_day, month_to_week)
-        price = "null"  # stays this if case I
-        if steam_aggregate != "null":
-            price = float("{0:.2f}".format(steam_aggregate))
+        case = steam_aggregate["case"]  # only used to debug pricing in dev mode
+        price = "null"
+
+        print(steam_aggregate)
+        if steam_aggregate["price"] != "null":
+            price = float("{0:.2f}".format(steam_aggregate["price"]))
         elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and csmoney_prices[item]["price"] != 0:
-            price = float("{0:.2f}".format(float(csmoney_prices[item]["price"]) * st_csm * week_to_day))  # case F
+            price = float("{0:.2f}".format(float(csmoney_prices[item]["price"]) * st_csm * week_to_day))
+            case = "F"
         elif item in bitskins_prices and "price" in bitskins_prices[item] and bitskins_prices[item]["price"] != "null":
-            price = float("{0:.2f}".format(float(bitskins_prices[item]["price"]) * st_bit * week_to_day))  # case G
+            price = float("{0:.2f}".format(float(bitskins_prices[item]["price"]) * st_bit * week_to_day))
+            case = "G"
         elif item in own_prices:
-            price = own_prices[item]  # case H
+            price = own_prices[item]
+            case = "H"
 
         if "Doppler" in item:
             doppler = {}
             for phase in csmoney_prices[item]["doppler"]:
-                doppler[phase] = float("{0:.2f}".format(float(csmoney_prices[item]["doppler"][phase]) * st_csm))  # case I
+                doppler[phase] = float("{0:.2f}".format(float(csmoney_prices[item]["doppler"][phase]) * st_csm))
+            if stage == "dev":
+                csgotrader_prices[item] = {
+                    "price": price,
+                    "case": case,
+                    "doppler": doppler
+                }
+            else:
+                csgotrader_prices[item] = {
+                    "price": price,
+                    "doppler": doppler
+                }
+        elif stage == "dev":
             csgotrader_prices[item] = {
                 "price": price,
-                "doppler": doppler
+                "case": case
             }
         else:
             csgotrader_prices[item] = {"price": price}
@@ -397,19 +415,38 @@ def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
         if "safe_ts" in steam_prices[item] and "sold" in steam_prices[item]:
             if float(steam_prices[item]["sold"]["last_24h"]) >= 5.0:
                 if abs(1 - float(steam_prices[item]["safe_ts"]["last_24h"]) / float(steam_prices[item]["safe_ts"]["last_7d"])) <= 0.1:
-                    return steam_prices[item]["safe_ts"]["last_24h"]  # case A
+                    return {
+                        "price": steam_prices[item]["safe_ts"]["last_24h"],
+                        "case": "A"
+                    }
                 else:
-                    return float(steam_prices[item]["safe_ts"]["last_7d"]) * daily_trend  # case B
+                    return {
+                        "price": float(steam_prices[item]["safe_ts"]["last_7d"]) * daily_trend,
+                        "case": "B"
+                    }
             elif float(steam_prices[item]["safe_ts"]["last_7d"]) != 0.0 and float(steam_prices[item]["safe_ts"]["last_30d"]) != 0.0:
                 if abs(1 - float(steam_prices[item]["safe_ts"]["last_7d"]) / float(steam_prices[item]["safe_ts"]["last_30d"])) <= 0.1 \
                         and float(steam_prices[item]["sold"]["last_7d"]) >= 5.0:
-                    return float(steam_prices[item]["safe_ts"]["last_7d"]) * daily_trend  # case C
+                    return {
+                        "price": float(steam_prices[item]["safe_ts"]["last_7d"]) * daily_trend,
+                        "case": "C"
+                    }
                 else:
-                    return float(steam_prices[item]["safe_ts"]["last_30d"]) * weekly_trend * daily_trend  # case D
+                    return {
+                        "price": float(steam_prices[item]["safe_ts"]["last_30d"]) * weekly_trend * daily_trend,
+                        "case": "D"
+                    }
 
-        return float(steam_prices[item]["safe"]) * weekly_trend * daily_trend  # case E
+        return {
+            "price": float(steam_prices[item]["safe"]) * weekly_trend * daily_trend,
+            "case": "E"
+        }
     else:
-        return "null"
+        return {
+            "price": "null",
+            "case": "I"
+        }
+
 
 
 def add_to_master_list(master_list, name, to_log):
