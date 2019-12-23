@@ -680,13 +680,7 @@ function addDopplerPhase(item, dopplerInfo) {
 }
 
 function updatePrices() {
-    let headers = new Headers();
-    headers.append('Accept-Encoding', 'gzip');
-    let init = { method: 'GET',
-        headers: headers,
-        mode: 'cors',
-        cache: 'default' };
-
+    // TODO remove this after a while
     chrome.storage.local.get(['pricingProvider', 'pricingMode'], (result) => {
         if (result.pricingProvider === 'csgobackpack') {
             let newPiricingMode = 'last_24h';
@@ -696,25 +690,33 @@ function updatePrices() {
         }
     });
 
-    let request = new Request('https://prices.csgotrader.app/test/prices.json', init);
+    chrome.storage.local.get(['itemPricing', 'pricingProvider', 'pricingMode'], (result) => {
+        let provider = result.pricingProvider;
+        let mode = result.pricingMode;
+        let headers = new Headers();
+        headers.append('Accept-Encoding', 'gzip');
+        let init = { method: 'GET',
+            headers: headers,
+            mode: 'cors',
+            cache: 'default' };
 
-    fetch(request).then((response) => {
-        if (!response.ok) console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-        return response.json();
-    }).then((fullPricesJSON) => {
-        chrome.storage.local.get(['itemPricing', 'pricingProvider', 'pricingMode'], (result) => {
+        let request = new Request(`https://prices.csgotrader.app/test/${provider}.json`, init);
+        fetch(request).then((response) => {
+            if (!response.ok) console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+            return response.json();
+        }).then((pricesJSON) => {
             if(result.itemPricing) {
                 let prices = {};
-                const keys = Object.keys(fullPricesJSON);
+                const keys = Object.keys(pricesJSON);
 
-                if (result.pricingProvider === pricingProviders.steam.name || result.pricingProvider === pricingProviders.bitskins.name) {
-                    let pricingMode = result.pricingMode;
-                    if (result.pricingMode === pricingProviders.bitskins.pricing_modes.bitskins.name) pricingMode = 'price';
-                    else if (result.pricingMode === pricingProviders.bitskins.pricing_modes.instant_sale.name) pricingMode = 'instant_sale_price';
+                if (provider === pricingProviders.steam.name || provider === pricingProviders.bitskins.name) {
+                    let pricingMode = mode;
+                    if (mode === pricingProviders.bitskins.pricing_modes.bitskins.name) pricingMode = 'price';
+                    else if (mode === pricingProviders.bitskins.pricing_modes.instant_sale.name) pricingMode = 'instant_sale_price';
 
                     for (const key of keys) {
-                        if (fullPricesJSON[key][result.pricingProvider] !== 'null' && fullPricesJSON[key][result.pricingProvider][pricingMode] !== undefined) {
-                            prices[key] = {'price': fullPricesJSON[key][result.pricingProvider][pricingMode]};
+                        if (pricesJSON[key][pricingMode] !== undefined) {
+                            prices[key] = {'price': pricesJSON[key][pricingMode]};
                         }
                         else {
                             prices[key] = {'price': 'null'};
@@ -722,31 +724,28 @@ function updatePrices() {
                         }
                     }
                 }
-                else if (result.pricingProvider === pricingProviders.lootfarm.name || result.pricingProvider === pricingProviders.csgotm.name) {
+                else if (provider === pricingProviders.lootfarm.name || provider === pricingProviders.csgotm.name) {
                     for (const key of keys) {
-                        if (fullPricesJSON[key][result.pricingProvider] !== undefined) prices[key] = {'price': fullPricesJSON[key][result.pricingProvider]};
-                        else prices[key] = {'price': 'null'};
+                        prices[key] = {'price': pricesJSON[key]};
                     }
                 }
-                else if (result.pricingProvider === pricingProviders.csmoney.name || result.pricingProvider === pricingProviders.csgotrader.name) {
+                else if (provider === pricingProviders.csmoney.name || provider === pricingProviders.csgotrader.name) {
                     for (const key of keys) {
-                        if (fullPricesJSON[key][result.pricingProvider] !== undefined || 'null') {
-                            if (fullPricesJSON[key][result.pricingProvider]['doppler'] !== undefined) {
-                                prices[key] = {
-                                    price: fullPricesJSON[key][result.pricingProvider]['price'],
-                                    doppler: fullPricesJSON[key][result.pricingProvider]['doppler']
-                                };
-                            }
-                            else prices[key] = {price: fullPricesJSON[key][result.pricingProvider]['price']};
+                        if (pricesJSON[key]['doppler'] !== undefined) {
+                            prices[key] = {
+                                price: pricesJSON[key]['price'],
+                                doppler: pricesJSON[key]['doppler']
+                            };
                         }
-                        else prices[key] = {'price': 'null'};
+                        else prices[key] = {price: pricesJSON[key]['price']};
                     }
                 }
                 console.log(prices);
                 chrome.storage.local.set({prices: prices}, () => {});
             }
-        });
-    }).catch((err) => {console.log(err)});
+        }).catch((err) => {console.log(err)});
+
+    });
 }
 
 function updateExchangeRates() {
