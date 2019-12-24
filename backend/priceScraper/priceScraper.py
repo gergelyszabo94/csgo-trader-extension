@@ -290,13 +290,13 @@ def lambda_handler(event, context):
             price = float("{0:.2f}".format(steam_aggregate["price"]))
         elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and csmoney_prices[item]["price"] != 0:
             price = float("{0:.2f}".format(float(csmoney_prices[item]["price"]) * st_csm * week_to_day))
-            case = "E"
+            case = "F"
         elif item in bitskins_prices and "price" in bitskins_prices[item] and bitskins_prices[item]["price"] != "null":
             price = float("{0:.2f}".format(float(bitskins_prices[item]["price"]) * st_bit * week_to_day))
-            case = "F"
+            case = "G"
         elif item in own_prices:
             price = own_prices[item]
-            case = "G"
+            case = "H"
 
         if "Doppler" in item:
             doppler = {}
@@ -305,7 +305,7 @@ def lambda_handler(event, context):
             if stage == "dev":
                 csgotrader_prices[item] = {
                     "price": price,
-                    "case": "I",
+                    "case": case,
                     "doppler": doppler
                 }
             else:
@@ -437,10 +437,15 @@ def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
                         "case": "D"
                     }
 
-    return {
-        "price": "null",
-        "case": "H"
-    }
+        return {
+            "price": float(steam_prices[item]["safe"]) * weekly_trend * daily_trend,
+            "case": "E"
+        }
+    else:
+        return {
+            "price": "null",
+            "case": "I"
+        }
 
 
 

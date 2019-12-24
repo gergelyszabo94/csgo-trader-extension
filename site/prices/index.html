@@ -90,29 +90,32 @@
             <li>
                 <span class="orange">D,</span> When there is less than 5 sold in the past week or there is no weekly data at all the monthly average is taken after adjusted with market trends.
             </li>
+            <li>
+                <span class="orange">E,</span> If there is not monthly sales data it takes any price that it can find from the market.
+            </li>
         </ul>
         If there is no market sales data the algorithm proceeds to other providers
         <br>
         <ul>
             <li>
-                <span class="orange">E,</span> If there is pricing info on CS.MONEY it takes that price and adjusts with the average difference between CS.MONEY and market prices.
+                <span class="orange">F,</span> If there is pricing info on CS.MONEY it takes that price and adjusts with the average difference between CS.MONEY and market prices.
             </li>
             <li>
-                <span class="orange">F,</span> If there is no CS.MONEY price it tries taking the Bitskins price and adjusts with the average difference between Bitskins and market prices.
+                <span class="orange">G,</span> If there is no CS.MONEY price it tries taking the Bitskins price and adjusts with the average difference between Bitskins and market prices.
             </li>
             <li>
-                <span class="orange">G,</span> If there is no Bitskins price it takes a price from a database table where prices are set manually.
+                <span class="orange">H,</span> If there is no Bitskins price it takes a price from a database table where prices are set manually.
                 This is pretty much unused for now. I have built this functionality so I can add prices for new items when there is no data from the providers yet.
             </li>
             <li>
-                <span class="orange">H,</span> If all of the above doesn't happen then the extension does not set any price to the item.
+                <span class="orange">I,</span> If all of the above doesn't happen then the extension does not set any price to the item.
             </li>
         </ul>
         Special cases:
         <br>
         <ul>
             <li>
-                <span class="orange">I,</span> Doppler and Gamma doppler knives have special pricing,
+                <span class="orange">J,</span> Doppler and Gamma doppler knives have special pricing,
                 if there is price info for the given phase for the knife on CS.MONEY, it takes that price and adjusts with the average difference between CS.MONEY and market prices.
                 If there isn't it falls back to the price calculated by the algorithm above.
             </li>
