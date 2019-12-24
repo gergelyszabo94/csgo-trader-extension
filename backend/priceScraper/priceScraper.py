@@ -15,7 +15,10 @@ own_prices_table = os.environ['OWN_PRICES_TABLE']
 steam_apis_key = os.environ['STEAM_APIS_COM_API_KEY']
 
 special_phases = ["Ruby", "Sapphire", "Black Pearl", "Emerald"]
-
+knives = ["Bayonet", "Bowie Knife", "Butterfly Knife", "Falchion Knife", "Flip Knife",
+          "Gut Knife", "Huntsman Knife", "Karambit", "M9 Bayonet", "Navaja Knife",
+          "Shadow Daggers", "Stiletto Knife", "Talon Knife", "Ursus Knife", "Nomad Knife",
+          "Skeleton Knife", "Survival Knife", "Paracord Knife", "Classic Knife"]
 
 def lambda_handler(event, context):
     arn_split = context.invoked_function_arn.split(':')
@@ -286,17 +289,17 @@ def lambda_handler(event, context):
         price = "null"
 
         print(steam_aggregate)
-        if steam_aggregate["price"] != "null":
+        if steam_aggregate["price"] != "null" and not is_mispriced_knife(item, steam_aggregate["price"]):
             price = float("{0:.2f}".format(steam_aggregate["price"]))
         elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and csmoney_prices[item]["price"] != 0:
             price = float("{0:.2f}".format(float(csmoney_prices[item]["price"]) * st_csm * week_to_day))
-            case = "F"
+            case = "E"
         elif item in bitskins_prices and "price" in bitskins_prices[item] and bitskins_prices[item]["price"] != "null":
             price = float("{0:.2f}".format(float(bitskins_prices[item]["price"]) * st_bit * week_to_day))
-            case = "G"
+            case = "F"
         elif item in own_prices:
             price = own_prices[item]
-            case = "H"
+            case = "G"
 
         if "Doppler" in item:
             doppler = {}
@@ -305,7 +308,7 @@ def lambda_handler(event, context):
             if stage == "dev":
                 csgotrader_prices[item] = {
                     "price": price,
-                    "case": case,
+                    "case": "I",
                     "doppler": doppler
                 }
             else:
@@ -437,16 +440,10 @@ def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
                         "case": "D"
                     }
 
-        return {
-            "price": float(steam_prices[item]["safe"]) * weekly_trend * daily_trend,
-            "case": "E"
-        }
-    else:
-        return {
-            "price": "null",
-            "case": "I"
-        }
-
+    return {
+        "price": "null",
+        "case": "H"
+    }
 
 
 def add_to_master_list(master_list, name, to_log):
@@ -455,3 +452,15 @@ def add_to_master_list(master_list, name, to_log):
         if to_log:
             print(name + " was not seen before, adding it to master list")
 
+
+def is_mispriced_knife(item_name, price):
+    contains = False
+
+    for knife in knives:
+        if knife in item_name:
+            contains = True
+
+    if contains and price < 50:
+        return True
+    else:
+        return False
