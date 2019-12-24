@@ -18,67 +18,67 @@ let floatQueue = {
 };
 
 function getPattern(name, paint_seed) {
-    if (/ Marble Fade /i.test(name)) {
+    if (name.includes(' Marble Fade ')) {
         let pattern = null;
-        if (/Karambit/i.test(name)) pattern = patterns.marble_fades.karambit[paint_seed];
-        else if (/Butterfly/i.test(name)) pattern = patterns.marble_fades.butterfly[paint_seed];
-        else if (/M9 Bayonet/i.test(name)) pattern = patterns.marble_fades.m9[paint_seed];
-        else if (/Bayonet/i.test(name)) pattern = patterns.marble_fades.bayonet[paint_seed];
-        else if (/Talon/i.test(name)) pattern = patterns.marble_fades.talon[paint_seed];
-        else if (/Stiletto/i.test(name)) pattern = patterns.marble_fades.stiletto[paint_seed];
-        else if (/Navaja/i.test(name)) pattern = patterns.marble_fades.navaja[paint_seed];
-        else if (/Ursus/i.test(name)) pattern = patterns.marble_fades.ursus[paint_seed];
-        else if (/Huntsman/i.test(name)) pattern = patterns.marble_fades.huntsman[paint_seed];
-        else if (/Flip/i.test(name)) pattern = patterns.marble_fades.flip[paint_seed];
-        else if (/Bowie/i.test(name)) pattern = patterns.marble_fades.bowie[paint_seed];
-        else if (/Daggers/i.test(name)) pattern = patterns.marble_fades.daggers[paint_seed];
-        else if (/Gut/i.test(name)) pattern = patterns.marble_fades.gut[paint_seed];
-        else if (/Falchion/i.test(name)) pattern = patterns.marble_fades.falchion[paint_seed];
+        if (name.includes('Karambit')) pattern = patterns.marble_fades.karambit[paint_seed];
+        else if (name.includes('Butterfly')) pattern = patterns.marble_fades.butterfly[paint_seed];
+        else if (name.includes('M9 Bayonet')) pattern = patterns.marble_fades.m9[paint_seed];
+        else if (name.includes('Bayonet')) pattern = patterns.marble_fades.bayonet[paint_seed];
+        else if (name.includes('Talon')) pattern = patterns.marble_fades.talon[paint_seed];
+        else if (name.includes('Stiletto')) pattern = patterns.marble_fades.stiletto[paint_seed];
+        else if (name.includes('Navaja')) pattern = patterns.marble_fades.navaja[paint_seed];
+        else if (name.includes('Ursus')) pattern = patterns.marble_fades.ursus[paint_seed];
+        else if (name.includes('Huntsman')) pattern = patterns.marble_fades.huntsman[paint_seed];
+        else if (name.includes('Flip')) pattern = patterns.marble_fades.flip[paint_seed];
+        else if (name.includes('Bowie')) pattern = patterns.marble_fades.bowie[paint_seed];
+        else if (name.includes('Daggers')) pattern = patterns.marble_fades.daggers[paint_seed];
+        else if (name.includes('Gut')) pattern = patterns.marble_fades.gut[paint_seed];
+        else if (name.includes('Falchion')) pattern = patterns.marble_fades.falchion[paint_seed];
         else return null;
 
         if (pattern !== null && pattern !== undefined) return {type: 'marble_fade', value: pattern};
         else return null;
     }
-    else if (/ Fade /i.test(name)){
+    else if (name.includes(' Fade ')) {
         let percentage = null;
-        if (/Karambit/i.test(name)) percentage = patterns.fades.karambit[paint_seed];
-        else if (/Butterfly/i.test(name)) percentage = patterns.fades.butterfly[paint_seed];
-        else if (/M9 Bayonet/i.test(name)) percentage = patterns.fades.m9[paint_seed];
-        else if (/Bayonet/i.test(name)) percentage = patterns.fades.bayonet[paint_seed];
-        else if (/Talon/i.test(name)) percentage = patterns.fades.talon[paint_seed];
-        else if (/Stiletto/i.test(name)) percentage = patterns.fades.stiletto[paint_seed];
-        else if (/Navaja/i.test(name)) percentage = patterns.fades.navaja[paint_seed];
-        else if (/Ursus/i.test(name)) percentage = patterns.fades.ursus[paint_seed];
-        else if (/Huntsman/i.test(name)) percentage = patterns.fades.huntsman[paint_seed];
-        else if (/Flip/i.test(name)) percentage = patterns.fades.flip[paint_seed];
-        else if (/Bowie/i.test(name)) percentage = patterns.fades.bowie[paint_seed];
-        else if (/Daggers/i.test(name)) percentage = patterns.fades.daggers[paint_seed];
-        else if (/Gut/i.test(name)) percentage = patterns.fades.gut[paint_seed];
-        else if (/Falchion/i.test(name)) percentage = patterns.fades.falchion[paint_seed];
-        else if (/Glock/i.test(name)) percentage = patterns.fades.glock[paint_seed];
+        if (name.includes('Karambit')) percentage = patterns.fades.karambit[paint_seed];
+        else if (name.includes('Butterfly')) percentage = patterns.fades.butterfly[paint_seed];
+        else if (name.includes('M9 Bayonet')) percentage = patterns.fades.m9[paint_seed];
+        else if (name.includes('Bayonet')) percentage = patterns.fades.bayonet[paint_seed];
+        else if (name.includes('Talon')) percentage = patterns.fades.talon[paint_seed];
+        else if (name.includes('Stiletto')) percentage = patterns.fades.stiletto[paint_seed];
+        else if (name.includes('Navaja')) percentage = patterns.fades.navaja[paint_seed];
+        else if (name.includes('Ursus')) percentage = patterns.fades.ursus[paint_seed];
+        else if (name.includes('Huntsman')) percentage = patterns.fades.huntsman[paint_seed];
+        else if (name.includes('Flip')) percentage = patterns.fades.flip[paint_seed];
+        else if (name.includes('Bowie')) percentage = patterns.fades.bowie[paint_seed];
+        else if (name.includes('Daggers')) percentage = patterns.fades.daggers[paint_seed];
+        else if (name.includes('Gut')) percentage = patterns.fades.gut[paint_seed];
+        else if (name.includes('Falchion')) percentage = patterns.fades.falchion[paint_seed];
+        else if (name.includes('Glock')) percentage = patterns.fades.glock[paint_seed];
         else return null;
 
-        if(percentage !== null && percentage !== undefined) return {type: 'fade', value: `${percentage}% Fade`};
+        if (percentage !== null && percentage !== undefined) return {type: 'fade', value: `${percentage}% Fade`};
         else return null;
     }
-    else if (/ Case Hardened/i.test(name)) {
+    else if (name.includes(' Case Hardened')) {
         let pattern = null;
-        if (/AK-47/i.test(name)) pattern = patterns.case_hardeneds.ak[paint_seed];
-        else if (/Butterfly/i.test(name)) pattern = patterns.case_hardeneds.butterfly[paint_seed];
-        else if (/M9 Bayonet/i.test(name)) pattern = patterns.case_hardeneds.m9[paint_seed];
-        else if (/Bayonet/i.test(name)) pattern = patterns.case_hardeneds.bayonet[paint_seed];
-        else if (/Talon/i.test(name)) pattern = patterns.case_hardeneds.talon[paint_seed];
-        else if (/Stiletto/i.test(name)) pattern = patterns.case_hardeneds.stiletto[paint_seed];
-        else if (/Navaja/i.test(name)) pattern = patterns.case_hardeneds.navaja[paint_seed];
-        else if (/Ursus/i.test(name)) pattern = patterns.case_hardeneds.ursus[paint_seed];
-        else if (/Huntsman/i.test(name)) pattern = patterns.case_hardeneds.huntsman[paint_seed];
-        else if (/Flip/i.test(name)) pattern = patterns.case_hardeneds.flip[paint_seed];
-        else if (/Bowie/i.test(name)) pattern = patterns.case_hardeneds.bowie[paint_seed];
-        else if (/Daggers/i.test(name)) pattern = patterns.case_hardeneds.daggers[paint_seed];
-        else if (/Gut/i.test(name)) pattern = patterns.case_hardeneds.gut[paint_seed];
-        else if (/Falchion/i.test(name)) pattern = patterns.case_hardeneds.falchion[paint_seed];
-        else if (/Karambit/i.test(name)) pattern = patterns.case_hardeneds.karambit[paint_seed];
-        else if (/Five-SeveN/i.test(name)) pattern = patterns.case_hardeneds.five_seven[paint_seed];
+        if (name.includes('AK-47'))pattern = patterns.case_hardeneds.ak[paint_seed];
+        else if (name.includes('Butterfly')) pattern = patterns.case_hardeneds.butterfly[paint_seed];
+        else if (name.includes('M9 Bayonet')) pattern = patterns.case_hardeneds.m9[paint_seed];
+        else if (name.includes('Bayonet')) pattern = patterns.case_hardeneds.bayonet[paint_seed];
+        else if (name.includes('Talon')) pattern = patterns.case_hardeneds.talon[paint_seed];
+        else if (name.includes('Stiletto')) pattern = patterns.case_hardeneds.stiletto[paint_seed];
+        else if (name.includes('Navaja')) pattern = patterns.case_hardeneds.navaja[paint_seed];
+        else if (name.includes('Ursus')) pattern = patterns.case_hardeneds.ursus[paint_seed];
+        else if (name.includes('Huntsman')) pattern = patterns.case_hardeneds.huntsman[paint_seed];
+        else if (name.includes('Flip')) pattern = patterns.case_hardeneds.flip[paint_seed];
+        else if (name.includes('Bowie')) pattern = patterns.case_hardeneds.bowie[paint_seed];
+        else if (name.includes('Daggers')) pattern = patterns.case_hardeneds.daggers[paint_seed];
+        else if (name.includes('Gut')) pattern = patterns.case_hardeneds.gut[paint_seed];
+        else if (name.includes('Falchion')) pattern = patterns.case_hardeneds.falchion[paint_seed];
+        else if (name.includes('Karambit')) pattern = patterns.case_hardeneds.karambit[paint_seed];
+        else if (name.includes('/Five-SeveN')) pattern = patterns.case_hardeneds.five_seven[paint_seed];
         else return null;
 
         if (pattern !== null && pattern !== undefined) return {type: 'case_hardened', value: pattern};
@@ -553,7 +553,7 @@ function parseStickerInfo(descriptions, linkType) {
         let link = linkType === 'search' ? 'https://steamcommunity.com/market/search?q=' : 'https://steamcommunity.com/market/listings/730/Sticker%20%7C%20';
 
         descriptions.forEach((description) => {
-            if (/sticker_info/.test(description.value)) {
+            if (description.value.includes('sticker_info')) {
                 let names = description.value.split('><br>')[1].split(': ')[1].split('</center>')[0].split(', ');
                 names = handleStickerNamesWithCommas(names);
                 let iconURLs = description.value.split('src="');
