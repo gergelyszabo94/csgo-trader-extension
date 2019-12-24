@@ -15,7 +15,10 @@ own_prices_table = os.environ['OWN_PRICES_TABLE']
 steam_apis_key = os.environ['STEAM_APIS_COM_API_KEY']
 
 special_phases = ["Ruby", "Sapphire", "Black Pearl", "Emerald"]
-
+knives = ["Bayonet", "Bowie Knife", "Butterfly Knife", "Falchion Knife", "Flip Knife",
+          "Gut Knife", "Huntsman Knife", "Karambit", "M9 Bayonet", "Navaja Knife",
+          "Shadow Daggers", "Stiletto Knife", "Talon Knife", "Ursus Knife", "Nomad Knife",
+          "Skeleton Knife", "Survival Knife", "Paracord Knife", "Classic Knife"]
 
 def lambda_handler(event, context):
     arn_split = context.invoked_function_arn.split(':')
@@ -286,7 +289,7 @@ def lambda_handler(event, context):
         price = "null"
 
         print(steam_aggregate)
-        if steam_aggregate["price"] != "null":
+        if steam_aggregate["price"] != "null" and not is_mispriced_knife(item, steam_aggregate["price"]):
             price = float("{0:.2f}".format(steam_aggregate["price"]))
         elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and csmoney_prices[item]["price"] != 0:
             price = float("{0:.2f}".format(float(csmoney_prices[item]["price"]) * st_csm * week_to_day))
@@ -443,10 +446,21 @@ def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
     }
 
 
-
 def add_to_master_list(master_list, name, to_log):
     if name not in master_list:
         master_list.append(name)
         if to_log:
             print(name + " was not seen before, adding it to master list")
 
+
+def is_mispriced_knife(item_name, price):
+    contains = False
+
+    for knife in knives:
+        if knife in item_name:
+            contains = True
+
+    if contains and price < 50:
+        return True
+    else:
+        return False
