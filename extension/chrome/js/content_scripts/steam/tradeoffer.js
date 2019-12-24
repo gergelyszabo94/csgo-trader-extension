@@ -84,9 +84,9 @@ function buildInventoryStructure(inventory) {
         let nametag = undefined;
         let inspectLink = null;
         let dopplerInfo = (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon) : null;
-        let isStatrack = /StatTrak™/.test(item.name);
-        let isSouvenir = /Souvenir/.test(item.name);
-        let starInName = /★/.test(item.name);
+        let isStatrack = item.name.includes('StatTrak™');
+        let isSouvenir = item.name.includes('Souvenir');
+        let starInName = item.name.includes('★');
         let type = getType(item.tags);
 
         try {if (item.fraudwarnings !== undefined || item.fraudwarnings[0] !== undefined) nametag = item.fraudwarnings[0].split('Name Tag: \'\'')[1].split('\'\'')[0]}
