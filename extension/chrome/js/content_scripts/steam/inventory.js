@@ -436,7 +436,7 @@ function addFunctionBar(){
                         </table>
                         <span>
                             <span style="font-weight: bold">Total:</span> To list <span id="numberOfItemsToSell">0</span> item(s) worth <span id="saleTotal">0</span>
-                            and receive <span id="saleTotalAfterFees">0</span> after fees <span id="retryStartingAt" class="hidden">Retry Loading Starting At Price</span> 
+                            and receive <span id="saleTotalAfterFees">0</span> after fees <span id="retryStartingAt" class="hidden clickable">Retry Loading Starting At Price</span> 
                             <span id="sellButton" class="clickable">Start Mass Listing</span>
                         </span>
                         <div id="massSellError" class="hidden not_tradable"></div>
