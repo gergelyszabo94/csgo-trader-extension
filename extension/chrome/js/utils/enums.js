@@ -19815,7 +19815,7 @@ const currencies = {
         sign: "₩"
     },
     PLN:{
-        short: "KRW",
+        short: "PLN",
         long: "Polish złoty",
         sign: "zł"
     },
