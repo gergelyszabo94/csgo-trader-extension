@@ -122,8 +122,8 @@
         <h2>Architecture - How the prices are scrapped, processed, stored and served</h2>
         <p>
             It all happens on AWS. There is a python script that is responsible for price scraping and another one that updates exchange rates.
-            The <a href="https://github.com/bladegery/csgo-trader-extension/blob/master/backend/priceScraper/priceScraper.py" target="_blank">price scrapper script</a> runs daily at 3AM UTC.
-            The <a href="https://github.com/bladegery/csgo-trader-extension/blob/master/backend/exchangeRates/exchangeRates.py" target="_blank">exchange rates</a> update every 3 hours.
+            The <a href="https://github.com/gergelyszabo94/csgo-trader-extension/blob/master/backend/priceScraper/priceScraper.py" target="_blank">price scrapper script</a> runs daily at 3AM UTC.
+            The <a href="https://github.com/gergelyszabo94/csgo-trader-extension/blob/master/backend/exchangeRates/exchangeRates.py" target="_blank">exchange rates</a> update every 3 hours.
             Both of these Lambda functions are triggered by CloudWatch events and are executed in a Python 3.7 environment.
             The pricing script scrapes prices from steamapis.com, CS.MONEY, BITSKINS.COM, LOOT.FARM and CSGO.TM then the extension calculates it's own pricing with the algorithm described above.
             The pricing data is stored in an S3 Bucket and made available and distributed around the world under the prices.csgotrader.app domain by Cloudfront.
