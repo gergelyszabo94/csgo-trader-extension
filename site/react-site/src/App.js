@@ -1,9 +1,15 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
+import Home from './Home/Home'
+import Changelog from './Changelog/Changelog'
+import ReleaseNotes from './ReleaseNotes/ReleaseNotes'
+import SteamGroup from './SteamGroup/SteamGroup'
+import Prices from './Prices/Prices'
+
 import './App.css';
 
-function App() {
+const App = () => {
   return (
     <Router>
         <div>
@@ -46,26 +52,6 @@ function App() {
         </div>
     </Router>
   );
-}
-
-function Home() {
-    return <h2>Home</h2>;
-}
-
-function Changelog() {
-    return <h2>Changelog</h2>;
-}
-
-function ReleaseNotes() {
-    return <h2>Release-Notes</h2>;
-}
-
-function SteamGroup() {
-    return <h2>Steam Group</h2>;
-}
-
-function Prices() {
-    return <h2>Prices</h2>;
-}
+};
 
 export default App;
