@@ -1,11 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
-import Home from './Home/Home'
-import Changelog from './Changelog/Changelog'
-import ReleaseNotes from './ReleaseNotes/ReleaseNotes'
-import SteamGroup from './SteamGroup/SteamGroup'
-import Prices from './Prices/Prices'
+import Home from './containers/Home/Home'
+import Changelog from './containers/Changelog/Changelog'
+import ReleaseNotes from './containers/ReleaseNotes/ReleaseNotes'
+import SteamGroup from './containers/SteamGroup/SteamGroup'
+import Prices from './containers/Prices/Prices'
 
 import './App.css';
 
