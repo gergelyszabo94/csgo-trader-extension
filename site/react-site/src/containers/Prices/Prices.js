@@ -1,6 +1,7 @@
 import React from "react";
 
-const prices = () => {
+const prices = (props) => {
+    props.setActiveNav('/prices');
     return  <h2>Prices</h2>;
 };
 
