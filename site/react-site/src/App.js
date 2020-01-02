@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import ReactGA from 'react-ga';
 
@@ -14,42 +14,34 @@ import './App.css';
 ReactGA.initialize('UA-48407333-4');
 
 const App = () => {
-    const [activeNav, setActiveNav] = useState('');
-
+    console.log('app render');
     return (
         <Router>
             <div>
-                <Navigation
-                    activeNav={activeNav}
-                />
+                <Navigation/>
                 <Switch>
+                    <Route exact path="/">
+                        <Home
+                            gAnalytic={ReactGA}
+                        />
+                    </Route>
                     <Route path="/changelog">
                         <Changelog
-                            setActiveNav={setActiveNav}
                             gAnalytic={ReactGA}
                         />
                     </Route>
                     <Route path="/release-notes">
                         <ReleaseNotes
-                            setActiveNav={setActiveNav}
                             gAnalytic={ReactGA}
                         />
                     </Route>
                     <Route path="/group">
                         <SteamGroup
-                            setActiveNav={setActiveNav}
                             gAnalytic={ReactGA}
                         />
                     </Route>
                     <Route path="/prices">
                         <Prices
-                            setActiveNav={setActiveNav}
-                            gAnalytic={ReactGA}
-                        />
-                    </Route>
-                    <Route path="/">
-                        <Home
-                            setActiveNav={setActiveNav}
                             gAnalytic={ReactGA}
                         />
                     </Route>

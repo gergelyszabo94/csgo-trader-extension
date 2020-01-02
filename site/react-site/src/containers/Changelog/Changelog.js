@@ -4,7 +4,6 @@ import Head from '../../components/Head/Head'
 
 const changelog = (props) => {
     props.gAnalytic.pageview(window.location.pathname + window.location.search);
-    props.setActiveNav(window.location.pathname);
 
     return  (
         <React.Fragment>

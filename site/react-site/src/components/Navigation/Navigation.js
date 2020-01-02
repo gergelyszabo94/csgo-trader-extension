@@ -1,10 +1,9 @@
 import React from "react";
-// import {Link} from "react-router-dom";
+import {NavLink} from "react-router-dom";
 
-import NavItem from '../NavigationItem/NavigationItem'
 import './Navigation.css';
 
-const navigation = (props) => {
+const navigation = () => {
     const navItems = [
         {
             path: '/',
@@ -35,12 +34,10 @@ const navigation = (props) => {
                 {
                     navItems.map(navItem => {
                         return (
-                            <NavItem
-                                path={navItem.path}
-                                name={navItem.name}
-                                active={props.activeNav === navItem.path}
-                                key={navItem.path}
-                            />)
+                            <NavLink to={navItem.path} exact={true} activeClassName='active'>
+                                <li>{navItem.name}</li>
+                            </NavLink>
+                           )
                     })
                 }
             </ul>
