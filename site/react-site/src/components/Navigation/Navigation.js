@@ -34,7 +34,7 @@ const navigation = () => {
                 {
                     navItems.map(navItem => {
                         return (
-                            <NavLink to={navItem.path} exact={true} activeClassName='active'>
+                            <NavLink to={navItem.path} exact={true} activeClassName='active' key={navItem.path}>
                                 <li>{navItem.name}</li>
                             </NavLink>
                            )

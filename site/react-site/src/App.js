@@ -14,7 +14,6 @@ import './App.css';
 ReactGA.initialize('UA-48407333-4');
 
 const App = () => {
-    console.log('app render');
     return (
         <Router>
             <div>
