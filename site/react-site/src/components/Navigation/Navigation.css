@@ -1,3 +1,23 @@
-.active {
-    font-weight: bold;
+.navbar.navbar-expand-lg.navbar-dark.bg-dark {
+    background-color: #23272b !important;
+}
+
+.navlogo {
+    margin-right: 10px;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: darkorange;
+}
+
+.navbar-dark .navbar-nav .nav-link.active {
+    color: rgb(255, 215, 0);
+}
+
+.navbar-dark .navbar-brand {
+    color: darkorange;
+}
+
+.navbar-dark .navbar-brand.active {
+    color: rgb(255, 215, 0);
 }

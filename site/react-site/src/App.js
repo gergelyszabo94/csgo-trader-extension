@@ -1,3 +1,6 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
+
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import ReactGA from 'react-ga';
@@ -8,8 +11,6 @@ import Changelog from './containers/Changelog/Changelog';
 import ReleaseNotes from './containers/ReleaseNotes/ReleaseNotes';
 import SteamGroup from './containers/SteamGroup/SteamGroup';
 import Prices from './containers/Prices/Prices';
-
-import './App.css';
 
 ReactGA.initialize('UA-48407333-4');
 
