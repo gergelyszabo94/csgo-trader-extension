@@ -38,6 +38,6 @@ h1 {
 
 .buildingBlock {
   background-color: #23272b;
-  margin: 1rem;
   padding: 1rem;
+  margin: 1rem auto;
 }
