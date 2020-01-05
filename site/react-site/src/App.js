@@ -11,6 +11,7 @@ import Changelog from './containers/Changelog/Changelog';
 import ReleaseNotes from './containers/ReleaseNotes/ReleaseNotes';
 import SteamGroup from './containers/SteamGroup/SteamGroup';
 import Prices from './containers/Prices/Prices';
+import Privacy from './containers/Privacy/Privacy';
 
 ReactGA.initialize('UA-48407333-4');
 
@@ -42,6 +43,11 @@ const App = () => {
                     </Route>
                     <Route path="/prices">
                         <Prices
+                            gAnalytic={ReactGA}
+                        />
+                    </Route>
+                    <Route path="/privacy">
+                        <Privacy
                             gAnalytic={ReactGA}
                         />
                     </Route>
