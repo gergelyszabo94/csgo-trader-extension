@@ -1,6 +1,6 @@
 {
-  "name": "react-site",
-  "version": "0.1.0",
+  "name": "csgotrader.app-site",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
@@ -18,9 +18,9 @@
   },
   "scripts": {
     "start": "node_modules/.bin/react-scripts start",
-    "build": "/node_modules/.bin/react-scripts build",
-    "test": "/node_modules/.bin/react-scripts test",
-    "eject": "/node_modules/.bin/react-scripts eject"
+    "build": "node_modules/.bin/react-scripts build",
+    "test": "node_modules/.bin/react-scripts test",
+    "eject": "node_modules/.bin/react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
