@@ -50,3 +50,7 @@ h1 {
   height: auto;
   max-width: 100%;
 }
+
+.orange {
+  color: darkorange;
+}

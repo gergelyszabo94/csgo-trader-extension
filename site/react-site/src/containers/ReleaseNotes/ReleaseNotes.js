@@ -1,8 +1,8 @@
 import React, {Fragment} from 'react';
-import { Container } from 'react-bootstrap'
+import { Container } from 'react-bootstrap';
 
-import Head from '../../components/Head/Head'
-import NewTabLink from '../../components/NewTabLink/NewTabLink'
+import Head from '../../components/Head/Head';
+import NewTabLink from '../../components/NewTabLink/NewTabLink';
 
 const releaseNotes = (props) => {
     props.gAnalytic.pageview(window.location.pathname + window.location.search);
