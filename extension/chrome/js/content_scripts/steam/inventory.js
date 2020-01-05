@@ -639,7 +639,7 @@ function generateItemsList(){
         let item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
         let price = (showPrice && item.price !== null) ? ` ${delimiter} ${item.price.display}` : '';
         let priceCSV = (showPrice && item.price !== null) ? `,${item.price.display}` : '';
-        let exterior = item.exterior !== undefined ? item.exterior[exteriorType] : '';
+        let exterior = (item.exterior !== undefined && item.exterior !== null) ? item.exterior[exteriorType] : '';
         let tradableAt = new Date(item.tradability).toString().split('GMT')[0];
         let tradability = (showTradability && tradableAt !== 'Invalid Date') ? `${delimiter} ${tradableAt}` : '';
         let tradabilityCSV = (showTradability && tradableAt !== 'Invalid Date') ? `,${tradableAt}` : '';
