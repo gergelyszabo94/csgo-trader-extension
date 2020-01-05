@@ -2,7 +2,7 @@ import React, {Fragment} from "react";
 import { Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-import Head from '../../components/Head/Head'
+import Head from '../../components/Head/Head';
 import NewTabLink from "../../components/NewTabLink/NewTabLink";
 
 const changelog = (props) => {
