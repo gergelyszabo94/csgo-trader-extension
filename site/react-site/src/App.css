@@ -41,3 +41,12 @@ h1 {
   padding: 1rem;
   margin: 1rem auto;
 }
+
+.showcase {
+  margin: 30px auto;
+}
+
+.showcaseImage {
+  height: auto;
+  max-width: 100%;
+}
