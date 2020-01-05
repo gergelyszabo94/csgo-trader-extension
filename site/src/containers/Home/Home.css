@@ -1,18 +1,9 @@
-.showCaseImage{
-    width: 100%;
-}
-
-@media (min-width: 1280px){
-    .showCaseImage{
-        width: 1280px;
-    }
-}
-
 .video-container {
     position: relative;
     padding-bottom: 56.25%; /* 16:9 */
     height: 0;
 }
+
 .video-container iframe {
     position: absolute;
     top: 0;
