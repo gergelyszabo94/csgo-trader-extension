@@ -253,9 +253,13 @@ def lambda_handler(event, context):
             weekly = float(steam_prices[item]["safe_ts"]["last_7d"])
             monthly = float(steam_prices[item]["safe_ts"]["last_30d"])
             if (daily != 0 and weekly != 0 and monthly != 0) and (daily > 0.1 and weekly > 0.1 and monthly > 0.1):
-                week_to_day += (daily / weekly)
-                month_to_week += (weekly / monthly)
-                count += 1
+                wtd_ratio = daily / weekly
+                mtw_ratio = weekly / monthly
+
+                if 0 < wtd_ratio < 2 and 0 < mtw_ratio < 2:
+                    week_to_day += wtd_ratio
+                    month_to_week += mtw_ratio
+                    count += 1
     week_to_day = week_to_day / count
     month_to_week = month_to_week / count
     print("Market trends: WtD: " + str(week_to_day) + " MtW: " + str(month_to_week))
@@ -273,9 +277,13 @@ def lambda_handler(event, context):
             bit = float(bitskins_prices[item]["price"])
             csm = float(csmoney_prices[item]["price"])
             if (st_weekly != 0 and bit != 0 and csm != 0) and (st_weekly > 0.1 and bit > 0.1 and csm > 0.1):
-                st_bit += (st_weekly / bit)
-                st_csm += (st_weekly / csm)
-                count += 1
+                st_bit_ratio = st_weekly / bit
+                st_csm_ratio = st_weekly / csm
+
+                if 0 < st_bit_ratio < 2 and 0 < st_csm_ratio < 2:
+                    st_bit += st_bit_ratio
+                    st_csm += st_csm_ratio
+                    count += 1
     st_bit = st_bit / count
     st_csm = st_csm / count
     print("Steam:Bitskins: " + str(st_bit) + " Steam:Csmoney:  " + str(st_csm))
@@ -288,7 +296,6 @@ def lambda_handler(event, context):
         case = steam_aggregate["case"]  # only used to debug pricing in dev mode
         price = "null"
 
-        print(steam_aggregate)
         if steam_aggregate["price"] != "null" and not is_mispriced_knife(item, steam_aggregate["price"]):
             price = float("{0:.2f}".format(steam_aggregate["price"]))
         elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and csmoney_prices[item]["price"] != 0:
