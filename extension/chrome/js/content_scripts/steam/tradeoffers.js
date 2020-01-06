@@ -154,12 +154,15 @@ function addTotals(offers, items){
             let offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
             if (isOfferActive(offerElement)) {
                 activeOfferCount++;
-                let primaryHeader = offerElement.querySelector('.tradeoffer_items.primary').querySelector('.tradeoffer_items_header');
-                primaryHeader.innerText += ` ${prettyPrintPrice(result.currency, (theirItemsTotal).toFixed(2))}`;
-                theirIncludesItemWIthNoPrice ? primaryHeader.innerText += ' - includes items with no price' : null;
-                let secondaryHeader = offerElement.querySelector('.tradeoffer_items.secondary').querySelector('.tradeoffer_items_header');
-                secondaryHeader.innerText += ` ${prettyPrintPrice(result.currency, (yourItemsTotal).toFixed(2))}`;
-                yourIncludesItemWIthNoPrice ? secondaryHeader.innerText += ' - includes items with no price' : null;
+                const primaryHeader = offerElement.querySelector('.tradeoffer_items.primary').querySelector('.tradeoffer_items_header');
+                const secondaryHeader = offerElement.querySelector('.tradeoffer_items.secondary').querySelector('.tradeoffer_items_header');
+                const theirHeader = activePage === 'incoming_offers' ? primaryHeader : secondaryHeader;
+                const yourHeader = activePage === 'incoming_offers' ? secondaryHeader : primaryHeader;
+
+                theirHeader.innerText += ` ${prettyPrintPrice(result.currency, (theirItemsTotal).toFixed(2))}`;
+                theirIncludesItemWIthNoPrice ? theirHeader.innerText += ' - includes items with no price' : null;
+                yourHeader.innerText += ` ${prettyPrintPrice(result.currency, (yourItemsTotal).toFixed(2))}`;
+                yourIncludesItemWIthNoPrice ? yourHeader.innerText += ' - includes items with no price' : null;
 
                 let profitOrLoss = theirItemsTotal - yourItemsTotal;
                 let PLPercentage = theirItemsTotal / yourItemsTotal;
