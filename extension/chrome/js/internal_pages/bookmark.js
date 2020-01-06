@@ -19,7 +19,7 @@ chrome.storage.local.get('bookmarks', (result) => {
             //let notifOptionsVisibility = element.notify ? 'block' : 'none';
             let visible = element.notify ? '' : 'hidden';
 
-            let exterior = (element.itemInfo.exterior !== undefined) ?  element.itemInfo.exterior.localized_name : '';
+            let exterior = (element.itemInfo.exterior !== undefined && element.itemInfo.exterior !== null) ?  element.itemInfo.exterior.localized_name : '';
             let bookmark = `<div class="buildingBlock">
          <div class="row">
             <div class="col-5">
