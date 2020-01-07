@@ -902,13 +902,20 @@ function doTheSorting(items, itemElements, method, pages, type) {
     if (type === 'offer' || type === 'inventory') {
         itemElements.reverse();
 
-        let numberOfItemsPerPage = type === 'offer' ? 16 : 25;
+        const numberOfItemsPerPage = type === 'offer' ? 16 : 25;
 
         pages.forEach((page) => {
             page.innerHTML = '';
+
             for ( let i = 0; i < numberOfItemsPerPage ; i++) {
-                let item = itemElements.pop();
+                const item = itemElements.pop();
+
                 if (item !== undefined) page.appendChild(item.parentElement);
+                else {
+                    const emptySlot = document.createElement('div');
+                    emptySlot.classList.add('itemHolder', 'disabled');
+                    page.appendChild(emptySlot);
+                }
             }
         });
     }

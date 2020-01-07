@@ -184,6 +184,8 @@ function sortItems(method, type) {
         else {
             let items = document.getElementById(`trade_${type}s`).querySelectorAll('.item.app730.context2');
             doTheSorting(combinedInventories, Array.from(items), method, document.getElementById(`${type}_slots`), type);
+            const inventoryTab = document.querySelector(`[href="#${type}_inventory"]`);
+            if (inventoryTab !== null) inventoryTab.classList.add('sorted');
         }
 
         loadAllItemsProperly();
@@ -338,24 +340,24 @@ function doInitSorting() {
     });
 }
 
-function getActiveInventory(){
+function getActiveInventory() {
     let activeInventory = null;
     document.querySelectorAll('.inventory_ctn').forEach(inventory => {if (inventory.style.display !== 'none') activeInventory = inventory});
     return activeInventory;
 }
 
 // moves items to/from being in the offer
-function moveItem(item){
-    let clickEvent = document.createEvent ('MouseEvents');
-    clickEvent.initEvent ('dblclick', true, true);
-    item.dispatchEvent (clickEvent);
+function moveItem(item) {
+    let clickEvent = document.createEvent('MouseEvents');
+    clickEvent.initEvent('dblclick', true, true);
+    item.dispatchEvent(clickEvent);
 }
 
 // single click move, move same with ctrl+click, ctrl +right click to select item for mass moving
-function singleClickControlClick(){
+function singleClickControlClick() {
     document.querySelectorAll('.item.app730.context2').forEach(item => {
         item.removeEventListener('click', singleClickControlClickHandler);
-        item.removeEventListener('click', singleClickControlClickHandler, false);
+        item.removeEventListener('click', rightClickControlHandler, false);
 
     });
 
@@ -595,8 +597,12 @@ setInterval(() => {chrome.storage.local.get('hideOtherExtensionPrices', (result)
 document.querySelectorAll('.inventory_user_tab').forEach( (inventoryTab) => {
     inventoryTab.addEventListener('click', () => {
         addItemInfo();
-        let sortingSelect = document.getElementById('offer_sorting_mode');
-        sortItems(sortingSelect.options[sortingSelect.selectedIndex].value, 'offer');
+        if (!inventoryTab.classList.contains('sorted')) {
+            let sortingSelect = document.getElementById('offer_sorting_mode');
+            sortItems(sortingSelect.options[sortingSelect.selectedIndex].value, 'offer');
+            inventoryTab.classList.add('sorted');
+        }
+
     })
 });
 
