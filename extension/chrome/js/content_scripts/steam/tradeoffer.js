@@ -173,8 +173,8 @@ function addInTradeTotals(whose){
 function periodicallyUpdateTotals(){setInterval(() => {if (!document.hidden) addInTradeTotals('your'); addInTradeTotals('their')}, 1000)}
 
 function sortItems(method, type) {
-    if (isCSGOInventoryActive('offer')){
-        if (type === 'offer'){
+    if (isCSGOInventoryActive('offer')) {
+        if (type === 'offer') {
             let activeInventory = getActiveInventory();
 
             let items = activeInventory.querySelectorAll('.item.app730.context2');
@@ -326,16 +326,27 @@ function addFunctionBars(){
 
 function doInitSorting() {
     chrome.storage.local.get(['offerSortingMode', 'switchToOtherInventory'], (result) => {
-        if(result.switchToOtherInventory) document.getElementById("inventory_select_their_inventory").click();
+        if (result.switchToOtherInventory) {
+            const inventoryTab = document.getElementById("inventory_select_their_inventory");
+            inventoryTab.click();
+            sortItems(result.offerSortingMode, 'their');
+            inventoryTab.classList.add('sorted');
+        }
+        else {
+            const inventoryTab = document.getElementById("inventory_select_your_inventory");
+            sortItems(result.offerSortingMode, 'your');
+            inventoryTab.classList.add('sorted');
+        }
         sortItems(result.offerSortingMode, 'offer');
-        sortItems(result.offerSortingMode, 'your');
-        sortItems(result.offerSortingMode, 'their');
+
         addFloatIndicatorsToPage('their');
         addFloatIndicatorsToPage('page');
         addFloatIndicatorsToPage('your');
+
         document.querySelector(`#offer_sorting_mode [value="${result.offerSortingMode}"]`).selected = true;
         document.querySelector(`#offer_your_sorting_mode [value="${result.offerSortingMode}"]`).selected = true;
         document.querySelector(`#offer_their_sorting_mode [value="${result.offerSortingMode}"]`).selected = true;
+
         singleClickControlClick();
     });
 }
