@@ -1,6 +1,11 @@
 logExtensionPresence();
+updateLoggedInUserID();
 
 chrome.storage.local.get('autoSetSteamAPIKey', (result) => {
+    trackEvent({
+        type: 'event',
+        action: 'apiKeyAutoSet'
+    });
     if (result.autoSetSteamAPIKey) {
         if (document.getElementById('editForm').action.includes('registerkey')) { // if no API key registered yet, registers one
             document.getElementById('domain').value = `registered_${Date.now()}`;

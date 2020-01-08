@@ -155,6 +155,19 @@
       "css": ["/css/generalCSTStyle.css"]
     },
     {
+      "matches": [
+        "*://steamcommunity.com/id/*/friends*",
+        "*://steamcommunity.com/profiles/*/friends*"
+      ],
+      "run_at" : "document_idle",
+      "js": [
+        "js/utils/steam_override.js",
+        "js/utils/enums.js",
+        "js/utils/utils.js",
+        "js/content_scripts/steam/friends.js"],
+      "css": ["/css/generalCSTStyle.css"]
+    },
+    {
       "matches": ["*://csgolounge.com/mytrades/*"],
       "run_at" : "document_idle",
       "js": [
