@@ -23,6 +23,31 @@ if (document.querySelector('body').classList.contains('profile_page')){
     let commentThreadEntryBox = document.querySelector('.commentthread_entry_quotebox');
     if (commentThreadEntryBox !== null) commentThreadEntryBox.setAttribute('style', 'width: 83%; display: inline-block;');
 
+    // makes profiles with csgotrader.app in their name gold
+    // top friends:
+    const topFriends = document.querySelector('.profile_friend_links');
+    if (topFriends !== null) {
+        topFriends.querySelectorAll('.friendBlock').forEach(friendBlock => {
+           if (friendBlock.innerText.includes('csgotrader.app')) {
+               friendBlock.classList.add('golden');
+               friendBlock.querySelector('.playerAvatar').classList.add('golden');
+               friendBlock.addEventListener('mouseover', goldenMiniProfileHandler);
+           }
+        });
+    }
+
+    // profile name, level, avatar:
+    const personaName = document.querySelector('.actual_persona_name');
+    if (personaName !== null && personaName.innerText.includes('csgotrader.app')) {
+        personaName.classList.add('golden');
+        const level = document.querySelector('.persona_level');
+        if (level !== null) level.classList.add('golden');
+        const avatar = document.querySelector('.profile_header').querySelector('.playerAvatar');
+        if (avatar !== null) avatar.classList.add('golden');
+    }
+
+    goldenCommenters();
+
     if (loggedInUserID === profileOwnerSteamID){ //when on the logged in user's own profile
         chrome.storage.local.get(['reoccuringMessage', 'showReoccButton'], (result) => {
             if(result.showReoccButton){

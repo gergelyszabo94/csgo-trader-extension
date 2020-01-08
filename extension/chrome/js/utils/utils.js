@@ -629,7 +629,10 @@ function handleReplyToCommentFunctionality(event) {
 }
 
 function addCommentsMutationObserver() {
-    let observer = new MutationObserver(() => {addReplytoCommentsFunctionality()});
+    let observer = new MutationObserver(() => {
+        addReplytoCommentsFunctionality();
+        goldenCommenters();
+    });
 
     let commentThread = document.querySelector('.commentthread_comments');
 
@@ -1652,4 +1655,34 @@ function validateSteamAPIKey(apiKey) {
             reject(err)
         });
     });
+}
+
+function goldenCommenters() {
+    document.querySelectorAll('.commentthread_author_link').forEach(commenter => {
+        if (commenter.innerText.includes('csgotrader.app')) {
+            commenter.classList.add('golden');
+            const avatar = commenter.parentElement.parentElement.parentElement.querySelector('.playerAvatar');
+            avatar.classList.add('golden');
+            commenter.addEventListener('mouseover', goldenMiniProfileHandler);
+            avatar.addEventListener('mouseover', goldenMiniProfileHandler);
+        }
+    })
+}
+
+function goldenMiniprofile() {
+    const miniProfile = document.querySelector('.miniprofile_player');
+
+    if (miniProfile  !== null) {
+        miniProfile.querySelector('.playerAvatar').classList.add('golden');
+        miniProfile.querySelector('.persona').classList.add('golden');
+        return true;
+    }
+    else return false;
+}
+
+function goldenMiniProfileHandler() {
+    goldenMiniprofile();
+    const goldenInterval = setInterval((() =>{
+        if (goldenMiniprofile()) clearInterval(goldenInterval);
+    }), 500)
 }

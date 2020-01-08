@@ -105,6 +105,10 @@ progress {
     }
 }
 
+.golden {
+    color: var(--steam-sale-golden) !important;
+}
+
 .trade_offers_module{
     padding-top: 24px;
     padding-left: 48px;
