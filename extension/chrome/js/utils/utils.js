@@ -1686,3 +1686,21 @@ function goldenMiniProfileHandler() {
         if (goldenMiniprofile()) clearInterval(goldenInterval);
     }), 500)
 }
+
+function listenToLocationChange(callBackFunction) {
+    let oldHref = document.location.href;
+
+    const locationObserver = new MutationObserver((mutations) => {
+        mutations.forEach(mutation => {
+           if (oldHref !== document.location.href) {
+               oldHref = document.location.href;
+               callBackFunction();
+           }
+        });
+    });
+
+    locationObserver.observe(document.querySelector('body'), {
+        subtree: true,
+        childList: true
+    })
+}
