@@ -624,7 +624,9 @@ if (inventorySelector !== null) {
     });
 }
 
-injectStyle(`
+chrome.storage.local.get('tradeOfferHeaderToLeft', (result) => {
+   if (result.tradeOfferHeaderToLeft) {
+       injectStyle(`
     @media (min-width: 1500px) {
         body, .pagecontent {
             width: 100%
@@ -651,6 +653,8 @@ injectStyle(`
         }
     }
 `, 'headerToSide');
+   }
+});
 
 addPageControlEventListeners('offer');
 

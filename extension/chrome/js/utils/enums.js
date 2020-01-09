@@ -20076,8 +20076,8 @@ const storageKeys = {
     csgotradersAutoLogin: false,
     tradeHistoryLastUpdate: 0,
     tradeHistoryOffers: true,
-    tradeHistoryInventory: true
-
+    tradeHistoryInventory: true,
+    tradeOfferHeaderToLeft: true
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID', 'tradeHistoryLastUpdate'];
