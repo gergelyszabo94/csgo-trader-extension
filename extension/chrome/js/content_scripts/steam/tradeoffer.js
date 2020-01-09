@@ -651,6 +651,10 @@ chrome.storage.local.get('tradeOfferHeaderToLeft', (result) => {
         .trade_partner_recently_changed_name, .trade_partner_headline_sub, .trade_partner_headline_sub .nickname_block {
             display: block;
         }
+        
+        .trade_partner_info_text {
+            white-space: unset;
+        }
     }
 `, 'headerToSide');
    }
