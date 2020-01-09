@@ -538,35 +538,6 @@ function rightClickControlHandler(event) {
     }
 }
 
-const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
-
-let yourInventory = null;
-let theirInventory = null;
-let combinedInventories = [];
-
-logExtensionPresence();
-
-// initiates all logic that needs access to item info
-getInventories();
-
-
-// adds "get float value" action item
-overrideHandleTradeActionMenu();
-
-injectStyle(`
-    .slot_app_fraudwarning{
-        top: 19px !important;
-        left: 75px !important;
-    }`, 'nametagWarning');
-updateLoggedInUserID();
-trackEvent({
-    type: 'pageview',
-    action: 'TradeOfferView'
-});
-
-// changes background and adds a banner if steamrep banned scammer detected
-chrome.storage.local.get('markScammers', result => {if(result.markScammers) warnOfScammer(getTradePartnerSteamID(), 'offer')});
-
 // add an info card to the top of the offer about offer history with the user (sent/received)
 function addPartnerOfferSummary() {
     chrome.storage.local.get(['tradeHistoryOffers', `offerHistory_${getTradePartnerSteamID()}`, 'apiKeyValid'], (result) => {
@@ -603,6 +574,35 @@ function addPartnerOfferSummary() {
     });
 }
 
+const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
+
+let yourInventory = null;
+let theirInventory = null;
+let combinedInventories = [];
+
+logExtensionPresence();
+
+// initiates all logic that needs access to item info
+getInventories();
+
+
+// adds "get float value" action item
+overrideHandleTradeActionMenu();
+
+injectStyle(`
+    .slot_app_fraudwarning{
+        top: 19px !important;
+        left: 75px !important;
+    }`, 'nametagWarning');
+updateLoggedInUserID();
+trackEvent({
+    type: 'pageview',
+    action: 'TradeOfferView'
+});
+
+// changes background and adds a banner if steamrep banned scammer detected
+chrome.storage.local.get('markScammers', result => {if(result.markScammers) warnOfScammer(getTradePartnerSteamID(), 'offer')});
+
 setInterval(() => {chrome.storage.local.get('hideOtherExtensionPrices', (result) => { if (result.hideOtherExtensionPrices && !document.hidden) removeSIHStuff()})}, 2000);
 
 document.querySelectorAll('.inventory_user_tab').forEach( (inventoryTab) => {
@@ -623,6 +623,34 @@ if (inventorySelector !== null) {
         setTimeout( () => {if (isCSGOInventoryActive('offer')) addItemInfo()}, 2000);
     });
 }
+
+injectStyle(`
+    @media (min-width: 1500px) {
+        body, .pagecontent {
+            width: 100%
+        }
+    
+        .trade_partner_header {
+            width: 450px;
+            float: left;
+            margin: 20px;
+        }
+        
+        .trade_area {
+            float: left;
+            width: 936px;
+            margin-top: 20px;
+        }
+        
+        .trade_partner_info_block {
+            float: none;
+        }
+        
+        .trade_partner_recently_changed_name, .trade_partner_headline_sub, .trade_partner_headline_sub .nickname_block {
+            display: block;
+        }
+    }
+`, 'headerToSide');
 
 addPageControlEventListeners('offer');
 
