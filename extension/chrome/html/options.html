@@ -145,6 +145,10 @@
 
     <div class="buildingBlock">
         <h2>Pricing</h2>
+        <p>
+            <span class="countdown">DISCLAIMER:</span> No pricing provider is 100% accurate all the time.
+            Take these prices as advisory, always with a pinch of salt. You should not rely on them solely when doing your trades.
+        </p>
         <table class="table table-striped">
             <thead>
             <tr>
@@ -184,6 +188,17 @@
                     <select class="select-theme" id="pricingMode"></select>
                 </td>
                 <td>The pricing provider you want to get your prices from <br><p><b>About the pricing mode: </b><span id="aboutTheMode"></span></p></td>
+            </tr>
+            <tr>
+                <td>Refresh Prices</td>
+                <td style="text-align:center;">
+                    <i class="fas fa-sync whiteIcon" id="refreshPrices"></i>
+                    <div id="refreshPricesResult"></div>
+                </td>
+                <td>Normally prices refresh every 24 hours in the back end and on are also refreshed daily by the client.
+                    These two events are not synced so you might have a bit outdated prices.
+                    Refreshing the prices makes sure that you have the latest. Refreshing multiple times in a short period of time is pointless.
+                </td>
             </tr>
             </tbody>
         </table>

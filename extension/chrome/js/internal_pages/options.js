@@ -542,3 +542,12 @@ importBookmarksInput.addEventListener('change', event => {
     });
     fr.readAsText(file);
 });
+
+// refresh prices
+
+document.getElementById('refreshPrices').addEventListener('click', () => {
+    updatePrices();
+    setTimeout(() => {
+        document.getElementById('refreshPricesResult').innerText = 'Prices refreshed';
+    }, 2000);
+});
