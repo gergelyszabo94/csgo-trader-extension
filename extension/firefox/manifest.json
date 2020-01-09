@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "__MSG_application_title__",
   "short_name": "CSGO Trader",
-  "version": "1.23.1",
+  "version": "1.24",
   "default_locale": "en",
   "description": "__MSG_application_description__",
   "homepage_url": "https://csgotrader.app/",
@@ -83,7 +83,8 @@
         "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
-        "js/content_scripts/steam/profile.js"]
+        "js/content_scripts/steam/profile.js"],
+      "css": ["/css/generalCSTStyle.css"]
     },
     {
       "matches": ["*://steamcommunity.com/groups/*"],
@@ -92,7 +93,8 @@
         "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
-        "js/content_scripts/steam/group.js"]
+        "js/content_scripts/steam/group.js"],
+      "css": ["/css/generalCSTStyle.css"]
     },
     {
       "matches": ["*://steamcommunity.com/sharedfiles/filedetails/*"],
@@ -101,7 +103,8 @@
         "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
-        "js/content_scripts/steam/sharedfile.js"]
+        "js/content_scripts/steam/sharedfile.js"],
+      "css": ["/css/generalCSTStyle.css"]
     },
     {
       "matches": ["*://steamcommunity.com/games/*/announcements/detail/*"],
@@ -110,7 +113,8 @@
         "js/utils/steam_override.js",
         "js/utils/enums.js",
         "js/utils/utils.js",
-        "js/content_scripts/steam/announcements.js"]
+        "js/content_scripts/steam/announcements.js"],
+      "css": ["/css/generalCSTStyle.css"]
     },
     {
       "matches": ["*://steamcommunity.com/chat/*"],
@@ -146,6 +150,19 @@
         "js/utils/enums.js",
         "js/utils/utils.js",
         "js/content_scripts/steam/openid_login.js"],
+      "css": ["/css/generalCSTStyle.css"]
+    },
+    {
+      "matches": [
+        "*://steamcommunity.com/id/*/friends*",
+        "*://steamcommunity.com/profiles/*/friends*"
+      ],
+      "run_at" : "document_idle",
+      "js": [
+        "js/utils/steam_override.js",
+        "js/utils/enums.js",
+        "js/utils/utils.js",
+        "js/content_scripts/steam/friends.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
