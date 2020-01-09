@@ -19,6 +19,29 @@ const releaseNotes = (props) => {
             <Container className='buildingBlock'>
                 Release notes are meant to explain how to use new features and why certain design or policy decisions were made.
             </Container>
+            <Container className='buildingBlock' id='1.24'>
+                <h2>1.24 - Highlighted profiles, trade offer Widescreen goodness</h2>
+                <p>Along with many bug fixes and other improvements this update brought two small features.</p>
+                <p>Profiles with "csgotrader.app" in their name are highlighted with golden coloring.
+                    Similarly to holiday profiles it makes profiles stand out. It's applied on profiles, comments, friend lists, group member lists.
+                    I though I would give a little incentive to anyone nice enough to want to spread the word about the extension.
+                    Illustration:
+                </p>
+                <img src='/img/release-notes/highlighted_profile.jpg'
+                     title='Golden highlighted profile'
+                     alt='Golden highlighted profile'
+                     className='showcaseImage showcase'/>
+                <p>
+                    The other feature is being able to move trade offer headers to the left on Widescreens.
+                    It's on by default, it should activate for most people if they have offers open full screen.
+                    If you don't like this feature you can head over to the extension options and look for "Offer header to left" and turn it off.
+                    Illustration:
+                    <img src='/img/release-notes/trade_offer_header_left.jpg'
+                         title='Trade offer header on the left'
+                         alt='Trade offer header on the left'
+                         className='showcaseImage showcase'/>
+                </p>
+            </Container>
             <Container className='buildingBlock' id='1.23'>
                 <h2>1.23 - Partner offer history summary</h2>
                 <p>It might not be immediately obvious from the title of what this feature does, so let me explain and illustrate it first before going into the details.
@@ -133,11 +156,11 @@ const releaseNotes = (props) => {
                     <li>Float values in case they were loaded for those items previously</li>
                 </ul>
                 Illustrated in the bellow screenshot:
-                    <img src='/img/release-notes/incomingoffersfeaturesfull_annotated.jpg'
-                         title='Incoming offers features'
-                         alt='Incoming offers features'
-                         className='showcaseImage'
-                    />
+                <img src='/img/release-notes/incomingoffersfeaturesfull_annotated.jpg'
+                     title='Incoming offers features'
+                     alt='Incoming offers features'
+                     className='showcaseImage'
+                />
             </Container>
         </Fragment>
     );

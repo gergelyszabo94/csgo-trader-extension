@@ -18,6 +18,28 @@ const changelog = (props) => {
 
             <h1>Changelog</h1>
             <Container className='buildingBlock'>
+                <h2>Version 1.24 - 2020-01-09</h2>
+                <ul>
+                    <li>Profiles with csgotrader.app in their name are highlighted with gold color Check out the
+                        <Link to='/release-notes#1.24'> Release Notes </Link> for more info </li>
+                    <li>Added option (on by default) to move trade offer headers to the left on wide screens. Check out the
+                        <Link to='/release-notes#1.24'> Release Notes </Link> for more info
+                        <GithubIssueLink issueNumber={108}/>
+                    </li>
+                    <li>Fixed a bug where Gamma Doppler phases were not showing in offers if the user used a language where the knives' names are capitalized differently.</li>
+                    <li>Fixed a bug that prevented PLN from being able to selected as a pricing currency</li>
+                    <li>Fixed item list generation</li>
+                    <li>Fixed a bug that made all bookmarks disappear if one of the bookmarked items was a vanilla item</li>
+                    <li>Fixed offer totals showing switched on the sent offer page
+                        <Credit to='https://steamcommunity.com/profiles/76561198275942728'>¡kFzo彡</Credit>
+                    </li>
+                    <li>Fixed a bug that caused items in trade offers to disappear (visually) sometimes completely when they should have gone back to the inventory
+                        <Credit to='https://steamcommunity.com/profiles/76561198275942728'>¡kFzo彡</Credit>
+                    </li>
+                    <li>Misc performance and usability improvements</li>
+                </ul>
+            </Container>
+            <Container className='buildingBlock'>
                 <h2>Version 1.23.1 - 2019-12-23</h2>
                 <ul>
                     <li>Changes to the <Link to='/prices'>pricing algorithm</Link>.</li>
