@@ -12,6 +12,7 @@ import ReleaseNotes from './containers/ReleaseNotes/ReleaseNotes';
 import SteamGroup from './containers/SteamGroup/SteamGroup';
 import Prices from './containers/Prices/Prices';
 import Privacy from './containers/Privacy/Privacy';
+import Faq from './containers/Faq/Faq';
 
 ReactGA.initialize('UA-48407333-4');
 
@@ -48,6 +49,11 @@ const App = () => {
                     </Route>
                     <Route path="/privacy">
                         <Privacy
+                            gAnalytic={ReactGA}
+                        />
+                    </Route>
+                    <Route path="/faq">
+                        <Faq
                             gAnalytic={ReactGA}
                         />
                     </Route>
