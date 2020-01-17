@@ -21,9 +21,9 @@ const changelog = (props) => {
                 <h2>Version 1.24 - 2020-01-09</h2>
                 <ul>
                     <li>Profiles with csgotrader.app in their name are highlighted with gold color Check out the
-                        <Link to='/release-notes#1.24'> Release Notes </Link> for more info </li>
+                        <Link to='/release-notes/#1.24'> Release Notes </Link> for more info </li>
                     <li>Added option (on by default) to move trade offer headers to the left on wide screens. Check out the
-                        <Link to='/release-notes#1.24'> Release Notes </Link> for more info
+                        <Link to='/release-notes/#1.24'> Release Notes </Link> for more info
                         <GithubIssueLink issueNumber={108}/>
                     </li>
                     <li>Fixed a bug where Gamma Doppler phases were not showing in offers if the user used a language where the knives' names are capitalized differently.</li>
@@ -42,7 +42,7 @@ const changelog = (props) => {
             <Container className='buildingBlock'>
                 <h2>Version 1.23.1 - 2019-12-23</h2>
                 <ul>
-                    <li>Changes to the <Link to='/prices'>pricing algorithm</Link>.</li>
+                    <li>Changes to the <Link to='/prices/'>pricing algorithm</Link>.</li>
                     <li>User experience improvements by making clickable elements more apparent and added explanatory titles</li>
                     <li>Steam API key is set automatically when the user installs the extension (if the user has one generated)</li>
                     <li>Added the highest buy order price as "instant sale price" pricing option for Mass Listing and made item names in the table a link to market.
@@ -69,7 +69,7 @@ const changelog = (props) => {
             <Container className='buildingBlock'>
                 <h2>Version 1.22 - 2019-12-01</h2>
                 <ul>
-                    <li>Added Mass Listing feature that is now in Beta. Check out the <Link to='/release-notes#1.22'> Release Notes </Link> for more info
+                    <li>Added Mass Listing feature that is now in Beta. Check out the <Link to='/release-notes/#1.22'> Release Notes </Link> for more info
                         <GithubIssueLink issueNumber={69}/>
                     </li>
                     <li>
@@ -137,7 +137,7 @@ const changelog = (props) => {
                 <ul>
                     <li>Made float caching more efficient</li>
                     <li>Added prices, exteriors, etc to items on the incoming offers page <GithubIssueLink issueNumber={77}/>
-                        More info about this in the <Link to='/release-notes#1.20'> Release Notes </Link></li>
+                        More info about this in the <Link to='/release-notes/#1.20'> Release Notes </Link></li>
                     <li>Clicking user avatars on the incoming offers page makes profiles open on new tab</li>
                     <li>Added an "accept trade" button to trade offers on the incoming offers page</li>
                     <li>Fixed a bug that made float values round up <GithubIssueLink issueNumber={82}/>
@@ -163,7 +163,7 @@ const changelog = (props) => {
                     <li>Float values on items with 0.00 float not shown</li>
                     <li>Float loading performance improvements</li>
                     <li>Usage data reporting made optional</li>
-                    <li>Added <Link to='/privacy'> Privacy </Link> page detailing how your data is handled</li>
+                    <li>Added <Link to='/privacy/'> Privacy </Link> page detailing how your data is handled</li>
                 </ul>
             </Container>
             <Container className='buildingBlock'>
@@ -179,7 +179,7 @@ const changelog = (props) => {
                     <li>Add option for users to add comments, comment patterns that they want automatically reported <GithubIssueLink issueNumber={54}/></li>
                     <li>Fixes a bug that added the username twice when replying to comments</li>
                     <li>Fixes a bug that made the bookmarks not show up if one of the bookmarked item was a vanilla</li>
-                    <li>Added a short page about the Extension's Steam Group at: <Link to='/group'>csgotrader.app/group</Link></li>
+                    <li>Added a short page about the Extension's Steam Group at: <Link to='/group/'>csgotrader.app/group</Link></li>
                     <li>Item float values in inventories, offers and on market get loaded automatically</li>
                     <li>Removes the now redundant "Get Float Info" buttons from offers and market pages</li>
                     <li>Market "float bars" are now wider, stickers are centered and sticker condition is shown on hover</li>
@@ -214,8 +214,8 @@ const changelog = (props) => {
                 <h2>Version 1.17 - 2019-08-20</h2>
                 <ul>
                     <li>Created <Link to='/'>csgotrader.app</Link> site that showcases the features of the extension</li>
-                    <li>Moved the changelog pages from the extension to <Link to='/changelog'>csgotrader.app/changelog</Link></li>
-                    <li>Created <Link to='/prices'>csgotrader.app/prices</Link> page that explains how the extension calculates prices</li>
+                    <li>Moved the changelog pages from the extension to <Link to='/changelog/'>csgotrader.app/changelog</Link></li>
+                    <li>Created <Link to='/prices/'>csgotrader.app/prices</Link> page that explains how the extension calculates prices</li>
                     <li>Added case keys, BTC, ETH and their denominations as currencies</li>
                     <li>Adjusted the pricing algorithm to try to get a more accurate price for rare items and specify different prices for different Doppler phases</li>
                     <li>Added feature to check the value of the items selected, the selection can be initiated by clicking the hand icon in inventories</li>

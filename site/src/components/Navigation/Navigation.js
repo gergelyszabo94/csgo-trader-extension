@@ -7,23 +7,23 @@ import './Navigation.css';
 const navigation = () => {
     const navItems = [
         {
-            path: '/changelog',
+            path: '/changelog/',
             name: 'Changelog'
         },
         {
-            path: '/release-notes',
+            path: '/release-notes/',
             name: 'Release-Notes'
         },
         {
-            path: '/group',
+            path: '/group/',
             name: 'Steam Group'
         },
         {
-            path: '/prices',
+            path: '/prices/',
             name: 'Prices'
         },
         {
-            path: '/faq',
+            path: '/faq/',
             name: 'FAQ'
         }
     ];
