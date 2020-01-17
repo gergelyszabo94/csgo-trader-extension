@@ -1,5 +1,6 @@
 import React, {Fragment} from "react";
 import { Container } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 import Head from '../../components/Head/Head';
 import NewTabLink from '../../components/NewTabLink/NewTabLink';
@@ -23,7 +24,11 @@ const faq = (props) => {
 
                 <h2>How do I install it?</h2>
                 <p>
-                    The extension is available in the Chrome Web Store and at AMO. These release versions are usually updated every 1-2 weeks.
+                    The extension is available in the
+                    <NewTabLink to='https://chrome.google.com/webstore/detail/csgo-trader-steam-trading/kaibcgikagnkfgjnibflebpldakfhfih'> Chrome Web Store </NewTabLink>
+                    and at
+                    <NewTabLink to='https://addons.mozilla.org/en-US/firefox/addon/csgo-trader-steam-trading/'> AMO</NewTabLink>.
+                    These release versions are usually updated every 1-2 weeks.
                 </p>
                 <p>
                     To install it open the appropriate web store for your browser and install it.
@@ -44,8 +49,8 @@ const faq = (props) => {
                 <h2>How do I get support?</h2>
                 <p>
                     This FAQ page is meant to be your starting point when you need help with the extension.
-                    You should give a look to the Release Notes, new features are usually explained there.
-                    If you can’t find answer to your question here, then you should head over to the Support page.
+                    You should give a look to the <Link to='/release-notes/'>Release Notes</Link>, new features are usually explained there.
+                    If you can’t find answer to your question here, then you should email <span className='yellow'>support@csgotrader.app</span>
                 </p>
 
                 <h2>Can I trust it? Can it steal my items? Will it steal my items?</h2>
@@ -63,20 +68,31 @@ const faq = (props) => {
                     As I mentioned for the most dangerous actions (using the market, trading, buying games from the store) require either additional confirmation in the app or Steam Guard re-prompt.
                     The other things the extension could do without confirmation are not really rewarding so there is no real incentive to go rouge.
                     It has been around for over a year and is trusted by thousands of users.
-                    It’s also open source meaning that every piece of code that runs in your browser can be read by anyone, no guessing or speculating needed!
+                    It’s also
+                    <NewTabLink to='https://github.com/gergelyszabo94/csgo-trader-extension'> open source  </NewTabLink>
+                    meaning that every piece of code that runs in your browser can be read by anyone, no guessing or speculating needed!
                 </p>
                 <h2>How can I support it?</h2>
                 <p>
-                    Leaving a positive review or rating in the Chrome Web Store or at Mozilla Addons helps others find it and motivates me to keep working on it.
+                    Leaving a positive review or rating in the
+                    <NewTabLink to='https://chrome.google.com/webstore/detail/csgo-trader-steam-trading/kaibcgikagnkfgjnibflebpldakfhfih'> Chrome Web Store </NewTabLink>
+                    or at
+                    <NewTabLink to='https://addons.mozilla.org/en-US/firefox/addon/csgo-trader-steam-trading/'> Mozilla Addons </NewTabLink>
+                    helps others find it and motivates me to keep working on it.
                 </p>
                 <p>
-                    Putting “csgotrader.app” in your Steam nickname would help enormously and your profile is highlighted with golden colors for other extension users.
+                    Putting “csgotrader.app” in your Steam nickname would help enormously and your profile is highlighted with
+                    <Link to='/release-notes/#1.24'> golden colors </Link>
+                    for other extension users.
                 </p>
                 <p>
-                    When you want to change your items or buy something consider trading them with me instead of using a trade bot site.
+                    When you want to change your items or buy something consider
+                    <NewTabLink to='https://steamcommunity.com/id/gergelyszabo'> trading them with me </NewTabLink>
+                    instead of using a trade bot site.
                 </p>
                 <p>
-                    The project is open for contributions! If you know one of these: web-development, web-design, graphic design, UX, UI or translation, and want to contribute then reach out!
+                    <NewTabLink to='https://github.com/gergelyszabo94/csgo-trader-extension'>The project </NewTabLink>
+                    is open for contributions! If you know one of these: web-development, web-design, graphic design, UX, UI or translation, and want to contribute then reach out!
                 </p>
                 <p>
                     Spreading the word about it in any way is a great help!
@@ -89,7 +105,8 @@ const faq = (props) => {
 
                 <h2>How are CSGO Trader prices calculated?</h2>
                 <p>
-                    You can read about this in detail in its own dedicated page.
+                    You can read about this in detail in
+                    <Link to='/prices/'> its own dedicated page. </Link>
                 </p>
 
                 <h2>What are the supported currencies?</h2>
@@ -104,30 +121,57 @@ const faq = (props) => {
 
                 <h2>Who is the owner, developer?</h2>
                 <p>
-                    Both the owner and developer is GeRy with some minor contributions from others.
+                    Both the owner and developer is
+                    <NewTabLink to='https://steamcommunity.com/id/gergelyszabo'> GeRy </NewTabLink>
+                    with some
+                    <NewTabLink to='https://github.com/gergelyszabo94/csgo-trader-extension/blob/master/CONTRIBUTING.md'> minor contributions </NewTabLink>
+                    from others.
                 </p>
 
                 <h2>What are the features that are planned or are already being developed?</h2>
                 <p>
-                    You can follow the development by checking the open GitHub issues and the Kanban Board.
+                    You can follow the development by checking the open
+                    <NewTabLink to='https://github.com/gergelyszabo94/csgo-trader-extension/issues'> GitHub issues </NewTabLink>
+                    and the
+                    <NewTabLink to='https://github.com/gergelyszabo94/csgo-trader-extension/projects/1'> Kanban Board. </NewTabLink>
                 </p>
 
-                <h2>Why does it need the permissions it requires and what do they mean?</h2>
+                <h2 id='permissions'>Why does it need the permissions it requires and what do they mean?</h2>
+                <p>
+                    Default permissions: default permissions are granted when you install the extension.
+                </p>
                 <ul>
                     <li>
-                        storage: This permission allows the extension to store data on your computer. It’s used for example to store your preferences.
+                        <NewTabLink to='https://developer.chrome.com/apps/storage'>storage:  </NewTabLink>
+                        This permission allows the extension to store data on your computer. It’s used for example to store your preferences.
                     </li>
                     <li>
-                        unlimitedStorage: The simple storage permission has pretty strict limitation on the amount of storage that can be used by an extension.
+                        <NewTabLink to='https://developer.chrome.com/apps/declare_permissions'>unlimitedStorage:  </NewTabLink>
+                        The simple storage permission has pretty strict limitation on the amount of storage that can be used by an extension.
                         The unlimited storage permission lifts these limits. The extension has to store the item pricing information, item float information, bookmarks, etc.
                         It needs more storage than what the simple storage permission allows.
                     </li>
                     <li>
-                        notifications:  The name is pretty descriptive; it allows the extension to send browser notifications. It’s used to send notifications about bookmarked items for example.
+                        <NewTabLink to='https://developer.chrome.com/apps/notifications'>notifications: </NewTabLink>
+                        The name is pretty descriptive; it allows the extension to send browser notifications. It’s used to send notifications about bookmarked items for example.
                     </li>
                     <li>
-                        alarms: The alarms permission allows the extension to set alarms in the future. The extension subscribes to the alarms and executes some action.
+                        <NewTabLink to='https://developer.chrome.com/apps/alarms'>alarms: </NewTabLink>
+                        The alarms permission allows the extension to set alarms in the future. The extension subscribes to the alarms and executes some action.
                         For example, when you bookmark an item the extension sets an alarm to when the item becomes tradable and sends you a notification.
+                    </li>
+                </ul>
+                <p>
+                    <NewTabLink to='https://developer.chrome.com/apps/permissions'>Optional permissions: </NewTabLink>
+                    They can be activated from the extension options.
+                </p>
+                <ul>
+                    <li>
+                        <NewTabLink to='https://developer.chrome.com/extensions/tabs'>tabs: </NewTabLink>
+                        Tabs is a pretty powerful permission and gives off some pretty scary warnings on installations so I made it optional.
+                        When turned on it allows the extension to open and close tabs, to read open tab urls, etc.
+                        The extension does not need it per say, but I recommend turning it on for better user experience.
+                        It is used to open extension pages, for example when bookmarking an item from an inventory.
                     </li>
                 </ul>
                 <p>
@@ -154,16 +198,30 @@ const faq = (props) => {
                 </p>
                 <p>
                     Well, I have started developing it much later than those two, so it hasn’t been around for as long as them.
-                    I have tried spreading the word about it on reddit, but my posts on /r/GlobalOffensiveTrade were removed because it’s not whitelisted.
+                    I have tried spreading the word about it on reddit, but my posts on
+                    <NewTabLink to='https://www.reddit.com/r/GlobalOffensiveTrade/'> /r/GlobalOffensiveTrade </NewTabLink>
+                    were removed because it’s not whitelisted.
                     My whitelisting requests were denied without explanation as well.
                 </p>
                 <p>
-                    To complete the vicious circle the mods on /r/csgomarketforum also removed posts because, wait for it... it is not whitelisted on /r/GlobalOffensiveTrade.
+                    To complete the vicious circle the mods on
+                    <NewTabLink to='https://www.reddit.com/r/csgomarketforum/'> /r/csgomarketforum </NewTabLink>
+                    also removed posts because, wait for it... it is not whitelisted on /r/GlobalOffensiveTrade.
                 </p>
+
                 <h2>Does the extension mine my data, spy one me? How and what kind of information is stored? How is my privacy preserved?</h2>
                 <p2>
-                    Read the Privacy page about this.
+                    Read the
+                    <Link to='/privacy/'> Privacy page </Link>
+                    about this.
                 </p2>
+
+                <h2>The in-browser inspection page does not load? I can't see the generated screenshot?</h2>
+                <p>
+                    The screenshot generation is done by csgo.gallery
+                    <NewTabLink to='https://cs.deals/screenshot'> (CS.DEALS).</NewTabLink>
+                    I have no control over it, please let them know if it is not working as intended.
+                </p>
             </Container>
         </Fragment>
     );

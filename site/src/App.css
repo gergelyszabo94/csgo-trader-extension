@@ -54,3 +54,7 @@ h1 {
 .orange {
   color: darkorange;
 }
+
+.yellow {
+  color: var(--steam-souvenir-yellow);
+}
