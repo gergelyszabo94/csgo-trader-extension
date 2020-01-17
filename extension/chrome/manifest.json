@@ -7,7 +7,6 @@
   "description": "__MSG_application_description__",
   "homepage_url": "https://csgotrader.app/",
   "permissions": [
-    "activeTab",
     "storage",
     "notifications",
     "alarms",
