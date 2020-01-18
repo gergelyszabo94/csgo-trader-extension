@@ -1,0 +1,12 @@
+version: 0.1
+phases:
+  pre_build:
+    commands:
+      - cd site
+      - npm ci
+  build:
+    commands:
+      - npm run build
+  post_build:
+    commands:
+      - echo "post build"
