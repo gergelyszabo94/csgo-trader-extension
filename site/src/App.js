@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import ReactGA from 'react-ga';
 
 import Navigation from './components/Navigation/Navigation';
@@ -56,6 +56,9 @@ const App = () => {
                         <Faq
                             gAnalytic={ReactGA}
                         />
+                    </Route>
+                    <Route>
+                        <Redirect to='/'/>
                     </Route>
                 </Switch>
             </div>
