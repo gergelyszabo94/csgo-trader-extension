@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-d
 import ReactGA from 'react-ga';
 
 import Navigation from './components/Navigation/Navigation';
+import Footer from './components/Footer/Footer';
 import Home from './containers/Home/Home';
 import Changelog from './containers/Changelog/Changelog';
 import ReleaseNotes from './containers/ReleaseNotes/ReleaseNotes';
@@ -61,6 +62,7 @@ const App = () => {
                         <Redirect to='/'/>
                     </Route>
                 </Switch>
+                <Footer/>
             </div>
         </Router>
     );
