@@ -973,7 +973,7 @@ function injectToPage(scriptString, toRemove, id, executeAndReturn) {
 
     let simpleAttributeParsing = ['steamidOfLoggedinUser', 'steamidOfProfileOwner', 'tradePartnerSteamID', 'inventoryOwnerID', 'listingsInfo',
         'inventoryInfo', 'allItemsLoaded', 'offerInventoryInfo', 'steamWalletCurrency', 'steamWallet', 'formattedToInt', 'intToFormatted',
-        'priceAfterFees'];
+        'priceAfterFees', 'sessionid'];
     let result = simpleAttributeParsing.includes(executeAndReturn) ? document.querySelector('body').getAttribute(executeAndReturn) : null;
     document.querySelector('body').setAttribute(executeAndReturn, '');
 
@@ -1703,4 +1703,34 @@ function listenToLocationChange(callBackFunction) {
         subtree: true,
         childList: true
     })
+}
+
+function removeListing(listingID) {
+    return new Promise((resolve, reject) => {
+        let myHeaders = new Headers();
+        myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+
+        let request = new Request(`https://steamcommunity.com/market/removelisting/${listingID}`,
+            {
+                method: 'POST',
+                headers: myHeaders,
+                body: `sessionid=${getSessionID()}`
+            });
+
+        fetch(request).then((response) => {
+            if (!response.ok) {
+                console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+                reject({status:response.status, statusText: response.statusText});
+            }
+            else resolve('success');
+        }).catch((err) => {
+            console.log(err);
+            reject(err);
+        });
+    });
+}
+
+function getSessionID() {
+    let getSessionIDScript = `document.querySelector('body').setAttribute('sessionid', g_sessionID);`;
+    return injectToPage(getSessionIDScript, true, 'getSessionID', 'sessionid');
 }
