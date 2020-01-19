@@ -1,4 +1,5 @@
 version: 0.2
+
 phases:
   install:
     runtime-versions:
@@ -12,4 +13,4 @@ phases:
       - npm run build
   post_build:
     commands:
-      - echo "post build"
+      - aws s3 sync ./build $BUCKET
