@@ -1,5 +1,4 @@
 version: 0.2
-run-as: ubuntu
 phases:
   install:
     runtime-versions:
@@ -8,7 +7,9 @@ phases:
     commands:
       - cd site
       - npm ci
+      - sudo adduser notroot
   build:
+    run-as: notroot
     commands:
       - npm run build
   post_build:
