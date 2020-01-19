@@ -1,4 +1,5 @@
 version: 0.2
+run-as: ubuntu
 phases:
   install:
     runtime-versions:
