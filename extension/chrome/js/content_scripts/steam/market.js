@@ -22,6 +22,7 @@ if (sellListings !== null) {
     const removeColumnHeader = tableHeader.querySelector('.market_listing_right_cell.market_listing_edit_buttons.placeholder');
 
     removeColumnHeader.innerText = 'REMOVE ALL';
+    removeColumnHeader.setAttribute('title', 'Click here to remove all listings from this page!');
     removeColumnHeader.classList.add('clickable');
 
     removeColumnHeader.addEventListener('click', () => {
@@ -44,6 +45,7 @@ if (orders !== null && orders !== undefined) {
     const cancelColumnHeader = tableHeader.querySelector('.market_listing_right_cell.market_listing_edit_buttons.placeholder');
 
     cancelColumnHeader.innerText = 'CANCEL ALL';
+    cancelColumnHeader.setAttribute('title', 'Click here to cancel all your buy orders!');
     cancelColumnHeader.classList.add('clickable');
 
     cancelColumnHeader.addEventListener('click', () => {
