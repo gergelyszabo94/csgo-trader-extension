@@ -15,6 +15,24 @@ trackEvent({
     action: 'marketMainPage'
 });
 
+// makes remove/cancel columns narrower
+injectStyle(`
+.market_listing_edit_buttons {
+    width: 120px;
+}`, 'editColumnWidth');
+
+// adds selection checkboxes
+document.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(row => {
+    const priceElement = row.querySelector('.market_listing_right_cell.market_listing_my_price');
+
+    if (priceElement !== null) {
+        priceElement.insertAdjacentHTML('beforebegin', `
+            <div class="market_listing_right_cell market_listing_edit_buttons">
+                <input type="checkbox">
+            </div>`);
+    }
+});
+
 // remove all listings functionality
 const sellListings = document.getElementById('tabContentsMyActiveMarketListingsTable');
 if (sellListings !== null) {
@@ -24,6 +42,22 @@ if (sellListings !== null) {
     removeColumnHeader.innerText = 'REMOVE ALL';
     removeColumnHeader.setAttribute('title', 'Click here to remove all listings from this page!');
     removeColumnHeader.classList.add('clickable');
+
+    removeColumnHeader.insertAdjacentHTML('afterend', `<span id="removeSelected" class="market_listing_right_cell market_listing_edit_buttons placeholder clickable">REMOVE</span>`);
+
+    document.getElementById('removeSelected').addEventListener('click', () => {
+        sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listingRow => {
+            if (listingRow.querySelector('input').checked) {
+                const listingID = getMyListingIDFromElement(listingRow);
+                removeListing(listingID).then(
+                    result => {
+                        listingRow.parentElement.removeChild(listingRow);
+                        switchToNextPageIfEmpty(sellListings);
+                    }
+                )
+            }
+        });
+    });
 
     removeColumnHeader.addEventListener('click', () => {
         sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listingRow => {
@@ -47,6 +81,21 @@ if (orders !== null && orders !== undefined) {
     cancelColumnHeader.innerText = 'CANCEL ALL';
     cancelColumnHeader.setAttribute('title', 'Click here to cancel all your buy orders!');
     cancelColumnHeader.classList.add('clickable');
+
+    cancelColumnHeader.insertAdjacentHTML('afterend', `<span id="cancelSelected" class="market_listing_right_cell market_listing_edit_buttons placeholder clickable">CANCEL</span>`);
+
+    document.getElementById('cancelSelected').addEventListener('click', () => {
+        orders.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(orderRow => {
+            if (orderRow.querySelector('input').checked) {
+                const orderID = getMyOrderIDFromElement(orderRow);
+                cancelOrder(orderID).then(
+                    result => {
+                        orderRow.parentElement.removeChild(orderRow);
+                    }
+                )
+            }
+        });
+    });
 
     cancelColumnHeader.addEventListener('click', () => {
         orders.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(orderRow => {
