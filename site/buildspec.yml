@@ -3,11 +3,13 @@ phases:
   install:
     runtime-versions:
       nodejs: 12
+    commands:
+      - adduser notroot
   pre_build:
+    run-as: notroot
     commands:
       - cd site
       - npm ci
-      - adduser notroot
   build:
     run-as: notroot
     commands:
