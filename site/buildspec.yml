@@ -7,7 +7,7 @@ phases:
     commands:
       - cd site
       - npm ci
-      - sudo adduser notroot
+      - adduser notroot
   build:
     run-as: notroot
     commands:
