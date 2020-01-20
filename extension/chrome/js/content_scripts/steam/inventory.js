@@ -765,12 +765,12 @@ function getItemInfoFromPage() {
 
 // adds market info in other inventories
 function addStartingAtPrice(market_hash_name) {
-    getPriceOverview(market_hash_name).then(
+    getPriceOverview('730', market_hash_name).then(
         priceOverview => {
             // removes previous leftover elements
             document.querySelectorAll('.startingAtVolume').forEach(previousElement => previousElement.parentNode.removeChild(previousElement));
 
-            // adds new elemenets
+            // adds new elements
             document.querySelectorAll('.item_owner_actions').forEach(marketActions => {
                 marketActions.style.display = 'block';
                 let startingAt = priceOverview.lowest_price === undefined ? 'Unknown' : priceOverview.lowest_price;
@@ -840,7 +840,7 @@ function addStartingAtAndQuickSellPrice(item) {
     if (startingAtElement.getAttribute('data-price-set') !== true && startingAtElement.getAttribute('data-price-in-progress') !== true) { // check if price is already set or in progress
         startingAtElement.setAttribute('data-price-in-progress', true);
 
-        getPriceOverview(item.market_hash_name).then(
+        getPriceOverview('730', item.market_hash_name).then(
             priceOverview => {
                 if (priceOverview.lowest_price !== undefined) {
                     let quickSell = listingRow.querySelector('.itemQuickSell');

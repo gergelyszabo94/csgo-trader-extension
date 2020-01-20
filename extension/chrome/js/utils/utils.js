@@ -1426,10 +1426,10 @@ function getSteamWalletCurrency() {
     return injectToPage(getCurrencyScript, true, 'steamWalletCurrencyScript', 'steamWalletCurrency');
 }
 
-function getPriceOverview(market_hash_name) {
+function getPriceOverview(appID, market_hash_name) {
     return new Promise((resolve, reject) => {
         let currencyID = getSteamWalletInfo().wallet_currency;
-        let request = new Request(`https://steamcommunity.com/market/priceoverview/?appid=730&country=US&currency=${currencyID}&market_hash_name=${market_hash_name}`);
+        let request = new Request(`https://steamcommunity.com/market/priceoverview/?appid=${appID}&country=US&currency=${currencyID}&market_hash_name=${market_hash_name}`);
 
         fetch(request).then((response) => {
             if (!response.ok) {
