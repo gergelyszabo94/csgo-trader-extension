@@ -423,7 +423,7 @@ def alert_via_sns(error):
 def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
     if item in steam_prices and "safe" in steam_prices[item] and steam_prices[item]["safe"] is not None:
         if "safe_ts" in steam_prices[item] and "sold" in steam_prices[item]:
-            if float(steam_prices[item]["sold"]["last_24h"]) >= 5.0:
+            if float(steam_prices[item]["sold"]["last_24h"]) >= 5.0 and float(steam_prices[item]["safe_ts"]["last_7d"]) != 0.0:
                 if abs(1 - float(steam_prices[item]["safe_ts"]["last_24h"]) / float(steam_prices[item]["safe_ts"]["last_7d"])) <= 0.1:
                     return {
                         "price": steam_prices[item]["safe_ts"]["last_24h"],
@@ -446,6 +446,11 @@ def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
                         "price": float(steam_prices[item]["safe_ts"]["last_30d"]) * weekly_trend * daily_trend,
                         "case": "D"
                     }
+            else:
+                return {
+                    "price": float(steam_prices[item]["safe_ts"]["last_30d"]) * weekly_trend * daily_trend,
+                    "case": "D"
+                }
 
     return {
         "price": "null",
