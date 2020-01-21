@@ -105,6 +105,14 @@ progress {
     }
 }
 
+.cheapest {
+    color: var(--steam-ingame-green);
+}
+
+.not_cheapest {
+    color: var(--steam-nametag-red);
+}
+
 .golden {
     color: var(--steam-sale-golden) !important;
 }

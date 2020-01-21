@@ -51,9 +51,19 @@ if (sellListings !== null) {
             const appID = getAppIDAndItemNameFromLink(marketLink).appID;
             const market_hash_name = getAppIDAndItemNameFromLink(marketLink).market_hash_name;
 
+            const priceElement = listingRow.querySelector('.market_listing_price');
+            const listedPrice = priceElement.querySelectorAll('span')[1].innerText;
+
             getPriceOverview(appID, market_hash_name).then(
                 priceOverview => {
-                    listingRow.querySelector('.market_listing_price').insertAdjacentHTML('beforeend', `<span>${priceOverview.lowest_price}</span>`);
+                    if (priceOverview.lowest_price !== undefined) {
+                        const cheapest = listedPrice === priceOverview.lowest_price ? 'cheapest' : 'not_cheapest';
+
+                        priceElement.insertAdjacentHTML('beforeend', `
+                            <div class="${cheapest}" title="This is the price of the lowest listing right now.">
+                                ${priceOverview.lowest_price}
+                            </div>`);
+                    }
                 }, (error) => {console.log(error)}
             );
         }
