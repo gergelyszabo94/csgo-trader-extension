@@ -494,7 +494,7 @@ function addFloatIndicatorsToPage(type) {
 function getOfferID() {return location.href.split('tradeoffer/')[1].split('/')[0]}
 
 function getItemInfoFromPage(who) {
-    let getItemsSccript = `
+    let getItemsScript = `
             inventory = User${who}.getInventory(730,2);
             assets = inventory.rgInventory;
             steamID = inventory.owner.strSteamId;
@@ -527,7 +527,7 @@ function getItemInfoFromPage(who) {
              }
              else trimmedAssets = null;
         document.querySelector('body').setAttribute('offerInventoryInfo', JSON.stringify(trimmedAssets));`;
-    return JSON.parse(injectToPage(getItemsSccript, true, 'getOfferItemInfo', 'offerInventoryInfo'));
+    return JSON.parse(injectToPage(getItemsScript, true, 'getOfferItemInfo', 'offerInventoryInfo'));
 }
 
 function rightClickControlHandler(event) {

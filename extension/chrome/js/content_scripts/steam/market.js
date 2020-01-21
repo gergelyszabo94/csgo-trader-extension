@@ -8,6 +8,12 @@ function switchToNextPageIfEmpty(listings) {
     }
 }
 
+function getAppIDAndItemNameFromLink(marketLink) {
+    const appID = marketLink.split('listings/')[1].split('/')[0];
+    const market_hash_name = marketLink.split('listings/')[1].split('/')[1];
+    return {appID, market_hash_name};
+}
+
 logExtensionPresence();
 updateLoggedInUserID();
 trackEvent({
@@ -33,9 +39,27 @@ document.querySelectorAll('.market_listing_row.market_recent_listing_row').forEa
     }
 });
 
-// remove all listings functionality
+// remove all listings and starting at functionality
 const sellListings = document.getElementById('tabContentsMyActiveMarketListingsTable');
 if (sellListings !== null) {
+
+    // add starting at price
+    sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listingRow => {
+        const nameElement = listingRow.querySelector('.market_listing_item_name_link');
+        if (nameElement !== null) {
+            const marketLink = nameElement.getAttribute('href');
+            const appID = getAppIDAndItemNameFromLink(marketLink).appID;
+            const market_hash_name = getAppIDAndItemNameFromLink(marketLink).market_hash_name;
+
+            getPriceOverview(appID, market_hash_name).then(
+                priceOverview => {
+                    listingRow.querySelector('.market_listing_price').insertAdjacentHTML('beforeend', `<span>${priceOverview.lowest_price}</span>`);
+                }, (error) => {console.log(error)}
+            );
+        }
+    });
+
+
     const tableHeader = sellListings.querySelector('.market_listing_table_header');
     const removeColumnHeader = tableHeader.querySelector('.market_listing_right_cell.market_listing_edit_buttons.placeholder');
 
