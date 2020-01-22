@@ -19,7 +19,8 @@ let floatQueue = {
 
 let priceQueue = {
     active: false,
-    jobs: []
+    jobs: [],
+    lastJobSuccessful: true
 };
 
 function getPattern(name, paint_seed) {
@@ -1767,18 +1768,22 @@ function getSessionID() {
 
 function workOnPriceQueue() {
     if (priceQueue.jobs.length !== 0) { // if there are no jobs then there is no recursion
+        const delay = priceQueue.lastJobSuccessful ? 3000 : 15000;
+
         if (!floatQueue.active) { // only start the work if the queue is inactive at the moment
             floatQueue.active = true; // marks the queue active
 
             setTimeout(() => { // marks the queue inactive (ready for work) and starts the work again
                 floatQueue.active = false;
                 workOnPriceQueue();
-            }, 3000);
+            }, delay);
 
             const job = priceQueue.jobs.shift();
 
             getPriceOverview(job.appID, job.market_hash_name).then(
                 priceOverview => {
+                    priceQueue.lastJobSuccessful = true;
+
                     if (job.type === 'my_listing') {
                         if (priceOverview.lowest_price !== undefined) {
                             const listingRow = getElementByListingID(job.listingID);
@@ -1792,11 +1797,14 @@ function workOnPriceQueue() {
                             </div>`);
                         }
                     }
-                }, (error) => {console.log(error)}
+                }, (error) => {
+                    priceQueue.lastJobSuccessful = false;
+                    console.log(error)
+                }
             );
         }
         else { // when there are jobs in the queue but work is already being done at the moment
-            setTimeout(() => {workOnPriceQueue()}, 3000); // in this case is retries with a delay
+            setTimeout(() => {workOnPriceQueue()}, delay); // in this case is retries with a delay
         }
     }
     else priceQueue.active = false;
