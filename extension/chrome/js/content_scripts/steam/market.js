@@ -39,12 +39,16 @@ document.querySelectorAll('.market_listing_row.market_recent_listing_row').forEa
     }
 });
 
-// remove all listings and starting at functionality
+// listings related functionality, starting at price, remove selected, remove all
 const sellListings = document.getElementById('tabContentsMyActiveMarketListingsTable');
 if (sellListings !== null) {
 
-    // add starting at price
-    sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listingRow => {
+    const sellListingRows = sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row');
+    let totalPrice = 0;
+    let totalYouReceivePrice = 0;
+
+    // add starting at prices and total
+    sellListingRows.forEach(listingRow => {
         const nameElement = listingRow.querySelector('.market_listing_item_name_link');
         if (nameElement !== null) {
             const marketLink = nameElement.getAttribute('href');
@@ -53,6 +57,10 @@ if (sellListings !== null) {
 
             const priceElement = listingRow.querySelector('.market_listing_price');
             const listedPrice = priceElement.querySelectorAll('span')[1].innerText;
+            const youReceivePrice = priceElement.querySelectorAll('span')[2].innerText.split('(')[1].split(')')[0];
+
+            totalPrice += parseInt(steamFormattedPriceToCents(listedPrice));
+            totalYouReceivePrice += parseInt(steamFormattedPriceToCents(youReceivePrice));
 
             getPriceOverview(appID, market_hash_name).then(
                 priceOverview => {
@@ -69,6 +77,12 @@ if (sellListings !== null) {
         }
     });
 
+    sellListings.insertAdjacentHTML('afterend',
+        `<div style="margin: -15px 0 15px;">
+                   Total listed price: ${centsToSteamFormattedPrice(totalPrice)} You will receive: ${centsToSteamFormattedPrice(totalYouReceivePrice)} (on this page)
+               </div>`);
+
+
 
     const tableHeader = sellListings.querySelector('.market_listing_table_header');
     const removeColumnHeader = tableHeader.querySelector('.market_listing_right_cell.market_listing_edit_buttons.placeholder');
@@ -80,7 +94,7 @@ if (sellListings !== null) {
     removeColumnHeader.insertAdjacentHTML('afterend', `<span id="removeSelected" class="market_listing_right_cell market_listing_edit_buttons placeholder clickable">REMOVE</span>`);
 
     document.getElementById('removeSelected').addEventListener('click', () => {
-        sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listingRow => {
+        sellListingRows.forEach(listingRow => {
             if (listingRow.querySelector('input').checked) {
                 const listingID = getMyListingIDFromElement(listingRow);
                 removeListing(listingID).then(
@@ -94,7 +108,7 @@ if (sellListings !== null) {
     });
 
     removeColumnHeader.addEventListener('click', () => {
-        sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listingRow => {
+        sellListingRows.forEach(listingRow => {
             const listingID = getMyListingIDFromElement(listingRow);
             removeListing(listingID).then(
                 result => {
