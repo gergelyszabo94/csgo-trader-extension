@@ -17,6 +17,11 @@ let floatQueue = {
     jobs: []
 };
 
+let priceQueue = {
+    active: false,
+    jobs: []
+};
+
 function getPattern(name, paint_seed) {
     if (name.includes(' Marble Fade ')) {
         let pattern = null;
@@ -1692,10 +1697,10 @@ function listenToLocationChange(callBackFunction) {
 
     const locationObserver = new MutationObserver((mutations) => {
         mutations.forEach(mutation => {
-           if (oldHref !== document.location.href) {
-               oldHref = document.location.href;
-               callBackFunction();
-           }
+            if (oldHref !== document.location.href) {
+                oldHref = document.location.href;
+                callBackFunction();
+            }
         });
     });
 
@@ -1758,4 +1763,41 @@ function cancelOrder(orderID) {
 function getSessionID() {
     let getSessionIDScript = `document.querySelector('body').setAttribute('sessionid', g_sessionID);`;
     return injectToPage(getSessionIDScript, true, 'getSessionID', 'sessionid');
+}
+
+function workOnPriceQueue() {
+    if (priceQueue.jobs.length !== 0) { // if there are no jobs then there is no recursion
+        if (!floatQueue.active) { // only start the work if the queue is inactive at the moment
+            floatQueue.active = true; // marks the queue active
+
+            setTimeout(() => { // marks the queue inactive (ready for work) and starts the work again
+                floatQueue.active = false;
+                workOnPriceQueue();
+            }, 3000);
+
+            const job = priceQueue.jobs.shift();
+
+            getPriceOverview(job.appID, job.market_hash_name).then(
+                priceOverview => {
+                    if (job.type === 'my_listing') {
+                        if (priceOverview.lowest_price !== undefined) {
+                            const listingRow = getElementByListingID(job.listingID);
+                            const priceElement = listingRow.querySelector('.market_listing_price');
+                            const listedPrice = priceElement.querySelectorAll('span')[1].innerText;
+                            const cheapest = listedPrice === priceOverview.lowest_price ? 'cheapest' : 'not_cheapest';
+
+                            priceElement.insertAdjacentHTML('beforeend', `
+                            <div class="${cheapest}" title="This is the price of the lowest listing right now.">
+                                ${priceOverview.lowest_price}
+                            </div>`);
+                        }
+                    }
+                }, (error) => {console.log(error)}
+            );
+        }
+        else { // when there are jobs in the queue but work is already being done at the moment
+            setTimeout(() => {workOnPriceQueue()}, 3000); // in this case is retries with a delay
+        }
+    }
+    else priceQueue.active = false;
 }

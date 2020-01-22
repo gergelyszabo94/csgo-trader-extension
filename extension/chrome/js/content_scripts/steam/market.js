@@ -2,6 +2,8 @@ function getMyListingIDFromElement(listingElement) {return listingElement.id.spl
 
 function getMyOrderIDFromElement(orderElement) {return orderElement.id.split('mybuyorder_')[1]}
 
+function getElementByListingID(listingID) {return document.getElementById(`mylisting_${listingID}`)}
+
 function switchToNextPageIfEmpty(listings) {
     if (listings.querySelectorAll('.market_listing_row.market_recent_listing_row').length === 0 ) {
         document.getElementById('tabContentsMyActiveMarketListings_btn_next').click();
@@ -54,6 +56,7 @@ if (sellListings !== null) {
             const marketLink = nameElement.getAttribute('href');
             const appID = getAppIDAndItemNameFromLink(marketLink).appID;
             const market_hash_name = getAppIDAndItemNameFromLink(marketLink).market_hash_name;
+            const listingID = getMyListingIDFromElement(listingRow);
 
             const priceElement = listingRow.querySelector('.market_listing_price');
             const listedPrice = priceElement.querySelectorAll('span')[1].innerText;
@@ -62,18 +65,14 @@ if (sellListings !== null) {
             totalPrice += parseInt(steamFormattedPriceToCents(listedPrice));
             totalYouReceivePrice += parseInt(steamFormattedPriceToCents(youReceivePrice));
 
-            getPriceOverview(appID, market_hash_name).then(
-                priceOverview => {
-                    if (priceOverview.lowest_price !== undefined) {
-                        const cheapest = listedPrice === priceOverview.lowest_price ? 'cheapest' : 'not_cheapest';
+            priceQueue.jobs.push({
+                type: 'my_listing',
+                listingID,
+                appID,
+                market_hash_name
+            });
 
-                        priceElement.insertAdjacentHTML('beforeend', `
-                            <div class="${cheapest}" title="This is the price of the lowest listing right now.">
-                                ${priceOverview.lowest_price}
-                            </div>`);
-                    }
-                }, (error) => {console.log(error)}
-            );
+            if (!priceQueue.active) workOnPriceQueue();
         }
     });
 
