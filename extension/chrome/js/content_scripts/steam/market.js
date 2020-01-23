@@ -90,7 +90,11 @@ if (sellListings !== null) {
     removeColumnHeader.setAttribute('title', 'Click here to remove all listings from this page!');
     removeColumnHeader.classList.add('clickable');
 
-    removeColumnHeader.insertAdjacentHTML('afterend', `<span id="removeSelected" class="market_listing_right_cell market_listing_edit_buttons placeholder clickable">REMOVE</span>`);
+    // adds remove selected column header/button
+    removeColumnHeader.insertAdjacentHTML('afterend', `
+        <span id="removeSelected" class="market_listing_right_cell market_listing_edit_buttons placeholder clickable" title="Click to remove the selected listings.">
+            REMOVE
+        </span>`);
 
     document.getElementById('removeSelected').addEventListener('click', () => {
         sellListingRows.forEach(listingRow => {
@@ -129,7 +133,11 @@ if (orders !== null && orders !== undefined) {
     cancelColumnHeader.setAttribute('title', 'Click here to cancel all your buy orders!');
     cancelColumnHeader.classList.add('clickable');
 
-    cancelColumnHeader.insertAdjacentHTML('afterend', `<span id="cancelSelected" class="market_listing_right_cell market_listing_edit_buttons placeholder clickable">CANCEL</span>`);
+    // adds cancel selected column header/button
+    cancelColumnHeader.insertAdjacentHTML('afterend', `
+        <span id="cancelSelected" class="market_listing_right_cell market_listing_edit_buttons placeholder clickable" title="Click to cancel the selected buy orders.">
+            CANCEL
+        </span>`);
 
     document.getElementById('cancelSelected').addEventListener('click', () => {
         orders.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(orderRow => {
