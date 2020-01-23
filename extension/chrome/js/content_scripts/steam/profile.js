@@ -187,6 +187,16 @@ if (document.querySelector('body').classList.contains('profile_page')){
 
             // changes avatar to the default one
             document.querySelector('.playerAvatarAutoSizeInner').querySelector('img').setAttribute('src', 'https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg');
+
+            // removes holiday cheer
+            if (document.querySelector('.golden_profile') !== null) {
+                injectStyle('.profile_header_bg:before {background-image: url()}', 'holidayheaderstyle');
+                document.querySelector('.golden_profile').classList.remove('golden_profile', '.profile_customization_snow');
+                document.querySelector('.golden_profile_header').classList.remove('golden_profile_header');
+                document.querySelector('.profile_header_bg_texture').classList.remove('profile_header_bg_texture');
+                document.querySelector('.w19_side_background, .w19_pig, .w19_strings, .profile_header_bg, .profile_header_bg_texture').style.background = 'url()';
+                document.querySelector('.w19_sides_position').innerHTML = '';
+            }
         }
     });
     overrideShowTradeOffer();
