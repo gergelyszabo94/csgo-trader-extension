@@ -1787,14 +1787,17 @@ function workOnPriceQueue() {
                     if (job.type === 'my_listing') {
                         if (priceOverview.lowest_price !== undefined) {
                             const listingRow = getElementByListingID(job.listingID);
-                            const priceElement = listingRow.querySelector('.market_listing_price');
-                            const listedPrice = priceElement.querySelectorAll('span')[1].innerText;
-                            const cheapest = listedPrice === priceOverview.lowest_price ? 'cheapest' : 'not_cheapest';
 
-                            priceElement.insertAdjacentHTML('beforeend', `
+                            if (listingRow !== null) { // the listing might not be there for example if the page was switched, the per page listing count was changed or the listing was removed
+                                const priceElement = listingRow.querySelector('.market_listing_price');
+                                const listedPrice = priceElement.querySelectorAll('span')[1].innerText;
+                                const cheapest = listedPrice === priceOverview.lowest_price ? 'cheapest' : 'not_cheapest';
+
+                                priceElement.insertAdjacentHTML('beforeend', `
                             <div class="${cheapest}" title="This is the price of the lowest listing right now.">
                                 ${priceOverview.lowest_price}
                             </div>`);
+                            }
                         }
                     }
                 }, (error) => {
