@@ -105,11 +105,11 @@ progress {
     }
 }
 
-.cheapest {
+.cheapest, .highest {
     color: var(--steam-ingame-green);
 }
 
-.not_cheapest {
+.not_cheapest, .not_highest {
     color: var(--steam-nametag-red);
 }
 

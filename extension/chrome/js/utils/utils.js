@@ -1591,13 +1591,10 @@ function prettyTimeAgo(unixTimestamp) {
     return prettyString;
 }
 
-function getHighestBuyOrder(market_hash_name) {
+function getHighestBuyOrder(appID, market_hash_name) {
     return new Promise((resolve, reject) => {
         let currencyID = getSteamWalletInfo().wallet_currency;
-        chrome.runtime.sendMessage({getBuyOrderInfo: {
-                currencyID: currencyID,
-                market_hash_name: market_hash_name
-            }}, (response) => {
+        chrome.runtime.sendMessage({getBuyOrderInfo: {appID, currencyID, market_hash_name}}, (response) => {
             if (response.getBuyOrderInfo !== 'error') resolve(response.getBuyOrderInfo.highest_buy_order);
             else reject('error');
         });
@@ -1770,21 +1767,21 @@ function workOnPriceQueue() {
     if (priceQueue.jobs.length !== 0) { // if there are no jobs then there is no recursion
         const delay = priceQueue.lastJobSuccessful ? 3000 : 15000;
 
-        if (!floatQueue.active) { // only start the work if the queue is inactive at the moment
-            floatQueue.active = true; // marks the queue active
+        if (!priceQueue.active) { // only start the work if the queue is inactive at the moment
+            priceQueue.active = true; // marks the queue active
 
             setTimeout(() => { // marks the queue inactive (ready for work) and starts the work again
-                floatQueue.active = false;
+                priceQueue.active = false;
                 workOnPriceQueue();
             }, delay);
 
             const job = priceQueue.jobs.shift();
 
-            getPriceOverview(job.appID, job.market_hash_name).then(
-                priceOverview => {
-                    priceQueue.lastJobSuccessful = true;
+            if (job.type === 'my_listing') {
+                getPriceOverview(job.appID, job.market_hash_name).then(
+                    priceOverview => {
+                        priceQueue.lastJobSuccessful = true;
 
-                    if (job.type === 'my_listing') {
                         if (priceOverview.lowest_price !== undefined) {
                             const listingRow = getElementByListingID(job.listingID);
 
@@ -1794,17 +1791,43 @@ function workOnPriceQueue() {
                                 const cheapest = listedPrice === priceOverview.lowest_price ? 'cheapest' : 'not_cheapest';
 
                                 priceElement.insertAdjacentHTML('beforeend', `
-                            <div class="${cheapest}" title="This is the price of the lowest listing right now.">
-                                ${priceOverview.lowest_price}
-                            </div>`);
+                                    <div class="${cheapest}" title="This is the price of the lowest listing right now.">
+                                        ${priceOverview.lowest_price}
+                                    </div>`);
                             }
                         }
+                    }, (error) => {
+                        priceQueue.lastJobSuccessful = false;
+                        console.log(error)
                     }
-                }, (error) => {
-                    priceQueue.lastJobSuccessful = false;
-                    console.log(error)
-                }
-            );
+                );
+            }
+            else if (job.type === 'my_buy_order') {
+                getHighestBuyOrder(job.appID, job.market_hash_name).then(
+                    highestBuyOrder => {
+                        if (highestBuyOrder !== undefined) {
+                            priceQueue.lastJobSuccessful = true;
+                            const priceOfHighestOrder = centsToSteamFormattedPrice(highestBuyOrder);
+                            const orderRow = getElementByOrderID(job.orderID);
+
+                            if (orderRow !== null) { // the order might not be there for example if the page was switched, the per page order count was changed or the order was canceled
+                                const priceElement = orderRow.querySelector('.market_listing_price');
+                                const orderPrice = priceElement.innerText;
+                                const highest = orderPrice === priceOfHighestOrder ? 'highest' : 'not_highest';
+
+                                priceElement.insertAdjacentHTML('beforeend', `
+                                    <div class="${highest}" title="This is the price of the highest buy order right now.">
+                                        ${priceOfHighestOrder}
+                                    </div>`);
+                            }
+                        }
+                        else priceQueue.lastJobSuccessful = false;
+                    }, (error) => {
+                        priceQueue.lastJobSuccessful = false;
+                        console.log(error)
+                    }
+                );
+            }
         }
         else { // when there are jobs in the queue but work is already being done at the moment
             setTimeout(() => {workOnPriceQueue()}, delay); // in this case is retries with a delay

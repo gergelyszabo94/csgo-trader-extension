@@ -912,7 +912,7 @@ function addInstantSellPrice(item) {
     if (instantElement.getAttribute('data-price-set') !== true && instantElement.getAttribute('data-price-in-progress') !== true) { // check if price is already set or in progress
         instantElement.setAttribute('data-price-in-progress', true);
 
-        getHighestBuyOrder(item.market_hash_name).then(highest_order => {
+        getHighestBuyOrder('730', item.market_hash_name).then(highest_order => {
                 if (highest_order !== undefined) {
                     instantElement.innerText = centsToSteamFormattedPrice(highest_order);
                     instantElement.setAttribute('data-price-set', true);

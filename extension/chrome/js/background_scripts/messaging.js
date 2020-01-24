@@ -319,7 +319,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
     else if (request.getBuyOrderInfo !== undefined) {
 
-        let getRequest = new Request(`https://steamcommunity.com/market/listings/730/${request.getBuyOrderInfo.market_hash_name}`);
+        let getRequest = new Request(`https://steamcommunity.com/market/listings/${request.getBuyOrderInfo.appID}/${request.getBuyOrderInfo.market_hash_name}`);
 
         fetch(getRequest).then((response) => {
             if (!response.ok) {

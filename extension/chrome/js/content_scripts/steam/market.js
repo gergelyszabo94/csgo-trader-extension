@@ -4,6 +4,8 @@ function getMyOrderIDFromElement(orderElement) {return orderElement.id.split('my
 
 function getElementByListingID(listingID) {return document.getElementById(`mylisting_${listingID}`)}
 
+function getElementByOrderID(orderID) {return document.getElementById(`mybuyorder_${orderID}`)}
+
 function switchToNextPageIfEmpty(listings) {
     if (listings.querySelectorAll('.market_listing_row.market_recent_listing_row').length === 0 ) {
         document.getElementById('tabContentsMyActiveMarketListings_btn_next').click();
@@ -126,6 +128,38 @@ if (sellListings !== null) {
 // cancel all orders functionality
 const orders = document.querySelectorAll('.my_listing_section.market_content_block.market_home_listing_table')[1];
 if (orders !== null && orders !== undefined) {
+    const orderRows = orders.querySelectorAll('.market_listing_row.market_recent_listing_row');
+    let totalOrderAmount = 0;
+
+    // add starting at prices and total
+    orderRows.forEach(orderRow => {
+        const nameElement = orderRow.querySelector('.market_listing_item_name_link');
+        if (nameElement !== null) {
+            const marketLink = nameElement.getAttribute('href');
+            const appID = getAppIDAndItemNameFromLink(marketLink).appID;
+            const market_hash_name = getAppIDAndItemNameFromLink(marketLink).market_hash_name;
+            const orderID = getMyOrderIDFromElement(orderRow);
+
+            const orderPrice = orderRow.querySelector('.market_listing_price').innerText;
+
+            totalOrderAmount += parseInt(steamFormattedPriceToCents(orderPrice));
+
+            priceQueue.jobs.push({
+                type: 'my_buy_order',
+                orderID,
+                appID,
+                market_hash_name
+            });
+
+            if (!priceQueue.active) workOnPriceQueue();
+        }
+    });
+
+    orders.insertAdjacentHTML('afterend',
+        `<div style="margin: -15px 0 15px;">
+                   Orders placed total value: ${centsToSteamFormattedPrice(totalOrderAmount)}
+               </div>`);
+
     const tableHeader = orders.querySelector('.market_listing_table_header');
     const cancelColumnHeader = tableHeader.querySelector('.market_listing_right_cell.market_listing_edit_buttons.placeholder');
 
@@ -140,7 +174,7 @@ if (orders !== null && orders !== undefined) {
         </span>`);
 
     document.getElementById('cancelSelected').addEventListener('click', () => {
-        orders.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(orderRow => {
+        orderRows.forEach(orderRow => {
             if (orderRow.querySelector('input').checked) {
                 const orderID = getMyOrderIDFromElement(orderRow);
                 cancelOrder(orderID).then(
@@ -153,7 +187,7 @@ if (orders !== null && orders !== undefined) {
     });
 
     cancelColumnHeader.addEventListener('click', () => {
-        orders.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(orderRow => {
+        orderRows.forEach(orderRow => {
             const orderID = getMyOrderIDFromElement(orderRow);
             cancelOrder(orderID).then(
                 result => {
