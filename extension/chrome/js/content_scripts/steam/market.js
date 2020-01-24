@@ -125,7 +125,7 @@ if (sellListings !== null) {
     });
 }
 
-// cancel all orders functionality
+// buy order related functionality, highest buy order price, cancel selected, cancel all
 const orders = document.querySelectorAll('.my_listing_section.market_content_block.market_home_listing_table')[1];
 if (orders !== null && orders !== undefined) {
     const orderRows = orders.querySelectorAll('.market_listing_row.market_recent_listing_row');
@@ -197,6 +197,26 @@ if (orders !== null && orders !== undefined) {
         });
     });
 }
+
+// market history features
+document.getElementById('tabMyMarketHistory').addEventListener('click', () => {
+    setTimeout(() => {
+        document.getElementById('tabContentsMyMarketHistoryRows').querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(historyRow => {
+            const gainOrLoss = historyRow.querySelector('.market_listing_gainorloss').innerText;
+            let historyType = null;
+
+            switch (gainOrLoss) {
+                case '': historyType = 'listing_created'; break;
+                case '+': historyType = 'purchase'; break;
+                case '-': historyType = 'sale'; break
+            }
+
+            historyRow.classList.add(historyType);
+
+        })
+    }, 3000);
+});
+
 
 // reloads the page on extension update/reload/uninstall
 chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});

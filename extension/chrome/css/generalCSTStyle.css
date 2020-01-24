@@ -117,6 +117,14 @@ progress {
     color: var(--steam-sale-golden) !important;
 }
 
+.purchase {
+    background-color: rgba(0,255,0 ,0.3) !important;
+}
+
+.sale {
+    background-color: rgba(255,0,0 ,0.3) !important;
+}
+
 .trade_offers_module{
     padding-top: 24px;
     padding-left: 48px;
