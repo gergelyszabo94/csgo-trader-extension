@@ -18,41 +18,21 @@ function getAppIDAndItemNameFromLink(marketLink) {
     return {appID, market_hash_name};
 }
 
-logExtensionPresence();
-updateLoggedInUserID();
-trackEvent({
-    type: 'pageview',
-    action: 'marketMainPage'
-});
-
-// makes remove/cancel columns narrower
-injectStyle(`
-.market_listing_edit_buttons {
-    width: 120px;
-}`, 'editColumnWidth');
-
-// adds selection checkboxes
-document.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(row => {
-    const priceElement = row.querySelector('.market_listing_right_cell.market_listing_my_price');
-
-    if (priceElement !== null) {
-        priceElement.insertAdjacentHTML('beforebegin', `
-            <div class="market_listing_right_cell market_listing_edit_buttons">
-                <input type="checkbox">
-            </div>`);
-    }
-});
-
-// listings related functionality, starting at price, remove selected, remove all
-const sellListings = document.getElementById('tabContentsMyActiveMarketListingsTable');
-if (sellListings !== null) {
-
-    const sellListingRows = sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row');
+function addListingStartingAtPricesAndTotal(sellListings) {
     let totalPrice = 0;
     let totalYouReceivePrice = 0;
 
     // add starting at prices and total
-    sellListingRows.forEach(listingRow => {
+    sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listingRow => {
+        // adds selection checkboxes
+        const priceElement = listingRow.querySelector('.market_listing_right_cell.market_listing_my_price');
+        if (priceElement !== null) {
+            priceElement.insertAdjacentHTML('beforebegin', `
+            <div class="market_listing_right_cell market_listing_edit_buttons">
+                <input type="checkbox">
+            </div>`);
+        }
+
         const nameElement = listingRow.querySelector('.market_listing_item_name_link');
         if (nameElement !== null) {
             const marketLink = nameElement.getAttribute('href');
@@ -78,12 +58,50 @@ if (sellListings !== null) {
         }
     });
 
+    const listingsTotal = document.getElementById('listingsTotal');
+    if (listingsTotal !== null) listingsTotal.parentNode.removeChild(listingsTotal);
+
     sellListings.insertAdjacentHTML('afterend',
-        `<div style="margin: -15px 0 15px;">
+        `<div id='listingsTotal' style="margin: -15px 0 15px;">
                    Total listed price: ${centsToSteamFormattedPrice(totalPrice)} You will receive: ${centsToSteamFormattedPrice(totalYouReceivePrice)} (on this page)
                </div>`);
+}
 
+logExtensionPresence();
+updateLoggedInUserID();
+trackEvent({
+    type: 'pageview',
+    action: 'marketMainPage'
+});
 
+// makes remove/cancel columns narrower
+injectStyle(`
+.market_listing_edit_buttons {
+    width: 120px;
+}`, 'editColumnWidth');
+
+// listings related functionality, starting at price, remove selected, remove all
+const sellListings = document.getElementById('tabContentsMyActiveMarketListingsTable');
+
+if (sellListings !== null) {
+    const tabContentRows = document.getElementById('tabContentsMyActiveMarketListingsRows');
+
+    if (tabContentRows !== null) {
+        // listens for listing changes like removal, page switching
+        MutationObserver = window.MutationObserver;
+
+        let observer = new MutationObserver((changes) => {
+            if (sellListings.parentElement.style.display !== 'none') { // only execute if it's the active tab
+                addListingStartingAtPricesAndTotal(sellListings);
+            }
+        });
+
+        observer.observe(tabContentRows, {
+            subtree: false,
+            childList: true,
+            attributes: false
+        });
+    }
 
     const tableHeader = sellListings.querySelector('.market_listing_table_header');
     const removeColumnHeader = tableHeader.querySelector('.market_listing_right_cell.market_listing_edit_buttons.placeholder');
@@ -99,7 +117,7 @@ if (sellListings !== null) {
         </span>`);
 
     document.getElementById('removeSelected').addEventListener('click', () => {
-        sellListingRows.forEach(listingRow => {
+        sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listingRow => {
             if (listingRow.querySelector('input').checked) {
                 const listingID = getMyListingIDFromElement(listingRow);
                 removeListing(listingID).then(
@@ -113,7 +131,7 @@ if (sellListings !== null) {
     });
 
     removeColumnHeader.addEventListener('click', () => {
-        sellListingRows.forEach(listingRow => {
+        sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listingRow => {
             const listingID = getMyListingIDFromElement(listingRow);
             removeListing(listingID).then(
                 result => {
@@ -123,6 +141,8 @@ if (sellListings !== null) {
             )
         });
     });
+
+    addListingStartingAtPricesAndTotal(sellListings);
 }
 
 // buy order related functionality, highest buy order price, cancel selected, cancel all
@@ -133,6 +153,15 @@ if (orders !== null && orders !== undefined) {
 
     // add starting at prices and total
     orderRows.forEach(orderRow => {
+        // adds selection checkboxes
+        const priceElement = orderRow.querySelector('.market_listing_right_cell.market_listing_my_price');
+        if (priceElement !== null) {
+            priceElement.insertAdjacentHTML('beforebegin', `
+            <div class="market_listing_right_cell market_listing_edit_buttons">
+                <input type="checkbox">
+            </div>`);
+        }
+
         const nameElement = orderRow.querySelector('.market_listing_item_name_link');
         if (nameElement !== null) {
             const marketLink = nameElement.getAttribute('href');
