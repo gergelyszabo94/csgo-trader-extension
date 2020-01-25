@@ -80,7 +80,6 @@ injectStyle(`
     width: 120px;
 }`, 'editColumnWidth');
 
-// listings related functionality, starting at price, remove selected, remove all
 const sellListings = document.getElementById('tabContentsMyActiveMarketListingsTable');
 
 if (sellListings !== null) {
@@ -228,24 +227,37 @@ if (orders !== null && orders !== undefined) {
 }
 
 // market history features
-document.getElementById('tabMyMarketHistory').addEventListener('click', () => {
-    setTimeout(() => {
-        document.getElementById('tabContentsMyMarketHistoryRows').querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(historyRow => {
-            const gainOrLoss = historyRow.querySelector('.market_listing_gainorloss').innerText;
-            let historyType = null;
+const marketHistoryTab = document.getElementById('tabContentsMyMarketHistory');
+if (marketHistoryTab !== null) {
+    // listens for history page changes
+    MutationObserver = window.MutationObserver;
 
-            switch (gainOrLoss) {
-                case '': historyType = 'listing_created'; break;
-                case '+': historyType = 'purchase'; break;
-                case '-': historyType = 'sale'; break
+    let observer = new MutationObserver((mutationRecord) => {
+        if (sellListings.style.display !== 'none') { // only execute if it's the active tab
+            if (mutationRecord[0].target.id === 'tabContentsMyMarketHistory' || mutationRecord[0].target.id === 'tabContentsMyMarketHistoryRows') {
+                marketHistoryTab.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(historyRow => {
+                    const gainOrLoss = historyRow.querySelector('.market_listing_gainorloss').innerText;
+                    let historyType = null;
+
+                    switch (gainOrLoss) {
+                        case '': historyType = 'listing_created'; break;
+                        case '+': historyType = 'purchase'; break;
+                        case '-': historyType = 'sale'; break
+                    }
+
+                    historyRow.classList.add(historyType);
+
+                })
             }
+        }
+    });
 
-            historyRow.classList.add(historyType);
-
-        })
-    }, 3000);
-});
-
+    observer.observe(marketHistoryTab, {
+        subtree: true,
+        childList: true,
+        attributes: false
+    });
+}
 
 // reloads the page on extension update/reload/uninstall
 chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});
