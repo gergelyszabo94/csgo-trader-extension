@@ -180,7 +180,10 @@
       "css": ["/css/generalCSTStyle.css"]
     },
     {
-      "matches": ["*://csgolounge.com/mytrades/*"],
+      "matches": [
+        "*://csgolounge.com/mytrades/*",
+        "*://old.csgolounge.com/mytrades/*"
+      ],
       "run_at" : "document_idle",
       "js": [
         "js/utils/utils.js",
