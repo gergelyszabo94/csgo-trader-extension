@@ -1834,3 +1834,32 @@ function workOnPriceQueue() {
     }
     else priceQueue.active = false;
 }
+
+function getMarketHistory(start, count) {
+    return new Promise((resolve, reject) => {
+        let myHeaders = new Headers();
+        myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+
+        let request = new Request(`https://steamcommunity.com/market/myhistory/?start=${start}&count=${count}`,
+            {
+                method: 'POST',
+                headers: myHeaders,
+                body: `sessionid=${getSessionID()}`
+            });
+
+        fetch(request).then((response) => {
+            if (!response.ok) {
+                console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+                reject({status:response.status, statusText: response.statusText});
+            }
+            return response.json();
+        }).then((historyJSON) => {
+            if (historyJSON === null) reject ('success:false');
+            else if (historyJSON.success === true) resolve(historyJSON);
+            else reject ('success:false');
+        }).catch((err) => {
+            console.log(err);
+            reject(err);
+        });
+    });
+}

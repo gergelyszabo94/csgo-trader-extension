@@ -289,10 +289,11 @@ if (marketHistoryButton !== null) {
     // inserts export tab content
     document.getElementById('myListings').insertAdjacentHTML('beforeend', `
         <div id="tabContentsMyMarketHistoryExport" class="my_listing_section market_content_block" style="display: none;">
-            Content
+            <span id="exportMarketHistory">Export Market History</span>
         </div>    
     `);
 
+    const marketHistoryExportButton = document.getElementById('exportMarketHistory');
     const marketHistoryExportContent = document.getElementById('tabContentsMyMarketHistoryExport');
     const marketHistoryExportTabButton = document.getElementById('tabMyMarketHistoryExport');
 
@@ -303,6 +304,16 @@ if (marketHistoryButton !== null) {
            marketHistoryExportTabButton.classList.add('market_tab_well_tab_inactive');
            marketHistoryExportContent.style.display = 'none';
        })
+    });
+
+    marketHistoryExportButton.addEventListener('click', (event) => {
+       event.target.innerText = 'Exporting market history..';
+        getMarketHistory(0, 50).then(
+            history => {
+                console.log(history);
+                event.target.innerHTML = history.results_html;
+            }
+        )
     });
 
     marketHistoryExportTabButton.addEventListener('click', () => {
