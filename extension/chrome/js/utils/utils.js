@@ -20,7 +20,8 @@ let floatQueue = {
 let priceQueue = {
     active: false,
     jobs: [],
-    lastJobSuccessful: true
+    lastJobSuccessful: true,
+    localCache: {}
 };
 
 function getPattern(name, paint_seed) {
@@ -1778,29 +1779,27 @@ function workOnPriceQueue() {
             const job = priceQueue.jobs.shift();
 
             if (job.type === 'my_listing') {
-                getPriceOverview(job.appID, job.market_hash_name).then(
-                    priceOverview => {
-                        priceQueue.lastJobSuccessful = true;
-
-                        if (priceOverview.lowest_price !== undefined) {
-                            const listingRow = getElementByListingID(job.listingID);
-
-                            if (listingRow !== null) { // the listing might not be there for example if the page was switched, the per page listing count was changed or the listing was removed
-                                const priceElement = listingRow.querySelector('.market_listing_price');
-                                const listedPrice = priceElement.querySelectorAll('span')[1].innerText;
-                                const cheapest = listedPrice === priceOverview.lowest_price ? 'cheapest' : 'not_cheapest';
-
-                                priceElement.insertAdjacentHTML('beforeend', `
-                                    <div class="${cheapest}" title="This is the price of the lowest listing right now.">
-                                        ${priceOverview.lowest_price}
-                                    </div>`);
+                // non-active listing pages are not kept in DOM so if you switch back a page the starting at prices have to be readded
+                // to avoid making additional requests lowest prices are stored on a local (exclusive to the current page) only cache
+                if (priceQueue.localCache[job.listingID] !== undefined) {
+                    addStartingAtPriceInfoToPage(job.listingID, priceQueue.localCache[job.listingID]);
+                    priceQueue.active = false;
+                    workOnPriceQueue();
+                }
+                else {
+                    getPriceOverview(job.appID, job.market_hash_name).then(
+                        priceOverview => {
+                            priceQueue.lastJobSuccessful = true;
+                            if (priceOverview.lowest_price !== undefined) {
+                                addStartingAtPriceInfoToPage(job.listingID, priceOverview.lowest_price);
+                                priceQueue.localCache[job.listingID] = priceOverview.lowest_price;
                             }
+                        }, (error) => {
+                            priceQueue.lastJobSuccessful = false;
+                            console.log(error)
                         }
-                    }, (error) => {
-                        priceQueue.lastJobSuccessful = false;
-                        console.log(error)
-                    }
-                );
+                    );
+                }
             }
             else if (job.type === 'my_buy_order') {
                 getHighestBuyOrder(job.appID, job.market_hash_name).then(
