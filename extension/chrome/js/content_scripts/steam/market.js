@@ -274,5 +274,51 @@ if (marketHistoryTab !== null) {
     });
 }
 
+// market history export
+const marketHistoryButton = document.getElementById('tabMyMarketHistory');
+const myListingsButton = document.getElementById('tabMyListings');
+
+if (marketHistoryButton !== null) {
+    // inserts export tab button
+    marketHistoryButton.insertAdjacentHTML('afterend', `
+        <a id="tabMyMarketHistoryExport" class="market_tab_well_tab market_tab_well_tab_inactive" href="#">
+            <span class="market_tab_well_tab_contents">Export Market History</span>
+        </a>
+    `);
+
+    // inserts export tab content
+    document.getElementById('myListings').insertAdjacentHTML('beforeend', `
+        <div id="tabContentsMyMarketHistoryExport" class="my_listing_section market_content_block" style="display: none;">
+            Content
+        </div>    
+    `);
+
+    const marketHistoryExportContent = document.getElementById('tabContentsMyMarketHistoryExport');
+    const marketHistoryExportTabButton = document.getElementById('tabMyMarketHistoryExport');
+
+    // hides the export tab when one of the other tabs becomes active
+    [marketHistoryButton, myListingsButton].forEach((tabButton) => {
+       tabButton.addEventListener('click', () => {
+           marketHistoryExportTabButton.classList.remove('market_tab_well_tab_active');
+           marketHistoryExportTabButton.classList.add('market_tab_well_tab_inactive');
+           marketHistoryExportContent.style.display = 'none';
+       })
+    });
+
+    marketHistoryExportTabButton.addEventListener('click', () => {
+        marketHistoryExportTabButton.classList.add('market_tab_well_tab_active');
+        marketHistoryExportTabButton.classList.remove('market_tab_well_tab_inactive');
+        marketHistoryButton.classList.remove('market_tab_well_tab_active');
+        marketHistoryButton.classList.add('market_tab_well_tab_inactive');
+        myListingsButton.classList.remove('market_tab_well_tab_active');
+        myListingsButton.classList.add('market_tab_well_tab_inactive');
+
+        marketHistoryExportContent.style.display = 'block';
+        sellListings.parentElement.style.display = 'none';
+        marketHistoryTab.style.display = 'none';
+
+    });
+}
+
 // reloads the page on extension update/reload/uninstall
 chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});
