@@ -127,12 +127,13 @@ function getHistoryType(historyRow) {
 function createCSV() {
     let csvContent = 'Item Name,Game Name,Listed On,Acted On, Display Price, Price in Cents, Type, Partner Name, Partner Link\n';
 
-    marketHistoryExport.history.forEach((historyEvent) => {
+    for (let i = 0; i < marketHistoryExport.to - marketHistoryExport.from; i++) {
+        const historyEvent = marketHistoryExport.history[i];
         const lineCSV = historyEvent.partner !== null
             ? `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}","${historyEvent.partner.partnerName}","${historyEvent.partner.partnerLink}"\n`
             : `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}",,,\n`;
         csvContent += lineCSV;
-    });
+    }
 
     const encodedURI = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
     const downloadButton = document.getElementById('market_history_download');
@@ -146,11 +147,11 @@ function workOnExport() {
             history => {
                 marketHistoryExport.progress += 50;
                 marketHistoryExport.history = marketHistoryExport.history.concat(extractHistoryEvents(history.results_html));
-                console.log(marketHistoryExport.history);
 
-                if (marketHistoryExport.progress >= marketHistoryExport.to) {
+                if (marketHistoryExport.progress >= marketHistoryExport.to - marketHistoryExport.from) {
                     marketHistoryExport.inProgress = false;
                     createCSV();
+                    document.getElementById('exportHelperMessage').innerText = 'Export finished, you can now download the result!';
                 }
                 else setTimeout(() => { workOnExport()}, 5000);
             }
@@ -382,7 +383,7 @@ if (marketHistoryButton !== null) {
                 <span id="exportMarketHistory" class="clickable underline"> Start history export!</span>
             </p>
             <div>
-                <span id="exportHelperMessage" class="hidden"></span>
+                <span id="exportHelperMessage"></span>
             </div>
             <div>
                 <a class="hidden" id="market_history_download" href="" download="market_history.csv">Download market_history.csv</a> 
@@ -418,9 +419,9 @@ if (marketHistoryButton !== null) {
         if (!marketHistoryExport.inProgress) {
             marketHistoryExport.inProgress = true;
             marketHistoryExport.history = [];
-            event.target.innerText = 'Exporting market history..';
-            marketHistoryExport.from = document.getElementById('exportFrom').value;
-            marketHistoryExport.to = document.getElementById('exportTo').value;
+            document.getElementById('exportHelperMessage').innerText = 'Exporting market history...';
+            marketHistoryExport.from = parseInt(document.getElementById('exportFrom').value);
+            marketHistoryExport.to = parseInt(document.getElementById('exportTo').value);
             workOnExport();
         }
         else document.getElementById('exportHelperMessage').innerText = 'Exporting is already in progress!';
