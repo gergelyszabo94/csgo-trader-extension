@@ -102,8 +102,7 @@ function extractHistoryEvents(result_html) {
         if (type !== 'listing_created') { // listing creation events have no partner specified
             const partnerName = partnerElement.querySelector('img').title;
             const partnerLink = partnerElement.querySelector('a').getAttribute('href');
-            const partnerID = partnerLink.split('profiles/')[1];
-            partner = {partnerName, partnerLink, partnerID};
+            partner = {partnerName, partnerLink};
         }
 
         eventsToReturn.push({itemName, gameName, listedOn, actedOn, displayPrice, priceInCents, partner, type});
@@ -124,6 +123,26 @@ function getHistoryType(historyRow) {
     }
     return historyType;
 }
+
+function createCSV() {
+    let csvContent = 'Item Name,Game Name,Listed On,Acted On, Display Price, Price in Cents, Type, Partner Name, Partner Link\n';
+
+    marketHistory.forEach((historyEvent) => {
+        let lineCSV = '';
+        if (historyEvent.partner !== null) {
+            lineCSV = `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}","${historyEvent.partner.partnerName}","${historyEvent.partner.partnerLink}"\n`;
+        }
+        else lineCSV = `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}",,,\n`;
+        csvContent += lineCSV;
+    });
+
+    const encodedURI = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
+    const downloadButton = document.getElementById('market_history_download');
+    downloadButton.setAttribute('href', encodedURI);
+    downloadButton.classList.remove('hidden');
+}
+
+let marketHistory = [];
 
 logExtensionPresence();
 updateLoggedInUserID();
@@ -330,7 +349,9 @@ if (marketHistoryButton !== null) {
                 The result is a .csv file that you can open in Microsoft Excel or use programmatically.
             </p>
             <span id="exportMarketHistory" class="clickable underline">Click here to export to start exporting your market history.</span>
-            <span style="display: none" id="marketHistoryTempElement"></span>
+            <p>
+                <a class="hidden" id="market_history_download" href="" download="market_history.csv">Download market_history.csv</a> 
+            </p>
         </div>    
     `);
 
@@ -340,18 +361,20 @@ if (marketHistoryButton !== null) {
 
     // hides the export tab when one of the other tabs becomes active
     [marketHistoryButton, myListingsButton].forEach((tabButton) => {
-       tabButton.addEventListener('click', () => {
-           marketHistoryExportTabButton.classList.remove('market_tab_well_tab_active');
-           marketHistoryExportTabButton.classList.add('market_tab_well_tab_inactive');
-           marketHistoryExportContent.style.display = 'none';
-       })
+        tabButton.addEventListener('click', () => {
+            marketHistoryExportTabButton.classList.remove('market_tab_well_tab_active');
+            marketHistoryExportTabButton.classList.add('market_tab_well_tab_inactive');
+            marketHistoryExportContent.style.display = 'none';
+        })
     });
 
     marketHistoryExportButton.addEventListener('click', (event) => {
-       event.target.innerText = 'Exporting market history..';
-        getMarketHistory(0, 50).then(
+        event.target.innerText = 'Exporting market history..';
+        getMarketHistory(50, 50).then(
             history => {
-                console.log(extractHistoryEvents(history.results_html));
+                marketHistory = marketHistory.concat(extractHistoryEvents(history.results_html));
+                console.log(marketHistory);
+                createCSV();
             }
         )
     });
@@ -371,8 +394,8 @@ if (marketHistoryButton !== null) {
         getMarketHistory(0, 50).then(
             history => {
                 console.log(history);
+                marketHistory = marketHistory.concat(extractHistoryEvents(history.results_html));
                 document.getElementById('numberOfHistoryEvents').innerText = history.total_count;
-                document.getElementById('marketHistoryTempElement').innerHTML = history.results_html;
             }
         )
 
