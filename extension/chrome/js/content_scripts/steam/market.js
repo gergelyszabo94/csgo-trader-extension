@@ -125,14 +125,17 @@ function getHistoryType(historyRow) {
 }
 
 function createCSV() {
+    const excludeCreatedEvent = document.getElementById('excludeListingCreated').checked;
     let csvContent = 'Item Name,Game Name,Listed On,Acted On, Display Price, Price in Cents, Type, Partner Name, Partner Link\n';
 
     for (let i = 0; i < marketHistoryExport.to - marketHistoryExport.from; i++) {
         const historyEvent = marketHistoryExport.history[i];
-        const lineCSV = historyEvent.partner !== null
-            ? `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}","${historyEvent.partner.partnerName}","${historyEvent.partner.partnerLink}"\n`
-            : `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}",,,\n`;
-        csvContent += lineCSV;
+        if (!(excludeCreatedEvent && historyEvent.type === 'listing_created')) {
+            const lineCSV = historyEvent.partner !== null
+                ? `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}","${historyEvent.partner.partnerName}","${historyEvent.partner.partnerLink}"\n`
+                : `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}",,,\n`;
+            csvContent += lineCSV;
+        }
     }
 
     const encodedURI = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
@@ -391,7 +394,8 @@ if (marketHistoryButton !== null) {
                 Your market history is requested in junks and might take a while if do lots of transactions.
             </p>
             <p>
-                Range: Events <input type="number" min="0" max="1000000" value="0" id="exportFrom"/> to <input type="number" min="50" max="1000000" value="50" id="exportTo"/>
+                Range: Events <input type="number" min="0" max="1000000" value="0" id="exportFrom"/> to <input type="number" min="50" max="1000000" value="50" id="exportTo"/> 
+                Exclude listing created events<input type="checkbox" id="excludeListingCreated"/>
                 <span id="exportMarketHistory" class="clickable underline"> Start history export!</span>
             </p>
             <div>
