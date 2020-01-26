@@ -127,12 +127,10 @@ function getHistoryType(historyRow) {
 function createCSV() {
     let csvContent = 'Item Name,Game Name,Listed On,Acted On, Display Price, Price in Cents, Type, Partner Name, Partner Link\n';
 
-    marketHistory.forEach((historyEvent) => {
-        let lineCSV = '';
-        if (historyEvent.partner !== null) {
-            lineCSV = `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}","${historyEvent.partner.partnerName}","${historyEvent.partner.partnerLink}"\n`;
-        }
-        else lineCSV = `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}",,,\n`;
+    marketHistoryExport.history.forEach((historyEvent) => {
+        const lineCSV = historyEvent.partner !== null
+            ? `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}","${historyEvent.partner.partnerName}","${historyEvent.partner.partnerLink}"\n`
+            : `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}",,,\n`;
         csvContent += lineCSV;
     });
 
@@ -142,7 +140,31 @@ function createCSV() {
     downloadButton.classList.remove('hidden');
 }
 
-let marketHistory = [];
+function workOnExport() {
+    if (marketHistoryExport.inProgress) {
+        getMarketHistory(marketHistoryExport.progress, 50).then(
+            history => {
+                marketHistoryExport.progress += 50;
+                marketHistoryExport.history = marketHistoryExport.history.concat(extractHistoryEvents(history.results_html));
+                console.log(marketHistoryExport.history);
+
+                if (marketHistoryExport.progress >= marketHistoryExport.to) {
+                    marketHistoryExport.inProgress = false;
+                    createCSV();
+                }
+                else setTimeout(() => { workOnExport()}, 5000);
+            }
+        )
+    }
+}
+
+const marketHistoryExport = {
+    history: [],
+    from: 0,
+    to: 1000000,
+    progress: 0,
+    inProgress: false
+};
 
 logExtensionPresence();
 updateLoggedInUserID();
@@ -342,16 +364,29 @@ if (marketHistoryButton !== null) {
     // inserts export tab content
     document.getElementById('myListings').insertAdjacentHTML('beforeend', `
         <div id="tabContentsMyMarketHistoryExport" class="my_listing_section market_content_block" style="display: none;">
-            <h1 class="historyExportTitle">Export Market History (<span id="numberOfHistoryEvents">0</span> history events) (BETA)</h1> 
+            <h1 class="historyExportTitle">Export Market History (<span class="numberOfHistoryEvents">0</span> history events) (BETA)</h1> 
             <p>
                 Exporting your market history can be great if you want to analyse it in a spreadsheet for example.
-                A history event is either one of these three actions: a purchase, a sale or  a listing creation.
+                A history event is either one of these three actions: a purchase, a sale or a listing creation.
                 The result is a .csv file that you can open in Microsoft Excel or use programmatically.
+                It is in utf-8 charset, if you see weird characters in your Excel you should try
+                <a href="https://www.itg.ias.edu/content/how-import-csv-file-uses-utf-8-character-encoding-0" target="_blank">importing it as such</a>.
             </p>
-            <span id="exportMarketHistory" class="clickable underline">Click here to export to start exporting your market history.</span>
             <p>
-                <a class="hidden" id="market_history_download" href="" download="market_history.csv">Download market_history.csv</a> 
+                The most recent history event is event 0, the first one is the event with the highest number
+                (<span class="numberOfHistoryEvents">0</span> in your case).
+                Your market history is requested in junks and might take a while if do lots of transactions.
             </p>
+            <p>
+                Range: Events <input type="number" min="0" max="1000000" value="0" id="exportFrom"/> to <input type="number" min="50" max="1000000" value="50" id="exportTo"/>
+                <span id="exportMarketHistory" class="clickable underline"> Start history export!</span>
+            </p>
+            <div>
+                <span id="exportHelperMessage" class="hidden"></span>
+            </div>
+            <div>
+                <a class="hidden" id="market_history_download" href="" download="market_history.csv">Download market_history.csv</a> 
+            </div>
         </div>    
     `);
 
@@ -368,15 +403,27 @@ if (marketHistoryButton !== null) {
         })
     });
 
-    marketHistoryExportButton.addEventListener('click', (event) => {
-        event.target.innerText = 'Exporting market history..';
-        getMarketHistory(50, 50).then(
-            history => {
-                marketHistory = marketHistory.concat(extractHistoryEvents(history.results_html));
-                console.log(marketHistory);
-                createCSV();
+    document.querySelectorAll('#exportFrom, #exportTo').forEach((range) => {
+        range.addEventListener('change', () => {
+            const fromElement = document.getElementById('exportFrom');
+            const toElement = document.getElementById('exportTo');
+            if (parseInt(fromElement.value) >= parseInt(toElement.value)) {
+                fromElement.value = 0;
+                toElement.value = toElement.getAttribute('max');
             }
-        )
+        });
+    });
+
+    marketHistoryExportButton.addEventListener('click', (event) => {
+        if (!marketHistoryExport.inProgress) {
+            marketHistoryExport.inProgress = true;
+            marketHistoryExport.history = [];
+            event.target.innerText = 'Exporting market history..';
+            marketHistoryExport.from = document.getElementById('exportFrom').value;
+            marketHistoryExport.to = document.getElementById('exportTo').value;
+            workOnExport();
+        }
+        else document.getElementById('exportHelperMessage').innerText = 'Exporting is already in progress!';
     });
 
     marketHistoryExportTabButton.addEventListener('click', () => {
@@ -393,9 +440,13 @@ if (marketHistoryButton !== null) {
 
         getMarketHistory(0, 50).then(
             history => {
-                console.log(history);
-                marketHistory = marketHistory.concat(extractHistoryEvents(history.results_html));
-                document.getElementById('numberOfHistoryEvents').innerText = history.total_count;
+                document.getElementById('exportFrom').setAttribute('max', history.total_count);
+                const exportToElement = document.getElementById('exportTo');
+                exportToElement.setAttribute('max', history.total_count);
+                exportToElement.value = history.total_count;
+                document.querySelectorAll('.numberOfHistoryEvents').forEach((numberOfEvents) => {
+                    numberOfEvents.innerText = history.total_count;
+                });
             }
         )
 
