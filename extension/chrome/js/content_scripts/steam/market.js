@@ -143,17 +143,28 @@ function createCSV() {
 
 function workOnExport() {
     if (marketHistoryExport.inProgress) {
+        const delay = marketHistoryExport.lastRequestSuccessful ? 5000 : 30000;
         getMarketHistory(marketHistoryExport.progress, 50).then(
             history => {
+                marketHistoryExport.lastRequestSuccessful = true;
                 marketHistoryExport.progress += 50;
                 marketHistoryExport.history = marketHistoryExport.history.concat(extractHistoryEvents(history.results_html));
+
+                const requestProgressEl = document.getElementById('requestProgress');
+                requestProgressEl.innerText = (parseInt(requestProgressEl.innerText) + 1).toString();
+                const timeRemainingEl = document.getElementById('timeRemaining');
+                timeRemainingEl.innerText = (parseInt(timeRemainingEl.innerText) - 5).toString();
 
                 if (marketHistoryExport.progress >= marketHistoryExport.to - marketHistoryExport.from) {
                     marketHistoryExport.inProgress = false;
                     createCSV();
                     document.getElementById('exportHelperMessage').innerText = 'Export finished, you can now download the result!';
+                    document.getElementById('exportProgress').classList.add('hidden');
                 }
-                else setTimeout(() => { workOnExport()}, 5000);
+                else setTimeout(() => { workOnExport()}, delay);
+            }, (error) => {
+                marketHistoryExport.lastRequestSuccessful = false;
+                console.log(error)
             }
         )
     }
@@ -164,7 +175,8 @@ const marketHistoryExport = {
     from: 0,
     to: 1000000,
     progress: 0,
-    inProgress: false
+    inProgress: false,
+    lastRequestSuccessful: true
 };
 
 logExtensionPresence();
@@ -365,7 +377,7 @@ if (marketHistoryButton !== null) {
     // inserts export tab content
     document.getElementById('myListings').insertAdjacentHTML('beforeend', `
         <div id="tabContentsMyMarketHistoryExport" class="my_listing_section market_content_block" style="display: none;">
-            <h1 class="historyExportTitle">Export Market History (<span class="numberOfHistoryEvents">0</span> history events) (BETA)</h1> 
+            <h1 class="historyExportTitle">Export Market History (<span class="numberOfHistoryEvents">0</span> history events)</h1> 
             <p>
                 Exporting your market history can be great if you want to analyse it in a spreadsheet for example.
                 A history event is either one of these three actions: a purchase, a sale or a listing creation.
@@ -383,7 +395,10 @@ if (marketHistoryButton !== null) {
                 <span id="exportMarketHistory" class="clickable underline"> Start history export!</span>
             </p>
             <div>
-                <span id="exportHelperMessage"></span>
+                <span id="exportHelperMessage"></span> 
+                <span id="exportProgress" class="hidden">
+                    Request <span id="requestProgress">0</span>/<span id="numberOfRequests">0</span> Estimated time remaining: <span id="timeRemaining">0</span> seconds
+                </span>
             </div>
             <div>
                 <a class="hidden" id="market_history_download" href="" download="market_history.csv">Download market_history.csv</a> 
@@ -419,9 +434,16 @@ if (marketHistoryButton !== null) {
         if (!marketHistoryExport.inProgress) {
             marketHistoryExport.inProgress = true;
             marketHistoryExport.history = [];
+
             document.getElementById('exportHelperMessage').innerText = 'Exporting market history...';
             marketHistoryExport.from = parseInt(document.getElementById('exportFrom').value);
             marketHistoryExport.to = parseInt(document.getElementById('exportTo').value);
+
+            const numOfRequests = Math.ceil(((marketHistoryExport.to - marketHistoryExport.from) / 50));
+            document.getElementById('numberOfRequests').innerText = numOfRequests.toString();
+            document.getElementById('timeRemaining').innerText = (numOfRequests * 5).toString();
+            document.getElementById('exportProgress').classList.remove('hidden');
+
             workOnExport();
         }
         else document.getElementById('exportHelperMessage').innerText = 'Exporting is already in progress!';
