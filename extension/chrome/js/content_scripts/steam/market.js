@@ -82,6 +82,49 @@ function addStartingAtPriceInfoToPage(listingID, lowestPrice) {
     }
 }
 
+function extractHistoryEvents(result_html) {
+    const tempEl = document.createElement('div');
+    tempEl.innerHTML = result_html;
+
+    const eventsToReturn = [];
+
+    tempEl.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((historyRow) => {
+        const itemName = historyRow.querySelector('.market_listing_item_name').innerText;
+        const gameName = historyRow.querySelector('.market_listing_game_name').innerText;
+        const listedOn = historyRow.querySelectorAll('.market_listing_listed_date')[1].innerText.trim();
+        const actedOn = historyRow.querySelectorAll('.market_listing_listed_date')[0].innerText.trim();
+        const displayPrice = historyRow.querySelector('.market_listing_price').innerText.trim();
+        const priceInCents = steamFormattedPriceToCents(displayPrice);
+        const partnerElement = historyRow.querySelector('.market_listing_whoactedwith');
+        const type = getHistoryType(historyRow);
+        let partner = null;
+
+        if (type !== 'listing_created') { // listing creation events have no partner specified
+            const partnerName = partnerElement.querySelector('img').title;
+            const partnerLink = partnerElement.querySelector('a').getAttribute('href');
+            const partnerID = partnerLink.split('profiles/')[1];
+            partner = {partnerName, partnerLink, partnerID};
+        }
+
+        eventsToReturn.push({itemName, gameName, listedOn, actedOn, displayPrice, priceInCents, partner, type});
+    });
+
+    tempEl.remove();
+    return eventsToReturn;
+}
+
+function getHistoryType(historyRow) {
+    const gainOrLoss = historyRow.querySelector('.market_listing_gainorloss').innerText.trim();
+    let historyType = null;
+
+    switch (gainOrLoss) {
+        case '': historyType = 'listing_created'; break;
+        case '+': historyType = 'purchase'; break;
+        case '-': historyType = 'sale'; break
+    }
+    return historyType;
+}
+
 logExtensionPresence();
 updateLoggedInUserID();
 trackEvent({
@@ -251,17 +294,8 @@ if (marketHistoryTab !== null) {
         if (sellListings.style.display !== 'none') { // only execute if it's the active tab
             if (mutationRecord[0].target.id === 'tabContentsMyMarketHistory' || mutationRecord[0].target.id === 'tabContentsMyMarketHistoryRows') {
                 marketHistoryTab.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(historyRow => {
-                    const gainOrLoss = historyRow.querySelector('.market_listing_gainorloss').innerText;
-                    let historyType = null;
-
-                    switch (gainOrLoss) {
-                        case '': historyType = 'listing_created'; break;
-                        case '+': historyType = 'purchase'; break;
-                        case '-': historyType = 'sale'; break
-                    }
-
+                    const historyType = getHistoryType(historyRow);
                     historyRow.classList.add(historyType);
-
                 })
             }
         }
@@ -289,7 +323,14 @@ if (marketHistoryButton !== null) {
     // inserts export tab content
     document.getElementById('myListings').insertAdjacentHTML('beforeend', `
         <div id="tabContentsMyMarketHistoryExport" class="my_listing_section market_content_block" style="display: none;">
-            <span id="exportMarketHistory">Export Market History</span>
+            <h1 class="historyExportTitle">Export Market History (<span id="numberOfHistoryEvents">0</span> history events) (BETA)</h1> 
+            <p>
+                Exporting your market history can be great if you want to analyse it in a spreadsheet for example.
+                A history event is either one of these three actions: a purchase, a sale or  a listing creation.
+                The result is a .csv file that you can open in Microsoft Excel or use programmatically.
+            </p>
+            <span id="exportMarketHistory" class="clickable underline">Click here to export to start exporting your market history.</span>
+            <span style="display: none" id="marketHistoryTempElement"></span>
         </div>    
     `);
 
@@ -310,8 +351,7 @@ if (marketHistoryButton !== null) {
        event.target.innerText = 'Exporting market history..';
         getMarketHistory(0, 50).then(
             history => {
-                console.log(history);
-                event.target.innerHTML = history.results_html;
+                console.log(extractHistoryEvents(history.results_html));
             }
         )
     });
@@ -327,6 +367,14 @@ if (marketHistoryButton !== null) {
         marketHistoryExportContent.style.display = 'block';
         sellListings.parentElement.style.display = 'none';
         marketHistoryTab.style.display = 'none';
+
+        getMarketHistory(0, 50).then(
+            history => {
+                console.log(history);
+                document.getElementById('numberOfHistoryEvents').innerText = history.total_count;
+                document.getElementById('marketHistoryTempElement').innerHTML = history.results_html;
+            }
+        )
 
     });
 }

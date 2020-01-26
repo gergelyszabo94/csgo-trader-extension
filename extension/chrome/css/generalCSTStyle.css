@@ -105,6 +105,11 @@ progress {
     }
 }
 
+.historyExportTitle {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
 .cheapest, .highest {
     color: var(--steam-ingame-green);
 }
