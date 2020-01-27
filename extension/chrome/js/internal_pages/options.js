@@ -461,84 +461,40 @@ document.getElementById('savePopupLink').addEventListener('click', () =>{
     });
 });
 
-// export preferences
+// backup
+const storageKeysToExclude = ['prices', 'exchangeRates', 'analyticsEvents'];
 
-let settingsStorageKeys = [];
-for (let key in storageKeys) if (!nonSettingStorageKeys.includes(key)) settingsStorageKeys.push(key);
-
-chrome.storage.local.get(settingsStorageKeys, (result) =>{
-
+chrome.storage.local.get(null, (result) => { // gets all storage
     let JSONContent = 'data:application/json,';
 
-    let preferencesJSON = {
-        version: 1,
-        type: "preferences",
-        preferences: {}
+    const backupJSON = {
+        version: 2,
+        type: "full_backup",
+        storage: {}
     };
 
-    settingsStorageKeys.forEach(setting => {preferencesJSON.preferences[setting] = result[setting]});
+    for (let storageKey in result) {
+        if (!storageKeysToExclude.includes(storageKey) && storageKey.substring(0, 11) !== 'floatCache_') {
+            backupJSON.storage[storageKey] = result[storageKey];
+        }
+    }
 
-    JSONContent += encodeURIComponent(JSON.stringify(preferencesJSON));
+    JSONContent += encodeURIComponent(JSON.stringify(backupJSON));
 
-    let exportPreferences = document.getElementById('export_preferences');
-    exportPreferences.setAttribute('href', JSONContent);
+    const backupData = document.getElementById('backup_data');
+    backupData.setAttribute('href', JSONContent);
 });
 
-// export bookmarks
+// restore from backup
+const restoreInput = document.getElementById('restore');
 
-chrome.storage.local.get('bookmarks', (result) =>{
-
-    let JSONContent = 'data:application/json,';
-
-    let bookmarksJSON= {
-        version: 1,
-        bookmarks: result.bookmarks
-    };
-
-    JSONContent += encodeURIComponent(JSON.stringify(bookmarksJSON));
-
-    let exportBookmarks = document.getElementById('export_bookmarks');
-    exportBookmarks.setAttribute('href', JSONContent);
-});
-
-//import preferences
-
-let importPrefInput = document.getElementById('import_preferences');
-
-importPrefInput.addEventListener('change', event => {
-    let file = event.target.files[0];
-    let fr = new FileReader();
+restoreInput.addEventListener('change', event => {
+    const file = event.target.files[0];
+    const fr = new FileReader();
 
     fr.addEventListener('load', event => {
-        let inputAsJSON = JSON.parse(event.target.result);
-        if (parseInt(inputAsJSON.version) === 1) {
-            settingsStorageKeys.forEach(setting => {
-                if (inputAsJSON.preferences[setting] !== undefined) chrome.storage.local.set({[setting]: inputAsJSON.preferences[setting]}, ()=>{});
-            });
-            location.reload();
-        }
-        else console.log(inputAsJSON.version);
-    });
-    fr.readAsText(file);
-});
-
-//import bookmarks
-
-let importBookmarksInput = document.getElementById('import_bookmarks');
-
-importBookmarksInput.addEventListener('change', event => {
-    let file = event.target.files[0];
-    let fr = new FileReader();
-
-    fr.addEventListener('load', event => {
-        let inputAsJSON = JSON.parse(event.target.result);
-        if (parseInt(inputAsJSON.version) === 1) {
-            inputAsJSON.bookmarks.forEach( (bookmark) => {
-                chrome.runtime.sendMessage({setAlarm: {name:  bookmark.itemInfo.assetid, when: bookmark.notifTime}}, (response) => {location.href = 'bookmarks.html'});
-            });
-            if (inputAsJSON.bookmarks !== undefined) chrome.storage.local.set({bookmarks: inputAsJSON.bookmarks}, ()=>{});
-        }
-        else console.log(inputAsJSON.version);
+        const inputAsJSON = JSON.parse(event.target.result);
+        chrome.storage.local.set(inputAsJSON.storage, () => {location.reload();});
     });
     fr.readAsText(file);
 });
