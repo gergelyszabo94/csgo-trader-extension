@@ -59,7 +59,7 @@ function addListingStartingAtPricesAndTotal(sellListings) {
     });
 
     const listingsTotal = document.getElementById('listingsTotal');
-    if (listingsTotal !== null) listingsTotal.parentNode.removeChild(listingsTotal);
+    if (listingsTotal !== null) listingsTotal.remove();
 
     sellListings.insertAdjacentHTML('afterend',
         `<div id='listingsTotal' style="margin: -15px 0 15px;">
@@ -236,7 +236,7 @@ if (sellListings !== null) {
                 const listingID = getMyListingIDFromElement(listingRow);
                 removeListing(listingID).then(
                     result => {
-                        listingRow.parentElement.removeChild(listingRow);
+                        listingRow.remove();
                         switchToNextPageIfEmpty(sellListings);
                     }
                 )
@@ -249,7 +249,7 @@ if (sellListings !== null) {
             const listingID = getMyListingIDFromElement(listingRow);
             removeListing(listingID).then(
                 result => {
-                    listingRow.parentElement.removeChild(listingRow);
+                    listingRow.remove();
                     switchToNextPageIfEmpty(sellListings);
                 }
             )
@@ -322,7 +322,7 @@ if (orders !== null && orders !== undefined) {
                 const orderID = getMyOrderIDFromElement(orderRow);
                 cancelOrder(orderID).then(
                     result => {
-                        orderRow.parentElement.removeChild(orderRow);
+                        orderRow.remove();
                     }
                 )
             }
@@ -334,7 +334,7 @@ if (orders !== null && orders !== undefined) {
             const orderID = getMyOrderIDFromElement(orderRow);
             cancelOrder(orderID).then(
                 result => {
-                    orderRow.parentElement.removeChild(orderRow);
+                    orderRow.remove();
                 }
             )
         });

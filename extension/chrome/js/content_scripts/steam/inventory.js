@@ -82,7 +82,7 @@ function addElements(){
             let item = getItemByAssetID(items, activeID);
 
             // removes "tags" and "tradable after" in one's own inventory
-            document.querySelectorAll("#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors").forEach((tagsElement) => tagsElement.parentNode.removeChild(tagsElement));
+            document.querySelectorAll("#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors").forEach((tagsElement) => tagsElement.remove());
 
             // cleans up previously added elements
             cleanUpElements(false);
@@ -175,8 +175,8 @@ function addElements(){
 
                 // removes sih "Get Float" button - does not really work since it's loaded after this script..
                 if(isSIHActive()){
-                    document.querySelectorAll(".float_block").forEach(e => e.parentNode.removeChild(e));
-                    setTimeout(() =>{document.querySelectorAll(".float_block").forEach(e => e.parentNode.removeChild(e));}, 1000);
+                    document.querySelectorAll(".float_block").forEach(e => e.remove());
+                    setTimeout(() =>{document.querySelectorAll(".float_block").forEach(e => e.remove());}, 1000);
                 }
                 if (item.floatInfo === null){
                     if (item.inspectLink !== null && itemTypes[item.type.key].float) {
@@ -253,7 +253,7 @@ function addElements(){
 }
 
 function cleanUpElements(nonCSGOInventory) {
-    document.querySelectorAll('.upperModule, .lowerModule, .otherExteriors, .custom_name, .startingAtVolume').forEach((element) => element.parentNode.removeChild(element));
+    document.querySelectorAll('.upperModule, .lowerModule, .otherExteriors, .custom_name, .startingAtVolume').forEach((element) => element.remove());
     if (nonCSGOInventory) document.querySelectorAll('.hover_item_name').forEach((name) => name.classList.remove('hidden'));
 }
 
@@ -768,7 +768,7 @@ function addStartingAtPrice(market_hash_name) {
     getPriceOverview('730', market_hash_name).then(
         priceOverview => {
             // removes previous leftover elements
-            document.querySelectorAll('.startingAtVolume').forEach(previousElement => previousElement.parentNode.removeChild(previousElement));
+            document.querySelectorAll('.startingAtVolume').forEach(previousElement => previousElement.remove());
 
             // adds new elements
             document.querySelectorAll('.item_owner_actions').forEach(marketActions => {
@@ -878,7 +878,7 @@ function removeUnselectedItemsFromTable() {
         let assetIDs = listingRow.getAttribute('data-assetids').split(',');
         let remainingIDs = assetIDs.filter(assetID => findElementByAssetID(assetID).classList.contains('selected'));
 
-        if (remainingIDs.length === 0) listingRow.parentNode.removeChild(listingRow);
+        if (remainingIDs.length === 0) listingRow.remove();
         else {
             listingRow.setAttribute('data-assetids', remainingIDs.toString());
             listingRow.querySelector('.itemAmount').innerText = remainingIDs.length;

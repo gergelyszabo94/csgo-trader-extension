@@ -18,7 +18,7 @@ function addPhasesIndicator(){
 
 function addStickers() {
     // removes sih sticker info
-    document.querySelectorAll('.sih-images').forEach(image => {image.parentNode.removeChild(image)});
+    document.querySelectorAll('.sih-images').forEach(image => {image.remove()});
 
     let listings = getListings();
     let listingsSection = document.getElementById('searchResultsRows');
@@ -195,7 +195,7 @@ function sortListings(sortingMode) {
     }
 
     // remove all listings from page
-    listingElements.forEach(listingElement => {listingElement.parentNode.removeChild(listingElement)});
+    listingElements.forEach(listingElement => {listingElement.remove()});
 
     let listingsContainer = document.getElementById('searchResultsRows');
     sortedElements.forEach(listingElement => {

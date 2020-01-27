@@ -971,7 +971,7 @@ function getPrice(market_hash_name, dopplerInfo, prices, provider, exchange_rate
 function injectToPage(scriptString, toRemove, id, executeAndReturn) {
     // removes previously added instance of the script
     let elementFromBefore = document.getElementById(id);
-    if (elementFromBefore !== null) elementFromBefore.parentElement.removeChild(elementFromBefore);
+    if (elementFromBefore !== null) elementFromBefore.remove();
 
     let toInject = document.createElement('script');
     toInject.id = id;

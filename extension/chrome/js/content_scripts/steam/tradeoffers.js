@@ -234,8 +234,8 @@ function sortOffers(sortingMode){
     sortedOffers.reverse();
 
     // removes offer elements
-    activeOffers.forEach(offer => {offer.parentNode.removeChild(offer)});
-    document.querySelector('.profile_leftcol').querySelectorAll('.tradeoffer_rule').forEach( rulerElement => rulerElement.parentNode.removeChild(rulerElement));
+    activeOffers.forEach(offer => {offer.remove()});
+    document.querySelector('.profile_leftcol').querySelectorAll('.tradeoffer_rule').forEach( rulerElement => rulerElement.remove());
 
     // adds sorted offer elements to page
     let offerSection = document.querySelector('.profile_leftcol');
@@ -266,7 +266,7 @@ function addPartnerOfferSummary(offers, nthRun) {
                             let offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
 
                             // removes elements from previous runs
-                            offerElement.querySelectorAll('.offerHistory').forEach(offerHistoryElement =>  offerHistoryElement.parentNode.removeChild(offerHistoryElement));
+                            offerElement.querySelectorAll('.offerHistory').forEach(offerHistoryElement =>  offerHistoryElement.remove());
 
                             if (isOfferActive(offerElement)) {
                                 let receivedElement = `<span class="offerHistory">Received: ${offerHistorySummary.offers_received} Last: ${prettyTimeAgo(offerHistorySummary.last_received)}</span>`;

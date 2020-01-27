@@ -131,7 +131,7 @@ function buildInventoryStructure(inventory) {
     return inventoryArrayToReturn.sort((a, b) => { return a.position - b.position});
 }
 
-function removeSIHStuff() {document.querySelectorAll('.des-tag, .p-price, .price-tag').forEach(element => {element.parentNode.removeChild(element)})}
+function removeSIHStuff() {document.querySelectorAll('.des-tag, .p-price, .price-tag').forEach(element => {element.remove()})}
 
 function addInventoryTotals(yourInventory, theirInventory){
     chrome.runtime.sendMessage({inventoryTotal: yourInventory}, (response) => {
@@ -399,7 +399,7 @@ function singleClickControlClickHandler(event) {
 // removes buggy slots that remain behind and break the ui
 function removeLeftOverSlots(){
     setTimeout( () =>{
-        document.querySelectorAll('.itemHolder.trade_slot').forEach(slot => {if (slot.parentNode.id !== 'your_slots' && slot.parentNode.id !== 'their_slots') slot.parentNode.removeChild(slot)})
+        document.querySelectorAll('.itemHolder.trade_slot').forEach(slot => {if (slot.parentNode.id !== 'your_slots' && slot.parentNode.id !== 'their_slots') slot.remove()})
     }, 500);
 }
 

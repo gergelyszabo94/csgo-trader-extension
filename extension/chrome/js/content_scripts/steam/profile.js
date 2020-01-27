@@ -102,7 +102,7 @@ if (document.querySelector('body').classList.contains('profile_page')){
                 let textAreaElement = document.getElementById('text_area_to_copy_permalink');
                 textAreaElement.select();
                 document.execCommand('copy');
-                textAreaElement.parentNode.removeChild(textAreaElement);
+                textAreaElement.remove();
 
                 // for the context menu to go away
                 document.querySelector('.playerAvatarAutoSizeInner').click();
@@ -183,7 +183,7 @@ if (document.querySelector('body').classList.contains('profile_page')){
             document.querySelectorAll('.profile_content, body, .no_header.profile_page').forEach(element => {element.classList.remove('has_profile_background')});
 
             // removes artwork and screenshot showcases
-            document.querySelectorAll('.profile_background_holder_content, .screenshot_showcase').forEach(element => {element.parentNode.removeChild(element)});
+            document.querySelectorAll('.profile_background_holder_content, .screenshot_showcase').forEach(element => {element.remove()});
 
             // changes avatar to the default one
             document.querySelector('.playerAvatarAutoSizeInner').querySelector('img').setAttribute('src', 'https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg');

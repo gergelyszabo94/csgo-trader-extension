@@ -6,7 +6,7 @@ function addDeleteClickListener(element){
                     if (comment.id !== event.target.id) newCustomComments.push(comment)
                 }
             );
-            chrome.storage.local.set({customCommentsToReport: newCustomComments}, () => {event.target.parentNode.parentNode.removeChild(event.target.parentNode)});
+            chrome.storage.local.set({customCommentsToReport: newCustomComments}, () => {event.target.parentNode.remove()});
         });
     });
 }
