@@ -389,6 +389,11 @@ if (marketHistoryButton !== null) {
                 <a href="https://www.itg.ias.edu/content/how-import-csv-file-uses-utf-8-character-encoding-0" target="_blank">importing it as such</a>.
             </p>
             <p>
+                The item names will be in the language you have set on Steam at the moment.
+                Unfortunately Steam only returns day accuracy, that means you won't be able to tell at what specific time you transacted.
+                You also won't be able to easily tell which year the event is from.
+            </p>
+            <p>
                 The most recent history event is event 0, the first one is the event with the highest number
                 (<span class="numberOfHistoryEvents">0</span> in your case).
                 Your market history is requested in junks and might take a while if do lots of transactions.
