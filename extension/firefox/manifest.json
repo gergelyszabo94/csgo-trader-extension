@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "__MSG_application_title__",
   "short_name": "CSGO Trader",
-  "version": "1.24",
+  "version": "1.25",
   "default_locale": "en",
   "description": "__MSG_application_description__",
   "homepage_url": "https://csgotrader.app/",
@@ -162,6 +162,19 @@
         "js/utils/enums.js",
         "js/utils/utils.js",
         "js/content_scripts/steam/friends.js"],
+      "css": ["/css/generalCSTStyle.css"]
+    },
+    {
+      "matches": [
+        "*://steamcommunity.com/market/",
+        "*://steamcommunity.com/market"
+      ],
+      "run_at" : "document_idle",
+      "js": [
+        "js/utils/steam_override.js",
+        "js/utils/enums.js",
+        "js/utils/utils.js",
+        "js/content_scripts/steam/market.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
