@@ -20,6 +20,7 @@
   "optional_permissions": [
     "tabs",
     "*://csgolounge.com/*",
+    "*://old.csgolounge.com/*",
     "*://csgotraders.net/*" ],
   "background": {
     "scripts": [

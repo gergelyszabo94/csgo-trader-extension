@@ -66,14 +66,14 @@ let loungebump = document.getElementById('loungeBump');
 
 chrome.storage.local.get('loungeBump', (result) => {
     let optionOn = result.loungeBump;
-    chrome.permissions.contains({permissions: ['tabs'], origins: ['*://csgolounge.com/*']}, (result) => {
+    chrome.permissions.contains({permissions: ['tabs'], origins: ['*://csgolounge.com/*', '*://old.csgolounge.com/*']}, (result) => {
         if (optionOn && result) loungeBump.checked = result;
     });
 });
 
 loungebump.addEventListener('click', () => {
     if (loungebump.checked){
-        chrome.permissions.request({permissions: ['tabs'], origins: ['*://csgolounge.com/*']}, (granted) => {
+        chrome.permissions.request({permissions: ['tabs'], origins: ['*://csgolounge.com/*', '*://old.csgolounge.com/*']}, (granted) => {
             loungebump.checked = granted;
             chrome.storage.local.set({loungeBump: granted}, () => {});
         });
