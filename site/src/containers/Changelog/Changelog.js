@@ -22,6 +22,14 @@ const changelog = (props) => {
                 The platforms (Chrome Web Store, Mozzila Addons) review submissions before they are available for download.
                 This means that the latest version might not have rolled out to your platform yet when you are reading this.
             </Container>
+            <Container className='buildingBlock'>
+                <h2>Version 1.25.1 - 2020-01-27</h2>
+                <ul>
+                    <li>
+                        Made old.csgolounge.com permission that was prompting during update optional.
+                    </li>
+                </ul>
+            </Container>
 
             <Container className='buildingBlock'>
                 <h2>Version 1.25 - 2020-01-27</h2>
