@@ -52,7 +52,7 @@ const releaseNotes = (props) => {
                     You might have noticed a new tab appearing on the market main page besides your listings and history tabs.
                     An "Export Market History" tab was added. I described its purpose there but I will paste it here too:
                     "Exporting your market history can be great if you want to analyse it in a spreadsheet for example.
-                    A history event is either one of these three actions: a purchase, a sale or a listing creation.
+                    A history event is either one of these four actions: a purchase, a sale, a listing creation or a listing cancellation.
                     The result is a .csv file that you can open in Microsoft Excel or use programmatically.
                     It is in utf-8 charset, if you see weird characters in your Excel you should try
                     <NewTabLink to='https://www.itg.ias.edu/content/how-import-csv-file-uses-utf-8-character-encoding-0'> importing it as such.</NewTabLink>

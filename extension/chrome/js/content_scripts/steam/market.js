@@ -99,7 +99,7 @@ function extractHistoryEvents(result_html) {
         const type = getHistoryType(historyRow);
         let partner = null;
 
-        if (type !== 'listing_created') { // listing creation events have no partner specified
+        if (type === 'sale' || type === 'purchase') { // non-transactional (listing creation or cancellation) history events don't have partners
             const partnerName = partnerElement.querySelector('img').title;
             const partnerLink = partnerElement.querySelector('a').getAttribute('href');
             partner = {partnerName, partnerLink};
@@ -114,23 +114,24 @@ function extractHistoryEvents(result_html) {
 
 function getHistoryType(historyRow) {
     const gainOrLoss = historyRow.querySelector('.market_listing_gainorloss').innerText.trim();
-    let historyType = null;
+    let historyType;
 
     switch (gainOrLoss) {
-        case '': historyType = 'listing_created'; break;
         case '+': historyType = 'purchase'; break;
-        case '-': historyType = 'sale'; break
+        case '-': historyType = 'sale'; break;
+        default: historyType = historyRow.querySelector('.market_listing_whoactedwith').innerText.trim();
     }
     return historyType;
 }
 
 function createCSV() {
-    const excludeCreatedEvent = document.getElementById('excludeListingCreated').checked;
+    console.log(marketHistoryExport.history);
+    const excludeNonTransaction = document.getElementById('excludeNonTransaction').checked;
     let csvContent = 'Item Name,Game Name,Listed On,Acted On, Display Price, Price in Cents, Type, Partner Name, Partner Link\n';
 
     for (let i = 0; i < marketHistoryExport.to - marketHistoryExport.from; i++) {
         const historyEvent = marketHistoryExport.history[i];
-        if (!(excludeCreatedEvent && historyEvent.type === 'listing_created')) {
+        if (!(excludeNonTransaction && historyEvent.type !== 'purchase' && historyEvent.type !== 'sale')) {
             const lineCSV = historyEvent.partner !== null
                 ? `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}","${historyEvent.partner.partnerName}","${historyEvent.partner.partnerLink}"\n`
                 : `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}",,,\n`;
@@ -383,7 +384,7 @@ if (marketHistoryButton !== null) {
             <h1 class="historyExportTitle">Export Market History (<span class="numberOfHistoryEvents">0</span> history events)</h1> 
             <p>
                 Exporting your market history can be great if you want to analyse it in a spreadsheet for example.
-                A history event is either one of these three actions: a purchase, a sale or a listing creation.
+                A history event is either one of these four actions: a purchase, a sale, a listing creation or a listing cancellation.
                 The result is a .csv file that you can open in Microsoft Excel or use programmatically.
                 It is in utf-8 charset, if you see weird characters in your Excel you should try
                 <a href="https://www.itg.ias.edu/content/how-import-csv-file-uses-utf-8-character-encoding-0" target="_blank">importing it as such</a>.
@@ -400,7 +401,7 @@ if (marketHistoryButton !== null) {
             </p>
             <p>
                 Range: Events <input type="number" min="0" max="1000000" value="0" id="exportFrom"/> to <input type="number" min="50" max="1000000" value="50" id="exportTo"/> 
-                Exclude listing created events<input type="checkbox" id="excludeListingCreated"/>
+                Exclude non-transaction events<input type="checkbox" id="excludeNonTransaction"/>
                 <span id="exportMarketHistory" class="clickable underline"> Start history export!</span>
             </p>
             <div>
