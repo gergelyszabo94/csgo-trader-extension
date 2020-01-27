@@ -22,6 +22,9 @@ const footer = () => {
             <span className='footerNavLink'>
                 <Link to='/privacy/'>Privacy</Link>
             </span>
+            <span className='footerNavLink'>
+                <NewTabLink to='mailto:support@csgotrader.app'>support@csgotrader.app</NewTabLink>
+            </span>
         </footer>
     );
 };
