@@ -125,7 +125,6 @@ function getHistoryType(historyRow) {
 }
 
 function createCSV() {
-    console.log(marketHistoryExport.history);
     const excludeNonTransaction = document.getElementById('excludeNonTransaction').checked;
     let csvContent = 'Item Name,Game Name,Listed On,Acted On, Display Price, Price in Cents, Type, Partner Name, Partner Link\n';
 
@@ -444,6 +443,8 @@ if (marketHistoryButton !== null) {
         if (!marketHistoryExport.inProgress) {
             marketHistoryExport.inProgress = true;
             marketHistoryExport.history = [];
+            marketHistoryExport.progress = 0;
+            document.getElementById('requestProgress').innerText = '0';
 
             document.getElementById('exportHelperMessage').innerText = 'Exporting market history...';
             marketHistoryExport.from = parseInt(document.getElementById('exportFrom').value);
