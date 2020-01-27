@@ -22,7 +22,7 @@ const faq = (props) => {
                     Yes, the extension is free to install and use with all its features included. Some future features that requires servers might be paid/premium.
                 </p>
 
-                <h2>How do I install it?</h2>
+                <h2 id='install'>How do I install it?</h2>
                 <p>
                     The extension is available in the
                     <NewTabLink to='https://chrome.google.com/webstore/detail/csgo-trader-steam-trading/kaibcgikagnkfgjnibflebpldakfhfih'> Chrome Web Store </NewTabLink>
@@ -46,14 +46,14 @@ const faq = (props) => {
                     If you are on Safari, all is lost for you because I have no plan of porting it for your browser, Safari extensions work very differently, and the work can't be justified.
                 </p>
 
-                <h2>How do I get support?</h2>
+                <h2 id='support'>How do I get support?</h2>
                 <p>
                     This FAQ page is meant to be your starting point when you need help with the extension.
                     You should give a look to the <Link to='/release-notes/'>Release Notes</Link>, new features are usually explained there.
-                    If you can’t find answer to your question here, then you should email <span className='yellow'>support@csgotrader.app</span>
+                    If you can’t find answer to your question here, then you should email <NewTabLink to='mailto:support@csgotrader.app'> support@csgotrader.app</NewTabLink>
                 </p>
 
-                <h2>Can I trust it? Can it steal my items? Will it steal my items?</h2>
+                <h2 id='trust'>Can I trust it? Can it steal my items? Will it steal my items?</h2>
                 <p>
                     Answering this question is far from simple. Browser extensions, when they have access to a site can basically perform any action you as a user could.
                     CSGO Trader has access to Steam only by default, optionally (if you go to the options and allow it) it can access CSGOTRADERS.NET and CSGOLounge.com for auto-bumping.
@@ -221,6 +221,21 @@ const faq = (props) => {
                     The screenshot generation is done by csgo.gallery
                     <NewTabLink to='https://cs.deals/screenshot'> (CS.DEALS).</NewTabLink>
                     I have no control over it, please let them know if it is not working as intended.
+                </p>
+
+                <h2 id='update'>How do I make sure that I have the latest version installed?</h2>
+                <p>
+                    To see what the latest version is check <Link to='/changelog/'> Changelogs </Link>.
+                    During each release a new version of the extension is submitted the distribution platforms.
+                    The platforms (Chrome Web Store, Mozzila Addons) review submissions before they are available for download.
+                    This means that the latest version might not have rolled out to your platform yet.
+                    Check the extension's page on your platform to see what version is available there.
+                    If that is not the version you are running (you can see what version you are on by opening the extension pop-up) then you can force your browser to check for update.
+                    See
+                    <NewTabLink to='https://www.howtogeek.com/64525/how-to-manually-force-google-chrome-to-update-extensions/'> How to Manually Force Google Chrome to Update Extensions </NewTabLink>
+                    or
+                    <NewTabLink to='https://support.mozilla.org/en-US/kb/how-update-add-ons'> How to update add-ons </NewTabLink>
+                    (firefox).
                 </p>
             </Container>
         </Fragment>

@@ -18,6 +18,9 @@ const releaseNotes = (props) => {
             <h1>Release-Notes</h1>
             <Container className='buildingBlock'>
                 Release notes are meant to explain how to use new features and why certain design or policy decisions were made.
+                They are published when a new version of the extension is submitted the distribution platforms.
+                The platforms (Chrome Web Store, Mozzila Addons) review submissions before they are available for download.
+                This means that the latest version might not have rolled out to your platform yet when you are reading this.
             </Container>
             <Container className='buildingBlock' id='1.25'>
                 <h2>1.25 - New Community Market homepage features, price highlighting, market history export</h2>

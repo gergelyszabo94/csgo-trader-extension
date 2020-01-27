@@ -18,6 +18,12 @@ const changelog = (props) => {
 
             <h1>Changelog</h1>
             <Container className='buildingBlock'>
+                Changelogs are published when a new version of the extension is submitted the distribution platforms.
+                The platforms (Chrome Web Store, Mozzila Addons) review submissions before they are available for download.
+                This means that the latest version might not have rolled out to your platform yet when you are reading this.
+            </Container>
+
+            <Container className='buildingBlock'>
                 <h2>Version 1.25 - 2020-01-27</h2>
                 <ul>
                     <li>Added price highlighting for sell listings and buy orders, remove/cancel all or selected, as well as totals, history type highlighting and market history export on the Community Market page.
