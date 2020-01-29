@@ -12,9 +12,7 @@ phases:
       - mkdir build
       - cd chrome
       - zip -r ../build/chrome.zip .
-      - cd ..
-      - cp ./firefox/manifest.json ./chrome/manifest.json
-      - cd firefox
+      - cp ../firefox/manifest.json manifest.json
       - zip -r ../build/firefox.zip .
       - cd ..
   post_build:
