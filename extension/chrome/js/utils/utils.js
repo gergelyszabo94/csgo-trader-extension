@@ -1827,6 +1827,19 @@ function workOnPriceQueue() {
                     }
                 );
             }
+            else  if (job.type === 'inventory_mass_sell_starting_at') {
+                getPriceOverview(job.appID, job.market_hash_name).then(
+                    priceOverview => {
+                        priceQueue.lastJobSuccessful = true;
+                        if (priceOverview.lowest_price !== undefined) {
+                            addStartingAtAndQuickSellPrice(job.market_hash_name, priceOverview.lowest_price);
+                        }
+                    }, (error) => {
+                        priceQueue.lastJobSuccessful = false;
+                        console.log(error)
+                    }
+                );
+            }
         }
         else { // when there are jobs in the queue but work is already being done at the moment
             setTimeout(() => {workOnPriceQueue()}, delay); // in this case is retries with a delay
