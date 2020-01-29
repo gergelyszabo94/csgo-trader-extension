@@ -16,6 +16,7 @@ phases:
       - cp ./firefox/manifest.json ./chrome/manifest.json
       - cd firefox
       - zip -r ../build/firefox.zip .
+      - cd ..
   post_build:
     commands:
       - aws s3 sync ./build $BUCKET/extension/latest
