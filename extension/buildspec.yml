@@ -9,6 +9,7 @@ phases:
       - cd extension
   build:
     commands:
+      - mkdir build
       - cd chrome
       - zip -r ../build/chrome.zip .
       - cd ..
