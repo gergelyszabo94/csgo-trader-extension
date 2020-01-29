@@ -1801,28 +1801,32 @@ function workOnPriceQueue() {
                     );
                 }
             }
-            else if (job.type === 'my_buy_order') {
+            else if (job.type === 'my_buy_order' || job.type === 'inventory_mass_sell_instant_sell') {
                 getHighestBuyOrder(job.appID, job.market_hash_name).then(
                     highestBuyOrder => {
-                        if (highestBuyOrder !== undefined) {
+                        if (highestBuyOrder !== undefined && job.type === 'my_buy_order') {
                             priceQueue.lastJobSuccessful = true;
-                            const priceOfHighestOrder = centsToSteamFormattedPrice(highestBuyOrder);
-                            const orderRow = getElementByOrderID(job.orderID);
+                                const priceOfHighestOrder = centsToSteamFormattedPrice(highestBuyOrder);
+                                const orderRow = getElementByOrderID(job.orderID);
 
-                            if (orderRow !== null) { // the order might not be there for example if the page was switched, the per page order count was changed or the order was canceled
-                                const priceElement = orderRow.querySelector('.market_listing_price');
-                                const orderPrice = priceElement.innerText;
-                                const highest = orderPrice === priceOfHighestOrder ? 'highest' : 'not_highest';
+                                if (orderRow !== null) { // the order might not be there for example if the page was switched, the per page order count was changed or the order was canceled
+                                    const priceElement = orderRow.querySelector('.market_listing_price');
+                                    const orderPrice = priceElement.innerText;
+                                    const highest = orderPrice === priceOfHighestOrder ? 'highest' : 'not_highest';
 
-                                priceElement.insertAdjacentHTML('beforeend', `
+                                    priceElement.insertAdjacentHTML('beforeend', `
                                     <div class="${highest}" title="This is the price of the highest buy order right now.">
                                         ${priceOfHighestOrder}
                                     </div>`);
-                            }
+                                }
+                        }
+                        else if (job.type === 'inventory_mass_sell_instant_sell') {
+                            addInstantSellPrice(job.market_hash_name, highestBuyOrder);
                         }
                         else priceQueue.lastJobSuccessful = false;
                     }, (error) => {
                         priceQueue.lastJobSuccessful = false;
+                        if (job.type === 'inventory_mass_sell_instant_sell') getListingRow(job.market_hash_name).querySelector('.itemInstantSell').setAttribute('data-price-set', false.toString());
                         console.log(error)
                     }
                 );
@@ -1831,11 +1835,10 @@ function workOnPriceQueue() {
                 getPriceOverview(job.appID, job.market_hash_name).then(
                     priceOverview => {
                         priceQueue.lastJobSuccessful = true;
-                        if (priceOverview.lowest_price !== undefined) {
-                            addStartingAtAndQuickSellPrice(job.market_hash_name, priceOverview.lowest_price);
-                        }
+                        addStartingAtAndQuickSellPrice(job.market_hash_name, priceOverview.lowest_price);
                     }, (error) => {
                         priceQueue.lastJobSuccessful = false;
+                        getListingRow(job.market_hash_name).querySelector('.itemStartingAt').setAttribute('data-price-set', false.toString());
                         console.log(error)
                     }
                 );

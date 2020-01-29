@@ -541,7 +541,6 @@ function updateSelectedItemsSummary(){
             if (listingRow === null) {
                 addListingRow(item);
                 addToPriceQueueIfNeeded(item);
-                addInstantSellPrice(item);
             }
             else {
                 let previIDs = listingRow.getAttribute('data-assetids');
@@ -838,30 +837,47 @@ function addStartingAtAndQuickSellPrice(market_hash_name, starting_at_price) {
     const listingRow = getListingRow(market_hash_name);
     const startingAtElement = listingRow.querySelector('.itemStartingAt');
     const quickSell = listingRow.querySelector('.itemQuickSell');
-    const priceInCents = steamFormattedPriceToCents(starting_at_price);
-    const quickSellPrice = steamFormattedPriceToCents(starting_at_price) - 1;
 
-    startingAtElement.innerText = starting_at_price;
-    startingAtElement.setAttribute('data-price-set', true);
-    startingAtElement.setAttribute('data-price-in-cents', priceInCents);
-    startingAtElement.setAttribute('data-listing-price', getPriceAfterFees(priceInCents).toString());
-    quickSell.setAttribute('data-price-in-cents', quickSellPrice.toString());
-    quickSell.setAttribute('data-listing-price', getPriceAfterFees(quickSellPrice).toString());
-    quickSell.innerText = centsToSteamFormattedPrice(quickSellPrice);
+    if (starting_at_price !== undefined) {
+        const priceInCents = steamFormattedPriceToCents(starting_at_price);
+        const quickSellPrice = steamFormattedPriceToCents(starting_at_price) - 1;
 
-    // if the quicksell price is higher than the extension price then select that one as default instead
-    let extensionPrice = parseInt(listingRow.querySelector('.itemExtensionPrice').getAttribute('data-price-in-cents'));
-    if (extensionPrice < quickSellPrice) quickSell.click();
+        startingAtElement.innerText = starting_at_price;
+        startingAtElement.setAttribute('data-price-set', true.toString());
+        startingAtElement.setAttribute('data-price-in-cents', priceInCents);
+        startingAtElement.setAttribute('data-listing-price', getPriceAfterFees(priceInCents).toString());
+        quickSell.setAttribute('data-price-in-cents', quickSellPrice.toString());
+        quickSell.setAttribute('data-listing-price', getPriceAfterFees(quickSellPrice).toString());
+        quickSell.innerText = centsToSteamFormattedPrice(quickSellPrice);
+
+        // if the quicksell price is higher than the extension price then select that one as default instead
+        let extensionPrice = parseInt(listingRow.querySelector('.itemExtensionPrice').getAttribute('data-price-in-cents'));
+        if (extensionPrice < quickSellPrice) quickSell.click();
+    }
+    else startingAtElement.setAttribute('data-price-set', false.toString());
 }
 
 function addToPriceQueueIfNeeded(item) {
-    const startingAtElement = getListingRow(item.market_hash_name).querySelector('.itemStartingAt');
+    const listingRow = getListingRow(item.market_hash_name);
+    const startingAtElement = listingRow.querySelector('.itemStartingAt');
+    const instantElement = listingRow.querySelector('.itemInstantSell');
 
     if (startingAtElement.getAttribute('data-price-set') !== true && startingAtElement.getAttribute('data-price-in-progress') !== true) { // check if price is already set or in progress
         startingAtElement.setAttribute('data-price-in-progress', true.toString());
 
         priceQueue.jobs.push({
             type: 'inventory_mass_sell_starting_at',
+            appID: '730',
+            market_hash_name: item.market_hash_name
+        });
+        workOnPriceQueue();
+    }
+
+    if (instantElement.getAttribute('data-price-set') !== true && instantElement.getAttribute('data-price-in-progress') !== true) { // check if price is already set or in progress
+        instantElement.setAttribute('data-price-in-progress', true.toString());
+
+        priceQueue.jobs.push({
+            type: 'inventory_mass_sell_instant_sell',
             appID: '730',
             market_hash_name: item.market_hash_name
         });
@@ -902,23 +918,18 @@ function retryLoadingMarketPrice() {
     });
 }
 
-function addInstantSellPrice(item) {
-    let listingRow = getListingRow(item.market_hash_name);
-    let instantElement = listingRow.querySelector('.itemInstantSell');
-    if (instantElement.getAttribute('data-price-set') !== true && instantElement.getAttribute('data-price-in-progress') !== true) { // check if price is already set or in progress
-        instantElement.setAttribute('data-price-in-progress', true);
+function addInstantSellPrice(market_hash_name, highest_order) {
+    const instantElement = getListingRow(market_hash_name).querySelector('.itemInstantSell');
 
-        getHighestBuyOrder('730', item.market_hash_name).then(highest_order => {
-                if (highest_order !== undefined) {
-                    instantElement.innerText = centsToSteamFormattedPrice(highest_order);
-                    instantElement.setAttribute('data-price-set', true);
-                    instantElement.setAttribute('data-price-in-cents', highest_order);
-                    instantElement.setAttribute('data-listing-price', getPriceAfterFees(highest_order));
-                }
-                else instantElement.setAttribute('data-price-set', false);
-            }
-        ).finally(instantElement.setAttribute('data-price-in-progress', false));
+    if (highest_order !== undefined) {
+        instantElement.innerText = centsToSteamFormattedPrice(highest_order);
+        instantElement.setAttribute('data-price-set', true.toString());
+        instantElement.setAttribute('data-price-in-cents', highest_order);
+        instantElement.setAttribute('data-listing-price', getPriceAfterFees(highest_order).toString());
     }
+    else instantElement.setAttribute('data-price-set', false.toString());
+
+    instantElement.setAttribute('data-price-in-progress', false.toString());
 }
 
 const floatBar = getFloatBarSkeleton('inventory');
