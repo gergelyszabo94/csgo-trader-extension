@@ -1,0 +1,14 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - cd extension
+  build:
+    commands:
+      - cd chrome
+      - zip -r ../build/chrome.zip .
+      - cd ..
+  post_build:
+    commands:
+      - aws s3 sync ./build $BUCKET/build
