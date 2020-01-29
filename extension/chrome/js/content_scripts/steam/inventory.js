@@ -436,15 +436,13 @@ function addFunctionBar(){
                         </table>
                         <span>
                             <span style="font-weight: bold">Total:</span> To list <span id="numberOfItemsToSell">0</span> item(s) worth <span id="saleTotal">0</span>
-                            and receive <span id="saleTotalAfterFees">0</span> after fees <span id="retryStartingAt" class="hidden clickable">Retry Loading Starting At Price</span> 
+                            and receive <span id="saleTotalAfterFees">0</span> after fees
                             <span id="sellButton" class="clickable">Start Mass Listing</span>
                         </span>
                         <div id="massSellError" class="hidden not_tradable"></div>
                     </div>
                 </div>
                 `);
-
-        document.getElementById('retryStartingAt').addEventListener('click', retryLoadingMarketPrice);
 
         document.getElementById('sellButton').addEventListener('click', (event) => {
             event.target.innerText = 'Mass Listing in Progress...';
@@ -907,15 +905,6 @@ function updateMassSaleTotal() {
     });
     document.getElementById('saleTotal').innerText = centsToSteamFormattedPrice(total);
     document.getElementById('saleTotalAfterFees').innerText = centsToSteamFormattedPrice(totalAfterFees);
-}
-
-function retryLoadingMarketPrice() {
-    document.getElementById('listingTable').querySelectorAll('.itemStartingAt').forEach(startingAtElement => { // looks for rows that don't have their price set yet
-        if (startingAtElement.getAttribute('data-price-set') !== 'true') {
-            let itemName = startingAtElement.parentNode.getAttribute('data-item-name');
-            addStartingAtAndQuickSellPrice({market_hash_name: itemName})
-        }
-    });
 }
 
 function addInstantSellPrice(market_hash_name, highest_order) {
