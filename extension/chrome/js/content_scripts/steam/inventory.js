@@ -833,26 +833,28 @@ function getListingRow(name) {
 
 function addStartingAtAndQuickSellPrice(market_hash_name, starting_at_price) {
     const listingRow = getListingRow(market_hash_name);
-    const startingAtElement = listingRow.querySelector('.itemStartingAt');
-    const quickSell = listingRow.querySelector('.itemQuickSell');
 
-    if (starting_at_price !== undefined) {
-        const priceInCents = steamFormattedPriceToCents(starting_at_price);
-        const quickSellPrice = steamFormattedPriceToCents(starting_at_price) - 1;
+    if (listingRow !== null) { // the user might have unselected the item while it as in the queue and now there is nowhere to add the price to
+        const startingAtElement = listingRow.querySelector('.itemStartingAt');
+        const quickSell = listingRow.querySelector('.itemQuickSell');
 
-        startingAtElement.innerText = starting_at_price;
-        startingAtElement.setAttribute('data-price-set', true.toString());
-        startingAtElement.setAttribute('data-price-in-cents', priceInCents);
-        startingAtElement.setAttribute('data-listing-price', getPriceAfterFees(priceInCents).toString());
-        quickSell.setAttribute('data-price-in-cents', quickSellPrice.toString());
-        quickSell.setAttribute('data-listing-price', getPriceAfterFees(quickSellPrice).toString());
-        quickSell.innerText = centsToSteamFormattedPrice(quickSellPrice);
+        if (starting_at_price !== undefined) {
+            const priceInCents = steamFormattedPriceToCents(starting_at_price);
+            const quickSellPrice = steamFormattedPriceToCents(starting_at_price) - 1;
 
-        // if the quicksell price is higher than the extension price then select that one as default instead
-        let extensionPrice = parseInt(listingRow.querySelector('.itemExtensionPrice').getAttribute('data-price-in-cents'));
-        if (extensionPrice < quickSellPrice) quickSell.click();
+            startingAtElement.innerText = starting_at_price;
+            startingAtElement.setAttribute('data-price-set', true.toString());
+            startingAtElement.setAttribute('data-price-in-cents', priceInCents);
+            startingAtElement.setAttribute('data-listing-price', getPriceAfterFees(priceInCents).toString());
+            quickSell.setAttribute('data-price-in-cents', quickSellPrice.toString());
+            quickSell.setAttribute('data-listing-price', getPriceAfterFees(quickSellPrice).toString());
+            quickSell.innerText = centsToSteamFormattedPrice(quickSellPrice);
+
+            // if the quicksell price is higher than the extension price then select that one as default instead
+            let extensionPrice = parseInt(listingRow.querySelector('.itemExtensionPrice').getAttribute('data-price-in-cents'));
+            if (extensionPrice < quickSellPrice) quickSell.click();
+        } else startingAtElement.setAttribute('data-price-set', false.toString());
     }
-    else startingAtElement.setAttribute('data-price-set', false.toString());
 }
 
 function addToPriceQueueIfNeeded(item) {
@@ -908,17 +910,20 @@ function updateMassSaleTotal() {
 }
 
 function addInstantSellPrice(market_hash_name, highest_order) {
-    const instantElement = getListingRow(market_hash_name).querySelector('.itemInstantSell');
+    const listingRow = getListingRow(market_hash_name);
 
-    if (highest_order !== undefined) {
-        instantElement.innerText = centsToSteamFormattedPrice(highest_order);
-        instantElement.setAttribute('data-price-set', true.toString());
-        instantElement.setAttribute('data-price-in-cents', highest_order);
-        instantElement.setAttribute('data-listing-price', getPriceAfterFees(highest_order).toString());
+    if (listingRow !== null) { // the user might have unselected the item while it as in the queue and now there is nowhere to add the price to
+        const instantElement = listingRow.querySelector('.itemInstantSell');
+
+        if (highest_order !== undefined) {
+            instantElement.innerText = centsToSteamFormattedPrice(highest_order);
+            instantElement.setAttribute('data-price-set', true.toString());
+            instantElement.setAttribute('data-price-in-cents', highest_order);
+            instantElement.setAttribute('data-listing-price', getPriceAfterFees(highest_order).toString());
+        } else instantElement.setAttribute('data-price-set', false.toString());
+
+        instantElement.setAttribute('data-price-in-progress', false.toString());
     }
-    else instantElement.setAttribute('data-price-set', false.toString());
-
-    instantElement.setAttribute('data-price-in-progress', false.toString());
 }
 
 const floatBar = getFloatBarSkeleton('inventory');
