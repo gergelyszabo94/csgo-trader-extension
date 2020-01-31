@@ -19989,9 +19989,9 @@ const offersSortingModes = {
 const defaultPopupLinks = [
     {
         active: true,
-        id: "about",
-        name: "About",
-        url: "about.html"
+        id: "faq",
+        name: "FAQ",
+        url: "https://csgotrader.app/faq/"
     },
     {
         active: true,
