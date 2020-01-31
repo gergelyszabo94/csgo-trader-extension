@@ -37,16 +37,6 @@ chrome.runtime.onInstalled.addListener((details) => {
             } }
         });
 
-        // moves float cache from under a single storage key to individual keys TODO: remove these lines after a few new versions
-        chrome.storage.local.get('floatCache', (result) => {
-            if (result.floatCache !== undefined && result.floatCache !== null) {
-                for (let assetID in result.floatCache) {
-                    chrome.storage.local.set({[`floatCache_${assetID}`]: result.floatCache[assetID]}, () => {});
-                }
-                chrome.storage.local.remove('floatCache', () => {});
-            }
-        });
-
         trackEvent({
             type:'event',
             action: 'ExtensionUpdate'
