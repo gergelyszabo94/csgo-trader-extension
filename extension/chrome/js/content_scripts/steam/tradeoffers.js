@@ -2,17 +2,16 @@ function matchItemsWithDescriptions(items) {
     let itemsToReturn = [];
     items.forEach((item) => {
         if (item.market_hash_name !== undefined) { // some items don't have descriptions for some reason - will have to be investigated later
-            let exterior = getExteriorFromTags(item.tags);
-            let marketlink = `https://steamcommunity.com/market/listings/730/${item.market_hash_name}`;
-            let quality = getQuality(item.tags);
-            let stickers = parseStickerInfo(item.descriptions, 'direct');
+            const exterior = getExteriorFromTags(item.tags);
+            const marketlink = `https://steamcommunity.com/market/listings/730/${item.market_hash_name}`;
+            const quality = getQuality(item.tags);
             let nametag = undefined;
             let inspectLink = null;
-            let dopplerInfo = (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon_url) : null;
-            let isStatrack = item.name.includes('StatTrak™');
-            let isSouvenir = item.name.includes('Souvenir');
-            let starInName = item.name.includes('★');
-            let type = getType(item.tags);
+            const dopplerInfo = (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon_url) : null;
+            const isStatrack = item.name.includes('StatTrak™');
+            const isSouvenir = item.name.includes('Souvenir');
+            const starInName = item.name.includes('★');
+            const type = getType(item.tags);
 
             try {
                 if (item.fraudwarnings !== undefined || item.fraudwarnings[0] !== undefined) nametag = item.fraudwarnings[0].split('Name Tag: \'\'')[1].split('\'\'')[0]
@@ -47,12 +46,12 @@ function matchItemsWithDescriptions(items) {
                 isStatrack: isStatrack,
                 isSouvenir: isSouvenir,
                 starInName: starInName,
-                stickers: stickers,
                 nametag: nametag,
                 owner: item.owner,
                 type: type,
                 floatInfo: null,
-                patternInfo: null
+                patternInfo: null,
+                descriptions: item.descriptions
             })
         }
     });
@@ -97,7 +96,7 @@ function addItemInfo(items) {
     chrome.storage.local.get(['colorfulItems', 'autoFloatOffer'], (result) => {
         activeItemElements.forEach(itemElement => {
             if ((itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') && isCSGOItemElement(itemElement)){
-                let item = getItemByIDs(items, getIDsFromElement(itemElement));
+                const item = getItemByIDs(items, getIDsFromElement(itemElement));
                 addDopplerPhase(itemElement, item.dopplerInfo);
                 makeItemColorful(itemElement, item, result.colorfulItems);
                 addSSTandExtIndicators(itemElement, item);

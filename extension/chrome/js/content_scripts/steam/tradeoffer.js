@@ -77,17 +77,16 @@ function buildInventoryStructure(inventory) {
     });
 
     inventory.forEach((item) => {
-        let exterior = getExteriorFromTags(item.tags);
-        let marketlink = `https://steamcommunity.com/market/listings/730/${item.market_hash_name}`;
-        let quality = getQuality(item.tags);
-        let stickers =  parseStickerInfo(item.descriptions, 'direct');
+        const exterior = getExteriorFromTags(item.tags);
+        const marketlink = `https://steamcommunity.com/market/listings/730/${item.market_hash_name}`;
+        const quality = getQuality(item.tags);
         let nametag = undefined;
         let inspectLink = null;
-        let dopplerInfo = (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon) : null;
-        let isStatrack = item.name.includes('StatTrak™');
-        let isSouvenir = item.name.includes('Souvenir');
-        let starInName = item.name.includes('★');
-        let type = getType(item.tags);
+        const dopplerInfo = (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon) : null;
+        const isStatrack = item.name.includes('StatTrak™');
+        const isSouvenir = item.name.includes('Souvenir');
+        const starInName = item.name.includes('★');
+        const type = getType(item.tags);
 
         try {if (item.fraudwarnings !== undefined || item.fraudwarnings[0] !== undefined) nametag = item.fraudwarnings[0].split('Name Tag: \'\'')[1].split('\'\'')[0]}
         catch(error) {}
@@ -118,13 +117,13 @@ function buildInventoryStructure(inventory) {
             isStatrack: isStatrack,
             isSouvenir: isSouvenir,
             starInName: starInName,
-            stickers: stickers,
             nametag: nametag,
             duplicates: duplicates[item.market_hash_name],
             owner: item.owner,
             type: type,
             floatInfo: null,
-            patternInfo: null
+            patternInfo: null,
+            descriptions: item.descriptions
         })
     });
 

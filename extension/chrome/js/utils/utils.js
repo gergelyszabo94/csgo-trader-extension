@@ -554,7 +554,7 @@ function warnOfScammer(steamID, page) {
     });
 }
 
-function parseStickerInfo(descriptions, linkType) {
+function parseStickerInfo(descriptions, linkType, prices, pricingProvider, exchangeRate, currency) {
     if (descriptions !== undefined && linkType !== undefined) {
         let stickers = [];
         let link = linkType === 'search' ? 'https://steamcommunity.com/market/search?q=' : 'https://steamcommunity.com/market/listings/730/Sticker%20%7C%20';
@@ -571,6 +571,7 @@ function parseStickerInfo(descriptions, linkType) {
                 names.forEach((name, index) => {
                     stickers.push({
                         name: name,
+                        price: getPrice('Sticker | ' + name, null, prices, pricingProvider, exchangeRate, currency),
                         iconURL: iconURLs[index],
                         marketURL: link + name
                     });
@@ -950,7 +951,7 @@ function getPrice(market_hash_name, dopplerInfo, prices, provider, exchange_rate
         // csgotrader and csmoney have doppler phase prices so they are handled differently
         if ((provider === pricingProviders.csgotrader.name || provider === pricingProviders.csmoney.name)) {
             if (dopplerInfo !== null) {
-                // when there is price for the specific dopper phase take that
+                // when there is price for the specific doppler phase take that
                 if (prices[market_hash_name]['doppler'] !== undefined && prices[market_hash_name]['doppler'] !== 'null' && prices[market_hash_name]['doppler'][dopplerInfo.name] !== 'null' && prices[market_hash_name]['doppler'][dopplerInfo.name] !== undefined) {
                     price = (prices[market_hash_name]['doppler'][dopplerInfo.name] * exchange_rate).toFixed(2);
                 }
@@ -1878,4 +1879,14 @@ function getMarketHistory(start, count) {
             reject(err);
         });
     });
+}
+
+function getStickerPriceTotal(stickers) {
+    let total = 0.0;
+    if (stickers !== null) {
+        stickers.forEach((sticker) => {
+            if (sticker.price !== null) total += parseFloat(sticker.price.price);
+        });
+    }
+    return total === 0 ? null : total;
 }

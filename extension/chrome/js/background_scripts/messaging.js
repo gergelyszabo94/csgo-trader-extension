@@ -52,35 +52,36 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                             for (let item in items) {
                                 if (ids[asset].classid === items[item].classid && ids[asset].instanceid === items[item].instanceid) {
-                                    let name = items[item].name;
-                                    let market_hash_name = items[item].market_hash_name;
-                                    let name_color = items[item].name_color;
-                                    let marketlink = `https://steamcommunity.com/market/listings/730/${items[item].market_hash_name}`;
-                                    let classid = items[item].classid;
-                                    let instanceid = items[item].instanceid;
-                                    let exterior = getExteriorFromTags(items[item].tags);
+                                    const name = items[item].name;
+                                    const market_hash_name = items[item].market_hash_name;
+                                    const name_color = items[item].name_color;
+                                    const marketlink = `https://steamcommunity.com/market/listings/730/${items[item].market_hash_name}`;
+                                    const classid = items[item].classid;
+                                    const instanceid = items[item].instanceid;
+                                    const exterior = getExteriorFromTags(items[item].tags);
                                     let tradability = 'Tradable';
                                     let tradabilityShort = 'T';
                                     let icon = items[item].icon_url;
-                                    let dopplerInfo = (items[item].name.includes('Doppler') || items[item].name.includes('doppler')) ? getDopplerInfo(icon) : null;
-                                    let isStatrack = items[item].name.includes('StatTrak™');
-                                    let isSouvenir = items[item].name.includes('Souvenir');
-                                    let starInName = items[item].name.includes('★');
-                                    let quality = getQuality(items[item].tags);
-                                    let stickers =  parseStickerInfo(items[item].descriptions, 'direct');
+                                    const dopplerInfo = (items[item].name.includes('Doppler') || items[item].name.includes('doppler')) ? getDopplerInfo(icon) : null;
+                                    const isStatrack = items[item].name.includes('StatTrak™');
+                                    const isSouvenir = items[item].name.includes('Souvenir');
+                                    const starInName = items[item].name.includes('★');
+                                    const quality = getQuality(items[item].tags);
+                                    const stickers =  parseStickerInfo(items[item].descriptions, 'direct', prices, result.pricingProvider, result.exchangeRate, result.currency);
+                                    const stickerPrice = getStickerPriceTotal(stickers);
                                     let nametag = undefined;
                                     let inspectLink = null;
-                                    let owner = steamID;
+                                    const owner = steamID;
                                     let price = null;
-                                    let type = getType(items[item].tags);
+                                    const type = getType(items[item].tags);
                                     let floatInfo = null;
                                     if (floatCache[assetid] !== undefined && floatCache[assetid] !== null && itemTypes[type.key].float) {
                                         floatInfo = floatCache[assetid];
                                     }
-                                    let patternInfo = (floatInfo !== null) ? getPattern(market_hash_name, floatInfo.paintseed) : null;
+                                    const patternInfo = (floatInfo !== null) ? getPattern(market_hash_name, floatInfo.paintseed) : null;
 
                                     if (result.itemPricing) price = getPrice(market_hash_name, dopplerInfo, prices, result.pricingProvider, result.exchangeRate, result.currency);
-                                    else{price = {price: '', display: ''}}
+                                    else price = {price: '', display: ''};
 
                                     try {if (items[item].fraudwarnings !== undefined || items[item].fraudwarnings[0] !== undefined) nametag = items[item].fraudwarnings[0].split('Name Tag: ')[1]}
                                     catch(error){}
@@ -104,33 +105,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     catch(error) {}
 
                                     itemsPropertiesToReturn.push({
-                                        name: name,
-                                        market_hash_name: market_hash_name,
-                                        name_color: name_color,
-                                        marketlink: marketlink,
-                                        classid: classid,
-                                        instanceid: instanceid,
-                                        assetid: assetid,
-                                        position: position,
-                                        tradability: tradability,
-                                        tradabilityShort: tradabilityShort,
+                                        name, market_hash_name, name_color, marketlink, classid, instanceid, assetid, position, tradability, tradabilityShort,
                                         marketable: items[item].marketable,
-                                        dopplerInfo: dopplerInfo,
-                                        exterior: exterior,
-                                        iconURL: icon,
-                                        inspectLink: inspectLink,
-                                        quality: quality,
-                                        isStatrack: isStatrack,
-                                        isSouvenir: isSouvenir,
-                                        starInName: starInName,
-                                        stickers: stickers,
-                                        nametag: nametag,
+                                        dopplerInfo, exterior, icon, inspectLink, quality, isStatrack, isSouvenir, starInName, stickers, stickerPrice, nametag,
                                         duplicates: duplicates[market_hash_name],
-                                        owner: owner,
-                                        price: price,
-                                        type: type,
-                                        floatInfo: floatInfo,
-                                        patternInfo: patternInfo
+                                        owner, price, type, floatInfo, patternInfo
                                     })
                                 }
                             }
@@ -166,13 +145,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 getFloatInfoFromCache(floatCacheAssetIDs).then(
                     floatCache => {
                         inventory.forEach(item => {
-                            if (result.prices[item.market_hash_name] !== undefined && result.prices[item.market_hash_name] !== 'null'){
+                            if (result.prices[item.market_hash_name] !== undefined && result.prices[item.market_hash_name] !== 'null') {
                                 item.price =  getPrice(item.market_hash_name, item.dopplerInfo, result.prices, result.pricingProvider, result.exchangeRate, result.currency);
                             }
                             if (floatCache[item.assetid] !== undefined && floatCache[item.assetid] !== null && itemTypes[item.type.key].float) {
                                 item.floatInfo = floatCache[item.assetid];
                                 item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintSeed);
                             }
+                            const stickers = parseStickerInfo(item.descriptions, 'direct', result.prices, result.pricingProvider, result.exchangeRate, result.currency);
+                            const stickerPrice = getStickerPriceTotal(stickers);
+                            item.stickers = stickers;
+                            item.stickerPrice = stickerPrice;
                         });
                         sendResponse({addPricesAndFloatsToInventory: inventory});
                     }
