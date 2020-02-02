@@ -19956,6 +19956,14 @@ const sortingModes = {
     "float_desc":{
         key: "float_desc",
         name: "Float (highest to lowest)"
+    },
+    "sticker_price_asc": {
+        key: "sticker_price_asc",
+        name: "Sticker price (cheap to expensive)"
+    },
+    "sticker_price_desc": {
+        key: "sticker_price_desc",
+        name: "Sticker price (expensive to cheap)"
     }
 };
 
