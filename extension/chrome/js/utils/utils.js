@@ -563,15 +563,17 @@ function parseStickerInfo(descriptions, linkType, prices, pricingProvider, excha
             if (description.value.includes('sticker_info')) {
                 let names = description.value.split('><br>')[1].split(': ')[1].split('</center>')[0].split(', ');
                 names = handleStickerNamesWithCommas(names);
-                let iconURLs = description.value.split('src="');
+                const iconURLs = description.value.split('src="');
+
                 iconURLs.shift();
                 iconURLs.forEach((iconURL, index) => {
                     iconURLs[index] = iconURL.split('><')[0]
                 });
+
                 names.forEach((name, index) => {
                     stickers.push({
                         name: name,
-                        price: getPrice('Sticker | ' + name, null, prices, pricingProvider, exchangeRate, currency),
+                        price: linkType === 'search' ? null : getPrice('Sticker | ' + name, null, prices, pricingProvider, exchangeRate, currency),
                         iconURL: iconURLs[index],
                         marketURL: link + name
                     });

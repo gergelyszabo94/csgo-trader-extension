@@ -20,17 +20,17 @@ function addStickers() {
     // removes sih sticker info
     document.querySelectorAll('.sih-images').forEach(image => {image.remove()});
 
-    let listings = getListings();
-    let listingsSection = document.getElementById('searchResultsRows');
+    const listings = getListings();
+    const listingsSection = document.getElementById('searchResultsRows');
 
     if (listingsSection !== null) { // so it does not throw any errors when it can't find it on commodity items
         listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listing_row => {
             if (listing_row.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listing_row.parentNode.parentNode.id !== 'tabContentsMyListings'){
-                let listingID = getListingIDFromElement(listing_row);
+                const listingID = getListingIDFromElement(listing_row);
+
                 if (listing_row.querySelector('.stickerHolderMarket') === null) { // if stickers elements not added already
                     listing_row.querySelector('.market_listing_item_name_block').insertAdjacentHTML('beforeend', `<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`);
-
-                    let stickers = listings[listingID].asset.stickers;
+                    const stickers = listings[listingID].asset.stickers;
 
                     stickers.forEach(stickerInfo =>{
                         listing_row.querySelector('.stickerHolderMarket').insertAdjacentHTML('beforeend', `<span class="stickerSlotMarket" data-tooltip-market="${stickerInfo.name}"><a href="${stickerInfo.marketURL}" target="_blank"><img src="${stickerInfo.iconURL}" class="stickerIcon"></a></span>`)
@@ -132,7 +132,7 @@ function getListings() {
         let assetID = listings[listing].asset.id;
 
         for(let asset in assets){
-            let stickers = parseStickerInfo(assets[asset].descriptions, 'search');
+            let stickers = parseStickerInfo(assets[asset].descriptions, 'search', );
 
             if(assetID === assets[asset].id){
                 listings[listing].asset = assets[asset];
@@ -147,16 +147,20 @@ function getListings() {
 // sticker wear to sticker icon tooltip
 function setStickerInfo(listingID, stickers){
     if (stickers !== null) {
-        let listingElement = getElementByListingID(listingID);
-        if (listingElement !== null) {
-            stickers.forEach((stickerInfo, index) => {
-                let wear = stickerInfo.wear !== undefined ? Math.trunc(Math.abs(1 - stickerInfo.wear) * 100) : 100;
+        chrome.storage.local.get(['prices', 'pricingProvider', 'exchangeRate', 'currency'], (result) => {
+            const listingElement = getElementByListingID(listingID);
 
-                let currentSticker = listingElement.querySelectorAll('.stickerSlotMarket')[index];
-                currentSticker.setAttribute('data-tooltip-market', `${stickerInfo.name} - Condition: ${wear}%`);
-                currentSticker.querySelector('img').setAttribute('style', `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`);
-            });
-        }
+            if (listingElement !== null) {
+                stickers.forEach((stickerInfo, index) => {
+                    const wear = stickerInfo.wear !== undefined ? Math.trunc(Math.abs(1 - stickerInfo.wear) * 100) : 100;
+                    const currentSticker = listingElement.querySelectorAll('.stickerSlotMarket')[index];
+                    const stickerPrice = getPrice('Sticker | ' + stickerInfo.name, null, result.prices, result.pricingProvider, result.exchangeRate, result.currency);
+
+                    currentSticker.setAttribute('data-tooltip-market', `${stickerInfo.name} (${stickerPrice.display}) - Condition: ${wear}%`);
+                    currentSticker.querySelector('img').setAttribute('style', `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`);
+                });
+            }
+        });
     }
 }
 
