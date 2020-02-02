@@ -98,7 +98,7 @@ function populateFloatInfo(listingID, floatInfo){
     if (listingElement !== null) { // if for example the user has changed page and the listing is not there anymore
         listingElement.querySelector('.floatTechnical').innerHTML = getDataFilledFloatTechnical(floatInfo);
 
-        let position = ((floatInfo.floatvalue.toFixedNoRounding(2) * 100) - 2).toFixedNoRounding(2);
+        const position = ((floatInfo.floatvalue.toFixedNoRounding(2) * 100) - 2).toFixedNoRounding(2);
         listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
         listingElement.querySelector('.floatDropTarget').innerText = floatInfo.floatvalue.toFixedNoRounding(4);
     }
@@ -118,23 +118,23 @@ function getListingIDFromElement(listingElement) {return listingElement.id.split
 
 
 function getListings() {
-    let getListingsScript = `
+    const getListingsScript = `
     document.querySelector('body').setAttribute('listingsInfo', JSON.stringify({
         listings: g_rgListingInfo,
         assets: g_rgAssets
     }));`;
 
-    let listingsInfo = JSON.parse(injectToPage(getListingsScript, true, 'getListings', 'listingsInfo'));
-    let assets = listingsInfo.assets[730][2];
-    let listings = listingsInfo.listings;
+    const listingsInfo = JSON.parse(injectToPage(getListingsScript, true, 'getListings', 'listingsInfo'));
+    const assets = listingsInfo.assets[730][2];
+    const listings = listingsInfo.listings;
 
-    for (let listing in listings){
-        let assetID = listings[listing].asset.id;
+    for (const listing in listings){
+        const assetID = listings[listing].asset.id;
 
-        for(let asset in assets){
-            let stickers = parseStickerInfo(assets[asset].descriptions, 'search', );
+        for(const asset in assets){
+            const stickers = parseStickerInfo(assets[asset].descriptions, 'search');
 
-            if(assetID === assets[asset].id){
+            if (assetID === assets[asset].id){
                 listings[listing].asset = assets[asset];
                 listings[listing].asset.stickers = stickers;
             }
@@ -156,9 +156,13 @@ function setStickerInfo(listingID, stickers){
                     const currentSticker = listingElement.querySelectorAll('.stickerSlotMarket')[index];
                     const stickerPrice = getPrice('Sticker | ' + stickerInfo.name, null, result.prices, result.pricingProvider, result.exchangeRate, result.currency);
 
+                    stickerInfo.price = stickerPrice;
                     currentSticker.setAttribute('data-tooltip-market', `${stickerInfo.name} (${stickerPrice.display}) - Condition: ${wear}%`);
                     currentSticker.querySelector('img').setAttribute('style', `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`);
                 });
+
+                const stickersTotalPrice = getStickerPriceTotal(stickers, result.currency);
+                listingElement.setAttribute('data-sticker-price', stickersTotalPrice === null ? '0.0' : stickersTotalPrice.price.toString());
             }
         });
     }
@@ -195,6 +199,28 @@ function sortListings(sortingMode) {
             let floatOfA = parseFloat(a.querySelector('.floatDropTarget').innerText);
             let floatOfB = parseFloat(b.querySelector('.floatDropTarget').innerText);
             return floatOfB - floatOfA;
+        });
+    }
+    else if (sortingMode === 'sticker_price_asc') {
+        sortedElements = listingElements.sort((a, b) => {
+            const stickerPriceOfA = a.getAttribute('data-sticker-price') !== 'null' && a.getAttribute('data-sticker-price') !== undefined
+                ? parseFloat(a.getAttribute('data-sticker-price'))
+                : 0.0;
+            const stickerPriceOfB = b.getAttribute('data-sticker-price') !== 'null' && b.getAttribute('data-sticker-price') !== undefined
+                ? parseFloat(b.getAttribute('data-sticker-price'))
+                : 0.0;
+            return stickerPriceOfA - stickerPriceOfB;
+        });
+    }
+    else if (sortingMode === 'sticker_price_desc') {
+        sortedElements = listingElements.sort((a, b) => {
+            const stickerPriceOfA = a.getAttribute('data-sticker-price') !== 'null' && a.getAttribute('data-sticker-price') !== undefined
+                ? parseFloat(a.getAttribute('data-sticker-price'))
+                : 0.0;
+            const stickerPriceOfB = b.getAttribute('data-sticker-price') !== 'null' && b.getAttribute('data-sticker-price') !== undefined
+                ? parseFloat(b.getAttribute('data-sticker-price'))
+                : 0.0;
+            return stickerPriceOfB - stickerPriceOfA;
         });
     }
 
@@ -363,6 +389,8 @@ if (searchBar !== null) {
                                                                     <option value="price_desc">Most expensive to cheapest</option>
                                                                     <option value="float_asc">Float lowest to highest</option>
                                                                     <option value="float_desc">Float highest to lowest</option>
+                                                                    <option value="sticker_price_asc">Sticker price cheapest to most expensive</option>
+                                                                    <option value="sticker_price_desc">Sticker price most expensive to cheapest</option>
                                                                 </select>
                                                             </div>`);
 
