@@ -31,7 +31,7 @@ function addItemInfo() {
 
     let itemElements = document.querySelectorAll('.item.app730.context2');
     if (itemElements.length !== 0){
-        chrome.storage.local.get(['colorfulItems', 'autoFloatOffer'], (result) => {
+        chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice'], (result) => {
             itemElements.forEach(itemElement =>{
                 if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false'){
                     // in case the inventory is not loaded yet it retires in a second
@@ -43,7 +43,7 @@ function addItemInfo() {
                         let item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
                         addDopplerPhase(itemElement, item.dopplerInfo);
                         makeItemColorful(itemElement, item, result.colorfulItems);
-                        addSSTandExtIndicators(itemElement, item);
+                        addSSTandExtIndicators(itemElement, item, result.showStickerPrice);
                         addPriceIndicator(itemElement, item.price);
                         if (result.autoFloatOffer) addFloatIndicator(itemElement, item.floatInfo);
 

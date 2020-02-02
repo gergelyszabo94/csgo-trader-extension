@@ -20077,7 +20077,8 @@ const storageKeys = {
     tradeHistoryLastUpdate: 0,
     tradeHistoryOffers: true,
     tradeHistoryInventory: true,
-    tradeOfferHeaderToLeft: true
+    tradeOfferHeaderToLeft: true,
+    showStickerPrice: true
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID', 'tradeHistoryLastUpdate'];

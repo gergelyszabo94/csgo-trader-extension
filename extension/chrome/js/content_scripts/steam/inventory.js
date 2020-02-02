@@ -22,7 +22,7 @@ function requestInventory(){
 function addPerItemInfo(){
     let itemElements = document.querySelectorAll('.item.app730.context2');
     if (itemElements.length !== 0) {
-        chrome.storage.local.get(['colorfulItems', 'autoFloatInventory'], (result) => {
+        chrome.storage.local.get(['colorfulItems', 'autoFloatInventory', 'showStickerPrice'], (result) => {
             itemElements.forEach(itemElement => {
                 if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') {
                     // in case the inventory is not loaded yet it retries in a second
@@ -38,7 +38,7 @@ function addPerItemInfo(){
 
                         addDopplerPhase(itemElement, item.dopplerInfo);
                         makeItemColorful(itemElement, item, result.colorfulItems);
-                        addSSTandExtIndicators(itemElement, item);
+                        addSSTandExtIndicators(itemElement, item, result.showStickerPrice);
                         addPriceIndicator(itemElement, item.price);
                         if (result.autoFloatInventory) addFloatIndicator(itemElement, item.floatInfo);
 

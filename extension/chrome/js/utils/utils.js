@@ -1078,18 +1078,20 @@ function addPriceIndicator(itemElement, priceInfo) {
 }
 
 // adds StatTrak, Souvenir and exterior indicators as well as sticker price when applicable
-function addSSTandExtIndicators(itemElement, item) {
+function addSSTandExtIndicators(itemElement, item, showStickerPrice) {
     const stattrak = item.isStatrack ? 'ST' : '';
     const souvenir = item.isSouvenir ? 'S' : '';
     const exterior = item.exterior !== null ? item.exterior.localized_short : '';
     const stickerPrice = item.stickerPrice !== null ? item.stickerPrice.display : '';
+    const showStickersClass = showStickerPrice ? '' : 'hidden';
+
     itemElement.insertAdjacentHTML('beforeend', `
         <div class='exteriorSTInfo'>
             <span class="souvenirYellow">${souvenir}</span>
             <span class="stattrakOrange">${stattrak}</span>
             <span class="exteriorIndicator">${exterior}</span>
         </div>
-        <div class="stickerPrice">${stickerPrice}</div>`);
+        <div class="stickerPrice ${showStickersClass}">${stickerPrice}</div>`);
 }
 
 function makeItemColorful(itemElement, item, colorfulItemsEnabled) {

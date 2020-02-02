@@ -93,13 +93,13 @@ function addItemInfo(items) {
         }
     });
 
-    chrome.storage.local.get(['colorfulItems', 'autoFloatOffer'], (result) => {
+    chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice'], (result) => {
         activeItemElements.forEach(itemElement => {
             if ((itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') && isCSGOItemElement(itemElement)){
                 const item = getItemByIDs(items, getIDsFromElement(itemElement));
                 addDopplerPhase(itemElement, item.dopplerInfo);
                 makeItemColorful(itemElement, item, result.colorfulItems);
-                addSSTandExtIndicators(itemElement, item);
+                addSSTandExtIndicators(itemElement, item, result.showStickerPrice);
                 addPriceIndicator(itemElement, item.price);
 
                 if (result.autoFloatOffer && item.inspectLink !== null) {
