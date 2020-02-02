@@ -1077,13 +1077,19 @@ function addPriceIndicator(itemElement, priceInfo) {
     }
 }
 
-// adds StatTrak, Souvenir and exterior indicators
+// adds StatTrak, Souvenir and exterior indicators as well as sticker price when applicable
 function addSSTandExtIndicators(itemElement, item) {
-    let stattrak = item.isStatrack ? 'ST' : '';
-    let souvenir = item.isSouvenir ? 'S' : '';
-    let exterior = item.exterior !== null ? item.exterior.localized_short : '';
-
-    itemElement.insertAdjacentHTML('beforeend', `<div class='exteriorSTInfo'><span class="souvenirYellow">${souvenir}</span><span class="stattrakOrange">${stattrak}</span><span class="exteriorIndicator">${exterior}</span></div>`);
+    const stattrak = item.isStatrack ? 'ST' : '';
+    const souvenir = item.isSouvenir ? 'S' : '';
+    const exterior = item.exterior !== null ? item.exterior.localized_short : '';
+    const stickerPrice = item.stickerPrice !== null ? item.stickerPrice.display : '';
+    itemElement.insertAdjacentHTML('beforeend', `
+        <div class='exteriorSTInfo'>
+            <span class="souvenirYellow">${souvenir}</span>
+            <span class="stattrakOrange">${stattrak}</span>
+            <span class="exteriorIndicator">${exterior}</span>
+        </div>
+        <div class="stickerPrice">${stickerPrice}</div>`);
 }
 
 function makeItemColorful(itemElement, item, colorfulItemsEnabled) {
@@ -1881,12 +1887,12 @@ function getMarketHistory(start, count) {
     });
 }
 
-function getStickerPriceTotal(stickers) {
+function getStickerPriceTotal(stickers, currency) {
     let total = 0.0;
     if (stickers !== null) {
         stickers.forEach((sticker) => {
             if (sticker.price !== null) total += parseFloat(sticker.price.price);
         });
     }
-    return total === 0 ? null : total;
+    return total === 0 ? null : {price: total, display: currencies[currency].sign + total.toFixed(2)};
 }

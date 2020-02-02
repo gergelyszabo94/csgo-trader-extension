@@ -420,6 +420,14 @@ progress {
     -webkit-text-fill-color: transparent;
 }
 
+.stickerPrice {
+    position: absolute;
+    right: 5px;
+    top: 18px;
+    font-size: 0.6rem;
+    color: white;
+}
+
 .market_sorting{
     margin-top: 5px;
 }

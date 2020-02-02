@@ -134,7 +134,7 @@ function addElements(){
                     item.stickers.forEach((stickerInfo) => {
                         document.querySelectorAll('.customStickers').forEach((customStickers) => {
                             customStickers.innerHTML = customStickers.innerHTML + `
-                                    <div class="stickerSlot" data-tooltip="${stickerInfo.name}">
+                                    <div class="stickerSlot" data-tooltip="${stickerInfo.name} (${stickerInfo.price.display})">
                                         <a href="${stickerInfo.marketURL}" target="_blank">
                                             <img src="${stickerInfo.iconURL}" class="stickerIcon">
                                         </a>
@@ -694,12 +694,14 @@ function setPatternInfo(patternInfo){
 function setStickerInfo(stickers){
     if (stickers !== null) {
         stickers.forEach((stickerInfo, index) =>{
-            let wear = stickerInfo.wear !== undefined ? Math.trunc(Math.abs( 1 - stickerInfo.wear) * 100) : 100 ;
+            const wear = stickerInfo.wear !== undefined ? Math.trunc(Math.abs( 1 - stickerInfo.wear) * 100) : 100 ;
 
             document.querySelectorAll('.customStickers').forEach(customStickers => {
-                let currentSticker = customStickers.querySelectorAll('.stickerSlot')[index];
+                const currentSticker = customStickers.querySelectorAll('.stickerSlot')[index];
+
                 if (currentSticker !== undefined) {
-                    currentSticker.setAttribute('data-tooltip', `${stickerInfo.name} - Condition: ${wear}%`);
+                    const currentToolTipText = currentSticker.getAttribute('data-tooltip');
+                    currentSticker.setAttribute('data-tooltip', `${currentToolTipText} - Condition: ${wear}%`);
                     currentSticker.querySelector('img').setAttribute('style', `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`);
                 }
             });

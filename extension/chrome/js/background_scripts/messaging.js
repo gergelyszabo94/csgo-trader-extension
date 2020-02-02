@@ -68,7 +68,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     const starInName = items[item].name.includes('★');
                                     const quality = getQuality(items[item].tags);
                                     const stickers =  parseStickerInfo(items[item].descriptions, 'direct', prices, result.pricingProvider, result.exchangeRate, result.currency);
-                                    const stickerPrice = getStickerPriceTotal(stickers);
+                                    const stickerPrice = getStickerPriceTotal(stickers, result.currency);
                                     let nametag = undefined;
                                     let inspectLink = null;
                                     const owner = steamID;
@@ -153,7 +153,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintSeed);
                             }
                             const stickers = parseStickerInfo(item.descriptions, 'direct', result.prices, result.pricingProvider, result.exchangeRate, result.currency);
-                            const stickerPrice = getStickerPriceTotal(stickers);
+                            const stickerPrice = getStickerPriceTotal(stickers, result.currency);
                             item.stickers = stickers;
                             item.stickerPrice = stickerPrice;
                         });
