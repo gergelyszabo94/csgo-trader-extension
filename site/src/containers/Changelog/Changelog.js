@@ -23,6 +23,28 @@ const changelog = (props) => {
                 This means that the latest version might not have rolled out to your platform yet when you are reading this.
             </Container>
             <Container className='buildingBlock'>
+                <h2>Version 1.26 - 2020-02-03</h2>
+                <ul>
+                    <li>
+                        Added sticker prices to inventories, offers and market listings.
+                        Check out the <Link to='/release-notes/#1.26'> Release Notes </Link> for more info.
+                        <GithubIssueLink issueNumber={116}/>
+                    </li>
+                    <li>Added listing canceled even type to Market History Export</li>
+                    <li>The progress is properly reset after the Market History Export process finishes</li>
+                    <li>
+                        Simplified data export/import options, now the only options are backup and restore.
+                        <GithubIssueLink issueNumber={114}/>
+                    </li>
+                    <li>Mass selling starting at and instant sell price fetching now uses a queue to delay requests</li>
+                    <li>
+                        Removed the About page and added link the the <Link to='/faq/'> FAQ </Link> page
+                        <GithubIssueLink issueNumber={115}/>
+                    </li>
+                    <li>Fixed a bug that made the original listing prices show up as zero or NaN after sorting</li>
+                </ul>
+            </Container>
+            <Container className='buildingBlock'>
                 <h2>Version 1.25.1 - 2020-01-27</h2>
                 <ul>
                     <li>

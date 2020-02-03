@@ -22,6 +22,31 @@ const releaseNotes = (props) => {
                 The platforms (Chrome Web Store, Mozzila Addons) review submissions before they are available for download.
                 This means that the latest version might not have rolled out to your platform yet when you are reading this.
             </Container>
+            <Container className='buildingBlock' id='1.26'>
+                <h2>1.26 - Sticker Prices</h2>
+                <p>This update focused on delivering applied sticker prices to inventory and offer items as well as market listings.
+                    Let me emphasize that these prices are not meant to be "the item is this much more expensive now", it's purely the total price of the stickers displayed.
+                    A few things to note on this screenshot: The total sticker prices per item shown under the exterior in small white print.
+                    The Sorting Method selected is "Sticker price (expensive to cheap) and the items are in that order.
+                    The mouse pointer is hovering over the "Winged Defuser" sticker, the tooltip shows the sticker's price.
+                    <div>
+                        <img src='/img/release-notes/sticker_prices_inventory.png'
+                             title='Inventory Sticker Prices and Sorting by sticker prices'
+                             alt='Inventory Sticker Prices and Sorting by sticker prices'
+                             className='showcaseImage showcase'/>
+                    </div>
+                    The same features are available in trade offers and on the incoming  tradeoffers page as wel.
+                </p>
+                <p>
+                    On the market pages, you can sort the listings by sticker price, you can see the total price of stickers on an item and see the individual stickers' prices when hovering over them:
+                    <div>
+                        <img src='/img/release-notes/sticker_prices_market.png'
+                             title='Market Sticker Prices and Sorting by sticker prices'
+                             alt='Market Sticker Prices and Sorting by sticker prices'
+                             className='showcaseImage showcase'/>
+                    </div>
+                </p>
+            </Container>
             <Container className='buildingBlock' id='1.25'>
                 <h2>1.25 - New Community Market homepage features, price highlighting, market history export</h2>
                 <p>This update brought to some nice new features to the
