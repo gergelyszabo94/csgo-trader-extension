@@ -428,6 +428,11 @@ progress {
     color: white;
 }
 
+.stickersTotal {
+    color: white;
+    text-align: center;
+}
+
 .market_sorting{
     margin-top: 5px;
 }

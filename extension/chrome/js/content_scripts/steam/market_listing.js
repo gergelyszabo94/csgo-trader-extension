@@ -33,8 +33,14 @@ function addStickers() {
                     const stickers = listings[listingID].asset.stickers;
 
                     stickers.forEach(stickerInfo =>{
-                        listing_row.querySelector('.stickerHolderMarket').insertAdjacentHTML('beforeend', `<span class="stickerSlotMarket" data-tooltip-market="${stickerInfo.name}"><a href="${stickerInfo.marketURL}" target="_blank"><img src="${stickerInfo.iconURL}" class="stickerIcon"></a></span>`)
+                        listing_row.querySelector('.stickerHolderMarket').insertAdjacentHTML('beforeend', `
+                            <span class="stickerSlotMarket" data-tooltip-market="${stickerInfo.name}">
+                                <a href="${stickerInfo.marketURL}" target="_blank">
+                                    <img src="${stickerInfo.iconURL}" class="stickerIcon">
+                                </a>
+                            </span>`)
                     });
+                    listing_row.querySelector('.stickerHolderMarket').insertAdjacentHTML('afterend', `<div class="stickersTotal" data-tooltip-market="Total Price of Stickers on this item"></div>`)
                 }
             }
         });
@@ -64,7 +70,7 @@ function addListingsToFloatQueue() {
     });
 }
 
-function addFloatBarSkeletons(){
+function addFloatBarSkeletons() {
     chrome.storage.local.get('autoFloatMarket', (result) => {
         if (result.autoFloatMarket) {
             let listingsSection = document.getElementById('searchResultsRows');
@@ -163,6 +169,9 @@ function setStickerInfo(listingID, stickers){
 
                 const stickersTotalPrice = getStickerPriceTotal(stickers, result.currency);
                 listingElement.setAttribute('data-sticker-price', stickersTotalPrice === null ? '0.0' : stickersTotalPrice.price.toString());
+
+                const stickersTotalElement = listingElement.querySelector('.stickersTotal');
+                stickersTotalElement.innerText = stickersTotalPrice === null ? '' : stickersTotalPrice.display;
             }
         });
     }
