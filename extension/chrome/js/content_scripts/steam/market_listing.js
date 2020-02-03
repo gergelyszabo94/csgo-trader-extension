@@ -235,21 +235,22 @@ function sortListings(sortingMode) {
 
 function addPricesInOtherCurrencies() {
     chrome.storage.local.get('marketOriginalPrice', (result) => {
-        if (result.marketOriginalPrice){
-
-            let listings = getListings();
-            let listingsSection = document.getElementById('searchResultsRows');
+        if (result.marketOriginalPrice) {
+            const listings = getListings();
+            const listingsSection = document.getElementById('searchResultsRows');
 
             if (listingsSection !== null) { // so it does not throw any errors when it can't find it on commodity items
                 listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listing_row => {
-                    if (listing_row.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listing_row.parentNode.parentNode.id !== 'tabContentsMyListings'){
-                        let listingID = getListingIDFromElement(listing_row);
-                        if (listing_row.querySelector('.originalPrice') === null) { // if stickers elements not added already
-                            let price = parseInt(listings[listingID].price);
-                            let priceWithFees = price + parseInt(listings[listingID].fee);
-                            let currencyID = parseInt(listings[listingID].currencyid) - 2000;
+                    if (listing_row.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listing_row.parentNode.parentNode.id !== 'tabContentsMyListings') {
+                        const listingID = getListingIDFromElement(listing_row);
+
+                        if (listing_row.querySelector('.originalPrice') === null) { // if not added before
+                            const price = parseInt(listings[listingID].price);
+                            const priceWithFees = price + parseInt(listings[listingID].fee);
+                            const currencyID = parseInt(listings[listingID].currencyid) - 2000;
+
                             listing_row.querySelector('.market_table_value').insertAdjacentHTML('beforeend',
-                                `<div class="originalPrice" data-currency-id="${currencyID}">
+                                `<div class="originalPrice" data-currency-id="${currencyID}" data-converted="false">
                                     <div class="market_listing_price_original_after_fees">${priceWithFees}</div>
                                     <div class="market_listing_price_original_before_fees">${price}</div>
                                 </div>`);
@@ -257,15 +258,22 @@ function addPricesInOtherCurrencies() {
                     }
                 });
 
-                let currencyConverterScript = `
+                const currencyConverterScript = `
                     document.getElementById('searchResultsRows').querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listing_row => {
-                        let currencyCode = GetCurrencyCode(parseInt(listing_row.querySelector('.originalPrice').getAttribute('data-currency-id')));
-                        let priceWithoutFeesElement = listing_row.querySelector('.market_listing_price_original_before_fees');
-                        let priceWithoutFees = parseInt(priceWithoutFeesElement.innerText);
-                        priceWithoutFeesElement.innerText = v_currencyformat(priceWithoutFees, currencyCode);
-                        let priceWithFeesElement = listing_row.querySelector('.market_listing_price_original_after_fees');
-                        let priceWithFee = parseInt(priceWithFeesElement.innerText);
-                        priceWithFeesElement.innerText = v_currencyformat(priceWithFee, currencyCode);
+                        const originalPriceElement = listing_row.querySelector('.originalPrice');
+                        
+                        if (originalPriceElement.getAttribute('data-converted') === 'false') {
+                            const currencyCode = GetCurrencyCode(parseInt(originalPriceElement.getAttribute('data-currency-id')));
+                            const priceWithoutFeesElement = listing_row.querySelector('.market_listing_price_original_before_fees');
+                            const priceWithoutFees = parseInt(priceWithoutFeesElement.innerText);
+                            
+                            priceWithoutFeesElement.innerText = v_currencyformat(priceWithoutFees, currencyCode);
+                            const priceWithFeesElement = listing_row.querySelector('.market_listing_price_original_after_fees');
+                            const priceWithFee = parseInt(priceWithFeesElement.innerText);
+                            
+                            priceWithFeesElement.innerText = v_currencyformat(priceWithFee, currencyCode);
+                            originalPriceElement.setAttribute('data-converted', 'true');
+                        }
                     });`;
 
                 injectToPage(currencyConverterScript, true, 'currencyConverter', false);
