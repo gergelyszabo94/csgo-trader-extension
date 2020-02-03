@@ -36,6 +36,7 @@ const releaseNotes = (props) => {
                              className='showcaseImage showcase'/>
                     </div>
                     The same features are available in trade offers and on the incoming  tradeoffers page as wel.
+                    If, for some reason you don't like this feature you can disable it by going to the options and flipping the switch on "Show sticker worth on items".
                 </p>
                 <p>
                     On the market pages, you can sort the listings by sticker price, you can see the total price of stickers on an item and see the individual stickers' prices when hovering over them:
