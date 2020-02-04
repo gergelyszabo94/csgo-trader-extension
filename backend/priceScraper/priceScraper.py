@@ -296,7 +296,7 @@ def lambda_handler(event, context):
         case = steam_aggregate["case"]  # only used to debug pricing in dev mode
         price = "null"
 
-        if steam_aggregate["price"] != "null" and not is_mispriced_knife(item, steam_aggregate["price"]):
+        if steam_aggregate["price"] != "null" and steam_aggregate["price"] != 0.0 and not is_mispriced_knife(item, steam_aggregate["price"]):
             price = float("{0:.2f}".format(steam_aggregate["price"]))
         elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and csmoney_prices[item]["price"] != 0:
             price = float("{0:.2f}".format(float(csmoney_prices[item]["price"]) * st_csm * week_to_day))
