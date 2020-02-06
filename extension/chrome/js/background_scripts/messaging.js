@@ -107,7 +107,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     itemsPropertiesToReturn.push({
                                         name, market_hash_name, name_color, marketlink, classid, instanceid, assetid, position, tradability, tradabilityShort,
                                         marketable: items[item].marketable,
-                                        dopplerInfo, exterior, icon, inspectLink, quality, isStatrack, isSouvenir, starInName, stickers, stickerPrice, nametag,
+                                        iconURL: icon,
+                                        dopplerInfo, exterior, inspectLink, quality, isStatrack, isSouvenir, starInName, stickers, stickerPrice, nametag,
                                         duplicates: duplicates[market_hash_name],
                                         owner, price, type, floatInfo, patternInfo
                                     })
