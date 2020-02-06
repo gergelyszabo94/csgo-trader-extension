@@ -18,6 +18,7 @@
     "react-helmet": "^5.2.1",
     "react-router-bootstrap": "^0.25.0",
     "react-router-dom": "^5.1.2",
+    "react-router-hash-link": "^1.2.2",
     "react-scripts": "3.3.0"
   },
   "scripts": {
@@ -46,6 +47,9 @@
     "react-snap": "^1.23.0"
   },
   "reactSnap": {
-    "puppeteerArgs": ["--no-sandbox", "--disable-setuid-sandbox"]
+    "puppeteerArgs": [
+      "--no-sandbox",
+      "--disable-setuid-sandbox"
+    ]
   }
 }
