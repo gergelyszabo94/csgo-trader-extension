@@ -23,7 +23,9 @@ const faq = (props) => {
                 </p>
 
                 <h2 id='install'>How do I install it?</h2>
+                <h3>From your browser vendor's distribution platform</h3>
                 <p>
+                    Installing from a distribution platform is the recommended way of installing the extension as it's the easiest way and guarantees that you will receive updates automatically.
                     The extension is available in the
                     <NewTabLink to='https://chrome.google.com/webstore/detail/csgo-trader-steam-trading/kaibcgikagnkfgjnibflebpldakfhfih'> Chrome Web Store </NewTabLink>
                     and at
@@ -44,6 +46,46 @@ const faq = (props) => {
                 </p>
                 <p>
                     If you are on Safari, all is lost for you because I have no plan of porting it for your browser, Safari extensions work very differently, and the work can't be justified.
+                </p>
+                <h3 id='installmanual'>Manually in developer mode</h3>
+                <p>
+                    Only recommended for those how like to tinker with the code or are forced to work around geoblocking, etc.
+                </p>
+                <h4>Pre-built release version</h4>
+                <p>
+                    This is the same code that gets published to the platforms. You can grab the zip, unpack it and load it in your browser.
+                    Also useful in case an update gets stuck in the review hell and does not get published for a while and you want to try it.
+                </p>
+                <p>
+                    To install the extension in development mode in a Chromium based browser (Chrome, Edge, Opera or Brave):
+                    <ul>
+                        <li>Grab the latest <NewTabLink to='/extension/chrome.zip'>chrome.zip</NewTabLink></li>
+                        <li>Unpack it in a folder on your computer</li>
+                        <li>Open the Extensions page ( chrome://extensions )</li>
+                        <li>Enable developer mode with the toggle</li>
+                        <li>Click "Load unpacked" and select the folder that you unpacked the contents of the .zip file</li>
+                        <li>The extension should now appear in your extensions</li>
+                    </ul>
+                    For Firefox:
+                    <ul>
+                        <li>Grab the latest <NewTabLink to='/extension/firefox.zip'>firefox.zip</NewTabLink></li>
+                        <li>Unpack it in a folder on your computer</li>
+                        <li>Open tha Extensions page ( about:addons )</li>
+                        <li>Click the Gear icon then "Debug Add-ons"</li>
+                        <li>The Temporary Extensions menu appears ( about:debugging#/runtime/this-firefox )</li>
+                        <li>Click "Load Temporary Add-ons..." and select the folder where you unpacked the contents of the .zip file</li>
+                        <li>The extension should now appear in your extensions</li>
+                    </ul>
+                </p>
+                <h4 id='installfromsource'>From source</h4>
+                <p>
+                    If you want the latest and greatest "nightly" version of the extension you will have to install it from source.
+                    <NewTabLink to='https://github.com/gergelyszabo94/csgo-trader-extension'> The repo is available on GitHub</NewTabLink>, clone or download it to your computer.
+                    If you have downloaded the .zip then extract the extension directory.
+                    For Chromium based browsers follow the instructions from above, you will have to pick the chrome directory when loading the extension.
+                    For firefox you will either have to grab the manifest.json from the firefox directory and copy (and overwrite)
+                    the one in the chrome directory or copy everything except the manifest.json from the chrome directory to the firefox directory.
+                    There are no other build steps at the moment, but it will soon change when I will refactor the extension to use the React framework.
                 </p>
 
                 <h2 id='support'>How do I get support?</h2>
