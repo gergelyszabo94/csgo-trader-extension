@@ -22,6 +22,7 @@ const footer = () => {
             <span className='footerNavLink'>
                 <Link to='/privacy/'>Privacy</Link>
             </span>
+            <Divider/>
             <span className='footerNavLink'>
                 <NewTabLink to='mailto:support@csgotrader.app'>support@csgotrader.app</NewTabLink>
             </span>
@@ -37,6 +38,10 @@ const BrandIcon = (props) => {
             </NewTabLink>
         </span>
     );
+};
+
+const Divider = () => {
+    return (<span>|</span>);
 };
 
 export default footer;
