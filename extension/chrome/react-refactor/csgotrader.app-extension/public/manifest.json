@@ -1,10 +1,10 @@
 {
-  "name": "anyádszarik",
+  "name": "CS:GO trade extension refactor",
   "version": "0.0.1",
   "manifest_version": 2,
   "browser_action": {
     "default_popup": "index.html?popup",
     "default_icon": {}
   },
-  "options_page": "index.html"
+  "options_page": "index.html?options"
 }

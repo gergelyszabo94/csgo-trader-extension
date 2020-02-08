@@ -2,15 +2,24 @@ import React from "react";
 import "./App.scss";
 import Home from "./pages/Home/Home";
 import Popup from "./pages/Popup/Popup";
+import Options from "./pages/Options/Options";
 import Navigation from "./components/Navigation/Navigation";
 import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Redirect
+  Redirect,
+  useHistory
 } from "react-router-dom";
 
-function App() {
+function App(props) {
+  // if (window.location.search === "?options") {
+  //   return (
+  //     <Router>
+  //
+  //     </Router>
+  //   );
+  // }
   if (window.location.search === "?popup") {
     return (
       <Router>
@@ -25,13 +34,14 @@ function App() {
       </Router>
     );
   } else {
+    console.log(window.location.search);
     return (
       <Router>
         <Navigation />
         <div className="content">
           <Switch>
             <Route exact path="/">
-              <Home />
+              <Options />
             </Route>
             <Route path="/popup">
               <Popup />
