@@ -1139,8 +1139,7 @@ function workOnFloatQueue() {
                 }
                 else {
                     chrome.runtime.sendMessage({fetchFloatInfo: job.inspectLink}, (response) => {
-                        if (response === 'error') floatQueue.jobs.push(job);
-                        else {
+                        if (response !== 'error') {
                             if (response !== 'nofloat') addFloatDataToPage(job, floatQueue, response.floatInfo);
                             else {
                                 if (job.type === 'inventory_floatbar') hideFloatBars();
@@ -1831,19 +1830,19 @@ function workOnPriceQueue() {
                     highestBuyOrder => {
                         if (highestBuyOrder !== undefined && job.type === 'my_buy_order') {
                             priceQueue.lastJobSuccessful = true;
-                                const priceOfHighestOrder = centsToSteamFormattedPrice(highestBuyOrder);
-                                const orderRow = getElementByOrderID(job.orderID);
+                            const priceOfHighestOrder = centsToSteamFormattedPrice(highestBuyOrder);
+                            const orderRow = getElementByOrderID(job.orderID);
 
-                                if (orderRow !== null) { // the order might not be there for example if the page was switched, the per page order count was changed or the order was canceled
-                                    const priceElement = orderRow.querySelector('.market_listing_price');
-                                    const orderPrice = priceElement.innerText;
-                                    const highest = orderPrice === priceOfHighestOrder ? 'highest' : 'not_highest';
+                            if (orderRow !== null) { // the order might not be there for example if the page was switched, the per page order count was changed or the order was canceled
+                                const priceElement = orderRow.querySelector('.market_listing_price');
+                                const orderPrice = priceElement.innerText;
+                                const highest = orderPrice === priceOfHighestOrder ? 'highest' : 'not_highest';
 
-                                    priceElement.insertAdjacentHTML('beforeend', `
+                                priceElement.insertAdjacentHTML('beforeend', `
                                     <div class="${highest}" title="This is the price of the highest buy order right now.">
                                         ${priceOfHighestOrder}
                                     </div>`);
-                                }
+                            }
                         }
                         else if (job.type === 'inventory_mass_sell_instant_sell') {
                             addInstantSellPrice(job.market_hash_name, highestBuyOrder);
