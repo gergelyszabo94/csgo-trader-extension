@@ -1,6 +1,6 @@
 // external css
-@import "/external/CSTExtensionPages.css",
-  "/external/thirdparty/bootstrap.min.css";
+@import "./assets/styles/external/CSTExtensionPages.css",
+  "./assets/styles/external/thirdparty/bootstrap.min.css";
 
 // pages
-@import "pages/pages";
+@import "./pages/pages";
