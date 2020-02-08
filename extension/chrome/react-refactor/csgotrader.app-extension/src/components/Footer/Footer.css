@@ -1,0 +1,14 @@
+footer {
+    width: 100%;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.brandIcon {
+    margin: 3px;
+}
+
+.footerNavLink {
+    font-size: 0.8rem;
+    margin: 0 5px 0 5px;
+}
