@@ -1,0 +1,74 @@
+{
+  "application_title": {
+    "message": "CSGO Trader - Steam Trading Enhancer",
+    "description": "The title of the application, displayed in the web store."
+  },
+  "application_description": {
+    "message": "Extension to help with CS:GO trading, trade-lock countdown, in-browser inspect, doppler phases, prices, float values, etc",
+    "description": "The description of the application, displayed in the web store. It's character limited (132 or less)"
+  },
+  "webstore_description": {
+    "message": "CSGO Trader Chrome Extension This is a chrome extension designed to help with CS:GO trading. I started by adding functionality that Steam Inventory Helper lacked, but it started overlapping and it's quite comperable already. Current Features: - Adds pricing info to inventories and tradeoffers along with totals- Adds an \"Inspect in Browser...\" button beside the default inspect button- Shows when an item's tradelock will expire and adds a countdown- Shows floats and other technical info in inventories, offers and on the market- Shows Doppler knives' phases- Shows exterior on each item and adds links to other version to inventory and market pages- NSFW filter mode to avoid showing anime boobs to your colleagues- Bookmark and notify when item is tradable- Real chat status on profiles- Colorful inventories- Scammers are market on their profile and in trade offers (if they are SteamRep banned)- CSGOLouunge.com auto-bumping- CSGOTraders.net auto-bumping- Other small automations, conveniencesFeel free to contribute (with code, graphics, translations or even with ideas)https://github.com/gergelyszabo94/csgo-trader-extension",
+    "description": "The long description of the application as visible in it's Chrome Webstore page"
+  },
+  "inspect_in_browser": {
+    "message": "Inspect in Browser...",
+    "description": "Text for the buttons that open in-browser inspection"
+  },
+  "fn_long": {
+    "message": "Factory New",
+    "description": "Factory New"
+  },
+  "mw_long": {
+    "message": "Minimal Wear",
+    "description": "Minimal Wear"
+  },
+  "ft_long": {
+    "message": "Field-Tested",
+    "description": "Field-Tested"
+  },
+  "ww_long": {
+    "message": "Well-Worn",
+    "description": "Well-Worn"
+  },
+  "bs_long": {
+    "message": "Battle-Scarred",
+    "description": "Battle-Scarred"
+  },
+  "fn_short": {
+    "message": "FN",
+    "description": "Factory New"
+  },
+  "mw_short": {
+    "message": "MW",
+    "description": "Minimal Wear"
+  },
+  "ft_short": {
+    "message": "FT",
+    "description": "Field-Tested"
+  },
+  "ww_short": {
+    "message": "WW",
+    "description": "Well-Worn"
+  },
+  "bs_short": {
+    "message": "BS",
+    "description": "Battle-Scarred"
+  },
+  "links_to_other_exteriors": {
+    "message": "Links to other exteriors",
+    "description": "Links to other exteriors"
+  },
+  "not_every_available": {
+    "message": "Not every item is available in every exterior",
+    "description": "Not every item is available in every exterior"
+  },
+  "souvenir": {
+    "message": "Souvenir",
+    "description": "Souvenir"
+  },
+  "get_float_info": {
+    "message": "Get Float Information...",
+    "description": "Get Float Information..."
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "application_title": {
+    "message": "CSGO Trader - Steam Trade Javito",
+    "description": "The title of the application, displayed in the web store."
+  },
+  "application_description": {
+    "message": "A CS:GOs cserék segítéséhez, trade-lock visszaszámlálás, böngészőből való megtekintés, doppler phasek, floatok, stb.",
+    "description": "The description of the application, displayed in the web store. It's character limited (132 or less)"
+  },
+  "webstore_description": {
+    "message": "CSGO Trader Chrome Bővítmény A bővítményt a CS:GO-s cserék segítéséhez terveztem. Olyan funkciókat rakok bele amit a Steam Inventory Helper nem tud, legalábbis egyelőre. Amit most tud:- Berak egy \"Inspect in Browser...\" gombot amivel meg tudod nézni böngészőből hogy hogy néz ki a fegyver játékban- Mutatja mikor válnak cserélhetővé a különböző cuccok a raktárakban- Mutatja a skinek floatját (hogy mennyire kopott)- Mutatja a Doppler phasesket- A skinek más kopás-minőségű verziójára rak linkeket- NSFW módot bekapcsolva elrejti az anime csöcsöket a profilokról- Könyvjelzőzés és értesítés amikor cserélhető a cucc- A valós steam chat státusz a profilokon- Szép színes raktárak- A scammerek profiljai meg vannak jelölve (akik steamrep bannoltak)- CSGOLouunge.com auto-bump- CSGOTraders.net auto-bump- Más apróságokTámogathatod a fejlesztést többek között kóddal, grafikával, fordítással és akár ötletekkel is.https://github.com/gergelyszabo94/csgo-trader-extension",
+    "description": "The long description of the application as visible in it's Chrome Webstore page"
+  },
+  "inspect_in_browser": {
+    "message": "Megvizsgálás böngészőben...",
+    "description": "Text for the buttons that open in-browser inspection"
+  },
+  "fn_long": {
+    "message": "Gyári új",
+    "description": "Factory New"
+  },
+  "mw_long": {
+    "message": "Kevéssé használt",
+    "description": "Minimal Wear"
+  },
+  "ft_long": {
+    "message": "Harctéren tesztelt",
+    "description": "Field-Tested"
+  },
+  "ww_long": {
+    "message": "Viseletes",
+    "description": "Well-Worn"
+  },
+  "bs_long": {
+    "message": "Háború tépázta",
+    "description": "Battle-Scarred"
+  },
+  "fn_short": {
+    "message": "GY",
+    "description": "Factory New"
+  },
+  "mw_short": {
+    "message": "KH",
+    "description": "Minimal Wear"
+  },
+  "ft_short": {
+    "message": "HA",
+    "description": "Field-Tested"
+  },
+  "ww_short": {
+    "message": "V",
+    "description": "Well-Worn"
+  },
+  "bs_short": {
+    "message": "HT",
+    "description": "Battle-Scarred"
+  },
+  "links_to_other_exteriors": {
+    "message": "Link a többi külsőre",
+    "description": "Links to other exteriors"
+  },
+  "not_every_available": {
+    "message": "Nem minden tárgy elérhető minden kölsőben",
+    "description": "Not every item is available in every exterior"
+  },
+  "souvenir": {
+    "message": "Emléktárgy",
+    "description": "Souvenir"
+  },
+  "get_float_info": {
+    "message": "Float Infó Betöltése...",
+    "description": "Get Float Information..."
+  }
+}

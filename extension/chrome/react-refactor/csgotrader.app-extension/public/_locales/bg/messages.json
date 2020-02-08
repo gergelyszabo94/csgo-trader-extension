@@ -1,0 +1,14 @@
+{
+  "application_title": {
+    "message": "CSGO Trader - Помощник в Търговията в Steam",
+    "description": "The title of the application, displayed in the web store."
+  },
+  "application_description": {
+    "message": "Приложение с което да си помогнете в CS:GO trading-а,cooldown на trade lock,оглед в browser-а ви,doppler фази,float проверка и тн.",
+    "description": "The description of the application, displayed in the web store. It's character limited (132 or less)"
+  },
+  "webstore_description": {
+    "message": "CSGO Trader Chrome ExtansionТова е chrome приложение направено да ви помогне с търгуването в CS:GO.Нещата които ще направя ще бъдад допълнителни от Steam Inventory Helper за сега.Текущи приложения:-\"Оглед в browser\" бутон освен обикновенния \"оглед в играта\" бутон- Показва когато item има tradelock и кога ще изтече (обратно броене)- Показва floats в инвентара- Показва doppler фазите- Показва външният вид на всеки item и добавя link-ове за всяка друга версия в общественият пазар- NSFL филтър който скрива всичко като полови органи и тн.- Bookmark и нодификация когато item е търговаем- Истински chat статус на профилите- Измамниците са маркирани в техния профил и техниите оферти за търговия (ако имат забрана в SteamRep)- http://CSGOLounge.com автоматична обява- http://CSGOTrades.net автоматична обява- Други малки автоматични функцийЧувствайте се свободни да помогнете (с кодиране,графики,преводи или дори с идей)https://github.com/gergelyszabo94/csgo-trader-extension",
+    "description": "The long description of the application as visible in it's Chrome Webstore page"
+  }
+}
