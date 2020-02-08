@@ -97,23 +97,25 @@ function addItemInfo(items) {
         activeItemElements.forEach(itemElement => {
             if ((itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') && isCSGOItemElement(itemElement)){
                 const item = getItemByIDs(items, getIDsFromElement(itemElement));
-                addDopplerPhase(itemElement, item.dopplerInfo);
-                makeItemColorful(itemElement, item, result.colorfulItems);
-                addSSTandExtIndicators(itemElement, item, result.showStickerPrice);
-                addPriceIndicator(itemElement, item.price);
 
-                if (result.autoFloatOffer && item.inspectLink !== null) {
-                    if (item.floatInfo === null && itemTypes[item.type.key].float) {
-                        floatQueue.jobs.push({
-                            type: 'offersPage',
-                            assetID: item.assetid,
-                            classid: item.classid,
-                            instanceid: item.instanceid,
-                            inspectLink: item.inspectLink
-                        });
-                        if (!floatQueue.active) workOnFloatQueue();
+                if (item !== undefined) {
+                    addDopplerPhase(itemElement, item.dopplerInfo);
+                    makeItemColorful(itemElement, item, result.colorfulItems);
+                    addSSTandExtIndicators(itemElement, item, result.showStickerPrice);
+                    addPriceIndicator(itemElement, item.price);
+
+                    if (result.autoFloatOffer && item.inspectLink !== null) {
+                        if (item.floatInfo === null && itemTypes[item.type.key].float) {
+                            floatQueue.jobs.push({
+                                type: 'offersPage',
+                                assetID: item.assetid,
+                                classid: item.classid,
+                                instanceid: item.instanceid,
+                                inspectLink: item.inspectLink
+                            });
+                            if (!floatQueue.active) workOnFloatQueue();
+                        } else addFloatIndicator(itemElement, item.floatInfo);
                     }
-                    else addFloatIndicator(itemElement, item.floatInfo);
                 }
 
                 // marks the item "processed" to avoid additional unnecessary work later
