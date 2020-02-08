@@ -26,16 +26,30 @@ const navigation = props => {
         <Navbar.Collapse id="responsive-navbar-nav" className={collapseShow}>
           <Nav className="mr-auto">
             {router.map(element => {
-              return (
-                <RouterNavLink
-                  to={element.path}
-                  exact={true}
-                  activeClassName="active"
-                  key={element.path}
-                >
-                  {element.title}
-                </RouterNavLink>
-              );
+              if (
+                ((props.isPopup && element.isActive) || !props.isPopup) &&
+                !element.isExternal
+              ) {
+                return (
+                  <RouterNavLink
+                    to={element.path}
+                    exact={true}
+                    activeClassName="active"
+                    key={element.id}
+                  >
+                    {element.title}
+                  </RouterNavLink>
+                );
+              } else if (
+                ((props.isPopup && element.isActive) || !props.isPopup) &&
+                element.isExternal
+              ) {
+                return (
+                  <a href={element.path} target="_blank" className="nav-link">
+                    {element.title}
+                  </a>
+                );
+              }
             })}
           </Nav>
         </Navbar.Collapse>

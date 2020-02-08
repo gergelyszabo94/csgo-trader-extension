@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
 import Navigation from "../../components/Navigation/Navigation";
+
 const Popup = () => {
   return (
     <Fragment>
