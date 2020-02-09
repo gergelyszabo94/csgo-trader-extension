@@ -1,45 +1,44 @@
 const links = [
-  {
-    title: "FAQ",
-    id: "faq",
-    path: "https://csgotrader.app/faq/",
-    isExternal: true,
-    isActive: false
-  },
-  {
+    {
     title: "Options",
     id: "options",
     path: "/",
-    isExternal: true,
-    isActive: true
-  },
-  {
-    title: "Changelog",
-    id: "changelog",
-    path: "https://csgotrader.app/changelog/",
-    isExternal: true,
-    isActive: true
+    isExternal: true
   },
   {
     title: "Bookmarks",
     id: "bookmarks",
     path: "/bookmarks/",
-    isExternal: false,
-    isActive: true
+    isExternal: false
   },
   {
-    title: "Inventory",
-    id: "inventory",
-    path: "https://steamcommunity.com/my/inventory/",
-    isExternal: true,
-    isActive: true
+    title: "Changelog",
+    id: "changelog",
+    path: "https://csgotrader.app/changelog/",
+    isExternal: true
   },
   {
-    title: "Trade Offers",
-    id: "tradeoffers",
-    path: "https://steamcommunity.com/",
-    isExternal: false,
-    isActive: true
+    title: 'Release-Notes',
+    id: "release-notes",
+    path: 'https://csgotrader.app/release-notes/'
+  },
+  {
+    title: "Steam Group",
+    id: "group",
+    path: "https://csgotrader.app/group/",
+    isExternal: true
+  },
+  {
+    title: "Prices",
+    id: "prices",
+    path: "https://csgotrader.app/prices/",
+    isExternal: true
+  },
+  {
+    title: "FAQ",
+    id: "faq",
+    path: "https://csgotrader.app/faq/",
+    isExternal: true
   }
 ];
 

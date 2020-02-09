@@ -3,7 +3,7 @@ import React from "react";
 const options = props => {
   return (
     <div>
-      OptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptionsOptions
+      Options
     </div>
   );
 };

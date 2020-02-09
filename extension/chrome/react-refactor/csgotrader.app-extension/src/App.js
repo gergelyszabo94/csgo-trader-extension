@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.scss";
-import Home from "./pages/Home/Home";
+import Bookmarks from "./pages/Bookmarks/Bookmarks";
 import Popup from "./pages/Popup/Popup";
 import Options from "./pages/Options/Options";
 import Navigation from "./components/Navigation/Navigation";
@@ -18,10 +18,12 @@ function App(props) {
       <Popup/>
     );
   }
-  else if (window.location.search === "?page=bookmarks") {
-    return (<span>Bookmarks</span>)
-  }
   else {
+    if (window.location.search === "?page=bookmarks") {
+      window.location.pathname = '/bookmarks/';
+      window.location.search = '';
+    }
+
     return (
       <Router>
         <Navigation />
@@ -29,6 +31,9 @@ function App(props) {
           <Switch>
             <Route exact path="/">
               <Options />
+            </Route>
+            <Route path="/bookmarks/">
+              <Bookmarks />
             </Route>
             <Route>
               <Redirect to="/" />
