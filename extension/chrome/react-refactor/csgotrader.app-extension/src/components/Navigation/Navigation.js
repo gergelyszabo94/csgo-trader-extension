@@ -6,48 +6,35 @@ import logo from "../../assets/images/cstlogo48.png";
 import "./Navigation.css";
 
 const navigation = props => {
-  let collapseShow = props.isPopup ? "show" : "";
   return (
     <Fragment>
       <Navbar expand="lg" bg="dark" variant="dark">
-          <Navbar.Brand href='https://csgotrader.app'>
-            <img
-              src={logo}
-              className="d-inline-block navlogo"
-              alt="CSGO Trader Extension logo"
-            />
-            CSGO Trader Extension
-          </Navbar.Brand>
-        {props.isPopup ? null : (
-          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        )}
-        <Navbar.Collapse id="responsive-navbar-nav" className={collapseShow}>
+        <Navbar.Brand href="https://csgotrader.app">
+          <img
+            src={logo}
+            className="d-inline-block navlogo"
+            alt="CSGO Trader Extension logo"
+          />
+          CSGO Trader Extension
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
             {links.map(link => {
-              if (
-                ((props.isPopup && link.isActive) || !props.isPopup) &&
-                !link.isExternal
-              ) {
-                return (
-                  <RouterNavLink
-                    to={link.path}
-                    exact={true}
-                    activeClassName="active"
-                    key={link.id}
-                  >
-                    {link.title}
-                  </RouterNavLink>
-                );
-              } else if (
-                ((props.isPopup && link.isActive) || !props.isPopup) &&
-                  link.isExternal
-              ) {
-                return (
-                  <a href={link.path} target="_blank" className="nav-link">
-                    {link.title}
-                  </a>
-                );
-              }
+              return !link.isExternal ? (
+                <RouterNavLink
+                  to={link.path}
+                  exact={true}
+                  activeClassName="active"
+                  key={link.id}
+                >
+                  {link.title}
+                </RouterNavLink>
+              ) : (
+                <a href={link.path} target="_blank" className="nav-link">
+                  {link.title}
+                </a>
+              );
             })}
           </Nav>
         </Navbar.Collapse>
