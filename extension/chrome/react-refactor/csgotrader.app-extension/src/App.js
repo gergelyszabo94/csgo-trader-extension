@@ -8,28 +8,25 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Redirect,
-  useHistory
+  Redirect
 } from "react-router-dom";
 
 function App(props) {
+  console.log(window.location.search);
+  console.log(window.location.search === "?page=bookmarks");
+
   if (window.location.search === "?page=popup") {
     return <Popup />;
   } else {
     return (
       <Router>
-        {window.location.search === "?page=bookmarks" ? (
-          <Route>
-            <Redirect to="/bookmarks/" />
-          </Route>
-        ) : null}
         <Navigation />
         <div className="content">
           <Switch>
             <Route exact path="/">
               <Options />
             </Route>
-            <Route path="/bookmarks">
+            <Route path="/bookmarks/">
               <Bookmarks />
             </Route>
             <Route>
@@ -37,6 +34,12 @@ function App(props) {
             </Route>
           </Switch>
         </div>
+        {window.location.search === "?page=bookmarks" ? (
+          <Route>
+            {console.log(<Redirect to="/bookmarks/" />)}
+            <Redirect to="/bookmarks/" />
+          </Route>
+        ) : null}
       </Router>
     );
   }
