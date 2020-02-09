@@ -13,28 +13,11 @@ import {
 } from "react-router-dom";
 
 function App(props) {
-  // if (window.location.search === "?options") {
-  //   return (
-  //     <Router>
-  //
-  //     </Router>
-  //   );
-  // }
   if (window.location.search === "?popup") {
     return (
-      <Router>
-        <Switch>
-          <Route exact path="/">
-            <Popup />
-          </Route>
-          <Route>
-            <Redirect to="/" />
-          </Route>
-        </Switch>
-      </Router>
+      <Popup/>
     );
   } else {
-    console.log(window.location.search);
     return (
       <Router>
         <Navigation />

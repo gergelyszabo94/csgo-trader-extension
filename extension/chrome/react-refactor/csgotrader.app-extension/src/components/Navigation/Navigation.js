@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Container, Navbar, Nav } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
-import router from "./router.js";
+import links from "./links.js";
 import logo from "../../assets/images/cstlogo48.png";
 import "./Navigation.css";
 
@@ -10,8 +10,7 @@ const navigation = props => {
   return (
     <Fragment>
       <Navbar expand="lg" bg="dark" variant="dark">
-        <LinkContainer to="/" exact={true} activeClassName="active" key="/">
-          <Navbar.Brand>
+          <Navbar.Brand href='https://csgotrader.app'>
             <img
               src={logo}
               className="d-inline-block navlogo"
@@ -19,34 +18,33 @@ const navigation = props => {
             />
             CSGO Trader Extension
           </Navbar.Brand>
-        </LinkContainer>
         {props.isPopup ? null : (
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         )}
         <Navbar.Collapse id="responsive-navbar-nav" className={collapseShow}>
           <Nav className="mr-auto">
-            {router.map(element => {
+            {links.map(link => {
               if (
-                ((props.isPopup && element.isActive) || !props.isPopup) &&
-                !element.isExternal
+                ((props.isPopup && link.isActive) || !props.isPopup) &&
+                !link.isExternal
               ) {
                 return (
                   <RouterNavLink
-                    to={element.path}
+                    to={link.path}
                     exact={true}
                     activeClassName="active"
-                    key={element.id}
+                    key={link.id}
                   >
-                    {element.title}
+                    {link.title}
                   </RouterNavLink>
                 );
               } else if (
-                ((props.isPopup && element.isActive) || !props.isPopup) &&
-                element.isExternal
+                ((props.isPopup && link.isActive) || !props.isPopup) &&
+                  link.isExternal
               ) {
                 return (
-                  <a href={element.path} target="_blank" className="nav-link">
-                    {element.title}
+                  <a href={link.path} target="_blank" className="nav-link">
+                    {link.title}
                   </a>
                 );
               }
@@ -58,7 +56,7 @@ const navigation = props => {
   );
 };
 
-// workaround from here: https://github.com/react-bootstrap/react-router-bootstrap/issues/242#issuecomment-480330910
+// workaround from here: https://github.com/react-bootstrap/react-linkr-bootstrap/issues/242#issuecomment-480330910
 const RouterNavLink = ({ children, ...props }) => (
   <LinkContainer {...props}>
     <Nav.Link active={false}>{children}</Nav.Link>

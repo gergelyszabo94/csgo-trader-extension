@@ -1,6 +1,6 @@
 /* global chrome */
 let devMode = true;
-const router = [
+const links = [
   {
     title: "FAQ",
     id: "faq",
@@ -56,7 +56,7 @@ const getRouter = () => {
     });
   }
 
-  return router;
+  return links;
 };
 
 export default getRouter();
