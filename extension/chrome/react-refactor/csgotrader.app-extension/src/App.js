@@ -14,25 +14,22 @@ import {
 
 function App(props) {
   if (window.location.search === "?page=popup") {
-    return (
-      <Popup/>
-    );
-  }
-  else {
-    if (window.location.search === "?page=bookmarks") {
-      window.location.pathname = '/bookmarks/';
-      window.location.search = '';
-    }
-
+    return <Popup />;
+  } else {
     return (
       <Router>
+        {window.location.search === "?page=bookmarks" ? (
+          <Route>
+            <Redirect to="/bookmarks/" />
+          </Route>
+        ) : null}
         <Navigation />
         <div className="content">
           <Switch>
             <Route exact path="/">
               <Options />
             </Route>
-            <Route path="/bookmarks/">
+            <Route path="/bookmarks">
               <Bookmarks />
             </Route>
             <Route>
