@@ -3,7 +3,7 @@ const links = [
     title: "Options",
     id: "options",
     path: "/",
-    isExternal: true
+    isExternal: false
   },
   {
     title: "Bookmarks",
@@ -20,7 +20,8 @@ const links = [
   {
     title: 'Release-Notes',
     id: "release-notes",
-    path: 'https://csgotrader.app/release-notes/'
+    path: 'https://csgotrader.app/release-notes/',
+    isExternal: true
   },
   {
     title: "Steam Group",
