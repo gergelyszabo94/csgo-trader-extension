@@ -20005,7 +20005,7 @@ const defaultPopupLinks = [
         active: true,
         id: "options",
         name: "Options",
-        url: "options.html"
+        url: "index.html"
     },
     {
         active: true,
@@ -20017,7 +20017,7 @@ const defaultPopupLinks = [
         active: true,
         id: "bookmarks",
         name: "Bookmarks",
-        url: "bookmarks.html"
+        url: "index.html?page=bookmarks"
     },
     {
         active: true,

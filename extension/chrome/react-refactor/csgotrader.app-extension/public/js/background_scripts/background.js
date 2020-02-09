@@ -37,13 +37,19 @@ chrome.runtime.onInstalled.addListener((details) => {
             } }
         });
 
-        // the About page was removed, but since the extension popup links are stored in storage it has to be changed there too (to FAQ) - Remove this code in a couple of months
+        // during the React refactor the links had to be changed - Remove this code in a couple of months when the majority of the users have updated
         chrome.storage.local.get('popupLinks', (result) => {
             for (let popupLink of result.popupLinks) {
                 if (popupLink.id === 'about') {
                     popupLink.id = 'faq';
                     popupLink.name = 'FAQ';
                     popupLink.url = 'https://csgotrader.app/faq/';
+                }
+                else if (popupLink.id === 'options') {
+                    popupLink.url = 'index.html'
+                }
+                else if (popupLink.id === 'bookmarks') {
+                    popupLink.url = 'index.html?page=bookmarks'
                 }
             }
             chrome.storage.local.set({'popupLinks': result.popupLinks}, () => {});

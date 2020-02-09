@@ -13,11 +13,15 @@ import {
 } from "react-router-dom";
 
 function App(props) {
-  if (window.location.search === "?popup") {
+  if (window.location.search === "?page=popup") {
     return (
       <Popup/>
     );
-  } else {
+  }
+  else if (window.location.search === "?page=bookmarks") {
+    return (<span>Bookmarks</span>)
+  }
+  else {
     return (
       <Router>
         <Navigation />
@@ -25,9 +29,6 @@ function App(props) {
           <Switch>
             <Route exact path="/">
               <Options />
-            </Route>
-            <Route path="/popup">
-              <Popup />
             </Route>
             <Route>
               <Redirect to="/" />
