@@ -1,5 +1,3 @@
-/* global chrome */
-let devMode = true;
 const links = [
   {
     title: "FAQ",
@@ -11,7 +9,7 @@ const links = [
   {
     title: "Options",
     id: "options",
-    path: "index.html",
+    path: "/",
     isExternal: true,
     isActive: true
   },
@@ -25,7 +23,7 @@ const links = [
   {
     title: "Bookmarks",
     id: "bookmarks",
-    path: "bookmarks.html",
+    path: "/bookmarks/",
     isExternal: false,
     isActive: true
   },
@@ -45,18 +43,4 @@ const links = [
   }
 ];
 
-console.log(chrome);
-
-const getRouter = () => {
-  if (chrome.storage && !devMode) {
-    chrome.storage.local.get(["popupLinks"], result => {
-      if (result !== undefined) {
-        return result;
-      }
-    });
-  }
-
-  return links;
-};
-
-export default getRouter();
+export default links;
