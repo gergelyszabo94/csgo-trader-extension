@@ -1,30 +1,48 @@
 /* global chrome */
 
-import React, { Fragment } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 
 const Popup = () => {
-    chrome.storage.local.get(['popupLinks', 'steamIDOfUser'], (result) => {
-        return (
-            <Fragment>
-                <a href="https://csgotrader.app" target="_blank">
-                    <img style="margin-bottom: 5px" src="/images/cstlogo48.png"/>
-                    <h5>CSGO Trader {chrome.runtime.getManifest().version}</h5>
-                </a>
+  const [data, setData] = useState([]);
 
-                {result.popupLinks.forEach(link => {
-                    if (link.active) {
-                        const URL = link.id === 'tradeoffers' ? `https://steamcommunity.com/profiles/${result.steamIDOfUser}/tradeoffers` : link.url;
+  useEffect(() => {
+    if (data.length === 0) {
+      getDataFromStorage();
+    }
+  }, []);
+  const getDataFromStorage = () => {
+    chrome.storage.local.get(["popupLinks", "steamIDOfUser"], result => {
+      let template = [];
+      template.push(
+        <a href="https://csgotrader.app" target="_blank">
+          <img src="/images/cstlogo48.png" />
+          <h5>
+            CSGO Trader <span>{chrome.runtime.getManifest().version}</span>
+          </h5>
+        </a>
+      );
 
-                        return (
-                            <div>
-                                <a href={URL} target="_blank">{link.name}</a>
-                            </div>
-                        );
-                    }
-                })}
-            </Fragment>
-        );
+      result.popupLinks.map(link => {
+        if (link.active) {
+          const URL =
+            link.id === "tradeoffers"
+              ? `https://steamcommunity.com/profiles/${result.steamIDOfUser}/tradeoffers`
+              : link.url;
+          template.push(
+            <div>
+              <a href={URL} target="_blank">
+                {link.name}
+              </a>
+            </div>
+          );
+        }
+      });
+
+      setData(...data, template);
     });
+  };
+
+  return <div className="popup">{data}</div>;
 };
 
 export default Popup;

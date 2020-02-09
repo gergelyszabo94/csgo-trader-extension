@@ -1,0 +1,26 @@
+.popup {
+  text-align: center;
+  background-color: #1d2124;
+  padding: 10px;
+  img {
+    margin: 5px auto;
+  }
+  h5 {
+    white-space: nowrap;
+    padding: 10px;
+    color: darkorange;
+
+    span {
+      color: white;
+    }
+  }
+
+  a {
+    color: var(--steam-souvenir-yellow);
+    margin: 5px auto;
+    &:hover {
+      color: #e1e1e1;
+      text-decoration: underline;
+    }
+  }
+}
