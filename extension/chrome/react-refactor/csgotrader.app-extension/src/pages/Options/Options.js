@@ -1,11 +1,14 @@
-import React from "react";
+import React, {Fragment} from "react";
+import Category from "./Category/Category";
+import GeneralSchema from "./optionsSchemas/general";
 
 const options = props => {
-  return (
-    <div>
-      Options
-    </div>
-  );
+    return (
+        <Fragment>
+            <h1>CSGO Trader Options</h1>
+            <Category schema={GeneralSchema}/>
+        </Fragment>
+    );
 };
 
 export default options;
