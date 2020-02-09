@@ -22,7 +22,7 @@
     "*://csgolounge.com/*",
     "*://old.csgolounge.com/*",
     "*://csgotraders.net/*" ],
-  "options_page": "index.html?options",
+  "options_page": "index.html",
   "background": {
     "scripts": [
       "js/utils/enums.js",
