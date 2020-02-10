@@ -4,7 +4,8 @@ import { Table } from 'react-bootstrap';
 const category = (props) => {
     return (
         <div className="buildingBlock">
-            <h2>{props.schema.title}</h2>
+            <h2>{props.title}</h2>
+            {props.subTitle !== undefined ? <p>{props.subTitle}</p> : null}
             <Table striped>
                 <thead>
                 <tr>
@@ -14,17 +15,7 @@ const category = (props) => {
                 </tr>
                 </thead>
                 <tbody>
-                {
-                    props.schema.options.map(option => {
-                      return (
-                          <tr key={option.storageKey}>
-                              <td>{option.name}</td>
-                              <td>{option.inputType}</td>
-                              <td>{option.description}</td>
-                          </tr>
-                      )
-                    })
-                }
+                {props.children}
                 </tbody>
             </Table>
         </div>

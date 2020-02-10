@@ -1,6 +1,9 @@
 import React, { Fragment } from "react";
-import Category from "./Category/Category";
-import GeneralSchema from "./optionsSchemas/general";
+
+import Notifications from '../../components/Options/Categories/Notifications';
+import General from '../../components/Options/Categories/General';
+import Pricing from '../../components/Options/Categories/Pricing';
+
 import {
   BrowserRouter as Router,
   Switch,
@@ -19,7 +22,7 @@ const options = props => {
           <div className="row">
             <div className="col-md-2  options__side-nav">
               <Nav defaultActiveKey="/home" className="flex-column">
-                <Link to="/">Genereal</Link>
+                <Link to="/">General</Link>
                 <Link to="/pricing">Pricing</Link>
                 <Link to="/popup/">Popup</Link>
                 <Link to="/trade-offer/">Trade Offer</Link>
@@ -35,10 +38,10 @@ const options = props => {
             <div className="col-md-10">
               <Switch>
                 <Route exact path="/">
-                  <Category schema={GeneralSchema} />
+                  <General/>
                 </Route>
                 <Route path="/pricing/">
-                  <div>Pricing</div>
+                  <Pricing/>
                 </Route>
                 <Route path="/popup/">
                   <div>Popup</div>
@@ -56,7 +59,7 @@ const options = props => {
                   <div>market</div>
                 </Route>
                 <Route path="/notifications/">
-                  <div>notifications</div>
+                  <Notifications/>
                 </Route>
                 <Route path="/other/">
                   <div>other</div>
@@ -74,7 +77,6 @@ const options = props => {
 
         {window.location.search === "?page=bookmarks" ? (
           <Route>
-            {console.log(<Redirect to="/bookmarks/" />)}
             <Redirect to="/bookmarks/" />
           </Route>
         ) : null}
