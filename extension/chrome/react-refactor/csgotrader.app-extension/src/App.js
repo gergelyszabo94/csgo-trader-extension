@@ -1,5 +1,8 @@
 import React from "react";
+
+import 'bootstrap/dist/css/bootstrap.min.css';
 import "./App.scss";
+
 import Bookmarks from "./pages/Bookmarks/Bookmarks";
 import Popup from "./pages/Popup/Popup";
 import Options from "./pages/Options/Options";
