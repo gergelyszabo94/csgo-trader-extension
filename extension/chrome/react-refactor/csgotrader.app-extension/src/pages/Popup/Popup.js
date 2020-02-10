@@ -12,9 +12,9 @@ const Popup = () => {
   }, []);
   const getDataFromStorage = () => {
     chrome.storage.local.get(["popupLinks", "steamIDOfUser"], result => {
-      let template = [];
+      const template = [];
       template.push(
-        <a href="https://csgotrader.app" target="_blank">
+        <a key='home' href="https://csgotrader.app" target="_blank">
           <img src="/images/cstlogo48.png" />
           <h5>
             CSGO Trader <span>{chrome.runtime.getManifest().version}</span>
@@ -29,7 +29,7 @@ const Popup = () => {
               ? `https://steamcommunity.com/profiles/${result.steamIDOfUser}/tradeoffers`
               : link.url;
           template.push(
-            <div>
+            <div key={link.id}>
               <a href={URL} target="_blank">
                 {link.name}
               </a>

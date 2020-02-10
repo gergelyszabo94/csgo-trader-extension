@@ -17,7 +17,7 @@ const category = (props) => {
                 {
                     props.schema.options.map(option => {
                       return (
-                          <tr>
+                          <tr key={option.storageKey}>
                               <td>{option.name}</td>
                               <td>{option.inputType}</td>
                               <td>{option.description}</td>

@@ -15,9 +15,6 @@ import {
 } from "react-router-dom";
 
 function App(props) {
-  console.log(window.location.search);
-  console.log(window.location.search === "?page=bookmarks");
-
   if (window.location.search === "?page=popup") {
     return <Popup />;
   } else {

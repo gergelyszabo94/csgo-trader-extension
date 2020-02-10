@@ -30,7 +30,7 @@ const generalSchema = {
         },
         {
             name: 'Tabs API access',
-            storageKey: 'steamAPIKey',
+            storageKey: 'tabsAPI',
             inputType: 'flipSwitchSpecial',
             description:
                 <Fragment>

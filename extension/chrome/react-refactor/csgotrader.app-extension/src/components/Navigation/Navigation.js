@@ -31,7 +31,7 @@ const navigation = props => {
                   {link.title}
                 </RouterNavLink>
               ) : (
-                <a href={link.path} target="_blank" className="nav-link">
+                <a href={link.path} target="_blank" className="nav-link" key={link.id}>
                   {link.title}
                 </a>
               );
