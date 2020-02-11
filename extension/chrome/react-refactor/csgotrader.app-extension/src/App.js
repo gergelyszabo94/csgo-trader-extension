@@ -23,21 +23,16 @@ function App(props) {
         <Navigation />
         <div className="content">
           <Switch>
-            <Route exact path="/">
-              <Options />
-            </Route>
-            <Route path="/bookmarks/">
-              <Bookmarks />
-            </Route>
+            <Route path="/options/" component={Options}/>
+            <Route path="/bookmarks/" component={Bookmarks}/>
             <Route>
-              <Redirect to="/" />
+              <Redirect to="/options/general/"/>
             </Route>
           </Switch>
         </div>
         {window.location.search === "?page=bookmarks" ? (
           <Route>
-            {console.log(<Redirect to="/bookmarks/" />)}
-            <Redirect to="/bookmarks/" />
+            <Redirect to="/bookmarks/"/>
           </Route>
         ) : null}
       </Router>

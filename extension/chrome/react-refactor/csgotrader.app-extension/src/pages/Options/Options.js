@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 
 import Notifications from '../../components/Options/Categories/Notifications';
 import General from '../../components/Options/Categories/General';
@@ -13,7 +13,60 @@ import {
 } from "react-router-dom";
 import { Navbar, Nav } from "react-bootstrap";
 
-const options = props => {
+const routes = [
+  {
+    to: 'general/',
+    name: 'General',
+    component: General
+  },
+  {
+    to: 'pricing/',
+    name: 'Pricing',
+    component: Pricing
+  },
+  {
+    to: 'popup/',
+    name: 'Popup',
+    component: null
+  },
+  {
+    to: 'trade-offer/',
+    name: 'Trade Offer',
+    component: null
+  },
+  {
+    to: 'inventory/',
+    name: 'Inventory',
+    component: null
+  },
+  {
+    to: 'profile/',
+    name: 'Profile',
+    component: null
+  },
+  {
+    to: 'market/',
+    name: 'Market',
+    component: null
+  },
+  {
+    to: 'notifications/',
+    name: 'Notifications',
+    component: Notifications
+  },
+  {
+    to: 'other/',
+    name: 'Other',
+    component: null
+  },
+  {
+    to: 'backup-restore/',
+    name: 'Data backup and restore',
+    component: null
+  }
+];
+
+const options = ({match}) => {
   return (
     <div className="options">
       <h1>CSGO Trader Options</h1>
@@ -22,54 +75,24 @@ const options = props => {
           <div className="row">
             <div className="col-md-2  options__side-nav">
               <Nav defaultActiveKey="/home" className="flex-column">
-                <Link to="/">General</Link>
-                <Link to="/pricing">Pricing</Link>
-                <Link to="/popup/">Popup</Link>
-                <Link to="/trade-offer/">Trade Offer</Link>
-                <Link to="/inventory/">Inventory</Link>
-                <Link to="/profile/">Profile</Link>
-                <Link to="/market/">Market</Link>
-                <Link to="/notifications/">Notifications</Link>
-                <Link to="/other/">Other</Link>
-                <Link to="/backup/">Extension data backup and restore</Link>
+                {
+                  routes.map(route => {
+                    return (
+                        <Link to={match.path + route.to} key={route.to}>{route.name}</Link>
+                    )
+                  })
+                }
               </Nav>
             </div>
-
             <div className="col-md-10">
               <Switch>
-                <Route exact path="/">
-                  <General/>
-                </Route>
-                <Route path="/pricing/">
-                  <Pricing/>
-                </Route>
-                <Route path="/popup/">
-                  <div>Popup</div>
-                </Route>
-                <Route path="/trade-offer/">
-                  <div>trade-offer</div>
-                </Route>
-                <Route path="/inventory/">
-                  <div>inventory</div>
-                </Route>
-                <Route path="/profile/">
-                  <div>profile</div>
-                </Route>
-                <Route path="/market/">
-                  <div>market</div>
-                </Route>
-                <Route path="/notifications/">
-                  <Notifications/>
-                </Route>
-                <Route path="/other/">
-                  <div>other</div>
-                </Route>
-                <Route path="/backup/">
-                  <div>backup</div>
-                </Route>
-                <Route>
-                  <Redirect to="/" />
-                </Route>
+                {
+                  routes.map(route => {
+                    return (
+                        <Route path={match.path + route.to} component={route.component} key={route.to}/>
+                    )
+                  })
+                }
               </Switch>
             </div>
           </div>
