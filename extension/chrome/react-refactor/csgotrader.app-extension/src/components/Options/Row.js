@@ -1,15 +1,16 @@
 import React from "react";
 
-import FlipSwitch from './Inputs/FlipSwitch/FlipSwitch';
+import FlipSwitchStorage from './Inputs/FlipSwitchStorage/FlipSwitchStorage';
+import FlipSwitchPermission from './Inputs/FlipSwitchPermission/FlipSwitchPermission';
 import ModalTextBox from './Inputs/ModalTextBox/ModalTextBox';
 import Select from './Inputs/Select/Select';
 
-function typeSwitch (type, key, permission) {
+function typeSwitch (type, key, permission, origins) {
     switch (type) {
-        case 'flipSwitch': return <FlipSwitch key={key} type='storage'/>;
-        case 'modalTextBox': return <ModalTextBox key={key}/>;
-        case 'flipSwitchPermission': return <FlipSwitch key={key} type='permission' permission={permission}/>;
-        case 'select': return <Select key={key}/>;
+        case 'flipSwitchStorage': return <FlipSwitchStorage id={key}/>;
+        case 'modalTextBox': return <ModalTextBox id={key}/>;
+        case 'flipSwitchPermission': return <FlipSwitchPermission id={key} permission={permission} origins={origins}/>;
+        case 'select': return <Select id={key}/>;
         default: return null;
     }
 }
@@ -19,7 +20,7 @@ const row = (props) => {
         <tr>
             <td>{props.name}</td>
             <td>
-                {typeSwitch(props.type, props.storageKey)}
+                {typeSwitch(props.type, props.id, props.permission, props.origins)}
             </td>
             <td>{props.description}</td>
         </tr>

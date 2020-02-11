@@ -12,8 +12,8 @@ const general = props => {
         <Category title='General'>
             <Row
                 name='Auto-set Steam API key'
-                key='autoSetSteamAPIKey'
-                type='flipSwitch'
+                id='autoSetSteamAPIKey'
+                type='flipSwitchStorage'
                 description={
                     <Fragment>
                         Automatically generates and adds the Steam API key to the extension when visiting <NewTabLink to='https://steamcommunity.com/dev/apikey'>steamcommunity.com/dev/apikey</NewTabLink>
@@ -22,7 +22,7 @@ const general = props => {
             />
             <Row
                 name='Steam API key'
-                key='steamAPIKey'
+                id='steamAPIKey'
                 type='modalTextBox'
                 description={
                     <Fragment>
@@ -35,7 +35,7 @@ const general = props => {
             />
             <Row
                 name='Tabs API access'
-                key='tabsAPI'
+                id='tabsAPI'
                 type='flipSwitchPermission'
                 description={
                     <Fragment>
@@ -49,26 +49,26 @@ const general = props => {
             />
             <Row
                 name='Flag scam comments'
-                key='flagScamComments'
-                type='flipSwitch'
+                id='flagScamComments'
+                type='flipSwitchStorage'
                 description='Reports obvious scam and spam comments like "I will give my knife for all of your csgo graffitties" and others. Helps to keep steamcommunity cleaner and safer.'
             />
             <Row
                 name='Your strings to report'
-                key='customCommentsToReport'
+                id='customCommentsToReport'
                 type='modalTextBox'
                 description='Make the extension report comments that includes one of the the strings you add here. These are additional to the built-in ones.'
             />
             <Row
                 name='Colorful items'
-                key='colorfulItems'
-                type='flipSwitch'
+                id='colorfulItems'
+                type='flipSwitchStorage'
                 description='Makes inventories and offers pretty by changing the background color of items based on rarity or in case of doppler, phase'
             />
             <Row
                 name='Collect usage data'
-                key='telemetryOn'
-                type='flipSwitch'
+                id='telemetryOn'
+                type='flipSwitchStorage'
                 description={
                     <Fragment>
                         Sends anonymous usage data to the developers to help discover problems and better understand how the extension is used. Check the
@@ -78,14 +78,14 @@ const general = props => {
             />
             <Row
                 name='Hide other extensions'
-                key='hideOtherExtensionPrices'
-                type='flipSwitch'
+                id='hideOtherExtensionPrices'
+                type='flipSwitchStorage'
                 description="Hides elements from other extensions that overlap with CSGO Trader's"
             />
             <Row
                 name='Show sticker worth on items'
-                key='showStickerPrice'
-                type='flipSwitch'
+                id='showStickerPrice'
+                type='flipSwitchStorage'
                 description='When turned on it puts the total price of the stickers applied on a weapon under the exterior indicator in inventories, trade offers and no the incoming trade offers page.'
             />
         </Category>

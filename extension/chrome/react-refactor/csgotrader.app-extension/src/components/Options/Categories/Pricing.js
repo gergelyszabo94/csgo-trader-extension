@@ -14,14 +14,14 @@ const pricing = props => {
                 </Fragment>}>
             <Row
                 name='Pricing'
-                type='flipSwitch'
-                key='itemPricing'
+                type='flipSwitchStorage'
+                id='itemPricing'
                 description='Shows item prices in inventories and trade offers'
             />
             <Row
                 name='Currency'
                 type='select'
-                key='Provider'
+                id='Provider'
                 description={
                     <Fragment>
                         The pricing provider you want to get your prices from <br/><p><b>About the provider: </b></p>

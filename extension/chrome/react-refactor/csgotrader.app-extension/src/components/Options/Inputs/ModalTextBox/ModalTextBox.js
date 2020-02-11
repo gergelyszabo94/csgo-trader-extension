@@ -2,7 +2,7 @@ import React from "react";
 
 const modalTextBox = (props) => {
     return (
-        <textarea id={props.key}/>
+        <textarea id={props.id}/>
     );
 };
 

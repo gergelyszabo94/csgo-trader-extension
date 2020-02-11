@@ -5,7 +5,7 @@ const category = (props) => {
     return (
         <div className="buildingBlock">
             <h2>{props.title}</h2>
-            {props.subTitle !== undefined ? <p>{props.subTitle}</p> : null}
+            {props.subTitle ? <p>{props.subTitle}</p> : null}
             <Table striped>
                 <thead>
                 <tr>

@@ -8,8 +8,8 @@ const notifications = props => {
         <Category title='Notifications'>
             <Row
                 name='Notify on update'
-                type='flipSwitch'
-                key='updateNotifications'
+                type='flipSwitchStorage'
+                id='updateNotifications'
                 description='Whether you want to receive notifications when the extension gets updated'
             />
         </Category>

@@ -3,6 +3,7 @@ import React from "react";
 import Notifications from '../../components/Options/Categories/Notifications';
 import General from '../../components/Options/Categories/General';
 import Pricing from '../../components/Options/Categories/Pricing';
+import Other from '../../components/Options/Categories/Other';
 
 import {
   BrowserRouter as Router,
@@ -57,7 +58,7 @@ const routes = [
   {
     to: 'other/',
     name: 'Other',
-    component: null
+    component: Other
   },
   {
     to: 'backup-restore/',
