@@ -3,7 +3,7 @@ import React, { Fragment } from "react";
 import Category from '../Category/Category';
 import Row from '../Row';
 
-const pricing = props => {
+const pricing = () => {
     return (
         <Category
             title='Pricing'

@@ -3,7 +3,7 @@ import React from "react";
 import Category from '../Category/Category';
 import Row from '../Row';
 
-const notifications = props => {
+const notifications = () => {
     return (
         <Category title='Notifications'>
             <Row

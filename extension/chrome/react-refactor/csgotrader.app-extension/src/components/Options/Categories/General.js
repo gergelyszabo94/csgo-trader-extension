@@ -7,7 +7,7 @@ import NewTabLink from 'components/NewTabLink/NewTabLink';
 import Category from 'components/Options/Category/Category';
 import Row from 'components/Options/Row';
 
-const general = props => {
+const general = () => {
     return (
         <Category title='General'>
             <Row

@@ -1,9 +1,15 @@
 import React from "react";
 
-import Notifications from '../../components/Options/Categories/Notifications';
-import General from '../../components/Options/Categories/General';
-import Pricing from '../../components/Options/Categories/Pricing';
-import Other from '../../components/Options/Categories/Other';
+import Notifications from 'components/Options/Categories/Notifications';
+import General from 'components/Options/Categories/General';
+import Pricing from 'components/Options/Categories/Pricing';
+import Other from 'components/Options/Categories/Other';
+import BackupRestore from 'components/Options/Categories/BackupRestore';
+import Inventory from 'components/Options/Categories/Inventory';
+import Market from 'components/Options/Categories/Market';
+import Popup from 'components/Options/Categories/Popup';
+import Profile from 'components/Options/Categories/Profile';
+import TradeOffer from 'components/Options/Categories/TradeOffer';
 
 import {
   BrowserRouter as Router,
@@ -28,27 +34,27 @@ const routes = [
   {
     to: 'popup/',
     name: 'Popup',
-    component: null
+    component: Popup
   },
   {
     to: 'trade-offer/',
     name: 'Trade Offer',
-    component: null
+    component: TradeOffer
   },
   {
     to: 'inventory/',
     name: 'Inventory',
-    component: null
+    component: Inventory
   },
   {
     to: 'profile/',
     name: 'Profile',
-    component: null
+    component: Profile
   },
   {
     to: 'market/',
     name: 'Market',
-    component: null
+    component: Market
   },
   {
     to: 'notifications/',
@@ -63,7 +69,7 @@ const routes = [
   {
     to: 'backup-restore/',
     name: 'Data backup and restore',
-    component: null
+    component: BackupRestore
   }
 ];
 
