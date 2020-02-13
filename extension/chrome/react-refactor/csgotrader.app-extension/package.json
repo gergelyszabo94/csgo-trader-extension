@@ -76,9 +76,6 @@
     "test": "node scripts/test.js",
     "watch": "node scripts/watch.js"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "browserslist": {
     "production": [
       ">0.2%",
