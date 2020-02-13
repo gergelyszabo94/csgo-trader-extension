@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 
-const flipSwitchStorage = (props) => {
+const FlipSwitchStorage = (props) => {
     const [state, setState] = useState({
         hasRun: false,
         value: false
@@ -32,4 +32,4 @@ const flipSwitchStorage = (props) => {
     );
 };
 
-export default flipSwitchStorage;
+export default FlipSwitchStorage;

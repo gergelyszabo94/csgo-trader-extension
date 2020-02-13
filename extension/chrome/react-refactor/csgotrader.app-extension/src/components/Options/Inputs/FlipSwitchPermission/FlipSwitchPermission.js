@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 
-const flipSwitchPermission = (props) => {
+const FlipSwitchPermission = (props) => {
     const [state, setState] = useState({
         hasRun: false,
         value: false
@@ -64,4 +64,4 @@ const flipSwitchPermission = (props) => {
     );
 };
 
-export default flipSwitchPermission;
+export default FlipSwitchPermission;
