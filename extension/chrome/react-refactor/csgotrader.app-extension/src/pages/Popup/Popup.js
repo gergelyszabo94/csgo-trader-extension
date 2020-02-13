@@ -1,4 +1,5 @@
 import React, {useState, useEffect } from "react";
+import NewTabLink from 'components/NewTabLink/NewTabLink';
 
 const Popup = () => {
   const [data, setData] = useState([]);
@@ -12,12 +13,12 @@ const Popup = () => {
     chrome.storage.local.get(["popupLinks", "steamIDOfUser"], result => {
       const template = [];
       template.push(
-        <a key='home' href="https://csgotrader.app" target="_blank">
-          <img src="/images/cstlogo48.png" />
-          <h5>
-            CSGO Trader <span>{chrome.runtime.getManifest().version}</span>
-          </h5>
-        </a>
+          <NewTabLink to='https://csgotrader.app' key='home'>
+            <img src="/images/cstlogo48.png" />
+            <h5>
+              CSGO Trader <span>{chrome.runtime.getManifest().version}</span>
+            </h5>
+          </NewTabLink>
       );
 
       result.popupLinks.map(link => {
@@ -28,9 +29,7 @@ const Popup = () => {
               : link.url;
           template.push(
             <div key={link.id}>
-              <a href={URL} target="_blank">
-                {link.name}
-              </a>
+              <NewTabLink to={URL}>{link.name}</NewTabLink>
             </div>
           );
         }

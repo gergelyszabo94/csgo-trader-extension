@@ -2,10 +2,11 @@ import React, { Fragment } from "react";
 import { Navbar, Nav } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import links from "./links.js";
-import logo from "../../assets/images/cstlogo48.png";
+import logo from "assets/images/cstlogo48.png";
 import "./Navigation.css";
+import NewTabLink from 'components/NewTabLink/NewTabLink';
 
-const navigation = props => {
+const navigation = () => {
   return (
     <Fragment>
       <Navbar expand="lg" bg="dark" variant="dark">
@@ -21,20 +22,9 @@ const navigation = props => {
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
             {links.map(link => {
-              return !link.isExternal ? (
-                <RouterNavLink
-                  to={link.path}
-                  exact={true}
-                  activeClassName="active"
-                  key={link.id}
-                >
-                  {link.title}
-                </RouterNavLink>
-              ) : (
-                <a href={link.path} target="_blank" className="nav-link" key={link.id}>
-                  {link.title}
-                </a>
-              );
+              return !link.isExternal
+                  ? (<RouterNavLink to={link.path} exact={true} activeClassName="active" key={link.id}>{link.title}</RouterNavLink>)
+                  : (<NewTabLink to={link.path} className='nav-link' key={link.id}> {link.title} </NewTabLink>);
             })}
           </Nav>
         </Navbar.Collapse>

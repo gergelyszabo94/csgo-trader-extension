@@ -2,7 +2,7 @@ import React from "react";
 
 const newTabLink = (props) => {
     return  (
-        <a href={props.to} target='_blank' rel='noopener'>
+        <a href={props.to} target='_blank' rel='noopener' className={props.className}>
             {props.children}
         </a>);
 };
