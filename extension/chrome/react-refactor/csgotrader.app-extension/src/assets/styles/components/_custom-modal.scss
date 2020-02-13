@@ -1,0 +1,85 @@
+.overlay {
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+
+  .custom-modal {
+    width: 500px;
+    min-height: 100px;
+    background: $background-secondary;
+    border: 1px solid $border-color-primary;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 5px;
+
+    &__close {
+      &:before {
+        content: "";
+        cursor: pointer;
+        position: absolute;
+        background: $border-color-primary;
+        right: 12px;
+        top: 20px;
+        width: 15px;
+        height: 4px;
+        transform: rotate(45deg);
+      }
+
+      &:after {
+        content: "";
+        cursor: pointer;
+        position: absolute;
+        background: $border-color-primary;
+        right: 12px;
+        top: 20px;
+        width: 15px;
+        height: 4px;
+        transform: rotate(-45deg);
+      }
+    }
+
+    &__title {
+      font-size: 18px;
+      padding: 10px 15px;
+    }
+
+    &__body {
+      padding: 15px;
+      border-top: 1px solid $color-secondary;
+      border-bottom: 1px solid $color-secondary;
+    }
+
+    &__controls {
+      padding: 15px;
+    }
+
+    &__input {
+      background: $background-secondary;
+      color: White;
+      padding: 10px 0;
+      border: none;
+      border-bottom: 1px solid $border-color-primary;
+      width: 100%;
+
+      &::placeholder {
+        color: $border-color-primary;
+      }
+
+      &:focus {
+        outline: none;
+        border: none;
+        border-bottom: 1px solid white;
+      }
+    }
+  }
+
+  &.active {
+    display: block;
+  }
+}

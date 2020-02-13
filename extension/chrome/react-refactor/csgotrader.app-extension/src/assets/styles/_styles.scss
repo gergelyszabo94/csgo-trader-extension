@@ -1,5 +1,12 @@
 // external css
 @import "./assets/styles/external/CSTExtensionPages.css";
 
+//base
+@import "./base/variables";
+
+// compoenents
+@import "./components/custom-modal";
+@import "./components/button";
+
 // pages
 @import "./pages/pages";
