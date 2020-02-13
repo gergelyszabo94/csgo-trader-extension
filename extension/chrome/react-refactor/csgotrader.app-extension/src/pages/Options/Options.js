@@ -18,7 +18,7 @@ import {
   Redirect,
   Link
 } from "react-router-dom";
-import { Navbar, Nav } from "react-bootstrap";
+import { Nav } from "react-bootstrap";
 
 const routes = [
   {

@@ -2,44 +2,42 @@ import React, {useState, useEffect } from "react";
 import NewTabLink from 'components/NewTabLink/NewTabLink';
 
 const Popup = () => {
-  const [data, setData] = useState([]);
+  const [state, setState] = useState([]);
 
   useEffect(() => {
-    if (data.length === 0) {
-      getDataFromStorage();
-    }
-  }, []);
-  const getDataFromStorage = () => {
-    chrome.storage.local.get(["popupLinks", "steamIDOfUser"], result => {
-      const template = [];
-      template.push(
-          <NewTabLink to='https://csgotrader.app' key='home'>
-            <img src="/images/cstlogo48.png" />
-            <h5>
-              CSGO Trader <span>{chrome.runtime.getManifest().version}</span>
-            </h5>
-          </NewTabLink>
-      );
+    if (state.length === 0) {
+      chrome.storage.local.get(['popupLinks', 'steamIDOfUser'], result => {
 
-      result.popupLinks.map(link => {
-        if (link.active) {
-          const URL =
-            link.id === "tradeoffers"
-              ? `https://steamcommunity.com/profiles/${result.steamIDOfUser}/tradeoffers`
-              : link.url;
-          template.push(
-            <div key={link.id}>
-              <NewTabLink to={URL}>{link.name}</NewTabLink>
-            </div>
-          );
-        }
+        const navLinks = result.popupLinks.map(link => {
+          if (link.active) {
+            const URL =
+                link.id === 'tradeoffers'
+                    ? `https://steamcommunity.com/profiles/${result.steamIDOfUser}/tradeoffers`
+                    : link.url;
+            return (
+                <div key={link.id}>
+                  <NewTabLink to={URL}>{link.name}</NewTabLink>
+                </div>
+            );
+          }
+          return null;
+        });
+        setState(navLinks);
       });
+    }
+  });
 
-      setData(...data, template);
-    });
-  };
-
-  return <div className="popup">{data}</div>;
+  return (
+      <div className='popup'>
+        <NewTabLink to='https://csgotrader.app' key='home'>
+          <img src='/images/cstlogo48.png' alt='CSGO Trader Logo'/>
+          <h5>
+            CSGO Trader <span>{chrome.runtime.getManifest().version}</span>
+          </h5>
+        </NewTabLink>
+        {state}
+      </div>
+  );
 };
 
 export default Popup;
