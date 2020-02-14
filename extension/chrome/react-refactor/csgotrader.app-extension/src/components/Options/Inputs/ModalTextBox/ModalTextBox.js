@@ -15,39 +15,36 @@ const ModalTextBox = props => {
         setState({...state, content: change.target.value});
     };
 
-    const inputValidator = () => {
-        return new Promise((resolve, reject) => {
-            if (props.id === 'steamAPIKey') {
-                if (state.content !== '') {
-                    chrome.runtime.sendMessage({apikeytovalidate: state.content}, (response) => {
-                        if (response.valid) {
-                            chrome.storage.local.set({steamAPIKey: state.content, apiKeyValid: true}, () => {
-                                setState({...state, inputValid: true, validationError: ''});
-                                resolve(true);
-                            });
-                        } else {
-                            setState({
-                                ...state,
-                                inputValid: false,
-                                validationError: 'Could not validate your API key, it\'s either incorrect or Steam is down at the moment'
-                            });
-                            reject('Could not validate your API key, it\'s either incorrect or Steam is down at the moment')
-                        }
-                    });
-                }
-                else {
-                    chrome.storage.local.set({steamAPIKey: 'Not Set', apiKeyValid: false}, () => {
-                        reject('empty_input');
-                    });
-                }
-            }
-            else {
-                chrome.storage.local.set({[props.id]: state.content}, () => {
-                    setState({...state, inputValid: true, validationError: ''});
-                    resolve(true);
+    const inputValidator = (closeModal) => {
+        if (props.id === 'steamAPIKey') {
+            if (state.content !== '') {
+                chrome.runtime.sendMessage({apikeytovalidate: state.content}, (response) => {
+                    if (response.valid) {
+                        chrome.storage.local.set({steamAPIKey: state.content, apiKeyValid: true}, () => {
+                            setState({...state, inputValid: true, validationError: ''});
+                            closeModal();
+                        });
+                    } else {
+                        setState({
+                            ...state,
+                            inputValid: false,
+                            validationError: 'Could not validate your API key, it\'s either incorrect or Steam is down at the moment'
+                        });
+                    }
                 });
             }
-        });
+            else {
+                chrome.storage.local.set({steamAPIKey: 'Not Set', apiKeyValid: false}, () => {
+                    closeModal();
+                });
+            }
+        }
+        else {
+            chrome.storage.local.set({[props.id]: state.content}, () => {
+                setState({...state, inputValid: true, validationError: ''});
+                closeModal();
+            });
+        }
     };
 
     useEffect(() => {

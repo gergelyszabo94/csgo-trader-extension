@@ -13,18 +13,6 @@ const CustomModal = props => {
     setModalState("");
   };
 
-  const saveContent = () => {
-    props.validator().then(() => {
-      closeModal();
-    }).catch((err) => {
-      if (err === 'empty_input') {
-        console.log('Empty input, removed API key from storage.');
-        closeModal();
-      }
-      else console.log(err)
-    });
-  };
-
   return (
       <Fragment>
         <div className={`overlay ${modalState}`}>
@@ -34,7 +22,7 @@ const CustomModal = props => {
             <h5 className="custom-modal__title">{props.modalTitle}</h5>
             <div className="custom-modal__body">{props.children}</div>
             <div className="custom-modal__controls">
-              <button className="button button__save" onClick={saveContent}>
+              <button className="button button__save" onClick={() => {props.validator(closeModal)}}>
                 Save Changes
               </button>
               <button className="button button__cancel" onClick={closeModal}>
