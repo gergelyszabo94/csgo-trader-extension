@@ -28,7 +28,6 @@ const general = () => {
         name="Steam API key"
         id="steamAPIKey"
         type="modalTextBox"
-        modalTitle="Enter your Steam API key here"
         description={
           <Fragment>
             Allows the extension to make API requests to the{" "}
@@ -48,6 +47,7 @@ const general = () => {
             (you can put anything in as domain name).
           </Fragment>
         }
+        modalTitle="Enter your Steam API key here"
       />
       <Row
         name="Tabs API access"
@@ -73,12 +73,12 @@ const general = () => {
         type="flipSwitchStorage"
         description="Reports obvious scam and spam comments like &quot;I will give my knife for all of your csgo graffitties&quot; and others. Helps to keep steamcommunity cleaner and safer."
       />
-      <Row
-        name="Your strings to report"
-        id="customCommentsToReport"
-        type="modalTextBox"
-        description="Make the extension report comments that includes one of the the strings you add here. These are additional to the built-in ones."
-      />
+      {/*<Row*/}
+      {/*  name="Your strings to report"*/}
+      {/*  id="customCommentsToReport"*/}
+      {/*  type="modalTextBox"*/}
+      {/*  description="Make the extension report comments that includes one of the the strings you add here. These are additional to the built-in ones."*/}
+      {/*/>*/}
       <Row
         name="Colorful items"
         id="colorfulItems"
