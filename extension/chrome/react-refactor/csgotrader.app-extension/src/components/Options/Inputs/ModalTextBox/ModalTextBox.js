@@ -41,7 +41,12 @@ const ModalTextBox = props => {
                     });
                 }
             }
-            else resolve(true);
+            else {
+                chrome.storage.local.set({[props.id]: state.content}, () => {
+                    setState({...state, inputValid: true, validationError: ''});
+                    resolve(true);
+                });
+            }
         });
     };
 
