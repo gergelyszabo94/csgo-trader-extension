@@ -1,11 +1,74 @@
-import React from "react";
+import React, { Fragment } from "react";
+import Row from "components/Options/Row";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCode } from "@fortawesome/free-solid-svg-icons";
 
 import Category from '../Category/Category';
 
 const tradeOffer = () => {
     return (
-        <Category title='Trade OFfer'>
-
+        <Category title='Trade Offer'>
+            <Row
+                name='Quick decline offers'
+                id='quickDeclineOffer'
+                type='flipSwitchStorage'
+                description='Clicking "decline trade" on the trade offers page declines the trade offer without the confirmation dialog popping up'
+            />
+            <Row
+                name='Open trade window as a tab'
+                id='openOfferInTab'
+                type='flipSwitchStorage'
+                description='The trade window opens in a neat new tab instead of the annoying separate small window, especially useful when there is no mouse to middle-click (when on laptop or mobile)'
+            />
+            <Row
+                name='Make icons larger'
+                id='tradeOffersLargerItems'
+                type='flipSwitchStorage'
+                description={
+                    'Makes your own items\' icon larger - making it the same size as the other party\'s items at the trade offers page. ' +
+                    'Recommended to have this on, so all additional info fits on them properly.'}
+            />
+            <Row
+                name='Default sorting mode'
+                id='offerSortingMode'
+                type='select'
+                description='Specifies what method the items in an trade offer should be sorted by'
+            />
+            <Row
+                name='Switch to other inventory'
+                id='switchToOtherInventory'
+                type='flipSwitchStorage'
+                description={'When on, it makes the other party\'s inventory the active one by default when trade offers load'}
+            />
+            <Row
+                name='Get float values automatically'
+                id='autoFloatOffer'
+                type='flipSwitchStorage'
+                description='Loads float values to each item when on'
+            />
+            <Row
+                name='Default offer sorting mode'
+                id='tradeOffersSortingMode'
+                type='select'
+                description='Specifies the default trade offer sorting mode on the incoming trade offers page'
+            />
+            <Row
+                name='Show partner history'
+                id='tradeHistoryOffers'
+                type='flipSwitchStorage'
+                description={
+                    <Fragment>
+                        Show the number of offers received from a user and how many was sent to them (on the tradeoffers and the individual offer pages)
+                        {' '} <FontAwesomeIcon icon={faCode} className='apiIcon' />
+                    </Fragment>
+                }
+            />
+            <Row
+                name='Offer header to left'
+                id='tradeOfferHeaderToLeft'
+                type='flipSwitchStorage'
+                description='Moves the trade offer header to the left on wide screens, saving you some scrolling'
+            />
         </Category>
     );
 };
