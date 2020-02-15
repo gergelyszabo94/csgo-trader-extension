@@ -3,6 +3,7 @@ import React from "react";
 import FlipSwitchStorage from "./Inputs/FlipSwitchStorage/FlipSwitchStorage";
 import FlipSwitchPermission from "./Inputs/FlipSwitchPermission/FlipSwitchPermission";
 import ModalTextBox from "./Inputs/ModalTextBox/ModalTextBox";
+import ModalCustomComments from "./Inputs/ModalCustomComments/ModalCustomComments";
 import Select from "./Inputs/Select/Select";
 
 function typeSwitch(type, key, permission, origins, modalTitle) {
@@ -11,6 +12,8 @@ function typeSwitch(type, key, permission, origins, modalTitle) {
       return <FlipSwitchStorage id={key} />;
     case "modalTextBox":
       return <ModalTextBox id={key} modalTitle={modalTitle} />;
+    case "modalCustomComments":
+      return <ModalCustomComments id={key} modalTitle={modalTitle} />;
     case "flipSwitchPermission":
       return (
         <FlipSwitchPermission
