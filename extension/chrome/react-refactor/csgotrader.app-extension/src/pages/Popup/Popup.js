@@ -5,27 +5,25 @@ const Popup = () => {
   const [state, setState] = useState([]);
 
   useEffect(() => {
-    if (state.length === 0) {
-      chrome.storage.local.get(['popupLinks', 'steamIDOfUser'], result => {
+    chrome.storage.local.get(['popupLinks', 'steamIDOfUser'], result => {
 
-        const navLinks = result.popupLinks.map(link => {
-          if (link.active) {
-            const URL =
-                link.id === 'tradeoffers'
-                    ? `https://steamcommunity.com/profiles/${result.steamIDOfUser}/tradeoffers`
-                    : link.url;
-            return (
-                <div key={link.id}>
-                  <NewTabLink to={URL}>{link.name}</NewTabLink>
-                </div>
-            );
-          }
-          return null;
-        });
-        setState(navLinks);
+      const navLinks = result.popupLinks.map(link => {
+        if (link.active) {
+          const URL =
+              link.id === 'tradeoffers'
+                  ? `https://steamcommunity.com/profiles/${result.steamIDOfUser}/tradeoffers`
+                  : link.url;
+          return (
+              <div key={link.id}>
+                <NewTabLink to={URL}>{link.name}</NewTabLink>
+              </div>
+          );
+        }
+        return null;
       });
-    }
-  });
+      setState(navLinks);
+    });
+  }, []);
 
   return (
       <div className='popup'>

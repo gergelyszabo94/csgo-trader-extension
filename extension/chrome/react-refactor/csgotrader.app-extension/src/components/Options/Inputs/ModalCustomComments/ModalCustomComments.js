@@ -3,7 +3,6 @@ import CustomModal from "components/CustomModal/CustomModal";
 
 const ModalCustomComments = props => {
   const [state, setState] = useState({
-    initialized: false,
     content: [],
     inputValue: ""
   });
@@ -26,16 +25,13 @@ const ModalCustomComments = props => {
   };
 
   useEffect(() => {
-    if (!state.initialized) {
       chrome.storage.local.get("customCommentsToReport", result => {
         setState({
           ...state,
-          initialized: true,
           content: result.customCommentsToReport
         });
       });
-    }
-  });
+  }, []);
 
   const addNewString = () => {
     const date = new Date();

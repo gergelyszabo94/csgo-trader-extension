@@ -5,7 +5,6 @@ import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 const ModalTextBox = props => {
     const [state, setState] = useState({
-        initialized: false,
         content: '',
         inputValid: true,
         validationError: ''
@@ -48,12 +47,10 @@ const ModalTextBox = props => {
     };
 
     useEffect(() => {
-        if (!state.initialized) {
-            chrome.storage.local.get([props.id], (result) => {
-                setState({...state, initialized: true, content: result[props.id]})
-            });
-        }
-    });
+        chrome.storage.local.get([props.id], (result) => {
+            setState({...state, content: result[props.id]})
+        });
+    }, [props.id]);
 
     return (
         <Fragment>

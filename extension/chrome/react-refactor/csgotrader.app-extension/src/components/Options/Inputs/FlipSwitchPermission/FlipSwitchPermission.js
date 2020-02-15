@@ -1,64 +1,55 @@
 import React, {useState, useEffect} from "react";
 
 const FlipSwitchPermission = (props) => {
-    const [state, setState] = useState({
-        hasRun: false,
-        value: false
-    });
+    const [state, setState] = useState(false);
 
-    const init = (permission, origins, key) => {
-        if (origins) {
-            chrome.storage.local.get([key], (storageResult) => {
-                chrome.permissions.contains({permissions: ['tabs'], origins: origins}, (permissionResult) => {
-                    setState({hasRun: true, value: storageResult[key] && permissionResult});
+    useEffect(() => {
+        if (props.origins) {
+            chrome.storage.local.get([props.id], (storageResult) => {
+                chrome.permissions.contains({permissions: ['tabs'], origins: props.origins}, (permissionResult) => {
+                    setState(storageResult[props.id] && permissionResult);
                 });
             });
         }
         else {
-            chrome.permissions.contains({permissions: [permission]}, (result) => {
-                setState({hasRun: true, value: result});
+            chrome.permissions.contains({permissions: [props.permission]}, (result) => {
+                setState(result);
             });
         }
-    };
+    },[props.permission, props.origins, props.id]);
 
     const onChangeHandler = () => {
-        if (!state.value) {
+        if (!state) {
             if (props.origins) {
                 chrome.permissions.request({permissions: ['tabs'], origins: props.origins}, (granted) => {
                     chrome.storage.local.set({[props.id]: granted}, () => {
-                        setState({hasRun: true, value: granted});
+                        setState(granted);
                     });
                 });
             }
             else {
                 chrome.permissions.request({permissions: ['tabs']}, (granted) => {
-                    setState({...state, value: granted});
+                    setState(granted);
                 });
             }
         }
         else {
             if (props.origins) {
                 chrome.storage.local.set({[props.id]: false}, () => {
-                    setState({...state, value: false})
+                    setState(false);
                 });
             }
             else {
                 chrome.permissions.remove({permissions: ['tabs']}, (removed) => {
-                    setState({...state, value: !removed})
+                    setState(!removed)
                 });
             }
         }
     };
 
-    useEffect(() => {
-        if (!state.hasRun) {
-            init(props.permission, props.origins, props.id);
-        }
-    });
-
     return (
         <label className="switch">
-            <input type="checkbox" id={props.id} checked={state.value} onChange={onChangeHandler}/>
+            <input type="checkbox" id={props.id} checked={state} onChange={onChangeHandler}/>
             <span className="slider round"/>
         </label>
     );
