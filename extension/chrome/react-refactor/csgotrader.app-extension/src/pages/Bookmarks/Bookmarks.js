@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 
-const bookmarks = props => {
+const Bookmarks = () => {
+  useEffect(() => {
+    document.title = 'Bookmarks';
+  }, []);
+
   return <div>Bookmarks</div>;
 };
 
-export default bookmarks;
+export default Bookmarks;

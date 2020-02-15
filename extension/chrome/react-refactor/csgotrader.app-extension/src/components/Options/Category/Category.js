@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Table } from 'react-bootstrap';
 
-const category = (props) => {
+const Category = (props) => {
+    useEffect(() => {
+        document.title = `Options - ${props.title}`
+    }, [props.title]);
+
     return (
         <div className="buildingBlock">
             <h2>{props.title}</h2>
@@ -22,4 +26,4 @@ const category = (props) => {
     );
 };
 
-export default category;
+export default Category;
