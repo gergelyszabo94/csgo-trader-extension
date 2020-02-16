@@ -5,6 +5,7 @@ import FlipSwitchPermission from "./Inputs/FlipSwitchPermission/FlipSwitchPermis
 import ModalTextBox from "./Inputs/ModalTextBox/ModalTextBox";
 import ModalCustomComments from "./Inputs/ModalCustomComments/ModalCustomComments";
 import SimpleSelect from "./Inputs/SimpleSelect/SimpleSelect";
+import PricingProvider from './Inputs/PricingProvider/PricingProvider';
 
 function typeSwitch(type, key, permission, origins, modalTitle, options) {
   switch (type) {
@@ -24,6 +25,8 @@ function typeSwitch(type, key, permission, origins, modalTitle, options) {
       );
     case "select":
       return <SimpleSelect id={key} options={options} />;
+    case "pricingProvider":
+      return <PricingProvider options={options} />;
     default:
       return null;
   }

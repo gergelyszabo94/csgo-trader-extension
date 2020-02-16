@@ -1,4 +1,4 @@
-/* global currencies */
+/* global currencies, pricingProviders, */
 // Currencies comes from enums.js
 import React, { Fragment } from "react";
 
@@ -41,6 +41,12 @@ const pricing = () => {
         id="currency"
         description="The currency you want prices to show in for you"
         options={transformCurrencies()}
+      />
+      <Row
+          name="Provider"
+          type="pricingProvider"
+          description="The pricing provider and pricing mode you want to get your prices from"
+          options={pricingProviders}
       />
     </Category>
   );
