@@ -5,16 +5,15 @@ const Select = props => {
 
   const changeHandler = e => {
     const thisValue = e.target.value;
-    chrome.storage.local.set({ [props.id]: thisValue }, () => {
-      setValue(thisValue);
-    });
+    props.foreignChangeHandler(thisValue);
+    setValue(thisValue);
   };
 
   useEffect(() => {
-    chrome.storage.local.get(props.id, result => {
-      setValue(result[props.id]);
+    props.foreignUseEffect().then(result => {
+      setValue(result);
     });
-  }, [props.id]);
+  }, []);
 
   return (
     <select

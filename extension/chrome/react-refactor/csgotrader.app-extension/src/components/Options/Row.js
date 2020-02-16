@@ -4,7 +4,7 @@ import FlipSwitchStorage from "./Inputs/FlipSwitchStorage/FlipSwitchStorage";
 import FlipSwitchPermission from "./Inputs/FlipSwitchPermission/FlipSwitchPermission";
 import ModalTextBox from "./Inputs/ModalTextBox/ModalTextBox";
 import ModalCustomComments from "./Inputs/ModalCustomComments/ModalCustomComments";
-import Select from "./Inputs/Select/Select";
+import SimpleSelect from "./Inputs/SimpleSelect/SimpleSelect";
 
 function typeSwitch(type, key, permission, origins, modalTitle, options) {
   switch (type) {
@@ -23,7 +23,7 @@ function typeSwitch(type, key, permission, origins, modalTitle, options) {
         />
       );
     case "select":
-      return <Select id={key} options={options} />;
+      return <SimpleSelect id={key} options={options} />;
     default:
       return null;
   }

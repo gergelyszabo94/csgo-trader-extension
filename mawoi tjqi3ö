@@ -1,0 +1,332 @@
+[1mdiff --git a/extension/chrome/react-refactor/csgotrader.app-extension/.eslintrc.json b/extension/chrome/react-refactor/csgotrader.app-extension/.eslintrc.json[m
+[1mindex c8035e5..3f7966c 100644[m
+[1m--- a/extension/chrome/react-refactor/csgotrader.app-extension/.eslintrc.json[m
+[1m+++ b/extension/chrome/react-refactor/csgotrader.app-extension/.eslintrc.json[m
+[36m@@ -5,12 +5,14 @@[m
+   },[m
+   "extends": "react-app",[m
+   "rules": {[m
+[32m+[m[32m    "react-hooks/rules-of-hooks": "error", // Checks rules of Hooks[m
+[32m+[m[32m    "react-hooks/exhaustive-deps": "off", // Checks effect dependencies[m
+     "react/jsx-no-target-blank": [[m
+       2,[m
+       {[m
+         "allowReferrer": true,[m
+         "enforceDynamicLinks": "always"[m
+[31m-        }[m
+[31m-      ][m
+[32m+[m[32m      }[m
+[32m+[m[32m    ][m
+   }[m
+[31m-}[m
+\ No newline at end of file[m
+[32m+[m[32m}[m
+[1mdiff --git a/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Inputs/FlipSwitchStorage/FlipSwitchStorage.js b/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Inputs/FlipSwitchStorage/FlipSwitchStorage.js[m
+[1mindex f4d16a9..64715e5 100644[m
+[1m--- a/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Inputs/FlipSwitchStorage/FlipSwitchStorage.js[m
+[1m+++ b/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Inputs/FlipSwitchStorage/FlipSwitchStorage.js[m
+[36m@@ -1,26 +1,34 @@[m
+[31m-import React, {useState, useEffect} from "react";[m
+[32m+[m[32mimport React, { useState, useEffect } from "react";[m
+ [m
+[31m-const FlipSwitchStorage = (props) => {[m
+[31m-    const [state, setState] = useState(false);[m
+[32m+[m[32mconst FlipSwitchStorage = props => {[m
+[32m+[m[32m  const [state, setState] = useState(false);[m
+ [m
+[31m-    const onChangeHandler = (event) => {[m
+[31m-        chrome.storage.local.set({[event.target.id]: event.target.checked}, () => {[m
+[31m-            setState(!state);[m
+[31m-        });[m
+[31m-    };[m
+[32m+[m[32m  const onChangeHandler = event => {[m
+[32m+[m[32m    chrome.storage.local.set([m
+[32m+[m[32m      { [event.target.id]: event.target.checked },[m
+[32m+[m[32m      () => {[m
+[32m+[m[32m        setState(!state);[m
+[32m+[m[32m      }[m
+[32m+[m[32m    );[m
+[32m+[m[32m  };[m
+ [m
+[31m-    useEffect(() => {[m
+[31m-        chrome.storage.local.get(props.id, (result) => {[m
+[31m-            setState(result[props.id]);[m
+[31m-        });[m
+[31m-    }, [props.id]);[m
+[32m+[m[32m  useEffect(() => {[m
+[32m+[m[32m    chrome.storage.local.get(props.id, result => {[m
+[32m+[m[32m      setState(result[props.id]);[m
+[32m+[m[32m    });[m
+[32m+[m[32m  }, [props.id]);[m
+ [m
+[31m-    return ([m
+[31m-        <label className="switch">[m
+[31m-            <input type="checkbox" id={props.id} checked={state} onChange={onChangeHandler}/>[m
+[31m-            <span className="slider round"/>[m
+[31m-        </label>[m
+[31m-    );[m
+[32m+[m[32m  return ([m
+[32m+[m[32m    <label className="switch">[m
+[32m+[m[32m      <input[m
+[32m+[m[32m        type="checkbox"[m
+[32m+[m[32m        id={props.id}[m
+[32m+[m[32m        checked={state}[m
+[32m+[m[32m        onChange={onChangeHandler}[m
+[32m+[m[32m      />[m
+[32m+[m[32m      <span className="slider round" />[m
+[32m+[m[32m    </label>[m
+[32m+[m[32m  );[m
+ };[m
+ [m
+[31m-export default FlipSwitchStorage;[m
+\ No newline at end of file[m
+[32m+[m[32mexport default FlipSwitchStorage;[m
+[1mdiff --git a/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Inputs/ModalCustomComments/ModalCustomComments.js b/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Inputs/ModalCustomComments/ModalCustomComments.js[m
+[1mindex 5f2351e..b801ae5 100644[m
+[1m--- a/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Inputs/ModalCustomComments/ModalCustomComments.js[m
+[1m+++ b/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Inputs/ModalCustomComments/ModalCustomComments.js[m
+[36m@@ -25,12 +25,12 @@[m [mconst ModalCustomComments = props => {[m
+   };[m
+ [m
+   useEffect(() => {[m
+[31m-      chrome.storage.local.get("customCommentsToReport", result => {[m
+[31m-        setState({[m
+[31m-          ...state,[m
+[31m-          content: result.customCommentsToReport[m
+[31m-        });[m
+[32m+[m[32m    chrome.storage.local.get("customCommentsToReport", result => {[m
+[32m+[m[32m      setState({[m
+[32m+[m[32m        ...state,[m
+[32m+[m[32m        content: result.customCommentsToReport[m
+       });[m
+[32m+[m[32m    });[m
+   }, []);[m
+ [m
+   const addNewString = () => {[m
+[1mdiff --git a/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Inputs/ModalTextBox/ModalTextBox.js b/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Inputs/ModalTextBox/ModalTextBox.js[m
+[1mindex e600dc7..6731cbc 100644[m
+[1m--- a/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Inputs/ModalTextBox/ModalTextBox.js[m
+[1m+++ b/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Inputs/ModalTextBox/ModalTextBox.js[m
+[36m@@ -4,72 +4,80 @@[m [mimport { FontAwesomeIcon } from "@fortawesome/react-fontawesome";[m
+ import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";[m
+ [m
+ const ModalTextBox = props => {[m
+[31m-    const [state, setState] = useState({[m
+[31m-        content: '',[m
+[31m-        inputValid: true,[m
+[31m-        validationError: ''[m
+[31m-    });[m
+[32m+[m[32m  const [state, setState] = useState({[m
+[32m+[m[32m    content: "",[m
+[32m+[m[32m    inputValid: true,[m
+[32m+[m[32m    validationError: ""[m
+[32m+[m[32m  });[m
+ [m
+[31m-    const onChangeHandler = (change) => {[m
+[31m-        setState({...state, content: change.target.value});[m
+[31m-    };[m
+[32m+[m[32m  const onChangeHandler = change => {[m
+[32m+[m[32m    setState({ ...state, content: change.target.value });[m
+[32m+[m[32m  };[m
+ [m
+[31m-    const inputValidator = (closeModal) => {[m
+[31m-        if (props.id === 'steamAPIKey') {[m
+[31m-            if (state.content !== '') {[m
+[31m-                chrome.runtime.sendMessage({apikeytovalidate: state.content}, (response) => {[m
+[31m-                    if (response.valid) {[m
+[31m-                        chrome.storage.local.set({steamAPIKey: state.content, apiKeyValid: true}, () => {[m
+[31m-                            setState({...state, inputValid: true, validationError: ''});[m
+[31m-                            closeModal();[m
+[31m-                        });[m
+[31m-                    } else {[m
+[31m-                        setState({[m
+[31m-                            ...state,[m
+[31m-                            inputValid: false,[m
+[31m-                            validationError: 'Could not validate your API key, it\'s either incorrect or Steam is down at the moment'[m
+[31m-                        });[m
+[31m-                    }[m
+[31m-                });[m
+[31m-            }[m
+[31m-            else {[m
+[31m-                chrome.storage.local.set({steamAPIKey: 'Not Set', apiKeyValid: false}, () => {[m
+[31m-                    closeModal();[m
+[31m-                });[m
+[32m+[m[32m  const inputValidator = closeModal => {[m
+[32m+[m[32m    if (props.id === "steamAPIKey") {[m
+[32m+[m[32m      if (state.content !== "") {[m
+[32m+[m[32m        chrome.runtime.sendMessage([m
+[32m+[m[32m          { apikeytovalidate: state.content },[m
+[32m+[m[32m          response => {[m
+[32m+[m[32m            if (response.valid) {[m
+[32m+[m[32m              chrome.storage.local.set([m
+[32m+[m[32m                { steamAPIKey: state.content, apiKeyValid: true },[m
+[32m+[m[32m                () => {[m
+[32m+[m[32m                  setState({ ...state, inputValid: true, validationError: "" });[m
+[32m+[m[32m                  closeModal();[m
+[32m+[m[32m                }[m
+[32m+[m[32m              );[m
+[32m+[m[32m            } else {[m
+[32m+[m[32m              setState({[m
+[32m+[m[32m                ...state,[m
+[32m+[m[32m                inputValid: false,[m
+[32m+[m[32m                validationError:[m
+[32m+[m[32m                  "Could not validate your API key, it's either incorrect or Steam is down at the moment"[m
+[32m+[m[32m              });[m
+             }[m
+[31m-        }[m
+[31m-        else {[m
+[31m-            chrome.storage.local.set({[props.id]: state.content}, () => {[m
+[31m-                setState({...state, inputValid: true, validationError: ''});[m
+[31m-                closeModal();[m
+[31m-            });[m
+[31m-        }[m
+[31m-    };[m
+[32m+[m[32m          }[m
+[32m+[m[32m        );[m
+[32m+[m[32m      } else {[m
+[32m+[m[32m        chrome.storage.local.set([m
+[32m+[m[32m          { steamAPIKey: "Not Set", apiKeyValid: false },[m
+[32m+[m[32m          () => {[m
+[32m+[m[32m            closeModal();[m
+[32m+[m[32m          }[m
+[32m+[m[32m        );[m
+[32m+[m[32m      }[m
+[32m+[m[32m    } else {[m
+[32m+[m[32m      chrome.storage.local.set({ [props.id]: state.content }, () => {[m
+[32m+[m[32m        setState({ ...state, inputValid: true, validationError: "" });[m
+[32m+[m[32m        closeModal();[m
+[32m+[m[32m      });[m
+[32m+[m[32m    }[m
+[32m+[m[32m  };[m
+ [m
+[31m-    useEffect(() => {[m
+[31m-        chrome.storage.local.get([props.id], (result) => {[m
+[31m-            setState({...state, content: result[props.id]})[m
+[31m-        });[m
+[31m-    }, [props.id]);[m
+[32m+[m[32m  useEffect(() => {[m
+[32m+[m[32m    chrome.storage.local.get([props.id], result => {[m
+[32m+[m[32m      setState({ ...state, content: result[props.id] });[m
+[32m+[m[32m    });[m
+[32m+[m[32m  }, [props.id]);[m
+ [m
+[31m-    return ([m
+[31m-        <Fragment>[m
+[31m-            <p>{state.content.substring(0,8) + '...'}</p>[m
+[31m-            <CustomModal modalTitle={props.modalTitle} validator={inputValidator}>[m
+[31m-                <input[m
+[31m-                    className="custom-modal__input"[m
+[31m-                    type="text"[m
+[31m-                    placeholder="Type your text here"[m
+[31m-                    value={state.content}[m
+[31m-                    onChange={onChangeHandler}[m
+[31m-                />[m
+[31m-                <div className={`warning ${state.inputValid ? 'hidden' : null }`}>[m
+[31m-                    <FontAwesomeIcon icon={faExclamationTriangle} />[m
+[31m-                    <span className="warning"> {state.validationError}</span>[m
+[31m-                </div>[m
+[31m-            </CustomModal>[m
+[31m-        </Fragment>[m
+[31m-    );[m
+[32m+[m[32m  return ([m
+[32m+[m[32m    <Fragment>[m
+[32m+[m[32m      <p>{state.content.substring(0, 8) + "..."}</p>[m
+[32m+[m[32m      <CustomModal modalTitle={props.modalTitle} validator={inputValidator}>[m
+[32m+[m[32m        <input[m
+[32m+[m[32m          className="custom-modal__input"[m
+[32m+[m[32m          type="text"[m
+[32m+[m[32m          placeholder="Type your text here"[m
+[32m+[m[32m          value={state.content}[m
+[32m+[m[32m          onChange={onChangeHandler}[m
+[32m+[m[32m        />[m
+[32m+[m[32m        <div className={`warning ${state.inputValid ? "hidden" : null}`}>[m
+[32m+[m[32m          <FontAwesomeIcon icon={faExclamationTriangle} />[m
+[32m+[m[32m          <span className="warning"> {state.validationError}</span>[m
+[32m+[m[32m        </div>[m
+[32m+[m[32m      </CustomModal>[m
+[32m+[m[32m    </Fragment>[m
+[32m+[m[32m  );[m
+ };[m
+ [m
+ export default ModalTextBox;[m
+[1mdiff --git a/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Inputs/Select/Select.js b/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Inputs/Select/Select.js[m
+[1mindex e216e1e..05972ce 100644[m
+[1m--- a/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Inputs/Select/Select.js[m
+[1m+++ b/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Inputs/Select/Select.js[m
+[36m@@ -1,9 +1,37 @@[m
+[31m-import React from "react";[m
+[32m+[m[32mimport React, { useState, useEffect } from "react";[m
+ [m
+[31m-const select = (props) => {[m
+[31m-    return ([m
+[31m-        <select id={props.id}/>[m
+[31m-    );[m
+[32m+[m[32mconst Select = props => {[m
+[32m+[m[32m  const [value, setValue] = useState(props.options[0].key);[m
+[32m+[m
+[32m+[m[32m  const changeHandler = e => {[m
+[32m+[m[32m    const thisValue = e.target.value;[m
+[32m+[m[32m    chrome.storage.local.set({ [props.id]: thisValue }, () => {[m
+[32m+[m[32m      setValue(thisValue);[m
+[32m+[m[32m    });[m
+[32m+[m[32m  };[m
+[32m+[m
+[32m+[m[32m  useEffect(() => {[m
+[32m+[m[32m    chrome.storage.local.get(props.id, result => {[m
+[32m+[m[32m      setValue(result[props.id]);[m
+[32m+[m[32m    });[m
+[32m+[m[32m  }, [props.id]);[m
+[32m+[m
+[32m+[m[32m  return ([m
+[32m+[m[32m    <select[m
+[32m+[m[32m      className="select-theme"[m
+[32m+[m[32m      id={props.id}[m
+[32m+[m[32m      onChange={changeHandler}[m
+[32m+[m[32m      value={value}[m
+[32m+[m[32m    >[m
+[32m+[m[32m      {props.options.map((option, i) => {[m
+[32m+[m[32m        return ([m
+[32m+[m[32m          <option key={i} value={option.key}>[m
+[32m+[m[32m            {option.text}[m
+[32m+[m[32m          </option>[m
+[32m+[m[32m        );[m
+[32m+[m[32m      })}[m
+[32m+[m[32m    </select>[m
+[32m+[m[32m  );[m
+ };[m
+ [m
+[31m-export default select;[m
+\ No newline at end of file[m
+[32m+[m[32mexport default Select;[m
+[1mdiff --git a/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Row.js b/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Row.js[m
+[1mindex 7ea0221..a37d0a6 100644[m
+[1m--- a/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Row.js[m
+[1m+++ b/extension/chrome/react-refactor/csgotrader.app-extension/src/components/Options/Row.js[m
+[36m@@ -6,7 +6,7 @@[m [mimport ModalTextBox from "./Inputs/ModalTextBox/ModalTextBox";[m
+ import ModalCustomComments from "./Inputs/ModalCustomComments/ModalCustomComments";[m
+ import Select from "./Inputs/Select/Select";[m
+ [m
+[31m-function typeSwitch(type, key, permission, origins, modalTitle) {[m
+[32m+[m[32mfunction typeSwitch(type, key, permission, origins, modalTitle, options) {[m
+   switch (type) {[m
+     case "flipSwitchStorage":[m
+       return <FlipSwitchStorage id={key} />;[m
+[36m@@ -23,7 +23,7 @@[m [mfunction typeSwitch(type, key, permission, origins, modalTitle) {[m
+         />[m
+       );[m
+     case "select":[m
+[31m-      return <Select id={key} />;[m
+[32m+[m[32m      return <Select id={key} options={options} />;[m
+     default:[m
+       return null;[m
+   }[m
+[36m@@ -39,7 +39,8 @@[m [mconst row = props => {[m
+           props.id,[m
+           props.permission,[m
+           props.origins,[m
+[31m-          props.modalTitle[m
+[32m+[m[32m          props.modalTitle,[m
+[32m+[m[32m          props.options[m
+         )}[m
+       </td>[m
+       <td>{props.description}</td>[m
