@@ -4,72 +4,80 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 const ModalTextBox = props => {
-    const [state, setState] = useState({
-        content: '',
-        inputValid: true,
-        validationError: ''
+  const [state, setState] = useState({
+    content: "",
+    inputValid: true,
+    validationError: ""
+  });
+
+  const onChangeHandler = change => {
+    setState({ ...state, content: change.target.value });
+  };
+
+  const inputValidator = closeModal => {
+    if (props.id === "steamAPIKey") {
+      if (state.content !== "") {
+        chrome.runtime.sendMessage(
+          { apikeytovalidate: state.content },
+          response => {
+            if (response.valid) {
+              chrome.storage.local.set(
+                { steamAPIKey: state.content, apiKeyValid: true },
+                () => {
+                  setState({ ...state, inputValid: true, validationError: "" });
+                  closeModal();
+                }
+              );
+            } else {
+              setState({
+                ...state,
+                inputValid: false,
+                validationError:
+                  "Could not validate your API key, it's either incorrect or Steam is down at the moment"
+              });
+            }
+          }
+        );
+      } else {
+        chrome.storage.local.set(
+          { steamAPIKey: "Not Set", apiKeyValid: false },
+          () => {
+            closeModal();
+          }
+        );
+      }
+    } else {
+      chrome.storage.local.set({ [props.id]: state.content }, () => {
+        setState({ ...state, inputValid: true, validationError: "" });
+        closeModal();
+      });
+    }
+  };
+
+  useEffect(() => {
+    chrome.storage.local.get([props.id], result => {
+      setState({ ...state, content: result[props.id] });
     });
+  }, [props.id]);
 
-    const onChangeHandler = (change) => {
-        setState({...state, content: change.target.value});
-    };
-
-    const inputValidator = (closeModal) => {
-        if (props.id === 'steamAPIKey') {
-            if (state.content !== '') {
-                chrome.runtime.sendMessage({apikeytovalidate: state.content}, (response) => {
-                    if (response.valid) {
-                        chrome.storage.local.set({steamAPIKey: state.content, apiKeyValid: true}, () => {
-                            setState({...state, inputValid: true, validationError: ''});
-                            closeModal();
-                        });
-                    } else {
-                        setState({
-                            ...state,
-                            inputValid: false,
-                            validationError: 'Could not validate your API key, it\'s either incorrect or Steam is down at the moment'
-                        });
-                    }
-                });
-            }
-            else {
-                chrome.storage.local.set({steamAPIKey: 'Not Set', apiKeyValid: false}, () => {
-                    closeModal();
-                });
-            }
-        }
-        else {
-            chrome.storage.local.set({[props.id]: state.content}, () => {
-                setState({...state, inputValid: true, validationError: ''});
-                closeModal();
-            });
-        }
-    };
-
-    useEffect(() => {
-        chrome.storage.local.get([props.id], (result) => {
-            setState({...state, content: result[props.id]})
-        });
-    }, [props.id]);
-
-    return (
-        <Fragment>
-            <p>{state.content.substring(0,8) + '...'}</p>
-            <CustomModal modalTitle={props.modalTitle} validator={inputValidator}>
-                <input
-                    className="custom-modal__input"
-                    type="text"
-                    placeholder="Type your text here"
-                    value={state.content}
-                    onChange={onChangeHandler}
-                />
-                <div className={`warning ${state.inputValid ? 'hidden' : null }`}>
-                    <FontAwesomeIcon icon={faExclamationTriangle} />
-                    <span className="warning"> {state.validationError}</span>
-                </div>
-            </CustomModal>
-        </Fragment>
-    );
+  return (
+    <Fragment>
+      <p>{state.content.substring(0, 8) + "..."}</p>
+      <CustomModal modalTitle={props.modalTitle} validator={inputValidator}>
+        <input
+          className="custom-modal__input"
+          type="text"
+          placeholder="Type your text here"
+          value={state.content}
+          onChange={onChangeHandler}
+        />
+        <div className={`warning ${state.inputValid ? "hidden" : null}`}>
+          <FontAwesomeIcon icon={faExclamationTriangle} />
+          <span className="warning"> {state.validationError}</span>
+        </div>
+      </CustomModal>
+    </Fragment>
+  );
 };
 
 export default ModalTextBox;

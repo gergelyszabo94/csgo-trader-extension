@@ -6,7 +6,7 @@ import ModalTextBox from "./Inputs/ModalTextBox/ModalTextBox";
 import ModalCustomComments from "./Inputs/ModalCustomComments/ModalCustomComments";
 import Select from "./Inputs/Select/Select";
 
-function typeSwitch(type, key, permission, origins, modalTitle) {
+function typeSwitch(type, key, permission, origins, modalTitle, options) {
   switch (type) {
     case "flipSwitchStorage":
       return <FlipSwitchStorage id={key} />;
@@ -23,7 +23,7 @@ function typeSwitch(type, key, permission, origins, modalTitle) {
         />
       );
     case "select":
-      return <Select id={key} />;
+      return <Select id={key} options={options} />;
     default:
       return null;
   }
@@ -39,7 +39,8 @@ const row = props => {
           props.id,
           props.permission,
           props.origins,
-          props.modalTitle
+          props.modalTitle,
+          props.options
         )}
       </td>
       <td>{props.description}</td>

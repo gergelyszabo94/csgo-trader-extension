@@ -25,12 +25,12 @@ const ModalCustomComments = props => {
   };
 
   useEffect(() => {
-      chrome.storage.local.get("customCommentsToReport", result => {
-        setState({
-          ...state,
-          content: result.customCommentsToReport
-        });
+    chrome.storage.local.get("customCommentsToReport", result => {
+      setState({
+        ...state,
+        content: result.customCommentsToReport
       });
+    });
   }, []);
 
   const addNewString = () => {
