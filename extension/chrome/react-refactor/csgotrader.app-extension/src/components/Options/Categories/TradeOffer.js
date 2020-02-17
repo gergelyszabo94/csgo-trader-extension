@@ -1,3 +1,5 @@
+/* globals sortingModes offersSortingModes*/
+
 import React, { Fragment } from "react";
 import Row from "components/Options/Row";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -6,6 +8,29 @@ import { faCode } from "@fortawesome/free-solid-svg-icons";
 import Category from '../Category/Category';
 
 const tradeOffer = () => {
+
+    const transformSortingModes = () => {
+        const transformed = [];
+        for (const mode in sortingModes) {
+            transformed.push({
+                key: sortingModes[mode].key,
+                text: sortingModes[mode].name
+            });
+        }
+        return transformed;
+    };
+
+    const transformOfferSortingModes = () => {
+        const transformed = [];
+        for (const mode in offersSortingModes) {
+            transformed.push({
+                key: offersSortingModes[mode].key,
+                text: offersSortingModes[mode].name
+            });
+        }
+        return transformed;
+    };
+
     return (
         <Category title='Trade Offer'>
             <Row
@@ -33,6 +58,7 @@ const tradeOffer = () => {
                 id='offerSortingMode'
                 type='select'
                 description='Specifies what method the items in an trade offer should be sorted by'
+                options={transformSortingModes()}
             />
             <Row
                 name='Switch to other inventory'
@@ -51,6 +77,7 @@ const tradeOffer = () => {
                 id='tradeOffersSortingMode'
                 type='select'
                 description='Specifies the default trade offer sorting mode on the incoming trade offers page'
+                options={transformOfferSortingModes()}
             />
             <Row
                 name='Show partner history'

@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 
 const Refresh = () => {
-     const [state, setState] = useState('');
+    const [state, setState] = useState('');
 
     const onClickHandler = () => {
         updatePrices();
