@@ -5,10 +5,11 @@ import FlipSwitchPermission from "./Inputs/FlipSwitchPermission/FlipSwitchPermis
 import ModalTextBox from "./Inputs/ModalTextBox/ModalTextBox";
 import ModalCustomComments from "./Inputs/ModalCustomComments/ModalCustomComments";
 import SimpleSelect from "./Inputs/SimpleSelect/SimpleSelect";
-import PricingProvider from './Inputs/PricingProvider/PricingProvider';
+import PricingProvider from "./Inputs/PricingProvider/PricingProvider";
 import Refresh from "./Inputs/Refresh/Refresh";
+import LinksToShow from "./Inputs/LinksToShow/LinksToShow";
 
-import './Row.css';
+import "./Row.css";
 
 function typeSwitch(type, key, permission, origins, modalTitle, options) {
   switch (type) {
@@ -32,6 +33,8 @@ function typeSwitch(type, key, permission, origins, modalTitle, options) {
       return <PricingProvider options={options} />;
     case "refresh":
       return <Refresh id={key} />;
+    case "linksToShow":
+      return <LinksToShow id={key} />;
     default:
       return null;
   }
@@ -41,7 +44,7 @@ const row = props => {
   return (
     <tr>
       <td>{props.name}</td>
-      <td className='center'>
+      <td className="center">
         {typeSwitch(
           props.type,
           props.id,
