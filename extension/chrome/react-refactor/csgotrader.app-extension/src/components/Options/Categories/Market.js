@@ -1,141 +1,51 @@
 import React from "react";
 
 import Category from "../Category/Category";
+import Row from 'components/Options/Row';
 
 const market = () => {
-  return (
-    <Category title="Market">
-      <div className="row">
-        <div className="col-md-6">Auto-set Steam API key</div>
-        <div className="col-md-6 justify-content-center">
-          <label className="switch">
-            <input type="checkbox" id="autoSetSteamAPIKey" />
-            <span className="slider round" />
-          </label>
-        </div>
-        <div className="col-md-12">
-          Automatically generates and adds the Steam API key to the extension
-          when visiting{" "}
-          <a
-            href="https://steamcommunity.com/dev/apikey"
-            target="_blank"
-            rel="noopener"
-          >
-            steamcommunity.com/dev/apikey
-          </a>
-        </div>
-      </div>
-
-      <div className="row">
-        <div className="col-md-6">Auto-set Steam API key</div>
-        <div className="col-md-6 justify-content-center">
-          <label className="switch">
-            <input type="checkbox" id="autoSetSteamAPIKey" />
-            <span className="slider round" />
-          </label>
-        </div>
-        <div className="col-md-12">
-          Automatically generates and adds the Steam API key to the extension
-          when visiting{" "}
-          <a
-            href="https://steamcommunity.com/dev/apikey"
-            target="_blank"
-            rel="noopener"
-          >
-            steamcommunity.com/dev/apikey
-          </a>
-        </div>
-      </div>
-
-      <div className="row">
-        <div className="col-md-6">Auto-set Steam API key</div>
-        <div className="col-md-6 justify-content-center">
-          <label className="switch">
-            <input type="checkbox" id="autoSetSteamAPIKey" />
-            <span className="slider round" />
-          </label>
-        </div>
-        <div className="col-md-12">
-          Automatically generates and adds the Steam API key to the extension
-          when visiting{" "}
-          <a
-            href="https://steamcommunity.com/dev/apikey"
-            target="_blank"
-            rel="noopener"
-          >
-            steamcommunity.com/dev/apikey
-          </a>
-        </div>
-      </div>
-
-      <div className="row">
-        <div className="col-md-6">Auto-set Steam API key</div>
-        <div className="col-md-6 justify-content-center">
-          <label className="switch">
-            <input type="checkbox" id="autoSetSteamAPIKey" />
-            <span className="slider round" />
-          </label>
-        </div>
-        <div className="col-md-12">
-          Automatically generates and adds the Steam API key to the extension
-          when visiting{" "}
-          <a
-            href="https://steamcommunity.com/dev/apikey"
-            target="_blank"
-            rel="noopener"
-          >
-            steamcommunity.com/dev/apikey
-          </a>
-        </div>
-      </div>
-
-      <div className="row">
-        <div className="col-md-6">Auto-set Steam API key</div>
-        <div className="col-md-6 justify-content-center">
-          <label className="switch">
-            <input type="checkbox" id="autoSetSteamAPIKey" />
-            <span className="slider round" />
-          </label>
-        </div>
-        <div className="col-md-12">
-          Automatically generates and adds the Steam API key to the extension
-          when visiting{" "}
-          <a
-            href="https://steamcommunity.com/dev/apikey"
-            target="_blank"
-            rel="noopener"
-          >
-            steamcommunity.com/dev/apikey
-          </a>
-        </div>
-      </div>
-
-      <div className="row">
-        <div className="col-md-6">Auto-set Steam API key</div>
-        <div className="col-md-6 justify-content-center">
-          <label className="switch">
-            <input type="checkbox" id="autoSetSteamAPIKey" />
-            <span className="slider round" />
-          </label>
-        </div>
-        <div className="col-md-12">
-          Automatically generates and adds the Steam API key to the extension
-          when visiting Automatically generates and adds the Steam API key to
-          the extension when visiting Automatically generates and adds the Steam
-          API key to the extension when visiting Automatically generates and
-          adds the Steam API key to the extension when visiting Automatically
-          generates and adds the Steam API key to the extension when visiting{" "}
-          <a
-            href="https://steamcommunity.com/dev/apikey"
-            target="_blank"
-            rel="noopener"
-          >
-            steamcommunity.com/dev/apikey
-          </a>
-        </div>
-      </div>
-    </Category>
-  );
+    return (
+        <Category title="Market">
+            <Row
+                name='Listings per page'
+                id='numberOfListings'
+                type='select'
+                description='The number of market listings you want to see when you load the market page of an item'
+                options={
+                    [
+                        {
+                            key: 10,
+                            text: 10
+                        },
+                        {
+                            key: 20,
+                            text: 20
+                        },
+                        {
+                            key: 50,
+                            text: 50
+                        },
+                        {
+                            key: 100,
+                            text: 100
+                        }
+                    ]
+                }
+            />
+            <Row
+                name='Get float values automatically'
+                id='autoFloatMarket'
+                type='flipSwitchStorage'
+                description='Loads float values to each item when on'
+            />
+            <Row
+                name='Original price'
+                id='marketOriginalPrice'
+                type='flipSwitchStorage'
+                description={'Show the price of listings in the seller\'s currency too as well as what they will receive after fees.'}
+            />
+        </Category>
+    );
 };
 
 export default market;
