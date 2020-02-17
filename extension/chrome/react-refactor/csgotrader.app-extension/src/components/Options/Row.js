@@ -6,6 +6,9 @@ import ModalTextBox from "./Inputs/ModalTextBox/ModalTextBox";
 import ModalCustomComments from "./Inputs/ModalCustomComments/ModalCustomComments";
 import SimpleSelect from "./Inputs/SimpleSelect/SimpleSelect";
 import PricingProvider from './Inputs/PricingProvider/PricingProvider';
+import Refresh from "./Inputs/Refresh/Refresh";
+
+import './Row.css';
 
 function typeSwitch(type, key, permission, origins, modalTitle, options) {
   switch (type) {
@@ -27,6 +30,8 @@ function typeSwitch(type, key, permission, origins, modalTitle, options) {
       return <SimpleSelect id={key} options={options} />;
     case "pricingProvider":
       return <PricingProvider options={options} />;
+    case "refresh":
+      return <Refresh id={key} />;
     default:
       return null;
   }
@@ -36,7 +41,7 @@ const row = props => {
   return (
     <tr>
       <td>{props.name}</td>
-      <td>
+      <td className='center'>
         {typeSwitch(
           props.type,
           props.id,

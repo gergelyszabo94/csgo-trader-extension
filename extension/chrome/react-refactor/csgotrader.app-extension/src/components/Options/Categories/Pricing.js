@@ -48,6 +48,14 @@ const pricing = () => {
           description="The pricing provider and pricing mode you want to get your prices from"
           options={pricingProviders}
       />
+      <Row
+          name="Refresh Prices"
+          type="refresh"
+          id="refreshPrices"
+          description="Normally prices refresh every 24 hours in the back end and on are also refreshed daily by the client.
+                    These two events are not synced so you might have a bit outdated prices.
+                    Refreshing the prices makes sure that you have the latest. Refreshing multiple times in a short period of time is pointless."
+      />
     </Category>
   );
 };
