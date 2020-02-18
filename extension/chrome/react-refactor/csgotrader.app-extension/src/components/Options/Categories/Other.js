@@ -35,6 +35,18 @@ const other = () => {
                 permission='tabs'
                 origins={['*://csgotraders.net/*']}
             />
+            <Row
+                name='CSGOTraders.net auto-login and redirect'
+                id='csgotradersAutoLogin'
+                type='flipSwitchStorage'
+                description='Automatically logs you back into CSGOTRADERS.NET, useful when auto bumping is used since the site logs you out fairly often'
+            />
+            <Row
+                name='Auto OpenID login'
+                id='autoOpenIDLogin'
+                type='flipSwitchStorage'
+                description='Go through the "Login with Steam" dialogs automatically, required for CSGOTRADERS.NET autologin'
+            />
         </Category>
     );
 };

@@ -8,6 +8,8 @@ import SimpleSelect from "./Inputs/SimpleSelect/SimpleSelect";
 import PricingProvider from "./Inputs/PricingProvider/PricingProvider";
 import Refresh from "./Inputs/Refresh/Refresh";
 import LinksToShow from "./Inputs/LinksToShow/LinksToShow";
+import Backup from "./Inputs/Backup/Backup";
+import Restore from "./Inputs/Restore/Restore";
 
 import "./Row.css";
 
@@ -35,6 +37,10 @@ function typeSwitch(type, key, permission, origins, modalTitle, options) {
       return <Refresh id={key} />;
     case "linksToShow":
       return <LinksToShow id={key} />;
+    case "backup":
+      return <Backup id={key} />;
+    case "restore":
+      return <Restore id={key} />;
     default:
       return null;
   }
