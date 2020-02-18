@@ -23,6 +23,15 @@ const changelog = (props) => {
                 This means that the latest version might not have rolled out to your platform yet when you are reading this.
             </Container>
             <Container className='buildingBlock'>
+                <h2>Version 1.26.1 - 2020-02-10</h2>
+                <ul>
+                    <li>Fixed some very rare items showing no price when pricing is set to CSGOTRADER</li>
+                    <li>Fixed a bug that made bookmarked items not to show</li>
+                    <li>Fixed a bug that created an infinite loop during float info fetching  <GithubIssueLink issueNumber={120}/></li>
+                    <li>Fixed functionalities breaking on the incoming trade offers page when the steam api returned incomplete data</li>
+                </ul>
+            </Container>
+            <Container className='buildingBlock'>
                 <h2>Version 1.26 - 2020-02-03</h2>
                 <ul>
                     <li>
