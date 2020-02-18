@@ -11,14 +11,16 @@ import Popup from 'components/Options/Categories/Popup';
 import Profile from 'components/Options/Categories/Profile';
 import TradeOffer from 'components/Options/Categories/TradeOffer';
 
+import './Options.css';
+
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect,
-  Link
 } from "react-router-dom";
 import { Nav } from "react-bootstrap";
+import {LinkContainer} from "react-router-bootstrap";
 
 const routes = [
   {
@@ -81,11 +83,12 @@ const options = ({match}) => {
         <div className="container-fluid">
           <div className="row">
             <div className="col-md-2  options__side-nav">
-              <Nav defaultActiveKey="/home" className="flex-column">
+              <Nav defaultActiveKey="/options/general/" className="flex-column">
                 {
                   routes.map(route => {
                     return (
-                        <Link to={match.path + route.to} key={route.to}>{route.name}</Link>
+                        <RouterNavLink to={match.path + route.to} exact={false} activeClassName='sideNavActive' key={route.to}>{route.name}</RouterNavLink>
+                        // <Link to={match.path + route.to} key={route.to}>{route.name}</Link>
                     )
                   })
                 }
@@ -114,5 +117,12 @@ const options = ({match}) => {
     </div>
   );
 };
+
+// workaround from here: https://github.com/react-bootstrap/react-linkr-bootstrap/issues/242#issuecomment-480330910
+const RouterNavLink = ({ children, ...props }) => (
+    <LinkContainer {...props}>
+      <Nav.Link active={false}>{children}</Nav.Link>
+    </LinkContainer>
+);
 
 export default options;
