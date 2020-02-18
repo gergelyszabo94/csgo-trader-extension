@@ -63,8 +63,8 @@ chrome.runtime.onInstalled.addListener((details) => {
         chrome.browserAction.setBadgeText({text: 'U'});
 
         // notifies the user when the extension is updated
-        chrome.storage.local.get('updateNotifications', (result) => {
-            if(result.updateNotifications){
+        chrome.storage.local.get('notifyOnUpdate', (result) => {
+            if(result.notifyOnUpdate){
                 let thisVersion = chrome.runtime.getManifest().version;
                 chrome.permissions.contains({
                     permissions: ['tabs']
