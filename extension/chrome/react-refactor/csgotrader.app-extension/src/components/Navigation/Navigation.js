@@ -23,7 +23,7 @@ const navigation = () => {
           <Nav className="mr-auto">
             {links.map(link => {
               return !link.isExternal
-                  ? (<RouterNavLink to={link.path} exact={true} activeClassName="active" key={link.id}>{link.title}</RouterNavLink>)
+                  ? (<RouterNavLink to={link.path} exact={false} activeClassName="active" key={link.id}>{link.title}</RouterNavLink>)
                   : (<NewTabLink to={link.path} className='nav-link' key={link.id}> {link.title} </NewTabLink>);
             })}
           </Nav>

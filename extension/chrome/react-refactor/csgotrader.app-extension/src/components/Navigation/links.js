@@ -2,7 +2,7 @@ const links = [
     {
     title: "Options",
     id: "options",
-    path: "/",
+    path: "/options/general/",
     isExternal: false
   },
   {

@@ -11,7 +11,6 @@ const FlipSwitchStorage = (props) => {
 
     useEffect(() => {
         chrome.storage.local.get(props.id, (result) => {
-            console.log(result);
             setState(result[props.id]);
         });
     }, [props.id]);
