@@ -1,3 +1,5 @@
+/* globals trackEvent*/
+
 import React from "react";
 
 import Notifications from 'components/Options/Categories/Notifications';
@@ -76,6 +78,12 @@ const routes = [
 ];
 
 const options = ({match}) => {
+  trackEvent({
+    type: 'pageview',
+    action: 'ExtensionOptionsView'
+  });
+
+
   return (
     <div className="options">
       <h1>CSGO Trader Options</h1>
