@@ -31,7 +31,7 @@ const CustomModal = props => {
             </div>
           </div>
         </div>
-        <span onClick={openModal}>
+        <span onClick={openModal} className='openModal'>
           <FontAwesomeIcon icon={faEdit} />
         </span>
       </Fragment>
