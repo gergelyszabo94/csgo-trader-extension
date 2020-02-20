@@ -106,7 +106,7 @@ chrome.notifications.onClicked.addListener((notificationID) =>{
     }, (result) =>{
         if (result) {
             if (notificationID === 'updated') chrome.tabs.create({url: 'https://csgotrader.app/changelog/'});
-            else goToInternalPage('/html/bookmarks.html');
+            else goToInternalPage('index.html?page=bookmarks');
         }
     });
 });
@@ -150,7 +150,7 @@ chrome.alarms.onAlarm.addListener((alarm) =>{
             else if(item.notifType === 'alert'){
                 chrome.permissions.contains({permissions: ['tabs']}, (result) =>{
                     if (result) {
-                        goToInternalPage('/html/bookmarks.html');
+                        goToInternalPage('index.html?page=bookmarks');
                         setTimeout(() =>{
                             chrome.tabs.query({active: true, currentWindow: true}, (tabs)=>{
                                 chrome.tabs.sendMessage(tabs[0].id, {alert: item.itemInfo.name}, (response) =>{});

@@ -329,7 +329,7 @@ function addBookmark(module) {
         chrome.storage.local.set({'bookmarks': bookmarks}, () => {
             if (bookmark.itemInfo.tradability !== 'Tradable') chrome.runtime.sendMessage({setAlarm: {name:  bookmark.itemInfo.assetid, when: bookmark.itemInfo.tradability}}, (response) => {});
 
-            chrome.runtime.sendMessage({openInternalPage: '/html/bookmarks.html'}, (response) => {
+            chrome.runtime.sendMessage({openInternalPage: 'index.html?page=bookmarks'}, (response) => {
                 if (response.openInternalPage === 'no_tabs_api_access') module.querySelector('.descriptor.tradability.bookmark').innerText = 'Bookmarked! Open the bookmarks menu to see what you have saved!';
             });
         });
