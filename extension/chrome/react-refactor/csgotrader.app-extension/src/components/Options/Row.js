@@ -5,6 +5,7 @@ import FlipSwitchPermission from "./Inputs/FlipSwitchPermission/FlipSwitchPermis
 import ModalTextBox from "./Inputs/ModalTextBox/ModalTextBox";
 import ModalCustomComments from "./Inputs/ModalCustomComments/ModalCustomComments";
 import SimpleSelect from "./Inputs/SimpleSelect/SimpleSelect";
+import DoubleSelect from "./Inputs/DoubleSelect/DoubleSelect";
 import PricingProvider from "./Inputs/PricingProvider/PricingProvider";
 import Refresh from "./Inputs/Refresh/Refresh";
 import LinksToShow from "./Inputs/LinksToShow/LinksToShow";
@@ -41,6 +42,8 @@ function typeSwitch(type, key, permission, origins, modalTitle, options) {
       return <Backup id={key} />;
     case "restore":
       return <Restore id={key} />;
+    case "doubleSelect":
+      return <DoubleSelect id={[...key]} options={options} />;
     default:
       return null;
   }

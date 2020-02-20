@@ -5,12 +5,12 @@ const Select = props => {
 
   const changeHandler = e => {
     const thisValue = e.target.value;
-    props.foreignChangeHandler(thisValue);
+    props.foreignChangeHandler(thisValue, props.id);
     setValue(thisValue);
   };
 
   useEffect(() => {
-    props.foreignUseEffect().then(result => {
+    props.foreignUseEffect(props.id).then(result => {
       setValue(result);
     });
   }, []);
