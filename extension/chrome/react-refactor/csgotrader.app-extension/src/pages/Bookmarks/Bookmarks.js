@@ -1,18 +1,36 @@
 /* globals trackEvent*/
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState, Fragment } from "react";
+
+import Bookmark from "components/Bookmark/Bookmark";
 
 const Bookmarks = () => {
-  trackEvent({
-    type: 'pageview',
-    action: 'ExtensionBookmarksView'
-  });
+    trackEvent({
+        type: 'pageview',
+        action: 'ExtensionBookmarksView'
+    });
 
-  useEffect(() => {
-    document.title = 'Bookmarks';
-  }, []);
+    const [bookmarks, setBookmarks] = useState([]);
 
-  return <div>Bookmarks</div>;
+    useEffect(() => {
+        document.title = 'Bookmarks';
+
+        chrome.storage.local.get('bookmarks', (result) => {
+            console.log(result.bookmarks);
+            setBookmarks(result.bookmarks)
+        });
+    }, []);
+
+    return (
+        <Fragment>
+            <h1>Bookmark and Notify</h1>
+            <div>
+                {bookmarks.map((bookmark, index) => {
+                    return ( <Bookmark key={index} bookmarkData={bookmark}/> );
+                })}
+            </div>
+        </Fragment>
+    );
 };
 
 export default Bookmarks;
