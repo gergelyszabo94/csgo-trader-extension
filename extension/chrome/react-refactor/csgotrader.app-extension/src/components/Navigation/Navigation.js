@@ -4,12 +4,16 @@ import { LinkContainer } from "react-router-bootstrap";
 import links from "./links.js";
 import logo from "assets/images/cstlogo48.png";
 import "./Navigation.css";
-import NewTabLink from 'components/NewTabLink/NewTabLink';
+import NewTabLink from "components/NewTabLink/NewTabLink";
 
 const navigation = () => {
   return (
     <Fragment>
-      <Navbar expand="lg" bg="dark" variant="dark">
+      <Navbar
+        expand="lg"
+        variant="dark"
+        className="sticky-top nav--shadow nav--dark"
+      >
         <Navbar.Brand href="https://csgotrader.app">
           <img
             src={logo}
@@ -22,9 +26,21 @@ const navigation = () => {
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
             {links.map(link => {
-              return !link.isExternal
-                  ? (<RouterNavLink to={link.path} exact={false} activeClassName="active" key={link.id}>{link.title}</RouterNavLink>)
-                  : (<NewTabLink to={link.path} className='nav-link' key={link.id}> {link.title} </NewTabLink>);
+              return !link.isExternal ? (
+                <RouterNavLink
+                  to={link.path}
+                  exact={false}
+                  activeClassName="active"
+                  key={link.id}
+                >
+                  {link.title}
+                </RouterNavLink>
+              ) : (
+                <NewTabLink to={link.path} className="nav-link" key={link.id}>
+                  {" "}
+                  {link.title}{" "}
+                </NewTabLink>
+              );
             })}
           </Nav>
         </Navbar.Collapse>

@@ -61,22 +61,7 @@
     }
 
     &__input {
-      background: $background-secondary;
-      color: White;
-      padding: 10px 0;
-      border: none;
-      border-bottom: 1px solid $border-color-primary;
-      width: 100%;
-
-      &::placeholder {
-        color: $border-color-primary;
-      }
-
-      &:focus {
-        outline: none;
-        border: none;
-        border-bottom: 1px solid white;
-      }
+      @extend .input;
     }
   }
 

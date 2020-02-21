@@ -1,57 +1,69 @@
 :root {
-    --steam-nametag-red: #bd4847;
-    --steam-ingame-green: #90ba3c;
-    --steam-online-blue: #57cbde;
-    --steam-offline-gray: #898989;
-    --steam-stattrak-orange: rgb(207, 106, 50);
-    --steam-note-blue: rgb(153, 204, 255);
-    --steam-knife-purple: rgb(134, 80, 172);
-    --steam-souvenir-yellow: rgb(255, 215, 0);
-    --steam-sale-golden: #e4ca63;
+  --steam-nametag-red: #bd4847;
+  --steam-ingame-green: #90ba3c;
+  --steam-online-blue: #57cbde;
+  --steam-offline-gray: #898989;
+  --steam-stattrak-orange: rgb(207, 106, 50);
+  --steam-note-blue: rgb(153, 204, 255);
+  --steam-knife-purple: rgb(134, 80, 172);
+  --steam-souvenir-yellow: rgb(255, 215, 0);
+  --steam-sale-golden: #e4ca63;
 }
 
-body{
-    background-color: #1d2124;
+body {
+  background-color: #1d2124;
 }
 
-p, b, th, tr, ul, li, a, span, div {
-    color: #e1e1e1;
+p,
+b,
+th,
+tr,
+ul,
+li,
+a,
+span,
+div {
+  color: #e1e1e1;
 }
 
-a{
-    color: var(--steam-souvenir-yellow);
+a {
+  color: var(--steam-souvenir-yellow);
 }
 
 a:hover {
-    color: #e1e1e1;
-    text-decoration: underline;
+  color: #e1e1e1;
+  text-decoration: underline;
 }
 
-h1, h2, h3, h4, h5{
-    color: darkorange;
+h1,
+h2,
+h3,
+h4,
+h5 {
+  color: darkorange;
 }
 
-h1{
-    margin: 1rem;
+h1 {
+  margin: 1rem;
 }
 
-nav{
-    background-color: #23272b;
+nav {
+  background-color: #23272b;
 }
 
-input[type=number]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
 }
 
-input[type=number]{
-    -moz-appearance: textfield;
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 
-i{
-    margin: 0.5rem;
+i {
+  margin: 0.5rem;
 }
 
-.select-theme {
+/*.select-theme {
     --baseFg: #e1e1e1;
     --baseBg: #23272b;
     --accentFg: #23272b;
@@ -90,181 +102,183 @@ select:active {
     color: var(--accentBg);
     border-color: var(--accentFg);
     background-color: var(--accentFg);
-}
+}*/
 
 /*Classes*/
 
 .hidden {
-    display: none;
+  display: none;
 }
 
-.orangeBox{
-    background-color: #23272b;
-    color: #e1e1e1;
-    border-color: darkorange;
-    width: 100%;
-    height: 100px;
+.orangeBox {
+  background-color: #23272b;
+  color: #e1e1e1;
+  border-color: darkorange;
+  width: 100%;
+  height: 100px;
 }
 
-.orangeTextField{
-    background-color: #23272b;
-    color: #e1e1e1;
-    border-color: darkorange;
+.orangeTextField {
+  background-color: #23272b;
+  color: #e1e1e1;
+  border-color: darkorange;
 }
 
-.delete{
-    color: var(--steam-nametag-red);
-    margin-left: 5px;
+.delete {
+  color: var(--steam-nametag-red);
+  margin-left: 5px;
 }
 
-.navlogo{
-    margin-right: 10px;
+.navlogo {
+  margin-right: 10px;
 }
 
-.buildingBlock{
-    background-color: #23272b;
-    margin: 1rem;
-    padding: 1rem;
+.buildingBlock {
+  background-color: #23272b;
+  margin: 1rem;
+  padding: 1rem;
 }
 
-.subBlock{
-    background-color: #313435;
-    margin: 2px;
+.subBlock {
+  background-color: #313435;
+  margin: 2px;
 }
 
-.orange{
-    color: darkorange !important;
+.orange {
+  color: darkorange !important;
 }
 
-.active{
-    color: var(--steam-souvenir-yellow) !important;
+.active {
+  color: var(--steam-souvenir-yellow) !important;
 }
 
-.tradability{
-    color: var(--steam-nametag-red);
+.tradability {
+  color: var(--steam-nametag-red);
 }
 
-.countdown{
-    color: var(--steam-nametag-red);
+.countdown {
+  color: var(--steam-nametag-red);
 }
 
-.tradable{
-    color: var(--steam-ingame-green);
+.tradable {
+  color: var(--steam-ingame-green);
 }
 
-.remove{
-    font-size: 2rem;
-    color: var(--steam-nametag-red);
+.remove {
+  font-size: 2rem;
+  color: var(--steam-nametag-red);
 }
-.remove:hover{
-    /*color:white;*/
-    font-size: 2.1rem;
-}
-
-.whiteIcon{
-    color: white;
-    font-size: 2rem;
-}
-.whiteIcon:hover{
-    font-size: 2.1rem;
+.remove:hover {
+  /*color:white;*/
+  font-size: 2.1rem;
 }
 
-.apiIcon{
-    font-size: 1.5rem;
-    color: var(--steam-nametag-red);
+.whiteIcon {
+  color: white;
+  font-size: 2rem;
+}
+.whiteIcon:hover {
+  font-size: 2.1rem;
 }
 
-.saveIcon{
-    display: inline-block;
-    float: right;
-    margin-right: 1rem;
+.apiIcon {
+  font-size: 130%;
+  color: var(--steam-nametag-red);
+  pointer-events: none;
 }
 
-.numberPicker{
-    padding-left: 0.25rem;
-    width: 2rem;
-    background-color: #23272b;
-    color: #e1e1e1;
-    border-color: darkorange;
+.saveIcon {
+  display: inline-block;
+  float: right;
+  margin-right: 1rem;
 }
 
-.someSpaceBefore{
-    margin-top: 1rem;
+.numberPicker {
+  padding-left: 0.25rem;
+  width: 2rem;
+  background-color: #23272b;
+  color: #e1e1e1;
+  border-color: darkorange;
 }
 
-.warning{
-    color: var(--steam-nametag-red);
+.someSpaceBefore {
+  margin-top: 1rem;
+}
+
+.warning {
+  color: var(--steam-nametag-red);
 }
 
 /*Custom flip switch for checkbox*/
 
 /* The switch - the box around the slider */
 .switch {
-    position: relative;
-    display: inline-block;
-    width: 45px;
-    height: 20px;
+  position: relative;
+  display: inline-block;
+  width: 45px;
+  height: 20px;
 }
 
 /* Hide default HTML checkbox */
 .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
 /* The slider */
 .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 34px;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
 }
 
 .slider:before {
-    position: absolute;
-    content: "";
-    height: 16px;
-    width: 16px;
-    left: 2px;
-    bottom: 2px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
 }
 
 input:checked + .slider {
-    background-color: darkorange;
+  background-color: darkorange;
 }
 
 input:focus + .slider {
-    box-shadow: 0 0 1px darkorange;
+  box-shadow: 0 0 1px darkorange;
 }
 
 input:checked + .slider:before {
-    transform: translateX(25px);
+  transform: translateX(25px);
 }
 
 /*Modal, button*/
 
-.modal-content{
-    background-color: #23272b;
-
+.modal-content {
+  background-color: #23272b;
 }
 
-.modal-header, .modal-body, .modal-footer{
-    border-color: darkorange;
+.modal-header,
+.modal-body,
+.modal-footer {
+  border-color: darkorange;
 }
 
 .btn-orange {
-    color: #000000;
-    background-color: #FF8C00;
-    border-color: #FF8C00;
+  color: #000000;
+  background-color: #ff8c00;
+  border-color: #ff8c00;
 }
 
 .btn-orange:hover,
@@ -272,15 +286,15 @@ input:checked + .slider:before {
 .btn-orange:active,
 .btn-orange.active,
 .open .dropdown-toggle.btn-orange {
-    color: #000000;
-    background-color: #ffd700;
-    border-color: #ffd700;
+  color: #000000;
+  background-color: #ffd700;
+  border-color: #ffd700;
 }
 
 .btn-orange:active,
 .btn-orange.active,
 .open .dropdown-toggle.btn-orange {
-    background-image: none;
+  background-image: none;
 }
 
 .btn-orange.disabled,
@@ -298,11 +312,11 @@ fieldset[disabled] .btn-orange:active,
 .btn-orange.disabled.active,
 .btn-orange[disabled].active,
 fieldset[disabled] .btn-orange.active {
-    background-color: #FF8C00;
-    border-color: #FF8C00;
+  background-color: #ff8c00;
+  border-color: #ff8c00;
 }
 
 .btn-orange .badge {
-    color: #FF8C00;
-    background-color: #000000;
+  color: #ff8c00;
+  background-color: #000000;
 }

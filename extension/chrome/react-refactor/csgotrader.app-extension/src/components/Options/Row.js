@@ -51,9 +51,14 @@ function typeSwitch(type, key, permission, origins, modalTitle, options) {
 
 const row = props => {
   return (
-    <tr>
-      <td>{props.name}</td>
-      <td className="center">
+    <div className="row mb-4 pb-4 option-row">
+      <div className="col-md-12">
+        <h5>{props.name}</h5>
+      </div>
+      <div className="col-md-6">
+        <p className="font-size--s">{props.description}</p>
+      </div>
+      <div className="col-md-6">
         {typeSwitch(
           props.type,
           props.id,
@@ -62,9 +67,8 @@ const row = props => {
           props.modalTitle,
           props.options
         )}
-      </td>
-      <td>{props.description}</td>
-    </tr>
+      </div>
+    </div>
   );
 };
 

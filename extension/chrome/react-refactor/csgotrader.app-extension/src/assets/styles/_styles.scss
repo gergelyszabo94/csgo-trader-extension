@@ -3,10 +3,16 @@
 
 //base
 @import "./base/variables";
+@import "./base/helpers";
 
 // compoenents
 @import "./components/custom-modal";
 @import "./components/button";
+@import "./components/nav";
+@import "./components/category";
+@import "./components/flipswitch";
+@import "./components/select";
+@import "./components/input";
 
 // pages
 @import "./pages/pages";

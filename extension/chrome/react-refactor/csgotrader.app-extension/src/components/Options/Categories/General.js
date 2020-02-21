@@ -30,20 +30,18 @@ const general = () => {
         type="modalTextBox"
         description={
           <Fragment>
-            Allows the extension to make API requests to the{" "}
+            Allows the extension to make API requests to the&nbsp;
             <NewTabLink to="https://developer.valvesoftware.com/wiki/Steam_Web_API">
               Steam Web API
-            </NewTabLink>, functions that need an API key will be tagged with
-            this icon: <FontAwesomeIcon
-              icon={faCode}
-              className="apiIcon"
-            />{" "}
+            </NewTabLink>
+            , functions that need an API key will be tagged with this
+            icon:&nbsp;
+            <FontAwesomeIcon icon={faCode} className="apiIcon" />
             <br />
-            You can get an API key by filling out
+            You can get an API key by filling out&nbsp;
             <NewTabLink to="https://steamcommunity.com/dev/apikey">
-              {" "}
               this form
-            </NewTabLink>{" "}
+            </NewTabLink>
             (you can put anything in as domain name).
           </Fragment>
         }
@@ -59,10 +57,11 @@ const general = () => {
             <NewTabLink to="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Working_with_the_Tabs_API">
               {" "}
               browser.tabs API
-            </NewTabLink>. It - for example - allows the extension to open a tab
-            and put it in focus, allows notifications to be clickable, opens the
-            bookmarks page when an item is bookmarked, etc. I am using it in
-            this mode so it's also less likely to be buggy as well.
+            </NewTabLink>
+            . It - for example - allows the extension to open a tab and put it
+            in focus, allows notifications to be clickable, opens the bookmarks
+            page when an item is bookmarked, etc. I am using it in this mode so
+            it's also less likely to be buggy as well.
           </Fragment>
         }
         permission="tabs"
@@ -71,7 +70,7 @@ const general = () => {
         name="Flag scam comments"
         id="flagScamComments"
         type="flipSwitchStorage"
-        description="Reports obvious scam and spam comments like &quot;I will give my knife for all of your csgo graffitties&quot; and others. Helps to keep steamcommunity cleaner and safer."
+        description='Reports obvious scam and spam comments like "I will give my knife for all of your csgo graffitties" and others. Helps to keep steamcommunity cleaner and safer.'
       />
       <Row
         name="Your strings to report"

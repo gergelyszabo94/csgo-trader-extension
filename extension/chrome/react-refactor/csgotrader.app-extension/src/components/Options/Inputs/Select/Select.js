@@ -17,7 +17,7 @@ const Select = props => {
 
   return (
     <select
-      className="select-theme"
+      className="select"
       id={props.id}
       onChange={changeHandler}
       value={value}

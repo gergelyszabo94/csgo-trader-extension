@@ -8,7 +8,16 @@
     }
   }
 
+  &__content {
+    height: calc(100vh - 74px);
+    overflow: auto;
+  }
+
   .buildingBlock {
     margin: 0;
+  }
+
+  .option-row {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   }
 }

@@ -1,5 +1,7 @@
 /* global defaultPopupLinks*/
 import React, { useState, useEffect, Fragment } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const LinksToShow = props => {
   const [links, setLinks] = useState([]);
@@ -52,6 +54,7 @@ const LinksToShow = props => {
   };
 
   const removeCustomUrl = event => {
+    console.log(event.target.id);
     links.map((link, mapIndex) => {
       if (link.id === event.target.id) {
         var filtered = links.filter(function(value, filterIndex, arr) {
@@ -91,9 +94,8 @@ const LinksToShow = props => {
     <Fragment>
       {links.map((link, index) => {
         return link.id === "options" ? null : (
-          <div key={link.id}>
-            <nobr>
-              <span>{link.name}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+          <div key={link.id} className="row mb-2">
+            <div className="col-md-2 justify-content-start">
               <label className="switch">
                 <input
                   type="checkbox"
@@ -103,38 +105,42 @@ const LinksToShow = props => {
                 />
                 <span className="slider round" />
               </label>
-              {!defaultPopupLinkIDs.includes(link.id) ? (
-                <button
-                  id={link.id}
-                  className="button button__remove"
-                  onClick={removeCustomUrl}
-                >
-                  Remove
-                </button>
-              ) : null}
-            </nobr>
+            </div>
+            <div className="col-md-3 justify-content-end pb-3">{link.name}</div>
+
+            {!defaultPopupLinkIDs.includes(link.id) ? (
+              <div className="col-md-1">
+                <span id={link.id} onClick={removeCustomUrl}>
+                  <FontAwesomeIcon
+                    id={link.id}
+                    icon={faTrash}
+                    className="apiIcon"
+                  />
+                </span>
+              </div>
+            ) : null}
           </div>
         );
       })}
       <hr />
-      <label>
-        Name on popup:
+      <label className="d-block">
         <input
           type="text"
-          className="custom-modal__input"
+          className="input"
           id="name"
           value={customLink.name}
           onChange={nameInputHandler}
+          placeholder="Name on popup"
         />
       </label>
-      <label>
-        URL to point to:
+      <label className="d-block">
         <input
           type="text"
-          className="custom-modal__input"
+          className="input"
           id="url"
           value={customLink.url}
           onChange={urlInputHandler}
+          placeholder="URL to point to"
         />
       </label>
       <button className="button button__save" onClick={addCustomUrl}>
