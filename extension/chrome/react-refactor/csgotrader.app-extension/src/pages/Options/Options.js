@@ -123,12 +123,6 @@ const options = ({ match }) => {
             </div>
           </div>
         </div>
-
-        {window.location.search === "?page=bookmarks" ? (
-          <Route>
-            <Redirect to="/bookmarks/" />
-          </Route>
-        ) : null}
       </Router>
     </div>
   );
