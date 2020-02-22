@@ -16,8 +16,7 @@ import TradeOffer from "components/Options/Categories/TradeOffer";
 import {
   BrowserRouter as Router,
   Switch,
-  Route,
-  Redirect
+  Route
 } from "react-router-dom";
 import { Nav } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
