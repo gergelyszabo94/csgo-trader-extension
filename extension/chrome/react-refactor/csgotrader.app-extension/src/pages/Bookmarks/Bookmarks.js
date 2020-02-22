@@ -24,7 +24,7 @@ const Bookmarks = () => {
     return (
         <Fragment>
             <h1>Bookmark and Notify</h1>
-            <div>
+            <div className='row'>
                 {bookmarks.map((bookmark, index) => {
                     return ( <Bookmark key={index} bookmarkData={bookmark}/> );
                 })}
