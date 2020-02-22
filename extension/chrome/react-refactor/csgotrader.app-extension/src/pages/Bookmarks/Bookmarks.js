@@ -1,8 +1,8 @@
 /* globals trackEvent*/
 
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState } from "react";
 
-import Bookmark from "components/Bookmark/Bookmark";
+import Bookmark from "components/Bookmarks/Bookmark/Bookmark";
 
 const Bookmarks = () => {
     trackEvent({
@@ -16,20 +16,19 @@ const Bookmarks = () => {
         document.title = 'Bookmarks';
 
         chrome.storage.local.get('bookmarks', (result) => {
-            console.log(result.bookmarks);
             setBookmarks(result.bookmarks)
         });
     }, []);
 
     return (
-        <Fragment>
+        <div className='container'>
             <h1>Bookmark and Notify</h1>
             <div className='row'>
                 {bookmarks.map((bookmark, index) => {
                     return ( <Bookmark key={index} bookmarkData={bookmark}/> );
                 })}
             </div>
-        </Fragment>
+        </div>
     );
 };
 

@@ -1,4 +1,5 @@
 import React from "react";
+import Countdown from "./Countdown";
 
 const Bookmark = (props) => {
     const { comment, itemInfo, notifTime, nofitType, notify, owner } = props.bookmarkData;
@@ -21,8 +22,35 @@ const Bookmark = (props) => {
             <div>
                 {`${notifTime} ${nofitType} ${notify} ${owner}`}
             </div>
+            <div className='center'>
+                <Tradability tradability={itemInfo.tradability}/>
+            </div>
         </div>
     );
+};
+
+const Tradability = (props) => {
+    const { tradability } = props;
+
+    if (tradability === 'Tradable') {
+        return (
+            <div className='tradable'>
+                {tradability}
+            </div>
+        );
+    }
+    else if (tradability !== 'Not Tradable') {
+        return (
+            <Countdown tradability={tradability}/>
+        );
+    }
+    else {
+        return (
+            <div className='countdown'>
+                Untradable
+            </div>
+        );
+    }
 };
 
 export default Bookmark;
