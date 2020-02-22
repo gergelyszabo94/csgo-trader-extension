@@ -25,33 +25,33 @@ const Bookmark = (props) => {
             {/*    <input type='text' value={comment} onChange={onchangeHandler}/>*/}
             {/*</div>*/}
             <div className='actions'>
-                <Action>
+                <Action title='Inspect the item in-game'>
                     <NewTabLink to={itemInfo.inspectLink}>
                         <FontAwesomeIcon icon={faEye} />
                     </NewTabLink>
                 </Action>
-                <Action>
+                <Action title='Open the market listings page of the item'>
                     <NewTabLink to={itemInfo.marketlink}>
                         <FontAwesomeIcon icon={faChartLine} />
                     </NewTabLink>
                 </Action>
-                <Action>
+                <Action title={'View the item in the owner\'s inventory'}>
                     <NewTabLink to={`https://steamcommunity.com/profiles/${owner}/inventory/#730_2_${itemInfo.assetid}`}>
                         <FontAwesomeIcon icon={faLink} />
                     </NewTabLink>
                 </Action>
-                <Action>
+                <Action title={'Open the owner\'s profile'}>
                     <NewTabLink to={`https://steamcommunity.com/profiles/${owner}`}>
                         <FontAwesomeIcon icon={faUser} />
                     </NewTabLink>
                 </Action>
-                <Action>
+                <Action title='Add or edit a comment'>
                     <FontAwesomeIcon icon={faComment} />
                 </Action>
-                <Action>
+                <Action title='Edit notifications options'>
                     <FontAwesomeIcon icon={faBell} />
                 </Action>
-                <Action>
+                <Action title='Delete bookmark'>
                     <FontAwesomeIcon icon={faTrash} />
                 </Action>
                 {/*{`${notifTime} ${nofitType} ${notify} ${owner}`}*/}
@@ -89,7 +89,7 @@ const Tradability = (props) => {
 
 const Action = (props) => {
   return (
-      <span className='action'>
+      <span className='action' title={props.title}>
           {props.children}
       </span>
   )
