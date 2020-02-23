@@ -1,6 +1,6 @@
 /* globals updatePrices */
 import React, { Fragment, useState } from "react";
-import Select from "components/Options/Inputs/Select/Select";
+import Select from "components/Select/Select";
 
 import './PricingProvider.css';
 
