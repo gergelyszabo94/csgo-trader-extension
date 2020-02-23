@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import FlipSwitch from "components/FlipSwitch/FlipSwitch";
 
 const FlipSwitchPermission = props => {
   const [state, setState] = useState(false);
@@ -52,19 +53,7 @@ const FlipSwitchPermission = props => {
     }
   };
 
-  return (
-    <div className="flipswitch">
-      <label className="switch">
-        <input
-          type="checkbox"
-          id={props.id}
-          checked={state}
-          onChange={onChangeHandler}
-        />
-        <span className="slider round" />
-      </label>
-    </div>
-  );
+  return <FlipSwitch id={props.id} checked={state} onChange={onChangeHandler}/>
 };
 
 export default FlipSwitchPermission;

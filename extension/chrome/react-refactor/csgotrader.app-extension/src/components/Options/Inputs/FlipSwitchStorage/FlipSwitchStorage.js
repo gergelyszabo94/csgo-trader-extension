@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import FlipSwitch from "components/FlipSwitch/FlipSwitch";
 
 const FlipSwitchStorage = props => {
   const [state, setState] = useState(false);
@@ -18,19 +19,7 @@ const FlipSwitchStorage = props => {
     });
   }, [props.id]);
 
-  return (
-    <div className="flipswitch">
-      <label className="switch">
-        <input
-          type="checkbox"
-          id={props.id}
-          checked={state}
-          onChange={onChangeHandler}
-        />
-        <span className="slider round" />
-      </label>
-    </div>
-  );
+  return <FlipSwitch id={props.id} checked={state} onChange={onChangeHandler}/>
 };
 
 export default FlipSwitchStorage;
