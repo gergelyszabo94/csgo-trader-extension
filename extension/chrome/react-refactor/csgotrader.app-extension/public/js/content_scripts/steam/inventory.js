@@ -316,7 +316,7 @@ function addBookmark(module) {
     let bookmark = {
         itemInfo: item,
         owner: getInventoryOwnerID(),
-        comment: ' ',
+        comment: '',
         notify: true,
         notifTime: item.tradability.toString(),
         notifType: 'chrome'

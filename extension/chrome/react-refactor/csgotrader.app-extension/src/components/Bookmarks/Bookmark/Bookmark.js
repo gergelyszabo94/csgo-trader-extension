@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Countdown from "./Countdown";
 import NewTabLink from "components/NewTabLink/NewTabLink";
-import CustomModal from "components/CustomModal/CustomModal";
+import Modal from "components/Modal/Modal";
 import FlipSwitch from "components/FlipSwitch/FlipSwitch";
 import Select from "components/Select/Select";
 
@@ -105,17 +105,17 @@ const Bookmark = (props) => {
                             </NewTabLink>
                         </Action>
                         <Action title='Add or edit a comment'>
-                            <CustomModal modalTitle='Add your comment' opener={<FontAwesomeIcon icon={faComment} />} validator={saveComment}>
+                            <Modal modalTitle='Add your comment' opener={<FontAwesomeIcon icon={faComment} />} validator={saveComment}>
                         <textarea
-                            className="custom-modal__input"
+                            className="modalTextArea"
                             placeholder="Type your comment here"
                             value={comment}
                             onChange={commentChangeHandler}
                         />
-                            </CustomModal>
+                            </Modal>
                         </Action>
                         <Action title='Edit notifications options'>
-                            <CustomModal modalTitle='Edit notifications options' opener={<FontAwesomeIcon icon={faBell} />} validator={saveNotification}>
+                            <Modal modalTitle='Edit notifications options' opener={<FontAwesomeIcon icon={faBell} />} validator={saveNotification}>
                                 <div className='center'>
                                     <Tradability tradability={itemInfo.tradability}/>
                                 </div>
@@ -143,7 +143,7 @@ const Bookmark = (props) => {
                                     </div>
                                     {`${notification.notifTime} ${notification.nofitType} ${notification.notify} ${owner}`}
                                 </div>
-                            </CustomModal>
+                            </Modal>
                         </Action>
                         <Action title='Delete bookmark'>
                             <FontAwesomeIcon icon={faTrash} onClick={removeBookmark}/>

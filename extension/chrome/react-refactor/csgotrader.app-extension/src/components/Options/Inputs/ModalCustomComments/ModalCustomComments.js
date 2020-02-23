@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import CustomModal from "components/CustomModal/CustomModal";
+import Modal from "components/Modal/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
@@ -50,7 +50,7 @@ const ModalCustomComments = props => {
 
   return (
     <Fragment>
-      <CustomModal modalTitle={props.modalTitle} opener={<FontAwesomeIcon icon={faEdit} />} validator={addNewString}>
+      <Modal modalTitle={props.modalTitle} opener={<FontAwesomeIcon icon={faEdit} />} validator={addNewString}>
         {state.content.map((line, index) => {
           return (
             <div key={line.id}>
@@ -66,14 +66,13 @@ const ModalCustomComments = props => {
             </div>
           );
         })}
-        <input
-          className="custom-modal__input"
-          type="text"
+        <textarea
+          className="modalTextArea"
           placeholder="Type your text here"
           onChange={onChangeHandler}
           value={state.inputValue}
         />
-      </CustomModal>
+      </Modal>
     </Fragment>
   );
 };

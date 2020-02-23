@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import CustomModal from "components/CustomModal/CustomModal";
+import Modal from "components/Modal/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faEdit, faExclamationTriangle} from "@fortawesome/free-solid-svg-icons";
 
@@ -63,10 +63,9 @@ const ModalTextBox = props => {
   return (
     <Fragment>
       <p>{state.content.substring(0, 8) + "..."}</p>
-      <CustomModal modalTitle={props.modalTitle} opener={<FontAwesomeIcon icon={faEdit} />} validator={inputValidator}>
-        <input
-          className="custom-modal__input"
-          type="text"
+      <Modal modalTitle={props.modalTitle} opener={<FontAwesomeIcon icon={faEdit} />} validator={inputValidator}>
+        <textarea
+          className="modalTextArea"
           placeholder="Type your text here"
           value={state.content}
           onChange={onChangeHandler}
@@ -75,7 +74,7 @@ const ModalTextBox = props => {
           <FontAwesomeIcon icon={faExclamationTriangle} />
           <span className="warning"> {state.validationError}</span>
         </div>
-      </CustomModal>
+      </Modal>
     </Fragment>
   );
 };
