@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Countdown from "./Countdown";
 import NewTabLink from "components/NewTabLink/NewTabLink";
 import CustomModal from "components/CustomModal/CustomModal";
+import FlipSwitch from "components/FlipSwitch/FlipSwitch";
+import Select from "components/Select/Select";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -16,15 +18,41 @@ import {
 
 const Bookmark = (props) => {
     console.log(props);
+    const notificationTypes = [
+        {
+            key: 'chrome',
+            text: 'Browser desktop notification'
+        },
+        {
+            key: 'alert',
+            text: 'Browser alert (to focus)'
+        }
+    ];
+
     const { itemInfo, notifTime, nofitType, notify, owner } = props.bookmarkData;
     const imageSRC = `https://steamcommunity.com/economy/image/${itemInfo.iconURL}/256x256`;
     const exterior = itemInfo.exterior ?  itemInfo.exterior.localized_name : '';
     const displayName = itemInfo.name.split('| ')[1] ? itemInfo.name.split('| ')[1] : itemInfo.name;
 
     const [comment, setComment] = useState(props.bookmarkData.comment);
+    const [notification, setNotification] = useState({ notify, nofitType, notifTime});
 
     const commentChangeHandler = (event) => {
         setComment(event.target.value);
+    };
+
+    const onNotifyChange = () => {
+        setNotification({...notification, notify: !notification.notify})
+    };
+
+    const getNotifType = () => {
+        return new Promise((resolve, reject) => { // only done with promise because on other places where the select component is used data is returned from storage
+            resolve(notification.nofitType === undefined ? 'chrome' : notification.nofitType);
+        });
+    };
+
+    const onNotifTypeChange = (value) => {
+        setNotification({...notification, nofitType: value});
     };
 
     const saveComment = (closeModal) => {
@@ -33,8 +61,14 @@ const Bookmark = (props) => {
         closeModal();
     };
 
+    const saveNotification = (closeModal) => {
+        const bookmarkData = {...props.bookmarkData, ...notification};
+        props.editBookmark(bookmarkData);
+        closeModal();
+    };
+
     const removeBookmark = () => {
-      props.removeBookmark(itemInfo.assetid);
+        props.removeBookmark(itemInfo.assetid);
     };
 
     return (
@@ -78,12 +112,39 @@ const Bookmark = (props) => {
                     </CustomModal>
                 </Action>
                 <Action title='Edit notifications options'>
-                    <FontAwesomeIcon icon={faBell} />
+                    <CustomModal modalTitle='Edit notifications options' opener={<FontAwesomeIcon icon={faBell} />} validator={saveNotification}>
+                        <div className='center'>
+                            <Tradability tradability={itemInfo.tradability}/>
+                        </div>
+                        <div>
+                            Notify: <FlipSwitch id='notify' checked={notification.notify} onChange={onNotifyChange}/>
+                        </div>
+                        <div className={notification.notify ? null : 'hidden'}>
+                            <div>
+                                How do you want to be notified?
+                                <Select
+                                    id='notificationType'
+                                    foreignChangeHandler={onNotifTypeChange}
+                                    foreignUseEffect={getNotifType}
+                                    options={notificationTypes}
+                                />
+                            </div>
+                            <div>
+                                When do you want to be notified?
+                                <Select
+                                    id='notificationType'
+                                    foreignChangeHandler={onNotifTypeChange}
+                                    foreignUseEffect={getNotifType}
+                                    options={notificationTypes}
+                                />
+                            </div>
+                            {`${notification.notifTime} ${notification.nofitType} ${notification.notify} ${owner}`}
+                        </div>
+                    </CustomModal>
                 </Action>
                 <Action title='Delete bookmark'>
                     <FontAwesomeIcon icon={faTrash} onClick={removeBookmark}/>
                 </Action>
-                {/*{`${notifTime} ${nofitType} ${notify} ${owner}`}*/}
             </div>
             <div className='center'>
                 <Tradability tradability={itemInfo.tradability}/>
@@ -113,11 +174,11 @@ const Tradability = (props) => {
 };
 
 const Action = (props) => {
-  return (
-      <span className='action' title={props.title}>
+    return (
+        <span className='action' title={props.title}>
           {props.children}
       </span>
-  )
+    )
 };
 
 const STS = (props) => {

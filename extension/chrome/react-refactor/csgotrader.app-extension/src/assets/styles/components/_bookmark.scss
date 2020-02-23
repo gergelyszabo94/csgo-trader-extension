@@ -21,6 +21,7 @@
 
     .action {
       margin: 10px;
+      cursor: pointer;
     }
   }
 
@@ -36,6 +37,10 @@
 
   .souvenir {
     color: rgb(255, 215, 0);
+  }
+
+  .hidden {
+    display: none;
   }
 
   &__stock {
