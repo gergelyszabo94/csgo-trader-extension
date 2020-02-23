@@ -72,82 +72,87 @@ const Bookmark = (props) => {
     };
 
     return (
-        <div className={`bookmark bookmark__${itemInfo.quality.name} col-xs-1`}>
-            <h5 className='itemName' title={itemInfo.name}>{displayName}</h5>
-            <span>{exterior}</span>
-            <span className='STS'>
-                <STS st={itemInfo.isStatrack} s={itemInfo.isSouvenir}/>
-            </span>
-            <img src={imageSRC} alt={itemInfo.name} title={itemInfo.name}/>
-            <div className='actions'>
-                <Action title='Inspect the item in-game'>
-                    <NewTabLink to={itemInfo.inspectLink}>
-                        <FontAwesomeIcon icon={faEye} />
-                    </NewTabLink>
-                </Action>
-                <Action title='Open the market listings page of the item'>
-                    <NewTabLink to={itemInfo.marketlink}>
-                        <FontAwesomeIcon icon={faChartLine} />
-                    </NewTabLink>
-                </Action>
-                <Action title={'View the item in the owner\'s inventory'}>
-                    <NewTabLink to={`https://steamcommunity.com/profiles/${owner}/inventory/#730_2_${itemInfo.assetid}`}>
-                        <FontAwesomeIcon icon={faLink} />
-                    </NewTabLink>
-                </Action>
-                <Action title={'Open the owner\'s profile'}>
-                    <NewTabLink to={`https://steamcommunity.com/profiles/${owner}`}>
-                        <FontAwesomeIcon icon={faUser} />
-                    </NewTabLink>
-                </Action>
-                <Action title='Add or edit a comment'>
-                    <CustomModal modalTitle='Add your comment' opener={<FontAwesomeIcon icon={faComment} />} validator={saveComment}>
-                        <input
+        <div className='col-xl-2 col-lg-3 col-md-6 my-2'>
+            <div className={`bookmark bookmark__${itemInfo.quality.name}`}>
+                <h5 className='itemName' title={itemInfo.name}>{displayName}</h5>
+                <span>{exterior}</span>
+                <div className='bookmark__image-container'>
+                <span className='STS'>
+                    <STS st={itemInfo.isStatrack} s={itemInfo.isSouvenir}/>
+                </span>
+                    <img src={imageSRC} alt={itemInfo.name} title={itemInfo.name}/>
+                </div>
+                <div className='bookmark__controls'>
+                    <div className='actions'>
+                        <Action title='Inspect the item in-game'>
+                            <NewTabLink to={itemInfo.inspectLink}>
+                                <FontAwesomeIcon icon={faEye} />
+                            </NewTabLink>
+                        </Action>
+                        <Action title='Open the market listings page of the item'>
+                            <NewTabLink to={itemInfo.marketlink}>
+                                <FontAwesomeIcon icon={faChartLine} />
+                            </NewTabLink>
+                        </Action>
+                        <Action title={'View the item in the owner\'s inventory'}>
+                            <NewTabLink to={`https://steamcommunity.com/profiles/${owner}/inventory/#730_2_${itemInfo.assetid}`}>
+                                <FontAwesomeIcon icon={faLink} />
+                            </NewTabLink>
+                        </Action>
+                        <Action title={'Open the owner\'s profile'}>
+                            <NewTabLink to={`https://steamcommunity.com/profiles/${owner}`}>
+                                <FontAwesomeIcon icon={faUser} />
+                            </NewTabLink>
+                        </Action>
+                        <Action title='Add or edit a comment'>
+                            <CustomModal modalTitle='Add your comment' opener={<FontAwesomeIcon icon={faComment} />} validator={saveComment}>
+                        <textarea
                             className="custom-modal__input"
-                            type="text"
                             placeholder="Type your comment here"
                             value={comment}
                             onChange={commentChangeHandler}
                         />
-                    </CustomModal>
-                </Action>
-                <Action title='Edit notifications options'>
-                    <CustomModal modalTitle='Edit notifications options' opener={<FontAwesomeIcon icon={faBell} />} validator={saveNotification}>
-                        <div className='center'>
-                            <Tradability tradability={itemInfo.tradability}/>
-                        </div>
-                        <div>
-                            Notify: <FlipSwitch id='notify' checked={notification.notify} onChange={onNotifyChange}/>
-                        </div>
-                        <div className={notification.notify ? null : 'hidden'}>
-                            <div>
-                                How do you want to be notified?
-                                <Select
-                                    id='notificationType'
-                                    foreignChangeHandler={onNotifTypeChange}
-                                    foreignUseEffect={getNotifType}
-                                    options={notificationTypes}
-                                />
-                            </div>
-                            <div>
-                                When do you want to be notified?
-                                <Select
-                                    id='notificationType'
-                                    foreignChangeHandler={onNotifTypeChange}
-                                    foreignUseEffect={getNotifType}
-                                    options={notificationTypes}
-                                />
-                            </div>
-                            {`${notification.notifTime} ${notification.nofitType} ${notification.notify} ${owner}`}
-                        </div>
-                    </CustomModal>
-                </Action>
-                <Action title='Delete bookmark'>
-                    <FontAwesomeIcon icon={faTrash} onClick={removeBookmark}/>
-                </Action>
-            </div>
-            <div className='center'>
-                <Tradability tradability={itemInfo.tradability}/>
+                            </CustomModal>
+                        </Action>
+                        <Action title='Edit notifications options'>
+                            <CustomModal modalTitle='Edit notifications options' opener={<FontAwesomeIcon icon={faBell} />} validator={saveNotification}>
+                                <div className='center'>
+                                    <Tradability tradability={itemInfo.tradability}/>
+                                </div>
+                                <div>
+                                    Notify: <FlipSwitch id='notify' checked={notification.notify} onChange={onNotifyChange}/>
+                                </div>
+                                <div className={notification.notify ? null : 'hidden'}>
+                                    <div>
+                                        How do you want to be notified?
+                                        <Select
+                                            id='notificationType'
+                                            foreignChangeHandler={onNotifTypeChange}
+                                            foreignUseEffect={getNotifType}
+                                            options={notificationTypes}
+                                        />
+                                    </div>
+                                    <div>
+                                        When do you want to be notified?
+                                        <Select
+                                            id='notificationType'
+                                            foreignChangeHandler={onNotifTypeChange}
+                                            foreignUseEffect={getNotifType}
+                                            options={notificationTypes}
+                                        />
+                                    </div>
+                                    {`${notification.notifTime} ${notification.nofitType} ${notification.notify} ${owner}`}
+                                </div>
+                            </CustomModal>
+                        </Action>
+                        <Action title='Delete bookmark'>
+                            <FontAwesomeIcon icon={faTrash} onClick={removeBookmark}/>
+                        </Action>
+                    </div>
+                    <div className='center'>
+                        <Tradability tradability={itemInfo.tradability}/>
+                    </div>
+                </div>
             </div>
         </div>
     );

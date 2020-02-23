@@ -39,19 +39,21 @@ const Bookmarks = () => {
     }, []);
 
     return (
-        <div className='container'>
-            <h1>Bookmark and Notify</h1>
-            <div className='row'>
-                {bookmarks.map((bookmark, index) => {
-                    return (
-                        <Bookmark
-                            key={index}
-                            bookmarkData={bookmark}
-                            removeBookmark={removeBookmark}
-                            editBookmark={editBookmark}
-                        />
-                    );
-                })}
+        <div className='px-3'>
+            <div className='container-fluid'>
+                <h1>Bookmark and Notify</h1>
+                <div className='row'>
+                    {bookmarks.map((bookmark, index) => {
+                        return (
+                            <Bookmark
+                                key={index}
+                                bookmarkData={bookmark}
+                                removeBookmark={removeBookmark}
+                                editBookmark={editBookmark}
+                            />
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );
