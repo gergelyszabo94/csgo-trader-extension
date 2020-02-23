@@ -1,58 +1,36 @@
-import React, { useState } from "react";
+/* globals reverseWhenNotifDetails, determineNotificationDate*/
+
+import React, {useState} from "react";
 import Countdown from "./Countdown";
 import NewTabLink from "components/NewTabLink/NewTabLink";
 import Modal from "components/Modal/Modal";
 import FlipSwitch from "components/FlipSwitch/FlipSwitch";
-import Select from "components/Select/Select";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-    faEye,
-    faChartLine,
-    faTrash,
-    faUser,
-    faLink,
-    faBell,
-    faComment
-} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faBell, faChartLine, faComment, faEye, faLink, faTrash, faUser} from "@fortawesome/free-solid-svg-icons";
 
 const Bookmark = (props) => {
-    console.log(props);
-    const notificationTypes = [
-        {
-            key: 'chrome',
-            text: 'Browser desktop notification'
-        },
-        {
-            key: 'alert',
-            text: 'Browser alert (to focus)'
-        }
-    ];
-
-    const { itemInfo, notifTime, nofitType, notify, owner } = props.bookmarkData;
+    const { itemInfo, notifTime, notifType, notify, owner } = props.bookmarkData;
     const imageSRC = `https://steamcommunity.com/economy/image/${itemInfo.iconURL}/256x256`;
     const exterior = itemInfo.exterior ?  itemInfo.exterior.localized_name : '';
     const displayName = itemInfo.name.split('| ')[1] ? itemInfo.name.split('| ')[1] : itemInfo.name;
 
     const [comment, setComment] = useState(props.bookmarkData.comment);
-    const [notification, setNotification] = useState({ notify, nofitType, notifTime});
+    const [doNotify, setDoNotify] = useState(notify);
+
+    const whenDetails = reverseWhenNotifDetails(itemInfo.tradability, notifTime);
+
+    const notifTypeSelect = React.createRef();
+    const numberOfMinutesOrHours = React.createRef();
+    const minutesOrHours = React.createRef();
+    const beforeOrAfter = React.createRef();
 
     const commentChangeHandler = (event) => {
         setComment(event.target.value);
     };
 
     const onNotifyChange = () => {
-        setNotification({...notification, notify: !notification.notify})
-    };
-
-    const getNotifType = () => {
-        return new Promise((resolve, reject) => { // only done with promise because on other places where the select component is used data is returned from storage
-            resolve(notification.nofitType === undefined ? 'chrome' : notification.nofitType);
-        });
-    };
-
-    const onNotifTypeChange = (value) => {
-        setNotification({...notification, nofitType: value});
+        setDoNotify(!doNotify.notify);
     };
 
     const saveComment = (closeModal) => {
@@ -62,9 +40,33 @@ const Bookmark = (props) => {
     };
 
     const saveNotification = (closeModal) => {
-        const bookmarkData = {...props.bookmarkData, ...notification};
+        const newNotifTime = determineNotificationDate(itemInfo.tradability, minutesOrHours.current.value, numberOfMinutesOrHours.current.value, beforeOrAfter.current.value).toString();
+
+        const bookmarkData = {
+            ...props.bookmarkData,
+            notify: doNotify,
+            notifType: notifTypeSelect.current.value,
+            notifTime: newNotifTime
+        };
+
         props.editBookmark(bookmarkData);
-        closeModal();
+
+        if (doNotify) {
+            chrome.runtime.sendMessage({
+                setAlarm: {
+                    name:  itemInfo.assetid,
+                    when: newNotifTime
+                }
+            }, () => {
+                closeModal();
+            })
+        }
+        else {
+            chrome.alarms.clear(
+                itemInfo.assetid, () => {
+                    closeModal();
+                })
+        }
     };
 
     const removeBookmark = () => {
@@ -120,28 +122,28 @@ const Bookmark = (props) => {
                                     <Tradability tradability={itemInfo.tradability}/>
                                 </div>
                                 <div>
-                                    Notify: <FlipSwitch id='notify' checked={notification.notify} onChange={onNotifyChange}/>
+                                    Notify: <FlipSwitch id='notify' checked={doNotify} onChange={onNotifyChange}/>
                                 </div>
-                                <div className={notification.notify ? null : 'hidden'}>
+                                <div className={doNotify ? null : 'hidden'}>
+                                    How do you want to be notified?
                                     <div>
-                                        How do you want to be notified?
-                                        <Select
-                                            id='notificationType'
-                                            foreignChangeHandler={onNotifTypeChange}
-                                            foreignUseEffect={getNotifType}
-                                            options={notificationTypes}
-                                        />
+                                        <select ref={notifTypeSelect} defaultValue={notifType}>
+                                            <option value='chrome'>Browser desktop notification</option>
+                                            <option value='alert'>Browser alert (to focus)</option>
+                                        </select>
                                     </div>
+                                    When do you want to be notified?
                                     <div>
-                                        When do you want to be notified?
-                                        <Select
-                                            id='notificationType'
-                                            foreignChangeHandler={onNotifTypeChange}
-                                            foreignUseEffect={getNotifType}
-                                            options={notificationTypes}
-                                        />
+                                        <input type='number' ref={numberOfMinutesOrHours} defaultValue={whenDetails.numberOfMinutesOrHours}/>
+                                        <select ref={minutesOrHours} defaultValue={whenDetails.minutesOrHours}>
+                                            <option value='minutes'>minutes</option>
+                                            <option value='hours'>hours</option>
+                                        </select>
+                                        <select ref={beforeOrAfter} defaultValue={whenDetails.beforeOrAfter}>
+                                            <option value='before'>before</option>
+                                            <option value='after'>after</option>
+                                        </select>
                                     </div>
-                                    {`${notification.notifTime} ${notification.nofitType} ${notification.notify} ${owner}`}
                                 </div>
                             </Modal>
                         </Action>

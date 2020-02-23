@@ -10,6 +10,13 @@ const Bookmarks = () => {
         action: 'ExtensionBookmarksView'
     });
 
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if(request.alert !== undefined){
+            alert(`${request.alert} is now tradable!`);
+            sendResponse({alert: request.alert})
+        }
+    });
+
     const saveBookmarks = (bookmarks) => {
         chrome.storage.local.set({bookmarks: bookmarks}, () => {
             setBookmarks(bookmarks);
