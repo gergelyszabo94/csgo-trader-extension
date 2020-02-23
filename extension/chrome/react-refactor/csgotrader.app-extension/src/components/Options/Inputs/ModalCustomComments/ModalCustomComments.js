@@ -1,5 +1,7 @@
 import React, { Fragment, useState, useEffect } from "react";
 import CustomModal from "components/CustomModal/CustomModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
 const ModalCustomComments = props => {
   const [state, setState] = useState({
@@ -48,7 +50,7 @@ const ModalCustomComments = props => {
 
   return (
     <Fragment>
-      <CustomModal modalTitle={props.modalTitle} validator={addNewString}>
+      <CustomModal modalTitle={props.modalTitle} opener={<FontAwesomeIcon icon={faEdit} />} validator={addNewString}>
         {state.content.map((line, index) => {
           return (
             <div key={line.id}>

@@ -1,6 +1,4 @@
 import React, { Fragment, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
 const CustomModal = props => {
   const [modalState, setModalState] = useState("");
@@ -32,7 +30,7 @@ const CustomModal = props => {
           </div>
         </div>
         <span onClick={openModal} className='openModal'>
-          <FontAwesomeIcon icon={faEdit} />
+          {props.opener}
         </span>
       </Fragment>
   );
