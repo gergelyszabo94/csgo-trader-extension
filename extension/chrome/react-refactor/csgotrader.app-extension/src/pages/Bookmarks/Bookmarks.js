@@ -10,11 +10,22 @@ const Bookmarks = () => {
         action: 'ExtensionBookmarksView'
     });
 
-    const removeBookmark = (indexToRemove) => {
-        const bookmarksToKeep = bookmarks.filter(bookmark => bookmark.itemInfo.assetid !== indexToRemove);
-        chrome.storage.local.set({bookmarks: bookmarksToKeep}, () => {
-            setBookmarks(bookmarksToKeep);
+    const saveBookmarks = (bookmarks) => {
+        chrome.storage.local.set({bookmarks: bookmarks}, () => {
+            setBookmarks(bookmarks);
         });
+    };
+
+    const removeBookmark = (assetID) => {
+        const bookmarksToKeep = bookmarks.filter(bookmark => bookmark.itemInfo.assetid !== assetID);
+        saveBookmarks(bookmarksToKeep);
+    };
+
+    const editBookmark = (bookmarkData) => {
+        const newBookmarks = bookmarks.map(bookmark => {
+            return bookmark.itemInfo.assetid === bookmarkData.itemInfo.assetid ? bookmarkData : bookmark;
+        });
+        saveBookmarks(newBookmarks);
     };
 
     const [bookmarks, setBookmarks] = useState([]);
@@ -37,6 +48,7 @@ const Bookmarks = () => {
                             key={index}
                             bookmarkData={bookmark}
                             removeBookmark={removeBookmark}
+                            editBookmark={editBookmark}
                         />
                     );
                 })}

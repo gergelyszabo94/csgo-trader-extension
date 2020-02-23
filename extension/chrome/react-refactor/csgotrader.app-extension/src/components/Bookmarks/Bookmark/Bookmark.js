@@ -1,19 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 import Countdown from "./Countdown";
 import NewTabLink from "components/NewTabLink/NewTabLink";
+import CustomModal from "components/CustomModal/CustomModal";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faChartLine, faTrash, faUser, faLink, faBell, faComment } from "@fortawesome/free-solid-svg-icons";
+import {
+    faEye,
+    faChartLine,
+    faTrash,
+    faUser,
+    faLink,
+    faBell,
+    faComment
+} from "@fortawesome/free-solid-svg-icons";
 
 const Bookmark = (props) => {
     console.log(props);
-    const { comment, itemInfo, notifTime, nofitType, notify, owner } = props.bookmarkData;
+    const { itemInfo, notifTime, nofitType, notify, owner } = props.bookmarkData;
     const imageSRC = `https://steamcommunity.com/economy/image/${itemInfo.iconURL}/256x256`;
     const exterior = itemInfo.exterior ?  itemInfo.exterior.localized_name : '';
     const displayName = itemInfo.name.split('| ')[1] ? itemInfo.name.split('| ')[1] : itemInfo.name;
 
-    const onchangeHandler = () => {
+    const [comment, setComment] = useState(props.bookmarkData.comment);
 
+    const commentChangeHandler = (event) => {
+        setComment(event.target.value);
+    };
+
+    const saveComment = (closeModal) => {
+        const bookmarkData = {...props.bookmarkData, comment: comment};
+        props.editBookmark(bookmarkData);
+        closeModal();
     };
 
     const removeBookmark = () => {
@@ -28,9 +45,6 @@ const Bookmark = (props) => {
                 <STS st={itemInfo.isStatrack} s={itemInfo.isSouvenir}/>
             </span>
             <img src={imageSRC} alt={itemInfo.name} title={itemInfo.name}/>
-            {/*<div>*/}
-            {/*    <input type='text' value={comment} onChange={onchangeHandler}/>*/}
-            {/*</div>*/}
             <div className='actions'>
                 <Action title='Inspect the item in-game'>
                     <NewTabLink to={itemInfo.inspectLink}>
@@ -53,7 +67,15 @@ const Bookmark = (props) => {
                     </NewTabLink>
                 </Action>
                 <Action title='Add or edit a comment'>
-                    <FontAwesomeIcon icon={faComment} />
+                    <CustomModal modalTitle='Add your comment' opener={<FontAwesomeIcon icon={faComment} />} validator={saveComment}>
+                        <input
+                            className="custom-modal__input"
+                            type="text"
+                            placeholder="Type your comment here"
+                            value={comment}
+                            onChange={commentChangeHandler}
+                        />
+                    </CustomModal>
                 </Action>
                 <Action title='Edit notifications options'>
                     <FontAwesomeIcon icon={faBell} />
