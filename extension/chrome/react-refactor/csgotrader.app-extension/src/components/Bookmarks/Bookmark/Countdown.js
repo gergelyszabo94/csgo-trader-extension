@@ -28,6 +28,10 @@ const Countdown = (props) => {
         };
 
         setCurrentRemaining();
+
+        return () => { // cleanup function, runs when the components get removed
+            clearInterval(countDownInterval);
+        }
     }, []);
 
     return (

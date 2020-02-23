@@ -10,6 +10,13 @@ const Bookmarks = () => {
         action: 'ExtensionBookmarksView'
     });
 
+    const removeBookmark = (indexToRemove) => {
+        const bookmarksToKeep = bookmarks.filter(bookmark => bookmark.itemInfo.assetid !== indexToRemove);
+        chrome.storage.local.set({bookmarks: bookmarksToKeep}, () => {
+            setBookmarks(bookmarksToKeep);
+        });
+    };
+
     const [bookmarks, setBookmarks] = useState([]);
 
     useEffect(() => {
@@ -25,7 +32,13 @@ const Bookmarks = () => {
             <h1>Bookmark and Notify</h1>
             <div className='row'>
                 {bookmarks.map((bookmark, index) => {
-                    return ( <Bookmark key={index} bookmarkData={bookmark}/> );
+                    return (
+                        <Bookmark
+                            key={index}
+                            bookmarkData={bookmark}
+                            removeBookmark={removeBookmark}
+                        />
+                    );
                 })}
             </div>
         </div>

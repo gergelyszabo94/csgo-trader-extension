@@ -16,6 +16,10 @@ const Bookmark = (props) => {
 
     };
 
+    const removeBookmark = () => {
+      props.removeBookmark(itemInfo.assetid);
+    };
+
     return (
         <div className={`bookmark bookmark__${itemInfo.quality.name} col-xs-1`}>
             <h5 className='itemName' title={itemInfo.name}>{displayName}</h5>
@@ -55,7 +59,7 @@ const Bookmark = (props) => {
                     <FontAwesomeIcon icon={faBell} />
                 </Action>
                 <Action title='Delete bookmark'>
-                    <FontAwesomeIcon icon={faTrash} />
+                    <FontAwesomeIcon icon={faTrash} onClick={removeBookmark}/>
                 </Action>
                 {/*{`${notifTime} ${nofitType} ${notify} ${owner}`}*/}
             </div>
