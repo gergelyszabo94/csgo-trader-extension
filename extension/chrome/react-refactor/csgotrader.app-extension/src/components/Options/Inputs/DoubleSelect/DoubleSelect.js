@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import Select from "components/Options/Inputs/Select/Select";
+import Select from "components/Select/Select";
 const DoubleSelect = props => {
   const setStorage = (thisValue, id) => {
     id === undefined

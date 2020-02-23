@@ -1,5 +1,5 @@
 import React from "react";
-import Select from "components/Options/Inputs/Select/Select";
+import Select from "components/Select/Select";
 const SimpleSelect = props => {
   const setStorage = thisValue => {
     chrome.storage.local.set({ [props.id]: thisValue }, () => {});
