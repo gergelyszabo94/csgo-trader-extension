@@ -22,7 +22,7 @@ const Countdown = (props) => {
 
             if (distance > 0) setState({...state, text:`${days}d ${hours}h ${minutes}m ${seconds}s`});
             else {
-                setState({text: 'Tradable', class: 'tradable'});
+                setState({text: 'Tradable', class: null});
                 clearInterval(countDownInterval);
             }
         };

@@ -10,16 +10,19 @@ const Bookmark = (props) => {
     const { comment, itemInfo, notifTime, nofitType, notify, owner } = props.bookmarkData;
     const imageSRC = `https://steamcommunity.com/economy/image/${itemInfo.iconURL}/256x256`;
     const exterior = itemInfo.exterior ?  itemInfo.exterior.localized_name : '';
-    const displayName = itemInfo.name.split('| ')[1];
+    const displayName = itemInfo.name.split('| ')[1] ? itemInfo.name.split('| ')[1] : itemInfo.name;
 
     const onchangeHandler = () => {
 
     };
 
     return (
-        <div className='bookmark col-xs-1'>
+        <div className={`bookmark bookmark__${itemInfo.quality.name} col-xs-1`}>
             <h5 className='itemName' title={itemInfo.name}>{displayName}</h5>
-            <h6>{exterior}</h6>
+            <span>{exterior}</span>
+            <span className='STS'>
+                <STS st={itemInfo.isStatrack} s={itemInfo.isSouvenir}/>
+            </span>
             <img src={imageSRC} alt={itemInfo.name} title={itemInfo.name}/>
             {/*<div>*/}
             {/*    <input type='text' value={comment} onChange={onchangeHandler}/>*/}
@@ -67,22 +70,18 @@ const Tradability = (props) => {
     const { tradability } = props;
 
     if (tradability === 'Tradable') {
-        return (
-            <div className='tradable'>
-                {tradability}
-            </div>
-        );
+        return (<span>{tradability}</span>);
     }
-    else if (tradability !== 'Not Tradable') {
-        return (
-            <Countdown tradability={tradability}/>
-        );
-    }
-    else {
+    else if (tradability === 'Not Tradable') {
         return (
             <div className='countdown'>
                 Untradable
             </div>
+        );
+    }
+    else {
+        return (
+            <Countdown tradability={tradability}/>
         );
     }
 };
@@ -93,6 +92,24 @@ const Action = (props) => {
           {props.children}
       </span>
   )
+};
+
+const STS = (props) => {
+    if (props.st) {
+        return (
+            <span className='statTrak'>
+                StatTrak™
+            </span>
+        );
+    }
+    else if (props.s) {
+        return (
+            <span className='souvenir'>
+                Souvenir
+            </span>
+        );
+    }
+    else return null
 };
 
 export default Bookmark;
