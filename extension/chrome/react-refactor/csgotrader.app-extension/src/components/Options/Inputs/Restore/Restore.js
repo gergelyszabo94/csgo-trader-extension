@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 
 const Restore = () => {
     const [state, setState] = useState('hidden');
@@ -18,10 +18,10 @@ const Restore = () => {
     };
 
     return  (
-        <Fragment>
+        <>
             <input type='file' id='restore' name='restore' accept='.json' onChange={onChangeHandler}/>
             <div className={state}>Restore completed!</div>
-        </Fragment>
+        </>
     );
 };
 

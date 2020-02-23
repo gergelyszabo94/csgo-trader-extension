@@ -1,5 +1,5 @@
 /* global defaultPopupLinks*/
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
@@ -91,7 +91,7 @@ const LinksToShow = props => {
   }, [props.id]);
 
   return (
-    <Fragment>
+    <>
       {links.map((link, index) => {
         return link.id === "options" ? null : (
           <div key={link.id} className="row mb-2">
@@ -146,7 +146,7 @@ const LinksToShow = props => {
       <button className="button button__save" onClick={addCustomUrl}>
         Add new URL
       </button>
-    </Fragment>
+    </>
   );
 };
 

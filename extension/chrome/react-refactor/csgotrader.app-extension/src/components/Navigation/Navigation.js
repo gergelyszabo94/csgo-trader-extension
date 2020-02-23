@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { Navbar, Nav } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import links from "./links.js";
@@ -8,7 +8,7 @@ import NewTabLink from "components/NewTabLink/NewTabLink";
 
 const navigation = () => {
   return (
-    <Fragment>
+    <>
       <Navbar
         expand="lg"
         variant="dark"
@@ -45,7 +45,7 @@ const navigation = () => {
           </Nav>
         </Navbar.Collapse>
       </Navbar>
-    </Fragment>
+    </>
   );
 };
 

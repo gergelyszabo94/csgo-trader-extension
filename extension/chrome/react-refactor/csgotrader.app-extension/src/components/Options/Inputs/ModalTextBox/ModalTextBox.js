@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "components/Modal/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faEdit, faExclamationTriangle} from "@fortawesome/free-solid-svg-icons";
@@ -61,7 +61,7 @@ const ModalTextBox = props => {
   }, [props.id]);
 
   return (
-    <Fragment>
+    <>
       <p>{state.content.substring(0, 8) + "..."}</p>
       <Modal modalTitle={props.modalTitle} opener={<FontAwesomeIcon icon={faEdit} />} validator={inputValidator}>
         <textarea
@@ -75,7 +75,7 @@ const ModalTextBox = props => {
           <span className="warning"> {state.validationError}</span>
         </div>
       </Modal>
-    </Fragment>
+    </>
   );
 };
 

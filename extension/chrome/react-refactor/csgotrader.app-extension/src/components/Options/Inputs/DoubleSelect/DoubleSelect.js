@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import Select from "components/Select/Select";
 const DoubleSelect = props => {
   const setStorage = (thisValue, id) => {
@@ -16,7 +16,7 @@ const DoubleSelect = props => {
   };
 
   return (
-    <Fragment>
+    <>
       <Select
         id={props.id[0]}
         foreignChangeHandler={setStorage}
@@ -29,7 +29,7 @@ const DoubleSelect = props => {
         foreignUseEffect={getStorage}
         options={props.options}
       />
-    </Fragment>
+    </>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode } from "@fortawesome/free-solid-svg-icons";
 
@@ -15,13 +15,13 @@ const general = () => {
         id="autoSetSteamAPIKey"
         type="flipSwitchStorage"
         description={
-          <Fragment>
+          <>
             Automatically generates and adds the Steam API key to the extension
             when visiting{" "}
             <NewTabLink to="https://steamcommunity.com/dev/apikey">
               steamcommunity.com/dev/apikey
             </NewTabLink>
-          </Fragment>
+          </>
         }
       />
       <Row
@@ -29,7 +29,7 @@ const general = () => {
         id="steamAPIKey"
         type="modalTextBox"
         description={
-          <Fragment>
+          <>
             Allows the extension to make API requests to the&nbsp;
             <NewTabLink to="https://developer.valvesoftware.com/wiki/Steam_Web_API">
               Steam Web API
@@ -43,7 +43,7 @@ const general = () => {
               this form
             </NewTabLink>
             (you can put anything in as domain name).
-          </Fragment>
+          </>
         }
         modalTitle="Enter your Steam API key here"
       />
@@ -52,7 +52,7 @@ const general = () => {
         id="tabsAPI"
         type="flipSwitchPermission"
         description={
-          <Fragment>
+          <>
             Grants the extension access to the
             <NewTabLink to="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Working_with_the_Tabs_API">
               {" "}
@@ -62,7 +62,7 @@ const general = () => {
             in focus, allows notifications to be clickable, opens the bookmarks
             page when an item is bookmarked, etc. I am using it in this mode so
             it's also less likely to be buggy as well.
-          </Fragment>
+          </>
         }
         permission="tabs"
       />
@@ -90,7 +90,7 @@ const general = () => {
         id="telemetryOn"
         type="flipSwitchStorage"
         description={
-          <Fragment>
+          <>
             Sends anonymous usage data to the developers to help discover
             problems and better understand how the extension is used. Check the
             <NewTabLink to="https://csgotrader.app/privacy">
@@ -98,7 +98,7 @@ const general = () => {
               Privacy{" "}
             </NewTabLink>{" "}
             page for more information on how your data in handled.
-          </Fragment>
+          </>
         }
       />
       <Row

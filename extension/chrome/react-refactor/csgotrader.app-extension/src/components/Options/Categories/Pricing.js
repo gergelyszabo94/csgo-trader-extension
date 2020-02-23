@@ -1,6 +1,6 @@
 /* global currencies, pricingProviders, */
 // Currencies comes from enums.js
-import React, { Fragment } from "react";
+import React from "react";
 
 import Category from "../Category/Category";
 import Row from "../Row";
@@ -21,12 +21,12 @@ const pricing = () => {
     <Category
       title="Pricing"
       subTitle={
-        <Fragment>
+        <>
           <span className="countdown">DISCLAIMER:</span> No pricing provider is
           100% accurate all the time. Take these prices as advisory, always with
           a pinch of salt. You should not rely on them solely when doing your
           trades.
-        </Fragment>
+        </>
       }
     >
       <Row

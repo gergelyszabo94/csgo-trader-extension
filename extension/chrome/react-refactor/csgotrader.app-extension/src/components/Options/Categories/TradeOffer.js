@@ -1,6 +1,6 @@
 /* globals sortingModes offersSortingModes*/
 
-import React, { Fragment } from "react";
+import React from "react";
 import Row from "components/Options/Row";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode } from "@fortawesome/free-solid-svg-icons";
@@ -84,10 +84,10 @@ const tradeOffer = () => {
                 id='tradeHistoryOffers'
                 type='flipSwitchStorage'
                 description={
-                    <Fragment>
+                    <>
                         Show the number of offers received from a user and how many was sent to them (on the tradeoffers and the individual offer pages)
                         {' '} <FontAwesomeIcon icon={faCode} className='apiIcon' />
-                    </Fragment>
+                    </>
                 }
             />
             <Row

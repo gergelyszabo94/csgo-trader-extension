@@ -1,5 +1,5 @@
 /* globals updatePrices */
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
 import Select from "components/Select/Select";
 
 import './PricingProvider.css';
@@ -46,7 +46,7 @@ const PricingProvider = props => {
     };
 
     return (
-        <Fragment>
+        <>
             <Select
                 id='pricingProvider'
                 foreignChangeHandler={setStorage}
@@ -59,7 +59,7 @@ const PricingProvider = props => {
             <div>
                 <b>About the pricing mode:</b> <span>{aboutMode}</span>
             </div>
-        </Fragment>
+        </>
     );
 };
 

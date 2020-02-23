@@ -1,4 +1,4 @@
-import React, {Fragment} from "react";
+import React from "react";
 import Row from 'components/Options/Row';
 
 import Category from '../Category/Category';
@@ -47,9 +47,9 @@ const profile = () => {
                 id='showRealStatus'
                 type='flipSwitchStorage'
                 description={
-                        <Fragment>
+                        <>
                             Shows users' real chat status on their profile - if they are away it will show away. <FontAwesomeIcon icon={faCode} className='apiIcon' />
-                        </Fragment>
+                        </>
                     }
             />
             <Row
