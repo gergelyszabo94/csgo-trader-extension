@@ -30,7 +30,7 @@ const Bookmark = (props) => {
     };
 
     const onNotifyChange = () => {
-        setDoNotify(!doNotify.notify);
+        setDoNotify(!doNotify);
     };
 
     const saveComment = (closeModal) => {
@@ -116,7 +116,7 @@ const Bookmark = (props) => {
                         />
                             </Modal>
                         </Action>
-                        <Action title='Edit notifications options'>
+                        <Action title='Edit notifications options' className={(itemInfo.tradability === 'Tradable' || itemInfo.tradability === 'Not Tradable') ? 'hidden' : null}>
                             <Modal modalTitle='Edit notifications options' opener={<FontAwesomeIcon icon={faBell} />} validator={saveNotification}>
                                 <div className='center'>
                                     <Tradability tradability={itemInfo.tradability}/>
@@ -127,19 +127,24 @@ const Bookmark = (props) => {
                                 <div className={doNotify ? null : 'hidden'}>
                                     How do you want to be notified?
                                     <div>
-                                        <select ref={notifTypeSelect} defaultValue={notifType}>
+                                        <select ref={notifTypeSelect} defaultValue={notifType} className='select'>
                                             <option value='chrome'>Browser desktop notification</option>
                                             <option value='alert'>Browser alert (to focus)</option>
                                         </select>
                                     </div>
                                     When do you want to be notified?
                                     <div>
-                                        <input type='number' ref={numberOfMinutesOrHours} defaultValue={whenDetails.numberOfMinutesOrHours}/>
-                                        <select ref={minutesOrHours} defaultValue={whenDetails.minutesOrHours}>
+                                        <input
+                                            type='number'
+                                            ref={numberOfMinutesOrHours}
+                                            defaultValue={whenDetails.numberOfMinutesOrHours}
+                                            className='numberPicker'
+                                        />
+                                        <select ref={minutesOrHours} defaultValue={whenDetails.minutesOrHours} className='select'>
                                             <option value='minutes'>minutes</option>
                                             <option value='hours'>hours</option>
                                         </select>
-                                        <select ref={beforeOrAfter} defaultValue={whenDetails.beforeOrAfter}>
+                                        <select ref={beforeOrAfter} defaultValue={whenDetails.beforeOrAfter} className='select'>
                                             <option value='before'>before</option>
                                             <option value='after'>after</option>
                                         </select>
@@ -182,7 +187,7 @@ const Tradability = (props) => {
 
 const Action = (props) => {
     return (
-        <span className='action' title={props.title}>
+        <span className={`action ${props.className ? props.className : null}`} title={props.title}>
           {props.children}
       </span>
     )
