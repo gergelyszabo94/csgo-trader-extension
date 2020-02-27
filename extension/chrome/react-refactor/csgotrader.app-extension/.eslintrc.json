@@ -4,6 +4,13 @@
     "webextensions": true
   },
   "extends": "react-app",
+  "settings": {
+    "import/resolver": {
+      "node": {
+      "moduleDirectory": ["node_modules", "src/"]
+      }
+    }
+  },
   "rules": {
     "react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
     "react-hooks/exhaustive-deps": "off", // Checks effect dependencies

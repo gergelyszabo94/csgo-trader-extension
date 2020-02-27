@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@babel/core": "7.8.4",
+    "@babel/preset-react": "7.8.3",
     "@fortawesome/fontawesome-svg-core": "^1.2.27",
     "@fortawesome/free-solid-svg-icons": "^5.12.1",
     "@fortawesome/react-fontawesome": "^0.1.8",
@@ -41,7 +42,6 @@
     "jest-environment-jsdom-fourteen": "1.0.1",
     "jest-resolve": "24.9.0",
     "jest-watch-typeahead": "0.4.2",
-    "mini-css-extract-plugin": "0.9.0",
     "node-sass": "^4.13.1",
     "optimize-css-assets-webpack-plugin": "5.0.3",
     "pnp-webpack-plugin": "1.6.0",
@@ -68,13 +68,17 @@
     "webpack": "4.41.5",
     "webpack-dev-server": "3.10.1",
     "webpack-manifest-plugin": "2.2.0",
-    "workbox-webpack-plugin": "4.3.1"
+    "workbox-webpack-plugin": "4.3.1",
+    "react-hot-loader": "4.12.18",
+    "clean-webpack-plugin": "3.0.0",
+    "copy-webpack-plugin": "5.0.5",
+    "html-loader": "0.5.5",
+    "write-file-webpack-plugin": "4.5.1",
+    "webpack-cli": "3.3.10"
   },
   "scripts": {
-    "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
-    "test": "node scripts/test.js",
-    "watch": "node scripts/watch.js"
+    "build": "node utils/build.js",
+    "start": "node utils/webserver.js"
   },
   "browserslist": {
     "production": [
@@ -141,9 +145,7 @@
       "jest-watch-typeahead/testname"
     ]
   },
-  "babel": {
-    "presets": [
-      "react-app"
-    ]
+  "devDependencies": {
+    "mini-css-extract-plugin": "^0.9.0"
   }
 }
