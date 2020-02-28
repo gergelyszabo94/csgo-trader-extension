@@ -1,8 +1,7 @@
-/* globals trackEvent*/
-
 import React, { useEffect, useState } from "react";
 
 import Bookmark from "components/Bookmarks/Bookmark/Bookmark";
+import { trackEvent } from 'js/utils/analytics';
 
 const Bookmarks = () => {
     trackEvent({

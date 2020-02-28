@@ -1,7 +1,6 @@
-/* globals trackEvent*/
-
 import React, {useState, useEffect } from "react";
 import NewTabLink from 'components/NewTabLink/NewTabLink';
+import { trackEvent } from 'js/utils/analytics';
 
 const Popup = () => {
     // if there is any badge text it gets removed

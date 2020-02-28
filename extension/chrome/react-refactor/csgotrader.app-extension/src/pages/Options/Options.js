@@ -1,5 +1,3 @@
-/* globals trackEvent*/
-
 import React from "react";
 
 import Notifications from "components/Options/Categories/Notifications";
@@ -12,6 +10,8 @@ import Market from "components/Options/Categories/Market";
 import Popup from "components/Options/Categories/Popup";
 import Profile from "components/Options/Categories/Profile";
 import TradeOffer from "components/Options/Categories/TradeOffer";
+
+import { trackEvent } from 'js/utils/analytics';
 
 import {
   BrowserRouter as Router,
