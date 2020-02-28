@@ -1,9 +1,9 @@
-/* globals sortingModes offersSortingModes*/
-
 import React from "react";
 import Row from "components/Options/Row";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode } from "@fortawesome/free-solid-svg-icons";
+
+import { sortingModes, offersSortingModes} from "js/utils/static/sorting_modes";
 
 import Category from '../Category/Category';
 
