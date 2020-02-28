@@ -1,9 +1,8 @@
-/* global currencies, pricingProviders, */
-// Currencies comes from enums.js
 import React from "react";
 
 import Category from "../Category/Category";
 import Row from "../Row";
+import { currencies, pricingProviders} from "js/utils/static/pricing";
 
 const pricing = () => {
   const transformCurrencies = () => {

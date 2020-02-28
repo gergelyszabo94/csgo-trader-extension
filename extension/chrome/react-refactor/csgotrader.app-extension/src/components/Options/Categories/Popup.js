@@ -1,8 +1,8 @@
-/* global currencies */
 import React from "react";
 
 import Category from "../Category/Category";
 import Row from "../Row";
+import { currencies } from "js/utils/static/pricing";
 
 const popup = () => {
   const transformCurrencies = () => {

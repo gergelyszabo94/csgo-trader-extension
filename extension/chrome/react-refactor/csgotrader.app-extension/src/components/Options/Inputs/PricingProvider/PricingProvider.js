@@ -1,8 +1,8 @@
-/* globals updatePrices */
 import React, { useState } from "react";
 import Select from "components/Select/Select";
 
 import './PricingProvider.css';
+import { updatePrices } from 'js/utils/pricing';
 
 const PricingProvider = props => {
     const [aboutProvider, setAboutProvider] = useState(props.options.csgotrader.description);
