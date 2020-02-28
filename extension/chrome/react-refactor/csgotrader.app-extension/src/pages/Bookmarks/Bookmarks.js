@@ -49,20 +49,27 @@ const Bookmarks = () => {
             <div className='container-fluid'>
                 <h1>Bookmark and Notify</h1>
                 <div className='row'>
-                    {bookmarks.map((bookmark, index) => {
-                        return (
-                            <Bookmark
-                                key={index}
-                                bookmarkData={bookmark}
-                                removeBookmark={removeBookmark}
-                                editBookmark={editBookmark}
-                            />
-                        );
-                    })}
+                    <BookmarkContent bookmarks={bookmarks}/>
                 </div>
             </div>
         </div>
     );
+};
+
+const BookmarkContent = (props) => {
+    if (props.bookmarks.length === 0) return 'You don\'t have any bookmarks yet. You can bookmark items from user inventories!'
+    else {
+        props.bookmarks.map((bookmark, index) => {
+            return (
+                <Bookmark
+                    key={index}
+                    bookmarkData={bookmark}
+                    removeBookmark={removeBookmark}
+                    editBookmark={editBookmark}
+                />
+            );
+        })
+    }
 };
 
 export default Bookmarks;
