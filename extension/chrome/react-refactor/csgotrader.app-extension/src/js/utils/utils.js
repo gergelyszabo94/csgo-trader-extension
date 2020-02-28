@@ -487,29 +487,6 @@ function goToInternalPage(targetURL) {
     });
 }
 
-function determineNotificationDate(tradableDate, minutesOrHours, numberOfMinutesOrHours, beforeOrAfter) {
-    let baseTimeUnit = 0;
-    if (minutesOrHours === 'minutes') baseTimeUnit = 60;
-    else if (minutesOrHours === 'hours') baseTimeUnit = 3600;
-    if (beforeOrAfter === 'before') baseTimeUnit *= -1;
-    let timeDifference = numberOfMinutesOrHours * baseTimeUnit;
-    return new Date((parseInt((new Date(tradableDate).getTime() / 1000).toFixed(0)) + timeDifference) * 1000);
-}
-
-function reverseWhenNotifDetails(tradability, notifTime) {
-    let difference = (parseInt(new Date(notifTime).getTime() / 1000).toFixed(0)) - (parseInt(new Date(tradability).getTime() / 1000).toFixed(0));
-    let differenceAbs =  Math.abs(difference);
-    let beforeOrAfter = difference >= 0 ? 'after' : 'before';
-    let minutesOrHours = differenceAbs / 60 >= 60 ? 'hours' : 'minutes';
-    let numberOfMinutesOrHours = differenceAbs / 60 >= 60 ? ( differenceAbs / 60) / 60 : differenceAbs / 60;
-
-    return {
-        numberOfMinutesOrHours: numberOfMinutesOrHours,
-        minutesOrHours: minutesOrHours,
-        beforeOrAfter: beforeOrAfter
-    };
-}
-
 // there are many different kinds of SteamID formats , this function converts the 64bit into the ones used in trade offers
 function getOfferStyleSteamID(steamID64) {return Number(steamID64.split('7656')[1]) - Number(1197960265728)}
 

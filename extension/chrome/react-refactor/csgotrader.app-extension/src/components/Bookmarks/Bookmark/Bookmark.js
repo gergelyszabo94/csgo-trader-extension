@@ -1,13 +1,12 @@
-/* globals reverseWhenNotifDetails, determineNotificationDate*/
-
 import React, {useState} from "react";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faBell, faChartLine, faComment, faEye, faLink, faTrash, faUser} from "@fortawesome/free-solid-svg-icons";
+
 import Countdown from "./Countdown";
 import NewTabLink from "components/NewTabLink/NewTabLink";
 import Modal from "components/Modal/Modal";
 import FlipSwitch from "components/FlipSwitch/FlipSwitch";
-
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faBell, faChartLine, faComment, faEye, faLink, faTrash, faUser} from "@fortawesome/free-solid-svg-icons";
+import { determineNotificationDate, reverseWhenNotifDetails } from "js/utils/notifications";
 
 const Bookmark = (props) => {
     const { itemInfo, notifTime, notifType, notify, owner } = props.bookmarkData;
