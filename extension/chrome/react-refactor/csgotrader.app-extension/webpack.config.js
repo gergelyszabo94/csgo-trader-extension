@@ -1,6 +1,5 @@
-var webpack = require("webpack"),
+const webpack = require("webpack"),
     path = require("path"),
-    fileSystem = require("fs"),
     env = require("./utils/env"),
     CleanWebpackPlugin = require("clean-webpack-plugin").CleanWebpackPlugin,
     CopyWebpackPlugin = require("copy-webpack-plugin"),
@@ -8,22 +7,16 @@ var webpack = require("webpack"),
     WriteFilePlugin = require("write-file-webpack-plugin"),
     MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-// load the secrets
-var alias = {};
+const fileExtensions = ["jpg", "jpeg", "png", "gif", "eot", "otf", "svg", "ttf", "woff", "woff2"];
 
-var secretsPath = path.join(__dirname, ("secrets." + env.NODE_ENV + ".js"));
-
-var fileExtensions = ["jpg", "jpeg", "png", "gif", "eot", "otf", "svg", "ttf", "woff", "woff2"];
-
-if (fileSystem.existsSync(secretsPath)) {
-  alias["secrets"] = secretsPath;
-}
-
-var options = {
+const options = {
   mode: process.env.NODE_ENV || "development",
   entry: {
+    // the single js bundle used by the single page that is used for the popup, options and bookmarks
     index: path.join(__dirname, "src", "", "index.js"),
+    // background scripts
     // background: path.join(__dirname, "src", "js", "background.js"),
+    // content scripts that don't run on steam
     "js/content_scripts/loungeBump": path.join(__dirname, "src", "js/content_scripts", "loungeBump.js"),
     "js/content_scripts/tradersBump": path.join(__dirname, "src", "js/content_scripts", "tradersBump.js"),
     "js/content_scripts/tradersAutoLogin": path.join(__dirname, "src", "js/content_scripts", "tradersAutoLogin.js")
@@ -67,7 +60,6 @@ var options = {
   },
   resolve: {
     modules: [path.resolve(__dirname, './src'), 'node_modules'],
-    alias: alias,
     extensions: fileExtensions.map(extension => ("." + extension)).concat([".jsx", ".js", ".css"])
   },
   plugins: [
@@ -78,8 +70,9 @@ var options = {
       NODE_ENV: 'development', // use 'development' unless process.env.NODE_ENV is defined
       DEBUG: false
     }),
+    // copies assets that don't need bundling
     new CopyWebpackPlugin([
-        "src/manifest.json",
+      "src/manifest.json",
       {
         from: "src/css",
         to: 'css/'
