@@ -23,9 +23,10 @@ var options = {
   mode: process.env.NODE_ENV || "development",
   entry: {
     index: path.join(__dirname, "src", "", "index.js"),
-    // options: path.join(__dirname, "src", "js", "options.js"),
     // background: path.join(__dirname, "src", "js", "background.js"),
-    // myContentScript: path.join(__dirname, "src", "js", "myContentScript.js")
+    "js/content_scripts/loungeBump": path.join(__dirname, "src", "js/content_scripts", "loungeBump.js"),
+    "js/content_scripts/tradersBump": path.join(__dirname, "src", "js/content_scripts", "tradersBump.js"),
+    "js/content_scripts/tradersAutoLogin": path.join(__dirname, "src", "js/content_scripts", "tradersAutoLogin.js")
   },
   output: {
     publicPath: '',

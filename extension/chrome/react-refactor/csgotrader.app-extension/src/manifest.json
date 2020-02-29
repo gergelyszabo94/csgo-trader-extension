@@ -186,23 +186,17 @@
         "*://old.csgolounge.com/mytrades/*"
       ],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/utils.js",
-        "js/content_scripts/loungebump.js"]
+      "js": "js/content_scripts/loungeBump.bundle.js"
     },
     {
       "matches": ["*://csgotraders.net/mytrades*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/utils.js",
-        "js/content_scripts/tradersbump.js"]
+      "js": "js/content_scripts/tradersBump.bundle.js"
     },
     {
       "matches": ["*://csgotraders.net/*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/utils.js",
-        "js/content_scripts/traders_autologin.js"]
+      "js": "js/content_scripts/tradersAutoLogin.bundle.js"
     }
   ],
   "web_accessible_resources": [

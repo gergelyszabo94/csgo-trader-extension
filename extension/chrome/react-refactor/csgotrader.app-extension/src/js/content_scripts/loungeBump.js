@@ -1,4 +1,7 @@
-function bump(){
+import { trackEvent } from 'js/utils/analytics';
+import { logExtensionPresence } from 'js/utils/utils_modular';
+
+const bump = () => {
     document.querySelectorAll('.btn-bump___1-VFc').forEach(bumpButton => {
         bumpButton.click();
     });
@@ -7,7 +10,7 @@ function bump(){
         type: 'event',
         action: 'LoungeBump'
     });
-}
+};
 
 logExtensionPresence();
 
@@ -17,12 +20,16 @@ trackEvent({
 });
 
 chrome.storage.local.get('loungeBump', (result) => {
-    if(result.loungeBump){
+    if (result.loungeBump) {
         // ugly way to wait for the trades to load and become "bumpable"
-        setTimeout(() => {bump()}, 5000);
+        setTimeout(() => {
+            bump();
+        }, 5000);
 
-        let reloadInterval = Math.floor((Math.random() * 10) + 31);
+        const reloadInterval = Math.floor((Math.random() * 10) + 31);
 
-        setTimeout(() => {location.reload()}, reloadInterval*60*1000);
+        setTimeout(() => {
+            location.reload();
+        }, reloadInterval * 60 * 1000);
     }
 });

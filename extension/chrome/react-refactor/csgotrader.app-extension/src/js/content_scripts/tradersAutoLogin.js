@@ -3,7 +3,7 @@ chrome.storage.local.get('csgotradersAutoLogin', (result) => {
         // redirects to the trades page after login
         if (document.referrer.includes('steamcommunity.com/openid/login')) location.href = 'https://csgotraders.net/mytrades';
 
-        let loginViaSteamButton = document.querySelector('a[href="/auth/steam"]');
+        const loginViaSteamButton = document.querySelector('a[href="/auth/steam"]');
         if (loginViaSteamButton !== null) loginViaSteamButton.click();
     }
 });
