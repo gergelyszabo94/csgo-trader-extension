@@ -14,13 +14,24 @@ const options = {
   entry: {
     // the single js bundle used by the single page that is used for the popup, options and bookmarks
     index: path.join(__dirname, "src", "", "index.js"),
+
     // background scripts
     "js/backgroundScripts/background": path.join(__dirname, "src", "js/backgroundScripts", "background.js"),
     "js/backgroundScripts/messaging": path.join(__dirname, "src", "js/backgroundScripts", "messaging.js"),
-    // content scripts that don't run on steam
-    "js/content_scripts/loungeBump": path.join(__dirname, "src", "js/content_scripts", "loungeBump.js"),
-    "js/content_scripts/tradersBump": path.join(__dirname, "src", "js/content_scripts", "tradersBump.js"),
-    "js/content_scripts/tradersAutoLogin": path.join(__dirname, "src", "js/content_scripts", "tradersAutoLogin.js")
+
+    // content scripts that don't run on Steam
+    "js/contentScripts/loungeBump": path.join(__dirname, "src", "js/content_scripts", "loungeBump.js"),
+    "js/contentScripts/tradersBump": path.join(__dirname, "src", "js/content_scripts", "tradersBump.js"),
+    "js/contentScripts/tradersAutoLogin": path.join(__dirname, "src", "js/content_scripts", "tradersAutoLogin.js"),
+
+    // contents scripts that run on Steam pages
+    "js/contentScripts/steam/announcements": path.join(__dirname, "src", "js/content_scripts/steam", "announcements.js"),
+    "js/contentScripts/steam/apiKey": path.join(__dirname, "src", "js/content_scripts/steam", "apiKey.js"),
+    "js/contentScripts/steam/friends": path.join(__dirname, "src", "js/content_scripts/steam", "friends.js"),
+    "js/contentScripts/steam/group": path.join(__dirname, "src", "js/content_scripts/steam", "group.js"),
+    "js/contentScripts/steam/openIDLogin": path.join(__dirname, "src", "js/content_scripts/steam", "openIDLogin.js"),
+    "js/contentScripts/steam/sharedFile": path.join(__dirname, "src", "js/content_scripts/steam", "sharedFile.js"),
+    "js/contentScripts/steam/webChat": path.join(__dirname, "src", "js/content_scripts/steam", "webChat.js"),
   },
   output: {
     publicPath: '',

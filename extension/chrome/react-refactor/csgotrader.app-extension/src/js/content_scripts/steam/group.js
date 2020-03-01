@@ -1,15 +1,10 @@
-function goldenMemberNames() {
-    document.querySelectorAll('.member_block').forEach(memberBlock =>{
-       if (memberBlock.querySelector('.linkFriend').innerText.includes('csgotrader.app')) {
-           memberBlock.querySelector('.playerAvatar').classList.add('golden');
-           memberBlock.querySelector('.member_block_content').classList.remove('online', 'offline', 'in-game');
-           memberBlock.querySelector('.member_block_content').classList.add('golden');
-       }
-    });
-}
+import { goldenMemberNames, goldenCommenters } from "js/utils/goldening";
+import { logExtensionPresence, updateLoggedInUserID, listenToLocationChange } from "js/utils/utilsModular";
+import { reportComments, addReplyToCommentsFunctionality, addCommentsMutationObserver } from "js/utils/comments";
+import { trackEvent } from "js/utils/analytics";
 
 logExtensionPresence();
-addReplytoCommentsFunctionality();
+addReplyToCommentsFunctionality();
 addCommentsMutationObserver();
 reportComments();
 goldenCommenters();
@@ -22,4 +17,6 @@ trackEvent({
 
 if (document.location.href.includes('/members')) goldenMemberNames();
 
-setInterval( () =>{if(/#announcements|#comments/.test(window.location.href))addReplytoCommentsFunctionality()}, 2000);
+setInterval( () => {
+    if (/#announcements|#comments/.test(window.location.href)) addReplyToCommentsFunctionality();
+}, 2000);

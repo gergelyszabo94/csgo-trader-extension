@@ -293,6 +293,57 @@ const uuidv4 = () => {
     );
 };
 
+// updates the SteamID of the extension's user in storage
+const updateLoggedInUserID = () => {
+    const steamID = getUserSteamID();
+    if (steamID !== 'false' && steamID !== false) chrome.storage.local.set({steamIDOfUser: steamID}, () =>{});
+};
+
+// gets SteamID of the user logged into steam (returns false if there is no user logged in)
+const getUserSteamID = () => {
+    const getUserSteamIDScript = `document.querySelector('body').setAttribute('steamidOfLoggedinUser', g_steamID);`;
+    return injectToPage(getUserSteamIDScript, true, 'steamidOfLoggedinUser', 'steamidOfLoggedinUser');
+};
+
+// inject scripts from content scripts the the page context, usually to access variables or override functionality
+const injectToPage = (scriptString, toRemove, id, executeAndReturn) => {
+    // removes previously added instance of the script
+    const elementFromBefore = document.getElementById(id);
+    if (elementFromBefore !== null) elementFromBefore.remove();
+
+    const toInject = document.createElement('script');
+    toInject.id = id;
+    toInject.innerHTML = scriptString;
+    (document.head || document.documentElement).appendChild(toInject);
+
+    const simpleAttributeParsing = ['steamidOfLoggedinUser', 'steamidOfProfileOwner', 'tradePartnerSteamID', 'inventoryOwnerID', 'listingsInfo',
+        'inventoryInfo', 'allItemsLoaded', 'offerInventoryInfo', 'steamWalletCurrency', 'steamWallet', 'formattedToInt', 'intToFormatted',
+        'priceAfterFees', 'sessionid'];
+    const result = simpleAttributeParsing.includes(executeAndReturn) ? document.querySelector('body').getAttribute(executeAndReturn) : null;
+    document.querySelector('body').setAttribute(executeAndReturn, '');
+
+    if (toRemove) document.head.removeChild(toInject);
+    return result;
+};
+
+const listenToLocationChange = (callBackFunction) => {
+    let oldHref = document.location.href;
+
+    const locationObserver = new MutationObserver((mutations) => {
+        mutations.forEach(mutation => {
+            if (oldHref !== document.location.href) {
+                oldHref = document.location.href;
+                callBackFunction();
+            }
+        });
+    });
+
+    locationObserver.observe(document.querySelector('body'), {
+        subtree: true,
+        childList: true
+    })
+};
+
 const getAssetIDFromInspectLink = (inspectLink) => {
     return (inspectLink !== null && inspectLink !== undefined) ? inspectLink.split('A')[1].split('D')[0] : null;
 };
@@ -302,5 +353,7 @@ export {
     getExteriorFromTags, getDopplerInfo, getQuality, parseStickerInfo,
     handleStickerNamesWithCommas, removeFromArray, getType,
     getPattern, getShortDate, goToInternalPage,
-    validateSteamAPIKey, getAssetIDFromInspectLink, uuidv4
+    validateSteamAPIKey, getAssetIDFromInspectLink, uuidv4,
+    updateLoggedInUserID, getUserSteamID, injectToPage,
+    listenToLocationChange
 };

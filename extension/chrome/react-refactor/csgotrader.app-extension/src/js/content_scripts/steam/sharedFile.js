@@ -1,6 +1,6 @@
-import { logExtensionPresence, updateLoggedInUserID } from "js/utils/utilsModular";
-import { addReplyToCommentsFunctionality, addCommentsMutationObserver, reportComments } from "js/utils/comments";
 import { goldenCommenters } from "js/utils/goldening";
+import { logExtensionPresence, updateLoggedInUserID } from "js/utils/utilsModular";
+import { reportComments, addReplyToCommentsFunctionality, addCommentsMutationObserver } from "js/utils/comments";
 import { trackEvent } from "js/utils/analytics";
 
 logExtensionPresence();
@@ -11,5 +11,5 @@ goldenCommenters();
 updateLoggedInUserID();
 trackEvent({
     type: 'pageview',
-    action: 'AnnouncementView'
+    action: 'SharedFileView'
 });
