@@ -1,3 +1,9 @@
+import { storageKeys } from "js/utils/static/storageKeys";
+import { trackEvent, sendTelemetry } from 'js/utils/analytics';
+import { updatePrices, updateExchangeRates } from "js/utils/pricing";
+import { scrapeSteamAPIkey } from 'js/utils/utilsModular';
+import { trimFloatCache } from 'js/utils/floatCaching';
+
 // handles install and update events
 chrome.runtime.onInstalled.addListener((details) => {
     if (details.reason === 'install') {
@@ -64,19 +70,17 @@ chrome.runtime.onInstalled.addListener((details) => {
 
         // notifies the user when the extension is updated
         chrome.storage.local.get('notifyOnUpdate', (result) => {
-            if(result.notifyOnUpdate){
-                let thisVersion = chrome.runtime.getManifest().version;
+            if (result.notifyOnUpdate){
+                const version = chrome.runtime.getManifest().version;
                 chrome.permissions.contains({
                     permissions: ['tabs']
                 }, (result) => {
-                    let message = 'Check the changelog for the hot new stuff!';
-                    if (result) {
-                        message = 'You can check the changelog by clicking here!';
-                    }
+                    const message =  result ? 'You can check the changelog by clicking here!' : 'Check the changelog for the hot new stuff!';
+
                     chrome.notifications.create('updated', {
                         type: 'basic',
                         iconUrl: '/images/cstlogo128.png',
-                        title: `Extension updated to ${thisVersion}!`,
+                        title: `Extension updated to ${version}!`,
                         message: message
                     }, (notificationId) =>{});
                 });
@@ -111,7 +115,7 @@ chrome.notifications.onClicked.addListener((notificationID) =>{
     });
 });
 
-// handles periodic and timed events like bookmarked items getting tradable
+// handles periodic and timed events like bookmarked items becoming tradable
 chrome.alarms.onAlarm.addListener((alarm) =>{
     if (alarm.name === 'updatePricesAndExchangeRates'){
         chrome.storage.local.get('itemPricing', (result) =>{
@@ -133,17 +137,18 @@ chrome.alarms.onAlarm.addListener((alarm) =>{
             else chrome.browserAction.setBadgeText({text: (parseInt(result) + 1).toString()});
         });
         chrome.storage.local.get('bookmarks', (result) =>{
-            let item = result.bookmarks.find((element) =>{return element.itemInfo.assetid === alarm.name});
-            if(item.notifType === 'chrome'){
-                let iconFullURL= `https://steamcommunity.com/economy/image/${item.itemInfo.iconURL}/128x128`;
+            const item = result.bookmarks.find((element) => {return element.itemInfo.assetid === alarm.name});
+
+            if (item.notifType === 'chrome') {
+                const iconFullURL= `https://steamcommunity.com/economy/image/${item.itemInfo.iconURL}/128x128`;
                 chrome.permissions.contains({permissions: ['tabs']}, (result) =>{
-                    let message = `${item.itemInfo.name} is tradable!`;
-                    if (result) message = 'Click here to see your bookmarks!';
+                    const message =  result ? 'Click here to see your bookmarks!' : `${item.itemInfo.name} is tradable!`;
+
                     chrome.notifications.create(alarm.name, {
                         type: 'basic',
                         iconUrl: iconFullURL,
                         title: `${item.itemInfo.name} is tradable!`,
-                        message: message
+                        message
                     }, (notificationId) =>{});
                 });
             }

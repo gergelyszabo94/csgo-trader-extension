@@ -15,7 +15,8 @@ const options = {
     // the single js bundle used by the single page that is used for the popup, options and bookmarks
     index: path.join(__dirname, "src", "", "index.js"),
     // background scripts
-    // background: path.join(__dirname, "src", "js", "background.js"),
+    "js/backgroundScripts/background": path.join(__dirname, "src", "js/backgroundScripts", "background.js"),
+    "js/backgroundScripts/messaging": path.join(__dirname, "src", "js/backgroundScripts", "messaging.js"),
     // content scripts that don't run on steam
     "js/content_scripts/loungeBump": path.join(__dirname, "src", "js/content_scripts", "loungeBump.js"),
     "js/content_scripts/tradersBump": path.join(__dirname, "src", "js/content_scripts", "tradersBump.js"),

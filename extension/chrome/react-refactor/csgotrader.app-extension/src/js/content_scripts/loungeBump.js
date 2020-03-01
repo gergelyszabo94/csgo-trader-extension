@@ -1,5 +1,5 @@
 import { trackEvent } from 'js/utils/analytics';
-import { logExtensionPresence } from 'js/utils/utils_modular';
+import { logExtensionPresence } from 'js/utils/utilsModular';
 
 const bump = () => {
     document.querySelectorAll('.btn-bump___1-VFc').forEach(bumpButton => {

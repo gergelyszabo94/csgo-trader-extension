@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode } from "@fortawesome/free-solid-svg-icons";
 import Category from '../Category/Category';
 
-import { sortingModes } from "js/utils/static/sorting_modes";
+import { sortingModes } from "js/utils/static/sortingModes";
 
 const inventory = () => {
 

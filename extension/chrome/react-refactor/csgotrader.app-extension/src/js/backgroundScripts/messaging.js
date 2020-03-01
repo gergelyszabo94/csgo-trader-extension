@@ -1,3 +1,11 @@
+import { getFloatInfoFromCache, extractUsefulFloatInfo, addToFloatCache } from 'js/utils/floatCaching';
+import {
+    getExteriorFromTags, getDopplerInfo, getQuality, getType, parseStickerInfo, getPattern,
+    getShortDate, goToInternalPage, validateSteamAPIKey, getAssetIDFromInspectLink
+} from 'js/utils/utilsModular';
+import { getStickerPriceTotal, getPrice, prettyPrintPrice } from 'js/utils/pricing';
+import itemTypes from "js/utils/static/itemTypes";
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.inventory !== undefined) {
         chrome.storage.local.get(['itemPricing', 'prices', 'currency', 'exchangeRate', 'pricingProvider'], (result) => {
@@ -141,8 +149,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         let inventory = request.addPricesAndFloatsToInventory;
         chrome.storage.local.get(['prices', 'exchangeRate', 'currency', 'itemPricing', 'pricingProvider'], (result) =>{
             if (result.itemPricing){
-                let floatCacheAssetIDs = [];
-                inventory.forEach(item => {floatCacheAssetIDs.push(item.assetid)});
+                const floatCacheAssetIDs = inventory.map(item => {
+                    return item.assetid
+                });
                 getFloatInfoFromCache(floatCacheAssetIDs).then(
                     floatCache => {
                         inventory.forEach(item => {
@@ -197,11 +206,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
     else if (request.GetPlayerSummaries !== undefined) {
         chrome.storage.local.get(['apiKeyValid', 'steamAPIKey'], (result) => {
-            if(result.apiKeyValid){
-                let apiKey = result.steamAPIKey;
-                let steamID = request.GetPlayerSummaries;
+            if (result.apiKeyValid) {
+                const apiKey = result.steamAPIKey;
+                const steamID = request.GetPlayerSummaries;
 
-                let getRequest = new Request(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=${steamID}`);
+                const getRequest = new Request(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=${steamID}`);
 
                 fetch(getRequest).then((response) => {
                     if (!response.ok) {
@@ -225,10 +234,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return true; // async return to signal that it will return later
     }
     else if (request.fetchFloatInfo !== undefined) {
-        let inspectLink = request.fetchFloatInfo;
+        const inspectLink = request.fetchFloatInfo;
         if (inspectLink !== null) {
-            let assetID = getAssetIDFromInspectLink(inspectLink);
-            let getRequest = new Request(`https://api.csgofloat.com/?url=${inspectLink}`);
+            const assetID = getAssetIDFromInspectLink(inspectLink);
+            const getRequest = new Request(`https://api.csgofloat.com/?url=${inspectLink}`);
 
             fetch(getRequest).then((response) => {
                 if (!response.ok) {
@@ -238,7 +247,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 else return response.json();
             }).then((body) => {
                 if (body.iteminfo.floatvalue !== undefined) {
-                    let usefulFloatInfo = extractUsefulFloatInfo(body.iteminfo);
+                    const usefulFloatInfo = extractUsefulFloatInfo(body.iteminfo);
                     addToFloatCache(assetID, usefulFloatInfo);
                     if (usefulFloatInfo.floatvalue !== 0) sendResponse({floatInfo: usefulFloatInfo});
                     else sendResponse('nofloat');
@@ -253,9 +262,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return true; // async return to signal that it will return later
     }
     else if (request.getSteamRepInfo !== undefined) {
-        let steamID = request.getSteamRepInfo;
+        const steamID = request.getSteamRepInfo;
 
-        let getRequest = new Request(`https://steamrep.com/api/beta4/reputation/${steamID}?json=1`);
+        const getRequest = new Request(`https://steamrep.com/api/beta4/reputation/${steamID}?json=1`);
 
         fetch(getRequest).then((response) => {
             if (!response.ok) {
@@ -273,12 +282,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
     else if (request.getTradeOffers !== undefined) {
         chrome.storage.local.get(['apiKeyValid', 'steamAPIKey'], (result) => {
-            if(result.apiKeyValid){
-                let apiKey = result.steamAPIKey;
-                let actives_only = request.getTradeOffers === 'historical' ? 0 : 1;
-                let descriptions = request.getTradeOffers === 'historical' ? 0 : 1;
+            if (result.apiKeyValid) {
+                const apiKey = result.steamAPIKey;
+                const actives_only = request.getTradeOffers === 'historical' ? 0 : 1;
+                const descriptions = request.getTradeOffers === 'historical' ? 0 : 1;
 
-                let getRequest = new Request(`https://api.steampowered.com/IEconService/GetTradeOffers/v1/?get_received_offers=1&get_sent_offers=1&active_only=${actives_only}&get_descriptions=${descriptions}&language=english&key=${apiKey}`);
+                const getRequest = new Request(`https://api.steampowered.com/IEconService/GetTradeOffers/v1/?get_received_offers=1&get_sent_offers=1&active_only=${actives_only}&get_descriptions=${descriptions}&language=english&key=${apiKey}`);
 
                 fetch(getRequest).then((response) => {
                     if (!response.ok) {
@@ -302,8 +311,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return true; // async return to signal that it will return later
     }
     else if (request.getBuyOrderInfo !== undefined) {
-
-        let getRequest = new Request(`https://steamcommunity.com/market/listings/${request.getBuyOrderInfo.appID}/${request.getBuyOrderInfo.market_hash_name}`);
+        const getRequest = new Request(`https://steamcommunity.com/market/listings/${request.getBuyOrderInfo.appID}/${request.getBuyOrderInfo.market_hash_name}`);
 
         fetch(getRequest).then((response) => {
             if (!response.ok) {
@@ -313,13 +321,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             else return response.text();
         }).then((body) => {
             let item_nameid = '';
-            try{item_nameid = body.split('Market_LoadOrderSpread( ')[1].split(' ')[0]}
+            try {item_nameid = body.split('Market_LoadOrderSpread( ')[1].split(' ')[0]}
             catch (e) {
                 console.log(e);
                 console.log(body);
                 sendResponse('error');
             }
-            let getRequest2 = new Request(`https://steamcommunity.com/market/itemordershistogram?country=US&language=english&currency=${request.getBuyOrderInfo.currencyID}&item_nameid=${item_nameid}`);
+            const getRequest2 = new Request(`https://steamcommunity.com/market/itemordershistogram?country=US&language=english&currency=${request.getBuyOrderInfo.currencyID}&item_nameid=${item_nameid}`);
             fetch(getRequest2).then((response) => {
                 if (!response.ok) {
                     sendResponse('error');

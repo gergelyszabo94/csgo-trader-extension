@@ -1,5 +1,5 @@
 import { trackEvent } from 'js/utils/analytics';
-import { logExtensionPresence } from 'js/utils/utils_modular';
+import { logExtensionPresence } from 'js/utils/utilsModular';
 
 const bump = () => {
     document.querySelectorAll('.btn.btn-custom.btn-xs').forEach(button => {
