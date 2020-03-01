@@ -4,7 +4,9 @@ function getMyOrderIDFromElement(orderElement) {return orderElement.id.split('my
 
 function getElementByListingID(listingID) {return document.getElementById(`mylisting_${listingID}`)}
 
-function getElementByOrderID(orderID) {return document.getElementById(`mybuyorder_${orderID}`)}
+const getElementByOrderID = (orderID) => {
+    return document.getElementById(`mybuyorder_${orderID}`);
+};
 
 function switchToNextPageIfEmpty(listings) {
     if (listings.querySelectorAll('.market_listing_row.market_recent_listing_row').length === 0 ) {
@@ -67,7 +69,7 @@ function addListingStartingAtPricesAndTotal(sellListings) {
                </div>`);
 }
 
-function addStartingAtPriceInfoToPage(listingID, lowestPrice) {
+const addStartingAtPriceInfoToPage = (listingID, lowestPrice) => {
     const listingRow = getElementByListingID(listingID);
 
     if (listingRow !== null) { // the listing might not be there for example if the page was switched, the per page listing count was changed or the listing was removed
@@ -80,7 +82,7 @@ function addStartingAtPriceInfoToPage(listingID, lowestPrice) {
                                         ${lowestPrice}
                                     </div>`);
     }
-}
+};
 
 function extractHistoryEvents(result_html) {
     const tempEl = document.createElement('div');
@@ -489,3 +491,5 @@ if (marketHistoryButton !== null) {
 
 // reloads the page on extension update/reload/uninstall
 chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});
+
+export { addStartingAtPriceInfoToPage, getElementByOrderID };

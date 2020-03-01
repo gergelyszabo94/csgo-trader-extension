@@ -460,20 +460,24 @@ function addAPartysFunctionBar(whose){
     });
 }
 
-function addFloatIndicatorsToPage(type) {
+const addFloatIndicatorsToPage = (type) => {
     chrome.storage.local.get('autoFloatOffer', (result) => {
         if (result.autoFloatOffer && isCSGOInventoryActive('offer')) {
             let itemElements;
             if (type === 'page'){
-                let page = getActivePage('offer');
+                const page = getActivePage('offer');
                 if (page !== null) itemElements = page.querySelectorAll('.item.app730.context2');
-                else setTimeout(() => {addFloatIndicatorsToPage(type)}, 1000)}
+                else setTimeout(() => {
+                    addFloatIndicatorsToPage(type)
+                }, 1000)}
             else {
-                let page = document.getElementById(`trade_${type}s`);
+                const page = document.getElementById(`trade_${type}s`);
                 if (page !== null) itemElements = page.querySelectorAll('.item.app730.context2');
-                else setTimeout(() => {addFloatIndicatorsToPage(type)}, 1000)}
+                else setTimeout(() => {
+                    addFloatIndicatorsToPage(type)
+                }, 1000)}
             itemElements.forEach(itemElement => {
-                let item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
+                const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
                 if (item.inspectLink !== null){
                     if (item.floatInfo === null && itemTypes[item.type.key].float) {
                         floatQueue.jobs.push({
@@ -488,7 +492,7 @@ function addFloatIndicatorsToPage(type) {
             if (!floatQueue.active) workOnFloatQueue();
         }
     });
-}
+};
 
 function getOfferID() {return location.href.split('tradeoffer/')[1].split('/')[0]}
 
@@ -674,3 +678,5 @@ addPartnerOfferSummary();
 
 // reloads the page on extension update/reload/uninstall
 chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});
+
+export { addFloatIndicatorsToPage };

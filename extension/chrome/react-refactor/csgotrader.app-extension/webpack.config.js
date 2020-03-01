@@ -32,6 +32,11 @@ const options = {
     "js/contentScripts/steam/openIDLogin": path.join(__dirname, "src", "js/content_scripts/steam", "openIDLogin.js"),
     "js/contentScripts/steam/sharedFile": path.join(__dirname, "src", "js/content_scripts/steam", "sharedFile.js"),
     "js/contentScripts/steam/webChat": path.join(__dirname, "src", "js/content_scripts/steam", "webChat.js"),
+    "js/contentScripts/steam/inventory": path.join(__dirname, "src", "js/content_scripts/steam", "inventory.js"),
+    "js/contentScripts/steam/marketListing": path.join(__dirname, "src", "js/content_scripts/steam", "marketListing.js"),
+    "js/contentScripts/steam/market": path.join(__dirname, "src", "js/content_scripts/steam", "market.js"),
+    "js/contentScripts/steam/tradeOffer": path.join(__dirname, "src", "js/content_scripts/steam", "tradeOffer.js"),
+    "js/contentScripts/steam/tradeOffers": path.join(__dirname, "src", "js/content_scripts/steam", "tradeOffers.js")
   },
   output: {
     publicPath: '',
@@ -46,7 +51,8 @@ const options = {
         exclude: /node_modules/,
         loader: "eslint-loader",
         options: {
-          // eslint options (if necessary)
+          cache: true,
+          emitWarning: true
         },
       },
       {

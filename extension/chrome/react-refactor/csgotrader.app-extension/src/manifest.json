@@ -35,41 +35,25 @@
         "*://steamcommunity.com/*/inventory",
         "*://steamcommunity.com/*/inventory/*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js",
-        "js/content_scripts/steam/inventory.js"],
+      "js": ["js/contentScripts/steam/inventory.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
       "matches": ["*://steamcommunity.com/tradeoffer/*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js",
-        "js/content_scripts/steam/tradeoffer.js"],
+      "js": ["js/contentScripts/steam/tradeOffer.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
       "matches": ["*://steamcommunity.com/*/tradeoffers*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js" ,
-        "js/content_scripts/steam/tradeoffers.js"],
+      "js": ["js/contentScripts/steam/tradeOffers.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
       "matches": ["*://steamcommunity.com/market/listings/730/*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js",
-        "js/content_scripts/steam/market_listing.js"],
+      "js": ["js/contentScripts/steam/marketListing.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
@@ -143,11 +127,7 @@
         "*://steamcommunity.com/market"
       ],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js",
-        "js/content_scripts/steam/market.js"],
+      "js": ["js/contentScripts/steam/market.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {

@@ -71,9 +71,9 @@ function getIDsFromElement(element) {
     };
 }
 
-function selectItemElementByIDs(classid, instanceid) {
+const selectItemElementByIDs = (classid, instanceid) => {
     return document.querySelector(`[data-economy-item="classinfo/730/${classid}/${instanceid}"`);
-}
+};
 
 function getItemByIDs(items, IDs) {
     if (IDs.instanceid !== null) return items.filter(item => item.classid === IDs.classid && item.instanceid === IDs.instanceid)[0];
@@ -475,3 +475,5 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
 
 // reloads the page on extension update/reload/uninstall
 chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});
+
+export { selectItemElementByIDs };

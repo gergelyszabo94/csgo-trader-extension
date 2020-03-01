@@ -27,19 +27,22 @@ const dopplerPhases = {
         type: "doppler",
         name: "Sapphire",
         short: "SH",
-        color: "0000ff"
+        color: "0000ff",
+        element: '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/bluejewel" class="gemIcon">'
     },
     rb: {
         type: "doppler",
         name: "Ruby",
         short: "RB",
-        color: "ff0000"
+        color: "ff0000",
+        element: '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/redjewel" class="gemIcon">'
     },
     bp: {
         type: "doppler",
         name: "Black Pearl",
         short: "BP",
-        color: "000000"
+        color: "000000",
+        element: '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/lltqjewel" class="gemIcon">'
     },
     gp1: {
         type: "gamma",
@@ -69,7 +72,8 @@ const dopplerPhases = {
         type: "gamma",
         name: "Emerald",
         short: "EM",
-        color: "00ff00"
+        color: "00ff00",
+        element: '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/greenjewel" class="gemIcon">'
     },
     unk: {
         type: "unknown",

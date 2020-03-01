@@ -98,8 +98,8 @@ function addFloatBarSkeletons() {
     });
 }
 
-function populateFloatInfo(listingID, floatInfo){
-    let listingElement = getElementByListingID(listingID);
+const populateFloatInfo = (listingID, floatInfo) => {
+    const listingElement = getElementByListingID(listingID);
 
     if (listingElement !== null) { // if for example the user has changed page and the listing is not there anymore
         listingElement.querySelector('.floatTechnical').innerHTML = getDataFilledFloatTechnical(floatInfo);
@@ -108,15 +108,15 @@ function populateFloatInfo(listingID, floatInfo){
         listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
         listingElement.querySelector('.floatDropTarget').innerText = floatInfo.floatvalue.toFixedNoRounding(4);
     }
-}
+};
 
-function hideFloatBar(listingID) {
-    let listingElement = getElementByListingID(listingID);
+const hideFloatBar = (listingID) => {
+    const listingElement = getElementByListingID(listingID);
 
     if (listingElement !== null) {
         listingElement.querySelector('.floatBar').classList.add('hidden');
     }
-}
+};
 
 function getElementByListingID(listingID){return document.getElementById(`listing_${listingID}`)}
 
@@ -151,7 +151,7 @@ function getListings() {
 }
 
 // sticker wear to sticker icon tooltip
-function setStickerInfo(listingID, stickers){
+const setStickerInfo = (listingID, stickers) => {
     if (stickers !== null) {
         chrome.storage.local.get(['prices', 'pricingProvider', 'exchangeRate', 'currency'], (result) => {
             const listingElement = getElementByListingID(listingID);
@@ -175,7 +175,7 @@ function setStickerInfo(listingID, stickers){
             }
         });
     }
-}
+};
 
 function sortListings(sortingMode) {
     let listingElements = [...document.getElementById('searchResultsTable').querySelectorAll('.market_listing_row.market_recent_listing_row')];
@@ -291,16 +291,16 @@ function addPricesInOtherCurrencies() {
     });
 }
 
-function addPatterns(listingID, floatInfo) {
-    let patternInfo = getPattern(fullName, floatInfo.paintseed);
+const addPatterns = (listingID, floatInfo) => {
+    const patternInfo = getPattern(fullName, floatInfo.paintseed);
     if (patternInfo !== null) {
-        let listingElement = getElementByListingID(listingID);
+        const listingElement = getElementByListingID(listingID);
         if (listingElement !== null) {
-            let patternClass = patternInfo.type === 'marble_fade' ? 'marbleFadeGradient' : 'fadeGradient';
+            const patternClass = patternInfo.type === 'marble_fade' ? 'marbleFadeGradient' : 'fadeGradient';
             listingElement.querySelector('.market_listing_item_name').insertAdjacentHTML('afterend', `<span class="${patternClass}"> ${patternInfo.value}</span>`)
         }
     }
-}
+};
 
 logExtensionPresence();
 updateLoggedInUserID();
@@ -454,3 +454,5 @@ chrome.storage.local.get('numberOfListings', (result) =>{
 
 // reloads the page on extension update/reload/uninstall
 chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});
+
+export { populateFloatInfo, setStickerInfo, addPatterns, hideFloatBar };

@@ -6,6 +6,11 @@ import itemTypes from 'js/utils/static/itemTypes';
 import patterns from 'js/utils/static/patterns';
 import { getPrice } from 'js/utils/pricing';
 
+import { addFloatIndicatorsToPage as addFloatIndicatorsToInventory, updateFloatAndPatternElements, getAssetIDofActive } from 'js/content_scripts/steam/inventory';
+import { addFloatIndicatorsToPage as addFloatIndicatorsToOffer } from 'js/content_scripts/steam/tradeOffer';
+import { selectItemElementByIDs } from 'js/content_scripts/steam/tradeOffers';
+import { populateFloatInfo, setStickerInfo, addPatterns } from 'js/content_scripts/steam/marketListing';
+
 const logExtensionPresence = () => {
     const version = chrome.runtime.getManifest().version;
     console.log(`CSGO Trader - Steam Trading Enhancer ${version} is running on this page. Changelog at: https://csgotrader.app/changelog/`);
@@ -221,12 +226,12 @@ const parseStickerInfo = (descriptions, linkType, prices, pricingProvider, excha
                 });
 
                 stickers = names.map((name, index) => {
-                   return ({
-                       name,
-                       price: linkType === 'search' ? null : getPrice('Sticker | ' + name, null, prices, pricingProvider, exchangeRate, currency),
-                       iconURL: iconURLs[index],
-                       marketURL: link + name
-                   });
+                    return ({
+                        name,
+                        price: linkType === 'search' ? null : getPrice('Sticker | ' + name, null, prices, pricingProvider, exchangeRate, currency),
+                        iconURL: iconURLs[index],
+                        marketURL: link + name
+                    });
                 });
             }
         });
@@ -348,6 +353,282 @@ const getAssetIDFromInspectLink = (inspectLink) => {
     return (inspectLink !== null && inspectLink !== undefined) ? inspectLink.split('A')[1].split('D')[0] : null;
 };
 
+const addPageControlEventListeners = (type) => {
+    const pageControls = document.getElementById('inventory_pagecontrols');
+    if (pageControls !== null) {
+        pageControls.addEventListener('click', () => {
+            setTimeout(() => {
+                if (type === 'inventory') addFloatIndicatorsToInventory(getActivePage('inventory'));
+                else if (type === 'offer') addFloatIndicatorsToOffer('page');
+            }, 500);
+        })
+    }
+    else setTimeout(() => {addPageControlEventListeners()}, 1000);
+};
+
+// gets the details of an item by matching the passed asset id with the ones from the api call
+const getItemByAssetID = (items, assetIDToFind) => {
+    if (items === undefined || items.length === 0) return null;
+    return items.filter(item => item.assetid === assetIDToFind)[0];
+};
+
+const getAssetIDOfElement = (element) => {
+    if (element === null) return null;
+    const assetID = element.id.split('730_2_')[1];
+    return assetID === undefined ? null : assetID;
+};
+
+const addDopplerPhase = (item, dopplerInfo) => {
+    if (dopplerInfo !== null) {
+        const dopplerDiv = document.createElement('div');
+        dopplerDiv.classList.add('dopplerPhase');
+
+        switch (dopplerInfo.short) {
+            case 'SH': dopplerDiv.insertAdjacentHTML('beforeend', dopplerPhases.sh.element); break;
+            case 'RB': dopplerDiv.insertAdjacentHTML('beforeend', dopplerPhases.rb.element); break;
+            case 'EM': dopplerDiv.insertAdjacentHTML('beforeend', dopplerPhases.em.element); break;
+            case 'BP': dopplerDiv.insertAdjacentHTML('beforeend', dopplerPhases.bp.element); break;
+            default: dopplerDiv.innerText = dopplerInfo.short;
+        }
+
+        item.appendChild(dopplerDiv);
+    }
+};
+
+const getActivePage = (type, getActiveInventory) => {
+    let activePage = null;
+    if (type === 'inventory') {
+        document.querySelectorAll('.inventory_page').forEach(page => {
+            if (page.style.display !== 'none') activePage = page;
+        });
+    }
+    else if (type === 'offer') {
+        getActiveInventory().querySelectorAll('.inventory_page').forEach(page => {
+            if (page.style.display !== 'none') activePage = page;
+        });
+    }
+    return activePage;
+};
+
+const  makeItemColorful = (itemElement, item, colorfulItemsEnabled) => {
+    if (colorfulItemsEnabled) {
+        if (item.dopplerInfo !== null) itemElement.setAttribute('style', `background-image: url(); background-color: #${item.dopplerInfo.color}`);
+        else itemElement.setAttribute('style', `background-image: url(); background-color: ${item.quality.backgroundcolor}; border-color: ${item.quality.backgroundcolor}`);
+    }
+};
+
+// adds StatTrak, Souvenir and exterior indicators as well as sticker price when applicable
+const addSSTandExtIndicators = (itemElement, item, showStickerPrice) => {
+    const stattrak = item.isStatrack ? 'ST' : '';
+    const souvenir = item.isSouvenir ? 'S' : '';
+    const exterior = item.exterior !== null ? item.exterior.localized_short : '';
+    const stickerPrice = item.stickerPrice !== null ? item.stickerPrice.display : '';
+    const showStickersClass = showStickerPrice ? '' : 'hidden';
+
+    itemElement.insertAdjacentHTML('beforeend', `
+        <div class='exteriorSTInfo'>
+            <span class="souvenirYellow">${souvenir}</span>
+            <span class="stattrakOrange">${stattrak}</span>
+            <span class="exteriorIndicator">${exterior}</span>
+        </div>
+        <div class="stickerPrice ${showStickersClass}">${stickerPrice}</div>`);
+};
+
+const addFloatIndicator = (itemElement, floatInfo) => {
+    if (floatInfo !== null && itemElement.querySelector('div.floatIndicator') === null) {
+        itemElement.insertAdjacentHTML('beforeend', `<div class="floatIndicator">${floatInfo.floatvalue.toFixedNoRounding(4)}</div>`);
+    }
+};
+
+const addPriceIndicator = (itemElement, priceInfo) => {
+    if (priceInfo !== undefined && priceInfo !== 'null' && priceInfo !== null) {
+        itemElement.insertAdjacentHTML('beforeend', `<div class='priceIndicator'>${priceInfo.display}</div>`);
+    }
+};
+
+const addFloatDataToPage = (job, floatQueue, floatInfo, items) => {
+    if (job.type === 'inventory' || job.type === 'inventory_floatbar' || job.type === 'offer') {
+        addFloatIndicator(findElementByAssetID(job.assetID), floatInfo);
+
+        // add float and pattern info to page variable
+        let item = (job.type === 'inventory' || job.type === 'inventory_floatbar') ? getItemByAssetID(items, job.assetID) : getItemByAssetID(items, job.assetID);
+        item.floatInfo = floatInfo;
+        item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
+
+        if (job.type === 'inventory_floatbar') {
+            if (getAssetIDofActive() === job.assetID) updateFloatAndPatternElements(item);
+        }
+
+        // check if there is a floatbar job for the same item and remove it
+        if (job.type === 'inventory') {
+            floatQueue.jobs.find((floatJob, index) => {
+                if (floatJob.type === 'inventory_floatbar' && job.assetID === floatJob.assetID) {
+                    updateFloatAndPatternElements(item);
+                    removeFromArray(floatQueue, index);
+                }
+                return null;
+            })
+        }
+    }
+    else if (job.type === 'market') {
+        populateFloatInfo(job.listingID, floatInfo);
+        setStickerInfo(job.listingID, floatInfo.stickers);
+        addPatterns(job.listingID, floatInfo);
+    }
+    else if (job.type === 'offersPage') {
+        addFloatIndicator(selectItemElementByIDs(job.classid, job.instanceid), floatInfo);
+    }
+};
+
+const getDataFilledFloatTechnical = (floatInfo) => {
+    const floatRankLine = (floatInfo.low_rank !== undefined && floatInfo.low_rank !== null) ? `Low Rank: ${floatInfo.low_rank}<br>` : '';
+    return `
+            Technical:<br>
+            Float Value: ${floatInfo.floatvalue}<br>
+            Paint Index: ${floatInfo.paintindex}<br>
+            Paint Seed: ${floatInfo.paintseed}<br>
+            Origin: ${floatInfo.origin_name}<br>
+            Best Possible Float: ${floatInfo.min}<br>
+            Worst Possible Float: ${floatInfo.max}<br>
+            ${floatRankLine}
+            <br>
+            Float info from <a href="https://csgofloat.com/" target="_blank">csgofloat.com</a>`;
+};
+
+const souvenirExists = (iteminfo) => {
+    const collectionsWithSouvenirs = [
+        'The Blacksite Collection',
+        'The 2018 Inferno Collection',
+        'The 2018 Nuke Collection',
+        'The Cache Collection',
+        'The Cobblestone Collection',
+        'The Dust 2 Collection',
+        'The Inferno Collection',
+        'The Italy Collection',
+        'The Lake Collection',
+        'The Mirage Collection',
+        'The Nuke Collection',
+        'The Overpass Collection',
+        'The Safehouse Collection',
+        'The Train Collection'
+    ];
+
+    const collectionsWithSouvenirstoCheck = new RegExp(collectionsWithSouvenirs.join('|'), 'i');
+    return collectionsWithSouvenirstoCheck.test(iteminfo);
+
+};
+
+// tested and works in inventories, offers and market pages, does not work on profiles and incoming offers page
+const getSteamWalletInfo = () => {
+    const getWalletInfoScript = `document.querySelector('body').setAttribute('steamWallet', JSON.stringify(g_rgWalletInfo));`;
+    return JSON.parse(injectToPage(getWalletInfoScript, true, 'steamWalletScript', 'steamWallet'));
+};
+
+const getSteamWalletCurrency = () => {
+    const getCurrencyScript = `document.querySelector('body').setAttribute('steamWalletCurrency', GetCurrencyCode(${getSteamWalletInfo().wallet_currency}));`;
+    return injectToPage(getCurrencyScript, true, 'steamWalletCurrencyScript', 'steamWalletCurrency');
+};
+
+const findElementByAssetID = (assetID) => {
+    return document.getElementById(`730_2_${assetID}`);
+};
+
+const getFloatBarSkeleton = (type) => {
+    const typeClass = type === 'market' ? 'Market' : '';
+    return `<div class="floatBar${typeClass}">
+    <div class="floatToolTip">
+        <div>Float: <span class="floatDropTarget">Waiting for csgofloat.com</span></div>
+        <svg class="floatPointer" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path></svg>
+   </div>
+     <div class="progress">
+        <div class="progress-bar floatBarFN" title="${exteriors.factory_new.localized_name}"></div>
+        <div class="progress-bar floatBarMW" title="${exteriors.minimal_wear.localized_name}"></div>
+        <div class="progress-bar floatBarFT" title="${exteriors.field_tested.localized_name}"></div>
+        <div class="progress-bar floatBarWW" title="${exteriors.well_worn.localized_name}"></div>
+        <div class="progress-bar floatBarBS" title="${exteriors.battle_scarred.localized_name}"></div>
+     </div>
+     <div class="showTechnical clickable" title="Show Float Technical Information">Show Technical</div>
+     <div class="floatTechnical hidden"></div>
+    </div>`
+};
+
+// if CS:GO is selected - active
+const isCSGOInventoryActive = (where) => {
+    if (where === 'offer') return document.getElementById('appselect_activeapp').querySelector('img').src.includes('/730/');
+    else if (where === 'inventory') return document.querySelector('.games_list_tab.active').getAttribute('href') === '#730';
+};
+
+const injectStyle = (styleString, elementID) => {
+    const styleElement = document.createElement('style');
+    styleElement.id = elementID;
+    styleElement.innerHTML = styleString;
+    document.querySelector('body').appendChild(styleElement);
+};
+
+const reloadPageOnExtensionReload = () => {
+    // reloads the page on extension update/reload/uninstall
+    chrome.runtime.connect().onDisconnect.addListener(() =>{
+        window.location.reload()
+    });
+};
+
+const isSIHActive = () => {
+    const SIHSwitch = document.getElementById("switchPanel");
+    const SIHSwitcherCheckbox = document.getElementById("switcher");
+    return (SIHSwitch !== null && SIHSwitcherCheckbox !== null && SIHSwitcherCheckbox.checked)
+};
+
+const dateToISODisplay = (unixTimestamp) => {
+    const unformatted = (new Date(unixTimestamp * 1000)).toISOString();
+    const date = unformatted.split('T')[0];
+    const time = unformatted.split('T')[1].substr(0, 5);
+    return `${date} ${time}`
+};
+
+const prettyTimeAgo = (unixTimestamp) => {
+    const differenceSeconds = (Date.now() - new Date(unixTimestamp * 1000)) / 1000;
+    let prettyString = '';
+
+    if (differenceSeconds < 60) prettyString = 'Just now';
+    else if (differenceSeconds >= 60 && differenceSeconds < 120) prettyString = '1 minute ago';
+    else if (differenceSeconds >= 120 && differenceSeconds < 3600) prettyString = `${Math.trunc(differenceSeconds / 60)} minutes ago`;
+    else if (differenceSeconds >= 3600 && differenceSeconds < 7200) prettyString = '1 hour ago';
+    else if (differenceSeconds >= 7200 && differenceSeconds < 86400) prettyString = `${Math.trunc(differenceSeconds / 3600)} hours ago`;
+    else if (differenceSeconds >= 86400 && differenceSeconds < (86400 *2)) prettyString = '1 day ago';
+    else if (differenceSeconds >= (86400 * 2) && differenceSeconds < (86400 * 7)) prettyString = `${Math.trunc(differenceSeconds / 86400)} days ago`;
+    else if (differenceSeconds >= (86400 * 7) && differenceSeconds < (86400 * 14)) prettyString = '1 week ago';
+    else if (differenceSeconds >= (86400 * 14) && differenceSeconds < (86400 * 30)) prettyString = `${Math.trunc(differenceSeconds / (86400 * 7))} weeks ago`;
+    else if (differenceSeconds >= (86400 * 30) && differenceSeconds < (86400 * 60)) prettyString = 'Over a month ago';
+    else if (differenceSeconds >= (86400 * 60) && differenceSeconds < (86400 * 365)) prettyString = `${Math.trunc(differenceSeconds / (86400 * 30))} months ago`;
+    else prettyString = 'Over a year ago';
+
+    return prettyString;
+};
+
+let searchListenerTimeout = null;
+const addSearchListener = (type) => {
+    let searchElement;
+    if (type === 'inventory') searchElement = document.getElementById('filter_control');
+    else if (type === 'offer') searchElement = document.querySelector('.filter_search_box');
+
+    if (searchElement !== null) {
+        searchElement.addEventListener('input', () => {
+
+            if (searchListenerTimeout !== null) clearTimeout(searchListenerTimeout);
+            searchListenerTimeout = setTimeout(() => {
+                if (type === 'inventory') addFloatIndicatorsToInventory(getActivePage('inventory'));
+                else if (type === 'offer') addFloatIndicatorsToOffer('page');
+                searchListenerTimeout = null;
+            }, 1000);
+        });
+    }
+    else {
+        setTimeout(() => {
+            addSearchListener(type);
+        }, 1000);
+    }
+};
+
 export {
     logExtensionPresence, scrapeSteamAPIkey, arrayFromArrayOrNotArray,
     getExteriorFromTags, getDopplerInfo, getQuality, parseStickerInfo,
@@ -355,5 +636,12 @@ export {
     getPattern, getShortDate, goToInternalPage,
     validateSteamAPIKey, getAssetIDFromInspectLink, uuidv4,
     updateLoggedInUserID, getUserSteamID, injectToPage,
-    listenToLocationChange
+    listenToLocationChange, addPageControlEventListeners, getItemByAssetID,
+    getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
+    addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
+    addFloatDataToPage, getDataFilledFloatTechnical, souvenirExists,
+    getSteamWalletInfo, getSteamWalletCurrency, findElementByAssetID,
+    getFloatBarSkeleton, isCSGOInventoryActive, injectStyle,
+    reloadPageOnExtensionReload, isSIHActive, dateToISODisplay,
+    prettyTimeAgo, addSearchListener
 };
