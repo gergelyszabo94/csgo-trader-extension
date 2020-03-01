@@ -1,7 +1,7 @@
 import { storageKeys } from "js/utils/static/storageKeys";
 import { trackEvent, sendTelemetry } from 'js/utils/analytics';
 import { updatePrices, updateExchangeRates } from "js/utils/pricing";
-import { scrapeSteamAPIkey } from 'js/utils/utilsModular';
+import { scrapeSteamAPIkey, goToInternalPage, uuidv4 } from 'js/utils/utilsModular';
 import { trimFloatCache } from 'js/utils/floatCaching';
 
 // handles install and update events

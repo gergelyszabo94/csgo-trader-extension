@@ -32,7 +32,7 @@ chrome.storage.local.get('tradersBump', (result) => {
         const reloadInterval = Math.floor((Math.random() * 10) + 31);
 
         setTimeout(() => {
-            location.reload();
+            window.location.reload();
         }, reloadInterval * 60 * 1000);
     }
 });

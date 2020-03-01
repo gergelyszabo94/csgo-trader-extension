@@ -80,8 +80,8 @@ const arrayFromArrayOrNotArray = (arrayOrNotArray) => {
 
 const removeFromArray = (array, arrayIndex) => {
     return array.map((element, index) => {
-        if (index !== arrayIndex) return element;
-    })
+        return index !== arrayIndex ? element : null;
+    });
 };
 
 const getExteriorFromTags = (tags) => {
@@ -275,7 +275,8 @@ const getShortDate = (tradabibilityDate) => {
 
 const goToInternalPage = (targetURL) => {
     chrome.tabs.query({}, (tabs) => {
-        for (let i = 0, tab; tab = tabs[i]; i++) {
+        for (let i = 0; i < tabs.length ; i++) {
+            const tab = tabs[i];
             if (tab.url === ('chrome-extension://'+ chrome.runtime.id + targetURL)) { // TODO make this work in firefox or remove the whole thing
                 chrome.tabs.reload(tab.id, {}, () => {});
                 chrome.tabs.update(tab.id, {active: true});
@@ -284,6 +285,12 @@ const goToInternalPage = (targetURL) => {
         }
         chrome.tabs.create({url: targetURL});
     });
+};
+
+const uuidv4 = () => {
+    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> c / 4))).toString(16)
+    );
 };
 
 const getAssetIDFromInspectLink = (inspectLink) => {
@@ -295,5 +302,5 @@ export {
     getExteriorFromTags, getDopplerInfo, getQuality, parseStickerInfo,
     handleStickerNamesWithCommas, removeFromArray, getType,
     getPattern, getShortDate, goToInternalPage,
-    validateSteamAPIKey, getAssetIDFromInspectLink
+    validateSteamAPIKey, getAssetIDFromInspectLink, uuidv4
 };

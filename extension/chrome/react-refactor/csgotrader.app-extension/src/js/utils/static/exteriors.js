@@ -1,5 +1,3 @@
-import defaultPopupLinks from "./defaultPopupLinks";
-
 const exteriors = {
     factory_new: {
         internal_name: "WearCategory0",

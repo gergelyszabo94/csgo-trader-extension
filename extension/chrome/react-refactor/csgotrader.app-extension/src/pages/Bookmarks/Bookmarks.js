@@ -49,7 +49,7 @@ const Bookmarks = () => {
             <div className='container-fluid'>
                 <h1>Bookmark and Notify</h1>
                 <div className='row'>
-                    <BookmarkContent bookmarks={bookmarks}/>
+                    <BookmarkContent bookmarks={bookmarks} remove={removeBookmark} edit={editBookmark}/>
                 </div>
             </div>
         </div>
@@ -64,8 +64,8 @@ const BookmarkContent = (props) => {
                 <Bookmark
                     key={index}
                     bookmarkData={bookmark}
-                    removeBookmark={removeBookmark}
-                    editBookmark={editBookmark}
+                    removeBookmark={props.remove}
+                    editBookmark={props.edit}
                 />
             );
         })

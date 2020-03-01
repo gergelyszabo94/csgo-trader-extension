@@ -29,7 +29,7 @@ chrome.storage.local.get('loungeBump', (result) => {
         const reloadInterval = Math.floor((Math.random() * 10) + 31);
 
         setTimeout(() => {
-            location.reload();
+            window.location.reload();
         }, reloadInterval * 60 * 1000);
     }
 });
