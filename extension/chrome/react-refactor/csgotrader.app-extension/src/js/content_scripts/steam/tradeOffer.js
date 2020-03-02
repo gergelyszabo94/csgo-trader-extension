@@ -1,17 +1,34 @@
-function getInventories(){
+import { getItemByAssetID, getAssetIDOfElement, addDopplerPhase,
+    makeItemColorful, addSSTandExtIndicators, addPriceIndicator,
+    addFloatIndicator, getExteriorFromTags, getQuality,
+    getType, isCSGOInventoryActive, injectToPage,
+    getDopplerInfo, getActivePage, reloadPageOnExtensionReload,
+    dateToISODisplay, prettyTimeAgo, logExtensionPresence, injectStyle,
+    updateLoggedInUserID, warnOfScammer, addPageControlEventListeners,
+    addSearchListener } from "js/utils/utilsModular";
+import { prettyPrintPrice } from 'js/utils/pricing';
+import { doTheSorting } from "js/utils/sorting";
+import { sortingModes } from 'js/utils/static/sortingModes';
+import { trackEvent } from 'js/utils/analytics';
+import itemTypes from 'js/utils/static/itemTypes';
+import { genericMarketLink } from "js/utils/static/simpleStrings";
+import floatQueue, { workOnFloatQueue } from "js/utils/floatQueueing";
+import { overrideHandleTradeActionMenu } from 'js/utils/steamOverriding';
+
+const getInventories = () => {
     yourInventory = getItemInfoFromPage('You');
     theirInventory = getItemInfoFromPage('Them');
 
-    if(yourInventory !== null && theirInventory !== null){
-        let yourBuiltInventory = buildInventoryStructure(yourInventory);
-        let theirBuiltInventory = buildInventoryStructure(theirInventory);
+    if (yourInventory !== null && theirInventory !== null){
+        const yourBuiltInventory = buildInventoryStructure(yourInventory);
+        const theirBuiltInventory = buildInventoryStructure(theirInventory);
 
         chrome.runtime.sendMessage({addPricesAndFloatsToInventory: yourBuiltInventory}, (response) => {
-            let yourInventoryWithPrices = response.addPricesAndFloatsToInventory;
+            const yourInventoryWithPrices = response.addPricesAndFloatsToInventory;
             chrome.runtime.sendMessage({addPricesAndFloatsToInventory: theirBuiltInventory}, (response) => {
-                let theirInventoryWithPrices = response.addPricesAndFloatsToInventory;
-                for (let assetid in yourInventoryWithPrices) combinedInventories.push(yourInventoryWithPrices[assetid]);
-                for (let assetid in theirInventoryWithPrices) combinedInventories.push(theirInventoryWithPrices[assetid]);
+                const theirInventoryWithPrices = response.addPricesAndFloatsToInventory;
+                combinedInventories = yourInventoryWithPrices.concat(theirInventoryWithPrices);
+
                 addItemInfo();
                 addInventoryTotals(yourInventoryWithPrices, theirInventoryWithPrices);
                 addInTradeTotals('your');
@@ -21,26 +38,28 @@ function getInventories(){
             });
         });
     }
-    else setTimeout(() => {getInventories()}, 500);
-}
+    else setTimeout(() => {
+        getInventories()
+    }, 500);
+};
 
-function findElementByAssetID(assetID){ return document.getElementById(`item730_2_${assetID}`)}
-
-function addItemInfo() {
+const addItemInfo = () => {
     removeSIHStuff();
 
-    let itemElements = document.querySelectorAll('.item.app730.context2');
+    const itemElements = document.querySelectorAll('.item.app730.context2');
     if (itemElements.length !== 0){
         chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice'], (result) => {
             itemElements.forEach(itemElement =>{
                 if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false'){
                     // in case the inventory is not loaded yet it retires in a second
                     if (itemElement.id === undefined) {
-                        setTimeout( () =>{addItemInfo()}, 1000);
+                        setTimeout( () => {
+                            addItemInfo();
+                        }, 1000);
                         return false
                     }
-                    else{
-                        let item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
+                    else {
+                        const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
                         addDopplerPhase(itemElement, item.dopplerInfo);
                         makeItemColorful(itemElement, item, result.colorfulItems);
                         addSSTandExtIndicators(itemElement, item, result.showStickerPrice);
@@ -55,16 +74,19 @@ function addItemInfo() {
         });
     }
     // in case the inventory is not loaded yet
-    else{setTimeout( () => {addItemInfo()}, 1000)}
-}
+    else {
+        setTimeout( () => {
+                addItemInfo()}
+            , 1000)}
+};
 
-function buildInventoryStructure(inventory) {
+const buildInventoryStructure = (inventory) => {
     let inventoryArrayToReturn = [];
-    let duplicates = {};
+    const duplicates = {};
 
     inventory.forEach((item) => {
         if (duplicates[item.market_hash_name] === undefined){
-            let instances = [item.assetid];
+            const instances = [item.assetid];
             duplicates[item.market_hash_name] = {
                 num: 1,
                 instances: instances
@@ -78,7 +100,7 @@ function buildInventoryStructure(inventory) {
 
     inventory.forEach((item) => {
         const exterior = getExteriorFromTags(item.tags);
-        const marketlink = `https://steamcommunity.com/market/listings/730/${item.market_hash_name}`;
+        const marketlink = genericMarketLink + item.market_hash_name;
         const quality = getQuality(item.tags);
         let nametag = undefined;
         let inspectLink = null;
@@ -88,13 +110,15 @@ function buildInventoryStructure(inventory) {
         const starInName = item.name.includes('★');
         const type = getType(item.tags);
 
-        try {if (item.fraudwarnings !== undefined || item.fraudwarnings[0] !== undefined) nametag = item.fraudwarnings[0].split('Name Tag: \'\'')[1].split('\'\'')[0]}
-        catch(error) {}
+        try {
+            if (item.fraudwarnings !== undefined || item.fraudwarnings[0] !== undefined) nametag = item.fraudwarnings[0].split('Name Tag: \'\'')[1].split('\'\'')[0];
+        }
+        catch (error) {}
 
         try {
             if (item.actions !== undefined && item.actions[0] !== undefined){
-                let beggining = item.actions[0].link.split('%20S')[0];
-                let end = item.actions[0].link.split('%assetid%')[1];
+                const beggining = item.actions[0].link.split('%20S')[0];
+                const end = item.actions[0].link.split('%assetid%')[1];
                 inspectLink = (`${beggining}%20S${item.owner}A${item.assetid}${end}`);
             }
         }
@@ -113,14 +137,9 @@ function buildInventoryStructure(inventory) {
             exterior: exterior,
             iconURL: item.icon,
             inspectLink: inspectLink,
-            quality: quality,
-            isStatrack: isStatrack,
-            isSouvenir: isSouvenir,
-            starInName: starInName,
-            nametag: nametag,
+            quality: quality, isStatrack, isSouvenir, starInName, nametag,
             duplicates: duplicates[item.market_hash_name],
-            owner: item.owner,
-            type: type,
+            owner: item.owner, type,
             floatInfo: null,
             patternInfo: null,
             descriptions: item.descriptions
@@ -128,33 +147,37 @@ function buildInventoryStructure(inventory) {
     });
 
     return inventoryArrayToReturn.sort((a, b) => { return a.position - b.position});
-}
+};
 
-function removeSIHStuff() {document.querySelectorAll('.des-tag, .p-price, .price-tag').forEach(element => {element.remove()})}
+const removeSIHStuff = () => {
+    document.querySelectorAll('.des-tag, .p-price, .price-tag').forEach(element => {
+        element.remove();
+    });
+};
 
-function addInventoryTotals(yourInventory, theirInventory){
+const addInventoryTotals = (yourInventory, theirInventory) => {
     chrome.runtime.sendMessage({inventoryTotal: yourInventory}, (response) => {
         if (!(response === undefined || response.inventoryTotal === undefined || response.inventoryTotal === '' || response.inventoryTotal === 'error')){
-            let yourInventoryTitleDiv = document.getElementById('inventory_select_your_inventory').querySelector('div');
+            const yourInventoryTitleDiv = document.getElementById('inventory_select_your_inventory').querySelector('div');
             yourInventoryTitleDiv.style.fontSize = '16px';
             yourInventoryTitleDiv.innerText = `${yourInventoryTitleDiv.innerText} (${response.inventoryTotal})`;
         }
     });
     chrome.runtime.sendMessage({inventoryTotal: theirInventory}, (response) => {
         if (!(response === undefined || response.inventoryTotal === undefined || response.inventoryTotal === '' || response.inventoryTotal === 'error')){
-            let theirInventoryTitleDiv = document.getElementById('inventory_select_their_inventory').querySelector('div');
+            const theirInventoryTitleDiv = document.getElementById('inventory_select_their_inventory').querySelector('div');
             theirInventoryTitleDiv.style.fontSize = '16px';
             theirInventoryTitleDiv.innerText = `${theirInventoryTitleDiv.innerText} (${response.inventoryTotal})`;
         }
     });
-}
+};
 
-function addInTradeTotals(whose){
-    let itemsInTrade = document.getElementById(`${whose}_slots`).querySelectorAll('.item.app730.context2');
+const addInTradeTotals = (whose) => {
+    const itemsInTrade = document.getElementById(`${whose}_slots`).querySelectorAll('.item.app730.context2');
     let inTradeTotal = 0;
 
     itemsInTrade.forEach((inTradeItem) =>{
-        let item = getItemByAssetID(combinedInventories, getAssetIDOfElement(inTradeItem));
+        const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(inTradeItem));
         if (item.price !== undefined) inTradeTotal += parseFloat(item.price.price);
     });
 
@@ -166,22 +189,31 @@ function addInTradeTotals(whose){
             itemsTextDiv.innerHTML = `${itemsTextDiv.innerText.split(':')[0]} (<span id="${whose}InTradeTotal">${prettyPrintPrice(result.currency, inTradeTotal)}</span>):`;
         });
     }
-    else chrome.storage.local.get('currency', (result) => {document.getElementById(`${whose}InTradeTotal`).innerText = prettyPrintPrice(result.currency, inTradeTotal)});
-}
+    else chrome.storage.local.get('currency', (result) => {
+        document.getElementById(`${whose}InTradeTotal`).innerText = prettyPrintPrice(result.currency, inTradeTotal);
+    });
+};
 
-function periodicallyUpdateTotals(){setInterval(() => {if (!document.hidden) addInTradeTotals('your'); addInTradeTotals('their')}, 1000)}
+const periodicallyUpdateTotals = () => {
+    setInterval(() => {
+        if (!document.hidden) {
+            addInTradeTotals('your');
+            addInTradeTotals('their')
+        }
+    }, 1000);
+};
 
-function sortItems(method, type) {
+const sortItems = (method, type) => {
     if (isCSGOInventoryActive('offer')) {
         if (type === 'offer') {
-            let activeInventory = getActiveInventory();
+            const activeInventory = getActiveInventory();
 
-            let items = activeInventory.querySelectorAll('.item.app730.context2');
-            let offerPages = activeInventory.querySelectorAll('.inventory_page');
+            const items = activeInventory.querySelectorAll('.item.app730.context2');
+            const offerPages = activeInventory.querySelectorAll('.inventory_page');
             doTheSorting(combinedInventories, Array.from(items), method, offerPages, type);
         }
         else {
-            let items = document.getElementById(`trade_${type}s`).querySelectorAll('.item.app730.context2');
+            const items = document.getElementById(`trade_${type}s`).querySelectorAll('.item.app730.context2');
             doTheSorting(combinedInventories, Array.from(items), method, document.getElementById(`${type}_slots`), type);
             const inventoryTab = document.querySelector(`[href="#${type}_inventory"]`);
             if (inventoryTab !== null) inventoryTab.classList.add('sorted');
@@ -189,19 +221,19 @@ function sortItems(method, type) {
 
         loadAllItemsProperly();
     }
-}
+};
 
 // forces steam to load the item images
-function loadAllItemsProperly(){
-    let loadAllItemsProperly = `
+const loadAllItemsProperly = () => {
+    const loadAllItemsProperly = `
         g_ActiveInventory.pageList.forEach(function (page, index) {
             g_ActiveInventory.pageList[index].images_loaded = false;
             g_ActiveInventory.LoadPageImages(page);
         });`;
     injectToPage(loadAllItemsProperly, true, 'loadAllItemsProperly', null);
-}
+};
 
-function addFunctionBars(){
+const addFunctionBars = () => {
     if (document.getElementById('responsivetrade_itemfilters') !== null) {
         if (document.getElementById('offer_function_bar') === null) {
             // inserts left side function bar
@@ -227,18 +259,22 @@ function addFunctionBars(){
             document.getElementById('take_all_button').addEventListener('click', () => {
                 let activePage = null;
 
-                getActiveInventory().querySelectorAll('.inventory_page').forEach(page => {if (page.style.display !== 'none') activePage = page});
+                getActiveInventory().querySelectorAll('.inventory_page').forEach(page => {
+                    if (page.style.display !== 'none') activePage = page;
+                });
                 activePage.querySelectorAll('.item').forEach(item => {moveItem(item)});
             });
 
             // take everything functionality
             document.getElementById('take_everything_button').addEventListener('click', () => {
-                getActiveInventory().querySelectorAll('.item').forEach(item => {moveItem(item)});
+                getActiveInventory().querySelectorAll('.item').forEach(item => {
+                    moveItem(item);
+                });
             });
 
             // add keys functionality
             document.getElementById('take_keys').addEventListener('click', () => {
-                let numberOfKeys = document.getElementById('take_number_of_keys').value;
+                const numberOfKeys = document.getElementById('take_number_of_keys').value;
                 let keysTaken = 0;
                 getActiveInventory().querySelectorAll('.item').forEach((item) => {
                     if (keysTaken < numberOfKeys && getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).type.internal_name === itemTypes.key.internal_name){
@@ -250,16 +286,15 @@ function addFunctionBars(){
 
             // add selected functionality
             document.getElementById('take_selected').addEventListener('click', () => {
-                let numberOfSelected = document.getElementById('take_number_of_selected').value;
-                let selectedItems = [];
+                const numberOfSelected = document.getElementById('take_number_of_selected').value;
+                const itemElements = getActiveInventory().querySelectorAll('.item');
                 let selectedTaken = 0;
 
-                let itemElements = getActiveInventory().querySelectorAll('.item');
-
-                itemElements.forEach((item) => { // goes through the items and collects the names of the selected ones
+                const selectedItems = itemElements.map((item) => { // goes through the items and collects the names of the selected ones
                     if (item.classList.contains('selected')) {
-                        selectedItems.push(getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name);
+                        return getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name;
                     }
+                    else return null;
                 });
 
                 itemElements.forEach((item) => {
@@ -273,13 +308,13 @@ function addFunctionBars(){
             addAPartysFunctionBar('your');
             addAPartysFunctionBar('their');
 
-            let sortingSelect = document.getElementById('offer_sorting_mode');
-            let yourSortingSelect = document.getElementById('offer_your_sorting_mode');
-            let theirSortingSelect = document.getElementById('offer_their_sorting_mode');
+            const sortingSelect = document.getElementById('offer_sorting_mode');
+            const yourSortingSelect = document.getElementById('offer_your_sorting_mode');
+            const theirSortingSelect = document.getElementById('offer_their_sorting_mode');
 
-            let keys = Object.keys(sortingModes);
+            const keys = Object.keys(sortingModes);
             for (let key of keys) {
-                let option = document.createElement('option');
+                const option = document.createElement('option');
                 if (key !== 'tradability_desc' && key !== 'tradability_asc') {
                     option.value = sortingModes[key].key;
                     option.text = sortingModes[key].name;
@@ -320,10 +355,12 @@ function addFunctionBars(){
             });
         }
     }
-    else setTimeout(() => {addFunctionBars()}, 500);
-}
+    else setTimeout(() => {
+        addFunctionBars();
+    }, 500);
+};
 
-function doInitSorting() {
+const doInitSorting = () => {
     chrome.storage.local.get(['offerSortingMode', 'switchToOtherInventory'], (result) => {
         if (result.switchToOtherInventory) {
             const inventoryTab = document.getElementById("inventory_select_their_inventory");
@@ -348,23 +385,25 @@ function doInitSorting() {
 
         singleClickControlClick();
     });
-}
+};
 
-function getActiveInventory() {
+const getActiveInventory = () => {
     let activeInventory = null;
-    document.querySelectorAll('.inventory_ctn').forEach(inventory => {if (inventory.style.display !== 'none') activeInventory = inventory});
+    document.querySelectorAll('.inventory_ctn').forEach(inventory => {
+        if (inventory.style.display !== 'none') activeInventory = inventory;
+    });
     return activeInventory;
-}
+};
 
 // moves items to/from being in the offer
-function moveItem(item) {
-    let clickEvent = document.createEvent('MouseEvents');
+const moveItem = (item) => {
+    const clickEvent = document.createEvent('MouseEvents');
     clickEvent.initEvent('dblclick', true, true);
     item.dispatchEvent(clickEvent);
-}
+};
 
 // single click move, move same with ctrl+click, ctrl +right click to select item for mass moving
-function singleClickControlClick() {
+const singleClickControlClick = () => {
     document.querySelectorAll('.item.app730.context2').forEach(item => {
         item.removeEventListener('click', singleClickControlClickHandler);
         item.removeEventListener('click', rightClickControlHandler, false);
@@ -375,15 +414,16 @@ function singleClickControlClick() {
         item.addEventListener('click', singleClickControlClickHandler);
         item.addEventListener('contextmenu', rightClickControlHandler, false);
     });
-}
+};
 
-function singleClickControlClickHandler(event) {
+const singleClickControlClickHandler = (event) => {
     if (event.ctrlKey) {
-        let marketHashNameToLookFor = getItemByAssetID(combinedInventories, getAssetIDOfElement(event.target.parentNode)).market_hash_name;
-        let inInventory = null;
+        const marketHashNameToLookFor = getItemByAssetID(combinedInventories, getAssetIDOfElement(event.target.parentNode)).market_hash_name;
+        let inInventory;
         if (event.target.parentNode.parentNode.parentNode.parentNode.id === 'their_slots') inInventory = document.getElementById('their_slots');
         else if (event.target.parentNode.parentNode.parentNode.parentNode.id === 'your_slots') inInventory = document.getElementById('your_slots');
         else inInventory = getActiveInventory();
+
         inInventory.querySelectorAll('.item.app730.context2').forEach(item => {
             if (getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name === marketHashNameToLookFor){
                 moveItem(item);
@@ -393,16 +433,18 @@ function singleClickControlClickHandler(event) {
         removeLeftOverSlots();
     }
     else moveItem(event.target);
-}
+};
 
 // removes buggy slots that remain behind and break the ui
-function removeLeftOverSlots(){
+const removeLeftOverSlots = () => {
     setTimeout( () =>{
-        document.querySelectorAll('.itemHolder.trade_slot').forEach(slot => {if (slot.parentNode.id !== 'your_slots' && slot.parentNode.id !== 'their_slots') slot.remove()})
+        document.querySelectorAll('.itemHolder.trade_slot').forEach(slot => {
+            if (slot.parentNode.id !== 'your_slots' && slot.parentNode.id !== 'their_slots') slot.remove();
+        });
     }, 500);
-}
+};
 
-function addAPartysFunctionBar(whose){
+const addAPartysFunctionBar = (whose) => {
     // inserts "your" function bar
     document.getElementById(`trade_${whose}s`).querySelector('.offerheader').insertAdjacentHTML('afterend', `
             <div id="offer_${whose}_function_bar">
@@ -429,7 +471,7 @@ function addAPartysFunctionBar(whose){
 
     // remove your/their keys functionality
     document.getElementById(`remove_${whose}_keys`).addEventListener('click', () => {
-        let numberOfKeys = document.getElementById(`remove_${whose}_number_of_keys`).value;
+        const numberOfKeys = document.getElementById(`remove_${whose}_number_of_keys`).value;
         let keysRemoved = 0;
         document.getElementById(`trade_${whose}s`).querySelectorAll('.item').forEach((item) => {
             if (keysRemoved < numberOfKeys && getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).type.internal_name === itemTypes.key.internal_name){
@@ -442,12 +484,15 @@ function addAPartysFunctionBar(whose){
 
     // remove your/their selected items functionality
     document.getElementById(`remove_${whose}_selected`).addEventListener('click', () => {
-        let numberOfSelected = document.getElementById(`remove_${whose}_number_of_selected`).value;
+        const numberOfSelected = document.getElementById(`remove_${whose}_number_of_selected`).value;
+        const itemElements = document.getElementById(`trade_${whose}s`).querySelectorAll('.item');
         let selectedRemoved = 0;
-        let selectedItems = [];
-        let itemElements = document.getElementById(`trade_${whose}s`).querySelectorAll('.item');
-        itemElements.forEach((item) => {
-            if (item.classList.contains('selected')) selectedItems.push(getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name);
+
+        const selectedItems = itemElements.map((item) => {
+            if (item.classList.contains('selected')) {
+                return getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name;
+            }
+            else return null;
         });
 
         itemElements.forEach((item) => {
@@ -458,7 +503,7 @@ function addAPartysFunctionBar(whose){
             removeLeftOverSlots();
         });
     });
-}
+};
 
 const addFloatIndicatorsToPage = (type) => {
     chrome.storage.local.get('autoFloatOffer', (result) => {
@@ -494,10 +539,12 @@ const addFloatIndicatorsToPage = (type) => {
     });
 };
 
-function getOfferID() {return location.href.split('tradeoffer/')[1].split('/')[0]}
+const getOfferID = () => {
+    return window.location.href.split('tradeoffer/')[1].split('/')[0];
+};
 
-function getItemInfoFromPage(who) {
-    let getItemsScript = `
+const getItemInfoFromPage = (who) => {
+    const getItemsScript = `
             inventory = User${who}.getInventory(730,2);
             assets = inventory.rgInventory;
             steamID = inventory.owner.strSteamId;
@@ -531,21 +578,27 @@ function getItemInfoFromPage(who) {
              else trimmedAssets = null;
         document.querySelector('body').setAttribute('offerInventoryInfo', JSON.stringify(trimmedAssets));`;
     return JSON.parse(injectToPage(getItemsScript, true, 'getOfferItemInfo', 'offerInventoryInfo'));
-}
+};
 
-function rightClickControlHandler(event) {
+const rightClickControlHandler = (event) => {
     if (event.ctrlKey) {
         event.preventDefault(); // prevents the default behavior from happening - which would be the context menu appearing in this case
         event.target.parentNode.classList.toggle('selected');
         return false;
     }
-}
+};
+
+// gets the other party's steam id in a trade offer
+const getTradePartnerSteamID = () => {
+    const tradePartnerSteamIDScript = `document.querySelector('body').setAttribute('tradePartnerSteamID', g_ulTradePartnerSteamID);`;
+    return injectToPage(tradePartnerSteamIDScript, true, 'tradePartnerSteamID', 'tradePartnerSteamID')
+};
 
 // add an info card to the top of the offer about offer history with the user (sent/received)
-function addPartnerOfferSummary() {
+const addPartnerOfferSummary = () => {
     chrome.storage.local.get(['tradeHistoryOffers', `offerHistory_${getTradePartnerSteamID()}`, 'apiKeyValid'], (result) => {
         let offerHistory = result[`offerHistory_${getTradePartnerSteamID()}`];
-        let headline = document.querySelector('.trade_partner_headline');
+        const headline = document.querySelector('.trade_partner_headline');
 
         if (result.tradeHistoryOffers) {
             if (offerHistory === undefined) {
@@ -575,7 +628,7 @@ function addPartnerOfferSummary() {
             }
         }
     });
-}
+};
 
 const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
 
@@ -612,7 +665,7 @@ document.querySelectorAll('.inventory_user_tab').forEach( (inventoryTab) => {
     inventoryTab.addEventListener('click', () => {
         addItemInfo();
         if (!inventoryTab.classList.contains('sorted')) {
-            let sortingSelect = document.getElementById('offer_sorting_mode');
+            const sortingSelect = document.getElementById('offer_sorting_mode');
             sortItems(sortingSelect.options[sortingSelect.selectedIndex].value, 'offer');
             inventoryTab.classList.add('sorted');
         }
@@ -620,16 +673,18 @@ document.querySelectorAll('.inventory_user_tab').forEach( (inventoryTab) => {
     })
 });
 
-let inventorySelector = document.getElementById('appselect');
+const inventorySelector = document.getElementById('appselect');
 if (inventorySelector !== null) {
     document.getElementById('appselect').addEventListener('click', () => {
-        setTimeout( () => {if (isCSGOInventoryActive('offer')) addItemInfo()}, 2000);
+        setTimeout( () => {
+            if (isCSGOInventoryActive('offer')) addItemInfo();
+        }, 2000);
     });
 }
 
 chrome.storage.local.get('tradeOfferHeaderToLeft', (result) => {
-   if (result.tradeOfferHeaderToLeft) {
-       injectStyle(`
+    if (result.tradeOfferHeaderToLeft) {
+        injectStyle(`
     @media (min-width: 1500px) {
         body, .pagecontent {
             width: 100%
@@ -660,14 +715,14 @@ chrome.storage.local.get('tradeOfferHeaderToLeft', (result) => {
         }
     }
 `, 'headerToSide');
-   }
+    }
 });
 
 addPageControlEventListeners('offer');
 
 addSearchListener('offer');
 
-let theirInventoryTab = document.getElementById('inventory_select_their_inventory');
+const theirInventoryTab = document.getElementById('inventory_select_their_inventory');
 if (theirInventoryTab !== null) document.getElementById('inventory_select_their_inventory').addEventListener('click', () => { // if the offer is "active"
     singleClickControlClick();
     setTimeout(() => {addFloatIndicatorsToPage('page')}, 500);
@@ -676,7 +731,6 @@ if (theirInventoryTab !== null) document.getElementById('inventory_select_their_
 addFunctionBars();
 addPartnerOfferSummary();
 
-// reloads the page on extension update/reload/uninstall
-chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});
+reloadPageOnExtensionReload();
 
 export { addFloatIndicatorsToPage };

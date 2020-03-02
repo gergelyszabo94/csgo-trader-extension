@@ -63,11 +63,7 @@
         "*://steamcommunity.com/profiles/*/*",
         "*://steamcommunity.com/profiles/*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js",
-        "js/content_scripts/steam/profile.js"],
+      "js": ["js/content_scripts/steam/profile.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
