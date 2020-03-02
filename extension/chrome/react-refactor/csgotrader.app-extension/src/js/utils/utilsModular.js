@@ -629,6 +629,34 @@ const addSearchListener = (type) => {
     }
 };
 
+const getSessionID = () => {
+    const getSessionIDScript = `document.querySelector('body').setAttribute('sessionid', g_sessionID);`;
+    return injectToPage(getSessionIDScript, true, 'getSessionID', 'sessionid');
+};
+
+// converts shitty annoying trade offer style SteamID to proper SteamID64
+const getPoperStyleSteamIDFromOfferStyle = (offerStyleID) => {
+    return '7656' + (Number(offerStyleID) + Number(1197960265728));
+};
+
+const extractItemsFromOffers = (offers) => {
+    let itemsToReturn = [];
+    if (offers !== undefined || null) {
+        offers.forEach(offer => {
+            if (offer.items_to_give !== undefined) offer.items_to_give.forEach(item => {
+                item.owner = getPoperStyleSteamIDFromOfferStyle(offer.accountid_other);
+                itemsToReturn.push(item)
+            });
+            if (offer.items_to_receive !== undefined) offer.items_to_receive.forEach(item => {
+                item.owner = getPoperStyleSteamIDFromOfferStyle(offer.accountid_other);
+                itemsToReturn.push(item)
+            });
+        });
+    }
+
+    return itemsToReturn;
+};
+
 export {
     logExtensionPresence, scrapeSteamAPIkey, arrayFromArrayOrNotArray,
     getExteriorFromTags, getDopplerInfo, getQuality, parseStickerInfo,
@@ -643,5 +671,6 @@ export {
     getSteamWalletInfo, getSteamWalletCurrency, findElementByAssetID,
     getFloatBarSkeleton, isCSGOInventoryActive, injectStyle,
     reloadPageOnExtensionReload, isSIHActive, dateToISODisplay,
-    prettyTimeAgo, addSearchListener
+    prettyTimeAgo, addSearchListener, getSessionID,
+    getPoperStyleSteamIDFromOfferStyle, extractItemsFromOffers
 };

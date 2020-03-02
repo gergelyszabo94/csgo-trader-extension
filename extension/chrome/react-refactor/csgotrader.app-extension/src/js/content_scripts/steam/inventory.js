@@ -9,7 +9,7 @@ import { injectToPage, addPageControlEventListeners, getItemByAssetID,
     prettyTimeAgo, addSearchListener }
     from 'js/utils/utilsModular';
 
-import { stattrak, starChar, souvenir, stattrakPretty } from 'js/utils/static/simpleStrings';
+import { stattrak, starChar, souvenir, stattrakPretty, genericMarketLink } from 'js/utils/static/simpleStrings';
 import floatQueue, { workOnFloatQueue } from "js/utils/floatQueueing";
 import { getPriceOverview, getPriceAfterFees, userPriceToProperPrice,
     centsToSteamFormattedPrice, prettyPrintPrice, steamFormattedPriceToCents,
@@ -269,7 +269,6 @@ const addElements = () => {
 
                 const thereSouvenirForThisItem =  souvenirExists(textOfDescriptors);
 
-                const genericMarketLink = 'https://steamcommunity.com/market/listings/730/';
                 let weaponName = '';
                 const star = item.starInName ? starChar : '';
 
@@ -1061,8 +1060,6 @@ const dopplerPhase = '<div class="dopplerPhase"><span></span></div>';
 logExtensionPresence();
 
 // mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
-MutationObserver = window.MutationObserver;
-
 const observer = new MutationObserver(() => {
     if (isCSGOInventoryActive('inventory')){
         addElements();

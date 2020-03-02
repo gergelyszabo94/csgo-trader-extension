@@ -1,24 +1,38 @@
-function addPhasesIndicator(){
-    if (/Doppler/.test(window.location.href)) {
+import { dopplerPhases } from 'js/utils/static/dopplerPhases';
+import {
+    getDopplerInfo, getFloatBarSkeleton, injectToPage,
+    parseStickerInfo, getPattern, logExtensionPresence,
+    updateLoggedInUserID, souvenirExists, reloadPageOnExtensionReload,
+    getDataFilledFloatTechnical } from 'js/utils/utilsModular';
+import floatQueue, { workOnFloatQueue } from "js/utils/floatQueueing";
+import exteriors from "js/utils/static/exteriors";
+import { getPrice, getStickerPriceTotal } from 'js/utils/pricing';
+import { trackEvent } from "js/utils/analytics";
+import { stattrak, starChar, souvenir, stattrakPretty, genericMarketLink } from 'js/utils/static/simpleStrings';
+
+const addPhasesIndicator = () => {
+    if (window.location.href.includes('Doppler')) {
         document.querySelectorAll('.market_listing_item_img_container').forEach(container =>{
             container.insertAdjacentHTML('beforeend', dopplerPhase);
             let phase = getDopplerInfo(container.querySelector('img').getAttribute('src').split('economy/image/')[1].split('/')[0]);
             let dopplerElement = container.querySelector('.dopplerPhaseMarket');
 
             switch (phase.short){
-                case dopplerPhases.sh.short: dopplerElement.insertAdjacentHTML('beforeend', sapphire); break;
-                case dopplerPhases.rb.short: dopplerElement.insertAdjacentHTML('beforeend', ruby); break;
-                case dopplerPhases.em.short: dopplerElement.insertAdjacentHTML('beforeend', emerald); break;
-                case dopplerPhases.bp.short: dopplerElement.insertAdjacentHTML('beforeend', blackPearl); break;
+                case dopplerPhases.sh.short: dopplerElement.insertAdjacentHTML('beforeend', dopplerPhases.sh.element); break;
+                case dopplerPhases.rb.short: dopplerElement.insertAdjacentHTML('beforeend', dopplerPhases.rb.element); break;
+                case dopplerPhases.em.short: dopplerElement.insertAdjacentHTML('beforeend', dopplerPhases.em.element); break;
+                case dopplerPhases.bp.short: dopplerElement.insertAdjacentHTML('beforeend', dopplerPhases.bp.element); break;
                 default: dopplerElement.querySelector('span').innerText = phase.short;
             }
         });
     }
-}
+};
 
-function addStickers() {
+const addStickers = () => {
     // removes sih sticker info
-    document.querySelectorAll('.sih-images').forEach(image => {image.remove()});
+    document.querySelectorAll('.sih-images').forEach(image => {
+        image.remove();
+    });
 
     const listings = getListings();
     const listingsSection = document.getElementById('searchResultsRows');
@@ -45,16 +59,16 @@ function addStickers() {
             }
         });
     }
-}
+};
 
-function addListingsToFloatQueue() {
+const addListingsToFloatQueue = () => {
     chrome.storage.local.get('autoFloatMarket', (result) => {
         if (result.autoFloatMarket) {
             if (itemWithInspectLink) {
-                let listings = getListings();
+                const listings = getListings();
                 for (let listing in listings) {
                     listing = listings[listing];
-                    let assetID = listing.asset.id;
+                    const assetID = listing.asset.id;
 
                     floatQueue.jobs.push({
                         type: 'market',
@@ -68,15 +82,15 @@ function addListingsToFloatQueue() {
             }
         }
     });
-}
+};
 
-function addFloatBarSkeletons() {
+const addFloatBarSkeletons = () => {
     chrome.storage.local.get('autoFloatMarket', (result) => {
         if (result.autoFloatMarket) {
-            let listingsSection = document.getElementById('searchResultsRows');
+            const listingsSection = document.getElementById('searchResultsRows');
 
             if (listingsSection !== null) { // so it does not throw any errors when it can't find it on commodity items
-                let listingNameBlocks = listingsSection.querySelectorAll('.market_listing_item_name_block');
+                const listingNameBlocks = listingsSection.querySelectorAll('.market_listing_item_name_block');
                 if (listingNameBlocks !== null && itemWithInspectLink) {
                     listingNameBlocks.forEach(listingNameBlock => {
                         if (listingNameBlock.getAttribute('data-floatBar-added') === null || listingNameBlock.getAttribute('data-floatBar-added') === false) {
@@ -91,12 +105,12 @@ function addFloatBarSkeletons() {
                     });
                 }
                 else setTimeout(() => {
-                    addFloatBarSkeletons()
+                    addFloatBarSkeletons();
                 }, 2000);
             }
         }
     });
-}
+};
 
 const populateFloatInfo = (listingID, floatInfo) => {
     const listingElement = getElementByListingID(listingID);
@@ -110,7 +124,7 @@ const populateFloatInfo = (listingID, floatInfo) => {
     }
 };
 
-const hideFloatBar = (listingID) => {
+const hideFloatBar = listingID => {
     const listingElement = getElementByListingID(listingID);
 
     if (listingElement !== null) {
@@ -118,12 +132,16 @@ const hideFloatBar = (listingID) => {
     }
 };
 
-function getElementByListingID(listingID){return document.getElementById(`listing_${listingID}`)}
+const getElementByListingID = listingID => {
+    return document.getElementById(`listing_${listingID}`);
+};
 
-function getListingIDFromElement(listingElement) {return listingElement.id.split('listing_')[1]}
+const getListingIDFromElement = listingElement => {
+    return listingElement.id.split('listing_')[1];
+};
 
 
-function getListings() {
+const getListings = () => {
     const getListingsScript = `
     document.querySelector('body').setAttribute('listingsInfo', JSON.stringify({
         listings: g_rgListingInfo,
@@ -148,7 +166,7 @@ function getListings() {
     }
 
     return listings;
-}
+};
 
 // sticker wear to sticker icon tooltip
 const setStickerInfo = (listingID, stickers) => {
@@ -177,36 +195,36 @@ const setStickerInfo = (listingID, stickers) => {
     }
 };
 
-function sortListings(sortingMode) {
-    let listingElements = [...document.getElementById('searchResultsTable').querySelectorAll('.market_listing_row.market_recent_listing_row')];
-    let listingsData = getListings();
+const sortListings = (sortingMode) => {
+    const listingElements = [...document.getElementById('searchResultsTable').querySelectorAll('.market_listing_row.market_recent_listing_row')];
+    const listingsData = getListings();
     let sortedElements = [];
 
     if (sortingMode === 'price_asc') {
         sortedElements = listingElements.sort((a, b) => {
-            let priceOfA = parseInt(listingsData[getListingIDFromElement(a)].converted_price);
-            let priceOfB = parseInt(listingsData[getListingIDFromElement(b)].converted_price);
+            const priceOfA = parseInt(listingsData[getListingIDFromElement(a)].converted_price);
+            const priceOfB = parseInt(listingsData[getListingIDFromElement(b)].converted_price);
             return priceOfA - priceOfB;
         });
     }
     else if (sortingMode === 'price_desc') {
         sortedElements = listingElements.sort((a, b) => {
-            let priceOfA = parseInt(listingsData[getListingIDFromElement(a)].converted_price);
-            let priceOfB = parseInt(listingsData[getListingIDFromElement(b)].converted_price);
+            const priceOfA = parseInt(listingsData[getListingIDFromElement(a)].converted_price);
+            const priceOfB = parseInt(listingsData[getListingIDFromElement(b)].converted_price);
             return priceOfB - priceOfA;
         });
     }
     else if (sortingMode === 'float_asc') {
         sortedElements = listingElements.sort((a, b) => {
-            let floatOfA = parseFloat(a.querySelector('.floatDropTarget').innerText);
-            let floatOfB = parseFloat(b.querySelector('.floatDropTarget').innerText);
+            const floatOfA = parseFloat(a.querySelector('.floatDropTarget').innerText);
+            const floatOfB = parseFloat(b.querySelector('.floatDropTarget').innerText);
             return floatOfA - floatOfB;
         });
     }
     else if (sortingMode === 'float_desc') {
         sortedElements = listingElements.sort((a, b) => {
-            let floatOfA = parseFloat(a.querySelector('.floatDropTarget').innerText);
-            let floatOfB = parseFloat(b.querySelector('.floatDropTarget').innerText);
+            const floatOfA = parseFloat(a.querySelector('.floatDropTarget').innerText);
+            const floatOfB = parseFloat(b.querySelector('.floatDropTarget').innerText);
             return floatOfB - floatOfA;
         });
     }
@@ -240,9 +258,9 @@ function sortListings(sortingMode) {
     sortedElements.forEach(listingElement => {
         listingsContainer.insertAdjacentElement('beforeend', listingElement);
     });
-}
+};
 
-function addPricesInOtherCurrencies() {
+const addPricesInOtherCurrencies = () => {
     chrome.storage.local.get('marketOriginalPrice', (result) => {
         if (result.marketOriginalPrice) {
             const listings = getListings();
@@ -289,12 +307,13 @@ function addPricesInOtherCurrencies() {
             }
         }
     });
-}
+};
 
 const addPatterns = (listingID, floatInfo) => {
     const patternInfo = getPattern(fullName, floatInfo.paintseed);
     if (patternInfo !== null) {
         const listingElement = getElementByListingID(listingID);
+
         if (listingElement !== null) {
             const patternClass = patternInfo.type === 'marble_fade' ? 'marbleFadeGradient' : 'fadeGradient';
             listingElement.querySelector('.market_listing_item_name').insertAdjacentHTML('afterend', `<span class="${patternClass}"> ${patternInfo.value}</span>`)
@@ -317,34 +336,30 @@ let textOfDescriptors = '';
 document.querySelectorAll('.descriptor').forEach(descriptor => {textOfDescriptors += descriptor.innerText});
 let thereSouvenirForThisItem =  souvenirExists(textOfDescriptors);
 
-let genericMarketLink = 'https://steamcommunity.com/market/listings/730/';
 let weaponName = '';
 const fullName = decodeURIComponent(window.location.href).split("listings/730/")[1];
-let stattrak = 'StatTrak%E2%84%A2%20';
-let stattrakPretty = 'StatTrak™';
-let souvenir = 'Souvenir ';
 let star = '';
-let isStattrak = /StatTrak™/.test(fullName);
-let isSouvenir = /Souvenir/.test(fullName);
+const isStattrak = /StatTrak™/.test(fullName);
+const isSouvenir = /Souvenir/.test(fullName);
 
-if(/★/.test(fullName)){star = '%E2%98%85%20'}
-if(isStattrak) weaponName = fullName.split('StatTrak™ ')[1].split('(')[0];
+if (fullName.includes('★')) star = starChar;
+if (isStattrak) weaponName = fullName.split('StatTrak™ ')[1].split('(')[0];
 else if(isSouvenir) weaponName = fullName.split('Souvenir ')[1].split('(')[0];
-else{
+else {
     weaponName = fullName.split('(')[0].split('★ ')[1];
-    if(weaponName === undefined) weaponName = fullName.split('(')[0];
+    if (weaponName === undefined) weaponName = fullName.split('(')[0];
 }
 
 let stOrSv = stattrakPretty;
 let stOrSvClass = 'stattrakOrange';
 let linkMidPart = star + stattrak;
-if(isSouvenir || thereSouvenirForThisItem){
+if (isSouvenir || thereSouvenirForThisItem){
     stOrSvClass = 'souvenirYellow';
     stOrSv = souvenir;
     linkMidPart = souvenir;
 }
 
-let otherExteriors = `
+const otherExteriors = `
             <div class="descriptor otherExteriors">
                 <span>${chrome.i18n.getMessage("links_to_other_exteriors")}:</span>
                 <ul>
@@ -359,7 +374,7 @@ let otherExteriors = `
             `;
 
 const descriptor = document.getElementById('largeiteminfo_item_descriptors');
-if(fullName.split('(')[1] !== undefined && descriptor !== null) descriptor.insertAdjacentHTML('beforeend', otherExteriors);
+if (fullName.split('(')[1] !== undefined && descriptor !== null) descriptor.insertAdjacentHTML('beforeend', otherExteriors);
 
 // adds the in-browser inspect button to the top of the page
 const originalInspectButton = document.getElementById('largeiteminfo_item_actions').querySelector('.btn_small.btn_grey_white_innerfade'); // some items don't have inspect buttons (like cases)
@@ -424,8 +439,8 @@ addPricesInOtherCurrencies();
 
 
 
-let observer = new MutationObserver((mutations) =>{
-    for(let mutation of mutations) {
+const observer = new MutationObserver((mutations) =>{
+    for (let mutation of mutations) {
         if (mutation.target.id === 'searchResultsRows') {
             addPhasesIndicator();
             addFloatBarSkeletons();
@@ -436,7 +451,7 @@ let observer = new MutationObserver((mutations) =>{
     }
 });
 
-let searchResultsRows = document.getElementById('searchResultsRows');
+const searchResultsRows = document.getElementById('searchResultsRows');
 if (searchResultsRows !== null){
     observer.observe(searchResultsRows, {
         subtree: true,
@@ -447,12 +462,11 @@ if (searchResultsRows !== null){
 
 chrome.storage.local.get('numberOfListings', (result) =>{
     if (result.numberOfListings !== 10){
-        let loadMoreMarketAssets = `g_oSearchResults.m_cPageSize = ${result.numberOfListings}; g_oSearchResults.GoToPage(0, true);`;
+        const loadMoreMarketAssets = `g_oSearchResults.m_cPageSize = ${result.numberOfListings}; g_oSearchResults.GoToPage(0, true);`;
         injectToPage(loadMoreMarketAssets, true, 'loadMoreMarketAssets', null);
     }
 });
 
-// reloads the page on extension update/reload/uninstall
-chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});
+reloadPageOnExtensionReload();
 
 export { populateFloatInfo, setStickerInfo, addPatterns, hideFloatBar };

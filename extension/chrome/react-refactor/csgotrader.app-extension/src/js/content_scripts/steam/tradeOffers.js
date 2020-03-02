@@ -1,9 +1,24 @@
-function matchItemsWithDescriptions(items) {
+import {
+    getExteriorFromTags, getQuality, getDopplerInfo,
+    getType, addDopplerPhase, makeItemColorful,
+    addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
+    getItemByAssetID, getPoperStyleSteamIDFromOfferStyle, prettyTimeAgo,
+    logExtensionPresence, updateLoggedInUserID, reloadPageOnExtensionReload,
+    injectStyle, injectToPage, extractItemsFromOffers } from 'js/utils/utilsModular';
+import { genericMarketLink } from 'js/utils/static/simpleStrings';
+import floatQueue, { workOnFloatQueue } from "js/utils/floatQueueing";
+import itemTypes from 'js/utils/static/itemTypes';
+import { prettyPrintPrice } from 'js/utils/pricing';
+import { overrideDecline, overrideShowTradeOffer } from 'js/utils/steamOverriding';
+import { trackEvent } from "js/utils/analytics";
+import { offersSortingModes } from 'js/utils/static/sortingModes';
+
+const matchItemsWithDescriptions = (items) => {
     let itemsToReturn = [];
     items.forEach((item) => {
         if (item.market_hash_name !== undefined) { // some items don't have descriptions for some reason - will have to be investigated later
             const exterior = getExteriorFromTags(item.tags);
-            const marketlink = `https://steamcommunity.com/market/listings/730/${item.market_hash_name}`;
+            const marketlink = genericMarketLink + item.market_hash_name;
             const quality = getQuality(item.tags);
             let nametag = undefined;
             let inspectLink = null;
@@ -32,23 +47,14 @@ function matchItemsWithDescriptions(items) {
             itemsToReturn.push({
                 name: item.name,
                 market_hash_name: item.market_hash_name,
-                name_color: item.name_color,
-                marketlink: marketlink,
+                name_color: item.name_color, marketlink,
                 classid: item.classid,
                 instanceid: item.instanceid,
                 assetid: item.assetid,
-                position: item.position,
-                dopplerInfo: dopplerInfo,
-                exterior: exterior,
+                position: item.position, dopplerInfo, exterior,
                 iconURL: item.icon_url,
-                inspectLink: inspectLink,
-                quality: quality,
-                isStatrack: isStatrack,
-                isSouvenir: isSouvenir,
-                starInName: starInName,
-                nametag: nametag,
-                owner: item.owner,
-                type: type,
+                inspectLink, quality, isStatrack, isSouvenir, starInName, nametag,
+                owner: item.owner, type,
                 floatInfo: null,
                 patternInfo: null,
                 descriptions: item.descriptions
@@ -57,38 +63,37 @@ function matchItemsWithDescriptions(items) {
     });
 
     return itemsToReturn;
-}
+};
 
-function isCSGOItemElement(element) {
+const isCSGOItemElement = (element) => {
     return element.getAttribute('data-economy-item').includes('classinfo/730/');
-}
+};
 
-function getIDsFromElement(element) {
-    let splitString = element.getAttribute('data-economy-item').split('/');
+const getIDsFromElement = (element) => {
+    const splitString = element.getAttribute('data-economy-item').split('/');
     return {
         classid: splitString[2] === undefined ? null : splitString[2],
         instanceid: splitString[3] === undefined ? null : splitString[3]
     };
-}
+};
 
 const selectItemElementByIDs = (classid, instanceid) => {
     return document.querySelector(`[data-economy-item="classinfo/730/${classid}/${instanceid}"`);
 };
 
-function getItemByIDs(items, IDs) {
+const getItemByIDs = (items, IDs) => {
     if (IDs.instanceid !== null) return items.filter(item => item.classid === IDs.classid && item.instanceid === IDs.instanceid)[0];
     else return items.filter(item => item.classid === IDs.classid)[0];
-}
+};
 
-function addItemInfo(items) {
+const addItemInfo = (items) => {
     let activeItemElements = [];
     document.querySelectorAll('.tradeoffer').forEach(offerElement => {
         let offerItemsElement = offerElement.querySelector('.tradeoffer_items_ctn');
 
         if (isOfferActive(offerElement)) {
-            let offerItems = offerItemsElement.querySelectorAll('.trade_item');
-            offerItems.forEach(item => {
-                activeItemElements.push(item);
+            activeItemElements = offerItemsElement.querySelectorAll('.trade_item').map( item => {
+                return item;
             });
         }
     });
@@ -125,7 +130,7 @@ function addItemInfo(items) {
     });
 }
 
-function addTotals(offers, items){
+const addTotals = (offers, items) => {
     chrome.storage.local.get('currency', (result) => {
         let totalProfit = 0.0;
         let activeOfferCount = 0;
@@ -161,9 +166,9 @@ function addTotals(offers, items){
                 const yourHeader = activePage === 'incoming_offers' ? secondaryHeader : primaryHeader;
 
                 theirHeader.innerText += ` ${prettyPrintPrice(result.currency, (theirItemsTotal).toFixed(2))}`;
-                theirIncludesItemWIthNoPrice ? theirHeader.innerText += ' - includes items with no price' : null;
+                theirHeader.innerText = theirIncludesItemWIthNoPrice ? theirHeader.innerText += ' - includes items with no price' : theirHeader.innerText;
                 yourHeader.innerText += ` ${prettyPrintPrice(result.currency, (yourItemsTotal).toFixed(2))}`;
-                yourIncludesItemWIthNoPrice ? yourHeader.innerText += ' - includes items with no price' : null;
+                yourHeader.innerText = yourIncludesItemWIthNoPrice ? yourHeader.innerText += ' - includes items with no price' : yourHeader.innerText;
 
                 let profitOrLoss = theirItemsTotal - yourItemsTotal;
                 let PLPercentage = theirItemsTotal / yourItemsTotal;
@@ -178,56 +183,55 @@ function addTotals(offers, items){
         });
 
         document.getElementById('tradeoffers_summary').innerHTML = `
-                                                                   <div id="active_offers_count"><b>Active Offers: </b>${activeOfferCount}</div>
-                                                                   <div id="profitable_offers_count"><b>Profitable Offers: </b>${numberOfProfitableOffers}</div>
-                                                                   <div id="potential_profit"><b>Potential profit: </b>${prettyPrintPrice(result.currency, (totalProfit).toFixed(2))}</div>
-                                                                    `;
+            <div id="active_offers_count"><b>Active Offers: </b>${activeOfferCount}</div>
+            <div id="profitable_offers_count"><b>Profitable Offers: </b>${numberOfProfitableOffers}</div>
+            <div id="potential_profit"><b>Potential profit: </b>${prettyPrintPrice(result.currency, (totalProfit).toFixed(2))}</div>`;
     });
-}
+};
 
-function sortOffers(sortingMode){
-    let activeOffers = [...document.querySelectorAll('.tradeoffer')].filter(offerElement => isOfferActive(offerElement));
+const sortOffers = (sortingMode) => {
+    const activeOffers = [...document.querySelectorAll('.tradeoffer')].filter(offerElement => isOfferActive(offerElement));
     let sortedOffers = [];
 
     if (sortingMode === 'profit_amount') {
         sortedOffers = activeOffers.sort((a, b) => {
-            let profitOnA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-profit-or-loss'));
-            let profitOnB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-profit-or-loss'));
+            const profitOnA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-profit-or-loss'));
+            const profitOnB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-profit-or-loss'));
             return profitOnB - profitOnA;
         });
     }
     else if (sortingMode === 'loss_amount') {
         sortedOffers = activeOffers.sort((a, b) => {
-            let profitOnA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-profit-or-loss'));
-            let profitOnB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-profit-or-loss'));
+            const profitOnA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-profit-or-loss'));
+            const profitOnB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-profit-or-loss'));
             return profitOnA - profitOnB;
         });
     }
     else if (sortingMode === 'profit_percentage') {
         sortedOffers = activeOffers.sort((a, b) => {
-            let pLA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
-            let pLB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
+            const pLA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
+            const pLB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
             return pLB - pLA;
         });
     }
     else if (sortingMode === 'loss_percentage') {
         sortedOffers = activeOffers.sort((a, b) => {
-            let pLA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
-            let pLB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
+            const pLA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
+            const pLB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
             return pLA - pLB
         });
     }
     else if (sortingMode === 'default') {
         sortedOffers = activeOffers.sort((a, b) => {
-            let updatedA = parseInt(a.querySelector('.profitOrLoss').getAttribute('data-updated'));
-            let updatedB = parseInt(b.querySelector('.profitOrLoss').getAttribute('data-updated'));
+            const updatedA = parseInt(a.querySelector('.profitOrLoss').getAttribute('data-updated'));
+            const updatedB = parseInt(b.querySelector('.profitOrLoss').getAttribute('data-updated'));
             return updatedB - updatedA;
         });
     }
     else if (sortingMode === 'reverse') {
         sortedOffers = activeOffers.sort((a, b) => {
-            let updatedA = parseInt(a.querySelector('.profitOrLoss').getAttribute('data-updated'));
-            let updatedB = parseInt(b.querySelector('.profitOrLoss').getAttribute('data-updated'));
+            const updatedA = parseInt(a.querySelector('.profitOrLoss').getAttribute('data-updated'));
+            const updatedB = parseInt(b.querySelector('.profitOrLoss').getAttribute('data-updated'));
             return updatedA - updatedB;
         });
     }
@@ -235,36 +239,40 @@ function sortOffers(sortingMode){
     sortedOffers.reverse();
 
     // removes offer elements
-    activeOffers.forEach(offer => {offer.remove()});
-    document.querySelector('.profile_leftcol').querySelectorAll('.tradeoffer_rule').forEach( rulerElement => rulerElement.remove());
+    activeOffers.forEach(offer => {
+        offer.remove();
+    });
+    document.querySelector('.profile_leftcol').querySelectorAll('.tradeoffer_rule').forEach( rulerElement => {
+        rulerElement.remove();
+    });
 
     // adds sorted offer elements to page
-    let offerSection = document.querySelector('.profile_leftcol');
+    const offerSection = document.querySelector('.profile_leftcol');
     sortedOffers.forEach(offer => {
-        let currentTopOffer = offerSection.querySelector('.tradeoffer');
+        const currentTopOffer = offerSection.querySelector('.tradeoffer');
         if (currentTopOffer !== null) currentTopOffer.insertAdjacentElement('beforebegin', offer);
         else offerSection.insertAdjacentElement('beforeend', offer);
     });
-}
+};
 
-function isOfferActive(offerElement) {
+const isOfferActive = (offerElement) => {
     if (offerElement === null) return null;
-    let offerItemsElement = offerElement.querySelector('.tradeoffer_items_ctn');
+    const offerItemsElement = offerElement.querySelector('.tradeoffer_items_ctn');
     if (offerItemsElement !== null) return !offerItemsElement.classList.contains('inactive');
-    else return false
-}
+    else return false;
+};
 
-function addPartnerOfferSummary(offers, nthRun) {
+const addPartnerOfferSummary = (offers, nthRun) => {
     if (nthRun < 2) {
         chrome.storage.local.get('tradeHistoryOffers', (result) => {
             if (result.tradeHistoryOffers) {
                 offers.forEach(offer => {
-                    let partnerID = getPoperStyleSteamIDFromOfferStyle(offer.accountid_other);
-                    let storageKey = `offerHistory_${partnerID}`;
+                    const partnerID = getPoperStyleSteamIDFromOfferStyle(offer.accountid_other);
+                    const storageKey = `offerHistory_${partnerID}`;
                     chrome.storage.local.get(storageKey, (result) => {
-                        let offerHistorySummary = result[storageKey];
+                        const offerHistorySummary = result[storageKey];
                         if (offerHistorySummary !== undefined) {
-                            let offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
+                            const offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
 
                             // removes elements from previous runs
                             offerElement.querySelectorAll('.offerHistory').forEach(offerHistoryElement =>  offerHistoryElement.remove());
@@ -285,7 +293,97 @@ function addPartnerOfferSummary(offers, nthRun) {
         });
         if (nthRun === 0) setTimeout(() => {addPartnerOfferSummary(offers, 1)}, 15000);
     }
-}
+};
+
+const updateOfferHistoryData = () => {
+    getOffersFromAPI('historical').then(
+        offers => {
+            chrome.storage.local.get('tradeHistoryLastUpdate', (result) => {
+                const allOffers = offers.trade_offers_received.concat(offers.trade_offers_sent);
+                let offerHistoryToAdd = {};
+
+                allOffers.forEach(offer => {
+                    if (offer.time_updated > result.tradeHistoryLastUpdate) {
+                        const partnerID = getPoperStyleSteamIDFromOfferStyle(offer.accountid_other);
+                        const offerSummary = {
+                            timestamp: offer.time_updated,
+                            partner: partnerID,
+                            ours:  offer.is_our_offer
+                        };
+
+                        if (offerHistoryToAdd[partnerID] !== undefined) offerHistoryToAdd[partnerID].push(offerSummary);
+                        else offerHistoryToAdd[partnerID] = [offerSummary];
+                    }
+                });
+
+                for (let steamID in offerHistoryToAdd) {
+                    const offersToAdd = offerHistoryToAdd[steamID];
+                    const storageKey = `offerHistory_${steamID}`;
+
+                    let received = 0;
+                    let last_received = 0;
+                    let sent = 0;
+                    let last_sent = 0;
+
+                    offersToAdd.forEach(offer => {
+                        if (offer.ours) {
+                            sent++;
+                            last_sent = offer.timestamp > last_sent ? offer.timestamp : last_sent;
+                        }
+                        else {
+                            received++;
+                            last_received = offer.timestamp > last_received ? offer.timestamp : last_received;
+                        }
+                    });
+
+                    chrome.storage.local.get(storageKey, (result) => {
+                        const offerSummaryFromStorage = result[storageKey];
+
+                        if (offerSummaryFromStorage === undefined) {
+                            chrome.storage.local.set({
+                                [storageKey]: {
+                                    offers_received: received,
+                                    offers_sent: sent,
+                                    last_received: last_received,
+                                    last_sent: last_sent
+                                }
+                            }, () => {});
+                        }
+                        else {
+                            chrome.storage.local.set({
+                                [storageKey]: {
+                                    offers_received: offerSummaryFromStorage.offers_received + received,
+                                    offers_sent: offerSummaryFromStorage.offers_sent + sent,
+                                    last_received: last_received > offerSummaryFromStorage.last_received ? last_received : offerSummaryFromStorage.last_received,
+                                    last_sent: last_sent > offerSummaryFromStorage.last_sent ? last_sent : offerSummaryFromStorage.last_sent
+                                }
+                            }, () => {});
+                        }
+                    });
+                }
+                chrome.storage.local.set({tradeHistoryLastUpdate: Math.floor(Date.now() / 1000)}, () => {});
+            });
+
+        }, (error) => {
+            if (error === 'apiKeyInvalid') {
+                console.log('API key invalid');
+            }
+        }
+    );
+};
+
+// sends a message to the "back end" to request offers (history or active only with descriptions)
+const getOffersFromAPI = (type) => {
+    return new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage({getTradeOffers: type}, (response) => {
+            if (response.apiKeyValid === false) reject('apiKeyInvalid');
+            else {
+                if (!(response.offers === undefined || response === 'error')) resolve(response.offers);
+                else reject('steamError');
+            }
+        });
+    });
+};
 
 logExtensionPresence();
 overrideDecline();
@@ -297,16 +395,16 @@ trackEvent({
 });
 
 let activePage = 'incoming_offers';
-if (location.href.includes('/tradeoffers/?history=1')) activePage ='incoming_offers_history';
-else if (location.href.includes('/tradeoffers/sent/?history=1')) activePage ='sent_offers_history';
-else if (location.href.includes('/tradeoffers/sent/')) activePage ='sent_offers';
+if (window.location.href.includes('/tradeoffers/?history=1')) activePage ='incoming_offers_history';
+else if (window.location.href.includes('/tradeoffers/sent/?history=1')) activePage ='sent_offers_history';
+else if (window.location.href.includes('/tradeoffers/sent/')) activePage ='sent_offers';
 
 // chrome background tab throttling causes steam's own js files to load later than the these injections, so it does not override the functions
 // this only happens when the tab is opened in the background, https://www.chromestatus.com/feature/5527160148197376
 // this is a dirty but working fix for that
 let thisManyTimes = 15;
 let intervalID = setInterval(() =>{
-    if(thisManyTimes > 0){
+    if (thisManyTimes > 0) {
         overrideShowTradeOffer();
         overrideDecline();
     }
@@ -327,7 +425,7 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
             // adjust the icon sizes accordingly
             document.querySelectorAll('.tradeoffer_items.secondary').forEach(secondaryElement => {
                 secondaryElement.querySelectorAll('.trade_item').forEach(itemElement => {
-                    let iconElement = itemElement.querySelector('img');
+                    const iconElement = itemElement.querySelector('img');
                     iconElement.src = iconElement.src.replace('73fx73f', '96fx96f');
                     iconElement.setAttribute('srcset', iconElement.getAttribute('srcset').replace('73fx73f', '96fx96f'));
                 });
@@ -338,26 +436,29 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
 
 // makes clicking on profile avatars open profiles on a new tab
 document.querySelectorAll('.playerAvatar').forEach(avatarDiv => {
-    let link = avatarDiv.querySelector('a');
+    const link = avatarDiv.querySelector('a');
     if (link !== null) link.setAttribute('target', '_blank');
 });
 
 // makes the middle of the active trade offers a bit bigger making it the same size as a declined offer so it does not jerk the page when declining
-if (activePage === 'incoming_offers') document.querySelectorAll('.tradeoffer_items_rule').forEach(rule => {rule.style.height = '46px'});
+if (activePage === 'incoming_offers') document.querySelectorAll('.tradeoffer_items_rule').forEach(rule => {
+    rule.style.height = '46px';
+});
 
 // adds "accept trade" action to offers
 if (activePage === 'incoming_offers') {
     document.querySelectorAll('.tradeoffer').forEach(offerElement => {
         if (isOfferActive(offerElement)) {
-            let offerID = offerElement.id.split('tradeofferid_')[1];
-            let partnerID = getPoperStyleSteamIDFromOfferStyle(offerElement.querySelector('.playerAvatar').getAttribute('data-miniprofile'));
-            offerElement.querySelector('.tradeoffer_footer_actions').insertAdjacentHTML('afterbegin', `<a href="javascript:AcceptTradeOffer( '${offerID}', '${partnerID}' );" class="whiteLink">Accept Trade</a> | `)
+            const offerID = offerElement.id.split('tradeofferid_')[1];
+            const partnerID = getPoperStyleSteamIDFromOfferStyle(offerElement.querySelector('.playerAvatar').getAttribute('data-miniprofile'));
+            offerElement.querySelector('.tradeoffer_footer_actions').insertAdjacentHTML('afterbegin',
+                `<a href="javascript:AcceptTradeOffer( '${offerID}', '${partnerID}' );" class="whiteLink">Accept Trade</a> | `)
         }
     });
 }
 
 // injects accept trade functionality to page
-let acceptTradeScriptString = `
+const acceptTradeScriptString = `
                 function AcceptTradeOffer(offerID, partnerID){
                     let myHeaders = new Headers();
                     myHeaders.append('Content-Type', 'application/x-www-form-urlencoded');
@@ -397,15 +498,17 @@ if (activePage === 'incoming_offers') injectToPage(acceptTradeScriptString, fals
 
 // adds trade offer summary/help bar and sorting
 if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
-    let tradeOffersList = document.querySelector('.profile_leftcol');
+    const tradeOffersList = document.querySelector('.profile_leftcol');
     if (tradeOffersList !== null && document.querySelector('.profile_fatalerror') === null) {
         updateOfferHistoryData();
+
         tradeOffersList.insertAdjacentHTML('afterbegin', `
         <div id="tradeoffers_summary" class="trade_offers_module">Waiting for Steam API...</div>
         <div id="tradeOffersSortingMenu" class="trade_offers_module hidden"><span>Sorting: </span><select id="offerSortingMethod"></select></div>`);
+
         // populates and adds listener to sorting select
-        let sortingSelect = document.getElementById('offerSortingMethod');
-        let keys = Object.keys(offersSortingModes);
+        const sortingSelect = document.getElementById('offerSortingMethod');
+        const keys = Object.keys(offersSortingModes);
 
         for (let key of keys) {
             let option = document.createElement('option');
@@ -473,7 +576,6 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
     }
 }
 
-// reloads the page on extension update/reload/uninstall
-chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});
+reloadPageOnExtensionReload();
 
 export { selectItemElementByIDs };

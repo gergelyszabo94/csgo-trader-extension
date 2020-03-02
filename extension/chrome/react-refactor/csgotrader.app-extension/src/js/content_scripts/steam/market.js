@@ -1,26 +1,39 @@
-function getMyListingIDFromElement(listingElement) {return listingElement.id.split('mylisting_')[1]}
+import { reloadPageOnExtensionReload, logExtensionPresence,
+    updateLoggedInUserID, injectStyle } from "js/utils/utilsModular";
+import { removeListing, getMarketHistory, cancelOrder } from 'js/utils/market'
+import { trackEvent } from "js/utils/analytics";
+import { steamFormattedPriceToCents, centsToSteamFormattedPrice, priceQueue,
+    workOnPriceQueue } from 'js/utils/pricing';
 
-function getMyOrderIDFromElement(orderElement) {return orderElement.id.split('mybuyorder_')[1]}
+const getMyListingIDFromElement = (listingElement) => {
+    return listingElement.id.split('mylisting_')[1];
+};
 
-function getElementByListingID(listingID) {return document.getElementById(`mylisting_${listingID}`)}
+const getMyOrderIDFromElement = (orderElement) => {
+    return orderElement.id.split('mybuyorder_')[1];
+};
+
+const getElementByListingID = (listingID) => {
+    return document.getElementById(`mylisting_${listingID}`);
+};
 
 const getElementByOrderID = (orderID) => {
     return document.getElementById(`mybuyorder_${orderID}`);
 };
 
-function switchToNextPageIfEmpty(listings) {
+const switchToNextPageIfEmpty = (listings) => {
     if (listings.querySelectorAll('.market_listing_row.market_recent_listing_row').length === 0 ) {
         document.getElementById('tabContentsMyActiveMarketListings_btn_next').click();
     }
-}
+};
 
-function getAppIDAndItemNameFromLink(marketLink) {
+const getAppIDAndItemNameFromLink = (marketLink) => {
     const appID = marketLink.split('listings/')[1].split('/')[0];
     const market_hash_name = marketLink.split('listings/')[1].split('/')[1];
     return {appID, market_hash_name};
-}
+};
 
-function addListingStartingAtPricesAndTotal(sellListings) {
+const addListingStartingAtPricesAndTotal = (sellListings) => {
     let totalPrice = 0;
     let totalYouReceivePrice = 0;
 
@@ -67,7 +80,7 @@ function addListingStartingAtPricesAndTotal(sellListings) {
         `<div id='listingsTotal' style="margin: -15px 0 15px;">
                    Total listed price: ${centsToSteamFormattedPrice(totalPrice)} You will receive: ${centsToSteamFormattedPrice(totalYouReceivePrice)} (on this page)
                </div>`);
-}
+};
 
 const addStartingAtPriceInfoToPage = (listingID, lowestPrice) => {
     const listingRow = getElementByListingID(listingID);
@@ -84,7 +97,7 @@ const addStartingAtPriceInfoToPage = (listingID, lowestPrice) => {
     }
 };
 
-function extractHistoryEvents(result_html) {
+const extractHistoryEvents = (result_html) => {
     const tempEl = document.createElement('div');
     tempEl.innerHTML = result_html;
 
@@ -112,9 +125,9 @@ function extractHistoryEvents(result_html) {
 
     tempEl.remove();
     return eventsToReturn;
-}
+};
 
-function getHistoryType(historyRow) {
+const getHistoryType = (historyRow) => {
     const gainOrLoss = historyRow.querySelector('.market_listing_gainorloss').innerText.trim();
     let historyType;
 
@@ -124,9 +137,9 @@ function getHistoryType(historyRow) {
         default: historyType = historyRow.querySelector('.market_listing_whoactedwith').innerText.trim();
     }
     return historyType;
-}
+};
 
-function createCSV() {
+const createCSV = () => {
     const excludeNonTransaction = document.getElementById('excludeNonTransaction').checked;
     let csvContent = 'Item Name,Game Name,Listed On,Acted On, Display Price, Price in Cents, Type, Partner Name, Partner Link\n';
 
@@ -144,9 +157,9 @@ function createCSV() {
     const downloadButton = document.getElementById('market_history_download');
     downloadButton.setAttribute('href', encodedURI);
     downloadButton.classList.remove('hidden');
-}
+};
 
-function workOnExport() {
+const workOnExport = () => {
     if (marketHistoryExport.inProgress) {
         const delay = marketHistoryExport.lastRequestSuccessful ? 5000 : 30000;
         getMarketHistory(marketHistoryExport.progress, 50).then(
@@ -173,7 +186,7 @@ function workOnExport() {
             }
         )
     }
-}
+};
 
 const marketHistoryExport = {
     history: [],
@@ -204,8 +217,6 @@ if (sellListings !== null) {
 
     if (tabContentRows !== null) {
         // listens for listing changes like removal, page switching
-        MutationObserver = window.MutationObserver;
-
         let observer = new MutationObserver((changes) => {
             if (sellListings.parentElement.style.display !== 'none') { // only execute if it's the active tab
                 addListingStartingAtPricesAndTotal(sellListings);
@@ -347,8 +358,6 @@ if (orders !== null && orders !== undefined) {
 const marketHistoryTab = document.getElementById('tabContentsMyMarketHistory');
 if (marketHistoryTab !== null) {
     // listens for history page changes
-    MutationObserver = window.MutationObserver;
-
     let observer = new MutationObserver((mutationRecord) => {
         if (sellListings.style.display !== 'none') { // only execute if it's the active tab
             if (mutationRecord[0].target.id === 'tabContentsMyMarketHistory' || mutationRecord[0].target.id === 'tabContentsMyMarketHistoryRows') {
@@ -489,7 +498,6 @@ if (marketHistoryButton !== null) {
     });
 }
 
-// reloads the page on extension update/reload/uninstall
-chrome.runtime.connect().onDisconnect.addListener(() =>{location.reload()});
+reloadPageOnExtensionReload();
 
 export { addStartingAtPriceInfoToPage, getElementByOrderID };
