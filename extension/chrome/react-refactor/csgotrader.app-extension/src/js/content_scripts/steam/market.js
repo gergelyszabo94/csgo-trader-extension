@@ -66,7 +66,8 @@ const addListingStartingAtPricesAndTotal = (sellListings) => {
                 type: 'my_listing',
                 listingID,
                 appID,
-                market_hash_name
+                market_hash_name,
+                callBackFunction: addStartingAtPriceInfoToPage
             });
 
             if (!priceQueue.active) workOnPriceQueue();
@@ -188,6 +189,22 @@ const workOnExport = () => {
     }
 };
 
+const addHighestBuyOrderPrice = (job, highestBuyOrder) => {
+    const priceOfHighestOrder = centsToSteamFormattedPrice(highestBuyOrder);
+    const orderRow = getElementByOrderID(job.orderID);
+
+    if (orderRow !== null) { // the order might not be there for example if the page was switched, the per page order count was changed or the order was canceled
+        const priceElement = orderRow.querySelector('.market_listing_price');
+        const orderPrice = priceElement.innerText;
+        const highest = orderPrice === priceOfHighestOrder ? 'highest' : 'not_highest';
+
+        priceElement.insertAdjacentHTML('beforeend', `
+                                    <div class="${highest}" title="This is the price of the highest buy order right now.">
+                                        ${priceOfHighestOrder}
+                                    </div>`);
+    }
+};
+
 const marketHistoryExport = {
     history: [],
     from: 0,
@@ -304,7 +321,8 @@ if (orders !== null && orders !== undefined) {
                 type: 'my_buy_order',
                 orderID,
                 appID,
-                market_hash_name
+                market_hash_name,
+                callBackFunction: addHighestBuyOrderPrice
             });
 
             if (!priceQueue.active) workOnPriceQueue();
@@ -499,5 +517,3 @@ if (marketHistoryButton !== null) {
 }
 
 reloadPageOnExtensionReload();
-
-export { addStartingAtPriceInfoToPage, getElementByOrderID };

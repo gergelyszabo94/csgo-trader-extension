@@ -78,10 +78,15 @@ const addListingsToFloatQueue = () => {
                     });
 
                 }
-                if (!floatQueue.active) workOnFloatQueue();
+                if (!floatQueue.active) workOnFloatQueue(dealWithNewFloatData);
             }
         }
     });
+};
+
+const dealWithNewFloatData = (job, floatQueue, floatInfo) => {
+    if (floatInfo !== 'nofloat') addFloatDataToPage(job, floatInfo);
+    else hideFloatBar();
 };
 
 const addFloatBarSkeletons = () => {
@@ -321,6 +326,12 @@ const addPatterns = (listingID, floatInfo) => {
     }
 };
 
+const addFloatDataToPage = (job, floatInfo) => {
+    populateFloatInfo(job.listingID, floatInfo);
+    setStickerInfo(job.listingID, floatInfo.stickers);
+    addPatterns(job.listingID, floatInfo);
+};
+
 logExtensionPresence();
 updateLoggedInUserID();
 trackEvent({
@@ -468,5 +479,3 @@ chrome.storage.local.get('numberOfListings', (result) =>{
 });
 
 reloadPageOnExtensionReload();
-
-export { populateFloatInfo, setStickerInfo, addPatterns, hideFloatBar };

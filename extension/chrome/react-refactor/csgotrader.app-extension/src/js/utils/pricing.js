@@ -1,7 +1,5 @@
 import { pricingProviders, currencies } from "js/utils/static/pricing";
 import { getSteamWalletInfo, injectToPage } from 'js/utils/utilsModular';
-import { addStartingAtPriceInfoToPage, getElementByOrderID } from 'js/content_scripts/steam/market';
-import { addInstantSellPrice, getListingRow, addStartingAtAndQuickSellPrice } from 'js/content_scripts/steam/inventory';
 
 const priceQueue = {
     active: false,
@@ -28,7 +26,7 @@ const workOnPriceQueue = () => {
                 // non-active listing pages are not kept in DOM so if you switch back a page the starting at prices have to be readded
                 // to avoid making additional requests lowest prices are stored on a local (exclusive to the current page) only cache
                 if (priceQueue.localCache[job.listingID] !== undefined) {
-                    addStartingAtPriceInfoToPage(job.listingID, priceQueue.localCache[job.listingID]);
+                    job.callBackFunction(job.listingID, priceQueue.localCache[job.listingID]);
                     priceQueue.active = false;
                     workOnPriceQueue();
                 }
@@ -37,7 +35,7 @@ const workOnPriceQueue = () => {
                         priceOverview => {
                             priceQueue.lastJobSuccessful = true;
                             if (priceOverview.lowest_price !== undefined) {
-                                addStartingAtPriceInfoToPage(job.listingID, priceOverview.lowest_price);
+                                job.callBackFunction(job.listingID, priceOverview.lowest_price);
                                 priceQueue.localCache[job.listingID] = priceOverview.lowest_price;
                             }
                         }, (error) => {
@@ -52,27 +50,17 @@ const workOnPriceQueue = () => {
                     highestBuyOrder => {
                         if (highestBuyOrder !== undefined && job.type === 'my_buy_order') {
                             priceQueue.lastJobSuccessful = true;
-                            const priceOfHighestOrder = centsToSteamFormattedPrice(highestBuyOrder);
-                            const orderRow = getElementByOrderID(job.orderID);
-
-                            if (orderRow !== null) { // the order might not be there for example if the page was switched, the per page order count was changed or the order was canceled
-                                const priceElement = orderRow.querySelector('.market_listing_price');
-                                const orderPrice = priceElement.innerText;
-                                const highest = orderPrice === priceOfHighestOrder ? 'highest' : 'not_highest';
-
-                                priceElement.insertAdjacentHTML('beforeend', `
-                                    <div class="${highest}" title="This is the price of the highest buy order right now.">
-                                        ${priceOfHighestOrder}
-                                    </div>`);
-                            }
+                            job.callBackFunction(job, highestBuyOrder);
                         }
                         else if (job.type === 'inventory_mass_sell_instant_sell') {
-                            addInstantSellPrice(job.market_hash_name, highestBuyOrder);
+                            job.callBackFunction(true, job.market_hash_name, highestBuyOrder);
                         }
                         else priceQueue.lastJobSuccessful = false;
                     }, (error) => {
                         priceQueue.lastJobSuccessful = false;
-                        if (job.type === 'inventory_mass_sell_instant_sell') getListingRow(job.market_hash_name).querySelector('.itemInstantSell').setAttribute('data-price-set', false.toString());
+                        if (job.type === 'inventory_mass_sell_instant_sell') {
+                            job.callBackFunction(false, job.market_hash_name);
+                        }
                         console.log(error)
                     }
                 );
@@ -81,10 +69,10 @@ const workOnPriceQueue = () => {
                 getPriceOverview(job.appID, job.market_hash_name).then(
                     priceOverview => {
                         priceQueue.lastJobSuccessful = true;
-                        addStartingAtAndQuickSellPrice(job.market_hash_name, priceOverview.lowest_price);
+                        job.callBackFunction(true, job.market_hash_name, priceOverview.lowest_price);
                     }, (error) => {
                         priceQueue.lastJobSuccessful = false;
-                        getListingRow(job.market_hash_name).querySelector('.itemStartingAt').setAttribute('data-price-set', false.toString());
+                        job.callBackFunction(true, job.market_hash_name);
                         console.log(error)
                     }
                 );

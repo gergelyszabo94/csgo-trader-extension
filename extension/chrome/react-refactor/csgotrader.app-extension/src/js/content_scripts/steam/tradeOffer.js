@@ -1,11 +1,12 @@
-import { getItemByAssetID, getAssetIDOfElement, addDopplerPhase,
+import {
+    getItemByAssetID, getAssetIDOfElement, addDopplerPhase,
     makeItemColorful, addSSTandExtIndicators, addPriceIndicator,
     addFloatIndicator, getExteriorFromTags, getQuality,
     getType, isCSGOInventoryActive, injectToPage,
     getDopplerInfo, getActivePage, reloadPageOnExtensionReload,
     dateToISODisplay, prettyTimeAgo, logExtensionPresence, injectStyle,
     updateLoggedInUserID, warnOfScammer, addPageControlEventListeners,
-    addSearchListener } from "js/utils/utilsModular";
+    addSearchListener, findElementByAssetID, getPattern } from "js/utils/utilsModular";
 import { prettyPrintPrice } from 'js/utils/pricing';
 import { doTheSorting } from "js/utils/sorting";
 import { sortingModes } from 'js/utils/static/sortingModes';
@@ -528,7 +529,8 @@ const addFloatIndicatorsToPage = (type) => {
                         floatQueue.jobs.push({
                             type: 'offer',
                             assetID: item.assetid,
-                            inspectLink: item.inspectLink
+                            inspectLink: item.inspectLink,
+                            callBackFunction: addFloatDataToPage
                         });
                     }
                     else addFloatIndicator(itemElement, item.floatInfo);
@@ -539,9 +541,10 @@ const addFloatIndicatorsToPage = (type) => {
     });
 };
 
-const getOfferID = () => {
-    return window.location.href.split('tradeoffer/')[1].split('/')[0];
-};
+// future proofing
+// const getOfferID = () => {
+//     return window.location.href.split('tradeoffer/')[1].split('/')[0];
+// };
 
 const getItemInfoFromPage = (who) => {
     const getItemsScript = `
@@ -628,6 +631,15 @@ const addPartnerOfferSummary = () => {
             }
         }
     });
+};
+
+const addFloatDataToPage = (job, floatQueue, floatInfo) => {
+    addFloatIndicator(findElementByAssetID(job.assetID), floatInfo);
+
+    // add float and pattern info to page variable
+    const item = getItemByAssetID(combinedInventories, job.assetID);
+    item.floatInfo = floatInfo;
+    item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
 };
 
 const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
@@ -718,9 +730,8 @@ chrome.storage.local.get('tradeOfferHeaderToLeft', (result) => {
     }
 });
 
-addPageControlEventListeners('offer');
-
-addSearchListener('offer');
+addPageControlEventListeners('offer', addFloatIndicatorsToPage);
+addSearchListener('offer', addFloatIndicatorsToPage);
 
 const theirInventoryTab = document.getElementById('inventory_select_their_inventory');
 if (theirInventoryTab !== null) document.getElementById('inventory_select_their_inventory').addEventListener('click', () => { // if the offer is "active"
@@ -732,5 +743,3 @@ addFunctionBars();
 addPartnerOfferSummary();
 
 reloadPageOnExtensionReload();
-
-export { addFloatIndicatorsToPage };

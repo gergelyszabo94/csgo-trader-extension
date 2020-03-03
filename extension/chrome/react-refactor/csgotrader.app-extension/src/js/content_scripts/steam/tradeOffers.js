@@ -116,7 +116,8 @@ const addItemInfo = (items) => {
                                 assetID: item.assetid,
                                 classid: item.classid,
                                 instanceid: item.instanceid,
-                                inspectLink: item.inspectLink
+                                inspectLink: item.inspectLink,
+                                callBackFunction: addFloatDataToPage
                             });
                             if (!floatQueue.active) workOnFloatQueue();
                         } else addFloatIndicator(itemElement, item.floatInfo);
@@ -385,6 +386,10 @@ const getOffersFromAPI = (type) => {
     });
 };
 
+const addFloatDataToPage = (job, floatQueue, floatInfo, items) => {
+    addFloatIndicator(selectItemElementByIDs(job.classid, job.instanceid), floatInfo);
+};
+
 logExtensionPresence();
 overrideDecline();
 overrideShowTradeOffer();
@@ -577,5 +582,3 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
 }
 
 reloadPageOnExtensionReload();
-
-export { selectItemElementByIDs };

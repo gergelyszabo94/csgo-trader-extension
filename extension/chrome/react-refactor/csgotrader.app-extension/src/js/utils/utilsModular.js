@@ -6,10 +6,14 @@ import itemTypes from 'js/utils/static/itemTypes';
 import patterns from 'js/utils/static/patterns';
 import { getPrice } from 'js/utils/pricing';
 
-import { addFloatIndicatorsToPage as addFloatIndicatorsToInventory, updateFloatAndPatternElements, getAssetIDofActive } from 'js/content_scripts/steam/inventory';
-import { addFloatIndicatorsToPage as addFloatIndicatorsToOffer } from 'js/content_scripts/steam/tradeOffer';
-import { selectItemElementByIDs } from 'js/content_scripts/steam/tradeOffers';
-import { populateFloatInfo, setStickerInfo, addPatterns } from 'js/content_scripts/steam/marketListing';
+Number.prototype.toFixedNoRounding = function(n) {
+    const reg = new RegExp('^-?\\d+(?:\\.\\d{0,' + n + '})?', 'g');
+    const a = this.toString().match(reg)[0];
+    const dot = a.indexOf('.');
+    if (dot === -1) return a + '.' + '0'.repeat(n); // integer, insert decimal dot and pad up zeros
+    const b = n - (a.length - dot) + 1;
+    return b > 0 ? (a + '0'.repeat(b)) : a;
+};
 
 const logExtensionPresence = () => {
     const version = chrome.runtime.getManifest().version;
@@ -353,13 +357,13 @@ const getAssetIDFromInspectLink = (inspectLink) => {
     return (inspectLink !== null && inspectLink !== undefined) ? inspectLink.split('A')[1].split('D')[0] : null;
 };
 
-const addPageControlEventListeners = (type) => {
+const addPageControlEventListeners = (type, addFloatIndicatorsFunction) => {
     const pageControls = document.getElementById('inventory_pagecontrols');
     if (pageControls !== null) {
         pageControls.addEventListener('click', () => {
             setTimeout(() => {
-                if (type === 'inventory') addFloatIndicatorsToInventory(getActivePage('inventory'));
-                else if (type === 'offer') addFloatIndicatorsToOffer('page');
+                if (type === 'inventory') addFloatIndicatorsFunction(getActivePage('inventory'));
+                else if (type === 'offer') addFloatIndicatorsFunction('page');
             }, 500);
         })
     }
@@ -443,40 +447,6 @@ const addFloatIndicator = (itemElement, floatInfo) => {
 const addPriceIndicator = (itemElement, priceInfo) => {
     if (priceInfo !== undefined && priceInfo !== 'null' && priceInfo !== null) {
         itemElement.insertAdjacentHTML('beforeend', `<div class='priceIndicator'>${priceInfo.display}</div>`);
-    }
-};
-
-const addFloatDataToPage = (job, floatQueue, floatInfo, items) => {
-    if (job.type === 'inventory' || job.type === 'inventory_floatbar' || job.type === 'offer') {
-        addFloatIndicator(findElementByAssetID(job.assetID), floatInfo);
-
-        // add float and pattern info to page variable
-        let item = (job.type === 'inventory' || job.type === 'inventory_floatbar') ? getItemByAssetID(items, job.assetID) : getItemByAssetID(items, job.assetID);
-        item.floatInfo = floatInfo;
-        item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
-
-        if (job.type === 'inventory_floatbar') {
-            if (getAssetIDofActive() === job.assetID) updateFloatAndPatternElements(item);
-        }
-
-        // check if there is a floatbar job for the same item and remove it
-        if (job.type === 'inventory') {
-            floatQueue.jobs.find((floatJob, index) => {
-                if (floatJob.type === 'inventory_floatbar' && job.assetID === floatJob.assetID) {
-                    updateFloatAndPatternElements(item);
-                    removeFromArray(floatQueue, index);
-                }
-                return null;
-            })
-        }
-    }
-    else if (job.type === 'market') {
-        populateFloatInfo(job.listingID, floatInfo);
-        setStickerInfo(job.listingID, floatInfo.stickers);
-        addPatterns(job.listingID, floatInfo);
-    }
-    else if (job.type === 'offersPage') {
-        addFloatIndicator(selectItemElementByIDs(job.classid, job.instanceid), floatInfo);
     }
 };
 
@@ -606,7 +576,7 @@ const prettyTimeAgo = (unixTimestamp) => {
 };
 
 let searchListenerTimeout = null;
-const addSearchListener = (type) => {
+const addSearchListener = (type, addFloatIndicatorsFunction) => {
     let searchElement;
     if (type === 'inventory') searchElement = document.getElementById('filter_control');
     else if (type === 'offer') searchElement = document.querySelector('.filter_search_box');
@@ -616,8 +586,8 @@ const addSearchListener = (type) => {
 
             if (searchListenerTimeout !== null) clearTimeout(searchListenerTimeout);
             searchListenerTimeout = setTimeout(() => {
-                if (type === 'inventory') addFloatIndicatorsToInventory(getActivePage('inventory'));
-                else if (type === 'offer') addFloatIndicatorsToOffer('page');
+                if (type === 'inventory') addFloatIndicatorsFunction(getActivePage('inventory'));
+                else if (type === 'offer') addFloatIndicatorsFunction('page');
                 searchListenerTimeout = null;
             }, 1000);
         });
@@ -687,7 +657,7 @@ export {
     listenToLocationChange, addPageControlEventListeners, getItemByAssetID,
     getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
     addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
-    addFloatDataToPage, getDataFilledFloatTechnical, souvenirExists,
+    getDataFilledFloatTechnical, souvenirExists,
     getSteamWalletInfo, getSteamWalletCurrency, findElementByAssetID,
     getFloatBarSkeleton, isCSGOInventoryActive, injectStyle,
     reloadPageOnExtensionReload, isSIHActive, dateToISODisplay,

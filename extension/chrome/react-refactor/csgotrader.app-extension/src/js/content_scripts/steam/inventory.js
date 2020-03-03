@@ -1,4 +1,5 @@
-import { injectToPage, addPageControlEventListeners, getItemByAssetID,
+import {
+    injectToPage, addPageControlEventListeners, getItemByAssetID,
     getAssetIDOfElement, makeItemColorful, addDopplerPhase,
     addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
     getDataFilledFloatTechnical, souvenirExists, getUserSteamID,
@@ -6,7 +7,8 @@ import { injectToPage, addPageControlEventListeners, getItemByAssetID,
     logExtensionPresence, isCSGOInventoryActive, injectStyle,
     updateLoggedInUserID, reloadPageOnExtensionReload, isSIHActive,
     getShortDate, getActivePage, dateToISODisplay,
-    prettyTimeAgo, addSearchListener }
+    prettyTimeAgo, addSearchListener, getPattern, removeFromArray
+}
     from 'js/utils/utilsModular';
 
 import { stattrak, starChar, souvenir, stattrakPretty, genericMarketLink } from 'js/utils/static/simpleStrings';
@@ -247,7 +249,8 @@ const addElements = () => {
                         floatQueue.jobs.push({
                             type: 'inventory_floatbar',
                             assetID: item.assetid,
-                            inspectLink: item.inspectLink
+                            inspectLink: item.inspectLink,
+                            callBackFunction: dealWithNewFloatData
                         });
                         if (!floatQueue.active) workOnFloatQueue();
                     }
@@ -831,7 +834,8 @@ const addFloatIndicatorsToPage = (page) => {
                         floatQueue.jobs.push({
                             type: 'inventory',
                             assetID: assetID,
-                            inspectLink: item.inspectLink
+                            inspectLink: item.inspectLink,
+                            callBackFunction: dealWithNewFloatData
                         });
                     }
                     else addFloatIndicator(itemElement, item.floatInfo);
@@ -941,14 +945,14 @@ const getListingRow = (name) => {
     return document.getElementById('listingTable').querySelector(`tr[data-item-name="${name}"]`);
 };
 
-const addStartingAtAndQuickSellPrice = (market_hash_name, starting_at_price) => {
+const addStartingAtAndQuickSellPrice = (success, market_hash_name, starting_at_price) => {
     const listingRow = getListingRow(market_hash_name);
 
     if (listingRow !== null) { // the user might have unselected the item while it as in the queue and now there is nowhere to add the price to
         const startingAtElement = listingRow.querySelector('.itemStartingAt');
         const quickSell = listingRow.querySelector('.itemQuickSell');
 
-        if (starting_at_price !== undefined) {
+        if (starting_at_price !== undefined && !success) {
             const priceInCents = steamFormattedPriceToCents(starting_at_price);
             const quickSellPrice = steamFormattedPriceToCents(starting_at_price) - 1;
 
@@ -978,7 +982,8 @@ const addToPriceQueueIfNeeded = (item) => {
         priceQueue.jobs.push({
             type: 'inventory_mass_sell_starting_at',
             appID: '730',
-            market_hash_name: item.market_hash_name
+            market_hash_name: item.market_hash_name,
+            callBackFunction: null
         });
         workOnPriceQueue();
     }
@@ -989,7 +994,8 @@ const addToPriceQueueIfNeeded = (item) => {
         priceQueue.jobs.push({
             type: 'inventory_mass_sell_instant_sell',
             appID: '730',
-            market_hash_name: item.market_hash_name
+            market_hash_name: item.market_hash_name,
+            callBackFunction: addInstantSellPrice
         });
         workOnPriceQueue();
     }
@@ -1019,13 +1025,13 @@ const updateMassSaleTotal = () => {
     document.getElementById('saleTotalAfterFees').innerText = centsToSteamFormattedPrice(totalAfterFees);
 };
 
-const addInstantSellPrice = (market_hash_name, highest_order) => {
+const addInstantSellPrice = (success, market_hash_name, highest_order) => {
     const listingRow = getListingRow(market_hash_name);
 
     if (listingRow !== null) { // the user might have unselected the item while it as in the queue and now there is nowhere to add the price to
         const instantElement = listingRow.querySelector('.itemInstantSell');
 
-        if (highest_order !== undefined) {
+        if (highest_order !== undefined && !success) {
             instantElement.innerText = centsToSteamFormattedPrice(highest_order);
             instantElement.setAttribute('data-price-set', true.toString());
             instantElement.setAttribute('data-price-in-cents', highest_order);
@@ -1034,6 +1040,34 @@ const addInstantSellPrice = (market_hash_name, highest_order) => {
 
         instantElement.setAttribute('data-price-in-progress', false.toString());
     }
+};
+
+const addFloatDataToPage = (job, floatQueue, floatInfo) => {
+    addFloatIndicator(findElementByAssetID(job.assetID), floatInfo);
+
+    // add float and pattern info to page variable
+    const item = getItemByAssetID(items, job.assetID);
+    item.floatInfo = floatInfo;
+    item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
+
+    if (job.type === 'inventory_floatbar') {
+        if (getAssetIDofActive() === job.assetID) updateFloatAndPatternElements(item);
+    }
+    else {
+        // check if there is a floatbar job for the same item and remove it
+        floatQueue.jobs.find((floatJob, index) => {
+            if (floatJob.type === 'inventory_floatbar' && job.assetID === floatJob.assetID) {
+                updateFloatAndPatternElements(item);
+                removeFromArray(floatQueue, index);
+            }
+            return null;
+        })
+    }
+};
+
+const dealWithNewFloatData = (job, floatQueue, floatInfo) => {
+    if (floatInfo !== 'nofloat') addFloatDataToPage(job, floatQueue, floatInfo);
+    else if (job.type === 'inventory_floatbar') hideFloatBars();
 };
 
 const floatBar = getFloatBarSkeleton('inventory');
@@ -1090,7 +1124,7 @@ injectStyle(`
         top: 19px !important;
         left: 75px !important;
     }`, 'nametagWarning');
-addSearchListener('inventory');
+addSearchListener('inventory', addFloatIndicatorsToPage);
 overridePopulateActions();
 updateLoggedInUserID();
 trackEvent({
@@ -1236,5 +1270,3 @@ const listenSelectClicks = (event) => {
 };
 
 reloadPageOnExtensionReload();
-
-export { addFloatIndicatorsToPage, updateFloatAndPatternElements, getAssetIDofActive, hideFloatBars, addInstantSellPrice, getListingRow, addStartingAtAndQuickSellPrice };
