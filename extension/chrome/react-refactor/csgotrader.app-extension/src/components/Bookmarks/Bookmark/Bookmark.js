@@ -8,6 +8,8 @@ import Modal from "components/Modal/Modal";
 import FlipSwitch from "components/FlipSwitch/FlipSwitch";
 import { determineNotificationDate, reverseWhenNotifDetails } from "js/utils/notifications";
 
+// TODO: add offer link, will need: getOfferStyleSteamID
+
 const Bookmark = (props) => {
     const { itemInfo, notifTime, notifType, notify, owner } = props.bookmarkData;
     const imageSRC = `https://steamcommunity.com/economy/image/${itemInfo.iconURL}/256x256`;

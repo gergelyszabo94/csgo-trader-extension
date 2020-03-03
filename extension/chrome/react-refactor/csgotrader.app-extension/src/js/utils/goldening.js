@@ -39,4 +39,4 @@ const goldenMiniProfileHandler = () => {
     }), 500)
 };
 
-export { goldenCommenters, goldenMemberNames };
+export { goldenCommenters, goldenMemberNames, goldenMiniProfileHandler };

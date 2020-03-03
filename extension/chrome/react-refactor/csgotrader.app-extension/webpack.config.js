@@ -36,7 +36,8 @@ const options = {
     "js/contentScripts/steam/marketListing": path.join(__dirname, "src", "js/content_scripts/steam", "marketListing.js"),
     "js/contentScripts/steam/market": path.join(__dirname, "src", "js/content_scripts/steam", "market.js"),
     "js/contentScripts/steam/tradeOffer": path.join(__dirname, "src", "js/content_scripts/steam", "tradeOffer.js"),
-    "js/contentScripts/steam/tradeOffers": path.join(__dirname, "src", "js/content_scripts/steam", "tradeOffers.js")
+    "js/contentScripts/steam/tradeOffers": path.join(__dirname, "src", "js/content_scripts/steam", "tradeOffers.js"),
+    "js/contentScripts/steam/profile": path.join(__dirname, "src", "js/content_scripts/steam", "profile.js")
   },
   output: {
     publicPath: '',

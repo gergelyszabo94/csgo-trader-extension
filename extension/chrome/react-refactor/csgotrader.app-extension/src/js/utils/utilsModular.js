@@ -314,6 +314,11 @@ const getUserSteamID = () => {
     return injectToPage(getUserSteamIDScript, true, 'steamidOfLoggedinUser', 'steamidOfLoggedinUser');
 };
 
+// there are many different kinds of SteamID formats , this function converts the 64bit into the ones used in trade offers
+const getOfferStyleSteamID = (steamID64) => {
+    return Number(steamID64.split('7656')[1]) - Number(1197960265728);
+};
+
 // inject scripts from content scripts the the page context, usually to access variables or override functionality
 const injectToPage = (scriptString, toRemove, id, executeAndReturn) => {
     // removes previously added instance of the script
@@ -647,6 +652,17 @@ const warnOfScammer = (steamID, page) => {
     });
 };
 
+
+//  unused atm
+// const generateRandomString = (length) => {
+//     let text = '';
+//     const allowedChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+//
+//     for (let i = 0; i < length; i++) text += allowedChars.charAt(Math.floor(Math.random() * allowedChars.length));
+//
+//     return text;
+// };
+
 export {
     logExtensionPresence, scrapeSteamAPIkey, arrayFromArrayOrNotArray,
     getExteriorFromTags, getDopplerInfo, getQuality, parseStickerInfo,
@@ -662,5 +678,6 @@ export {
     getFloatBarSkeleton, isCSGOInventoryActive, injectStyle,
     reloadPageOnExtensionReload, isSIHActive, dateToISODisplay,
     prettyTimeAgo, addSearchListener, getSessionID,
-    getPoperStyleSteamIDFromOfferStyle, extractItemsFromOffers, warnOfScammer
+    getPoperStyleSteamIDFromOfferStyle, extractItemsFromOffers,
+    warnOfScammer, getOfferStyleSteamID
 };
