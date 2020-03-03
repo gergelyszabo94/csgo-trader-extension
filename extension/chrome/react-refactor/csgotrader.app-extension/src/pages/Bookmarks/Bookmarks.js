@@ -57,7 +57,7 @@ const Bookmarks = () => {
 };
 
 const BookmarkContent = (props) => {
-    if (props.bookmarks.length === 0) return 'You don\'t have any bookmarks yet. You can bookmark items from user inventories!'
+    if (props.bookmarks.length === 0) return 'You don\'t have any bookmarks yet. You can bookmark items from user inventories!';
     else {
         return props.bookmarks.map((bookmark, index) => {
             return (

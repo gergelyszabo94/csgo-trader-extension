@@ -1,14 +1,13 @@
 import React, {useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faBell, faChartLine, faComment, faEye, faLink, faTrash, faUser} from "@fortawesome/free-solid-svg-icons";
+import {faBell, faChartLine, faComment, faEye, faLink, faTrash, faUser, faExchangeAlt } from "@fortawesome/free-solid-svg-icons";
 
 import Countdown from "./Countdown";
 import NewTabLink from "components/NewTabLink/NewTabLink";
 import Modal from "components/Modal/Modal";
 import FlipSwitch from "components/FlipSwitch/FlipSwitch";
 import { determineNotificationDate, reverseWhenNotifDetails } from "js/utils/notifications";
-
-// TODO: add offer link, will need: getOfferStyleSteamID
+import { getOfferStyleSteamID } from 'js/utils/utilsModular';
 
 const Bookmark = (props) => {
     const { itemInfo, notifTime, notifType, notify, owner } = props.bookmarkData;
@@ -100,6 +99,11 @@ const Bookmark = (props) => {
                         <Action title={'View the item in the owner\'s inventory'}>
                             <NewTabLink to={`https://steamcommunity.com/profiles/${owner}/inventory/#730_2_${itemInfo.assetid}`}>
                                 <FontAwesomeIcon icon={faLink} />
+                            </NewTabLink>
+                        </Action>
+                        <Action title={'Send a trade offer to the owner (if on friend list)'}>
+                            <NewTabLink to={`https://steamcommunity.com/tradeoffer/new/?partner=${getOfferStyleSteamID(owner)}`}>
+                                <FontAwesomeIcon icon={faExchangeAlt} />
                             </NewTabLink>
                         </Action>
                         <Action title={'Open the owner\'s profile'}>
