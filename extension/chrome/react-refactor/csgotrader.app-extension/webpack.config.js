@@ -20,24 +20,24 @@ const options = {
     "js/backgroundScripts/messaging": path.join(__dirname, "src", "js/backgroundScripts", "messaging.js"),
 
     // content scripts that don't run on Steam
-    "js/contentScripts/loungeBump": path.join(__dirname, "src", "js/content_scripts", "loungeBump.js"),
-    "js/contentScripts/tradersBump": path.join(__dirname, "src", "js/content_scripts", "tradersBump.js"),
-    "js/contentScripts/tradersAutoLogin": path.join(__dirname, "src", "js/content_scripts", "tradersAutoLogin.js"),
+    "js/contentScripts/loungeBump": path.join(__dirname, "src", "js/contentScripts", "loungeBump.js"),
+    "js/contentScripts/tradersBump": path.join(__dirname, "src", "js/contentScripts", "tradersBump.js"),
+    "js/contentScripts/tradersAutoLogin": path.join(__dirname, "src", "js/contentScripts", "tradersAutoLogin.js"),
 
     // contents scripts that run on Steam pages
-    "js/contentScripts/steam/announcements": path.join(__dirname, "src", "js/content_scripts/steam", "announcements.js"),
-    "js/contentScripts/steam/apiKey": path.join(__dirname, "src", "js/content_scripts/steam", "apiKey.js"),
-    "js/contentScripts/steam/friends": path.join(__dirname, "src", "js/content_scripts/steam", "friends.js"),
-    "js/contentScripts/steam/group": path.join(__dirname, "src", "js/content_scripts/steam", "group.js"),
-    "js/contentScripts/steam/openIDLogin": path.join(__dirname, "src", "js/content_scripts/steam", "openIDLogin.js"),
-    "js/contentScripts/steam/sharedFile": path.join(__dirname, "src", "js/content_scripts/steam", "sharedFile.js"),
-    "js/contentScripts/steam/webChat": path.join(__dirname, "src", "js/content_scripts/steam", "webChat.js"),
-    "js/contentScripts/steam/inventory": path.join(__dirname, "src", "js/content_scripts/steam", "inventory.js"),
-    "js/contentScripts/steam/marketListing": path.join(__dirname, "src", "js/content_scripts/steam", "marketListing.js"),
-    "js/contentScripts/steam/market": path.join(__dirname, "src", "js/content_scripts/steam", "market.js"),
-    "js/contentScripts/steam/tradeOffer": path.join(__dirname, "src", "js/content_scripts/steam", "tradeOffer.js"),
-    "js/contentScripts/steam/tradeOffers": path.join(__dirname, "src", "js/content_scripts/steam", "tradeOffers.js"),
-    "js/contentScripts/steam/profile": path.join(__dirname, "src", "js/content_scripts/steam", "profile.js")
+    "js/contentScripts/steam/announcements": path.join(__dirname, "src", "js/contentScripts/steam", "announcements.js"),
+    "js/contentScripts/steam/apiKey": path.join(__dirname, "src", "js/contentScripts/steam", "apiKey.js"),
+    "js/contentScripts/steam/friends": path.join(__dirname, "src", "js/contentScripts/steam", "friends.js"),
+    "js/contentScripts/steam/group": path.join(__dirname, "src", "js/contentScripts/steam", "group.js"),
+    "js/contentScripts/steam/openIDLogin": path.join(__dirname, "src", "js/contentScripts/steam", "openIDLogin.js"),
+    "js/contentScripts/steam/sharedFile": path.join(__dirname, "src", "js/contentScripts/steam", "sharedFile.js"),
+    "js/contentScripts/steam/webChat": path.join(__dirname, "src", "js/contentScripts/steam", "webChat.js"),
+    "js/contentScripts/steam/inventory": path.join(__dirname, "src", "js/contentScripts/steam", "inventory.js"),
+    "js/contentScripts/steam/marketListing": path.join(__dirname, "src", "js/contentScripts/steam", "marketListing.js"),
+    "js/contentScripts/steam/market": path.join(__dirname, "src", "js/contentScripts/steam", "market.js"),
+    "js/contentScripts/steam/tradeOffer": path.join(__dirname, "src", "js/contentScripts/steam", "tradeOffer.js"),
+    "js/contentScripts/steam/tradeOffers": path.join(__dirname, "src", "js/contentScripts/steam", "tradeOffers.js"),
+    "js/contentScripts/steam/profile": path.join(__dirname, "src", "js/contentScripts/steam", "profile.js")
   },
   output: {
     publicPath: '',
@@ -112,10 +112,6 @@ const options = {
       {
         from: "src/images",
         to: 'images/'
-      },
-      {
-        from: "src/js",
-        to: 'js/'
       }
     ], { copyUnmodified: true }),
     new HtmlWebpackPlugin({
