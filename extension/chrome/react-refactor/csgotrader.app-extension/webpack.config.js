@@ -96,10 +96,7 @@ const options = {
         test: /\.(sa|sc|c)ss$/,
         use: [
           {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              hmr: true,
-            },
+            loader: MiniCssExtractPlugin.loader
           },
           'css-loader',
           'sass-loader',
@@ -127,7 +124,7 @@ const options = {
     extensions: fileExtensions.map(extension => ("." + extension)).concat([".jsx", ".js", ".css"])
   },
   plugins:
-    (mode === 'production') ? [...pluginsToAlwaysUse, new CleanWebpackPlugin()] : pluginsToAlwaysUse, // CleanWebpackPlugin only needs to run when it's a production build
+      (mode === 'production') ? [...pluginsToAlwaysUse, new CleanWebpackPlugin()] : pluginsToAlwaysUse, // CleanWebpackPlugin only needs to run when it's a production build
   devServer: {
     writeToDisk: true,
     contentBase: path.join(__dirname, "../build")
