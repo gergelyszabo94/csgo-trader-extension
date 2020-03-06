@@ -45,7 +45,7 @@ const pluginsToAlwaysUse = [
   }),
 ];
 
-const options = {
+module.exports = {
   mode: mode,
   entry: {
     // the single js bundle used by the single page that is used for the popup, options and bookmarks
@@ -130,7 +130,3 @@ const options = {
     contentBase: path.join(__dirname, "../build")
   }
 };
-
-if (mode === "development") options.devtool = "cheap-module-source-map";
-
-module.exports = options;
