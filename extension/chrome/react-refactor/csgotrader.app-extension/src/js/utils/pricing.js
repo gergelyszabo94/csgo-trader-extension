@@ -1,5 +1,6 @@
 import { pricingProviders, currencies } from "js/utils/static/pricing";
-import { getSteamWalletInfo, injectToPage } from 'js/utils/utilsModular';
+import { getSteamWalletInfo } from 'js/utils/utilsModular';
+import { injectScript } from 'js/utils/injection';
 
 const priceQueue = {
     active: false,
@@ -230,7 +231,7 @@ const getPriceAfterFees = (priceBeforeFees) => {
     // TODO get the publisher fee dynamically
     const priceAfterFeesScript = `
         document.querySelector('body').setAttribute('priceAfterFees', ${priceBeforeFees} - CalculateFeeAmount( ${priceBeforeFees}, g_rgWalletInfo['wallet_publisher_fee_percent_default'] ).fees);`;
-    return parseInt(injectToPage(priceAfterFeesScript, true, 'priceAfterFeesScript', 'priceAfterFees'));
+    return parseInt(injectScript(priceAfterFeesScript, true, 'priceAfterFeesScript', 'priceAfterFees'));
 };
 
 const userPriceToProperPrice = (userInput) => {
@@ -250,13 +251,13 @@ const userPriceToProperPrice = (userInput) => {
 // converts cent integers to pretty formatted string
 const centsToSteamFormattedPrice = (centsPrice) => {
     const intToFormattedScript = `document.querySelector('body').setAttribute('intToFormatted', v_currencyformat(${centsPrice}, GetCurrencyCode(g_rgWalletInfo.wallet_currency)));`;
-    return injectToPage(intToFormattedScript, true, 'intToFormattedScript', 'intToFormatted');
+    return injectScript(intToFormattedScript, true, 'intToFormattedScript', 'intToFormatted');
 };
 
 // to convert the formatted price string that the price overview api call returns to cent int (for market listing)
 const steamFormattedPriceToCents = (formattedPrice) => {
     const formattedToIntScript = `document.querySelector('body').setAttribute('formattedToInt', GetPriceValueAsInt('${formattedPrice}'));`;
-    return injectToPage(formattedToIntScript, true, 'formattedToIntScript', 'formattedToInt');
+    return injectScript(formattedToIntScript, true, 'formattedToIntScript', 'formattedToInt');
 };
 
 export { updatePrices, updateExchangeRates, getPrice,

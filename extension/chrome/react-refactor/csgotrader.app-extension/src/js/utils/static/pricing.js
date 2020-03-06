@@ -368,5 +368,4 @@ const pricingProviders = {
     }
 };
 
-
 export { currencies, pricingProviders };

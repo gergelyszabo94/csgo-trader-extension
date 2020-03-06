@@ -2,9 +2,9 @@ import {
     getItemByAssetID, getAssetIDOfElement, addDopplerPhase,
     makeItemColorful, addSSTandExtIndicators, addPriceIndicator,
     addFloatIndicator, getExteriorFromTags, getQuality,
-    getType, isCSGOInventoryActive, injectToPage,
+    getType, isCSGOInventoryActive,
     getDopplerInfo, getActivePage, reloadPageOnExtensionReload,
-    dateToISODisplay, prettyTimeAgo, logExtensionPresence, injectStyle,
+    dateToISODisplay, prettyTimeAgo, logExtensionPresence,
     updateLoggedInUserID, warnOfScammer, addPageControlEventListeners,
     addSearchListener, findElementByAssetID, getPattern } from "js/utils/utilsModular";
 import { prettyPrintPrice } from 'js/utils/pricing';
@@ -15,6 +15,7 @@ import itemTypes from 'js/utils/static/itemTypes';
 import { genericMarketLink } from "js/utils/static/simpleStrings";
 import floatQueue, { workOnFloatQueue } from "js/utils/floatQueueing";
 import { overrideHandleTradeActionMenu } from 'js/utils/steamOverriding';
+import { injectScript, injectStyle } from 'js/utils/injection';
 
 const getInventories = () => {
     yourInventory = getItemInfoFromPage('You');
@@ -231,7 +232,7 @@ const loadAllItemsProperly = () => {
             g_ActiveInventory.pageList[index].images_loaded = false;
             g_ActiveInventory.LoadPageImages(page);
         });`;
-    injectToPage(loadAllItemsProperly, true, 'loadAllItemsProperly', null);
+    injectScript(loadAllItemsProperly, true, 'loadAllItemsProperly', null);
 };
 
 const addFunctionBars = () => {
@@ -580,7 +581,7 @@ const getItemInfoFromPage = (who) => {
              }
              else trimmedAssets = null;
         document.querySelector('body').setAttribute('offerInventoryInfo', JSON.stringify(trimmedAssets));`;
-    return JSON.parse(injectToPage(getItemsScript, true, 'getOfferItemInfo', 'offerInventoryInfo'));
+    return JSON.parse(injectScript(getItemsScript, true, 'getOfferItemInfo', 'offerInventoryInfo'));
 };
 
 const rightClickControlHandler = (event) => {
@@ -594,7 +595,7 @@ const rightClickControlHandler = (event) => {
 // gets the other party's steam id in a trade offer
 const getTradePartnerSteamID = () => {
     const tradePartnerSteamIDScript = `document.querySelector('body').setAttribute('tradePartnerSteamID', g_ulTradePartnerSteamID);`;
-    return injectToPage(tradePartnerSteamIDScript, true, 'tradePartnerSteamID', 'tradePartnerSteamID')
+    return injectScript(tradePartnerSteamIDScript, true, 'tradePartnerSteamID', 'tradePartnerSteamID')
 };
 
 // add an info card to the top of the offer about offer history with the user (sent/received)

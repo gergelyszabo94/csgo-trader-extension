@@ -1,4 +1,4 @@
-import { injectToPage } from "js/utils/utilsModular";
+import { injectScript } from 'js/utils/injection';
 
 // makes trade offers open in new tab instead of a separate window
 const overrideShowTradeOffer = () => {
@@ -18,7 +18,7 @@ const overrideShowTradeOffer = () => {
         }
 `;
     chrome.storage.local.get(['openOfferInTab'], (result) => {
-        if (result.openOfferInTab) injectToPage(overRideShowTradeOfferScript, false, 'ShowTradeOfferScript', null);
+        if (result.openOfferInTab) injectScript(overRideShowTradeOfferScript, false, 'ShowTradeOfferScript', null);
     });
 };
 
@@ -31,7 +31,7 @@ const overrideDecline = () => {
     }
     `;
     chrome.storage.local.get(['quickDeclineOffer'], (result) => {
-        if (result.quickDeclineOffer) injectToPage(overRideDeclineTradeOfferScript, false, 'overrideDeclineTradeOffer', null);
+        if (result.quickDeclineOffer) injectScript(overRideDeclineTradeOfferScript, false, 'overrideDeclineTradeOffer', null);
     });
 };
 
@@ -122,7 +122,7 @@ const overrideHandleTradeActionMenu = () => {
         }
        `;
 
-    injectToPage(overrideHandleTradeActionMenuScript, false, 'overrideHandleTradeActionMenu', null)
+    injectScript(overrideHandleTradeActionMenuScript, false, 'overrideHandleTradeActionMenu', null)
 };
 
 //adds In-browser inspect as action in inventory
@@ -185,7 +185,7 @@ const overridePopulateActions = () => {
             elActions.show();
         }
 `;
-    injectToPage(overRidePopulateActionsMenuScript, false, 'overRidePopulateActionsMenu', null);
+    injectScript(overRidePopulateActionsMenuScript, false, 'overRidePopulateActionsMenu', null);
 };
 
 export { overrideShowTradeOffer, overrideDecline, overridePopulateActions, overrideHandleTradeActionMenu }

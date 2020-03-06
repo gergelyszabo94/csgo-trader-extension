@@ -1,10 +1,10 @@
 import {
-    injectToPage, addPageControlEventListeners, getItemByAssetID,
+    addPageControlEventListeners, getItemByAssetID,
     getAssetIDOfElement, makeItemColorful, addDopplerPhase,
     addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
     getDataFilledFloatTechnical, souvenirExists, getUserSteamID,
     getSteamWalletCurrency, findElementByAssetID, getFloatBarSkeleton,
-    logExtensionPresence, isCSGOInventoryActive, injectStyle,
+    logExtensionPresence, isCSGOInventoryActive,
     updateLoggedInUserID, reloadPageOnExtensionReload, isSIHActive,
     getShortDate, getActivePage, dateToISODisplay,
     prettyTimeAgo, addSearchListener, getPattern, removeFromArray
@@ -23,6 +23,7 @@ import { overridePopulateActions } from 'js/utils/steamOverriding';
 import { trackEvent } from "js/utils/analytics";
 import itemTypes from "js/utils/static/itemTypes";
 import exteriors from "js/utils/static/exteriors";
+import { injectScript, injectStyle } from 'js/utils/injection';
 
 // sends a message to the "back end" to request inventory contents
 const requestInventory = () => {
@@ -49,7 +50,7 @@ const requestInventory = () => {
 
 const getInventoryOwnerID = () => {
     const inventoryOwnerIDScript = `document.querySelector('body').setAttribute('inventoryOwnerID', UserYou.GetSteamId());`;
-    return injectToPage(inventoryOwnerIDScript, true, 'inventoryOwnerID', 'inventoryOwnerID')
+    return injectScript(inventoryOwnerIDScript, true, 'inventoryOwnerID', 'inventoryOwnerID')
 };
 
 //adds everything that is per item, like trade lock, exterior, doppler phases, border colors
@@ -538,7 +539,7 @@ const addFunctionBar = () => {
         document.getElementById('sellButton').addEventListener('click', (event) => {
             event.target.innerText = 'Mass Listing in Progress...';
             const startSellingScript = `sellNext()`;
-            injectToPage(startSellingScript, true, 'startSelling', false);
+            injectScript(startSellingScript, true, 'startSelling', false);
         });
 
         // shows currency mismatch warning and option to change currency
@@ -679,7 +680,7 @@ const loadFullInventory = () => {
                     document.querySelector('body').setAttribute('allItemsLoaded', true);
                 });
                 `;
-            if (injectToPage(loadFullInventoryScript, true, 'loadFullInventory', 'allItemsLoaded') === null) {
+            if (injectScript(loadFullInventoryScript, true, 'loadFullInventory', 'allItemsLoaded') === null) {
                 setTimeout(() => {
                     loadFullInventory();
                 }, 2000);
@@ -868,7 +869,7 @@ const getItemInfoFromPage = () => {
             });
         }
         document.querySelector('body').setAttribute('inventoryInfo', JSON.stringify(trimmedAssets));`;
-    return JSON.parse(injectToPage(getItemsSccript, true, 'getInventory', 'inventoryInfo'));
+    return JSON.parse(injectScript(getItemsSccript, true, 'getInventory', 'inventoryInfo'));
 };
 
 // adds market info in other inventories
@@ -904,7 +905,7 @@ const isOwnInventory = () => {
 //
 // const sellItem = (assetID, price) => {
 //     const callSellItemOnPageScript = `sellItemOnPage(${price}, ${assetID})`;
-//     injectToPage(callSellItemOnPageScript, true, 'callSellItemOnPage', false);
+//     injectScript(callSellItemOnPageScript, true, 'callSellItemOnPage', false);
 // };
 
 const addListingRow = (item) => {
@@ -1200,7 +1201,7 @@ if (isOwnInventory()) {
             }
             document.getElementById('sellButton').innerText = 'Start Mass Listing';
         }`;
-    injectToPage(sellItemScriptString, false, 'sellItemScript', false);
+    injectScript(sellItemScriptString, false, 'sellItemScript', false);
 }
 
 if (!isOwnInventory()) {

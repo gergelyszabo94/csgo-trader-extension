@@ -1,6 +1,6 @@
 import { dopplerPhases } from 'js/utils/static/dopplerPhases';
 import {
-    getDopplerInfo, getFloatBarSkeleton, injectToPage,
+    getDopplerInfo, getFloatBarSkeleton,
     parseStickerInfo, getPattern, logExtensionPresence,
     updateLoggedInUserID, souvenirExists, reloadPageOnExtensionReload,
     getDataFilledFloatTechnical } from 'js/utils/utilsModular';
@@ -9,6 +9,7 @@ import exteriors from "js/utils/static/exteriors";
 import { getPrice, getStickerPriceTotal } from 'js/utils/pricing';
 import { trackEvent } from "js/utils/analytics";
 import { stattrak, starChar, souvenir, stattrakPretty, genericMarketLink } from 'js/utils/static/simpleStrings';
+import { injectScript } from 'js/utils/injection';
 
 const addPhasesIndicator = () => {
     if (window.location.href.includes('Doppler')) {
@@ -153,7 +154,7 @@ const getListings = () => {
         assets: g_rgAssets
     }));`;
 
-    const listingsInfo = JSON.parse(injectToPage(getListingsScript, true, 'getListings', 'listingsInfo'));
+    const listingsInfo = JSON.parse(injectScript(getListingsScript, true, 'getListings', 'listingsInfo'));
     const assets = listingsInfo.assets[730][2];
     const listings = listingsInfo.listings;
 
@@ -308,7 +309,7 @@ const addPricesInOtherCurrencies = () => {
                         }
                     });`;
 
-                injectToPage(currencyConverterScript, true, 'currencyConverter', false);
+                injectScript(currencyConverterScript, true, 'currencyConverter', false);
             }
         }
     });
@@ -474,7 +475,7 @@ if (searchResultsRows !== null){
 chrome.storage.local.get('numberOfListings', (result) =>{
     if (result.numberOfListings !== 10){
         const loadMoreMarketAssets = `g_oSearchResults.m_cPageSize = ${result.numberOfListings}; g_oSearchResults.GoToPage(0, true);`;
-        injectToPage(loadMoreMarketAssets, true, 'loadMoreMarketAssets', null);
+        injectScript(loadMoreMarketAssets, true, 'loadMoreMarketAssets', null);
     }
 });
 

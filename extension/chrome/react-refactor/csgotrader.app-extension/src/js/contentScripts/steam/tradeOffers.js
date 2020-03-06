@@ -4,7 +4,7 @@ import {
     addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
     getItemByAssetID, getPoperStyleSteamIDFromOfferStyle, prettyTimeAgo,
     logExtensionPresence, updateLoggedInUserID, reloadPageOnExtensionReload,
-    injectStyle, injectToPage, extractItemsFromOffers } from 'js/utils/utilsModular';
+    extractItemsFromOffers } from 'js/utils/utilsModular';
 import { genericMarketLink } from 'js/utils/static/simpleStrings';
 import floatQueue, { workOnFloatQueue } from "js/utils/floatQueueing";
 import itemTypes from 'js/utils/static/itemTypes';
@@ -12,6 +12,7 @@ import { prettyPrintPrice } from 'js/utils/pricing';
 import { overrideDecline, overrideShowTradeOffer } from 'js/utils/steamOverriding';
 import { trackEvent } from "js/utils/analytics";
 import { offersSortingModes } from 'js/utils/static/sortingModes';
+import { injectScript, injectStyle } from 'js/utils/injection';
 
 const matchItemsWithDescriptions = (items) => {
     let itemsToReturn = [];
@@ -499,7 +500,7 @@ const acceptTradeScriptString = `
                         console.log(err);
                     });
                 }`;
-if (activePage === 'incoming_offers') injectToPage(acceptTradeScriptString, false, 'acceptTradeScript', false);
+if (activePage === 'incoming_offers') injectScript(acceptTradeScriptString, false, 'acceptTradeScript', false);
 
 // adds trade offer summary/help bar and sorting
 if (activePage === 'incoming_offers' || activePage === 'sent_offers') {

@@ -1,9 +1,10 @@
 import { reloadPageOnExtensionReload, logExtensionPresence,
-    updateLoggedInUserID, injectStyle } from "js/utils/utilsModular";
+    updateLoggedInUserID } from "js/utils/utilsModular";
 import { removeListing, getMarketHistory, cancelOrder } from 'js/utils/market'
 import { trackEvent } from "js/utils/analytics";
 import { steamFormattedPriceToCents, centsToSteamFormattedPrice, priceQueue,
     workOnPriceQueue } from 'js/utils/pricing';
+import { injectStyle } from 'js/utils/injection';
 
 const getMyListingIDFromElement = (listingElement) => {
     return listingElement.id.split('mylisting_')[1];

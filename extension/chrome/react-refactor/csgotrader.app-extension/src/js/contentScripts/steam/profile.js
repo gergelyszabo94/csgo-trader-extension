@@ -1,5 +1,5 @@
 import { logExtensionPresence, updateLoggedInUserID, getUserSteamID,
-    warnOfScammer, injectToPage, dateToISODisplay, injectStyle,
+    warnOfScammer, dateToISODisplay,
     reloadPageOnExtensionReload} from "js/utils/utilsModular";
 import { trackEvent } from "js/utils/analytics";
 import { addReplyToCommentsFunctionality, addCommentsMutationObserver, reportComments } from "js/utils/comments";
@@ -7,11 +7,12 @@ import { goldenMiniProfileHandler, goldenCommenters } from 'js/utils/goldening';
 import steamTextFormattingTags from 'js/utils/static/steamTextFormatingTags';
 import { overrideShowTradeOffer } from 'js/utils/steamOverriding';
 import steamProfileStatuses from 'js/utils/static/steamProfileStatuses';
+import { injectScript, injectStyle } from 'js/utils/injection';
 
 // gets the steam id of the user that's profile this script is run on
 const getProfileOwnerSteamID = () => {
     const steamidOfProfileOwnerScript = `document.querySelector('body').setAttribute('steamidOfProfileOwner', g_rgProfileData.steamid);`;
-    return injectToPage(steamidOfProfileOwnerScript, true, 'steamidOfProfileOwner', 'steamidOfProfileOwner');
+    return injectScript(steamidOfProfileOwnerScript, true, 'steamidOfProfileOwner', 'steamidOfProfileOwner');
 };
 
 // ensures that we are on a profile page, it's not possible with simple regex

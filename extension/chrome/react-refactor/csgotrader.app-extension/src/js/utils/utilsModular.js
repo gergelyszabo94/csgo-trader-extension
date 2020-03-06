@@ -5,6 +5,8 @@ import qualities from "js/utils/static/qualities";
 import itemTypes from 'js/utils/static/itemTypes';
 import patterns from 'js/utils/static/patterns';
 import { getPrice } from 'js/utils/pricing';
+import collectionsWithSouvenirs from 'js/utils/static/collectionsWithSouvenirs';
+import { injectScript } from "js/utils/injection";
 
 // eslint-disable-next-line no-extend-native
 Number.prototype.toFixedNoRounding = function(n) {
@@ -312,33 +314,12 @@ const updateLoggedInUserID = () => {
 // gets SteamID of the user logged into steam (returns false if there is no user logged in)
 const getUserSteamID = () => {
     const getUserSteamIDScript = `document.querySelector('body').setAttribute('steamidOfLoggedinUser', g_steamID);`;
-    return injectToPage(getUserSteamIDScript, true, 'steamidOfLoggedinUser', 'steamidOfLoggedinUser');
+    return injectScript(getUserSteamIDScript, true, 'steamidOfLoggedinUser', 'steamidOfLoggedinUser');
 };
 
 // there are many different kinds of SteamID formats , this function converts the 64bit into the ones used in trade offers
 const getOfferStyleSteamID = (steamID64) => {
     return Number(steamID64.split('7656')[1]) - Number(1197960265728);
-};
-
-// inject scripts from content scripts the the page context, usually to access variables or override functionality
-const injectToPage = (scriptString, toRemove, id, executeAndReturn) => {
-    // removes previously added instance of the script
-    const elementFromBefore = document.getElementById(id);
-    if (elementFromBefore !== null) elementFromBefore.remove();
-
-    const toInject = document.createElement('script');
-    toInject.id = id;
-    toInject.innerHTML = scriptString;
-    (document.head || document.documentElement).appendChild(toInject);
-
-    const simpleAttributeParsing = ['steamidOfLoggedinUser', 'steamidOfProfileOwner', 'tradePartnerSteamID', 'inventoryOwnerID', 'listingsInfo',
-        'inventoryInfo', 'allItemsLoaded', 'offerInventoryInfo', 'steamWalletCurrency', 'steamWallet', 'formattedToInt', 'intToFormatted',
-        'priceAfterFees', 'sessionid'];
-    const result = simpleAttributeParsing.includes(executeAndReturn) ? document.querySelector('body').getAttribute(executeAndReturn) : null;
-    document.querySelector('body').setAttribute(executeAndReturn, '');
-
-    if (toRemove) document.head.removeChild(toInject);
-    return result;
 };
 
 const listenToLocationChange = (callBackFunction) => {
@@ -471,38 +452,20 @@ const getDataFilledFloatTechnical = (floatInfo) => {
             Float info from <a href="https://csgofloat.com/" target="_blank">csgofloat.com</a>`;
 };
 
-const souvenirExists = (iteminfo) => {
-    const collectionsWithSouvenirs = [
-        'The Blacksite Collection',
-        'The 2018 Inferno Collection',
-        'The 2018 Nuke Collection',
-        'The Cache Collection',
-        'The Cobblestone Collection',
-        'The Dust 2 Collection',
-        'The Inferno Collection',
-        'The Italy Collection',
-        'The Lake Collection',
-        'The Mirage Collection',
-        'The Nuke Collection',
-        'The Overpass Collection',
-        'The Safehouse Collection',
-        'The Train Collection'
-    ];
-
-    const collectionsWithSouvenirstoCheck = new RegExp(collectionsWithSouvenirs.join('|'), 'i');
-    return collectionsWithSouvenirstoCheck.test(iteminfo);
-
+const souvenirExists = (itemInfo) => {
+    const collectionsWithSouvenirsToCheck = new RegExp(collectionsWithSouvenirs.join('|'), 'i');
+    return collectionsWithSouvenirsToCheck.test(itemInfo);
 };
 
 // tested and works in inventories, offers and market pages, does not work on profiles and incoming offers page
 const getSteamWalletInfo = () => {
     const getWalletInfoScript = `document.querySelector('body').setAttribute('steamWallet', JSON.stringify(g_rgWalletInfo));`;
-    return JSON.parse(injectToPage(getWalletInfoScript, true, 'steamWalletScript', 'steamWallet'));
+    return JSON.parse(injectScript(getWalletInfoScript, true, 'steamWalletScript', 'steamWallet'));
 };
 
 const getSteamWalletCurrency = () => {
     const getCurrencyScript = `document.querySelector('body').setAttribute('steamWalletCurrency', GetCurrencyCode(${getSteamWalletInfo().wallet_currency}));`;
-    return injectToPage(getCurrencyScript, true, 'steamWalletCurrencyScript', 'steamWalletCurrency');
+    return injectScript(getCurrencyScript, true, 'steamWalletCurrencyScript', 'steamWalletCurrency');
 };
 
 const findElementByAssetID = (assetID) => {
@@ -534,17 +497,10 @@ const isCSGOInventoryActive = (where) => {
     else if (where === 'inventory') return document.querySelector('.games_list_tab.active').getAttribute('href') === '#730';
 };
 
-const injectStyle = (styleString, elementID) => {
-    const styleElement = document.createElement('style');
-    styleElement.id = elementID;
-    styleElement.innerHTML = styleString;
-    document.querySelector('body').appendChild(styleElement);
-};
-
 const reloadPageOnExtensionReload = () => {
     // reloads the page on extension update/reload/uninstall
     chrome.runtime.connect().onDisconnect.addListener(() =>{
-        window.location.reload()
+        window.location.reload();
     });
 };
 
@@ -607,7 +563,7 @@ const addSearchListener = (type, addFloatIndicatorsFunction) => {
 
 const getSessionID = () => {
     const getSessionIDScript = `document.querySelector('body').setAttribute('sessionid', g_sessionID);`;
-    return injectToPage(getSessionIDScript, true, 'getSessionID', 'sessionid');
+    return injectScript(getSessionIDScript, true, 'getSessionID', 'sessionid');
 };
 
 // converts shitty annoying trade offer style SteamID to proper SteamID64
@@ -670,13 +626,13 @@ export {
     handleStickerNamesWithCommas, removeFromArray, getType,
     getPattern, getShortDate, goToInternalPage,
     validateSteamAPIKey, getAssetIDFromInspectLink, uuidv4,
-    updateLoggedInUserID, getUserSteamID, injectToPage,
+    updateLoggedInUserID, getUserSteamID,
     listenToLocationChange, addPageControlEventListeners, getItemByAssetID,
     getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
     addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
     getDataFilledFloatTechnical, souvenirExists,
     getSteamWalletInfo, getSteamWalletCurrency, findElementByAssetID,
-    getFloatBarSkeleton, isCSGOInventoryActive, injectStyle,
+    getFloatBarSkeleton, isCSGOInventoryActive,
     reloadPageOnExtensionReload, isSIHActive, dateToISODisplay,
     prettyTimeAgo, addSearchListener, getSessionID,
     getPoperStyleSteamIDFromOfferStyle, extractItemsFromOffers,
