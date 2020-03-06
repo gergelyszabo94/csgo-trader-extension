@@ -6,6 +6,7 @@ import itemTypes from 'js/utils/static/itemTypes';
 import patterns from 'js/utils/static/patterns';
 import { getPrice } from 'js/utils/pricing';
 
+// eslint-disable-next-line no-extend-native
 Number.prototype.toFixedNoRounding = function(n) {
     const reg = new RegExp('^-?\\d+(?:\\.\\d{0,' + n + '})?', 'g');
     const a = this.toString().match(reg)[0];

@@ -900,10 +900,12 @@ const isOwnInventory = () => {
     return getUserSteamID() === getInventoryOwnerID()
 };
 
-const sellItem = (assetID, price) => {
-    const callSellItemOnPageScript = `sellItemOnPage(${price}, ${assetID})`;
-    injectToPage(callSellItemOnPageScript, true, 'callSellItemOnPage', false);
-};
+// ready made for possible future usage, unused atm
+//
+// const sellItem = (assetID, price) => {
+//     const callSellItemOnPageScript = `sellItemOnPage(${price}, ${assetID})`;
+//     injectToPage(callSellItemOnPageScript, true, 'callSellItemOnPage', false);
+// };
 
 const addListingRow = (item) => {
     const row = `
@@ -983,7 +985,7 @@ const addToPriceQueueIfNeeded = (item) => {
             type: 'inventory_mass_sell_starting_at',
             appID: '730',
             market_hash_name: item.market_hash_name,
-            callBackFunction: null
+            callBackFunction: addStartingAtAndQuickSellPrice
         });
         workOnPriceQueue();
     }
@@ -1089,7 +1091,6 @@ const lowerModule = `<a class="lowerModule">
 
 const tradable = '<span class="tradable">Tradable</span>';
 const notTradable = '<span class="not_tradable">Not Tradable</span>';
-const dopplerPhase = '<div class="dopplerPhase"><span></span></div>';
 
 logExtensionPresence();
 

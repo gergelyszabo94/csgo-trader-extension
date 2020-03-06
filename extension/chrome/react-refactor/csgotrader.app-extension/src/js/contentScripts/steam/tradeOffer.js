@@ -642,8 +642,6 @@ const addFloatDataToPage = (job, floatQueue, floatInfo) => {
     item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
 };
 
-const dopplerPhase = "<div class='dopplerPhase'><span></span></div>";
-
 let yourInventory = null;
 let theirInventory = null;
 let combinedInventories = [];
