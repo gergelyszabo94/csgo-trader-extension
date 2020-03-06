@@ -1,6 +1,5 @@
-import { logExtensionPresence, updateLoggedInUserID, getUserSteamID,
-    warnOfScammer,
-    reloadPageOnExtensionReload} from "js/utils/utilsModular";
+import { logExtensionPresence, updateLoggedInUserID,
+    warnOfScammer, reloadPageOnExtensionReload} from "js/utils/utilsModular";
 import { dateToISODisplay } from 'js/utils/dateTime';
 import { trackEvent } from "js/utils/analytics";
 import { addReplyToCommentsFunctionality, addCommentsMutationObserver, reportComments } from "js/utils/comments";
@@ -9,6 +8,7 @@ import steamTextFormattingTags from 'js/utils/static/steamTextFormatingTags';
 import { overrideShowTradeOffer } from 'js/utils/steamOverriding';
 import steamProfileStatuses from 'js/utils/static/steamProfileStatuses';
 import { injectScript, injectStyle } from 'js/utils/injection';
+import { getUserSteamID } from "js/utils/steamID";
 
 // gets the steam id of the user that's profile this script is run on
 const getProfileOwnerSteamID = () => {

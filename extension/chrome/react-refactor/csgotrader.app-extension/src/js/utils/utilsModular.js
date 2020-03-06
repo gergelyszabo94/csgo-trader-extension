@@ -7,6 +7,7 @@ import patterns from 'js/utils/static/patterns';
 import { getPrice } from 'js/utils/pricing';
 import collectionsWithSouvenirs from 'js/utils/static/collectionsWithSouvenirs';
 import { injectScript } from "js/utils/injection";
+import { getUserSteamID, getProperStyleSteamIDFromOfferStyle } from "js/utils/steamID";
 
 // eslint-disable-next-line no-extend-native
 Number.prototype.toFixedNoRounding = function(n) {
@@ -288,17 +289,6 @@ const updateLoggedInUserID = () => {
     if (steamID !== 'false' && steamID !== false) chrome.storage.local.set({steamIDOfUser: steamID}, () =>{});
 };
 
-// gets SteamID of the user logged into steam (returns false if there is no user logged in)
-const getUserSteamID = () => {
-    const getUserSteamIDScript = `document.querySelector('body').setAttribute('steamidOfLoggedinUser', g_steamID);`;
-    return injectScript(getUserSteamIDScript, true, 'steamidOfLoggedinUser', 'steamidOfLoggedinUser');
-};
-
-// there are many different kinds of SteamID formats , this function converts the 64bit into the ones used in trade offers
-const getOfferStyleSteamID = (steamID64) => {
-    return Number(steamID64.split('7656')[1]) - Number(1197960265728);
-};
-
 const listenToLocationChange = (callBackFunction) => {
     let oldHref = document.location.href;
 
@@ -516,21 +506,16 @@ const getSessionID = () => {
     return injectScript(getSessionIDScript, true, 'getSessionID', 'sessionid');
 };
 
-// converts shitty annoying trade offer style SteamID to proper SteamID64
-const getPoperStyleSteamIDFromOfferStyle = (offerStyleID) => {
-    return '7656' + (Number(offerStyleID) + Number(1197960265728));
-};
-
 const extractItemsFromOffers = (offers) => {
     let itemsToReturn = [];
     if (offers !== undefined || null) {
         offers.forEach(offer => {
             if (offer.items_to_give !== undefined) offer.items_to_give.forEach(item => {
-                item.owner = getPoperStyleSteamIDFromOfferStyle(offer.accountid_other);
+                item.owner = getProperStyleSteamIDFromOfferStyle(offer.accountid_other);
                 itemsToReturn.push(item)
             });
             if (offer.items_to_receive !== undefined) offer.items_to_receive.forEach(item => {
-                item.owner = getPoperStyleSteamIDFromOfferStyle(offer.accountid_other);
+                item.owner = getProperStyleSteamIDFromOfferStyle(offer.accountid_other);
                 itemsToReturn.push(item)
             });
         });
@@ -575,8 +560,7 @@ export {
     getExteriorFromTags, getDopplerInfo, getQuality, parseStickerInfo,
     handleStickerNamesWithCommas, removeFromArray, getType,
     getPattern, goToInternalPage,
-    validateSteamAPIKey, getAssetIDFromInspectLink, uuidv4,
-    updateLoggedInUserID, getUserSteamID,
+    validateSteamAPIKey, getAssetIDFromInspectLink, uuidv4, updateLoggedInUserID,
     listenToLocationChange, addPageControlEventListeners, getItemByAssetID,
     getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
     addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
@@ -584,6 +568,5 @@ export {
     getSteamWalletInfo, getSteamWalletCurrency, findElementByAssetID,
     getFloatBarSkeleton, isCSGOInventoryActive,
     reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
-    getPoperStyleSteamIDFromOfferStyle, extractItemsFromOffers,
-    warnOfScammer, getOfferStyleSteamID
+    extractItemsFromOffers, warnOfScammer
 };

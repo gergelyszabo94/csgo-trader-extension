@@ -2,7 +2,7 @@ import {
     addPageControlEventListeners, getItemByAssetID,
     getAssetIDOfElement, makeItemColorful, addDopplerPhase,
     addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
-    getDataFilledFloatTechnical, souvenirExists, getUserSteamID,
+    getDataFilledFloatTechnical, souvenirExists,
     getSteamWalletCurrency, findElementByAssetID, getFloatBarSkeleton,
     logExtensionPresence, isCSGOInventoryActive,
     updateLoggedInUserID, reloadPageOnExtensionReload, isSIHActive, getActivePage
@@ -23,6 +23,7 @@ import { trackEvent } from "js/utils/analytics";
 import itemTypes from "js/utils/static/itemTypes";
 import exteriors from "js/utils/static/exteriors";
 import { injectScript, injectStyle } from 'js/utils/injection';
+import { getUserSteamID } from "js/utils/steamID";
 
 // sends a message to the "back end" to request inventory contents
 const requestInventory = () => {
@@ -897,7 +898,7 @@ const addStartingAtPrice = (market_hash_name) => {
 
 // works in inventory and profile pages
 const isOwnInventory = () => {
-    return getUserSteamID() === getInventoryOwnerID()
+    return getUserSteamID() === getInventoryOwnerID();
 };
 
 // ready made for possible future usage, unused atm

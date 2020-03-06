@@ -7,7 +7,7 @@ import NewTabLink from "components/NewTabLink/NewTabLink";
 import Modal from "components/Modal/Modal";
 import FlipSwitch from "components/FlipSwitch/FlipSwitch";
 import { determineNotificationDate, reverseWhenNotifDetails } from "js/utils/notifications";
-import { getOfferStyleSteamID } from 'js/utils/utilsModular';
+import { getOfferStyleSteamID } from 'js/utils/steamID';
 
 const Bookmark = (props) => {
     const { itemInfo, notifTime, notifType, notify, owner } = props.bookmarkData;

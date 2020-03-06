@@ -2,7 +2,7 @@ import {
     getExteriorFromTags, getQuality, getDopplerInfo,
     getType, addDopplerPhase, makeItemColorful,
     addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
-    getItemByAssetID, getPoperStyleSteamIDFromOfferStyle,
+    getItemByAssetID,
     logExtensionPresence, updateLoggedInUserID, reloadPageOnExtensionReload,
     extractItemsFromOffers } from 'js/utils/utilsModular';
 import { prettyTimeAgo } from 'js/utils/dateTime';
@@ -14,6 +14,7 @@ import { overrideDecline, overrideShowTradeOffer } from 'js/utils/steamOverridin
 import { trackEvent } from "js/utils/analytics";
 import { offersSortingModes } from 'js/utils/static/sortingModes';
 import { injectScript, injectStyle } from 'js/utils/injection';
+import { getProperStyleSteamIDFromOfferStyle } from 'js/utils/steamID';
 
 const matchItemsWithDescriptions = (items) => {
     let itemsToReturn = [];
@@ -270,7 +271,7 @@ const addPartnerOfferSummary = (offers, nthRun) => {
         chrome.storage.local.get('tradeHistoryOffers', (result) => {
             if (result.tradeHistoryOffers) {
                 offers.forEach(offer => {
-                    const partnerID = getPoperStyleSteamIDFromOfferStyle(offer.accountid_other);
+                    const partnerID = getProperStyleSteamIDFromOfferStyle(offer.accountid_other);
                     const storageKey = `offerHistory_${partnerID}`;
                     chrome.storage.local.get(storageKey, (result) => {
                         const offerHistorySummary = result[storageKey];
@@ -307,7 +308,7 @@ const updateOfferHistoryData = () => {
 
                 allOffers.forEach(offer => {
                     if (offer.time_updated > result.tradeHistoryLastUpdate) {
-                        const partnerID = getPoperStyleSteamIDFromOfferStyle(offer.accountid_other);
+                        const partnerID = getProperStyleSteamIDFromOfferStyle(offer.accountid_other);
                         const offerSummary = {
                             timestamp: offer.time_updated,
                             partner: partnerID,
@@ -457,7 +458,7 @@ if (activePage === 'incoming_offers') {
     document.querySelectorAll('.tradeoffer').forEach(offerElement => {
         if (isOfferActive(offerElement)) {
             const offerID = offerElement.id.split('tradeofferid_')[1];
-            const partnerID = getPoperStyleSteamIDFromOfferStyle(offerElement.querySelector('.playerAvatar').getAttribute('data-miniprofile'));
+            const partnerID = getProperStyleSteamIDFromOfferStyle(offerElement.querySelector('.playerAvatar').getAttribute('data-miniprofile'));
             offerElement.querySelector('.tradeoffer_footer_actions').insertAdjacentHTML('afterbegin',
                 `<a href="javascript:AcceptTradeOffer( '${offerID}', '${partnerID}' );" class="whiteLink">Accept Trade</a> | `)
         }
