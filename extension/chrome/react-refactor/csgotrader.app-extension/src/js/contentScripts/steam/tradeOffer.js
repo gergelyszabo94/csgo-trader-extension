@@ -3,10 +3,10 @@ import {
     makeItemColorful, addSSTandExtIndicators, addPriceIndicator,
     addFloatIndicator, getExteriorFromTags, getQuality,
     getType, isCSGOInventoryActive,
-    getDopplerInfo, getActivePage, reloadPageOnExtensionReload,
-    dateToISODisplay, prettyTimeAgo, logExtensionPresence,
+    getDopplerInfo, getActivePage, reloadPageOnExtensionReload, logExtensionPresence,
     updateLoggedInUserID, warnOfScammer, addPageControlEventListeners,
     addSearchListener, findElementByAssetID, getPattern } from "js/utils/utilsModular";
+import { dateToISODisplay, prettyTimeAgo } from 'js/utils/dateTime';
 import { prettyPrintPrice } from 'js/utils/pricing';
 import { doTheSorting } from "js/utils/sorting";
 import { sortingModes } from 'js/utils/static/sortingModes';

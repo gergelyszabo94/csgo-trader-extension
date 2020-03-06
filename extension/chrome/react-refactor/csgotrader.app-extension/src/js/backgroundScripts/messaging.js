@@ -1,8 +1,9 @@
 import { getFloatInfoFromCache, extractUsefulFloatInfo, addToFloatCache } from 'js/utils/floatCaching';
 import {
     getExteriorFromTags, getDopplerInfo, getQuality, getType, parseStickerInfo, getPattern,
-    getShortDate, goToInternalPage, validateSteamAPIKey, getAssetIDFromInspectLink
+    goToInternalPage, validateSteamAPIKey, getAssetIDFromInspectLink
 } from 'js/utils/utilsModular';
+import { getShortDate } from 'js/utils/dateTime';
 import { getStickerPriceTotal, getPrice, prettyPrintPrice } from 'js/utils/pricing';
 import itemTypes from "js/utils/static/itemTypes";
 

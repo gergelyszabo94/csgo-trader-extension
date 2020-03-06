@@ -1,6 +1,7 @@
 import { logExtensionPresence, updateLoggedInUserID, getUserSteamID,
-    warnOfScammer, dateToISODisplay,
+    warnOfScammer,
     reloadPageOnExtensionReload} from "js/utils/utilsModular";
+import { dateToISODisplay } from 'js/utils/dateTime';
 import { trackEvent } from "js/utils/analytics";
 import { addReplyToCommentsFunctionality, addCommentsMutationObserver, reportComments } from "js/utils/comments";
 import { goldenMiniProfileHandler, goldenCommenters } from 'js/utils/goldening';

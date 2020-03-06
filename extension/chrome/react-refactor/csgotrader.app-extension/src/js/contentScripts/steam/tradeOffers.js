@@ -2,9 +2,10 @@ import {
     getExteriorFromTags, getQuality, getDopplerInfo,
     getType, addDopplerPhase, makeItemColorful,
     addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
-    getItemByAssetID, getPoperStyleSteamIDFromOfferStyle, prettyTimeAgo,
+    getItemByAssetID, getPoperStyleSteamIDFromOfferStyle,
     logExtensionPresence, updateLoggedInUserID, reloadPageOnExtensionReload,
     extractItemsFromOffers } from 'js/utils/utilsModular';
+import { prettyTimeAgo } from 'js/utils/dateTime';
 import { genericMarketLink } from 'js/utils/static/simpleStrings';
 import floatQueue, { workOnFloatQueue } from "js/utils/floatQueueing";
 import itemTypes from 'js/utils/static/itemTypes';

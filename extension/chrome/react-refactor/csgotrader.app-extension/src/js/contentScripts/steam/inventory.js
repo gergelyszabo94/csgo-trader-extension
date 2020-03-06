@@ -5,12 +5,11 @@ import {
     getDataFilledFloatTechnical, souvenirExists, getUserSteamID,
     getSteamWalletCurrency, findElementByAssetID, getFloatBarSkeleton,
     logExtensionPresence, isCSGOInventoryActive,
-    updateLoggedInUserID, reloadPageOnExtensionReload, isSIHActive,
-    getShortDate, getActivePage, dateToISODisplay,
-    prettyTimeAgo, addSearchListener, getPattern, removeFromArray
+    updateLoggedInUserID, reloadPageOnExtensionReload, isSIHActive, getActivePage
+    , addSearchListener, getPattern, removeFromArray
 }
     from 'js/utils/utilsModular';
-
+import { getShortDate, dateToISODisplay, prettyTimeAgo } from 'js/utils/dateTime';
 import { stattrak, starChar, souvenir, stattrakPretty, genericMarketLink } from 'js/utils/static/simpleStrings';
 import floatQueue, { workOnFloatQueue } from "js/utils/floatQueueing";
 import { getPriceOverview, getPriceAfterFees, userPriceToProperPrice,
