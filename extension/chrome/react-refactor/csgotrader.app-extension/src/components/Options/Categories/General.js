@@ -1,11 +1,11 @@
-import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCode } from "@fortawesome/free-solid-svg-icons";
+import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCode } from '@fortawesome/free-solid-svg-icons';
 
-import NewTabLink from "components/NewTabLink/NewTabLink";
+import NewTabLink from 'components/NewTabLink/NewTabLink';
 
-import Category from "components/Options/Category/Category";
-import Row from "components/Options/Row";
+import Category from 'components/Options/Category/Category';
+import Row from 'components/Options/Row';
 
 const general = () => {
   return (
@@ -14,21 +14,22 @@ const general = () => {
         name="Auto-set Steam API key"
         id="autoSetSteamAPIKey"
         type="flipSwitchStorage"
-        description={
+        description={(
           <>
             Automatically generates and adds the Steam API key to the extension
-            when visiting{" "}
+            when visiting
+            {' '}
             <NewTabLink to="https://steamcommunity.com/dev/apikey">
               steamcommunity.com/dev/apikey
             </NewTabLink>
           </>
-        }
+        )}
       />
       <Row
         name="Steam API key"
         id="steamAPIKey"
         type="modalTextBox"
-        description={
+        description={(
           <>
             Allows the extension to make API requests to the&nbsp;
             <NewTabLink to="https://developer.valvesoftware.com/wiki/Steam_Web_API">
@@ -44,18 +45,18 @@ const general = () => {
             </NewTabLink>
             (you can put anything in as domain name).
           </>
-        }
+        )}
         modalTitle="Enter your Steam API key here"
       />
       <Row
         name="Tabs API access"
         id="tabsAPI"
         type="flipSwitchPermission"
-        description={
+        description={(
           <>
             Grants the extension access to the
             <NewTabLink to="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Working_with_the_Tabs_API">
-              {" "}
+              {' '}
               browser.tabs API
             </NewTabLink>
             . It - for example - allows the extension to open a tab and put it
@@ -63,7 +64,7 @@ const general = () => {
             page when an item is bookmarked, etc. I am using it in this mode so
             it's also less likely to be buggy as well.
           </>
-        }
+        )}
         permission="tabs"
       />
       <Row
@@ -89,17 +90,19 @@ const general = () => {
         name="Collect usage data"
         id="telemetryOn"
         type="flipSwitchStorage"
-        description={
+        description={(
           <>
             Sends anonymous usage data to the developers to help discover
             problems and better understand how the extension is used. Check the
             <NewTabLink to="https://csgotrader.app/privacy">
-              {" "}
-              Privacy{" "}
-            </NewTabLink>{" "}
+              {' '}
+              Privacy
+              {' '}
+            </NewTabLink>
+            {' '}
             page for more information on how your data in handled.
           </>
-        }
+        )}
       />
       <Row
         name="Hide other extensions"

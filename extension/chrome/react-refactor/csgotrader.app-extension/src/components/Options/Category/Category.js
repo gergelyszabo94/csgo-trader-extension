@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 
-const Category = props => {
+const Category = (props) => {
   useEffect(() => {
     document.title = `Options - ${props.title}`;
   }, [props.title]);

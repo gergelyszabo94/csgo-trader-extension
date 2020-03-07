@@ -1,83 +1,81 @@
-import React from "react";
-
-import Notifications from "components/Options/Categories/Notifications";
-import General from "components/Options/Categories/General";
-import Pricing from "components/Options/Categories/Pricing";
-import Other from "components/Options/Categories/Other";
-import BackupRestore from "components/Options/Categories/BackupRestore";
-import Inventory from "components/Options/Categories/Inventory";
-import Market from "components/Options/Categories/Market";
-import Popup from "components/Options/Categories/Popup";
-import Profile from "components/Options/Categories/Profile";
-import TradeOffer from "components/Options/Categories/TradeOffer";
-
-import { trackEvent } from 'js/utils/analytics';
-
+import React from 'react';
 import {
   BrowserRouter as Router,
   Switch,
-  Route
-} from "react-router-dom";
-import { Nav } from "react-bootstrap";
-import { LinkContainer } from "react-router-bootstrap";
+  Route,
+} from 'react-router-dom';
+import { Nav } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
+
+import Notifications from 'components/Options/Categories/Notifications';
+import General from 'components/Options/Categories/General';
+import Pricing from 'components/Options/Categories/Pricing';
+import Other from 'components/Options/Categories/Other';
+import BackupRestore from 'components/Options/Categories/BackupRestore';
+import Inventory from 'components/Options/Categories/Inventory';
+import Market from 'components/Options/Categories/Market';
+import Popup from 'components/Options/Categories/Popup';
+import Profile from 'components/Options/Categories/Profile';
+import TradeOffer from 'components/Options/Categories/TradeOffer';
+import { trackEvent } from 'js/utils/analytics';
 
 const routes = [
   {
-    to: "general/",
-    name: "General",
-    component: General
+    to: 'general/',
+    name: 'General',
+    component: General,
   },
   {
-    to: "pricing/",
-    name: "Pricing",
-    component: Pricing
+    to: 'pricing/',
+    name: 'Pricing',
+    component: Pricing,
   },
   {
-    to: "popup/",
-    name: "Popup",
-    component: Popup
+    to: 'popup/',
+    name: 'Popup',
+    component: Popup,
   },
   {
-    to: "trade-offer/",
-    name: "Trade Offer",
-    component: TradeOffer
+    to: 'trade-offer/',
+    name: 'Trade Offer',
+    component: TradeOffer,
   },
   {
-    to: "inventory/",
-    name: "Inventory",
-    component: Inventory
+    to: 'inventory/',
+    name: 'Inventory',
+    component: Inventory,
   },
   {
-    to: "profile/",
-    name: "Profile",
-    component: Profile
+    to: 'profile/',
+    name: 'Profile',
+    component: Profile,
   },
   {
-    to: "market/",
-    name: "Market",
-    component: Market
+    to: 'market/',
+    name: 'Market',
+    component: Market,
   },
   {
-    to: "notifications/",
-    name: "Notifications",
-    component: Notifications
+    to: 'notifications/',
+    name: 'Notifications',
+    component: Notifications,
   },
   {
-    to: "other/",
-    name: "Other",
-    component: Other
+    to: 'other/',
+    name: 'Other',
+    component: Other,
   },
   {
-    to: "backup-restore/",
-    name: "Data backup and restore",
-    component: BackupRestore
-  }
+    to: 'backup-restore/',
+    name: 'Data backup and restore',
+    component: BackupRestore,
+  },
 ];
 
 const options = ({ match }) => {
   trackEvent({
-    type: "pageview",
-    action: "ExtensionOptionsView"
+    type: 'pageview',
+    action: 'ExtensionOptionsView',
   });
 
   return (
@@ -91,33 +89,29 @@ const options = ({ match }) => {
                   defaultActiveKey="/options/general/"
                   className="flex-column"
                 >
-                  {routes.map(route => {
-                    return (
-                      <RouterNavLink
-                        to={match.path + route.to}
-                        exact={false}
-                        activeClassName="sideNavActive"
-                        key={route.to}
-                        className="px-4 py-3"
-                      >
-                        {route.name}
-                      </RouterNavLink>
-                    );
-                  })}
+                  {routes.map((route) => (
+                    <RouterNavLink
+                      to={match.path + route.to}
+                      exact={false}
+                      activeClassName="sideNavActive"
+                      key={route.to}
+                      className="px-4 py-3"
+                    >
+                      {route.name}
+                    </RouterNavLink>
+                  ))}
                 </Nav>
               </div>
             </div>
             <div className="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4 options__content">
               <Switch>
-                {routes.map(route => {
-                  return (
-                    <Route
-                      path={match.path + route.to}
-                      component={route.component}
-                      key={route.to}
-                    />
-                  );
-                })}
+                {routes.map((route) => (
+                  <Route
+                    path={match.path + route.to}
+                    component={route.component}
+                    key={route.to}
+                  />
+                ))}
               </Switch>
             </div>
           </div>

@@ -1,8 +1,8 @@
-import React from "react";
+import React from 'react';
 
-import Category from "../Category/Category";
-import Row from "../Row";
-import { currencies } from "js/utils/static/pricing";
+import { currencies } from 'js/utils/static/pricing';
+import Category from '../Category/Category';
+import Row from '../Row';
 
 const popup = () => {
   const transformCurrencies = () => {
@@ -10,7 +10,7 @@ const popup = () => {
     for (const currency in currencies) {
       transformedCurrencies.push({
         key: currencies[currency].short,
-        text: `${currencies[currency].short} - ${currencies[currency].long}`
+        text: `${currencies[currency].short} - ${currencies[currency].long}`,
       });
     }
 
@@ -27,7 +27,7 @@ const popup = () => {
       <Row
         name="Default converter currencies"
         type="doubleSelect"
-        id={["defaultConverterCurrency1", "defaultConverterCurrency2"]}
+        id={['defaultConverterCurrency1', 'defaultConverterCurrency2']}
         description="The currencies to be selected by default in the currency converter"
         options={transformCurrencies()}
       />

@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
-const Select = props => {
+const Select = (props) => {
   const [value, setValue] = useState(props.options[0].key);
 
-  const changeHandler = e => {
+  const changeHandler = (e) => {
     const thisValue = e.target.value;
     props.foreignChangeHandler(thisValue, props.id);
     setValue(thisValue);
   };
 
   useEffect(() => {
-    props.foreignUseEffect(props.id).then(result => {
+    props.foreignUseEffect(props.id).then((result) => {
       setValue(result);
     });
   }, []);

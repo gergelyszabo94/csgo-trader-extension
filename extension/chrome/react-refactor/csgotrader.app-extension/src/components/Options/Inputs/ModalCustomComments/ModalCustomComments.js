@@ -1,48 +1,48 @@
-import React, { useState, useEffect } from "react";
-import Modal from "components/Modal/Modal";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import React, { useState, useEffect } from 'react';
+import Modal from 'components/Modal/Modal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
 
-const ModalCustomComments = props => {
+const ModalCustomComments = (props) => {
   const [state, setState] = useState({
     content: [],
-    inputValue: ""
+    inputValue: '',
   });
 
-  const onChangeHandler = change => {
+  const onChangeHandler = (change) => {
     setState({ ...state, inputValue: change.target.value });
   };
 
-  const deleteHandler = index => {
-    let array = state.content;
+  const deleteHandler = (index) => {
+    const array = state.content;
 
     array.splice(index, 1);
 
     setState({
       ...state,
-      content: array
+      content: array,
     });
 
     chrome.storage.local.set({ customCommentsToReport: state.content });
   };
 
   useEffect(() => {
-    chrome.storage.local.get("customCommentsToReport", result => {
+    chrome.storage.local.get('customCommentsToReport', (result) => {
       setState({
         ...state,
-        content: result.customCommentsToReport
+        content: result.customCommentsToReport,
       });
     });
   }, []);
 
   const addNewString = () => {
     const date = new Date();
-    let array = state.content;
+    const array = state.content;
     array.push({ id: date.getTime(), text: state.inputValue });
     setState({
       ...state,
       content: array,
-      inputValue: ""
+      inputValue: '',
     });
 
     chrome.storage.local.set({ customCommentsToReport: state.content });

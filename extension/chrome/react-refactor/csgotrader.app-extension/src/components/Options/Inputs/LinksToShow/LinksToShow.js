@@ -1,36 +1,36 @@
-import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import defaultPopupLinks from 'js/utils/static/defaultPopupLinks'
+import React, { useState, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import defaultPopupLinks from 'js/utils/static/defaultPopupLinks';
 
-const LinksToShow = props => {
+const LinksToShow = (props) => {
   const [links, setLinks] = useState([]);
   const [customLink, setCustomLink] = useState({
-    name: "",
-    url: ""
+    name: '',
+    url: '',
   });
 
-  const defaultPopupLinkIDs = defaultPopupLinks.map(link => {
+  const defaultPopupLinkIDs = defaultPopupLinks.map((link) => {
     return link.id;
   });
 
-  const nameInputHandler = event => {
+  const nameInputHandler = (event) => {
     setCustomLink({
       ...customLink,
-      name: event.target.value
+      name: event.target.value,
     });
   };
-  const urlInputHandler = event => {
+  const urlInputHandler = (event) => {
     setCustomLink({
       ...customLink,
-      url: event.target.value
+      url: event.target.value,
     });
   };
 
   const addCustomUrl = () => {
     let isAlreadyExist = false;
-    links.map(link => {
-      if (link.id === customLink.name.replace(/\W/g, "").toLowerCase()) {
+    links.map((link) => {
+      if (link.id === customLink.name.replace(/\W/g, '').toLowerCase()) {
         isAlreadyExist = true;
       }
       return null;
@@ -40,11 +40,11 @@ const LinksToShow = props => {
       const changedLinks = [
         ...links,
         {
-          id: customLink.name.replace(/\W/g, "").toLowerCase(), // removes non-alphanumeric chars - https://stackoverflow.com/questions/9364400/remove-not-alphanumeric-characters-from-string-having-trouble-with-the-char
+          id: customLink.name.replace(/\W/g, '').toLowerCase(), // removes non-alphanumeric chars - https://stackoverflow.com/questions/9364400/remove-not-alphanumeric-characters-from-string-having-trouble-with-the-char
           name: customLink.name,
           url: customLink.url,
-          active: true
-        }
+          active: true,
+        },
       ];
 
       chrome.storage.local.set({ [props.id]: changedLinks }, () => {
@@ -53,11 +53,11 @@ const LinksToShow = props => {
     }
   };
 
-  const removeCustomUrl = event => {
+  const removeCustomUrl = (event) => {
     console.log(event.target.id);
     links.map((link, mapIndex) => {
       if (link.id === event.target.id) {
-        var filtered = links.filter(function(value, filterIndex, arr) {
+        const filtered = links.filter((value, filterIndex, arr) => {
           return mapIndex !== filterIndex;
         });
 
@@ -69,13 +69,13 @@ const LinksToShow = props => {
     });
   };
 
-  const onChangeHandler = event => {
+  const onChangeHandler = (event) => {
     const id = event.target.id;
 
     const changedLinks = [...links];
     const changedLink = {
       ...changedLinks[id],
-      active: !changedLinks[id].active
+      active: !changedLinks[id].active,
     };
     changedLinks[id] = changedLink;
 
@@ -85,7 +85,7 @@ const LinksToShow = props => {
   };
 
   useEffect(() => {
-    chrome.storage.local.get(props.id, result => {
+    chrome.storage.local.get(props.id, (result) => {
       setLinks(result.popupLinks);
     });
   }, [props.id]);
@@ -93,7 +93,7 @@ const LinksToShow = props => {
   return (
     <>
       {links.map((link, index) => {
-        return link.id === "options" ? null : (
+        return link.id === 'options' ? null : (
           <div key={link.id} className="row mb-2">
             <div className="col-md-2 justify-content-start">
               <label className="switch">

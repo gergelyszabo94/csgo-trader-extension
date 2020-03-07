@@ -1,68 +1,68 @@
-import React, { useState, useEffect } from "react";
-import Modal from "components/Modal/Modal";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faEdit, faExclamationTriangle} from "@fortawesome/free-solid-svg-icons";
+import React, { useState, useEffect } from 'react';
+import Modal from 'components/Modal/Modal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-const ModalTextBox = props => {
+const ModalTextBox = (props) => {
   const [state, setState] = useState({
-    content: "",
+    content: '',
     inputValid: true,
-    validationError: ""
+    validationError: '',
   });
 
-  const onChangeHandler = change => {
+  const onChangeHandler = (change) => {
     setState({ ...state, content: change.target.value });
   };
 
-  const inputValidator = closeModal => {
-    if (props.id === "steamAPIKey") {
-      if (state.content !== "") {
+  const inputValidator = (closeModal) => {
+    if (props.id === 'steamAPIKey') {
+      if (state.content !== '') {
         chrome.runtime.sendMessage(
           { apikeytovalidate: state.content },
-          response => {
+          (response) => {
             if (response.valid) {
               chrome.storage.local.set(
                 { steamAPIKey: state.content, apiKeyValid: true },
                 () => {
-                  setState({ ...state, inputValid: true, validationError: "" });
+                  setState({ ...state, inputValid: true, validationError: '' });
                   closeModal();
-                }
+                },
               );
             } else {
               setState({
                 ...state,
                 inputValid: false,
                 validationError:
-                  "Could not validate your API key, it's either incorrect or Steam is down at the moment"
+                  "Could not validate your API key, it's either incorrect or Steam is down at the moment",
               });
             }
-          }
+          },
         );
       } else {
         chrome.storage.local.set(
-          { steamAPIKey: "Not Set", apiKeyValid: false },
+          { steamAPIKey: 'Not Set', apiKeyValid: false },
           () => {
             closeModal();
-          }
+          },
         );
       }
     } else {
       chrome.storage.local.set({ [props.id]: state.content }, () => {
-        setState({ ...state, inputValid: true, validationError: "" });
+        setState({ ...state, inputValid: true, validationError: '' });
         closeModal();
       });
     }
   };
 
   useEffect(() => {
-    chrome.storage.local.get([props.id], result => {
+    chrome.storage.local.get([props.id], (result) => {
       setState({ ...state, content: result[props.id] });
     });
   }, [props.id]);
 
   return (
     <>
-      <p>{state.content.substring(0, 8) + "..."}</p>
+      <p>{`${state.content.substring(0, 8)}...`}</p>
       <Modal modalTitle={props.modalTitle} opener={<FontAwesomeIcon icon={faEdit} />} validator={inputValidator}>
         <textarea
           className="modalTextArea"
@@ -70,9 +70,12 @@ const ModalTextBox = props => {
           value={state.content}
           onChange={onChangeHandler}
         />
-        <div className={`warning ${state.inputValid ? "hidden" : null}`}>
+        <div className={`warning ${state.inputValid ? 'hidden' : null}`}>
           <FontAwesomeIcon icon={faExclamationTriangle} />
-          <span className="warning"> {state.validationError}</span>
+          <span className="warning">
+            {' '}
+            {state.validationError}
+          </span>
         </div>
       </Modal>
     </>

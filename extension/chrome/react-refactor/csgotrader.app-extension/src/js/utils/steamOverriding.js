@@ -2,7 +2,7 @@ import { injectScript } from 'js/utils/injection';
 
 // makes trade offers open in new tab instead of a separate window
 const overrideShowTradeOffer = () => {
-    const overRideShowTradeOfferScript = `
+  const overRideShowTradeOfferScript = `
     function ShowTradeOffer( tradeOfferID, rgParams )
         {
             var strParams = '';
@@ -17,27 +17,27 @@ const overrideShowTradeOffer = () => {
             winOffer.focus();
         }
 `;
-    chrome.storage.local.get(['openOfferInTab'], (result) => {
-        if (result.openOfferInTab) injectScript(overRideShowTradeOfferScript, false, 'ShowTradeOfferScript', null);
-    });
+  chrome.storage.local.get(['openOfferInTab'], (result) => {
+    if (result.openOfferInTab) injectScript(overRideShowTradeOfferScript, false, 'ShowTradeOfferScript', null);
+  });
 };
 
 // overrides steam's trade offer declining logic to skip the confirmation
 const overrideDecline = () => {
-    const overRideDeclineTradeOfferScript = `
+  const overRideDeclineTradeOfferScript = `
     function DeclineTradeOffer( tradeOfferID )
     {
         ActOnTradeOffer( tradeOfferID, 'decline', 'Trade Declined', 'Decline Trade' );
     }
     `;
-    chrome.storage.local.get(['quickDeclineOffer'], (result) => {
-        if (result.quickDeclineOffer) injectScript(overRideDeclineTradeOfferScript, false, 'overrideDeclineTradeOffer', null);
-    });
+  chrome.storage.local.get(['quickDeclineOffer'], (result) => {
+    if (result.quickDeclineOffer) injectScript(overRideDeclineTradeOfferScript, false, 'overrideDeclineTradeOffer', null);
+  });
 };
 
 // adds In-browser inspect as action - in trade offers
 const overrideHandleTradeActionMenu = () => {
-    const overrideHandleTradeActionMenuScript = `
+  const overrideHandleTradeActionMenuScript = `
         function HandleTradeActionMenu( elActionMenuButton, item, user )
         {
             HideMenuFast( elActionMenuButton, 'trade_action_popup' );
@@ -122,12 +122,12 @@ const overrideHandleTradeActionMenu = () => {
         }
        `;
 
-    injectScript(overrideHandleTradeActionMenuScript, false, 'overrideHandleTradeActionMenu', null)
+  injectScript(overrideHandleTradeActionMenuScript, false, 'overrideHandleTradeActionMenu', null);
 };
 
-//adds In-browser inspect as action in inventory
+// adds In-browser inspect as action in inventory
 const overridePopulateActions = () => {
-    const overRidePopulateActionsMenuScript = `
+  const overRidePopulateActionsMenuScript = `
         function PopulateActions( prefix, elActions, rgActions, item, owner )
         {
             elActions.update('');
@@ -185,7 +185,9 @@ const overridePopulateActions = () => {
             elActions.show();
         }
 `;
-    injectScript(overRidePopulateActionsMenuScript, false, 'overRidePopulateActionsMenu', null);
+  injectScript(overRidePopulateActionsMenuScript, false, 'overRidePopulateActionsMenu', null);
 };
 
-export { overrideShowTradeOffer, overrideDecline, overridePopulateActions, overrideHandleTradeActionMenu }
+export {
+  overrideShowTradeOffer, overrideDecline, overridePopulateActions, overrideHandleTradeActionMenu,
+};

@@ -1,225 +1,230 @@
-import { reloadPageOnExtensionReload, logExtensionPresence,
-    updateLoggedInUserID } from "js/utils/utilsModular";
-import { removeListing, getMarketHistory, cancelOrder } from 'js/utils/market'
-import { trackEvent } from "js/utils/analytics";
-import { steamFormattedPriceToCents, centsToSteamFormattedPrice, priceQueue,
-    workOnPriceQueue } from 'js/utils/pricing';
+import {
+  reloadPageOnExtensionReload, logExtensionPresence,
+  updateLoggedInUserID,
+} from 'js/utils/utilsModular';
+import { removeListing, getMarketHistory, cancelOrder } from 'js/utils/market';
+import { trackEvent } from 'js/utils/analytics';
+import {
+  steamFormattedPriceToCents, centsToSteamFormattedPrice, priceQueue,
+  workOnPriceQueue,
+} from 'js/utils/pricing';
 import { injectStyle } from 'js/utils/injection';
 
 const getMyListingIDFromElement = (listingElement) => {
-    return listingElement.id.split('mylisting_')[1];
+  return listingElement.id.split('mylisting_')[1];
 };
 
 const getMyOrderIDFromElement = (orderElement) => {
-    return orderElement.id.split('mybuyorder_')[1];
+  return orderElement.id.split('mybuyorder_')[1];
 };
 
 const getElementByListingID = (listingID) => {
-    return document.getElementById(`mylisting_${listingID}`);
+  return document.getElementById(`mylisting_${listingID}`);
 };
 
 const getElementByOrderID = (orderID) => {
-    return document.getElementById(`mybuyorder_${orderID}`);
+  return document.getElementById(`mybuyorder_${orderID}`);
 };
 
 const switchToNextPageIfEmpty = (listings) => {
-    if (listings.querySelectorAll('.market_listing_row.market_recent_listing_row').length === 0 ) {
-        document.getElementById('tabContentsMyActiveMarketListings_btn_next').click();
-    }
+  if (listings.querySelectorAll('.market_listing_row.market_recent_listing_row').length === 0) {
+    document.getElementById('tabContentsMyActiveMarketListings_btn_next').click();
+  }
 };
 
 const getAppIDAndItemNameFromLink = (marketLink) => {
-    const appID = marketLink.split('listings/')[1].split('/')[0];
-    const market_hash_name = marketLink.split('listings/')[1].split('/')[1];
-    return {appID, market_hash_name};
+  const appID = marketLink.split('listings/')[1].split('/')[0];
+  const market_hash_name = marketLink.split('listings/')[1].split('/')[1];
+  return { appID, market_hash_name };
 };
 
 const addListingStartingAtPricesAndTotal = (sellListings) => {
-    let totalPrice = 0;
-    let totalYouReceivePrice = 0;
+  let totalPrice = 0;
+  let totalYouReceivePrice = 0;
 
-    // add starting at prices and total
-    sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listingRow => {
-        // adds selection checkboxes
-        const priceElement = listingRow.querySelector('.market_listing_right_cell.market_listing_my_price');
-        if (priceElement !== null) {
-            priceElement.insertAdjacentHTML('beforebegin', `
+  // add starting at prices and total
+  sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((listingRow) => {
+    // adds selection checkboxes
+    const priceElement = listingRow.querySelector('.market_listing_right_cell.market_listing_my_price');
+    if (priceElement !== null) {
+      priceElement.insertAdjacentHTML('beforebegin', `
             <div class="market_listing_right_cell market_listing_edit_buttons">
                 <input type="checkbox">
             </div>`);
-        }
+    }
 
-        const nameElement = listingRow.querySelector('.market_listing_item_name_link');
-        if (nameElement !== null) {
-            const marketLink = nameElement.getAttribute('href');
-            const appID = getAppIDAndItemNameFromLink(marketLink).appID;
-            const market_hash_name = getAppIDAndItemNameFromLink(marketLink).market_hash_name;
-            const listingID = getMyListingIDFromElement(listingRow);
+    const nameElement = listingRow.querySelector('.market_listing_item_name_link');
+    if (nameElement !== null) {
+      const marketLink = nameElement.getAttribute('href');
+      const appID = getAppIDAndItemNameFromLink(marketLink).appID;
+      const market_hash_name = getAppIDAndItemNameFromLink(marketLink).market_hash_name;
+      const listingID = getMyListingIDFromElement(listingRow);
 
-            const priceElement = listingRow.querySelector('.market_listing_price');
-            const listedPrice = priceElement.querySelectorAll('span')[1].innerText;
-            const youReceivePrice = priceElement.querySelectorAll('span')[2].innerText.split('(')[1].split(')')[0];
+      const priceElement = listingRow.querySelector('.market_listing_price');
+      const listedPrice = priceElement.querySelectorAll('span')[1].innerText;
+      const youReceivePrice = priceElement.querySelectorAll('span')[2].innerText.split('(')[1].split(')')[0];
 
-            totalPrice += parseInt(steamFormattedPriceToCents(listedPrice));
-            totalYouReceivePrice += parseInt(steamFormattedPriceToCents(youReceivePrice));
+      totalPrice += parseInt(steamFormattedPriceToCents(listedPrice));
+      totalYouReceivePrice += parseInt(steamFormattedPriceToCents(youReceivePrice));
 
-            priceQueue.jobs.push({
-                type: 'my_listing',
-                listingID,
-                appID,
-                market_hash_name,
-                callBackFunction: addStartingAtPriceInfoToPage
-            });
+      priceQueue.jobs.push({
+        type: 'my_listing',
+        listingID,
+        appID,
+        market_hash_name,
+        callBackFunction: addStartingAtPriceInfoToPage,
+      });
 
-            if (!priceQueue.active) workOnPriceQueue();
-        }
-    });
+      if (!priceQueue.active) workOnPriceQueue();
+    }
+  });
 
-    const listingsTotal = document.getElementById('listingsTotal');
-    if (listingsTotal !== null) listingsTotal.remove();
+  const listingsTotal = document.getElementById('listingsTotal');
+  if (listingsTotal !== null) listingsTotal.remove();
 
-    sellListings.insertAdjacentHTML('afterend',
-        `<div id='listingsTotal' style="margin: -15px 0 15px;">
+  sellListings.insertAdjacentHTML('afterend',
+    `<div id='listingsTotal' style="margin: -15px 0 15px;">
                    Total listed price: ${centsToSteamFormattedPrice(totalPrice)} You will receive: ${centsToSteamFormattedPrice(totalYouReceivePrice)} (on this page)
                </div>`);
 };
 
 const addStartingAtPriceInfoToPage = (listingID, lowestPrice) => {
-    const listingRow = getElementByListingID(listingID);
+  const listingRow = getElementByListingID(listingID);
 
-    if (listingRow !== null) { // the listing might not be there for example if the page was switched, the per page listing count was changed or the listing was removed
-        const priceElement = listingRow.querySelector('.market_listing_price');
-        const listedPrice = priceElement.querySelectorAll('span')[1].innerText;
-        const cheapest = listedPrice === lowestPrice ? 'cheapest' : 'not_cheapest';
+  if (listingRow !== null) { // the listing might not be there for example if the page was switched, the per page listing count was changed or the listing was removed
+    const priceElement = listingRow.querySelector('.market_listing_price');
+    const listedPrice = priceElement.querySelectorAll('span')[1].innerText;
+    const cheapest = listedPrice === lowestPrice ? 'cheapest' : 'not_cheapest';
 
-        priceElement.insertAdjacentHTML('beforeend', `
+    priceElement.insertAdjacentHTML('beforeend', `
                                     <div class="${cheapest}" title="This is the price of the lowest listing right now.">
                                         ${lowestPrice}
                                     </div>`);
-    }
+  }
 };
 
 const extractHistoryEvents = (result_html) => {
-    const tempEl = document.createElement('div');
-    tempEl.innerHTML = result_html;
+  const tempEl = document.createElement('div');
+  tempEl.innerHTML = result_html;
 
-    const eventsToReturn = [];
+  const eventsToReturn = [];
 
-    tempEl.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((historyRow) => {
-        const itemName = historyRow.querySelector('.market_listing_item_name').innerText;
-        const gameName = historyRow.querySelector('.market_listing_game_name').innerText;
-        const listedOn = historyRow.querySelectorAll('.market_listing_listed_date')[1].innerText.trim();
-        const actedOn = historyRow.querySelectorAll('.market_listing_listed_date')[0].innerText.trim();
-        const displayPrice = historyRow.querySelector('.market_listing_price').innerText.trim();
-        const priceInCents = steamFormattedPriceToCents(displayPrice);
-        const partnerElement = historyRow.querySelector('.market_listing_whoactedwith');
-        const type = getHistoryType(historyRow);
-        let partner = null;
+  tempEl.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((historyRow) => {
+    const itemName = historyRow.querySelector('.market_listing_item_name').innerText;
+    const gameName = historyRow.querySelector('.market_listing_game_name').innerText;
+    const listedOn = historyRow.querySelectorAll('.market_listing_listed_date')[1].innerText.trim();
+    const actedOn = historyRow.querySelectorAll('.market_listing_listed_date')[0].innerText.trim();
+    const displayPrice = historyRow.querySelector('.market_listing_price').innerText.trim();
+    const priceInCents = steamFormattedPriceToCents(displayPrice);
+    const partnerElement = historyRow.querySelector('.market_listing_whoactedwith');
+    const type = getHistoryType(historyRow);
+    let partner = null;
 
-        if (type === 'sale' || type === 'purchase') { // non-transactional (listing creation or cancellation) history events don't have partners
-            const partnerName = partnerElement.querySelector('img').title;
-            const partnerLink = partnerElement.querySelector('a').getAttribute('href');
-            partner = {partnerName, partnerLink};
-        }
+    if (type === 'sale' || type === 'purchase') { // non-transactional (listing creation or cancellation) history events don't have partners
+      const partnerName = partnerElement.querySelector('img').title;
+      const partnerLink = partnerElement.querySelector('a').getAttribute('href');
+      partner = { partnerName, partnerLink };
+    }
 
-        eventsToReturn.push({itemName, gameName, listedOn, actedOn, displayPrice, priceInCents, partner, type});
+    eventsToReturn.push({
+      itemName, gameName, listedOn, actedOn, displayPrice, priceInCents, partner, type,
     });
+  });
 
-    tempEl.remove();
-    return eventsToReturn;
+  tempEl.remove();
+  return eventsToReturn;
 };
 
 const getHistoryType = (historyRow) => {
-    const gainOrLoss = historyRow.querySelector('.market_listing_gainorloss').innerText.trim();
-    let historyType;
+  const gainOrLoss = historyRow.querySelector('.market_listing_gainorloss').innerText.trim();
+  let historyType;
 
-    switch (gainOrLoss) {
-        case '+': historyType = 'purchase'; break;
-        case '-': historyType = 'sale'; break;
-        default: historyType = historyRow.querySelector('.market_listing_whoactedwith').innerText.trim();
-    }
-    return historyType;
+  switch (gainOrLoss) {
+    case '+': historyType = 'purchase'; break;
+    case '-': historyType = 'sale'; break;
+    default: historyType = historyRow.querySelector('.market_listing_whoactedwith').innerText.trim();
+  }
+  return historyType;
 };
 
 const createCSV = () => {
-    const excludeNonTransaction = document.getElementById('excludeNonTransaction').checked;
-    let csvContent = 'Item Name,Game Name,Listed On,Acted On, Display Price, Price in Cents, Type, Partner Name, Partner Link\n';
+  const excludeNonTransaction = document.getElementById('excludeNonTransaction').checked;
+  let csvContent = 'Item Name,Game Name,Listed On,Acted On, Display Price, Price in Cents, Type, Partner Name, Partner Link\n';
 
-    for (let i = 0; i < marketHistoryExport.to - marketHistoryExport.from; i++) {
-        const historyEvent = marketHistoryExport.history[i];
-        if (!(excludeNonTransaction && historyEvent.type !== 'purchase' && historyEvent.type !== 'sale')) {
-            const lineCSV = historyEvent.partner !== null
-                ? `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}","${historyEvent.partner.partnerName}","${historyEvent.partner.partnerLink}"\n`
-                : `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}",,,\n`;
-            csvContent += lineCSV;
-        }
+  for (let i = 0; i < marketHistoryExport.to - marketHistoryExport.from; i++) {
+    const historyEvent = marketHistoryExport.history[i];
+    if (!(excludeNonTransaction && historyEvent.type !== 'purchase' && historyEvent.type !== 'sale')) {
+      const lineCSV = historyEvent.partner !== null
+        ? `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}","${historyEvent.partner.partnerName}","${historyEvent.partner.partnerLink}"\n`
+        : `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}",,,\n`;
+      csvContent += lineCSV;
     }
+  }
 
-    const encodedURI = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
-    const downloadButton = document.getElementById('market_history_download');
-    downloadButton.setAttribute('href', encodedURI);
-    downloadButton.classList.remove('hidden');
+  const encodedURI = `data:text/csv;charset=utf-8,${encodeURIComponent(csvContent)}`;
+  const downloadButton = document.getElementById('market_history_download');
+  downloadButton.setAttribute('href', encodedURI);
+  downloadButton.classList.remove('hidden');
 };
 
 const workOnExport = () => {
-    if (marketHistoryExport.inProgress) {
-        const delay = marketHistoryExport.lastRequestSuccessful ? 5000 : 30000;
-        getMarketHistory(marketHistoryExport.progress, 50).then(
-            history => {
-                marketHistoryExport.lastRequestSuccessful = true;
-                marketHistoryExport.progress += 50;
-                marketHistoryExport.history = marketHistoryExport.history.concat(extractHistoryEvents(history.results_html));
+  if (marketHistoryExport.inProgress) {
+    const delay = marketHistoryExport.lastRequestSuccessful ? 5000 : 30000;
+    getMarketHistory(marketHistoryExport.progress, 50).then(
+      (history) => {
+        marketHistoryExport.lastRequestSuccessful = true;
+        marketHistoryExport.progress += 50;
+        marketHistoryExport.history = marketHistoryExport.history.concat(extractHistoryEvents(history.results_html));
 
-                const requestProgressEl = document.getElementById('requestProgress');
-                requestProgressEl.innerText = (parseInt(requestProgressEl.innerText) + 1).toString();
-                const timeRemainingEl = document.getElementById('timeRemaining');
-                timeRemainingEl.innerText = (parseInt(timeRemainingEl.innerText) - 5).toString();
+        const requestProgressEl = document.getElementById('requestProgress');
+        requestProgressEl.innerText = (parseInt(requestProgressEl.innerText) + 1).toString();
+        const timeRemainingEl = document.getElementById('timeRemaining');
+        timeRemainingEl.innerText = (parseInt(timeRemainingEl.innerText) - 5).toString();
 
-                if (marketHistoryExport.progress >= marketHistoryExport.to - marketHistoryExport.from) {
-                    marketHistoryExport.inProgress = false;
-                    createCSV();
-                    document.getElementById('exportHelperMessage').innerText = 'Export finished, you can now download the result!';
-                    document.getElementById('exportProgress').classList.add('hidden');
-                }
-                else setTimeout(() => { workOnExport()}, delay);
-            }, (error) => {
-                marketHistoryExport.lastRequestSuccessful = false;
-                console.log(error)
-            }
-        )
-    }
+        if (marketHistoryExport.progress >= marketHistoryExport.to - marketHistoryExport.from) {
+          marketHistoryExport.inProgress = false;
+          createCSV();
+          document.getElementById('exportHelperMessage').innerText = 'Export finished, you can now download the result!';
+          document.getElementById('exportProgress').classList.add('hidden');
+        } else setTimeout(() => { workOnExport(); }, delay);
+      }, (error) => {
+        marketHistoryExport.lastRequestSuccessful = false;
+        console.log(error);
+      },
+    );
+  }
 };
 
 const addHighestBuyOrderPrice = (job, highestBuyOrder) => {
-    const priceOfHighestOrder = centsToSteamFormattedPrice(highestBuyOrder);
-    const orderRow = getElementByOrderID(job.orderID);
+  const priceOfHighestOrder = centsToSteamFormattedPrice(highestBuyOrder);
+  const orderRow = getElementByOrderID(job.orderID);
 
-    if (orderRow !== null) { // the order might not be there for example if the page was switched, the per page order count was changed or the order was canceled
-        const priceElement = orderRow.querySelector('.market_listing_price');
-        const orderPrice = priceElement.innerText;
-        const highest = orderPrice === priceOfHighestOrder ? 'highest' : 'not_highest';
+  if (orderRow !== null) { // the order might not be there for example if the page was switched, the per page order count was changed or the order was canceled
+    const priceElement = orderRow.querySelector('.market_listing_price');
+    const orderPrice = priceElement.innerText;
+    const highest = orderPrice === priceOfHighestOrder ? 'highest' : 'not_highest';
 
-        priceElement.insertAdjacentHTML('beforeend', `
+    priceElement.insertAdjacentHTML('beforeend', `
                                     <div class="${highest}" title="This is the price of the highest buy order right now.">
                                         ${priceOfHighestOrder}
                                     </div>`);
-    }
+  }
 };
 
 const marketHistoryExport = {
-    history: [],
-    from: 0,
-    to: 1000000,
-    progress: 0,
-    inProgress: false,
-    lastRequestSuccessful: true
+  history: [],
+  from: 0,
+  to: 1000000,
+  progress: 0,
+  inProgress: false,
+  lastRequestSuccessful: true,
 };
 
 logExtensionPresence();
 updateLoggedInUserID();
 trackEvent({
-    type: 'pageview',
-    action: 'marketMainPage'
+  type: 'pageview',
+  action: 'marketMainPage',
 });
 
 // makes remove/cancel columns narrower
@@ -231,168 +236,168 @@ injectStyle(`
 const sellListings = document.getElementById('tabContentsMyActiveMarketListingsTable');
 
 if (sellListings !== null) {
-    const tabContentRows = document.getElementById('tabContentsMyActiveMarketListingsRows');
+  const tabContentRows = document.getElementById('tabContentsMyActiveMarketListingsRows');
 
-    if (tabContentRows !== null) {
-        // listens for listing changes like removal, page switching
-        let observer = new MutationObserver((changes) => {
-            if (sellListings.parentElement.style.display !== 'none') { // only execute if it's the active tab
-                addListingStartingAtPricesAndTotal(sellListings);
-            }
-        });
+  if (tabContentRows !== null) {
+    // listens for listing changes like removal, page switching
+    const observer = new MutationObserver((changes) => {
+      if (sellListings.parentElement.style.display !== 'none') { // only execute if it's the active tab
+        addListingStartingAtPricesAndTotal(sellListings);
+      }
+    });
 
-        observer.observe(tabContentRows, {
-            subtree: false,
-            childList: true,
-            attributes: false
-        });
-    }
+    observer.observe(tabContentRows, {
+      subtree: false,
+      childList: true,
+      attributes: false,
+    });
+  }
 
-    const tableHeader = sellListings.querySelector('.market_listing_table_header');
-    const removeColumnHeader = tableHeader.querySelector('.market_listing_right_cell.market_listing_edit_buttons.placeholder');
+  const tableHeader = sellListings.querySelector('.market_listing_table_header');
+  const removeColumnHeader = tableHeader.querySelector('.market_listing_right_cell.market_listing_edit_buttons.placeholder');
 
-    removeColumnHeader.innerText = 'REMOVE ALL';
-    removeColumnHeader.setAttribute('title', 'Click here to remove all listings from this page!');
-    removeColumnHeader.classList.add('clickable');
+  removeColumnHeader.innerText = 'REMOVE ALL';
+  removeColumnHeader.setAttribute('title', 'Click here to remove all listings from this page!');
+  removeColumnHeader.classList.add('clickable');
 
-    // adds remove selected column header/button
-    removeColumnHeader.insertAdjacentHTML('afterend', `
+  // adds remove selected column header/button
+  removeColumnHeader.insertAdjacentHTML('afterend', `
         <span id="removeSelected" class="market_listing_right_cell market_listing_edit_buttons placeholder clickable" title="Click to remove the selected listings.">
             REMOVE
         </span>`);
 
-    document.getElementById('removeSelected').addEventListener('click', () => {
-        sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listingRow => {
-            if (listingRow.querySelector('input').checked) {
-                const listingID = getMyListingIDFromElement(listingRow);
-                removeListing(listingID).then(
-                    result => {
-                        listingRow.remove();
-                        switchToNextPageIfEmpty(sellListings);
-                    }
-                )
-            }
-        });
+  document.getElementById('removeSelected').addEventListener('click', () => {
+    sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((listingRow) => {
+      if (listingRow.querySelector('input').checked) {
+        const listingID = getMyListingIDFromElement(listingRow);
+        removeListing(listingID).then(
+          (result) => {
+            listingRow.remove();
+            switchToNextPageIfEmpty(sellListings);
+          },
+        );
+      }
     });
+  });
 
-    removeColumnHeader.addEventListener('click', () => {
-        sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listingRow => {
-            const listingID = getMyListingIDFromElement(listingRow);
-            removeListing(listingID).then(
-                result => {
-                    listingRow.remove();
-                    switchToNextPageIfEmpty(sellListings);
-                }
-            )
-        });
+  removeColumnHeader.addEventListener('click', () => {
+    sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((listingRow) => {
+      const listingID = getMyListingIDFromElement(listingRow);
+      removeListing(listingID).then(
+        (result) => {
+          listingRow.remove();
+          switchToNextPageIfEmpty(sellListings);
+        },
+      );
     });
+  });
 
-    addListingStartingAtPricesAndTotal(sellListings);
+  addListingStartingAtPricesAndTotal(sellListings);
 }
 
 // buy order related functionality, highest buy order price, cancel selected, cancel all
 const orders = document.querySelectorAll('.my_listing_section.market_content_block.market_home_listing_table')[1];
 if (orders !== null && orders !== undefined) {
-    const orderRows = orders.querySelectorAll('.market_listing_row.market_recent_listing_row');
-    let totalOrderAmount = 0;
+  const orderRows = orders.querySelectorAll('.market_listing_row.market_recent_listing_row');
+  let totalOrderAmount = 0;
 
-    // add starting at prices and total
-    orderRows.forEach(orderRow => {
-        // adds selection checkboxes
-        const priceElement = orderRow.querySelector('.market_listing_right_cell.market_listing_my_price');
-        if (priceElement !== null) {
-            priceElement.insertAdjacentHTML('beforebegin', `
+  // add starting at prices and total
+  orderRows.forEach((orderRow) => {
+    // adds selection checkboxes
+    const priceElement = orderRow.querySelector('.market_listing_right_cell.market_listing_my_price');
+    if (priceElement !== null) {
+      priceElement.insertAdjacentHTML('beforebegin', `
             <div class="market_listing_right_cell market_listing_edit_buttons">
                 <input type="checkbox">
             </div>`);
-        }
+    }
 
-        const nameElement = orderRow.querySelector('.market_listing_item_name_link');
-        if (nameElement !== null) {
-            const marketLink = nameElement.getAttribute('href');
-            const appID = getAppIDAndItemNameFromLink(marketLink).appID;
-            const market_hash_name = getAppIDAndItemNameFromLink(marketLink).market_hash_name;
-            const orderID = getMyOrderIDFromElement(orderRow);
+    const nameElement = orderRow.querySelector('.market_listing_item_name_link');
+    if (nameElement !== null) {
+      const marketLink = nameElement.getAttribute('href');
+      const appID = getAppIDAndItemNameFromLink(marketLink).appID;
+      const market_hash_name = getAppIDAndItemNameFromLink(marketLink).market_hash_name;
+      const orderID = getMyOrderIDFromElement(orderRow);
 
-            const orderPrice = orderRow.querySelector('.market_listing_price').innerText;
+      const orderPrice = orderRow.querySelector('.market_listing_price').innerText;
 
-            totalOrderAmount += parseInt(steamFormattedPriceToCents(orderPrice));
+      totalOrderAmount += parseInt(steamFormattedPriceToCents(orderPrice));
 
-            priceQueue.jobs.push({
-                type: 'my_buy_order',
-                orderID,
-                appID,
-                market_hash_name,
-                callBackFunction: addHighestBuyOrderPrice
-            });
+      priceQueue.jobs.push({
+        type: 'my_buy_order',
+        orderID,
+        appID,
+        market_hash_name,
+        callBackFunction: addHighestBuyOrderPrice,
+      });
 
-            if (!priceQueue.active) workOnPriceQueue();
-        }
-    });
+      if (!priceQueue.active) workOnPriceQueue();
+    }
+  });
 
-    orders.insertAdjacentHTML('afterend',
-        `<div style="margin: -15px 0 15px;">
+  orders.insertAdjacentHTML('afterend',
+    `<div style="margin: -15px 0 15px;">
                    Orders placed total value: ${centsToSteamFormattedPrice(totalOrderAmount)}
                </div>`);
 
-    const tableHeader = orders.querySelector('.market_listing_table_header');
-    const cancelColumnHeader = tableHeader.querySelector('.market_listing_right_cell.market_listing_edit_buttons.placeholder');
+  const tableHeader = orders.querySelector('.market_listing_table_header');
+  const cancelColumnHeader = tableHeader.querySelector('.market_listing_right_cell.market_listing_edit_buttons.placeholder');
 
-    cancelColumnHeader.innerText = 'CANCEL ALL';
-    cancelColumnHeader.setAttribute('title', 'Click here to cancel all your buy orders!');
-    cancelColumnHeader.classList.add('clickable');
+  cancelColumnHeader.innerText = 'CANCEL ALL';
+  cancelColumnHeader.setAttribute('title', 'Click here to cancel all your buy orders!');
+  cancelColumnHeader.classList.add('clickable');
 
-    // adds cancel selected column header/button
-    cancelColumnHeader.insertAdjacentHTML('afterend', `
+  // adds cancel selected column header/button
+  cancelColumnHeader.insertAdjacentHTML('afterend', `
         <span id="cancelSelected" class="market_listing_right_cell market_listing_edit_buttons placeholder clickable" title="Click to cancel the selected buy orders.">
             CANCEL
         </span>`);
 
-    document.getElementById('cancelSelected').addEventListener('click', () => {
-        orderRows.forEach(orderRow => {
-            if (orderRow.querySelector('input').checked) {
-                const orderID = getMyOrderIDFromElement(orderRow);
-                cancelOrder(orderID).then(
-                    result => {
-                        orderRow.remove();
-                    }
-                )
-            }
-        });
+  document.getElementById('cancelSelected').addEventListener('click', () => {
+    orderRows.forEach((orderRow) => {
+      if (orderRow.querySelector('input').checked) {
+        const orderID = getMyOrderIDFromElement(orderRow);
+        cancelOrder(orderID).then(
+          (result) => {
+            orderRow.remove();
+          },
+        );
+      }
     });
+  });
 
-    cancelColumnHeader.addEventListener('click', () => {
-        orderRows.forEach(orderRow => {
-            const orderID = getMyOrderIDFromElement(orderRow);
-            cancelOrder(orderID).then(
-                result => {
-                    orderRow.remove();
-                }
-            )
-        });
+  cancelColumnHeader.addEventListener('click', () => {
+    orderRows.forEach((orderRow) => {
+      const orderID = getMyOrderIDFromElement(orderRow);
+      cancelOrder(orderID).then(
+        (result) => {
+          orderRow.remove();
+        },
+      );
     });
+  });
 }
 
 // market history features
 const marketHistoryTab = document.getElementById('tabContentsMyMarketHistory');
 if (marketHistoryTab !== null) {
-    // listens for history page changes
-    let observer = new MutationObserver((mutationRecord) => {
-        if (sellListings.style.display !== 'none') { // only execute if it's the active tab
-            if (mutationRecord[0].target.id === 'tabContentsMyMarketHistory' || mutationRecord[0].target.id === 'tabContentsMyMarketHistoryRows') {
-                marketHistoryTab.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(historyRow => {
-                    const historyType = getHistoryType(historyRow);
-                    historyRow.classList.add(historyType);
-                })
-            }
-        }
-    });
+  // listens for history page changes
+  const observer = new MutationObserver((mutationRecord) => {
+    if (sellListings.style.display !== 'none') { // only execute if it's the active tab
+      if (mutationRecord[0].target.id === 'tabContentsMyMarketHistory' || mutationRecord[0].target.id === 'tabContentsMyMarketHistoryRows') {
+        marketHistoryTab.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((historyRow) => {
+          const historyType = getHistoryType(historyRow);
+          historyRow.classList.add(historyType);
+        });
+      }
+    }
+  });
 
-    observer.observe(marketHistoryTab, {
-        subtree: true,
-        childList: true,
-        attributes: false
-    });
+  observer.observe(marketHistoryTab, {
+    subtree: true,
+    childList: true,
+    attributes: false,
+  });
 }
 
 // market history export
@@ -400,15 +405,15 @@ const marketHistoryButton = document.getElementById('tabMyMarketHistory');
 const myListingsButton = document.getElementById('tabMyListings');
 
 if (marketHistoryButton !== null) {
-    // inserts export tab button
-    marketHistoryButton.insertAdjacentHTML('afterend', `
+  // inserts export tab button
+  marketHistoryButton.insertAdjacentHTML('afterend', `
         <a id="tabMyMarketHistoryExport" class="market_tab_well_tab market_tab_well_tab_inactive" href="#">
             <span class="market_tab_well_tab_contents">Export Market History</span>
         </a>
     `);
 
-    // inserts export tab content
-    document.getElementById('myListings').insertAdjacentHTML('beforeend', `
+  // inserts export tab content
+  document.getElementById('myListings').insertAdjacentHTML('beforeend', `
         <div id="tabContentsMyMarketHistoryExport" class="my_listing_section market_content_block" style="display: none;">
             <h1 class="historyExportTitle">Export Market History (<span class="numberOfHistoryEvents">0</span> history events)</h1> 
             <p>
@@ -445,76 +450,74 @@ if (marketHistoryButton !== null) {
         </div>    
     `);
 
-    const marketHistoryExportButton = document.getElementById('exportMarketHistory');
-    const marketHistoryExportContent = document.getElementById('tabContentsMyMarketHistoryExport');
-    const marketHistoryExportTabButton = document.getElementById('tabMyMarketHistoryExport');
+  const marketHistoryExportButton = document.getElementById('exportMarketHistory');
+  const marketHistoryExportContent = document.getElementById('tabContentsMyMarketHistoryExport');
+  const marketHistoryExportTabButton = document.getElementById('tabMyMarketHistoryExport');
 
-    // hides the export tab when one of the other tabs becomes active
-    [marketHistoryButton, myListingsButton].forEach((tabButton) => {
-        tabButton.addEventListener('click', () => {
-            marketHistoryExportTabButton.classList.remove('market_tab_well_tab_active');
-            marketHistoryExportTabButton.classList.add('market_tab_well_tab_inactive');
-            marketHistoryExportContent.style.display = 'none';
-        })
+  // hides the export tab when one of the other tabs becomes active
+  [marketHistoryButton, myListingsButton].forEach((tabButton) => {
+    tabButton.addEventListener('click', () => {
+      marketHistoryExportTabButton.classList.remove('market_tab_well_tab_active');
+      marketHistoryExportTabButton.classList.add('market_tab_well_tab_inactive');
+      marketHistoryExportContent.style.display = 'none';
     });
+  });
 
-    document.querySelectorAll('#exportFrom, #exportTo').forEach((range) => {
-        range.addEventListener('change', () => {
-            const fromElement = document.getElementById('exportFrom');
-            const toElement = document.getElementById('exportTo');
-            if (parseInt(fromElement.value) >= parseInt(toElement.value)) {
-                fromElement.value = 0;
-                toElement.value = toElement.getAttribute('max');
-            }
+  document.querySelectorAll('#exportFrom, #exportTo').forEach((range) => {
+    range.addEventListener('change', () => {
+      const fromElement = document.getElementById('exportFrom');
+      const toElement = document.getElementById('exportTo');
+      if (parseInt(fromElement.value) >= parseInt(toElement.value)) {
+        fromElement.value = 0;
+        toElement.value = toElement.getAttribute('max');
+      }
+    });
+  });
+
+  marketHistoryExportButton.addEventListener('click', (event) => {
+    if (!marketHistoryExport.inProgress) {
+      marketHistoryExport.inProgress = true;
+      marketHistoryExport.history = [];
+      marketHistoryExport.progress = 0;
+      document.getElementById('requestProgress').innerText = '0';
+
+      document.getElementById('exportHelperMessage').innerText = 'Exporting market history...';
+      marketHistoryExport.from = parseInt(document.getElementById('exportFrom').value);
+      marketHistoryExport.to = parseInt(document.getElementById('exportTo').value);
+
+      const numOfRequests = Math.ceil(((marketHistoryExport.to - marketHistoryExport.from) / 50));
+      document.getElementById('numberOfRequests').innerText = numOfRequests.toString();
+      document.getElementById('timeRemaining').innerText = (numOfRequests * 5).toString();
+      document.getElementById('exportProgress').classList.remove('hidden');
+
+      workOnExport();
+    } else document.getElementById('exportHelperMessage').innerText = 'Exporting is already in progress!';
+  });
+
+  marketHistoryExportTabButton.addEventListener('click', () => {
+    marketHistoryExportTabButton.classList.add('market_tab_well_tab_active');
+    marketHistoryExportTabButton.classList.remove('market_tab_well_tab_inactive');
+    marketHistoryButton.classList.remove('market_tab_well_tab_active');
+    marketHistoryButton.classList.add('market_tab_well_tab_inactive');
+    myListingsButton.classList.remove('market_tab_well_tab_active');
+    myListingsButton.classList.add('market_tab_well_tab_inactive');
+
+    marketHistoryExportContent.style.display = 'block';
+    sellListings.parentElement.style.display = 'none';
+    marketHistoryTab.style.display = 'none';
+
+    getMarketHistory(0, 50).then(
+      (history) => {
+        document.getElementById('exportFrom').setAttribute('max', history.total_count);
+        const exportToElement = document.getElementById('exportTo');
+        exportToElement.setAttribute('max', history.total_count);
+        exportToElement.value = history.total_count;
+        document.querySelectorAll('.numberOfHistoryEvents').forEach((numberOfEvents) => {
+          numberOfEvents.innerText = history.total_count;
         });
-    });
-
-    marketHistoryExportButton.addEventListener('click', (event) => {
-        if (!marketHistoryExport.inProgress) {
-            marketHistoryExport.inProgress = true;
-            marketHistoryExport.history = [];
-            marketHistoryExport.progress = 0;
-            document.getElementById('requestProgress').innerText = '0';
-
-            document.getElementById('exportHelperMessage').innerText = 'Exporting market history...';
-            marketHistoryExport.from = parseInt(document.getElementById('exportFrom').value);
-            marketHistoryExport.to = parseInt(document.getElementById('exportTo').value);
-
-            const numOfRequests = Math.ceil(((marketHistoryExport.to - marketHistoryExport.from) / 50));
-            document.getElementById('numberOfRequests').innerText = numOfRequests.toString();
-            document.getElementById('timeRemaining').innerText = (numOfRequests * 5).toString();
-            document.getElementById('exportProgress').classList.remove('hidden');
-
-            workOnExport();
-        }
-        else document.getElementById('exportHelperMessage').innerText = 'Exporting is already in progress!';
-    });
-
-    marketHistoryExportTabButton.addEventListener('click', () => {
-        marketHistoryExportTabButton.classList.add('market_tab_well_tab_active');
-        marketHistoryExportTabButton.classList.remove('market_tab_well_tab_inactive');
-        marketHistoryButton.classList.remove('market_tab_well_tab_active');
-        marketHistoryButton.classList.add('market_tab_well_tab_inactive');
-        myListingsButton.classList.remove('market_tab_well_tab_active');
-        myListingsButton.classList.add('market_tab_well_tab_inactive');
-
-        marketHistoryExportContent.style.display = 'block';
-        sellListings.parentElement.style.display = 'none';
-        marketHistoryTab.style.display = 'none';
-
-        getMarketHistory(0, 50).then(
-            history => {
-                document.getElementById('exportFrom').setAttribute('max', history.total_count);
-                const exportToElement = document.getElementById('exportTo');
-                exportToElement.setAttribute('max', history.total_count);
-                exportToElement.value = history.total_count;
-                document.querySelectorAll('.numberOfHistoryEvents').forEach((numberOfEvents) => {
-                    numberOfEvents.innerText = history.total_count;
-                });
-            }
-        )
-
-    });
+      },
+    );
+  });
 }
 
 reloadPageOnExtensionReload();

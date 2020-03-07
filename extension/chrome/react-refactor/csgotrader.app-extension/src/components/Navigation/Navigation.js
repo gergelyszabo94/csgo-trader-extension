@@ -1,10 +1,10 @@
-import React from "react";
-import { Navbar, Nav } from "react-bootstrap";
-import { LinkContainer } from "react-router-bootstrap";
-import links from "./links.js";
-import logo from "assets/images/cstlogo48.png";
-import "./Navigation.css";
-import NewTabLink from "components/NewTabLink/NewTabLink";
+import React from 'react';
+import { Navbar, Nav } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
+import links from './links.js';
+import logo from 'assets/images/cstlogo48.png';
+import './Navigation.css';
+import NewTabLink from 'components/NewTabLink/NewTabLink';
 
 const navigation = () => {
   return (
@@ -25,7 +25,7 @@ const navigation = () => {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
-            {links.map(link => {
+            {links.map((link) => {
               return !link.isExternal ? (
                 <RouterNavLink
                   to={link.path}
@@ -37,8 +37,9 @@ const navigation = () => {
                 </RouterNavLink>
               ) : (
                 <NewTabLink to={link.path} className="nav-link" key={link.id}>
-                  {" "}
-                  {link.title}{" "}
+                  {' '}
+                  {link.title}
+                  {' '}
                 </NewTabLink>
               );
             })}
