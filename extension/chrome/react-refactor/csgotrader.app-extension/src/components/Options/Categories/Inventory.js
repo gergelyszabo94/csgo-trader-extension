@@ -10,10 +10,10 @@ import Category from '../Category/Category';
 const inventory = () => {
   const transformSortingModes = () => {
     const transformed = [];
-    for (const mode in sortingModes) {
+    for (const mode of Object.values(sortingModes)) {
       transformed.push({
-        key: sortingModes[mode].key,
-        text: sortingModes[mode].name,
+        key: mode.key,
+        text: mode.name,
       });
     }
     return transformed;
@@ -40,11 +40,10 @@ const inventory = () => {
         type="flipSwitchStorage"
         description={(
           <>
-                        Show the number of offers received from a user and how many was sent to them
-            {' '}
+            Show the number of offers received from a user and how many was sent to them
             <FontAwesomeIcon icon={faCode} className="apiIcon" />
           </>
-                  )}
+         )}
       />
     </Category>
   );

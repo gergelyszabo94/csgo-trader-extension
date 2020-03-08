@@ -1,36 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import FlipSwitch from 'components/FlipSwitch/FlipSwitch';
 
-const FlipSwitchPermission = (props) => {
+const FlipSwitchPermission = ({
+  id, origins, permission,
+}) => {
   const [state, setState] = useState(false);
 
   useEffect(() => {
-    if (props.origins) {
-      chrome.storage.local.get([props.id], (storageResult) => {
+    if (origins) {
+      chrome.storage.local.get([id], (storageResult) => {
         chrome.permissions.contains(
-          { permissions: ['tabs'], origins: props.origins },
+          { permissions: ['tabs'], origins },
           (permissionResult) => {
-            setState(storageResult[props.id] && permissionResult);
+            setState(storageResult[id] && permissionResult);
           },
         );
       });
     } else {
       chrome.permissions.contains(
-        { permissions: [props.permission] },
+        { permissions: [permission] },
         (result) => {
           setState(result);
         },
       );
     }
-  }, [props.permission, props.origins, props.id]);
+  }, [permission, origins, id]);
 
   const onChangeHandler = () => {
     if (!state) {
-      if (props.origins) {
+      if (origins) {
         chrome.permissions.request(
-          { permissions: ['tabs'], origins: props.origins },
+          { permissions: ['tabs'], origins },
           (granted) => {
-            chrome.storage.local.set({ [props.id]: granted }, () => {
+            chrome.storage.local.set({ [id]: granted }, () => {
               setState(granted);
             });
           },
@@ -40,8 +42,8 @@ const FlipSwitchPermission = (props) => {
           setState(granted);
         });
       }
-    } else if (props.origins) {
-      chrome.storage.local.set({ [props.id]: false }, () => {
+    } else if (origins) {
+      chrome.storage.local.set({ [id]: false }, () => {
         setState(false);
       });
     } else {
@@ -51,7 +53,7 @@ const FlipSwitchPermission = (props) => {
     }
   };
 
-  return <FlipSwitch id={props.id} checked={state} onChange={onChangeHandler} />;
+  return <FlipSwitch id={id} checked={state} onChange={onChangeHandler} />;
 };
 
 export default FlipSwitchPermission;

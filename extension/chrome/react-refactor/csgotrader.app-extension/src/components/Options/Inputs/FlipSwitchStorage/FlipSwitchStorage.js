@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import FlipSwitch from 'components/FlipSwitch/FlipSwitch';
 
-const FlipSwitchStorage = (props) => {
+const FlipSwitchStorage = ({
+  id,
+}) => {
   const [state, setState] = useState(false);
 
   const onChangeHandler = (event) => {
@@ -14,12 +16,12 @@ const FlipSwitchStorage = (props) => {
   };
 
   useEffect(() => {
-    chrome.storage.local.get(props.id, (result) => {
-      setState(result[props.id]);
+    chrome.storage.local.get(id, (result) => {
+      setState(result[id]);
     });
-  }, [props.id]);
+  }, [id]);
 
-  return <FlipSwitch id={props.id} checked={state} onChange={onChangeHandler} />;
+  return <FlipSwitch id={id} checked={state} onChange={onChangeHandler} />;
 };
 
 export default FlipSwitchStorage;

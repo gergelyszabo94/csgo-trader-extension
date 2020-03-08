@@ -14,7 +14,7 @@ import Popup from './pages/Popup/Popup';
 import Options from './pages/Options/Options';
 import Navigation from './components/Navigation/Navigation';
 
-function App(props) {
+function App() {
   if (window.location.search === '?page=popup') {
     return <Popup />;
   }

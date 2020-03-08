@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-const Countdown = (props) => {
-  const dateToCountDownTo = props.tradability;
+const Countdown = ({
+  tradability,
+}) => {
+  const dateToCountDownTo = tradability;
   const [state, setState] = useState({
     text: '',
     class: 'countdown',
@@ -9,6 +11,7 @@ const Countdown = (props) => {
 
   useEffect(() => {
     const countDownInterval = setInterval(() => {
+      // eslint-disable-next-line no-use-before-define
       setCurrentRemaining();
     }, 1000);
 

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-const Backup = (props) => {
+const Backup = ({
+  id,
+}) => {
   const [href, setHref] = useState('');
 
   useEffect(() => {
@@ -31,7 +33,7 @@ const Backup = (props) => {
     <a
       href={href}
       download="csgotrader_data_backup.json"
-      id={props.id}
+      id={id}
     >
             Backup
     </a>

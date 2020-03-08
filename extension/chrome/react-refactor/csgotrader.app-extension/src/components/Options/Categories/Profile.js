@@ -31,8 +31,8 @@ const profile = () => {
         name="Reoccuring message"
         id="reoccuringMessage"
         type="modalTextBox"
-        description={'The content of the comment you want posted on your profile when the "Reocc" button is pressed, '
-                + 'defaults to "I don\'t have other accounts. If someone adds you with my name and picture they are scammers."'}
+        description={`The content of the comment you want posted on your profile when the "Reocc" button is pressed, 
+          defaults to "I don't have other accounts. If someone adds you with my name and picture they are scammers."`}
         modalTitle="Enter your reoccuring message key here"
       />
       <Row
@@ -48,11 +48,11 @@ const profile = () => {
         type="flipSwitchStorage"
         description={(
           <>
-                            Shows users' real chat status on their profile - if they are away it will show away.
-            {' '}
+            Shows users&apos; real chat status on their profile
+            - if they are away it will show away.&nbsp;
             <FontAwesomeIcon icon={faCode} className="apiIcon" />
           </>
-                      )}
+        )}
       />
       <Row
         name="Mark scammers"

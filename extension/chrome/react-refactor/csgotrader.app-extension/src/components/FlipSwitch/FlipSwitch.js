@@ -1,14 +1,16 @@
 import React from 'react';
 
-const FlipSwitch = (props) => {
+const FlipSwitch = ({
+  id, checked, onChange,
+}) => {
   return (
     <div className="flipswitch">
       <label className="switch">
         <input
           type="checkbox"
-          id={props.id}
-          checked={props.checked}
-          onChange={props.onChange}
+          id={id}
+          checked={checked}
+          onChange={onChange}
         />
         <span className="slider round" />
       </label>

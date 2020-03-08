@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import defaultPopupLinks from 'js/utils/static/defaultPopupLinks';
+import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
 
-const LinksToShow = (props) => {
+const LinksToShow = ({ id }) => {
   const [links, setLinks] = useState([]);
   const [customLink, setCustomLink] = useState({
     name: '',
@@ -47,21 +48,20 @@ const LinksToShow = (props) => {
         },
       ];
 
-      chrome.storage.local.set({ [props.id]: changedLinks }, () => {
+      chrome.storage.local.set({ [id]: changedLinks }, () => {
         setLinks(changedLinks);
       });
     }
   };
 
   const removeCustomUrl = (event) => {
-    console.log(event.target.id);
     links.map((link, mapIndex) => {
       if (link.id === event.target.id) {
-        const filtered = links.filter((value, filterIndex, arr) => {
+        const filtered = links.filter((value, filterIndex) => {
           return mapIndex !== filterIndex;
         });
 
-        chrome.storage.local.set({ [props.id]: filtered }, () => {
+        chrome.storage.local.set({ [id]: filtered }, () => {
           setLinks(filtered);
         });
       }
@@ -70,25 +70,22 @@ const LinksToShow = (props) => {
   };
 
   const onChangeHandler = (event) => {
-    const id = event.target.id;
-
+    const targetID = event.target.id;
     const changedLinks = [...links];
-    const changedLink = {
-      ...changedLinks[id],
-      active: !changedLinks[id].active,
+    changedLinks[targetID] = {
+      ...changedLinks[targetID],
+      active: !changedLinks[targetID].active,
     };
-    changedLinks[id] = changedLink;
-
-    chrome.storage.local.set({ [props.id]: changedLinks }, () => {
+    chrome.storage.local.set({ [id]: changedLinks }, () => {
       setLinks(changedLinks);
     });
   };
 
   useEffect(() => {
-    chrome.storage.local.get(props.id, (result) => {
+    chrome.storage.local.get(id, (result) => {
       setLinks(result.popupLinks);
     });
-  }, [props.id]);
+  }, [id]);
 
   return (
     <>
@@ -107,16 +104,15 @@ const LinksToShow = (props) => {
               </label>
             </div>
             <div className="col-md-3 justify-content-end pb-3">{link.name}</div>
-
             {!defaultPopupLinkIDs.includes(link.id) ? (
               <div className="col-md-1">
-                <span id={link.id} onClick={removeCustomUrl}>
+                <CustomA11yButton id={link.id} action={removeCustomUrl} title="Delete">
                   <FontAwesomeIcon
                     id={link.id}
                     icon={faTrash}
                     className="apiIcon"
                   />
-                </span>
+                </CustomA11yButton>
               </div>
             ) : null}
           </div>
@@ -143,7 +139,7 @@ const LinksToShow = (props) => {
           placeholder="URL to point to"
         />
       </label>
-      <button className="button button__save" onClick={addCustomUrl}>
+      <button className="button button__save" onClick={addCustomUrl} type="submit">
         Add new URL
       </button>
     </>

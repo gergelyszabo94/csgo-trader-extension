@@ -18,7 +18,6 @@ const general = () => {
           <>
             Automatically generates and adds the Steam API key to the extension
             when visiting
-            {' '}
             <NewTabLink to="https://steamcommunity.com/dev/apikey">
               steamcommunity.com/dev/apikey
             </NewTabLink>
@@ -56,13 +55,12 @@ const general = () => {
           <>
             Grants the extension access to the
             <NewTabLink to="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Working_with_the_Tabs_API">
-              {' '}
               browser.tabs API
             </NewTabLink>
             . It - for example - allows the extension to open a tab and put it
             in focus, allows notifications to be clickable, opens the bookmarks
             page when an item is bookmarked, etc. I am using it in this mode so
-            it's also less likely to be buggy as well.
+            it&apos;s also less likely to be buggy as well.
           </>
         )}
         permission="tabs"
@@ -94,12 +92,7 @@ const general = () => {
           <>
             Sends anonymous usage data to the developers to help discover
             problems and better understand how the extension is used. Check the
-            <NewTabLink to="https://csgotrader.app/privacy">
-              {' '}
-              Privacy
-              {' '}
-            </NewTabLink>
-            {' '}
+            <NewTabLink to="https://csgotrader.app/privacy"> Privacy </NewTabLink>
             page for more information on how your data in handled.
           </>
         )}

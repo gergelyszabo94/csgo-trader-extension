@@ -1,17 +1,18 @@
 import React from 'react';
 import Select from 'components/Select/Select';
 
-const DoubleSelect = (props) => {
-  const setStorage = (thisValue, id) => {
-    id === undefined
-      ? chrome.storage.local.set({ [props.id]: thisValue }, () => {})
-      : chrome.storage.local.set({ [id]: thisValue }, () => {});
+const DoubleSelect = ({
+  id, options,
+}) => {
+  const setStorage = (thisValue, key) => {
+    if (key === undefined) chrome.storage.local.set({ [id]: thisValue }, () => {});
+    else chrome.storage.local.set({ [key]: thisValue }, () => {});
   };
 
-  const getStorage = (id) => {
-    return new Promise((resolve, reject) => {
-      chrome.storage.local.get(id, (result) => {
-        resolve(result[id]);
+  const getStorage = (key) => {
+    return new Promise((resolve) => {
+      chrome.storage.local.get(key, (result) => {
+        resolve(result[key]);
       });
     });
   };
@@ -19,16 +20,16 @@ const DoubleSelect = (props) => {
   return (
     <>
       <Select
-        id={props.id[0]}
+        id={id[0]}
         foreignChangeHandler={setStorage}
         foreignUseEffect={getStorage}
-        options={props.options}
+        options={options}
       />
       <Select
-        id={props.id[1]}
+        id={id[1]}
         foreignChangeHandler={setStorage}
         foreignUseEffect={getStorage}
-        options={props.options}
+        options={options}
       />
     </>
   );

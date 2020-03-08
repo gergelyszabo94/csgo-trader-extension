@@ -10,10 +10,10 @@ import Category from '../Category/Category';
 const tradeOffer = () => {
   const transformSortingModes = () => {
     const transformed = [];
-    for (const mode in sortingModes) {
+    for (const mode of Object.values(sortingModes)) {
       transformed.push({
-        key: sortingModes[mode].key,
-        text: sortingModes[mode].name,
+        key: mode.key,
+        text: mode.name,
       });
     }
     return transformed;
@@ -21,10 +21,10 @@ const tradeOffer = () => {
 
   const transformOfferSortingModes = () => {
     const transformed = [];
-    for (const mode in offersSortingModes) {
+    for (const mode of Object.values(offersSortingModes)) {
       transformed.push({
-        key: offersSortingModes[mode].key,
-        text: offersSortingModes[mode].name,
+        key: mode.key,
+        text: mode.name,
       });
     }
     return transformed;
@@ -48,10 +48,7 @@ const tradeOffer = () => {
         name="Make icons larger"
         id="tradeOffersLargerItems"
         type="flipSwitchStorage"
-        description={
-                    'Makes your own items\' icon larger - making it the same size as the other party\'s items at the trade offers page. '
-                    + 'Recommended to have this on, so all additional info fits on them properly.'
-}
+        description="Makes your own items' icon larger - making it the same size as the other party's items at the trade offers page. Recommended to have this on, so all additional info fits on them properly."
       />
       <Row
         name="Default sorting mode"
@@ -85,12 +82,11 @@ const tradeOffer = () => {
         type="flipSwitchStorage"
         description={(
           <>
-                        Show the number of offers received from a user and how many was sent to them (on the tradeoffers and the individual offer pages)
-            {' '}
-            {' '}
+            Show the number of offers received from a user and how many was
+            sent to them (on the tradeoffers and the individual offer pages)&nbsp;
             <FontAwesomeIcon icon={faCode} className="apiIcon" />
           </>
-                  )}
+        )}
       />
       <Row
         name="Offer header to left"

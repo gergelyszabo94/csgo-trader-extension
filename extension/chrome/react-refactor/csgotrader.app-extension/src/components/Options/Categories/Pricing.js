@@ -7,10 +7,10 @@ import Row from '../Row';
 const pricing = () => {
   const transformCurrencies = () => {
     const transformedCurrencies = [];
-    for (const currency in currencies) {
+    for (const currency of Object.values(currencies)) {
       transformedCurrencies.push({
-        key: currencies[currency].short,
-        text: `${currencies[currency].short} - ${currencies[currency].long}`,
+        key: currency.short,
+        text: `${currency.short} - ${currency.long}`,
       });
     }
 

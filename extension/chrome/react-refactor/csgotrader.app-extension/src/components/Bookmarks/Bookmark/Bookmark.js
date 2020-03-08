@@ -11,15 +11,17 @@ import { determineNotificationDate, reverseWhenNotifDetails } from 'js/utils/not
 import { getOfferStyleSteamID } from 'js/utils/steamID';
 import Countdown from './Countdown';
 
-const Bookmark = (props) => {
+const Bookmark = ({
+  bookmarkData, editBookmark, removeBookmark,
+}) => {
   const {
     itemInfo, notifTime, notifType, notify, owner,
-  } = props.bookmarkData;
+  } = bookmarkData;
   const imageSRC = `https://steamcommunity.com/economy/image/${itemInfo.iconURL}/256x256`;
   const exterior = itemInfo.exterior ? itemInfo.exterior.localized_name : '';
   const displayName = itemInfo.name.split('| ')[1] ? itemInfo.name.split('| ')[1] : itemInfo.name;
 
-  const [comment, setComment] = useState(props.bookmarkData.comment);
+  const [comment, setComment] = useState(bookmarkData.comment);
   const [doNotify, setDoNotify] = useState(notify);
 
   const whenDetails = reverseWhenNotifDetails(itemInfo.tradability, notifTime);
@@ -38,22 +40,24 @@ const Bookmark = (props) => {
   };
 
   const saveComment = (closeModal) => {
-    const bookmarkData = { ...props.bookmarkData, comment };
-    props.editBookmark(bookmarkData);
+    const newBookmarkData = { ...bookmarkData, comment };
+    editBookmark(newBookmarkData);
     closeModal();
   };
 
   const saveNotification = (closeModal) => {
-    const newNotifTime = determineNotificationDate(itemInfo.tradability, minutesOrHours.current.value, numberOfMinutesOrHours.current.value, beforeOrAfter.current.value).toString();
+    const newNotifTime = determineNotificationDate(itemInfo.tradability,
+      minutesOrHours.current.value, numberOfMinutesOrHours.current.value,
+      beforeOrAfter.current.value).toString();
 
-    const bookmarkData = {
-      ...props.bookmarkData,
+    const newBookmarkData = {
+      ...bookmarkData,
       notify: doNotify,
       notifType: notifTypeSelect.current.value,
       notifTime: newNotifTime,
     };
 
-    props.editBookmark(bookmarkData);
+    editBookmark(newBookmarkData);
 
     if (doNotify) {
       chrome.runtime.sendMessage({
@@ -73,8 +77,8 @@ const Bookmark = (props) => {
     }
   };
 
-  const removeBookmark = () => {
-    props.removeBookmark(itemInfo.assetid);
+  const removeBookmarkFunction = () => {
+    removeBookmark(itemInfo.assetid);
   };
 
   return (
@@ -164,7 +168,7 @@ const Bookmark = (props) => {
               </Modal>
             </Action>
             <Action title="Delete bookmark">
-              <FontAwesomeIcon icon={faTrash} onClick={removeBookmark} />
+              <FontAwesomeIcon icon={faTrash} onClick={removeBookmarkFunction} />
             </Action>
           </div>
           <div className="center">
@@ -195,21 +199,25 @@ const Tradability = (props) => {
   );
 };
 
-const Action = (props) => (
-  <span className={`action ${props.className ? props.className : null}`} title={props.title}>
-    {props.children}
+const Action = ({
+  children, className, title,
+}) => (
+  <span className={`action ${className}`} title={title}>
+    {children}
   </span>
 );
 
-const STS = (props) => {
-  if (props.st) {
+const STS = ({
+  st, s,
+}) => {
+  if (st) {
     return (
       <span className="statTrak">
                 StatTrak™
       </span>
     );
   }
-  if (props.s) {
+  if (s) {
     return (
       <span className="souvenir">
                 Souvenir
