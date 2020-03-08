@@ -103,108 +103,130 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         });
       }
     });
-  } else { // when on someone else's profile
-    if (!isProfilePrivate) {
-      // adds "copy profile permalink" and "show offer history" to the context menu
-      const copyPermalink = `<a class="popup_menu_item" href="#" id="copy_profile_perma_link"><img style="width: 16px; height: 16px" src="${chrome.runtime.getURL('images/paperclip.png')}">&nbsp; Copy Profile Permalink</a>`;
-      const showOfferSummary = '<a class="popup_menu_item" href="#" id="show_offer_history"><img style="width: 16px; height: 16px" src="https://steamcommunity-a.akamaihd.net/public/images/profile/icon_tradeoffers.png">&nbsp; Show Offer History</a>';
-      profileActionPopup.querySelector('.popup_body.popup_menu.shadow_content').insertAdjacentHTML('beforeend', copyPermalink + showOfferSummary);
+  } else if (!isProfilePrivate) { // when on someone else's profile that is not private
+    // adds "copy profile permalink" and "show offer history" to the context menu
+    const copyPermalink = `
+      <a class="popup_menu_item" href="#" id="copy_profile_perma_link">
+        <img style="width: 16px; height: 16px" src="${chrome.runtime.getURL('images/paperclip.png')}">
+            &nbsp; Copy Profile Permalink
+      </a>`;
+    const showOfferSummary = `
+        <a class="popup_menu_item" href="#" id="show_offer_history">
+            <img style="width: 16px; height: 16px" src="https://steamcommunity-a.akamaihd.net/public/images/profile/icon_tradeoffers.png">
+            &nbsp; Show Offer History
+        </a>`;
+    profileActionPopup.querySelector('.popup_body.popup_menu.shadow_content').insertAdjacentHTML('beforeend', copyPermalink + showOfferSummary);
 
-      // this is a workaround to only being able to copy text to the clipboard that is selected in a textbox
-      const textareaToCopy = `<textarea id="text_area_to_copy_permalink" class="hidden-copy-textarea" readonly="">https://steamcommunity.com/profiles/${profileOwnerSteamID}</textarea>`;
+    // this is a workaround to only being able to copy text
+    // to the clipboard that is selected in a textbox
+    const textareaToCopy = `
+        <textarea id="text_area_to_copy_permalink" class="hidden-copy-textarea" readonly="">
+            https://steamcommunity.com/profiles/${profileOwnerSteamID}
+        </textarea>`;
 
-      document.getElementById('copy_profile_perma_link').addEventListener('click', () => {
-        // analytics
-        trackEvent({
-          type: 'event',
-          action: 'ProfilePermalinkCopied',
-        });
-        document.querySelector('body').insertAdjacentHTML('beforeend', textareaToCopy);
-        const textAreaElement = document.getElementById('text_area_to_copy_permalink');
-        textAreaElement.select();
-        document.execCommand('copy');
-        textAreaElement.remove();
-
-        // for the context menu to go away
-        document.querySelector('.playerAvatarAutoSizeInner').click();
+    document.getElementById('copy_profile_perma_link').addEventListener('click', () => {
+      // analytics
+      trackEvent({
+        type: 'event',
+        action: 'ProfilePermalinkCopied',
       });
+      document.querySelector('body').insertAdjacentHTML('beforeend', textareaToCopy);
+      const textAreaElement = document.getElementById('text_area_to_copy_permalink');
+      textAreaElement.select();
+      document.execCommand('copy');
+      textAreaElement.remove();
 
-      document.getElementById('show_offer_history').addEventListener('click', () => {
-        // analytics
-        trackEvent({
-          type: 'event',
-          action: 'ProfileOfferHistoryChecked',
-        });
-        // prints trade offer history summary
-        chrome.storage.local.get([`offerHistory_${profileOwnerSteamID}`, 'apiKeyValid'], (result) => {
-          let offerHistory = result[`offerHistory_${profileOwnerSteamID}`];
-          let offerSummaryElement = '';
+      // for the context menu to go away
+      document.querySelector('.playerAvatarAutoSizeInner').click();
+    });
 
-          if (result.apiKeyValid) {
-            if (offerHistory === undefined) {
-              offerHistory = {
-                offers_received: 0,
-                offers_sent: 0,
-                last_received: 0,
-                last_sent: 0,
-              };
-            }
-            offerSummaryElement = `
+    document.getElementById('show_offer_history').addEventListener('click', () => {
+      // analytics
+      trackEvent({
+        type: 'event',
+        action: 'ProfileOfferHistoryChecked',
+      });
+      // prints trade offer history summary
+      chrome.storage.local.get([`offerHistory_${profileOwnerSteamID}`, 'apiKeyValid'], (result) => {
+        let offerHistory = result[`offerHistory_${profileOwnerSteamID}`];
+        let offerSummaryElement = '';
+
+        if (result.apiKeyValid) {
+          if (offerHistory === undefined) {
+            offerHistory = {
+              offers_received: 0,
+              offers_sent: 0,
+              last_received: 0,
+              last_sent: 0,
+            };
+          }
+          offerSummaryElement = `
                         <div class="trade_partner_info_block" style="color: lightgray"> 
                             <div>Offers Received: ${offerHistory.offers_received} Last:  ${offerHistory.offers_received !== 0 ? dateToISODisplay(offerHistory.last_received) : '-'}</div>
                             <div>Offers Sent: ${offerHistory.offers_sent} Last:  ${offerHistory.offers_sent !== 0 ? dateToISODisplay(offerHistory.last_sent) : '-'}</div>
                         </div>`;
-          } else {
-            offerSummaryElement = `
+        } else {
+          offerSummaryElement = `
                         <div class="trade_partner_info_block" style="color: lightgray"> 
                             <div><b>CSGOTrader Extension:</b> It looks like you don't have your Steam API Key set yet.</div>
-                            <div>If you had that you would see partner offer history here. Check the <a href="https://csgotrader.app/release-notes#1.23">Release Notes</a> for more info.</div>
+                            <div>If you had that you would see partner offer history here. Check the 
+                                <a href="https://csgotrader.app/release-notes#1.23">Release Notes</a> 
+                                for more info.
+                            </div>
                         </div>`;
-          }
-
-          const profileStatusElement = document.querySelector('.responsive_status_info');
-
-          if (profileStatusElement !== null) profileStatusElement.insertAdjacentHTML('beforeend', offerSummaryElement);
-          else document.querySelector('.profile_header_badgeinfo').insertAdjacentHTML('beforeend', offerSummaryElement);
-
-          // for the context menu to go away
-          document.querySelector('.playerAvatarAutoSizeInner').click();
-        });
-      });
-
-      // handles rep button related stuff
-      chrome.storage.local.get(['reputationMessage', 'showPlusRepButton'], (result) => {
-        if (result.showPlusRepButton) {
-          const repButton = '<div style="float: right; text-align: center; margin-top: 6px;" class="commentthread_user_avatar playerAvatar"><span class="btn_green_white_innerfade btn_small" id="repper" style="padding: 5px;">+rep<span></div>';
-
-          if (commentThreadEntryBox !== null) {
-            commentThreadEntryBox.insertAdjacentHTML('afterend', repButton);
-            document.getElementById('repper').addEventListener('click', () => {
-              // analytics
-              trackEvent({
-                type: 'event',
-                action: 'ReputionMessagePosted',
-              });
-              document.querySelector('.commentthread_textarea').value = result.reputationMessage;
-              setTimeout(() => {
-                document.querySelectorAll('.btn_green_white_innerfade.btn_small')[1].click();
-              }, 500);
-            });
-          }
         }
+
+        const profileStatusElement = document.querySelector('.responsive_status_info');
+
+        if (profileStatusElement !== null) profileStatusElement.insertAdjacentHTML('beforeend', offerSummaryElement);
+        else document.querySelector('.profile_header_badgeinfo').insertAdjacentHTML('beforeend', offerSummaryElement);
+
+        // for the context menu to go away
+        document.querySelector('.playerAvatarAutoSizeInner').click();
       });
-      reportComments();
-    }
+    });
+
+    // handles rep button related stuff
+    chrome.storage.local.get(['reputationMessage', 'showPlusRepButton'], (result) => {
+      if (result.showPlusRepButton) {
+        const repButton = `
+            <div style="float: right; text-align: center; margin-top: 6px;" class="commentthread_user_avatar playerAvatar">
+                <span class="btn_green_white_innerfade btn_small" id="repper" style="padding: 5px;">
+                    +rep
+                <span>
+            </div>`;
+
+        if (commentThreadEntryBox !== null) {
+          commentThreadEntryBox.insertAdjacentHTML('afterend', repButton);
+          document.getElementById('repper').addEventListener('click', () => {
+            // analytics
+            trackEvent({
+              type: 'event',
+              action: 'ReputionMessagePosted',
+            });
+            document.querySelector('.commentthread_textarea').value = result.reputationMessage;
+            setTimeout(() => {
+              document.querySelectorAll('.btn_green_white_innerfade.btn_small')[1].click();
+            }, 500);
+          });
+        }
+      }
+    });
+    reportComments();
   }
 
   chrome.storage.local.get('nsfwFilter', (result) => {
     if (result.nsfwFilter) {
       // makes the profile background the same as the default one
       document.querySelector('.no_header.profile_page').setAttribute('style', 'background-image: url(https://steamcommunity-a.akamaihd.net/public/images/profile/profile_bg.jpg); background-repeat: repeat-x; background-color: #262627;');
-      document.querySelectorAll('.profile_content, body, .no_header.profile_page').forEach((element) => { element.classList.remove('has_profile_background'); });
+      document.querySelectorAll('.profile_content, body, .no_header.profile_page').forEach((element) => {
+        element.classList.remove('has_profile_background');
+      });
 
       // removes artwork and screenshot showcases
-      document.querySelectorAll('.profile_background_holder_content, .screenshot_showcase').forEach((element) => { element.remove(); });
+      document.querySelectorAll('.profile_background_holder_content, .screenshot_showcase').forEach((element) => {
+        element.remove();
+      });
 
       // changes avatar to the default one
       document.querySelector('.playerAvatarAutoSizeInner').querySelector('img').setAttribute('src', 'https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg');
@@ -225,13 +247,17 @@ if (document.querySelector('body').classList.contains('profile_page')) {
   chrome.storage.local.get('showRealStatus', (result) => {
     if (result.showRealStatus && !isProfilePrivate) {
       const statusDiv = document.querySelector('.profile_in_game.persona');
-      if (statusDiv !== null) { // when there is right info column (sometimes profiles are not private but set to not have that by the user)
+      // when there is right info column
+      // (sometimes profiles are not private but set to not have that by the user)
+      if (statusDiv !== null) {
         if (statusDiv.classList.contains('online')) {
           const textDiv = statusDiv.querySelector('.profile_in_game_header');
 
           chrome.runtime.sendMessage({ GetPlayerSummaries: profileOwnerSteamID }, (response) => {
             if (response.apiKeyValid) {
-              textDiv.innerText = steamProfileStatuses[response.personastate] ? steamProfileStatuses[response.personastate] : textDiv.innerText;
+              textDiv.innerText = steamProfileStatuses[response.personastate]
+                ? steamProfileStatuses[response.personastate]
+                : textDiv.innerText;
             }
           });
         }

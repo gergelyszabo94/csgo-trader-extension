@@ -1,18 +1,89 @@
 import { dopplerPhases } from 'js/utils/static/dopplerPhases';
 import {
-  getDopplerInfo, getFloatBarSkeleton,
-  parseStickerInfo, getPattern, logExtensionPresence,
-  updateLoggedInUserID, souvenirExists, reloadPageOnExtensionReload,
   getDataFilledFloatTechnical,
+  getDopplerInfo,
+  getFloatBarSkeleton,
+  getPattern,
+  logExtensionPresence,
+  parseStickerInfo,
+  reloadPageOnExtensionReload,
+  souvenirExists,
+  updateLoggedInUserID,
 } from 'js/utils/utilsModular';
 import floatQueue, { workOnFloatQueue } from 'js/utils/floatQueueing';
 import exteriors from 'js/utils/static/exteriors';
 import { getPrice, getStickerPriceTotal } from 'js/utils/pricing';
 import { trackEvent } from 'js/utils/analytics';
 import {
-  stattrak, starChar, souvenir, stattrakPretty, genericMarketLink,
+  genericMarketLink, souvenir, starChar, stattrak, stattrakPretty,
 } from 'js/utils/static/simpleStrings';
 import { injectScript } from 'js/utils/injection';
+
+const inBrowserInspectButtonPopupLink = `
+    <a class="popup_menu_item" id="inbrowser_inspect" href="http://csgo.gallery/" target="_blank">
+        ${chrome.i18n.getMessage('inspect_in_browser')}
+    </a>`;
+const dopplerPhase = '<div class="dopplerPhaseMarket"><span></span></div>';
+
+// adds the in-browser inspect button to the top of the page
+// some items don't have inspect buttons (like cases)
+const originalInspectButton = document.getElementById('largeiteminfo_item_actions')
+  .querySelector('.btn_small.btn_grey_white_innerfade');
+let itemWithInspectLink = false;
+if (originalInspectButton !== null) {
+  itemWithInspectLink = true;
+  const inspectLink = originalInspectButton.getAttribute('href');
+  const inBrowserInspectButton = `
+    <a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect_button" href="http://csgo.gallery/${inspectLink}" target="_blank">
+        <span>
+            ${chrome.i18n.getMessage('inspect_in_browser')}
+        </span>
+    </a>`;
+  document.getElementById('largeiteminfo_item_actions').insertAdjacentHTML('beforeend', inBrowserInspectButton);
+  document.getElementById('inbrowser_inspect_button').addEventListener('click', () => {
+    // analytics
+    trackEvent({
+      type: 'event',
+      action: 'MarketInspection',
+    });
+  });
+}
+
+// it takes the visible descriptors and checks if the collection includes souvenirs
+let textOfDescriptors = '';
+document.querySelectorAll('.descriptor').forEach((descriptor) => { textOfDescriptors += descriptor.innerText; });
+const thereSouvenirForThisItem = souvenirExists(textOfDescriptors);
+
+let weaponName = '';
+const fullName = decodeURIComponent(window.location.href).split('listings/730/')[1];
+let star = '';
+const isStattrak = /StatTrak™/.test(fullName);
+const isSouvenir = /Souvenir/.test(fullName);
+
+if (fullName.includes('★')) star = starChar;
+if (isStattrak) weaponName = fullName.split('StatTrak™ ')[1].split('(')[0];
+else if (isSouvenir) weaponName = fullName.split('Souvenir ')[1].split('(')[0];
+else {
+  weaponName = fullName.split('(')[0].split('★ ')[1];
+  if (weaponName === undefined) weaponName = fullName.split('(')[0];
+}
+
+let stOrSv = stattrakPretty;
+let stOrSvClass = 'stattrakOrange';
+let linkMidPart = star + stattrak;
+if (isSouvenir || thereSouvenirForThisItem) {
+  stOrSvClass = 'souvenirYellow';
+  stOrSv = souvenir;
+  linkMidPart = souvenir;
+}
+
+const getElementByListingID = (listingID) => {
+  return document.getElementById(`listing_${listingID}`);
+};
+
+const getListingIDFromElement = (listingElement) => {
+  return listingElement.id.split('listing_')[1];
+};
 
 const addPhasesIndicator = () => {
   if (window.location.href.includes('Doppler')) {
@@ -32,6 +103,33 @@ const addPhasesIndicator = () => {
   }
 };
 
+const getListings = () => {
+  const getListingsScript = `
+    document.querySelector('body').setAttribute('listingsInfo', JSON.stringify({
+        listings: g_rgListingInfo,
+        assets: g_rgAssets
+    }));`;
+
+  const listingsInfo = JSON.parse(injectScript(getListingsScript, true, 'getListings', 'listingsInfo'));
+  const assets = listingsInfo.assets[730][2];
+  const listings = listingsInfo.listings;
+
+  for (const listing of listings) {
+    const assetID = listings[listing].asset.id;
+
+    for (const asset of assets) {
+      const stickers = parseStickerInfo(assets[asset].descriptions, 'search');
+
+      if (assetID === assets[asset].id) {
+        listings[listing].asset = assets[asset];
+        listings[listing].asset.stickers = stickers;
+      }
+    }
+  }
+
+  return listings;
+};
+
 const addStickers = () => {
   // removes sih sticker info
   document.querySelectorAll('.sih-images').forEach((image) => {
@@ -41,28 +139,125 @@ const addStickers = () => {
   const listings = getListings();
   const listingsSection = document.getElementById('searchResultsRows');
 
-  if (listingsSection !== null) { // so it does not throw any errors when it can't find it on commodity items
-    listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((listing_row) => {
-      if (listing_row.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listing_row.parentNode.parentNode.id !== 'tabContentsMyListings') {
-        const listingID = getListingIDFromElement(listing_row);
+  // so it does not throw any errors when it can't find it on commodity items
+  if (listingsSection !== null) {
+    listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
+      (listingRow) => {
+        if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
+          const listingID = getListingIDFromElement(listingRow);
 
-        if (listing_row.querySelector('.stickerHolderMarket') === null) { // if stickers elements not added already
-          listing_row.querySelector('.market_listing_item_name_block').insertAdjacentHTML('beforeend', `<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`);
-          const stickers = listings[listingID].asset.stickers;
+          if (listingRow.querySelector('.stickerHolderMarket') === null) { // if stickers elements not added already
+            listingRow.querySelector('.market_listing_item_name_block').insertAdjacentHTML('beforeend',
+              `<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`);
+            const stickers = listings[listingID].asset.stickers;
 
-          stickers.forEach((stickerInfo) => {
-            listing_row.querySelector('.stickerHolderMarket').insertAdjacentHTML('beforeend', `
+            stickers.forEach((stickerInfo) => {
+              listingRow.querySelector('.stickerHolderMarket').insertAdjacentHTML('beforeend', `
                             <span class="stickerSlotMarket" data-tooltip-market="${stickerInfo.name}">
                                 <a href="${stickerInfo.marketURL}" target="_blank">
                                     <img src="${stickerInfo.iconURL}" class="stickerIcon">
                                 </a>
                             </span>`);
-          });
-          listing_row.querySelector('.stickerHolderMarket').insertAdjacentHTML('afterend', '<div class="stickersTotal" data-tooltip-market="Total Price of Stickers on this item"></div>');
+            });
+            listingRow.querySelector('.stickerHolderMarket').insertAdjacentHTML('afterend',
+              '<div class="stickersTotal" data-tooltip-market="Total Price of Stickers on this item"></div>');
+          }
         }
-      }
-    });
+      },
+    );
   }
+};
+
+const populateFloatInfo = (listingID, floatInfo) => {
+  const listingElement = getElementByListingID(listingID);
+
+  // if for example the user has changed page and the listing is not there anymore
+  if (listingElement !== null) {
+    listingElement.querySelector('.floatTechnical').innerHTML = getDataFilledFloatTechnical(floatInfo);
+
+    const position = ((floatInfo.floatvalue.toFixedNoRounding(2) * 100) - 2).toFixedNoRounding(2);
+    listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
+    listingElement.querySelector('.floatDropTarget').innerText = floatInfo.floatvalue.toFixedNoRounding(4);
+  }
+};
+
+// sticker wear to sticker icon tooltip
+const setStickerInfo = (listingID, stickers) => {
+  if (stickers !== null) {
+    chrome.storage.local.get(['prices', 'pricingProvider', 'exchangeRate', 'currency'],
+      (result) => {
+        const listingElement = getElementByListingID(listingID);
+
+        if (listingElement !== null) {
+          stickers.forEach((stickerInfo, index) => {
+            const wear = stickerInfo.wear !== undefined
+              ? Math.trunc(Math.abs(1 - stickerInfo.wear) * 100)
+              : 100;
+            const currentSticker = listingElement.querySelectorAll('.stickerSlotMarket')[index];
+            const stickerPrice = getPrice(
+              `Sticker | ${stickerInfo.name}`,
+              null,
+              result.prices,
+              result.pricingProvider,
+              result.exchangeRate,
+              result.currency,
+            );
+
+            stickerInfo.price = stickerPrice;
+            currentSticker.setAttribute(
+              'data-tooltip-market',
+              `${stickerInfo.name} (${stickerPrice.display}) - Condition: ${wear}%`,
+            );
+            currentSticker.querySelector('img').setAttribute(
+              'style',
+              `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`,
+            );
+          });
+
+          const stickersTotalPrice = getStickerPriceTotal(stickers, result.currency);
+          listingElement.setAttribute(
+            'data-sticker-price',
+            stickersTotalPrice === null
+              ? '0.0'
+              : stickersTotalPrice.price.toString(),
+          );
+
+          const stickersTotalElement = listingElement.querySelector('.stickersTotal');
+          stickersTotalElement.innerText = stickersTotalPrice === null ? '' : stickersTotalPrice.display;
+        }
+      });
+  }
+};
+
+const addPatterns = (listingID, floatInfo) => {
+  const patternInfo = getPattern(fullName, floatInfo.paintseed);
+  if (patternInfo !== null) {
+    const listingElement = getElementByListingID(listingID);
+
+    if (listingElement !== null) {
+      const patternClass = patternInfo.type === 'marble_fade' ? 'marbleFadeGradient' : 'fadeGradient';
+      listingElement.querySelector('.market_listing_item_name').insertAdjacentHTML('afterend', `<span class="${patternClass}"> ${patternInfo.value}</span>`);
+    }
+  }
+};
+
+const addFloatDataToPage = (job, floatInfo) => {
+  populateFloatInfo(job.listingID, floatInfo);
+  setStickerInfo(job.listingID, floatInfo.stickers);
+  addPatterns(job.listingID, floatInfo);
+};
+
+const hideFloatBar = (listingID) => {
+  const listingElement = getElementByListingID(listingID);
+
+  if (listingElement !== null) {
+    listingElement.querySelector('.floatBar').classList.add('hidden');
+  }
+};
+
+const dealWithNewFloatData = (job, floatInfo) => {
+  if (floatInfo !== 'nofloat') addFloatDataToPage(job, floatInfo);
+  else hideFloatBar();
 };
 
 const addListingsToFloatQueue = () => {
@@ -70,8 +265,8 @@ const addListingsToFloatQueue = () => {
     if (result.autoFloatMarket) {
       if (itemWithInspectLink) {
         const listings = getListings();
-        for (let listing in listings) {
-          listing = listings[listing];
+        for (const listingKey of listings) {
+          const listing = listings[listingKey];
           const assetID = listing.asset.id;
 
           floatQueue.jobs.push({
@@ -87,28 +282,28 @@ const addListingsToFloatQueue = () => {
   });
 };
 
-const dealWithNewFloatData = (job, floatInfo) => {
-  if (floatInfo !== 'nofloat') addFloatDataToPage(job, floatInfo);
-  else hideFloatBar();
-};
-
 const addFloatBarSkeletons = () => {
   chrome.storage.local.get('autoFloatMarket', (result) => {
     if (result.autoFloatMarket) {
       const listingsSection = document.getElementById('searchResultsRows');
 
-      if (listingsSection !== null) { // so it does not throw any errors when it can't find it on commodity items
+      // so it does not throw any errors when it can't find it on commodity items
+      if (listingsSection !== null) {
         const listingNameBlocks = listingsSection.querySelectorAll('.market_listing_item_name_block');
         if (listingNameBlocks !== null && itemWithInspectLink) {
           listingNameBlocks.forEach((listingNameBlock) => {
-            if (listingNameBlock.getAttribute('data-floatBar-added') === null || listingNameBlock.getAttribute('data-floatBar-added') === false) {
+            if (listingNameBlock.getAttribute('data-floatBar-added') === null
+              || listingNameBlock.getAttribute('data-floatBar-added') === false) {
               listingNameBlock.insertAdjacentHTML('beforeend', getFloatBarSkeleton('market'));
-              listingNameBlock.setAttribute('data-floatBar-added', true);
+              listingNameBlock.setAttribute('data-floatBar-added', 'true');
 
               // adds "show technical" hide and show logic
-              listingNameBlock.querySelector('.showTechnical').addEventListener('click', (event) => {
-                event.target.parentNode.querySelector('.floatTechnical').classList.toggle('hidden');
-              });
+              listingNameBlock.querySelector('.showTechnical').addEventListener(
+                'click',
+                (event) => {
+                  event.target.parentNode.querySelector('.floatTechnical').classList.toggle('hidden');
+                },
+              );
             }
           });
         } else {
@@ -121,91 +316,9 @@ const addFloatBarSkeletons = () => {
   });
 };
 
-const populateFloatInfo = (listingID, floatInfo) => {
-  const listingElement = getElementByListingID(listingID);
-
-  if (listingElement !== null) { // if for example the user has changed page and the listing is not there anymore
-    listingElement.querySelector('.floatTechnical').innerHTML = getDataFilledFloatTechnical(floatInfo);
-
-    const position = ((floatInfo.floatvalue.toFixedNoRounding(2) * 100) - 2).toFixedNoRounding(2);
-    listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
-    listingElement.querySelector('.floatDropTarget').innerText = floatInfo.floatvalue.toFixedNoRounding(4);
-  }
-};
-
-const hideFloatBar = (listingID) => {
-  const listingElement = getElementByListingID(listingID);
-
-  if (listingElement !== null) {
-    listingElement.querySelector('.floatBar').classList.add('hidden');
-  }
-};
-
-const getElementByListingID = (listingID) => {
-  return document.getElementById(`listing_${listingID}`);
-};
-
-const getListingIDFromElement = (listingElement) => {
-  return listingElement.id.split('listing_')[1];
-};
-
-
-const getListings = () => {
-  const getListingsScript = `
-    document.querySelector('body').setAttribute('listingsInfo', JSON.stringify({
-        listings: g_rgListingInfo,
-        assets: g_rgAssets
-    }));`;
-
-  const listingsInfo = JSON.parse(injectScript(getListingsScript, true, 'getListings', 'listingsInfo'));
-  const assets = listingsInfo.assets[730][2];
-  const listings = listingsInfo.listings;
-
-  for (const listing in listings) {
-    const assetID = listings[listing].asset.id;
-
-    for (const asset in assets) {
-      const stickers = parseStickerInfo(assets[asset].descriptions, 'search');
-
-      if (assetID === assets[asset].id) {
-        listings[listing].asset = assets[asset];
-        listings[listing].asset.stickers = stickers;
-      }
-    }
-  }
-
-  return listings;
-};
-
-// sticker wear to sticker icon tooltip
-const setStickerInfo = (listingID, stickers) => {
-  if (stickers !== null) {
-    chrome.storage.local.get(['prices', 'pricingProvider', 'exchangeRate', 'currency'], (result) => {
-      const listingElement = getElementByListingID(listingID);
-
-      if (listingElement !== null) {
-        stickers.forEach((stickerInfo, index) => {
-          const wear = stickerInfo.wear !== undefined ? Math.trunc(Math.abs(1 - stickerInfo.wear) * 100) : 100;
-          const currentSticker = listingElement.querySelectorAll('.stickerSlotMarket')[index];
-          const stickerPrice = getPrice(`Sticker | ${stickerInfo.name}`, null, result.prices, result.pricingProvider, result.exchangeRate, result.currency);
-
-          stickerInfo.price = stickerPrice;
-          currentSticker.setAttribute('data-tooltip-market', `${stickerInfo.name} (${stickerPrice.display}) - Condition: ${wear}%`);
-          currentSticker.querySelector('img').setAttribute('style', `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`);
-        });
-
-        const stickersTotalPrice = getStickerPriceTotal(stickers, result.currency);
-        listingElement.setAttribute('data-sticker-price', stickersTotalPrice === null ? '0.0' : stickersTotalPrice.price.toString());
-
-        const stickersTotalElement = listingElement.querySelector('.stickersTotal');
-        stickersTotalElement.innerText = stickersTotalPrice === null ? '' : stickersTotalPrice.display;
-      }
-    });
-  }
-};
-
 const sortListings = (sortingMode) => {
-  const listingElements = [...document.getElementById('searchResultsTable').querySelectorAll('.market_listing_row.market_recent_listing_row')];
+  const listingElements = [...document.getElementById('searchResultsTable')
+    .querySelectorAll('.market_listing_row.market_recent_listing_row')];
   const listingsData = getListings();
   let sortedElements = [];
 
@@ -270,24 +383,28 @@ const addPricesInOtherCurrencies = () => {
       const listings = getListings();
       const listingsSection = document.getElementById('searchResultsRows');
 
-      if (listingsSection !== null) { // so it does not throw any errors when it can't find it on commodity items
-        listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((listing_row) => {
-          if (listing_row.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listing_row.parentNode.parentNode.id !== 'tabContentsMyListings') {
-            const listingID = getListingIDFromElement(listing_row);
+      // so it does not throw any errors when it can't find it on commodity items
+      if (listingsSection !== null) {
+        listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
+          (listingRow) => {
+            if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows'
+              && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
+              const listingID = getListingIDFromElement(listingRow);
 
-            if (listing_row.querySelector('.originalPrice') === null) { // if not added before
-              const price = parseInt(listings[listingID].price);
-              const priceWithFees = price + parseInt(listings[listingID].fee);
-              const currencyID = parseInt(listings[listingID].currencyid) - 2000;
+              if (listingRow.querySelector('.originalPrice') === null) { // if not added before
+                const price = parseInt(listings[listingID].price);
+                const priceWithFees = price + parseInt(listings[listingID].fee);
+                const currencyID = parseInt(listings[listingID].currencyid) - 2000;
 
-              listing_row.querySelector('.market_table_value').insertAdjacentHTML('beforeend',
-                `<div class="originalPrice" data-currency-id="${currencyID}" data-converted="false">
-                                    <div class="market_listing_price_original_after_fees">${priceWithFees}</div>
-                                    <div class="market_listing_price_original_before_fees">${price}</div>
-                                </div>`);
+                listingRow.querySelector('.market_table_value').insertAdjacentHTML('beforeend',
+                  `<div class="originalPrice" data-currency-id="${currencyID}" data-converted="false">
+                           <div class="market_listing_price_original_after_fees">${priceWithFees}</div>
+                           <div class="market_listing_price_original_before_fees">${price}</div>
+                         </div>`);
+              }
             }
-          }
-        });
+          },
+        );
 
         const currencyConverterScript = `
                     document.getElementById('searchResultsRows').querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listing_row => {
@@ -313,61 +430,12 @@ const addPricesInOtherCurrencies = () => {
   });
 };
 
-const addPatterns = (listingID, floatInfo) => {
-  const patternInfo = getPattern(fullName, floatInfo.paintseed);
-  if (patternInfo !== null) {
-    const listingElement = getElementByListingID(listingID);
-
-    if (listingElement !== null) {
-      const patternClass = patternInfo.type === 'marble_fade' ? 'marbleFadeGradient' : 'fadeGradient';
-      listingElement.querySelector('.market_listing_item_name').insertAdjacentHTML('afterend', `<span class="${patternClass}"> ${patternInfo.value}</span>`);
-    }
-  }
-};
-
-const addFloatDataToPage = (job, floatInfo) => {
-  populateFloatInfo(job.listingID, floatInfo);
-  setStickerInfo(job.listingID, floatInfo.stickers);
-  addPatterns(job.listingID, floatInfo);
-};
-
 logExtensionPresence();
 updateLoggedInUserID();
 trackEvent({
   type: 'pageview',
   action: 'ListingView',
 });
-
-const inBrowserInspectButtonPopupLink = `<a class="popup_menu_item" id="inbrowser_inspect" href="http://csgo.gallery/" target="_blank">${chrome.i18n.getMessage('inspect_in_browser')}</a>`;
-const dopplerPhase = '<div class="dopplerPhaseMarket"><span></span></div>';
-
-// it takes the visible descriptors and checks if the collection includes souvenirs
-let textOfDescriptors = '';
-document.querySelectorAll('.descriptor').forEach((descriptor) => { textOfDescriptors += descriptor.innerText; });
-const thereSouvenirForThisItem = souvenirExists(textOfDescriptors);
-
-let weaponName = '';
-const fullName = decodeURIComponent(window.location.href).split('listings/730/')[1];
-let star = '';
-const isStattrak = /StatTrak™/.test(fullName);
-const isSouvenir = /Souvenir/.test(fullName);
-
-if (fullName.includes('★')) star = starChar;
-if (isStattrak) weaponName = fullName.split('StatTrak™ ')[1].split('(')[0];
-else if (isSouvenir) weaponName = fullName.split('Souvenir ')[1].split('(')[0];
-else {
-  weaponName = fullName.split('(')[0].split('★ ')[1];
-  if (weaponName === undefined) weaponName = fullName.split('(')[0];
-}
-
-let stOrSv = stattrakPretty;
-let stOrSvClass = 'stattrakOrange';
-let linkMidPart = star + stattrak;
-if (isSouvenir || thereSouvenirForThisItem) {
-  stOrSvClass = 'souvenirYellow';
-  stOrSv = souvenir;
-  linkMidPart = souvenir;
-}
 
 const otherExteriors = `
             <div class="descriptor otherExteriors">
@@ -384,31 +452,19 @@ const otherExteriors = `
             `;
 
 const descriptor = document.getElementById('largeiteminfo_item_descriptors');
-if (fullName.split('(')[1] !== undefined && descriptor !== null) descriptor.insertAdjacentHTML('beforeend', otherExteriors);
-
-// adds the in-browser inspect button to the top of the page
-const originalInspectButton = document.getElementById('largeiteminfo_item_actions').querySelector('.btn_small.btn_grey_white_innerfade'); // some items don't have inspect buttons (like cases)
-let itemWithInspectLink = false;
-if (originalInspectButton !== null) {
-  itemWithInspectLink = true;
-  const inspectLink = originalInspectButton.getAttribute('href');
-  const inBrowserInspectButton = `<a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect_button" href="http://csgo.gallery/${inspectLink}" target="_blank"><span>${chrome.i18n.getMessage('inspect_in_browser')}</span></a>`;
-  document.getElementById('largeiteminfo_item_actions').insertAdjacentHTML('beforeend', inBrowserInspectButton);
-  document.getElementById('inbrowser_inspect_button').addEventListener('click', () => {
-    // analytics
-    trackEvent({
-      type: 'event',
-      action: 'MarketInspection',
-    });
-  });
+if (fullName.split('(')[1] !== undefined && descriptor !== null) {
+  descriptor.insertAdjacentHTML('beforeend', otherExteriors);
 }
 
 // adds the in-browser inspect button to the context menu
-document.getElementById('market_action_popup_itemactions').insertAdjacentHTML('afterend', inBrowserInspectButtonPopupLink);
+document.getElementById('market_action_popup_itemactions')
+  .insertAdjacentHTML('afterend', inBrowserInspectButtonPopupLink);
 
-// adds the proper link to the context menu before it gets clicked - needed because the context menu resets when clicked
+// adds the proper link to the context menu before it gets clicked
+// needed because the context menu resets when clicked
 document.getElementById('inbrowser_inspect').addEventListener('mouseenter', (event) => {
-  const inspectLink = document.getElementById('market_action_popup_itemactions').querySelector('a.popup_menu_item').getAttribute('href');
+  const inspectLink = document.getElementById('market_action_popup_itemactions')
+    .querySelector('a.popup_menu_item').getAttribute('href');
   event.target.setAttribute('href', `http://csgo.gallery/${inspectLink}`);
 });
 
@@ -423,22 +479,25 @@ document.getElementById('inbrowser_inspect').addEventListener('click', () => {
 // adds sorting menu to market pages with individual listings
 const searchBar = document.querySelector('.market_listing_filter_contents');
 if (searchBar !== null) {
-  searchBar.insertAdjacentHTML('beforeend', `
-                                                            <div class="market_sorting">
-                                                                <span class="market_listing_filter_searchhint">Sort on page by:</span>
-                                                                <select id="sortSelect">
-                                                                    <option value="price_asc">Cheapest to most expensive</option>
-                                                                    <option value="price_desc">Most expensive to cheapest</option>
-                                                                    <option value="float_asc">Float lowest to highest</option>
-                                                                    <option value="float_desc">Float highest to lowest</option>
-                                                                    <option value="sticker_price_asc">Sticker price cheapest to most expensive</option>
-                                                                    <option value="sticker_price_desc">Sticker price most expensive to cheapest</option>
-                                                                </select>
-                                                            </div>`);
+  searchBar.insertAdjacentHTML('beforeend',
+    `<div class="market_sorting">
+             <span class="market_listing_filter_searchhint">Sort on page by:</span>
+             <select id="sortSelect">
+               <option value="price_asc">Cheapest to most expensive</option>
+               <option value="price_desc">Most expensive to cheapest</option>
+               <option value="float_asc">Float lowest to highest</option>
+               <option value="float_desc">Float highest to lowest</option>
+               <option value="sticker_price_asc">Sticker price cheapest to most expensive</option>
+               <option value="sticker_price_desc">Sticker price most expensive to cheapest</option>
+             </select>
+           </div>`);
 
-  document.getElementById('sortSelect').addEventListener('change', (event) => {
-    sortListings(event.target.options[event.target.selectedIndex].value);
-  });
+  document.getElementById('sortSelect').addEventListener(
+    'change',
+    (event) => {
+      sortListings(event.target.options[event.target.selectedIndex].value);
+    },
+  );
 }
 
 addFloatBarSkeletons();
