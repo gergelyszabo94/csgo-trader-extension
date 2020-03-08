@@ -3,7 +3,7 @@ import {
   getAssetIDOfElement, makeItemColorful, addDopplerPhase,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists,
-  getSteamWalletCurrency, findElementByAssetID, getFloatBarSkeleton,
+  findElementByAssetID, getFloatBarSkeleton,
   logExtensionPresence, isCSGOInventoryActive,
   updateLoggedInUserID, reloadPageOnExtensionReload, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray,
@@ -17,11 +17,11 @@ import floatQueue, { workOnFloatQueue } from 'js/utils/floatQueueing';
 import {
   getPriceOverview, getPriceAfterFees, userPriceToProperPrice,
   centsToSteamFormattedPrice, prettyPrintPrice, steamFormattedPriceToCents,
-  priceQueue, workOnPriceQueue,
+  priceQueue, workOnPriceQueue, getSteamWalletCurrency,
 }
   from 'js/utils/pricing';
 import { sortingModes } from 'js/utils/static/sortingModes';
-import { doTheSorting } from 'js/utils/sorting';
+import doTheSorting from 'js/utils/sorting';
 import { overridePopulateActions } from 'js/utils/steamOverriding';
 import { trackEvent } from 'js/utils/analytics';
 import itemTypes from 'js/utils/static/itemTypes';
@@ -29,92 +29,281 @@ import exteriors from 'js/utils/static/exteriors';
 import { injectScript, injectStyle } from 'js/utils/injection';
 import { getUserSteamID } from 'js/utils/steamID';
 
-// sends a message to the "back end" to request inventory contents
-const requestInventory = () => {
-  chrome.runtime.sendMessage({ inventory: getInventoryOwnerID() }, (response) => {
-    if (!(response === undefined || response.inventory === undefined || response.inventory === '' || response.inventory === 'error')) {
-      items = response.inventory;
-      addElements();
-      addPerItemInfo();
-      setInventoryTotal(items);
-      addFunctionBar();
-      loadFullInventory();
-      addPageControlEventListeners('inventory', addFloatIndicatorsToPage);
-    } else {
-      console.log("Wasn't able to get the inventory, it's most likely steam not working properly or you loading inventory pages at the same time");
-      console.log('Retrying in 30 seconds');
+let items = [];
+// variables for the countdown recursive logic
+let countingDown = false;
+let countDownID = '';
 
-      setTimeout(() => {
-        requestInventory(); // this rarely works, consider removing
-      }, 30000);
-    }
-  });
-};
+const floatBar = getFloatBarSkeleton('inventory');
+const upperModule = `
+<div class="upperModule">
+    <div class="nametag"></div>
+    <div class="descriptor customStickers"></div>
+    <div class="duplicate">x1</div>
+    ${floatBar}
+    <div class="patternInfo"></div>
+</div>
+`;
+
+const lowerModule = `<a class="lowerModule">
+    <div class="descriptor tradability tradabilityDiv"></div>
+    <div class="descriptor countdown"></div>
+    <div class="descriptor tradability bookmark">Bookmark and Notify</div>
+</a>`;
+
+const tradable = '<span class="tradable">Tradable</span>';
+const notTradable = '<span class="not_tradable">Not Tradable</span>';
 
 const getInventoryOwnerID = () => {
   const inventoryOwnerIDScript = 'document.querySelector(\'body\').setAttribute(\'inventoryOwnerID\', UserYou.GetSteamId());';
   return injectScript(inventoryOwnerIDScript, true, 'inventoryOwnerID', 'inventoryOwnerID');
 };
 
-// adds everything that is per item, like trade lock, exterior, doppler phases, border colors
-const addPerItemInfo = () => {
-  const itemElements = document.querySelectorAll('.item.app730.context2');
-  if (itemElements.length !== 0) {
-    chrome.storage.local.get(['colorfulItems', 'autoFloatInventory', 'showStickerPrice'], (result) => {
-      itemElements.forEach((itemElement) => {
-        if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') {
-          // in case the inventory is not loaded yet it retries in a second
-          if (itemElement.id === undefined) {
-            setTimeout(() => {
-              addPerItemInfo();
-            }, 1000);
-            return false;
-          }
+// gets the asset id of the item that is currently selected
+const getAssetIDofActive = () => {
+  return getAssetIDOfElement(document.querySelector('.activeInfo'));
+};
 
-          const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
-          // adds tradability indicator
-          if (item.tradability === 'Tradable') itemElement.insertAdjacentHTML('beforeend', '<div class="perItemDate tradable">T</div>');
-          else if (item.tradability !== 'Not Tradable') itemElement.insertAdjacentHTML('beforeend', `<div class="perItemDate not_tradable">${item.tradabilityShort}</div>`);
+// works in inventory and profile pages
+const isOwnInventory = () => {
+  return getUserSteamID() === getInventoryOwnerID();
+};
 
-          addDopplerPhase(itemElement, item.dopplerInfo);
-          makeItemColorful(itemElement, item, result.colorfulItems);
-          addSSTandExtIndicators(itemElement, item, result.showStickerPrice);
-          addPriceIndicator(itemElement, item.price);
-          if (result.autoFloatInventory) addFloatIndicator(itemElement, item.floatInfo);
+const cleanUpElements = (nonCSGOInventory) => {
+  document.querySelectorAll('.upperModule, .lowerModule, .otherExteriors, .custom_name, .startingAtVolume').forEach((element) => {
+    element.remove();
+  });
 
-          // marks the item "processed" to avoid additional unnecessary work later
-          itemElement.setAttribute('data-processed', 'true');
+  if (nonCSGOInventory) {
+    document.querySelectorAll('.hover_item_name').forEach((name) => {
+      name.classList.remove('hidden');
+    });
+  }
+};
+
+const addBookmark = (module) => {
+  // analytics
+  trackEvent({
+    type: 'event',
+    action: 'AddBookmark',
+  });
+
+  const item = getItemByAssetID(items, getAssetIDofActive());
+  const bookmark = {
+    itemInfo: item,
+    owner: getInventoryOwnerID(),
+    comment: '',
+    notify: true,
+    notifTime: item.tradability.toString(),
+    notifType: 'chrome',
+  };
+
+  chrome.storage.local.get('bookmarks', (result) => {
+    chrome.storage.local.set({ bookmarks: [...result.bookmarks, bookmark] }, () => {
+      if (bookmark.itemInfo.tradability !== 'Tradable') {
+        chrome.runtime.sendMessage({
+          setAlarm: {
+            name: bookmark.itemInfo.assetid,
+            when: bookmark.itemInfo.tradability,
+          },
+        }, () => {});
+      }
+
+      chrome.runtime.sendMessage({
+        openInternalPage: 'index.html?page=bookmarks',
+      }, (response) => {
+        if (response.openInternalPage === 'no_tabs_api_access') {
+          module.querySelector('.descriptor.tradability.bookmark')
+            .innerText = 'Bookmarked! Open the bookmarks menu to see what you have saved!';
+        }
+      });
+    });
+  });
+};
+
+const countDown = (dateToCountDownTo) => {
+  if (!countingDown) {
+    countingDown = true;
+    countDownID = setInterval(() => {
+      document.querySelectorAll('.countdown').forEach((countdown) => {
+        const now = new Date().getTime();
+        const distance = new Date(dateToCountDownTo) - now;
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        countdown.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s remains`;
+
+        if (distance < 0) {
+          clearInterval(countDownID);
+          countdown.classList.add('hidden');
+          document.querySelectorAll('.tradabilityDiv').forEach((tradabilityDiv) => {
+            tradabilityDiv.innerText = 'Tradable';
+            tradabilityDiv.classList.add('tradable');
+          });
+        }
+      });
+    }, 1000);
+  } else {
+    clearInterval(countDownID);
+    countingDown = false;
+    countDown(dateToCountDownTo);
+  }
+};
+
+const getItemInfoFromPage = () => {
+  const getItemsSccript = `
+        inventory = UserYou.getInventory(730,2);
+        assets = inventory.m_rgAssets;
+        assetKeys= Object.keys(assets);
+        trimmedAssets = [];
+                
+        for(let assetKey of assetKeys){
+            trimmedAssets.push({
+                amount: assets[assetKey].amount,
+                assetid: assets[assetKey].assetid,
+                contextid: assets[assetKey].contextid,
+                description: assets[assetKey].description
+            });
+        }
+        document.querySelector('body').setAttribute('inventoryInfo', JSON.stringify(trimmedAssets));`;
+  return JSON.parse(injectScript(getItemsSccript, true, 'getInventory', 'inventoryInfo'));
+};
+
+// it hides the original item name element and replaces it with one
+// that is a link to it's market page and adds the doppler phase to the name
+const changeName = (name, color, link, dopplerInfo) => {
+  const newNameElement = dopplerInfo !== null
+    ? `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name} (${dopplerInfo.name})</a>`
+    : `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name}</a>`;
+
+  document.querySelectorAll('.hover_item_name').forEach((nameElement) => {
+    nameElement.insertAdjacentHTML('afterend', newNameElement);
+    nameElement.classList.add('hidden');
+  });
+};
+
+const setFloatBarWithData = (floatInfo) => {
+  const floatTechnicalElement = getDataFilledFloatTechnical(floatInfo);
+
+  document.querySelectorAll('.floatTechnical').forEach((floatTechnical) => {
+    floatTechnical.innerHTML = floatTechnicalElement;
+  });
+
+  const position = (floatInfo.floatvalue.toFixedNoRounding(2) * 100) - 2;
+  document.querySelectorAll('.floatToolTip').forEach((floatToolTip) => {
+    floatToolTip.setAttribute('style', `left: ${position}%`);
+  });
+  document.querySelectorAll('.floatDropTarget').forEach((floatDropTarget) => {
+    floatDropTarget.innerText = floatInfo.floatvalue.toFixedNoRounding(4);
+  });
+};
+
+const setPatternInfo = (patternInfo) => {
+  document.querySelectorAll('.patternInfo').forEach((patternInfoElement) => {
+    if (patternInfo !== null) {
+      if (patternInfo.type === 'fade') patternInfoElement.classList.add('fadeGradient');
+      else if (patternInfo.type === 'marble_fade') patternInfoElement.classList.add('marbleFadeGradient');
+      else if (patternInfo.type === 'case_hardened') patternInfoElement.classList.add('caseHardenedGradient');
+      patternInfoElement.innerText = `Pattern: ${patternInfo.value}`;
+    }
+  });
+};
+
+// sticker wear to sticker icon tooltip
+const setStickerInfo = (stickers) => {
+  if (stickers !== null) {
+    stickers.forEach((stickerInfo, index) => {
+      const wear = stickerInfo.wear !== undefined
+        ? Math.trunc(Math.abs(1 - stickerInfo.wear) * 100)
+        : 100;
+
+      document.querySelectorAll('.customStickers').forEach((customStickers) => {
+        const currentSticker = customStickers.querySelectorAll('.stickerSlot')[index];
+
+        if (currentSticker !== undefined) {
+          const currentToolTipText = currentSticker.getAttribute('data-tooltip');
+          currentSticker.setAttribute('data-tooltip', `${currentToolTipText} - Condition: ${wear}%`);
+          currentSticker.querySelector('img').setAttribute(
+            'style',
+            `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`,
+          );
         }
       });
     });
   }
-  // in case the inventory is not loaded yet
-  else {
-    setTimeout(() => {
-      addPerItemInfo();
-    }, 1000);
+};
+
+const updateFloatAndPatternElements = (item) => {
+  setFloatBarWithData(item.floatInfo);
+  setPatternInfo(item.patternInfo);
+  setStickerInfo(item.floatInfo.stickers);
+};
+
+const hideFloatBars = () => {
+  document.querySelectorAll('.floatBar').forEach((floatBarElement) => {
+    floatBarElement.classList.add('hidden');
+  });
+};
+
+const addFloatDataToPage = (job, activeFloatQueue, floatInfo) => {
+  addFloatIndicator(findElementByAssetID(job.assetID), floatInfo);
+
+  // add float and pattern info to page variable
+  const item = getItemByAssetID(items, job.assetID);
+  item.floatInfo = floatInfo;
+  item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
+
+  if (job.type === 'inventory_floatbar') {
+    if (getAssetIDofActive() === job.assetID) updateFloatAndPatternElements(item);
+  } else {
+    // check if there is a floatbar job for the same item and remove it
+    activeFloatQueue.jobs.find((floatJob, index) => {
+      if (floatJob.type === 'inventory_floatbar' && job.assetID === floatJob.assetID) {
+        updateFloatAndPatternElements(item);
+        removeFromArray(activeFloatQueue, index);
+      }
+      return null;
+    });
   }
 };
 
-const updateTradabilityIndicators = () => {
-  const itemElements = document.querySelectorAll('.item.app730.context2');
-  if (itemElements.length !== 0) {
-    itemElements.forEach((itemElement) => {
-      const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
-      const itemDateElement = itemElement.querySelector('.perItemDate');
+const dealWithNewFloatData = (job, floatInfo, activeFloatQueue) => {
+  if (floatInfo !== 'nofloat') addFloatDataToPage(job, activeFloatQueue, floatInfo);
+  else if (job.type === 'inventory_floatbar') hideFloatBars();
+};
 
-      if (itemDateElement !== null) {
-        const previText = itemDateElement.innerText;
-        const newText = getShortDate(item.tradability);
-        itemDateElement.innerText = newText;
+// adds market info in other inventories
+const addStartingAtPrice = (marketHashName) => {
+  getPriceOverview('730', marketHashName).then(
+    (priceOverview) => {
+      // removes previous leftover elements
+      document.querySelectorAll('.startingAtVolume')
+        .forEach((previousElement) => previousElement.remove());
 
-        if (previText !== 'T' && newText === 'T') {
-          itemDateElement.classList.remove('not_tradable');
-          itemDateElement.classList.add('tradable');
-        }
-      }
-    });
-  }
+      // adds new elements
+      document.querySelectorAll('.item_owner_actions')
+        .forEach((marketActions) => {
+          marketActions.style.display = 'block';
+          const startingAt = priceOverview.lowest_price === undefined ? 'Unknown' : priceOverview.lowest_price;
+          const volume = priceOverview.volume === undefined ? 'Unknown amount' : priceOverview.volume;
+
+          marketActions.insertAdjacentHTML('afterbegin',
+            `<div class="startingAtVolume">
+                     <div style="height: 24px;">
+                        <a href="https://steamcommunity.com/market/listings/730/${marketHashName}">
+                            View in Community Market
+                        </a>
+                     </div>
+                     <div style="min-height: 3em; margin-left: 1em;">
+                        Starting at: ${startingAt}<br>Volume: ${volume} sold in the last 24 hours<br>
+                     </div>
+                   </div>
+                `);
+        });
+    }, (error) => { console.log(error); },
+  );
 };
 
 const addElements = () => {
@@ -125,9 +314,10 @@ const addElements = () => {
       const item = getItemByAssetID(items, activeID);
 
       // removes "tags" and "tradable after" in one's own inventory
-      document.querySelectorAll('#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors').forEach((tagsElement) => {
-        tagsElement.remove();
-      });
+      document.querySelectorAll('#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors')
+        .forEach((tagsElement) => {
+          tagsElement.remove();
+        });
 
       // cleans up previously added elements
       cleanUpElements(false);
@@ -151,16 +341,18 @@ const addElements = () => {
         });
       });
 
-      // allows the float pointer's text to go outside the boundaries of the item - they would not be visible otherwise on high-float items
+      // allows the float pointer's text to go outside the boundaries of the item
+      // they would not be visible otherwise on high-float items
       // also removes background from the right side of the page
-      document.querySelectorAll('.item_desc_content').forEach((item_desc_content) => {
-        item_desc_content.setAttribute('style', 'overflow: visible; background-image: url()');
+      document.querySelectorAll('.item_desc_content').forEach((itemDescContent) => {
+        itemDescContent.setAttribute('style', 'overflow: visible; background-image: url()');
       });
 
       // adds the lower module that includes tradability, countdown  and bookmarking
-      document.querySelectorAll('#iteminfo1_item_actions, #iteminfo0_item_actions').forEach((action) => {
-        action.insertAdjacentHTML('afterend', lowerModule);
-      });
+      document.querySelectorAll('#iteminfo1_item_actions, #iteminfo0_item_actions')
+        .forEach((action) => {
+          action.insertAdjacentHTML('afterend', lowerModule);
+        });
 
       document.querySelectorAll('.lowerModule').forEach((module) => {
         module.addEventListener('click', (event) => {
@@ -173,8 +365,8 @@ const addElements = () => {
         document.querySelectorAll('.nametag').forEach((nametag) => {
           if (item.nametag !== undefined) {
             nametag.innerText = item.nametag;
-            document.querySelectorAll('.fraud_warning').forEach((fraud_warning) => {
-              fraud_warning.outerHTML = '';
+            document.querySelectorAll('.fraud_warning').forEach((fraudWarning) => {
+              fraudWarning.outerHTML = '';
             });
           } else nametag.style.display = 'none';
         });
@@ -237,7 +429,8 @@ const addElements = () => {
         const name = getItemByAssetID(getItemInfoFromPage(), activeID).description.name;
         changeName(name, item.name_color, item.marketlink, item.dopplerInfo);
 
-        // removes sih "Get Float" button - does not really work since it's loaded after this script..
+        // removes sih "Get Float" button
+        // does not really work since it's loaded after this script..
         if (isSIHActive()) {
           document.querySelectorAll('.float_block').forEach((e) => e.remove());
           setTimeout(() => {
@@ -262,7 +455,8 @@ const addElements = () => {
         // it takes the visible descriptors and checks if the collection includes souvenirs
         let textOfDescriptors = '';
         document.querySelectorAll('.descriptor').forEach((descriptor) => {
-          if (descriptor.parentNode.classList.contains('item_desc_descriptors') && descriptor.parentNode.parentNode.parentNode.parentNode.style.display !== 'none') {
+          if (descriptor.parentNode.classList.contains('item_desc_descriptors')
+            && descriptor.parentNode.parentNode.parentNode.parentNode.style.display !== 'none') {
             textOfDescriptors += descriptor.innerText;
           }
         });
@@ -303,9 +497,10 @@ const addElements = () => {
                     `;
 
         if (item.exterior !== undefined) {
-          document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors').forEach((descriptor) => {
-            descriptor.insertAdjacentHTML('afterend', otherExteriors);
-          });
+          document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
+            .forEach((descriptor) => {
+              descriptor.insertAdjacentHTML('afterend', otherExteriors);
+            });
         }
 
         // adds "starting at" and sales volume to everyone's inventory
@@ -319,146 +514,414 @@ const addElements = () => {
   }
 };
 
-const cleanUpElements = (nonCSGOInventory) => {
-  document.querySelectorAll('.upperModule, .lowerModule, .otherExteriors, .custom_name, .startingAtVolume').forEach((element) => {
-    element.remove();
-  });
-
-  if (nonCSGOInventory) {
-    document.querySelectorAll('.hover_item_name').forEach((name) => {
-      name.classList.remove('hidden');
-    });
-  }
-};
-
-// gets the asset id of the item that is currently selected
-const getAssetIDofActive = () => {
-  return getAssetIDOfElement(document.querySelector('.activeInfo'));
-};
-
-const countDown = (dateToCountDownTo) => {
-  if (!countingDown) {
-    countingDown = true;
-    countDownID = setInterval(() => {
-      document.querySelectorAll('.countdown').forEach((countdown) => {
-        const now = new Date().getTime();
-        const distance = new Date(dateToCountDownTo) - now;
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-        countdown.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s remains`;
-
-        if (distance < 0) {
-          clearInterval(countDownID);
-          countdown.classList.add('hidden');
-          document.querySelectorAll('.tradabilityDiv').forEach((tradabilityDiv) => {
-            tradabilityDiv.innerText = 'Tradable';
-            tradabilityDiv.classList.add('tradable');
-          });
+const addFloatIndicatorsToPage = (page) => {
+  chrome.storage.local.get('autoFloatInventory', (result) => {
+    if (result.autoFloatInventory) {
+      page.querySelectorAll('.item.app730.context2').forEach((itemElement) => {
+        const assetID = getAssetIDOfElement(itemElement);
+        const item = getItemByAssetID(items, assetID);
+        if (item.inspectLink !== null && itemTypes[item.type.key].float) {
+          if (item.floatInfo === null) {
+            floatQueue.jobs.push({
+              type: 'inventory',
+              assetID,
+              inspectLink: item.inspectLink,
+              callBackFunction: dealWithNewFloatData,
+            });
+          } else addFloatIndicator(itemElement, item.floatInfo);
         }
       });
-    }, 1000);
-  } else {
-    clearInterval(countDownID);
-    countingDown = false;
-    countDown(dateToCountDownTo);
-  }
-};
-
-// it hides the original item name element and replaces it with one that is a link to it's market page and adds the doppler phase to the name
-const changeName = (name, color, link, dopplerInfo) => {
-  const newNameElement = dopplerInfo !== null
-    ? `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name} (${dopplerInfo.name})</a>`
-    : `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name}</a>`;
-
-  document.querySelectorAll('.hover_item_name').forEach((name) => {
-    name.insertAdjacentHTML('afterend', newNameElement);
-    name.classList.add('hidden');
+      if (!floatQueue.active) workOnFloatQueue();
+    }
   });
 };
 
-const addBookmark = (module) => {
-  // analytics
-  trackEvent({
-    type: 'event',
-    action: 'AddBookmark',
-  });
+// adds everything that is per item, like trade lock, exterior, doppler phases, border colors
+const addPerItemInfo = () => {
+  const itemElements = document.querySelectorAll('.item.app730.context2');
+  if (itemElements.length !== 0) {
+    chrome.storage.local.get(['colorfulItems', 'autoFloatInventory', 'showStickerPrice'],
+      (result) => {
+        itemElements.forEach((itemElement) => {
+          if (itemElement.getAttribute('data-processed') === null
+            || itemElement.getAttribute('data-processed') === 'false') {
+            // in case the inventory is not loaded yet it retries in a second
+            if (itemElement.id === undefined) {
+              setTimeout(() => {
+                addPerItemInfo();
+              }, 1000);
+              return false;
+            }
 
-  const item = getItemByAssetID(items, getAssetIDofActive());
-  const bookmark = {
-    itemInfo: item,
-    owner: getInventoryOwnerID(),
-    comment: '',
-    notify: true,
-    notifTime: item.tradability.toString(),
-    notifType: 'chrome',
-  };
+            const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+            // adds tradability indicator
+            if (item.tradability === 'Tradable') {
+              itemElement.insertAdjacentHTML('beforeend', '<div class="perItemDate tradable">T</div>');
+            } else if (item.tradability !== 'Not Tradable') {
+              itemElement.insertAdjacentHTML(
+                'beforeend',
+                `<div class="perItemDate not_tradable">${item.tradabilityShort}</div>`,
+              );
+            }
 
-  chrome.storage.local.get('bookmarks', (result) => {
-    chrome.storage.local.set({ bookmarks: [...result.bookmarks, bookmark] }, () => {
-      if (bookmark.itemInfo.tradability !== 'Tradable') {
-        chrome.runtime.sendMessage({
-          setAlarm: {
-            name: bookmark.itemInfo.assetid,
-            when: bookmark.itemInfo.tradability,
-          },
-        }, (response) => {});
-      }
+            addDopplerPhase(itemElement, item.dopplerInfo);
+            makeItemColorful(itemElement, item, result.colorfulItems);
+            addSSTandExtIndicators(itemElement, item, result.showStickerPrice);
+            addPriceIndicator(itemElement, item.price);
+            if (result.autoFloatInventory) addFloatIndicator(itemElement, item.floatInfo);
 
-      chrome.runtime.sendMessage({ openInternalPage: 'index.html?page=bookmarks' }, (response) => {
-        if (response.openInternalPage === 'no_tabs_api_access') module.querySelector('.descriptor.tradability.bookmark').innerText = 'Bookmarked! Open the bookmarks menu to see what you have saved!';
+            // marks the item "processed" to avoid additional unnecessary work later
+            itemElement.setAttribute('data-processed', 'true');
+          }
+        });
       });
-    });
-  });
-};
-
-const hideOtherExtensionPrices = () => {
-  // sih
-  if (!document.hidden && isSIHActive()) {
-    document.querySelectorAll('.price_flag').forEach((price) => {
-      price.remove();
-    });
+  } else { // in case the inventory is not loaded yet
+    setTimeout(() => {
+      addPerItemInfo();
+    }, 1000);
   }
-
-  setTimeout(() => {
-    hideOtherExtensionPrices();
-  }, 2000);
-
-  // csgofloat
-  document.querySelectorAll('.csgofloat-itemfloat, .csgofloat-itemseed').forEach((csFElement) => {
-    csFElement.style.display = 'none';
-  });
 };
 
-const setInventoryTotal = (items) => {
+const setInventoryTotal = (inventoryItems) => {
   const inventoryTotalValueElement = document.getElementById('inventoryTotalValue');
-  chrome.runtime.sendMessage({ inventoryTotal: items }, (response) => {
-    if (!(response === undefined || response.inventoryTotal === undefined || response.inventoryTotal === '' || response.inventoryTotal === 'error' || inventoryTotalValueElement === null)) {
+  chrome.runtime.sendMessage({ inventoryTotal: inventoryItems }, (response) => {
+    if (!(response === undefined || response.inventoryTotal === undefined
+      || response.inventoryTotal === '' || response.inventoryTotal === 'error'
+      || inventoryTotalValueElement === null)) {
       inventoryTotalValueElement.innerText = response.inventoryTotal;
     } else {
       setTimeout(() => {
-        setInventoryTotal(items);
+        setInventoryTotal(inventoryItems);
       }, 1000);
     }
   });
 };
 
+const unselectAllItems = () => {
+  document.querySelectorAll('.item.app730.context2').forEach((item) => {
+    item.classList.remove('selected');
+  });
+};
+
+const updateMassSaleTotal = () => {
+  let total = 0;
+  let totalAfterFees = 0;
+  document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr')
+    .forEach((listingRow) => {
+      total += parseInt(listingRow.querySelector('.selected')
+        .getAttribute('data-price-in-cents'))
+        * parseInt(listingRow.querySelector('.itemAmount').innerText);
+      totalAfterFees += parseInt(listingRow.querySelector('.selected')
+        .getAttribute('data-listing-price'))
+        * parseInt(listingRow.querySelector('.itemAmount').innerText);
+    });
+  document.getElementById('saleTotal').innerText = centsToSteamFormattedPrice(total);
+  document.getElementById('saleTotalAfterFees').innerText = centsToSteamFormattedPrice(totalAfterFees);
+};
+
+const getListingRow = (name) => {
+  return document.getElementById('listingTable').querySelector(`tr[data-item-name="${name}"]`);
+};
+
+const removeUnselectedItemsFromTable = () => {
+  document.getElementById('listingTable').querySelector('tbody')
+    .querySelectorAll('tr').forEach((listingRow) => {
+      const assetIDs = listingRow.getAttribute('data-assetids').split(',');
+      const remainingIDs = assetIDs.filter((assetID) => findElementByAssetID(assetID).classList.contains('selected'));
+      if (remainingIDs.length === 0) listingRow.remove();
+      else {
+        listingRow.setAttribute('data-assetids', remainingIDs.toString());
+        listingRow.querySelector('.itemAmount').innerText = remainingIDs.length;
+      }
+    });
+};
+
+const addListingRow = (item) => {
+  const row = `
+        <tr data-assetids="${item.assetid}" data-sold-ids="" data-item-name="${item.market_hash_name}">
+            <td class="itemName"><a href="https://steamcommunity.com/market/listings/730/${item.market_hash_name}" target="_blank">${item.market_hash_name}</a></td>
+            <td class="itemAmount">1</td>
+            <td class="itemExtensionPrice selected clickable" data-price-in-cents="${userPriceToProperPrice(item.price.price)}" data-listing-price="${getPriceAfterFees(userPriceToProperPrice(item.price.price))}">${item.price.display}</td>
+            <td class="itemStartingAt clickable">Loading...</td>
+            <td class="itemQuickSell clickable">Loading...</td>
+            <td class="itemInstantSell clickable">Loading...</td>
+            <td class="itemUserPrice"><input type="text" class="userPriceInput"></td>
+        </tr>`;
+
+  document.getElementById('listingTable').querySelector('tbody')
+    .insertAdjacentHTML('beforeend', row);
+  const listingRow = getListingRow(item.market_hash_name);
+
+  listingRow.querySelector('.itemUserPrice').querySelector('input[type=text]')
+    .addEventListener('change', (event) => {
+      const priceInt = userPriceToProperPrice(event.target.value);
+      event.target.parentElement.setAttribute('data-price-in-cents', priceInt);
+      event.target.parentElement.setAttribute('data-listing-price', getPriceAfterFees(priceInt));
+      event.target.value = centsToSteamFormattedPrice(priceInt);
+      event.target.parentElement.classList.add('selected');
+      event.target.parentElement.parentElement.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell')
+        .forEach((priceType) => priceType.classList.remove('selected'));
+      updateMassSaleTotal();
+    });
+
+  listingRow.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell')
+    .forEach((priceType) => {
+      priceType.addEventListener('click', (event) => {
+        event.target.classList.add('selected');
+        event.target.parentNode.querySelectorAll('td').forEach((column) => {
+          if (column !== event.target) column.classList.remove('selected');
+        });
+        updateMassSaleTotal();
+      });
+    });
+};
+
+const addStartingAtAndQuickSellPrice = (success, marketHashName, startingAtPrice) => {
+  const listingRow = getListingRow(marketHashName);
+
+  // the user might have unselected the item while it as in the queue
+  // and now there is nowhere to add the price to
+  if (listingRow !== null) {
+    const startingAtElement = listingRow.querySelector('.itemStartingAt');
+    const quickSell = listingRow.querySelector('.itemQuickSell');
+
+    if (startingAtPrice !== undefined && !success) {
+      const priceInCents = steamFormattedPriceToCents(startingAtPrice);
+      const quickSellPrice = steamFormattedPriceToCents(startingAtPrice) - 1;
+
+      startingAtElement.innerText = startingAtPrice;
+      startingAtElement.setAttribute('data-price-set', true.toString());
+      startingAtElement.setAttribute('data-price-in-cents', priceInCents);
+      startingAtElement.setAttribute('data-listing-price', getPriceAfterFees(priceInCents).toString());
+      quickSell.setAttribute('data-price-in-cents', quickSellPrice.toString());
+      quickSell.setAttribute('data-listing-price', getPriceAfterFees(quickSellPrice).toString());
+      quickSell.innerText = centsToSteamFormattedPrice(quickSellPrice);
+
+      // if the quicksell price is higher than the extension price
+      // then select that one as default instead
+      const extensionPrice = parseInt(listingRow.querySelector('.itemExtensionPrice')
+        .getAttribute('data-price-in-cents'));
+      if (extensionPrice < quickSellPrice) quickSell.click();
+    } else startingAtElement.setAttribute('data-price-set', false.toString());
+  }
+};
+
+const addInstantSellPrice = (success, marketHashName, highestOrder) => {
+  const listingRow = getListingRow(marketHashName);
+
+  // the user might have unselected the item while it as in the queue
+  // and now there is nowhere to add the price to
+  if (listingRow !== null) {
+    const instantElement = listingRow.querySelector('.itemInstantSell');
+
+    if (highestOrder !== undefined && !success) {
+      instantElement.innerText = centsToSteamFormattedPrice(highestOrder);
+      instantElement.setAttribute('data-price-set', true.toString());
+      instantElement.setAttribute('data-price-in-cents', highestOrder);
+      instantElement.setAttribute('data-listing-price', getPriceAfterFees(highestOrder).toString());
+    } else instantElement.setAttribute('data-price-set', false.toString());
+
+    instantElement.setAttribute('data-price-in-progress', false.toString());
+  }
+};
+
+const addToPriceQueueIfNeeded = (item) => {
+  const listingRow = getListingRow(item.market_hash_name);
+  const startingAtElement = listingRow.querySelector('.itemStartingAt');
+  const instantElement = listingRow.querySelector('.itemInstantSell');
+
+  // check if price is already set or in progress
+  if (startingAtElement.getAttribute('data-price-set') !== true
+    && startingAtElement.getAttribute('data-price-in-progress') !== true) {
+    startingAtElement.setAttribute('data-price-in-progress', true.toString());
+
+    priceQueue.jobs.push({
+      type: 'inventory_mass_sell_starting_at',
+      appID: '730',
+      market_hash_name: item.market_hash_name,
+      callBackFunction: addStartingAtAndQuickSellPrice,
+    });
+    workOnPriceQueue();
+  }
+
+  // check if price is already set or in progress
+  if (instantElement.getAttribute('data-price-set') !== true
+    && instantElement.getAttribute('data-price-in-progress') !== true) {
+    instantElement.setAttribute('data-price-in-progress', true.toString());
+
+    priceQueue.jobs.push({
+      type: 'inventory_mass_sell_instant_sell',
+      appID: '730',
+      market_hash_name: item.market_hash_name,
+      callBackFunction: addInstantSellPrice,
+    });
+    workOnPriceQueue();
+  }
+};
+
+const updateSelectedItemsSummary = () => {
+  const selectedItems = document.querySelectorAll('.item.app730.context2.selected');
+  const numberOfSelectedItems = selectedItems.length;
+  let selectedTotal = 0;
+
+  document.getElementById('numberOfItemsToSell').innerText = numberOfSelectedItems.toString();
+
+  selectedItems.forEach((itemElement) => {
+    const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+    selectedTotal += parseFloat(item.price.price);
+
+    if (item.marketable === 1) {
+      const listingRow = getListingRow(item.market_hash_name);
+
+      if (listingRow === null) {
+        addListingRow(item);
+        addToPriceQueueIfNeeded(item);
+      } else {
+        const previIDs = listingRow.getAttribute('data-assetids');
+        if (!previIDs.includes(item.assetid)) {
+          listingRow.setAttribute('data-assetids', `${previIDs},${item.assetid}`);
+          listingRow.querySelector('.itemAmount').innerText = previIDs.split(',').length + 1;
+        }
+      }
+    }
+  });
+
+  removeUnselectedItemsFromTable();
+  updateMassSaleTotal();
+
+  chrome.storage.local.get('currency', (result) => {
+    document.getElementById('selectedTotalValue').innerText = prettyPrintPrice(result.currency, selectedTotal);
+  });
+};
+
+const listenSelectClicks = (event) => {
+  if (event.target.parentElement.classList.contains('item')
+    && event.target.parentElement.classList.contains('app730')
+    && event.target.parentElement.classList.contains('context2')) {
+    if (event.ctrlKey) {
+      const marketHashNameToLookFor = getItemByAssetID(items,
+        getAssetIDOfElement(event.target.parentNode)).market_hash_name;
+      document.querySelectorAll('.item.app730.context2')
+        .forEach((item) => {
+          if (getItemByAssetID(
+            items,
+            getAssetIDOfElement(item),
+          ).market_hash_name === marketHashNameToLookFor) {
+            item.classList.toggle('selected');
+          }
+        });
+    } else event.target.parentElement.classList.toggle('selected');
+    updateSelectedItemsSummary();
+  }
+};
+
+const sortItems = (inventoryItems, method) => {
+  if (isCSGOInventoryActive('inventory')) {
+    const itemElements = document.querySelectorAll('.item.app730.context2');
+    const inventoryPages = document.getElementById('inventories').querySelectorAll('.inventory_page');
+    doTheSorting(inventoryItems, Array.from(itemElements), method, Array.from(inventoryPages), 'inventory');
+    addPerItemInfo();
+  }
+};
+
+const doInitSorting = () => {
+  chrome.storage.local.get('inventorySortingMode', (result) => {
+    sortItems(items, result.inventorySortingMode);
+    document.querySelector(`#sortingMethod [value="${result.inventorySortingMode}"]`).selected = true;
+    document.querySelector(`#generate_sort [value="${result.inventorySortingMode}"]`).selected = true;
+    addFloatIndicatorsToPage(getActivePage('inventory'));
+  });
+};
+
+const generateItemsList = () => {
+  // analytics
+  trackEvent({
+    type: 'event',
+    action: 'GenerateList',
+  });
+
+  const generateSorting = document.getElementById('generate_sort');
+  const sortingMode = generateSorting.options[generateSorting.selectedIndex].value;
+  const sortedItems = doTheSorting(items,
+    Array.from(document.querySelectorAll('.item.app730.context2')),
+    sortingMode, null, 'simple_sort');
+  const copyTextArea = document.getElementById('generated_list_copy_textarea');
+  copyTextArea.value = '';
+
+  const delimiter = document.getElementById('generate_delimiter').value;
+
+  const limit = document.getElementById('generate_limit').value;
+
+  const exteriorSelect = document.getElementById('generate_exterior');
+  const exteriorSelected = exteriorSelect.options[exteriorSelect.selectedIndex].value;
+  const exteriorType = exteriorSelected === 'full' ? 'name' : 'short';
+
+  const showPrice = document.getElementById('generate_price').checked;
+  const showTradability = document.getElementById('generate_tradability').checked;
+  const includeDupes = document.getElementById('generate_duplicates').checked;
+  const includeNonMarketable = document.getElementById('generate_non_market').checked;
+
+  let lineCount = 0;
+  let characterCount = 0;
+  const namesAlreadyInList = [];
+
+  let csvContent = 'data:text/csv;charset=utf-8,';
+  const headers = `Name,Exterior${showPrice ? ',Price' : ''}${showTradability ? ',Tradability' : ''}${includeDupes ? '' : ',Duplicates'}\n`;
+  csvContent += headers;
+
+  sortedItems.forEach((itemElement) => {
+    const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+    const price = (showPrice && item.price !== null) ? ` ${delimiter} ${item.price.display}` : '';
+    const priceCSV = (showPrice && item.price !== null) ? `,${item.price.display}` : '';
+    const exterior = (item.exterior !== undefined && item.exterior !== null) ? item.exterior[exteriorType] : '';
+    const tradableAt = new Date(item.tradability).toString().split('GMT')[0];
+    const tradability = (showTradability && tradableAt !== 'Invalid Date') ? `${delimiter} ${tradableAt}` : '';
+    const tradabilityCSV = (showTradability && tradableAt !== 'Invalid Date') ? `,${tradableAt}` : '';
+    const duplicate = (!includeDupes && item.duplicates.num !== 1) ? `${delimiter} x${item.duplicates.num}` : '';
+    const duplicateCSV = (!includeDupes && item.duplicates.num !== 1) ? `,x${item.duplicates.num}` : '';
+    const line = `${item.name} ${delimiter} ${exterior}${price}${tradability} ${duplicate}\n`;
+    const lineCSV = `"${item.name}",${exterior}${priceCSV}${tradabilityCSV}${duplicateCSV}\n`;
+
+    if (lineCount < limit) {
+      if (includeDupes || (!includeDupes && !namesAlreadyInList.includes(item.market_hash_name))) {
+        if ((!includeNonMarketable && item.tradability !== 'Not Tradable')
+          || (item.tradability === 'Not Tradable' && includeNonMarketable)) {
+          namesAlreadyInList.push(item.market_hash_name);
+          copyTextArea.value += line;
+          csvContent += lineCSV;
+          characterCount += line.length;
+          lineCount += 1;
+        }
+      }
+    }
+  });
+  const encodedURI = encodeURI(csvContent);
+  const downloadButton = document.getElementById('generate_download');
+  downloadButton.setAttribute('href', encodedURI);
+  downloadButton.classList.remove('hidden');
+  downloadButton.setAttribute('download', `${getInventoryOwnerID()}_csgo_items.csv`);
+
+  copyTextArea.select();
+  document.execCommand('copy');
+
+  document.getElementById('generation_result')
+    .innerText = `${lineCount} lines (${characterCount} chars) generated and copied to clipboard`;
+};
+
 const addFunctionBar = () => {
   if (document.getElementById('inventory_function_bar') === null) {
-    const hand_pointer = chrome.runtime.getURL('images/hand-pointer-solid.svg');
+    const handPointer = chrome.runtime.getURL('images/hand-pointer-solid.svg');
     const table = chrome.runtime.getURL('images/table-solid.svg');
 
-    document.querySelector('.filter_ctn.inventory_filters').insertAdjacentHTML('afterend', `
-                <div id="inventory_function_bar">
+    document.querySelector('.filter_ctn.inventory_filters').insertAdjacentHTML('afterend',
+      `<div id="inventory_function_bar">
                     <div id="functionBarValues" class="functionBarRow">
                         <span id="selectedTotal"><span>Selected Items Value: </span><span id="selectedTotalValue">0.00</span></span>
                         <span id="inventoryTotal"><span>Total Inventory Value: </span><span id="inventoryTotalValue">0.00</span></span>
                     </div>
                     <div id="functionBarActions" class="functionBarRow">
                         <span id="selectMenu">
-                            <img id ="selectButton" class="clickable" src="${hand_pointer}" title="Start Selecting Items">
+                            <img id ="selectButton" class="clickable" src="${handPointer}" title="Start Selecting Items">
                         </span>
                         <span id="generate_menu">
                             <img id ="generate_list" class="clickable" src="${table}" title="Generate list of inventory items"
@@ -535,11 +998,12 @@ const addFunctionBar = () => {
                 </div>
                 `);
 
-    document.getElementById('sellButton').addEventListener('click', (event) => {
-      event.target.innerText = 'Mass Listing in Progress...';
-      const startSellingScript = 'sellNext()';
-      injectScript(startSellingScript, true, 'startSelling', false);
-    });
+    document.getElementById('sellButton').addEventListener('click',
+      (event) => {
+        event.target.innerText = 'Mass Listing in Progress...';
+        const startSellingScript = 'sellNext()';
+        injectScript(startSellingScript, true, 'startSelling', false);
+      });
 
     // shows currency mismatch warning and option to change currency
     chrome.storage.local.get('currency', (result) => {
@@ -567,35 +1031,36 @@ const addFunctionBar = () => {
       generateSortingSelect.add(option.cloneNode(true));
     }
 
-    document.getElementById('selectButton').addEventListener('click', (event) => {
-      if (event.target.classList.contains('selectionActive')) {
-        // analytics
-        trackEvent({
-          type: 'event',
-          action: 'SelectionStopped',
-        });
+    document.getElementById('selectButton').addEventListener('click',
+      (event) => {
+        if (event.target.classList.contains('selectionActive')) {
+          // analytics
+          trackEvent({
+            type: 'event',
+            action: 'SelectionStopped',
+          });
 
-        unselectAllItems();
-        updateSelectedItemsSummary();
-        event.target.classList.remove('selectionActive');
+          unselectAllItems();
+          updateSelectedItemsSummary();
+          event.target.classList.remove('selectionActive');
 
-        if (isOwnInventory()) {
-          document.getElementById('massListing').classList.add('hidden');
-          document.getElementById('listingTable').querySelector('tbody').innerHTML = '';
+          if (isOwnInventory()) {
+            document.getElementById('massListing').classList.add('hidden');
+            document.getElementById('listingTable').querySelector('tbody').innerHTML = '';
+          }
+          document.body.removeEventListener('click', listenSelectClicks, false);
+        } else {
+          // analytics
+          trackEvent({
+            type: 'event',
+            action: 'SelectionInitiated',
+          });
+
+          document.body.addEventListener('click', listenSelectClicks, false);
+          event.target.classList.add('selectionActive');
+          if (isOwnInventory()) document.getElementById('massListing').classList.remove('hidden');
         }
-        document.body.removeEventListener('click', listenSelectClicks, false);
-      } else {
-        // analytics
-        trackEvent({
-          type: 'event',
-          action: 'SelectionInitiated',
-        });
-
-        document.body.addEventListener('click', listenSelectClicks, false);
-        event.target.classList.add('selectionActive');
-        if (isOwnInventory()) document.getElementById('massListing').classList.remove('hidden');
-      }
-    });
+      });
 
     sortingSelect.addEventListener('change', () => {
       // analytics
@@ -612,56 +1077,6 @@ const addFunctionBar = () => {
 
     document.getElementById('generate_button').addEventListener('click', generateItemsList);
   } else setTimeout(() => { setInventoryTotal(items); }, 1000);
-};
-
-const updateSelectedItemsSummary = () => {
-  const selectedItems = document.querySelectorAll('.item.app730.context2.selected');
-  const numberOfSelectedItems = selectedItems.length;
-  let selectedTotal = 0;
-
-  document.getElementById('numberOfItemsToSell').innerText = numberOfSelectedItems.toString();
-
-  selectedItems.forEach((itemElement) => {
-    const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
-    selectedTotal += parseFloat(item.price.price);
-
-    if (item.marketable === 1) {
-      const listingRow = getListingRow(item.market_hash_name);
-
-      if (listingRow === null) {
-        addListingRow(item);
-        addToPriceQueueIfNeeded(item);
-      } else {
-        const previIDs = listingRow.getAttribute('data-assetids');
-        if (!previIDs.includes(item.assetid)) {
-          listingRow.setAttribute('data-assetids', `${previIDs},${item.assetid}`);
-          listingRow.querySelector('.itemAmount').innerText = previIDs.split(',').length + 1;
-        }
-      }
-    }
-  });
-
-  removeUnselectedItemsFromTable();
-  updateMassSaleTotal();
-
-  chrome.storage.local.get('currency', (result) => {
-    document.getElementById('selectedTotalValue').innerText = prettyPrintPrice(result.currency, selectedTotal);
-  });
-};
-
-const unselectAllItems = () => {
-  document.querySelectorAll('.item.app730.context2').forEach((item) => {
-    item.classList.remove('selected');
-  });
-};
-
-const sortItems = (items, method) => {
-  if (isCSGOInventoryActive('inventory')) {
-    const itemElements = document.querySelectorAll('.item.app730.context2');
-    const inventoryPages = document.getElementById('inventories').querySelectorAll('.inventory_page');
-    doTheSorting(items, Array.from(itemElements), method, Array.from(inventoryPages), 'inventory');
-    addPerItemInfo();
-  }
 };
 
 const loadFullInventory = () => {
@@ -685,212 +1100,66 @@ const loadFullInventory = () => {
   } else doInitSorting();
 };
 
-const doInitSorting = () => {
-  chrome.storage.local.get('inventorySortingMode', (result) => {
-    sortItems(items, result.inventorySortingMode);
-    document.querySelector(`#sortingMethod [value="${result.inventorySortingMode}"]`).selected = true;
-    document.querySelector(`#generate_sort [value="${result.inventorySortingMode}"]`).selected = true;
-    addFloatIndicatorsToPage(getActivePage('inventory'));
+// sends a message to the "back end" to request inventory contents
+const requestInventory = () => {
+  chrome.runtime.sendMessage({ inventory: getInventoryOwnerID() }, (response) => {
+    if (!(response === undefined || response.inventory === undefined
+      || response.inventory === '' || response.inventory === 'error')) {
+      items = response.inventory;
+      addElements();
+      addPerItemInfo();
+      setInventoryTotal(items);
+      addFunctionBar();
+      loadFullInventory();
+      addPageControlEventListeners('inventory', addFloatIndicatorsToPage);
+    } else {
+      console.log("Wasn't able to get the inventory, it's most likely steam not working properly or you loading inventory pages at the same time");
+      console.log('Retrying in 30 seconds');
+
+      setTimeout(() => {
+        requestInventory(); // this rarely works, consider removing
+      }, 30000);
+    }
   });
 };
 
-const generateItemsList = () => {
-  // analytics
-  trackEvent({
-    type: 'event',
-    action: 'GenerateList',
-  });
+const updateTradabilityIndicators = () => {
+  const itemElements = document.querySelectorAll('.item.app730.context2');
+  if (itemElements.length !== 0) {
+    itemElements.forEach((itemElement) => {
+      const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+      const itemDateElement = itemElement.querySelector('.perItemDate');
 
-  const generateSorting = document.getElementById('generate_sort');
-  const sortingMode = generateSorting.options[generateSorting.selectedIndex].value;
-  const sortedItems = doTheSorting(items, Array.from(document.querySelectorAll('.item.app730.context2')), sortingMode, null, 'simple_sort');
-  const copyTextArea = document.getElementById('generated_list_copy_textarea');
-  copyTextArea.value = '';
+      if (itemDateElement !== null) {
+        const previText = itemDateElement.innerText;
+        const newText = getShortDate(item.tradability);
+        itemDateElement.innerText = newText;
 
-  const delimiter = document.getElementById('generate_delimiter').value;
-
-  const limit = document.getElementById('generate_limit').value;
-
-  const exteriorSelect = document.getElementById('generate_exterior');
-  const exteriorSelected = exteriorSelect.options[exteriorSelect.selectedIndex].value;
-  const exteriorType = exteriorSelected === 'full' ? 'name' : 'short';
-
-  const showPrice = document.getElementById('generate_price').checked;
-  const showTradability = document.getElementById('generate_tradability').checked;
-  const includeDupes = document.getElementById('generate_duplicates').checked;
-  const includeNonMarketable = document.getElementById('generate_non_market').checked;
-
-  let lineCount = 0;
-  let characterCount = 0;
-  const namesAlreadyInList = [];
-
-  let csvContent = 'data:text/csv;charset=utf-8,';
-  const headers = `Name,Exterior${showPrice ? ',Price' : ''}${showTradability ? ',Tradability' : ''}${includeDupes ? '' : ',Duplicates'}\n`;
-  csvContent += headers;
-
-  sortedItems.forEach((itemElement) => {
-    const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
-    const price = (showPrice && item.price !== null) ? ` ${delimiter} ${item.price.display}` : '';
-    const priceCSV = (showPrice && item.price !== null) ? `,${item.price.display}` : '';
-    const exterior = (item.exterior !== undefined && item.exterior !== null) ? item.exterior[exteriorType] : '';
-    const tradableAt = new Date(item.tradability).toString().split('GMT')[0];
-    const tradability = (showTradability && tradableAt !== 'Invalid Date') ? `${delimiter} ${tradableAt}` : '';
-    const tradabilityCSV = (showTradability && tradableAt !== 'Invalid Date') ? `,${tradableAt}` : '';
-    const duplicate = (!includeDupes && item.duplicates.num !== 1) ? `${delimiter} x${item.duplicates.num}` : '';
-    const duplicateCSV = (!includeDupes && item.duplicates.num !== 1) ? `,x${item.duplicates.num}` : '';
-    const line = `${item.name} ${delimiter} ${exterior}${price}${tradability} ${duplicate}\n`;
-    const lineCSV = `"${item.name}",${exterior}${priceCSV}${tradabilityCSV}${duplicateCSV}\n`;
-
-    if (lineCount < limit) {
-      if (includeDupes || (!includeDupes && !namesAlreadyInList.includes(item.market_hash_name))) {
-        if ((!includeNonMarketable && item.tradability !== 'Not Tradable') || (item.tradability === 'Not Tradable' && includeNonMarketable)) {
-          namesAlreadyInList.push(item.market_hash_name);
-          copyTextArea.value += line;
-          csvContent += lineCSV;
-          characterCount += line.length;
-          lineCount++;
+        if (previText !== 'T' && newText === 'T') {
+          itemDateElement.classList.remove('not_tradable');
+          itemDateElement.classList.add('tradable');
         }
       }
-    }
-  });
-  const encodedURI = encodeURI(csvContent);
-  const downloadButton = document.getElementById('generate_download');
-  downloadButton.setAttribute('href', encodedURI);
-  downloadButton.classList.remove('hidden');
-  downloadButton.setAttribute('download', `${getInventoryOwnerID()}_csgo_items.csv`);
-
-  copyTextArea.select();
-  document.execCommand('copy');
-
-  document.getElementById('generation_result').innerText = `${lineCount} lines (${characterCount} chars) generated and copied to clipboard`;
-};
-
-const setFloatBarWithData = (floatInfo) => {
-  const floatTechnicalElement = getDataFilledFloatTechnical(floatInfo);
-
-  document.querySelectorAll('.floatTechnical').forEach((floatTechnical) => {
-    floatTechnical.innerHTML = floatTechnicalElement;
-  });
-
-  const position = (floatInfo.floatvalue.toFixedNoRounding(2) * 100) - 2;
-  document.querySelectorAll('.floatToolTip').forEach((floatToolTip) => {
-    floatToolTip.setAttribute('style', `left: ${position}%`);
-  });
-  document.querySelectorAll('.floatDropTarget').forEach((floatDropTarget) => {
-    floatDropTarget.innerText = floatInfo.floatvalue.toFixedNoRounding(4);
-  });
-};
-
-const setPatternInfo = (patternInfo) => {
-  document.querySelectorAll('.patternInfo').forEach((patternInfoElement) => {
-    if (patternInfo !== null) {
-      if (patternInfo.type === 'fade') patternInfoElement.classList.add('fadeGradient');
-      else if (patternInfo.type === 'marble_fade') patternInfoElement.classList.add('marbleFadeGradient');
-      else if (patternInfo.type === 'case_hardened') patternInfoElement.classList.add('caseHardenedGradient');
-      patternInfoElement.innerText = `Pattern: ${patternInfo.value}`;
-    }
-  });
-};
-
-// sticker wear to sticker icon tooltip
-const setStickerInfo = (stickers) => {
-  if (stickers !== null) {
-    stickers.forEach((stickerInfo, index) => {
-      const wear = stickerInfo.wear !== undefined ? Math.trunc(Math.abs(1 - stickerInfo.wear) * 100) : 100;
-
-      document.querySelectorAll('.customStickers').forEach((customStickers) => {
-        const currentSticker = customStickers.querySelectorAll('.stickerSlot')[index];
-
-        if (currentSticker !== undefined) {
-          const currentToolTipText = currentSticker.getAttribute('data-tooltip');
-          currentSticker.setAttribute('data-tooltip', `${currentToolTipText} - Condition: ${wear}%`);
-          currentSticker.querySelector('img').setAttribute('style', `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`);
-        }
-      });
     });
   }
 };
 
-const hideFloatBars = () => {
-  document.querySelectorAll('.floatBar').forEach((floatBar) => {
-    floatBar.classList.add('hidden');
+const hideOtherExtensionPrices = () => {
+  // sih
+  if (!document.hidden && isSIHActive()) {
+    document.querySelectorAll('.price_flag').forEach((price) => {
+      price.remove();
+    });
+  }
+
+  setTimeout(() => {
+    hideOtherExtensionPrices();
+  }, 2000);
+
+  // csgofloat
+  document.querySelectorAll('.csgofloat-itemfloat, .csgofloat-itemseed').forEach((csFElement) => {
+    csFElement.style.display = 'none';
   });
-};
-
-const addFloatIndicatorsToPage = (page) => {
-  chrome.storage.local.get('autoFloatInventory', (result) => {
-    if (result.autoFloatInventory) {
-      page.querySelectorAll('.item.app730.context2').forEach((itemElement) => {
-        const assetID = getAssetIDOfElement(itemElement);
-        const item = getItemByAssetID(items, assetID);
-        if (item.inspectLink !== null && itemTypes[item.type.key].float) {
-          if (item.floatInfo === null) {
-            floatQueue.jobs.push({
-              type: 'inventory',
-              assetID,
-              inspectLink: item.inspectLink,
-              callBackFunction: dealWithNewFloatData,
-            });
-          } else addFloatIndicator(itemElement, item.floatInfo);
-        }
-      });
-      if (!floatQueue.active) workOnFloatQueue();
-    }
-  });
-};
-
-const updateFloatAndPatternElements = (item) => {
-  setFloatBarWithData(item.floatInfo);
-  setPatternInfo(item.patternInfo);
-  setStickerInfo(item.floatInfo.stickers);
-};
-
-const getItemInfoFromPage = () => {
-  const getItemsSccript = `
-        inventory = UserYou.getInventory(730,2);
-        assets = inventory.m_rgAssets;
-        assetKeys= Object.keys(assets);
-        trimmedAssets = [];
-                
-        for(let assetKey of assetKeys){
-            trimmedAssets.push({
-                amount: assets[assetKey].amount,
-                assetid: assets[assetKey].assetid,
-                contextid: assets[assetKey].contextid,
-                description: assets[assetKey].description
-            });
-        }
-        document.querySelector('body').setAttribute('inventoryInfo', JSON.stringify(trimmedAssets));`;
-  return JSON.parse(injectScript(getItemsSccript, true, 'getInventory', 'inventoryInfo'));
-};
-
-// adds market info in other inventories
-const addStartingAtPrice = (market_hash_name) => {
-  getPriceOverview('730', market_hash_name).then(
-    (priceOverview) => {
-      // removes previous leftover elements
-      document.querySelectorAll('.startingAtVolume').forEach((previousElement) => previousElement.remove());
-
-      // adds new elements
-      document.querySelectorAll('.item_owner_actions').forEach((marketActions) => {
-        marketActions.style.display = 'block';
-        const startingAt = priceOverview.lowest_price === undefined ? 'Unknown' : priceOverview.lowest_price;
-        const volume = priceOverview.volume === undefined ? 'Unknown amount' : priceOverview.volume;
-
-        marketActions.insertAdjacentHTML('afterbegin', `
-                    <div class="startingAtVolume">
-                        <div style="height: 24px;"><a href="https://steamcommunity.com/market/listings/730/${market_hash_name}">View in Community Market</a></div>
-                        <div style="min-height: 3em; margin-left: 1em;">Starting at: ${startingAt}<br>Volume: ${volume} sold in the last 24 hours<br></div>
-                    </div>
-                `);
-      });
-    }, (error) => { console.log(error); },
-  );
-};
-
-// works in inventory and profile pages
-const isOwnInventory = () => {
-  return getUserSteamID() === getInventoryOwnerID();
 };
 
 // ready made for possible future usage, unused atm
@@ -900,193 +1169,10 @@ const isOwnInventory = () => {
 //     injectScript(callSellItemOnPageScript, true, 'callSellItemOnPage', false);
 // };
 
-const addListingRow = (item) => {
-  const row = `
-        <tr data-assetids="${item.assetid}" data-sold-ids="" data-item-name="${item.market_hash_name}">
-            <td class="itemName"><a href="https://steamcommunity.com/market/listings/730/${item.market_hash_name}" target="_blank">${item.market_hash_name}</a></td>
-            <td class="itemAmount">1</td>
-            <td class="itemExtensionPrice selected clickable" data-price-in-cents="${userPriceToProperPrice(item.price.price)}" data-listing-price="${getPriceAfterFees(userPriceToProperPrice(item.price.price))}">${item.price.display}</td>
-            <td class="itemStartingAt clickable">Loading...</td>
-            <td class="itemQuickSell clickable">Loading...</td>
-            <td class="itemInstantSell clickable">Loading...</td>
-            <td class="itemUserPrice"><input type="text" class="userPriceInput"></td>
-        </tr>`;
-
-  document.getElementById('listingTable').querySelector('tbody').insertAdjacentHTML('beforeend', row);
-  const listingRow = getListingRow(item.market_hash_name);
-
-  listingRow.querySelector('.itemUserPrice').querySelector('input[type=text]').addEventListener('change', (event) => {
-    const priceInt = userPriceToProperPrice(event.target.value);
-    event.target.parentElement.setAttribute('data-price-in-cents', priceInt);
-    event.target.parentElement.setAttribute('data-listing-price', getPriceAfterFees(priceInt));
-    event.target.value = centsToSteamFormattedPrice(priceInt);
-    event.target.parentElement.classList.add('selected');
-    event.target.parentElement.parentElement.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell').forEach((priceType) => priceType.classList.remove('selected'));
-    updateMassSaleTotal();
-  });
-
-  listingRow.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell').forEach((priceType) => {
-    priceType.addEventListener('click', (event) => {
-      event.target.classList.add('selected');
-      event.target.parentNode.querySelectorAll('td').forEach((column) => {
-        if (column !== event.target) column.classList.remove('selected');
-      });
-      updateMassSaleTotal();
-    });
-  });
-};
-
-const getListingRow = (name) => {
-  return document.getElementById('listingTable').querySelector(`tr[data-item-name="${name}"]`);
-};
-
-const addStartingAtAndQuickSellPrice = (success, market_hash_name, starting_at_price) => {
-  const listingRow = getListingRow(market_hash_name);
-
-  if (listingRow !== null) { // the user might have unselected the item while it as in the queue and now there is nowhere to add the price to
-    const startingAtElement = listingRow.querySelector('.itemStartingAt');
-    const quickSell = listingRow.querySelector('.itemQuickSell');
-
-    if (starting_at_price !== undefined && !success) {
-      const priceInCents = steamFormattedPriceToCents(starting_at_price);
-      const quickSellPrice = steamFormattedPriceToCents(starting_at_price) - 1;
-
-      startingAtElement.innerText = starting_at_price;
-      startingAtElement.setAttribute('data-price-set', true.toString());
-      startingAtElement.setAttribute('data-price-in-cents', priceInCents);
-      startingAtElement.setAttribute('data-listing-price', getPriceAfterFees(priceInCents).toString());
-      quickSell.setAttribute('data-price-in-cents', quickSellPrice.toString());
-      quickSell.setAttribute('data-listing-price', getPriceAfterFees(quickSellPrice).toString());
-      quickSell.innerText = centsToSteamFormattedPrice(quickSellPrice);
-
-      // if the quicksell price is higher than the extension price then select that one as default instead
-      const extensionPrice = parseInt(listingRow.querySelector('.itemExtensionPrice').getAttribute('data-price-in-cents'));
-      if (extensionPrice < quickSellPrice) quickSell.click();
-    } else startingAtElement.setAttribute('data-price-set', false.toString());
-  }
-};
-
-const addToPriceQueueIfNeeded = (item) => {
-  const listingRow = getListingRow(item.market_hash_name);
-  const startingAtElement = listingRow.querySelector('.itemStartingAt');
-  const instantElement = listingRow.querySelector('.itemInstantSell');
-
-  if (startingAtElement.getAttribute('data-price-set') !== true && startingAtElement.getAttribute('data-price-in-progress') !== true) { // check if price is already set or in progress
-    startingAtElement.setAttribute('data-price-in-progress', true.toString());
-
-    priceQueue.jobs.push({
-      type: 'inventory_mass_sell_starting_at',
-      appID: '730',
-      market_hash_name: item.market_hash_name,
-      callBackFunction: addStartingAtAndQuickSellPrice,
-    });
-    workOnPriceQueue();
-  }
-
-  if (instantElement.getAttribute('data-price-set') !== true && instantElement.getAttribute('data-price-in-progress') !== true) { // check if price is already set or in progress
-    instantElement.setAttribute('data-price-in-progress', true.toString());
-
-    priceQueue.jobs.push({
-      type: 'inventory_mass_sell_instant_sell',
-      appID: '730',
-      market_hash_name: item.market_hash_name,
-      callBackFunction: addInstantSellPrice,
-    });
-    workOnPriceQueue();
-  }
-};
-
-const removeUnselectedItemsFromTable = () => {
-  document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr').forEach((listingRow) => {
-    const assetIDs = listingRow.getAttribute('data-assetids').split(',');
-    const remainingIDs = assetIDs.filter((assetID) => findElementByAssetID(assetID).classList.contains('selected'));
-
-    if (remainingIDs.length === 0) listingRow.remove();
-    else {
-      listingRow.setAttribute('data-assetids', remainingIDs.toString());
-      listingRow.querySelector('.itemAmount').innerText = remainingIDs.length;
-    }
-  });
-};
-
-const updateMassSaleTotal = () => {
-  let total = 0;
-  let totalAfterFees = 0;
-  document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr').forEach((listingRow) => {
-    total += parseInt(listingRow.querySelector('.selected').getAttribute('data-price-in-cents')) * parseInt(listingRow.querySelector('.itemAmount').innerText);
-    totalAfterFees += parseInt(listingRow.querySelector('.selected').getAttribute('data-listing-price')) * parseInt(listingRow.querySelector('.itemAmount').innerText);
-  });
-  document.getElementById('saleTotal').innerText = centsToSteamFormattedPrice(total);
-  document.getElementById('saleTotalAfterFees').innerText = centsToSteamFormattedPrice(totalAfterFees);
-};
-
-const addInstantSellPrice = (success, market_hash_name, highest_order) => {
-  const listingRow = getListingRow(market_hash_name);
-
-  if (listingRow !== null) { // the user might have unselected the item while it as in the queue and now there is nowhere to add the price to
-    const instantElement = listingRow.querySelector('.itemInstantSell');
-
-    if (highest_order !== undefined && !success) {
-      instantElement.innerText = centsToSteamFormattedPrice(highest_order);
-      instantElement.setAttribute('data-price-set', true.toString());
-      instantElement.setAttribute('data-price-in-cents', highest_order);
-      instantElement.setAttribute('data-listing-price', getPriceAfterFees(highest_order).toString());
-    } else instantElement.setAttribute('data-price-set', false.toString());
-
-    instantElement.setAttribute('data-price-in-progress', false.toString());
-  }
-};
-
-const addFloatDataToPage = (job, floatQueue, floatInfo) => {
-  addFloatIndicator(findElementByAssetID(job.assetID), floatInfo);
-
-  // add float and pattern info to page variable
-  const item = getItemByAssetID(items, job.assetID);
-  item.floatInfo = floatInfo;
-  item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
-
-  if (job.type === 'inventory_floatbar') {
-    if (getAssetIDofActive() === job.assetID) updateFloatAndPatternElements(item);
-  } else {
-    // check if there is a floatbar job for the same item and remove it
-    floatQueue.jobs.find((floatJob, index) => {
-      if (floatJob.type === 'inventory_floatbar' && job.assetID === floatJob.assetID) {
-        updateFloatAndPatternElements(item);
-        removeFromArray(floatQueue, index);
-      }
-      return null;
-    });
-  }
-};
-
-const dealWithNewFloatData = (job, floatInfo, floatQueue) => {
-  if (floatInfo !== 'nofloat') addFloatDataToPage(job, floatQueue, floatInfo);
-  else if (job.type === 'inventory_floatbar') hideFloatBars();
-};
-
-const floatBar = getFloatBarSkeleton('inventory');
-const upperModule = `
-<div class="upperModule">
-    <div class="nametag"></div>
-    <div class="descriptor customStickers"></div>
-    <div class="duplicate">x1</div>
-    ${floatBar}
-    <div class="patternInfo"></div>
-</div>
-`;
-
-const lowerModule = `<a class="lowerModule">
-    <div class="descriptor tradability tradabilityDiv"></div>
-    <div class="descriptor countdown"></div>
-    <div class="descriptor tradability bookmark">Bookmark and Notify</div>
-</a>`;
-
-const tradable = '<span class="tradable">Tradable</span>';
-const notTradable = '<span class="not_tradable">Not Tradable</span>';
-
 logExtensionPresence();
 
-// mutation observer observes changes on the right side of the inventory interface, this is a workaround for waiting for ajax calls to finish when the page changes
+// mutation observer observes changes on the right side of the inventory interface
+// this is a workaround for waiting for ajax calls to finish when the page changes
 const observer = new MutationObserver(() => {
   if (isCSGOInventoryActive('inventory')) {
     addElements();
@@ -1098,8 +1184,10 @@ const observer2 = new MutationObserver(() => {
   addPerItemInfo();
 });
 
-// does not execute if inventory is private or failed to load the page (502 for example, mostly when steam is dead)
-if (document.getElementById('no_inventories') === null && document.getElementById('iteminfo0') !== null) {
+// does not execute if inventory is private or failed to load the page
+// (502 for example, mostly when steam is dead)
+if (document.getElementById('no_inventories') === null
+  && document.getElementById('iteminfo0') !== null) {
   observer.observe(document.getElementById('iteminfo0'), {
     subtree: false,
     attributes: true,
@@ -1196,67 +1284,59 @@ if (isOwnInventory()) {
 
 if (!isOwnInventory()) {
   // shows trade offer history summary
-  chrome.storage.local.get(['tradeHistoryInventory', `offerHistory_${getInventoryOwnerID()}`, 'apiKeyValid'], (result) => {
-    let offerHistory = result[`offerHistory_${getInventoryOwnerID()}`];
-    const header = document.querySelector('.profile_small_header_text');
+  chrome.storage.local.get(
+    ['tradeHistoryInventory', `offerHistory_${getInventoryOwnerID()}`, 'apiKeyValid'],
+    (result) => {
+      let offerHistory = result[`offerHistory_${getInventoryOwnerID()}`];
+      const header = document.querySelector('.profile_small_header_text');
 
-    if (result.tradeHistoryInventory) {
-      if (offerHistory === undefined) {
-        offerHistory = {
-          offers_received: 0,
-          offers_sent: 0,
-          last_received: 0,
-          last_sent: 0,
-        };
-      }
+      if (result.tradeHistoryInventory) {
+        if (offerHistory === undefined) {
+          offerHistory = {
+            offers_received: 0,
+            offers_sent: 0,
+            last_received: 0,
+            last_sent: 0,
+          };
+        }
 
-      if (header !== null) {
-        if (result.apiKeyValid) {
-          header.insertAdjacentHTML('beforeend', `
-                        <div class="trade_partner_info_block"> 
-                            <div title="${dateToISODisplay(offerHistory.last_received)}">Offers Received: ${offerHistory.offers_received} Last:  ${offerHistory.offers_received !== 0 ? prettyTimeAgo(offerHistory.last_received) : '-'}</div>
-                            <div title="${dateToISODisplay(offerHistory.last_sent)}">Offers Sent: ${offerHistory.offers_sent} Last:  ${offerHistory.offers_sent !== 0 ? prettyTimeAgo(offerHistory.last_sent) : '-'}</div>
-                        </div>`);
-        } else {
-          header.insertAdjacentHTML('beforeend', `
-                        <div class="trade_partner_info_block" style="color: lightgray"> 
-                            <div><b>CSGOTrader Extension:</b> It looks like you don't have your Steam API Key set yet.</div>
-                            <div>If you had that you would see partner offer history here. Check the <a href="https://csgotrader.app/release-notes#1.23">Release Notes</a> for more info.</div>
-                        </div>`);
+        if (header !== null) {
+          if (result.apiKeyValid) {
+            header.insertAdjacentHTML('beforeend',
+              `<div class="trade_partner_info_block"> 
+                        <div title="${dateToISODisplay(offerHistory.last_received)}">
+                          Offers Received: ${offerHistory.offers_received} Last:  ${offerHistory.offers_received !== 0 ? prettyTimeAgo(offerHistory.last_received) : '-'}
+                        </div>
+                        <div title="${dateToISODisplay(offerHistory.last_sent)}">
+                          Offers Sent: ${offerHistory.offers_sent} Last:  ${offerHistory.offers_sent !== 0 ? prettyTimeAgo(offerHistory.last_sent) : '-'}
+                        </div>
+                     </div>`);
+          } else {
+            header.insertAdjacentHTML('beforeend',
+              `<div class="trade_partner_info_block" style="color: lightgray"> 
+                      <div>
+                        <b>CSGOTrader Extension:</b> It looks like you don't have your Steam API Key set yet.
+                      </div>
+                      <div>
+                        If you had that you would see partner offer history here. Check the <a href="https://csgotrader.app/release-notes#1.23">Release Notes</a> for more info.
+                      </div>
+                    </div>`);
+          }
         }
       }
-    }
-  });
+    },
+  );
 }
 
 chrome.storage.local.get('hideOtherExtensionPrices', (result) => {
   if (result.hideOtherExtensionPrices) hideOtherExtensionPrices();
 });
 
-let items = [];
 requestInventory();
 
 // to refresh the trade lock remaining indicators
 setInterval(() => {
   if (!document.hidden) updateTradabilityIndicators();
 }, 60000);
-
-// variables for the countdown recursive logic
-let countingDown = false;
-let countDownID = '';
-
-const listenSelectClicks = (event) => {
-  if (event.target.parentElement.classList.contains('item') && event.target.parentElement.classList.contains('app730') && event.target.parentElement.classList.contains('context2')) {
-    if (event.ctrlKey) {
-      const marketHashNameToLookFor = getItemByAssetID(items, getAssetIDOfElement(event.target.parentNode)).market_hash_name;
-      document.querySelectorAll('.item.app730.context2').forEach((item) => {
-        if (getItemByAssetID(items, getAssetIDOfElement(item)).market_hash_name === marketHashNameToLookFor) {
-          item.classList.toggle('selected');
-        }
-      });
-    } else event.target.parentElement.classList.toggle('selected');
-    updateSelectedItemsSummary();
-  }
-};
 
 reloadPageOnExtensionReload();
