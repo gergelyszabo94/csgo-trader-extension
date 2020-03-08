@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 
-const Select = (props) => {
-  const [value, setValue] = useState(props.options[0].key);
+const Select = ({
+  options, foreignChangeHandler, foreignUseEffect, id,
+}) => {
+  const [value, setValue] = useState(options[0].key);
 
   const changeHandler = (e) => {
     const thisValue = e.target.value;
-    props.foreignChangeHandler(thisValue, props.id);
+    foreignChangeHandler(thisValue, id);
     setValue(thisValue);
   };
 
   useEffect(() => {
-    props.foreignUseEffect(props.id).then((result) => {
+    foreignUseEffect(id).then((result) => {
       setValue(result);
     });
   }, []);
@@ -18,13 +20,13 @@ const Select = (props) => {
   return (
     <select
       className="select"
-      id={props.id}
+      id={id}
       onChange={changeHandler}
       value={value}
     >
-      {props.options.map((option, i) => {
+      {options.map((option) => {
         return (
-          <option key={i} value={option.key}>
+          <option key={id + option.key} value={option.key}>
             {option.text}
           </option>
         );

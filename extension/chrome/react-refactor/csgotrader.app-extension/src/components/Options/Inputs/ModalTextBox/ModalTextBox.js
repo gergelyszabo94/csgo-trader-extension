@@ -3,7 +3,9 @@ import Modal from 'components/Modal/Modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-const ModalTextBox = (props) => {
+const ModalTextBox = ({
+  id, modalTitle,
+}) => {
   const [state, setState] = useState({
     content: '',
     inputValid: true,
@@ -15,7 +17,7 @@ const ModalTextBox = (props) => {
   };
 
   const inputValidator = (closeModal) => {
-    if (props.id === 'steamAPIKey') {
+    if (id === 'steamAPIKey') {
       if (state.content !== '') {
         chrome.runtime.sendMessage(
           { apikeytovalidate: state.content },
@@ -47,7 +49,7 @@ const ModalTextBox = (props) => {
         );
       }
     } else {
-      chrome.storage.local.set({ [props.id]: state.content }, () => {
+      chrome.storage.local.set({ [id]: state.content }, () => {
         setState({ ...state, inputValid: true, validationError: '' });
         closeModal();
       });
@@ -55,15 +57,19 @@ const ModalTextBox = (props) => {
   };
 
   useEffect(() => {
-    chrome.storage.local.get([props.id], (result) => {
-      setState({ ...state, content: result[props.id] });
+    chrome.storage.local.get([id], (result) => {
+      setState({ ...state, content: result[id] });
     });
-  }, [props.id]);
+  }, [id]);
 
   return (
     <>
       <p>{`${state.content.substring(0, 8)}...`}</p>
-      <Modal modalTitle={props.modalTitle} opener={<FontAwesomeIcon icon={faEdit} />} validator={inputValidator}>
+      <Modal
+        modalTitle={modalTitle}
+        opener={<FontAwesomeIcon icon={faEdit} />}
+        validator={inputValidator}
+      >
         <textarea
           className="modalTextArea"
           placeholder="Type your text here"

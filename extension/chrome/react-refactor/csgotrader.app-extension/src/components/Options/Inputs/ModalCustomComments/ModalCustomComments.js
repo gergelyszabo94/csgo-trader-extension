@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'components/Modal/Modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
 
-const ModalCustomComments = (props) => {
+const ModalCustomComments = ({
+  modalTitle,
+}) => {
   const [state, setState] = useState({
     content: [],
     inputValue: '',
@@ -50,19 +53,22 @@ const ModalCustomComments = (props) => {
 
   return (
     <>
-      <Modal modalTitle={props.modalTitle} opener={<FontAwesomeIcon icon={faEdit} />} validator={addNewString}>
+      <Modal
+        modalTitle={modalTitle}
+        opener={<FontAwesomeIcon icon={faEdit} />}
+        validator={addNewString}
+      >
         {state.content.map((line, index) => {
           return (
             <div key={line.id}>
               <span>{line.text}</span>
-              <span
+              <CustomA11yButton
+                action={() => { deleteHandler(index); }}
                 className="delete"
-                onClick={() => {
-                  deleteHandler(index);
-                }}
+                title="Delete"
               >
                 Delete
-              </span>
+              </CustomA11yButton>
             </div>
           );
         })}

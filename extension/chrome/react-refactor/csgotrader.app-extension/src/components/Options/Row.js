@@ -14,7 +14,7 @@ import Restore from './Inputs/Restore/Restore';
 
 import './Row.css';
 
-function typeSwitch(type, key, permission, origins, modalTitle, options) {
+const typeSwitch = (type, key, permission, origins, modalTitle, options) => {
   switch (type) {
     case 'flipSwitchStorage':
       return <FlipSwitchStorage id={key} />;
@@ -47,26 +47,21 @@ function typeSwitch(type, key, permission, origins, modalTitle, options) {
     default:
       return null;
   }
-}
+};
 
-const row = (props) => {
+const row = ({
+  name, description, type, id, permission, origins, modalTitle, options,
+}) => {
   return (
     <div className="row mb-4 pb-4 option-row">
       <div className="col-md-12">
-        <h5>{props.name}</h5>
+        <h5>{name}</h5>
       </div>
       <div className="col-md-6">
-        <p className="font-size--s">{props.description}</p>
+        <p className="font-size--s">{description}</p>
       </div>
       <div className="col-md-6">
-        {typeSwitch(
-          props.type,
-          props.id,
-          props.permission,
-          props.origins,
-          props.modalTitle,
-          props.options,
-        )}
+        {typeSwitch(type, id, permission, origins, modalTitle, options)}
       </div>
     </div>
   );

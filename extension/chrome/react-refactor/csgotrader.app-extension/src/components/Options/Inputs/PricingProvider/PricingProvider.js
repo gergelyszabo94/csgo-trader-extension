@@ -4,18 +4,22 @@ import Select from 'components/Select/Select';
 import './PricingProvider.css';
 import { updatePrices } from 'js/utils/pricing';
 
-const PricingProvider = (props) => {
-  const [aboutProvider, setAboutProvider] = useState(props.options.csgotrader.description);
-  const [aboutMode, setAboutMode] = useState(props.options.csgotrader.pricing_modes.csgotrader.description);
+const PricingProvider = ({
+  options,
+}) => {
+  const [aboutProvider, setAboutProvider] = useState(options.csgotrader.description);
+  const [aboutMode, setAboutMode] = useState(
+    options.csgotrader.pricing_modes.csgotrader.description,
+  );
 
-  const options = [];
+  const selectOptions = [];
 
-  for (const provider in props.options) {
-    for (const mode in props.options[provider].pricing_modes) {
-      const textModePart = provider === mode ? '' : ` -  ${props.options[provider].pricing_modes[mode].long}`;
-      options.push({
-        key: `${provider}.${mode}`,
-        text: `${props.options[provider].long} ${textModePart}`,
+  for (const [providerKey, provider] of Object.entries(options)) {
+    for (const [modeKey, mode] of Object.entries(provider.pricing_modes)) {
+      const textModePart = providerKey === mode ? '' : ` -  ${mode.long}`;
+      selectOptions.push({
+        key: `${providerKey}.${modeKey}`,
+        text: `${provider.long} ${textModePart}`,
       });
     }
   }
@@ -24,8 +28,8 @@ const PricingProvider = (props) => {
     const pricingProvider = thisValue.split('.')[0];
     const pricingMode = thisValue.split('.')[1];
 
-    setAboutProvider(props.options[pricingProvider].description);
-    setAboutMode(props.options[pricingProvider].pricing_modes[pricingMode].description);
+    setAboutProvider(options[pricingProvider].description);
+    setAboutMode(options[pricingProvider].pricing_modes[pricingMode].description);
 
     chrome.storage.local.set({ pricingProvider, pricingMode }, () => {
       updatePrices();
@@ -33,12 +37,12 @@ const PricingProvider = (props) => {
   };
 
   const getStorage = () => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       chrome.storage.local.get(['pricingProvider', 'pricingMode'], (result) => {
         const { pricingProvider, pricingMode } = result;
 
-        setAboutProvider(props.options[pricingProvider].description);
-        setAboutMode(props.options[pricingProvider].pricing_modes[pricingMode].description);
+        setAboutProvider(options[pricingProvider].description);
+        setAboutMode(options[pricingProvider].pricing_modes[pricingMode].description);
 
         resolve(`${pricingProvider}.${pricingMode}`);
       });
@@ -51,7 +55,7 @@ const PricingProvider = (props) => {
         id="pricingProvider"
         foreignChangeHandler={setStorage}
         foreignUseEffect={getStorage}
-        options={options}
+        options={selectOptions}
       />
       <div className="about">
         <b>About the provider:</b>
