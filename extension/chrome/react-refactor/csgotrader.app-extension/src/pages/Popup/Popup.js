@@ -1,6 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalculator, faCog } from '@fortawesome/free-solid-svg-icons';
+
 import NewTabLink from 'components/NewTabLink/NewTabLink';
 import { trackEvent } from 'js/utils/analytics';
+import Calculator from 'components/Popup/Calculator/Calculator';
+import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
 
 const Popup = () => {
   // if there is any badge text it gets removed
@@ -11,7 +16,8 @@ const Popup = () => {
     action: 'ExtensionPopupView',
   });
 
-  const [state, setState] = useState([]);
+  const [links, setLinks] = useState([]);
+  const [showCalc, doShowCalc] = useState(false);
 
   useEffect(() => {
     chrome.storage.local.get(['popupLinks', 'steamIDOfUser'], (result) => {
@@ -28,22 +34,39 @@ const Popup = () => {
         }
         return null;
       });
-      setState(navLinks);
+      setLinks(navLinks);
     });
   }, []);
 
   return (
-    <div className="popup">
-      <NewTabLink to="https://csgotrader.app" key="home">
-        <img src="/images/cstlogo48.png" alt="CSGO Trader Logo" />
-        <h5>
-                    CSGO Trader
-          {' '}
-          <span>{chrome.runtime.getManifest().version}</span>
-        </h5>
-      </NewTabLink>
-      {state}
-    </div>
+    <>
+      <div className="popup">
+        <NewTabLink to="https://csgotrader.app" key="home">
+          <img src="/images/cstlogo48.png" alt="CSGO Trader Logo" />
+          <h5>
+            <span className="orange">CSGO Trader </span>
+            <span>
+              {chrome.runtime.getManifest().version}
+            </span>
+          </h5>
+        </NewTabLink>
+        {showCalc ? <Calculator /> : links}
+        <div className="bottomRow">
+          <CustomA11yButton
+            action={() => { doShowCalc(!showCalc); }}
+            className="action"
+            title="Calculator"
+          >
+            <FontAwesomeIcon icon={faCalculator} />
+          </CustomA11yButton>
+          <span className="action">
+            <NewTabLink to="index.html">
+              <FontAwesomeIcon icon={faCog} title="Open Options" />
+            </NewTabLink>
+          </span>
+        </div>
+      </div>
+    </>
   );
 };
 
