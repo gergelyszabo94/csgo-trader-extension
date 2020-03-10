@@ -38,9 +38,9 @@ const Popup = () => {
     });
   }, []);
 
-  return (
-    <>
-      <div className="popup">
+  const LogoAndLinks = () => {
+    return (
+      <>
         <NewTabLink to="https://csgotrader.app" key="home">
           <img src="/images/cstlogo48.png" alt="CSGO Trader Logo" />
           <h5>
@@ -50,7 +50,15 @@ const Popup = () => {
             </span>
           </h5>
         </NewTabLink>
-        {showCalc ? <Calculator /> : links}
+        {links}
+      </>
+    );
+  };
+
+  return (
+    <>
+      <div className="popup">
+        {showCalc ? <Calculator /> : <LogoAndLinks />}
         <div className="bottomRow">
           <CustomA11yButton
             action={() => { doShowCalc(!showCalc); }}

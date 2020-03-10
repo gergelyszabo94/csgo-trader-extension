@@ -46,6 +46,13 @@
       "props": false
     }],
     "linebreak-style": "off", // git should handle this
-    "jsx-a11y/label-has-associated-control": "off" // does not allow the span that we use for the flip switch inside the label
+    "jsx-a11y/label-has-associated-control": "off", // does not allow the span that we use for the flip switch inside the label
+    "no-trailing-spaces": [
+      1,
+      {
+        "skipBlankLines": true,
+        "ignoreComments": true
+      }
+    ]
   }
 }

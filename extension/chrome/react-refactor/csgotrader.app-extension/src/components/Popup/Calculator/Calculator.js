@@ -1,9 +1,11 @@
 import React from 'react';
+import CurrencyConverter from 'components/Popup/Calculator/CurrencyConverter';
 
 const Calculator = () => {
   return (
     <>
-      <h6>Calculator</h6>
+      <CurrencyConverter />
+      <h5>Calculator</h5>
     </>
   );
 };
