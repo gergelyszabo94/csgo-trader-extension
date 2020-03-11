@@ -39,10 +39,17 @@
   }
 
   .numberInput {
-    width: 150px;
     background: transparent;
     color: white;
     border: none;
     border-bottom: 1px solid $border-color-primary;
+  }
+
+  .narrow {
+    width: 40px;
+  }
+
+  .wide {
+    width: 150px;
   }
 }

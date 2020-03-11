@@ -39,7 +39,7 @@ const CurrencyConverter = () => {
           {currencies[currency1].sign}
           {' '}
         </span>
-        <input type="number" value={inputNumber} onChange={onInputChange} className="numberInput" />
+        <input type="number" value={inputNumber} onChange={onInputChange} className="numberInput wide" />
         <span>
           {' = '}
           {prettyPrintPrice(currency2, result)}
