@@ -18,7 +18,13 @@ const ReversePercentage = () => {
   }, [percentage, number]);
 
   return (
-    <div>
+    <div className="calCategory">
+      <span
+        className="calcSubtitle"
+        title="Reverse Percentage - Find how many percent is a number of another number"
+      >
+        Reverse Percentage
+      </span>
       <input type="number" value={number} onChange={onNumberChange} className="numberInput narrow" />
       <span> is </span>
       <input type="number" value={percentage} onChange={onPercentageChange} className="numberInput narrow" />

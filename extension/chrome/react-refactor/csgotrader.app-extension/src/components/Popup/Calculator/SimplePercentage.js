@@ -18,7 +18,13 @@ const SimplePercentage = () => {
   }, [percentage, number]);
 
   return (
-    <div>
+    <div className="calCategory">
+      <span
+        className="calcSubtitle"
+        title="Percentage - Find how much a specific percentage is of a number"
+      >
+        Percentage
+      </span>
       <input type="number" value={percentage} onChange={onPercentageChange} className="numberInput narrow" />
       <span> % of </span>
       <input type="number" value={number} onChange={onNumberChange} className="numberInput narrow" />
