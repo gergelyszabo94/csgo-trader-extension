@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSync } from '@fortawesome/free-solid-svg-icons';
 
 import './Refresh.css';
-import { updatePrices } from 'js/utils/pricing';
+import { updatePrices } from 'utils/pricing';
 
 const Refresh = () => {
   const [state, setState] = useState({

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import defaultPopupLinks from 'js/utils/static/defaultPopupLinks';
+import defaultPopupLinks from 'utils/static/defaultPopupLinks';
 import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
 
 const LinksToShow = ({ id }) => {

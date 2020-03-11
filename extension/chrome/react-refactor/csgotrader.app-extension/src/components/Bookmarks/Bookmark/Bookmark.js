@@ -7,8 +7,8 @@ import {
 import NewTabLink from 'components/NewTabLink/NewTabLink';
 import Modal from 'components/Modal/Modal';
 import FlipSwitch from 'components/FlipSwitch/FlipSwitch';
-import { determineNotificationDate, reverseWhenNotifDetails } from 'js/utils/notifications';
-import { getOfferStyleSteamID } from 'js/utils/steamID';
+import { determineNotificationDate, reverseWhenNotifDetails } from 'utils/notifications';
+import { getOfferStyleSteamID } from 'utils/steamID';
 import Countdown from './Countdown';
 
 const Bookmark = ({

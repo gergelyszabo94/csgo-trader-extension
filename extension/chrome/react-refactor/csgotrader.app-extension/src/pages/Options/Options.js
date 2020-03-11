@@ -17,7 +17,7 @@ import Market from 'components/Options/Categories/Market';
 import Popup from 'components/Options/Categories/Popup';
 import Profile from 'components/Options/Categories/Profile';
 import TradeOffer from 'components/Options/Categories/TradeOffer';
-import { trackEvent } from 'js/utils/analytics';
+import { trackEvent } from 'utils/analytics';
 
 const routes = [
   {

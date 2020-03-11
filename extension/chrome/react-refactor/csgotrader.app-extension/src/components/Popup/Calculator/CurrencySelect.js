@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { currencies } from 'js/utils/static/pricing';
+import { currencies } from 'utils/static/pricing';
 
 const CurrencySelect = ({ id, selected, setSelected }) => {
   const transformCurrencies = () => {

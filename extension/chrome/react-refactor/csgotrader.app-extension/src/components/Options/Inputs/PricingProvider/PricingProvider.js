@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Select from 'components/Select/Select';
 
 import './PricingProvider.css';
-import { updatePrices } from 'js/utils/pricing';
+import { updatePrices } from 'utils/pricing';
 
 const PricingProvider = ({
   options,

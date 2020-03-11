@@ -19,15 +19,15 @@ const pluginsToAlwaysUse = [
   new CopyWebpackPlugin([
     'src/manifest.json',
     {
-      from: 'src/css',
-      to: 'css/',
+      from: 'src/assets/styles/external/generalCSTStyle.css',
+      to: 'css/generalCSTStyle.css',
     },
     {
-      from: 'src/_locales',
+      from: 'src/assets/_locales',
       to: '_locales/',
     },
     {
-      from: 'src/images',
+      from: 'src/assets/images',
       to: 'images/',
     },
   ], { copyUnmodified: true }),
@@ -53,28 +53,28 @@ module.exports = {
     index: path.join(__dirname, 'src', '', 'index.js'),
 
     // background scripts
-    'js/backgroundScripts/background': path.join(__dirname, 'src', 'js/backgroundScripts', 'background.js'),
-    'js/backgroundScripts/messaging': path.join(__dirname, 'src', 'js/backgroundScripts', 'messaging.js'),
+    'js/backgroundScripts/background': path.join(__dirname, 'src', 'backgroundScripts', 'background.js'),
+    'js/backgroundScripts/messaging': path.join(__dirname, 'src', 'backgroundScripts', 'messaging.js'),
 
     // content scripts that don't run on Steam
-    'js/contentScripts/loungeBump': path.join(__dirname, 'src', 'js/contentScripts', 'loungeBump.js'),
-    'js/contentScripts/tradersBump': path.join(__dirname, 'src', 'js/contentScripts', 'tradersBump.js'),
-    'js/contentScripts/tradersAutoLogin': path.join(__dirname, 'src', 'js/contentScripts', 'tradersAutoLogin.js'),
+    'js/contentScripts/loungeBump': path.join(__dirname, 'src', 'contentScripts', 'loungeBump.js'),
+    'js/contentScripts/tradersBump': path.join(__dirname, 'src', 'contentScripts', 'tradersBump.js'),
+    'js/contentScripts/tradersAutoLogin': path.join(__dirname, 'src', 'contentScripts', 'tradersAutoLogin.js'),
 
     // contents scripts that run on Steam pages
-    'js/contentScripts/steam/announcements': path.join(__dirname, 'src', 'js/contentScripts/steam', 'announcements.js'),
-    'js/contentScripts/steam/apiKey': path.join(__dirname, 'src', 'js/contentScripts/steam', 'apiKey.js'),
-    'js/contentScripts/steam/friends': path.join(__dirname, 'src', 'js/contentScripts/steam', 'friends.js'),
-    'js/contentScripts/steam/group': path.join(__dirname, 'src', 'js/contentScripts/steam', 'group.js'),
-    'js/contentScripts/steam/openIDLogin': path.join(__dirname, 'src', 'js/contentScripts/steam', 'openIDLogin.js'),
-    'js/contentScripts/steam/sharedFile': path.join(__dirname, 'src', 'js/contentScripts/steam', 'sharedFile.js'),
-    'js/contentScripts/steam/webChat': path.join(__dirname, 'src', 'js/contentScripts/steam', 'webChat.js'),
-    'js/contentScripts/steam/inventory': path.join(__dirname, 'src', 'js/contentScripts/steam', 'inventory.js'),
-    'js/contentScripts/steam/marketListing': path.join(__dirname, 'src', 'js/contentScripts/steam', 'marketListing.js'),
-    'js/contentScripts/steam/market': path.join(__dirname, 'src', 'js/contentScripts/steam', 'market.js'),
-    'js/contentScripts/steam/tradeOffer': path.join(__dirname, 'src', 'js/contentScripts/steam', 'tradeOffer.js'),
-    'js/contentScripts/steam/tradeOffers': path.join(__dirname, 'src', 'js/contentScripts/steam', 'tradeOffers.js'),
-    'js/contentScripts/steam/profile': path.join(__dirname, 'src', 'js/contentScripts/steam', 'profile.js'),
+    'js/contentScripts/steam/announcements': path.join(__dirname, 'src', 'contentScripts/steam', 'announcements.js'),
+    'js/contentScripts/steam/apiKey': path.join(__dirname, 'src', 'contentScripts/steam', 'apiKey.js'),
+    'js/contentScripts/steam/friends': path.join(__dirname, 'src', 'contentScripts/steam', 'friends.js'),
+    'js/contentScripts/steam/group': path.join(__dirname, 'src', 'contentScripts/steam', 'group.js'),
+    'js/contentScripts/steam/openIDLogin': path.join(__dirname, 'src', 'contentScripts/steam', 'openIDLogin.js'),
+    'js/contentScripts/steam/sharedFile': path.join(__dirname, 'src', 'contentScripts/steam', 'sharedFile.js'),
+    'js/contentScripts/steam/webChat': path.join(__dirname, 'src', 'contentScripts/steam', 'webChat.js'),
+    'js/contentScripts/steam/inventory': path.join(__dirname, 'src', 'contentScripts/steam', 'inventory.js'),
+    'js/contentScripts/steam/marketListing': path.join(__dirname, 'src', 'contentScripts/steam', 'marketListing.js'),
+    'js/contentScripts/steam/market': path.join(__dirname, 'src', 'contentScripts/steam', 'market.js'),
+    'js/contentScripts/steam/tradeOffer': path.join(__dirname, 'src', 'contentScripts/steam', 'tradeOffer.js'),
+    'js/contentScripts/steam/tradeOffers': path.join(__dirname, 'src', 'contentScripts/steam', 'tradeOffers.js'),
+    'js/contentScripts/steam/profile': path.join(__dirname, 'src', 'contentScripts/steam', 'profile.js'),
   },
   output: {
     publicPath: '',

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CurrencySelect from 'components/Popup/Calculator/CurrencySelect';
-import { prettyPrintPrice } from 'js/utils/pricing';
-import { currencies } from 'js/utils/static/pricing';
+import { prettyPrintPrice } from 'utils/pricing';
+import { currencies } from 'utils/static/pricing';
 
 const CurrencyConverter = () => {
   const [currency1, setCurrency1] = useState('USD');

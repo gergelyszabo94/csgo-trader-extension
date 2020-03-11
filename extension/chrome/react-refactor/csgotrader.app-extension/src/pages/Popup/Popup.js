@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalculator, faCog } from '@fortawesome/free-solid-svg-icons';
 
 import NewTabLink from 'components/NewTabLink/NewTabLink';
-import { trackEvent } from 'js/utils/analytics';
+import { trackEvent } from 'utils/analytics';
 import Calculator from 'components/Popup/Calculator/Calculator';
 import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
 

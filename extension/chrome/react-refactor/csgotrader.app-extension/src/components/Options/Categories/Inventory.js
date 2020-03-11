@@ -3,7 +3,7 @@ import React from 'react';
 import Row from 'components/Options/Row';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCode } from '@fortawesome/free-solid-svg-icons';
-import { sortingModes } from 'js/utils/static/sortingModes';
+import { sortingModes } from 'utils/static/sortingModes';
 import Category from '../Category/Category';
 
 

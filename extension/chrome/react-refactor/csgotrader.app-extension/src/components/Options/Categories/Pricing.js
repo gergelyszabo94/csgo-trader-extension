@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { currencies, pricingProviders } from 'js/utils/static/pricing';
+import { currencies, pricingProviders } from 'utils/static/pricing';
 import Category from '../Category/Category';
 import Row from '../Row';
 
