@@ -972,7 +972,7 @@ const addFunctionBar = () => {
                     <div id="massListing" class="hidden">
                     <h2>Mass Market Listing - Select Items to Start</h2>
                     <h3>Check out the <a href="https://csgotrader.app/release-notes#1.22" target="_blank">Release Notes</a> for a quick guide about the Mass Listing feature</h3>
-                    <div class="hidden not_tradable" id="currency_mismatch_warning">Warning: Your Steam Wallet currency and CSGO Trader currency are not the same. <span class="underline" id="changeCurrency">Click here to fix this</span></div>
+                    <div class="hidden not_tradable" id="currency_mismatch_warning">Warning: Your Steam Wallet currency and CSGO Trader currency are not the same. <span class="underline clickable" id="changeCurrency">Click here to fix this</span></div>
                         <table id="listingTable">
                             <thead>
                                 <tr>

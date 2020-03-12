@@ -96,7 +96,7 @@ const addListingStartingAtPricesAndTotal = (sellListings) => {
       if (nameElement !== null) {
         const marketLink = nameElement.getAttribute('href');
         const appID = getAppIDAndItemNameFromLink(marketLink).appID;
-        const marketHashName = getAppIDAndItemNameFromLink(marketLink).market_hash_name;
+        const marketHashName = getAppIDAndItemNameFromLink(marketLink).marketHashName;
         const listingID = getMyListingIDFromElement(listingRow);
 
         const lisintPriceElement = listingRow.querySelector('.market_listing_price');
@@ -325,7 +325,7 @@ if (orders !== null && orders !== undefined) {
     if (nameElement !== null) {
       const marketLink = nameElement.getAttribute('href');
       const appID = getAppIDAndItemNameFromLink(marketLink).appID;
-      const marketHashName = getAppIDAndItemNameFromLink(marketLink).market_hash_name;
+      const marketHashName = getAppIDAndItemNameFromLink(marketLink).marketHashName;
       const orderID = getMyOrderIDFromElement(orderRow);
 
       const orderPrice = orderRow.querySelector('.market_listing_price').innerText;
