@@ -21,7 +21,7 @@ const updateFloatCache = (assetIDs) => {
 
   chrome.storage.local.get(floatStorageKeys, (result) => {
     const itemFloatInfos = {};
-    for (const [floatKey, itemFloatInfo] in Object.entries(result)) {
+    for (const [floatKey, itemFloatInfo] of Object.entries(result)) {
       if (itemFloatInfo) {
         itemFloatInfo.lastUsed = Date.now();
         itemFloatInfo.used += 1;
@@ -37,7 +37,7 @@ const getFloatInfoFromCache = (assetIDs) => {
     const assetIDsArray = arrayFromArrayOrNotArray(assetIDs);
 
     const floatInfoToReturn = {};
-    const floatStorageKeys = assetIDs.map((ID) => {
+    const floatStorageKeys = assetIDsArray.map((ID) => {
       return `floatCache_${ID}`;
     });
 

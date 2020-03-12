@@ -6,7 +6,7 @@ import {
   findElementByAssetID, getFloatBarSkeleton,
   logExtensionPresence, isCSGOInventoryActive,
   updateLoggedInUserID, reloadPageOnExtensionReload, isSIHActive, getActivePage,
-  addSearchListener, getPattern, removeFromArray,
+  addSearchListener, getPattern, removeFromArray, toFixedNoRounding,
 }
   from 'utils/utilsModular';
 import { getShortDate, dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
@@ -191,12 +191,12 @@ const setFloatBarWithData = (floatInfo) => {
     floatTechnical.innerHTML = floatTechnicalElement;
   });
 
-  const position = (floatInfo.floatvalue.toFixedNoRounding(2) * 100) - 2;
+  const position = (toFixedNoRounding(floatInfo.floatvalue, 2) * 100) - 2;
   document.querySelectorAll('.floatToolTip').forEach((floatToolTip) => {
     floatToolTip.setAttribute('style', `left: ${position}%`);
   });
   document.querySelectorAll('.floatDropTarget').forEach((floatDropTarget) => {
-    floatDropTarget.innerText = floatInfo.floatvalue.toFixedNoRounding(4);
+    floatDropTarget.innerText = toFixedNoRounding(floatInfo.floatvalue, 4);
   });
 };
 

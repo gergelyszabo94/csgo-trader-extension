@@ -133,7 +133,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                       position,
                       tradability,
                       tradabilityShort,
-                      marketable: items[item].marketable,
+                      marketable: item.marketable,
                       iconURL: icon,
                       dopplerInfo,
                       exterior,

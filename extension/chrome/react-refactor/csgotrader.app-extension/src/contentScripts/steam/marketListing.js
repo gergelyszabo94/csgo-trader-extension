@@ -9,6 +9,7 @@ import {
   reloadPageOnExtensionReload,
   souvenirExists,
   updateLoggedInUserID,
+  toFixedNoRounding,
 } from 'utils/utilsModular';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import exteriors from 'utils/static/exteriors';
@@ -175,9 +176,9 @@ const populateFloatInfo = (listingID, floatInfo) => {
   if (listingElement !== null) {
     listingElement.querySelector('.floatTechnical').innerHTML = getDataFilledFloatTechnical(floatInfo);
 
-    const position = ((floatInfo.floatvalue.toFixedNoRounding(2) * 100) - 2).toFixedNoRounding(2);
+    const position = ((toFixedNoRounding(floatInfo.floatvalue, 2) * 100) - 2).toFixedNoRounding(2);
     listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
-    listingElement.querySelector('.floatDropTarget').innerText = floatInfo.floatvalue.toFixedNoRounding(4);
+    listingElement.querySelector('.floatDropTarget').innerText = toFixedNoRounding(floatInfo.floatvalue, 4);
   }
 };
 

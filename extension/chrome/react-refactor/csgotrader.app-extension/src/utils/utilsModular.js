@@ -9,10 +9,9 @@ import collectionsWithSouvenirs from 'utils/static/collectionsWithSouvenirs';
 import { injectScript } from 'utils/injection';
 import { getUserSteamID, getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 
-// eslint-disable-next-line no-extend-native
-Number.prototype.toFixedNoRounding = (n) => {
+const toFixedNoRounding = (number, n) => {
   const reg = new RegExp(`^-?\\d+(?:\\.\\d{0,${n}})?`, 'g');
-  const a = this.toString().match(reg)[0];
+  const a = number.toString().match(reg)[0];
   const dot = a.indexOf('.');
   if (dot === -1) return `${a}.${'0'.repeat(n)}`; // integer, insert decimal dot and pad up zeros
   const b = n - (a.length - dot) + 1;
@@ -398,7 +397,7 @@ const addSSTandExtIndicators = (itemElement, item, showStickerPrice) => {
 
 const addFloatIndicator = (itemElement, floatInfo) => {
   if (floatInfo !== null && itemElement.querySelector('div.floatIndicator') === null) {
-    itemElement.insertAdjacentHTML('beforeend', `<div class="floatIndicator">${floatInfo.floatvalue.toFixedNoRounding(4)}</div>`);
+    itemElement.insertAdjacentHTML('beforeend', `<div class="floatIndicator">${toFixedNoRounding(floatInfo.floatvalue, 4)}</div>`);
   }
 };
 
@@ -566,5 +565,5 @@ export {
   getDataFilledFloatTechnical, souvenirExists, findElementByAssetID,
   getFloatBarSkeleton, isCSGOInventoryActive,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
-  extractItemsFromOffers, warnOfScammer,
+  extractItemsFromOffers, warnOfScammer, toFixedNoRounding,
 };
