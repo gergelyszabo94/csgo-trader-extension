@@ -685,7 +685,7 @@ const addStartingAtAndQuickSellPrice = (success, marketHashName, startingAtPrice
     const startingAtElement = listingRow.querySelector('.itemStartingAt');
     const quickSell = listingRow.querySelector('.itemQuickSell');
 
-    if (startingAtPrice !== undefined && !success) {
+    if (startingAtPrice !== undefined && success) {
       const priceInCents = steamFormattedPriceToCents(startingAtPrice);
       const quickSellPrice = steamFormattedPriceToCents(startingAtPrice) - 1;
 
@@ -714,7 +714,7 @@ const addInstantSellPrice = (success, marketHashName, highestOrder) => {
   if (listingRow !== null) {
     const instantElement = listingRow.querySelector('.itemInstantSell');
 
-    if (highestOrder !== undefined && !success) {
+    if (highestOrder !== undefined && success) {
       instantElement.innerText = centsToSteamFormattedPrice(highestOrder);
       instantElement.setAttribute('data-price-set', true.toString());
       instantElement.setAttribute('data-price-in-cents', highestOrder);

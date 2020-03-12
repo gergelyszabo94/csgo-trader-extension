@@ -343,7 +343,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
     return true; // async return to signal that it will return later
   } else if (request.getBuyOrderInfo !== undefined) {
-    const getRequest = new Request(`https://steamcommunity.com/market/listings/${request.getBuyOrderInfo.appID}/${request.getBuyOrderInfo.market_hash_name}`);
+    const getRequest = new Request(`https://steamcommunity.com/market/listings/${request.getBuyOrderInfo.appID}/${request.getBuyOrderInfo.marketHashName}`);
 
     fetch(getRequest).then((response) => {
       if (!response.ok) {

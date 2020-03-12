@@ -25,7 +25,7 @@ const getHighestBuyOrder = (appID, marketHashName) => {
     const currencyID = getSteamWalletInfo().wallet_currency;
     chrome.runtime.sendMessage(
       { getBuyOrderInfo: { appID, currencyID, marketHashName } }, (response) => {
-        if (response.getBuyOrderInfo !== 'error') resolve(response.getBuyOrderInfo.highest_buy_order);
+        if (response !== 'error') resolve(response.getBuyOrderInfo.highest_buy_order);
         else reject('error');
       },
     );
