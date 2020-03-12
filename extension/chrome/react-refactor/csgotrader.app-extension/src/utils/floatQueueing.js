@@ -13,7 +13,7 @@ const workOnFloatQueue = () => {
     getFloatInfoFromCache(job.assetID).then(
       (floatInfo) => {
         if (floatInfo[job.assetID] !== null) {
-          job.callBackFunction(job, floatQueue, floatInfo[job.assetID]);
+          job.callBackFunction(job, floatInfo[job.assetID], floatQueue);
           workOnFloatQueue();
         } else {
           chrome.runtime.sendMessage({ fetchFloatInfo: job.inspectLink }, (response) => {
