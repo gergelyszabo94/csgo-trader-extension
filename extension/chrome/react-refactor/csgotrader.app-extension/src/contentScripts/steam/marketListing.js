@@ -115,15 +115,15 @@ const getListings = () => {
   const assets = listingsInfo.assets[730][2];
   const listings = listingsInfo.listings;
 
-  for (const listing of listings) {
-    const assetID = listings[listing].asset.id;
+  for (const listing of Object.values(listings)) {
+    const assetID = listing.asset.id;
 
-    for (const asset of assets) {
-      const stickers = parseStickerInfo(assets[asset].descriptions, 'search');
+    for (const asset of Object.values(assets)) {
+      const stickers = parseStickerInfo(asset.descriptions, 'search');
 
-      if (assetID === assets[asset].id) {
-        listings[listing].asset = assets[asset];
-        listings[listing].asset.stickers = stickers;
+      if (assetID === asset.id) {
+        listing.asset = asset;
+        listing.asset.stickers = stickers;
       }
     }
   }
@@ -176,7 +176,7 @@ const populateFloatInfo = (listingID, floatInfo) => {
   if (listingElement !== null) {
     listingElement.querySelector('.floatTechnical').innerHTML = getDataFilledFloatTechnical(floatInfo);
 
-    const position = ((toFixedNoRounding(floatInfo.floatvalue, 2) * 100) - 2).toFixedNoRounding(2);
+    const position = ((toFixedNoRounding(floatInfo.floatvalue, 2) * 100) - 2);
     listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
     listingElement.querySelector('.floatDropTarget').innerText = toFixedNoRounding(floatInfo.floatvalue, 4);
   }
@@ -266,8 +266,7 @@ const addListingsToFloatQueue = () => {
     if (result.autoFloatMarket) {
       if (itemWithInspectLink) {
         const listings = getListings();
-        for (const listingKey of listings) {
-          const listing = listings[listingKey];
+        for (const listing of Object.values(listings)) {
           const assetID = listing.asset.id;
 
           floatQueue.jobs.push({
@@ -275,6 +274,7 @@ const addListingsToFloatQueue = () => {
             assetID,
             inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
             listingID: listing.listingid,
+            callBackFunction: addFloatDataToPage,
           });
         }
         if (!floatQueue.active) workOnFloatQueue(dealWithNewFloatData);
@@ -506,7 +506,6 @@ addPhasesIndicator();
 addStickers();
 addListingsToFloatQueue();
 addPricesInOtherCurrencies();
-
 
 const observer = new MutationObserver((mutations) => {
   for (const mutation of mutations) {
