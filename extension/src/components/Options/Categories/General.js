@@ -17,7 +17,7 @@ const general = () => {
         description={(
           <>
             Automatically generates and adds the Steam API key to the extension
-            when visiting
+            when visiting&nbsp;
             <NewTabLink to="https://steamcommunity.com/dev/apikey">
               steamcommunity.com/dev/apikey
             </NewTabLink>
@@ -42,7 +42,7 @@ const general = () => {
             <NewTabLink to="https://steamcommunity.com/dev/apikey">
               this form
             </NewTabLink>
-            (you can put anything in as domain name).
+            &nbsp;(you can put anything in as domain name).
           </>
         )}
         modalTitle="Enter your Steam API key here"
@@ -53,7 +53,7 @@ const general = () => {
         type="flipSwitchPermission"
         description={(
           <>
-            Grants the extension access to the
+            Grants the extension access to the&nbsp;
             <NewTabLink to="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Working_with_the_Tabs_API">
               browser.tabs API
             </NewTabLink>
@@ -96,18 +96,6 @@ const general = () => {
             page for more information on how your data in handled.
           </>
         )}
-      />
-      <Row
-        name="Hide other extensions"
-        id="hideOtherExtensionPrices"
-        type="flipSwitchStorage"
-        description="Hides elements from other extensions that overlap with CSGO Trader's"
-      />
-      <Row
-        name="Show sticker worth on items"
-        id="showStickerPrice"
-        type="flipSwitchStorage"
-        description="When turned on it puts the total price of the stickers applied on a weapon under the exterior indicator in inventories, trade offers and no the incoming trade offers page."
       />
     </Category>
   );

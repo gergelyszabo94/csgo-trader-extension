@@ -21,12 +21,10 @@ const pricing = () => {
       title="Pricing"
       subTitle={(
         <>
-          <span className="countdown">DISCLAIMER:</span>
-          {' '}
-No pricing provider is
-          100% accurate all the time. Take these prices as advisory, always with
-          a pinch of salt. You should not rely on them solely when doing your
-          trades.
+          <span className="countdown">DISCLAIMER: </span>
+          No pricing provider is 100% accurate all the time.
+          Take these prices as advisory, always with a pinch of salt.
+          You should not rely on them solely when doing your trades.
         </>
       )}
     >
@@ -35,6 +33,12 @@ No pricing provider is
         type="flipSwitchStorage"
         id="itemPricing"
         description="Shows item prices in inventories and trade offers"
+      />
+      <Row
+        name="Show sticker worth on items"
+        id="showStickerPrice"
+        type="flipSwitchStorage"
+        description="When turned on it puts the total price of the stickers applied on a weapon under the exterior indicator in inventories, trade offers and no the incoming trade offers page."
       />
       <Row
         name="Currency"

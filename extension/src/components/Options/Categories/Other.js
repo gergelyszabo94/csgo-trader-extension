@@ -53,6 +53,12 @@ const other = () => {
         type="flipSwitchStorage"
         description='Go through the "Login with Steam" dialogs automatically, required for CSGOTRADERS.NET autologin'
       />
+      <Row
+        name="Hide other extensions"
+        id="hideOtherExtensionPrices"
+        type="flipSwitchStorage"
+        description="Hides elements from other extensions that overlap with CSGO Trader's"
+      />
     </Category>
   );
 };

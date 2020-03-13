@@ -40,7 +40,7 @@ const inventory = () => {
         type="flipSwitchStorage"
         description={(
           <>
-            Show the number of offers received from a user and how many was sent to them
+            Show the number of offers received from a user and how many was sent to them&nbsp;
             <FontAwesomeIcon icon={faCode} className="apiIcon" />
           </>
          )}
