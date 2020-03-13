@@ -24,52 +24,35 @@
     "*://csgotraders.net/*" ],
   "background": {
     "scripts": [
-      "js/utils/enums.js",
-      "js/utils/utils.js",
-      "js/background_scripts/background.js",
-      "js/background_scripts/messaging.js"]
+      "js/backgroundScripts/background.bundle.js",
+      "js/backgroundScripts/messaging.bundle.js"]
   },
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';",
   "content_scripts": [
     {
       "matches": [
         "*://steamcommunity.com/*/inventory",
         "*://steamcommunity.com/*/inventory/*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js",
-        "js/content_scripts/steam/inventory.js"],
+      "js": ["js/contentScripts/steam/inventory.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
       "matches": ["*://steamcommunity.com/tradeoffer/*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js",
-        "js/content_scripts/steam/tradeoffer.js"],
+      "js": ["js/contentScripts/steam/tradeOffer.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
       "matches": ["*://steamcommunity.com/*/tradeoffers*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js" ,
-        "js/content_scripts/steam/tradeoffers.js"],
+      "js": ["js/contentScripts/steam/tradeOffers.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
       "matches": ["*://steamcommunity.com/market/listings/730/*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js",
-        "js/content_scripts/steam/market_listing.js"],
+      "js": ["js/contentScripts/steam/marketListing.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
@@ -79,51 +62,31 @@
         "*://steamcommunity.com/profiles/*/*",
         "*://steamcommunity.com/profiles/*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js",
-        "js/content_scripts/steam/profile.js"],
+      "js": ["js/contentScripts/steam/profile.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
       "matches": ["*://steamcommunity.com/groups/*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js",
-        "js/content_scripts/steam/group.js"],
+      "js": ["js/contentScripts/steam/group.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
       "matches": ["*://steamcommunity.com/sharedfiles/filedetails/*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js",
-        "js/content_scripts/steam/sharedfile.js"],
+      "js": ["js/contentScripts/steam/sharedFile.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
       "matches": ["*://steamcommunity.com/games/*/announcements/detail/*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js",
-        "js/content_scripts/steam/announcements.js"],
+      "js": ["js/contentScripts/steam/announcements.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
       "matches": ["*://steamcommunity.com/chat/*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js",
-        "js/content_scripts/steam/webchat.js"],
+      "js": ["js/contentScripts/steam/webChat.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
@@ -133,11 +96,7 @@
         "*://steamcommunity.com/dev/revokekey*"
       ],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js",
-        "js/content_scripts/steam/api_key.js"],
+      "js": ["js/contentScripts/steam/apiKey.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
@@ -145,11 +104,7 @@
         "*://steamcommunity.com/openid/login*"
       ],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js",
-        "js/content_scripts/steam/openid_login.js"],
+      "js": ["js/contentScripts/steam/openIDLogin.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
@@ -158,11 +113,7 @@
         "*://steamcommunity.com/profiles/*/friends*"
       ],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js",
-        "js/content_scripts/steam/friends.js"],
+      "js": ["js/contentScripts/steam/friends.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
@@ -171,11 +122,7 @@
         "*://steamcommunity.com/market"
       ],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/steam_override.js",
-        "js/utils/enums.js",
-        "js/utils/utils.js",
-        "js/content_scripts/steam/market.js"],
+      "js": ["js/contentScripts/steam/market.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
     },
     {
@@ -184,23 +131,17 @@
         "*://old.csgolounge.com/mytrades/*"
       ],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/utils.js",
-        "js/content_scripts/loungebump.js"]
+      "js": ["js/contentScripts/loungeBump.bundle.js"]
     },
     {
       "matches": ["*://csgotraders.net/mytrades*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/utils.js",
-        "js/content_scripts/tradersbump.js"]
+      "js": ["js/contentScripts/tradersBump.bundle.js"]
     },
     {
       "matches": ["*://csgotraders.net/*"],
       "run_at" : "document_idle",
-      "js": [
-        "js/utils/utils.js",
-        "js/content_scripts/traders_autologin.js"]
+      "js": ["js/contentScripts/tradersAutoLogin.bundle.js"]
     }
   ],
   "web_accessible_resources": [
@@ -211,7 +152,7 @@
     "images/table-solid.svg"
   ],
   "browser_action": {
-    "default_popup": "html/popup.html",
+    "default_popup": "index.html?page=popup",
     "default_icon": {
       "16": "images/cstlogo16.png",
       "32": "images/cstlogo32.png",
