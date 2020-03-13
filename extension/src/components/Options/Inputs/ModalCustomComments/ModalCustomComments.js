@@ -39,16 +39,15 @@ const ModalCustomComments = ({
   }, []);
 
   const addNewString = () => {
-    const date = new Date();
-    const array = state.content;
-    array.push({ id: date.getTime(), text: state.inputValue });
-    setState({
-      ...state,
-      content: array,
-      inputValue: '',
-    });
+    if (state.inputValue !== '') {
+      const date = new Date();
+      setState({
+        content: [...state.content, { id: date.getTime(), text: state.inputValue }],
+        inputValue: '',
+      });
 
-    chrome.storage.local.set({ customCommentsToReport: state.content });
+      chrome.storage.local.set({ customCommentsToReport: state.content });
+    }
   };
 
   return (
