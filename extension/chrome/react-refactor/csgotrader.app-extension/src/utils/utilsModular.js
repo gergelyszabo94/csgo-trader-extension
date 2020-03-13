@@ -396,7 +396,8 @@ const addSSTandExtIndicators = (itemElement, item, showStickerPrice) => {
 };
 
 const addFloatIndicator = (itemElement, floatInfo) => {
-  if (floatInfo !== null && itemElement.querySelector('div.floatIndicator') === null) {
+  if (floatInfo !== null && itemElement !== null
+    && itemElement.querySelector('div.floatIndicator') === null) {
     itemElement.insertAdjacentHTML('beforeend', `<div class="floatIndicator">${toFixedNoRounding(floatInfo.floatvalue, 4)}</div>`);
   }
 };

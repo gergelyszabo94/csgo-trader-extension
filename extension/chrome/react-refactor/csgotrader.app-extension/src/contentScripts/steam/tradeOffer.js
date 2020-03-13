@@ -275,7 +275,7 @@ const addFloatIndicatorsToPage = (type) => {
     if (result.autoFloatOffer && isCSGOInventoryActive('offer')) {
       let itemElements;
       if (type === 'page') {
-        const page = getActivePage('offer');
+        const page = getActivePage('offer', getActiveInventory);
         if (page !== null) itemElements = page.querySelectorAll('.item.app730.context2');
         else {
           setTimeout(() => {
@@ -479,7 +479,7 @@ const addAPartysFunctionBar = (whose) => {
     const itemElements = document.getElementById(`trade_${whose}s`).querySelectorAll('.item');
     let selectedRemoved = 0;
 
-    const selectedItems = itemElements.map((item) => {
+    const selectedItems = [...itemElements].map((item) => {
       if (item.classList.contains('selected')) {
         return getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name;
       }
@@ -562,7 +562,7 @@ const addFunctionBars = () => {
         let selectedTaken = 0;
 
         // goes through the items and collects the names of the selected ones
-        const selectedItems = itemElements.map((item) => {
+        const selectedItems = [...itemElements].map((item) => {
           if (item.classList.contains('selected')) {
             return getItemByAssetID(
               combinedInventories,

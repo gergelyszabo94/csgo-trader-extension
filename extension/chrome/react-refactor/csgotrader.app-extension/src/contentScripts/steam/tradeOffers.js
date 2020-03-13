@@ -127,9 +127,10 @@ const addItemInfo = (items) => {
     const offerItemsElement = offerElement.querySelector('.tradeoffer_items_ctn');
 
     if (isOfferActive(offerElement)) {
-      activeItemElements = offerItemsElement.querySelectorAll('.trade_item').map((item) => {
+      const activeItemElementsInOffer = [...offerItemsElement.querySelectorAll('.trade_item')].map((item) => {
         return item;
       });
+      activeItemElements = activeItemElements.concat(activeItemElementsInOffer);
     }
   });
 
