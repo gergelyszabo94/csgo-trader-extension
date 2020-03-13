@@ -20,7 +20,7 @@ const Bookmarks = () => {
   const [bookmarks, setBookmarks] = useState([]);
 
   const saveBookmarks = (bookmarksToSave) => {
-    chrome.storage.local.set({ bookmarksToSave }, () => {
+    chrome.storage.local.set({ bookmarks: bookmarksToSave }, () => {
       setBookmarks(bookmarksToSave);
     });
   };
