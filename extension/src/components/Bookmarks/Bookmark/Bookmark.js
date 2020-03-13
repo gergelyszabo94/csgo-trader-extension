@@ -96,31 +96,6 @@ const Bookmark = ({
         </div>
         <div className="bookmark__controls">
           <div className="actions">
-            <Action title="Inspect the item in-game">
-              <NewTabLink to={itemInfo.inspectLink}>
-                <FontAwesomeIcon icon={faEye} />
-              </NewTabLink>
-            </Action>
-            <Action title="Open the market listings page of the item">
-              <NewTabLink to={itemInfo.marketlink}>
-                <FontAwesomeIcon icon={faChartLine} />
-              </NewTabLink>
-            </Action>
-            <Action title={'View the item in the owner\'s inventory'}>
-              <NewTabLink to={`https://steamcommunity.com/profiles/${owner}/inventory/#730_2_${itemInfo.assetid}`}>
-                <FontAwesomeIcon icon={faLink} />
-              </NewTabLink>
-            </Action>
-            <Action title="Send a trade offer to the owner (if on friend list)">
-              <NewTabLink to={`https://steamcommunity.com/tradeoffer/new/?partner=${getOfferStyleSteamID(owner)}`}>
-                <FontAwesomeIcon icon={faExchangeAlt} />
-              </NewTabLink>
-            </Action>
-            <Action title={'Open the owner\'s profile'}>
-              <NewTabLink to={`https://steamcommunity.com/profiles/${owner}`}>
-                <FontAwesomeIcon icon={faUser} />
-              </NewTabLink>
-            </Action>
             <Action title="Add or edit a comment">
               <Modal modalTitle="Add your comment" opener={<FontAwesomeIcon icon={faComment} />} validator={saveComment}>
                 <div
@@ -173,6 +148,33 @@ const Bookmark = ({
             </Action>
             <Action title="Delete bookmark">
               <FontAwesomeIcon icon={faTrash} onClick={removeBookmarkFunction} />
+            </Action>
+          </div>
+          <div className="actions">
+            <Action title="Inspect the item in-game">
+              <NewTabLink to={itemInfo.inspectLink}>
+                <FontAwesomeIcon icon={faEye} />
+              </NewTabLink>
+            </Action>
+            <Action title="Open the market listings page of the item">
+              <NewTabLink to={itemInfo.marketlink}>
+                <FontAwesomeIcon icon={faChartLine} />
+              </NewTabLink>
+            </Action>
+            <Action title={'View the item in the owner\'s inventory'}>
+              <NewTabLink to={`https://steamcommunity.com/profiles/${owner}/inventory/#730_2_${itemInfo.assetid}`}>
+                <FontAwesomeIcon icon={faLink} />
+              </NewTabLink>
+            </Action>
+            <Action title="Send a trade offer to the owner (if on friend list)">
+              <NewTabLink to={`https://steamcommunity.com/tradeoffer/new/?partner=${getOfferStyleSteamID(owner)}`}>
+                <FontAwesomeIcon icon={faExchangeAlt} />
+              </NewTabLink>
+            </Action>
+            <Action title={'Open the owner\'s profile'}>
+              <NewTabLink to={`https://steamcommunity.com/profiles/${owner}`}>
+                <FontAwesomeIcon icon={faUser} />
+              </NewTabLink>
             </Action>
           </div>
           <div className="center">
