@@ -85,7 +85,7 @@ const arrayFromArrayOrNotArray = (arrayOrNotArray) => {
 };
 
 const removeFromArray = (array, arrayIndex) => {
-  array.map((element, index) => (
+  return array.map((element, index) => (
     index !== arrayIndex ? element : null
   ));
 };

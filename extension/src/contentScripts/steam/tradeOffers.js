@@ -540,12 +540,11 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
 
     // populates and adds listener to sorting select
     const sortingSelect = document.getElementById('offerSortingMethod');
-    const keys = Object.keys(offersSortingModes);
 
-    for (const key of keys) {
+    for (const mode of Object.values(offersSortingModes)) {
       const option = document.createElement('option');
-      option.value = offersSortingModes[key].key;
-      option.text = offersSortingModes[key].name;
+      option.value = mode.key;
+      option.text = mode.name;
       sortingSelect.add(option);
     }
 
