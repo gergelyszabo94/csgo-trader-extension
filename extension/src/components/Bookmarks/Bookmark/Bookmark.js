@@ -9,7 +9,9 @@ import Modal from 'components/Modal/Modal';
 import FlipSwitch from 'components/FlipSwitch/FlipSwitch';
 import { determineNotificationDate, reverseWhenNotifDetails } from 'utils/notifications';
 import { getOfferStyleSteamID } from 'utils/steamID';
-import Countdown from './Countdown';
+import Action from 'components/Bookmarks/Bookmark/Action';
+import Tradability from 'components/Bookmarks/Bookmark/Tradability';
+import STS from 'components/Bookmarks/Bookmark/STS';
 
 const Bookmark = ({
   bookmarkData, editBookmark, removeBookmark,
@@ -180,53 +182,6 @@ const Bookmark = ({
       </div>
     </div>
   );
-};
-
-const Tradability = (props) => {
-  const { tradability } = props;
-
-  if (tradability === 'Tradable') {
-    return (<span>{tradability}</span>);
-  }
-  if (tradability === 'Not Tradable') {
-    return (
-      <div className="countdown">
-        Untradable
-      </div>
-    );
-  }
-
-  return (
-    <Countdown tradability={tradability} />
-  );
-};
-
-const Action = ({
-  children, className, title,
-}) => (
-  <span className={`action ${className}`} title={title}>
-    {children}
-  </span>
-);
-
-const STS = ({
-  st, s,
-}) => {
-  if (st) {
-    return (
-      <span className="statTrak">
-                StatTrak™
-      </span>
-    );
-  }
-  if (s) {
-    return (
-      <span className="souvenir">
-                Souvenir
-      </span>
-    );
-  }
-  return null;
 };
 
 export default Bookmark;
