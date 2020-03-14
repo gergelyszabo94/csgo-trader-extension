@@ -5,4 +5,5 @@ You can start working on any open issues though or create a new one. I usually c
 
 Contributed so far:
 - [@gergelyszabo94](https://github.com/gergelyszabo94 "gergelyszabo94's profile") (Owner - Developer)
+- [@gruczika](https://github.com/gruczika "gruczika's profile") (Developer - React refactor)
 - [@cjavad](https://github.com/cjavad "cjavad's profile") (Danish translation)
