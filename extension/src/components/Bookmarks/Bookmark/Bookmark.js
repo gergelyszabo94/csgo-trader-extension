@@ -117,29 +117,33 @@ const Bookmark = ({
               <FlipSwitch id="notify" checked={doNotify} onChange={onNotifyChange} />
             </div>
             <div className={doNotify ? null : 'hidden'}>
-              How do you want to be notified?
-              <div>
-                <select ref={notifTypeSelect} defaultValue={notifType} className="select">
-                  <option value="chrome">Browser desktop notification</option>
-                  <option value="alert">Browser alert (to focus)</option>
-                </select>
+              <div className="mt-3">
+                How do you want to be notified?
+                <div>
+                  <select ref={notifTypeSelect} defaultValue={notifType} className="select">
+                    <option value="chrome">Browser desktop notification</option>
+                    <option value="alert">Browser alert (to focus)</option>
+                  </select>
+                </div>
               </div>
-              When do you want to be notified?
-              <div>
-                <input
-                  type="number"
-                  ref={numberOfMinutesOrHours}
-                  defaultValue={whenDetails.numberOfMinutesOrHours}
-                  className="numberInput numberInput__narrow"
-                />
-                <select ref={minutesOrHours} defaultValue={whenDetails.minutesOrHours} className="select">
-                  <option value="minutes">minutes</option>
-                  <option value="hours">hours</option>
-                </select>
-                <select ref={beforeOrAfter} defaultValue={whenDetails.beforeOrAfter} className="select">
-                  <option value="before">before</option>
-                  <option value="after">after</option>
-                </select>
+              <div className="mt-3">
+                When do you want to be notified?
+                <div>
+                  <input
+                    type="number"
+                    ref={numberOfMinutesOrHours}
+                    defaultValue={whenDetails.numberOfMinutesOrHours}
+                    className="numberInput numberInput__narrow"
+                  />
+                  <select ref={minutesOrHours} defaultValue={whenDetails.minutesOrHours} className="select">
+                    <option value="minutes">minutes</option>
+                    <option value="hours">hours</option>
+                  </select>
+                  <select ref={beforeOrAfter} defaultValue={whenDetails.beforeOrAfter} className="select">
+                    <option value="before">before</option>
+                    <option value="after">after</option>
+                  </select>
+                </div>
               </div>
             </div>
           </Modal>
