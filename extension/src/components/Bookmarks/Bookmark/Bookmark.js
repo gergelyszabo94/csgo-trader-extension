@@ -130,7 +130,7 @@ const Bookmark = ({
                   type="number"
                   ref={numberOfMinutesOrHours}
                   defaultValue={whenDetails.numberOfMinutesOrHours}
-                  className="numberPicker"
+                  className="numberInput numberInput__narrow"
                 />
                 <select ref={minutesOrHours} defaultValue={whenDetails.minutesOrHours} className="select">
                   <option value="minutes">minutes</option>

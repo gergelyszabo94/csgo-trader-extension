@@ -41,9 +41,9 @@ const ReverseIncDecPercentage = () => {
         <option value="dec">decreased</option>
       </select>
       <span> by </span>
-      <input type="number" value={percentage} onChange={onPercentageChange} className="numberInput narrow" />
+      <input type="number" value={percentage} onChange={onPercentageChange} className="numberInput numberInput__narrow" />
       <span>% when the result is </span>
-      <input type="number" value={number} onChange={onNumberChange} className="numberInput narrow" />
+      <input type="number" value={number} onChange={onNumberChange} className="numberInput numberInput__narrow" />
     </div>
   );
 };

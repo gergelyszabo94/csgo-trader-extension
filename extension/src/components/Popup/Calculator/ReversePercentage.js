@@ -25,9 +25,9 @@ const ReversePercentage = () => {
       >
         Reverse Percentage
       </span>
-      <input type="number" value={number} onChange={onNumberChange} className="numberInput narrow" />
+      <input type="number" value={number} onChange={onNumberChange} className="numberInput numberInput__narrow" />
       <span> is </span>
-      <input type="number" value={percentage} onChange={onPercentageChange} className="numberInput narrow" />
+      <input type="number" value={percentage} onChange={onPercentageChange} className="numberInput numberInput__narrow" />
       <span> % of </span>
       <span>{result}</span>
     </div>
