@@ -7,17 +7,19 @@ phases:
   pre_build:
     commands:
       - cd extension
+      - npm ci
   build:
     commands:
-      - mkdir build
-      - cd chrome
-      - zip -r ../build/chrome.zip .
-      - cp ../firefox/manifest.json manifest.json # only the manifest file is different on firefox
-      - zip -r ../build/firefox.zip .
+      - npm run build
+      - mkdir publish
+      - cd build
+      - zip -r ../publish/chrome.zip .
+      - cp ../src/manifest_ff.json manifest.json # only the manifest file is different on firefox
+      - zip -r ../publish/firefox.zip .
       - cd ..
   post_build:
     commands:
-      - aws s3 sync ./build $BUCKET/extension/latest
+      - aws s3 sync ./publish $BUCKET/extension/test
       - |
           if expr "$ENV" : "PROD"; then
             aws cloudfront create-invalidation --distribution-id $CLOUDFRONT --paths "/extension/latest*"
