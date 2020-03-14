@@ -1,0 +1,322 @@
+:root {
+  --steam-nametag-red: #bd4847;
+  --steam-ingame-green: #90ba3c;
+  --steam-online-blue: #57cbde;
+  --steam-offline-gray: #898989;
+  --steam-stattrak-orange: rgb(207, 106, 50);
+  --steam-note-blue: rgb(153, 204, 255);
+  --steam-knife-purple: rgb(134, 80, 172);
+  --steam-souvenir-yellow: rgb(255, 215, 0);
+  --steam-sale-golden: #e4ca63;
+}
+
+body {
+  background-color: #1d2124;
+}
+
+p,
+b,
+th,
+tr,
+ul,
+li,
+a,
+span,
+div {
+  color: #e1e1e1;
+}
+
+a {
+  color: var(--steam-souvenir-yellow);
+}
+
+a:hover {
+  color: #e1e1e1;
+  text-decoration: underline;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  color: darkorange;
+}
+
+h1 {
+  margin: 1rem;
+}
+
+nav {
+  background-color: #23272b;
+}
+
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+i {
+  margin: 0.5rem;
+}
+
+/*.select-theme {
+    --baseFg: #e1e1e1;
+    --baseBg: #23272b;
+    --accentFg: #23272b;
+    --accentBg: darkorange;
+}
+
+select {
+    -webkit-appearance: none;
+    color: var(--baseFg);
+    border-color: var(--accentBg);
+    line-height: 1;
+    outline: 0;
+    padding: 0.65em 2.5em 0.55em 0.75em;
+    background-color: var(--baseBg);
+    background-image: linear-gradient(var(--baseFg), var(--baseFg)),
+    linear-gradient(-135deg, transparent 50%, var(--accentBg) 50%),
+    linear-gradient(-225deg, transparent 50%, var(--accentBg) 50%),
+    linear-gradient(var(--accentBg) 42%, var(--accentFg) 42%);
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+    background-size: 1px 100%, 20px 22px, 20px 22px, 20px 100%;
+    background-position: right 20px center, right bottom, right bottom, right bottom;
+}
+
+select:hover {
+    background-image: linear-gradient(var(--accentFg), var(--accentFg)),
+    linear-gradient(-135deg, transparent 50%, var(--accentFg) 50%),
+    linear-gradient(-225deg, transparent 50%, var(--accentFg) 50%),
+    linear-gradient(var(--accentFg) 42%, var(--accentBg) 42%);
+}
+
+select:active {
+    background-image: linear-gradient(var(--accentFg), var(--accentFg)),
+    linear-gradient(-135deg, transparent 50%, var(--accentFg) 50%),
+    linear-gradient(-225deg, transparent 50%, var(--accentFg) 50%),
+    linear-gradient(var(--accentFg) 42%, var(--accentBg) 42%);
+    color: var(--accentBg);
+    border-color: var(--accentFg);
+    background-color: var(--accentFg);
+}*/
+
+/*Classes*/
+
+.hidden {
+  display: none;
+}
+
+.orangeBox {
+  background-color: #23272b;
+  color: #e1e1e1;
+  border-color: darkorange;
+  width: 100%;
+  height: 100px;
+}
+
+.orangeTextField {
+  background-color: #23272b;
+  color: #e1e1e1;
+  border-color: darkorange;
+}
+
+.delete {
+  color: var(--steam-nametag-red);
+  margin-left: 5px;
+}
+
+.navlogo {
+  margin-right: 10px;
+}
+
+.buildingBlock {
+  background-color: #23272b;
+  margin: 1rem;
+  padding: 1rem;
+}
+
+.subBlock {
+  background-color: #313435;
+  margin: 2px;
+}
+
+.orange {
+  color: darkorange !important;
+}
+
+.active {
+  color: var(--steam-souvenir-yellow) !important;
+}
+
+.tradability {
+  color: var(--steam-nametag-red);
+}
+
+.countdown {
+  color: var(--steam-nametag-red);
+}
+
+.tradable {
+  color: var(--steam-ingame-green);
+}
+
+.remove {
+  font-size: 2rem;
+  color: var(--steam-nametag-red);
+}
+.remove:hover {
+  /*color:white;*/
+  font-size: 2.1rem;
+}
+
+.whiteIcon {
+  color: white;
+  font-size: 2rem;
+}
+.whiteIcon:hover {
+  font-size: 2.1rem;
+}
+
+.apiIcon {
+  font-size: 130%;
+  color: var(--steam-nametag-red);
+  pointer-events: none;
+}
+
+.saveIcon {
+  display: inline-block;
+  float: right;
+  margin-right: 1rem;
+}
+
+.numberPicker {
+  padding-left: 0.25rem;
+  width: 2rem;
+  background-color: #23272b;
+  color: #e1e1e1;
+  border-color: darkorange;
+}
+
+.someSpaceBefore {
+  margin-top: 1rem;
+}
+
+.warning {
+  color: var(--steam-nametag-red);
+}
+
+/*Custom flip switch for checkbox*/
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 45px;
+  height: 20px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: darkorange;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px darkorange;
+}
+
+input:checked + .slider:before {
+  transform: translateX(25px);
+}
+
+/*Modal, button*/
+
+.modal-content {
+  background-color: #23272b;
+}
+
+.modal-header,
+.modal-body,
+.modal-footer {
+  border-color: darkorange;
+}
+
+.btn-orange {
+  color: #000000;
+  background-color: #ff8c00;
+  border-color: #ff8c00;
+}
+
+.btn-orange:hover,
+.btn-orange:focus,
+.btn-orange:active,
+.btn-orange.active,
+.open .dropdown-toggle.btn-orange {
+  color: #000000;
+  background-color: #ffd700;
+  border-color: #ffd700;
+}
+
+.btn-orange:active,
+.btn-orange.active,
+.open .dropdown-toggle.btn-orange {
+  background-image: none;
+}
+
+.btn-orange.disabled,
+.btn-orange[disabled],
+fieldset[disabled] .btn-orange,
+.btn-orange.disabled:hover,
+.btn-orange[disabled]:hover,
+fieldset[disabled] .btn-orange:hover,
+.btn-orange.disabled:focus,
+.btn-orange[disabled]:focus,
+fieldset[disabled] .btn-orange:focus,
+.btn-orange.disabled:active,
+.btn-orange[disabled]:active,
+fieldset[disabled] .btn-orange:active,
+.btn-orange.disabled.active,
+.btn-orange[disabled].active,
+fieldset[disabled] .btn-orange.active {
+  background-color: #ff8c00;
+  border-color: #ff8c00;
+}
+
+.btn-orange .badge {
+  color: #ff8c00;
+  background-color: #000000;
+}

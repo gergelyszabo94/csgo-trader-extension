@@ -1,0 +1,23 @@
+.options {
+  &__side-nav {
+    div {
+      background-color: $background-secondary;
+      padding: 1rem;
+      padding-top: 2rem;
+      margin-right: -1rem;
+    }
+  }
+
+  &__content {
+    height: calc(100vh - 74px);
+    overflow: auto;
+  }
+
+  .buildingBlock {
+    margin: 0;
+  }
+
+  .option-row {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+}

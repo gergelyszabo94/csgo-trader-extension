@@ -1,0 +1,50 @@
+.popup {
+  text-align: center;
+  background-color: $background-primary;
+  padding: 10px 10px 5px 10px;
+  img {
+    margin: 5px auto;
+  }
+  h5 {
+    white-space: nowrap;
+    padding: 0 10px 0 10px;
+    color: $color-secondary;
+
+    span {
+      color: white;
+    }
+  }
+
+  a {
+    color: $color-primary;
+    margin: 5px auto;
+    &:hover {
+      color: #e1e1e1;
+      text-decoration: underline;
+    }
+  }
+
+  .bottomRow {
+    padding: 0 20px 0 20px;
+    font-size: 1.3rem;
+
+    .action {
+      margin: 5px;
+      color: $color-primary;
+      &:hover {
+        color: #e1e1e1;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .calcSubtitle {
+    color: $color-secondary;
+    font-size: 0.8rem;
+    display:block;
+  }
+
+  .calCategory {
+    margin: 5px 0 5px 0;
+  }
+}

@@ -1,0 +1,7 @@
+.openModal {
+  cursor: pointer;
+}
+
+.modalTextArea {
+  @extend .input;
+}

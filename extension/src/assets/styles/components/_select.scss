@@ -1,0 +1,23 @@
+.select {
+  background: transparent;
+  color: White;
+  padding: 10px 0;
+  border: none;
+  border-bottom: 1px solid $border-color-primary;
+
+  &:focus {
+    outline: 0 !important;
+  }
+
+  option {
+    background-color: #343a40;
+    padding: 3px;
+    color: #e1e1e1;
+    border-bottom: 1px solid #e1e1e1 !important;
+    outline: 0 !important;
+    &:hover {
+      background-color: #343a70 !important;
+      outline: 0 !important;
+    }
+  }
+}

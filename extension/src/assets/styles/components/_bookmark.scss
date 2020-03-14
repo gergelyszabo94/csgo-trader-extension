@@ -1,0 +1,99 @@
+.bookmarks {
+  margin: 0 20px 0 20px;
+  justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.bookmark {
+  background-color: #23272b;
+  padding: 0.5rem;
+  margin: 0.5rem;
+  border-bottom: solid;
+  border-width: 4px;
+  text-align: center;
+  width: 300px;
+  height: 360px;
+
+  a {
+    color: white;
+  }
+
+  .itemName {
+    color: white;
+  }
+
+  .exterior {
+    height: 25px;
+  }
+
+  .actions {
+
+    .action {
+      margin: 10px 5px;
+      cursor: pointer;
+    }
+  }
+
+  .STS {
+    position: absolute;
+    right: 20px;
+    top: 30px;
+  }
+
+  .statTrak{
+    color: rgb(207, 106, 50);
+  }
+
+  .souvenir {
+    color: rgb(255, 215, 0);
+  }
+
+  &__image-container {
+    position: relative;
+
+    img {
+      max-width: 100%;
+    }
+  }
+
+  &__stock {
+    background: #453b30;
+    border-color: #6a6156;
+  }
+
+  &__base_grade, &__consumer_grade, &__common {
+    background: #7e7e7e;
+    border-color: white;
+  }
+
+  &__classified, &__exotic, &__legendary {
+    background: #50248e;
+    border-color: #8847ff;
+  }
+
+  &__contraband {
+    background: #b27d36;
+    border-color: #e4ae39;
+  }
+
+  &__covert, &__extraordinary, &__ancient {
+    background: #653232;
+    border-color: #eb4b4b;
+  }
+
+  &__high_grade, &__milspec_grade, &__rare {
+    background: #414e9c;
+    border-color: #4b69ff;
+  }
+
+  &__industrial_grade, &__uncommon {
+    background: #3d6896;
+    border-color: #5e98d9;
+  }
+
+  &__restricted, &__remarkable, &__mythical {
+    background: #50248e;
+    border-color: #8847ff;
+  }
+}

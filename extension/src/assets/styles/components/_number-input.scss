@@ -1,0 +1,14 @@
+.numberInput {
+  background: transparent;
+  color: white;
+  border: none;
+  border-bottom: 1px solid $border-color-primary;
+
+  &__narrow {
+    width: 40px;
+  }
+
+  &__wide {
+    width: 150px;
+  }
+}

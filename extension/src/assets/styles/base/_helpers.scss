@@ -1,0 +1,21 @@
+.full-height {
+  min-height: calc(100vh - 74px);
+}
+
+.color-primary {
+  color: $color-primary;
+}
+
+.font-size {
+  &--s {
+    font-size: 0.75rem;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+body {
+  background-color: #212529;
+}

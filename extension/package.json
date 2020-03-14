@@ -1,0 +1,58 @@
+{
+  "name": "csgotrader.app-extension",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@babel/core": "7.8.4",
+    "@babel/preset-react": "7.8.3",
+    "@fortawesome/fontawesome-svg-core": "^1.2.27",
+    "@fortawesome/free-solid-svg-icons": "^5.12.1",
+    "@fortawesome/react-fontawesome": "^0.1.8",
+    "@typescript-eslint/eslint-plugin": "^2.10.0",
+    "@typescript-eslint/parser": "^2.10.0",
+    "babel-eslint": "10.0.3",
+    "babel-jest": "^24.9.0",
+    "babel-loader": "8.0.6",
+    "bootstrap": "^4.4.1",
+    "clean-webpack-plugin": "3.0.0",
+    "copy-webpack-plugin": "5.0.5",
+    "css-loader": "3.4.2",
+    "eslint": "^6.6.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-react-app": "^5.2.0",
+    "eslint-loader": "3.0.3",
+    "eslint-plugin-flowtype": "4.6.0",
+    "eslint-plugin-import": "2.20.0",
+    "eslint-plugin-jsx-a11y": "6.2.3",
+    "eslint-plugin-react": "7.18.0",
+    "eslint-plugin-react-hooks": "^1.6.1",
+    "file-loader": "4.3.0",
+    "html-loader": "0.5.5",
+    "html-webpack-plugin": "4.0.0-beta.11",
+    "identity-obj-proxy": "3.0.0",
+    "mini-css-extract-plugin": "^0.9.0",
+    "node-sass": "^4.13.1",
+    "react": "^16.12.0",
+    "react-app-polyfill": "^1.0.6",
+    "react-bootstrap": "^1.0.0-beta.16",
+    "react-dom": "^16.12.0",
+    "react-router-bootstrap": "^0.25.0",
+    "react-router-dom": "^5.1.2",
+    "sass-loader": "8.0.2",
+    "webpack": "4.41.5",
+    "webpack-cli": "3.3.10",
+    "webpack-dev-server": "3.10.1",
+    "write-file-webpack-plugin": "4.5.1"
+  },
+  "scripts": {
+    "build": "webpack --progress --colors --env.NODE_ENV=production",
+    "start": "webpack --watch & webpack-dev-server --inline --progress --colors --env.NODE_ENV=development"
+  },
+  "browserslist": [
+    "last 2 chrome version",
+    "last 2 firefox version"
+  ],
+  "watch": {
+    "build": "src/"
+  }
+}

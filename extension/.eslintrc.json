@@ -1,0 +1,58 @@
+{
+  "env": {
+    "browser": true,
+    "webextensions": true
+  },
+  "extends": [
+    "react-app",
+    "airbnb"
+  ],
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "moduleDirectory": ["node_modules", "src/"]
+      }
+    }
+  },
+  "rules": {
+    "react-hooks/rules-of-hooks": "error", // checks rules of Hooks
+    "react-hooks/exhaustive-deps": "off", // checks effect dependencies
+    "react/jsx-no-target-blank": [ // referrers are important to keep for analytics
+      2,
+      {
+        "allowReferrer": true,
+        "enforceDynamicLinks": "always"
+      }
+    ],
+    "react/jsx-filename-extension": [ // allow jsx inside .js files too
+      1,
+      {
+        "extensions": [
+          ".js",
+          ".jsx"
+        ]
+      }],
+    "react/prop-types": "off", // could be a good thing but seems to be a lot of work
+    "react/jsx-props-no-spreading": "off", // might be worthy for a revisit
+    "no-console": "off", // there are plenty of places where logging to console is used and is valid
+    "consistent-return": "off", // pretty annoying inside promises
+    "prefer-destructuring": "off",
+    "no-restricted-syntax": "off", // it's pretty controversial, disallows for of for iterating over obejcts https://github.com/airbnb/javascript/issues/1271
+    "arrow-body-style": "off",
+    "radix": "off",
+    "prefer-promise-reject-errors": "off", // reconsider later, would require quite some work https://eslint.org/docs/rules/prefer-promise-reject-errors
+    "no-nested-ternary": "off", // well-formatted nested trinaries are much cleaner than the alternatives
+    "no-param-reassign": [2, { // pretty anoying when manipulating the DOM
+      "props": false
+    }],
+    "linebreak-style": "off", // git should handle this
+    "jsx-a11y/label-has-associated-control": "off", // does not allow the span that we use for the flip switch inside the label
+    "no-trailing-spaces": [
+      1,
+      {
+        "skipBlankLines": true,
+        "ignoreComments": true
+      }
+    ]
+  }
+}
