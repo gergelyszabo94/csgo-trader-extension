@@ -46,12 +46,10 @@ const Bookmarks = () => {
   }, []);
 
   return (
-    <div className="px-3">
-      <div className="container-fluid">
-        <h1>Bookmark and Notify</h1>
-        <div className="row">
-          <BookmarkContent bookmarks={bookmarks} remove={removeBookmark} edit={editBookmark} />
-        </div>
+    <div>
+      <h1>Bookmark and Notify</h1>
+      <div className="bookmarks">
+        <BookmarkContent bookmarks={bookmarks} remove={removeBookmark} edit={editBookmark} />
       </div>
     </div>
   );

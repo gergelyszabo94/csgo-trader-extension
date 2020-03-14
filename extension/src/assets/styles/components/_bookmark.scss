@@ -1,13 +1,19 @@
+.bookmarks {
+  margin: 0 20px 0 20px;
+  justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .bookmark {
   background-color: #23272b;
   padding: 0.5rem;
-  margin: 0.5rem auto 0.5rem auto;
+  margin: 0.5rem;
   border-bottom: solid;
   border-width: 4px;
   text-align: center;
-  height: 100%;
-  padding-bottom: 50px;
-  position: relative;
+  width: 300px;
+  height: 360px;
 
   a {
     color: white;
@@ -15,6 +21,10 @@
 
   .itemName {
     color: white;
+  }
+
+  .exterior {
+    height: 25px;
   }
 
   .actions {
@@ -26,8 +36,8 @@
   }
 
   .STS {
-    position: relative;
-    left: 60px;
+    position: absolute;
+    right: 20px;
     top: 30px;
   }
 
@@ -37,13 +47,6 @@
 
   .souvenir {
     color: rgb(255, 215, 0);
-  }
-
-  &__controls {
-    position: absolute;
-    bottom: 5px;
-    left: 50%;
-    transform: translateX(-50%);
   }
 
   &__image-container {

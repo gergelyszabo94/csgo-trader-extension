@@ -84,103 +84,99 @@ const Bookmark = ({
   };
 
   return (
-    <div className="col-xl-2 col-lg-3 col-md-6 my-2">
-      <div className={`bookmark bookmark__${itemInfo.quality.name}`}>
-        <h5 className="itemName" title={itemInfo.name}>{displayName}</h5>
-        <span>{exterior}</span>
-        <div className="bookmark__image-container">
-          <span className="STS">
-            <STS st={itemInfo.isStatrack} s={itemInfo.isSouvenir} />
-          </span>
-          <img src={imageSRC} alt={itemInfo.name} title={itemInfo.name} />
-        </div>
-        <div className="bookmark__controls">
-          <div className="actions">
-            <Action title="Add or edit a comment">
-              <Modal modalTitle="Add your comment" opener={<FontAwesomeIcon icon={faComment} />} validator={saveComment}>
-                <div
-                  contentEditable="true"
-                  className="modalTextArea"
-                  placeholder="Type your comment here"
-                  onChange={commentChangeHandler}
-                >
-                  {comment}
-                </div>
-              </Modal>
-            </Action>
-            <Action title="Edit notifications options" className={(itemInfo.tradability === 'Tradable' || itemInfo.tradability === 'Not Tradable') ? 'hidden' : null}>
-              <Modal modalTitle="Edit notifications options" opener={<FontAwesomeIcon icon={faBell} />} validator={saveNotification}>
-                <div className="center">
-                  <Tradability tradability={itemInfo.tradability} />
-                </div>
-                <div>
-                  Notify:
-                  {' '}
-                  <FlipSwitch id="notify" checked={doNotify} onChange={onNotifyChange} />
-                </div>
-                <div className={doNotify ? null : 'hidden'}>
-                  How do you want to be notified?
-                  <div>
-                    <select ref={notifTypeSelect} defaultValue={notifType} className="select">
-                      <option value="chrome">Browser desktop notification</option>
-                      <option value="alert">Browser alert (to focus)</option>
-                    </select>
-                  </div>
-                  When do you want to be notified?
-                  <div>
-                    <input
-                      type="number"
-                      ref={numberOfMinutesOrHours}
-                      defaultValue={whenDetails.numberOfMinutesOrHours}
-                      className="numberPicker"
-                    />
-                    <select ref={minutesOrHours} defaultValue={whenDetails.minutesOrHours} className="select">
-                      <option value="minutes">minutes</option>
-                      <option value="hours">hours</option>
-                    </select>
-                    <select ref={beforeOrAfter} defaultValue={whenDetails.beforeOrAfter} className="select">
-                      <option value="before">before</option>
-                      <option value="after">after</option>
-                    </select>
-                  </div>
-                </div>
-              </Modal>
-            </Action>
-            <Action title="Delete bookmark">
-              <FontAwesomeIcon icon={faTrash} onClick={removeBookmarkFunction} />
-            </Action>
-          </div>
-          <div className="actions">
-            <Action title="Inspect the item in-game">
-              <NewTabLink to={itemInfo.inspectLink}>
-                <FontAwesomeIcon icon={faEye} />
-              </NewTabLink>
-            </Action>
-            <Action title="Open the market listings page of the item">
-              <NewTabLink to={itemInfo.marketlink}>
-                <FontAwesomeIcon icon={faChartLine} />
-              </NewTabLink>
-            </Action>
-            <Action title={'View the item in the owner\'s inventory'}>
-              <NewTabLink to={`https://steamcommunity.com/profiles/${owner}/inventory/#730_2_${itemInfo.assetid}`}>
-                <FontAwesomeIcon icon={faLink} />
-              </NewTabLink>
-            </Action>
-            <Action title="Send a trade offer to the owner (if on friend list)">
-              <NewTabLink to={`https://steamcommunity.com/tradeoffer/new/?partner=${getOfferStyleSteamID(owner)}`}>
-                <FontAwesomeIcon icon={faExchangeAlt} />
-              </NewTabLink>
-            </Action>
-            <Action title={'Open the owner\'s profile'}>
-              <NewTabLink to={`https://steamcommunity.com/profiles/${owner}`}>
-                <FontAwesomeIcon icon={faUser} />
-              </NewTabLink>
-            </Action>
-          </div>
-          <div className="center">
-            <Tradability tradability={itemInfo.tradability} />
-          </div>
-        </div>
+    <div className={`bookmark bookmark__${itemInfo.quality.name}`}>
+      <h5 className="itemName" title={itemInfo.name}>{displayName}</h5>
+      <div className="exterior">{exterior}</div>
+      <div className="bookmark__image-container">
+        <span className="STS">
+          <STS st={itemInfo.isStatrack} s={itemInfo.isSouvenir} />
+        </span>
+        <img src={imageSRC} alt={itemInfo.name} title={itemInfo.name} />
+      </div>
+      <div className="actions">
+        <Action title="Add or edit a comment">
+          <Modal modalTitle="Add your comment" opener={<FontAwesomeIcon icon={faComment} />} validator={saveComment}>
+            <div
+              contentEditable="true"
+              className="modalTextArea"
+              placeholder="Type your comment here"
+              onChange={commentChangeHandler}
+            >
+              {comment}
+            </div>
+          </Modal>
+        </Action>
+        <Action title="Edit notifications options" className={(itemInfo.tradability === 'Tradable' || itemInfo.tradability === 'Not Tradable') ? 'hidden' : null}>
+          <Modal modalTitle="Edit notifications options" opener={<FontAwesomeIcon icon={faBell} />} validator={saveNotification}>
+            <div className="center">
+              <Tradability tradability={itemInfo.tradability} />
+            </div>
+            <div>
+              Notify:
+              {' '}
+              <FlipSwitch id="notify" checked={doNotify} onChange={onNotifyChange} />
+            </div>
+            <div className={doNotify ? null : 'hidden'}>
+              How do you want to be notified?
+              <div>
+                <select ref={notifTypeSelect} defaultValue={notifType} className="select">
+                  <option value="chrome">Browser desktop notification</option>
+                  <option value="alert">Browser alert (to focus)</option>
+                </select>
+              </div>
+              When do you want to be notified?
+              <div>
+                <input
+                  type="number"
+                  ref={numberOfMinutesOrHours}
+                  defaultValue={whenDetails.numberOfMinutesOrHours}
+                  className="numberPicker"
+                />
+                <select ref={minutesOrHours} defaultValue={whenDetails.minutesOrHours} className="select">
+                  <option value="minutes">minutes</option>
+                  <option value="hours">hours</option>
+                </select>
+                <select ref={beforeOrAfter} defaultValue={whenDetails.beforeOrAfter} className="select">
+                  <option value="before">before</option>
+                  <option value="after">after</option>
+                </select>
+              </div>
+            </div>
+          </Modal>
+        </Action>
+        <Action title="Delete bookmark">
+          <FontAwesomeIcon icon={faTrash} onClick={removeBookmarkFunction} />
+        </Action>
+      </div>
+      <div className="actions">
+        <Action title="Inspect the item in-game">
+          <NewTabLink to={itemInfo.inspectLink}>
+            <FontAwesomeIcon icon={faEye} />
+          </NewTabLink>
+        </Action>
+        <Action title="Open the market listings page of the item">
+          <NewTabLink to={itemInfo.marketlink}>
+            <FontAwesomeIcon icon={faChartLine} />
+          </NewTabLink>
+        </Action>
+        <Action title={'View the item in the owner\'s inventory'}>
+          <NewTabLink to={`https://steamcommunity.com/profiles/${owner}/inventory/#730_2_${itemInfo.assetid}`}>
+            <FontAwesomeIcon icon={faLink} />
+          </NewTabLink>
+        </Action>
+        <Action title="Send a trade offer to the owner (if on friend list)">
+          <NewTabLink to={`https://steamcommunity.com/tradeoffer/new/?partner=${getOfferStyleSteamID(owner)}`}>
+            <FontAwesomeIcon icon={faExchangeAlt} />
+          </NewTabLink>
+        </Action>
+        <Action title={'Open the owner\'s profile'}>
+          <NewTabLink to={`https://steamcommunity.com/profiles/${owner}`}>
+            <FontAwesomeIcon icon={faUser} />
+          </NewTabLink>
+        </Action>
+      </div>
+      <div className="center">
+        <Tradability tradability={itemInfo.tradability} />
       </div>
     </div>
   );
