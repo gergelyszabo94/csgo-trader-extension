@@ -2,7 +2,7 @@ import {
   getExteriorFromTags, getQuality, getDopplerInfo,
   getType, addDopplerPhase, makeItemColorful,
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
-  getItemByAssetID,
+  getItemByAssetID, getInspectLink,
   logExtensionPresence, updateLoggedInUserID, reloadPageOnExtensionReload,
   extractItemsFromOffers, getNameTag,
 } from 'utils/utilsModular';
@@ -43,22 +43,11 @@ const matchItemsWithDescriptions = (items) => {
     // some items don't have descriptions for some reason - will have to be investigated later
     if (item.market_hash_name !== undefined) {
       const quality = getQuality(item.tags);
-      let inspectLink = null;
       const dopplerInfo = (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon_url) : null;
       const isStatrack = item.name.includes('StatTrak™');
       const isSouvenir = item.name.includes('Souvenir');
       const starInName = item.name.includes('★');
       const type = getType(item.tags);
-
-      try {
-        if (item.actions !== undefined && item.actions[0] !== undefined) {
-          const beggining = item.actions[0].link.split('%20S')[0];
-          const end = item.actions[0].link.split('%assetid%')[1];
-          inspectLink = (`${beggining}%20S${item.owner}A${item.assetid}${end}`);
-        }
-        // eslint-disable-next-line no-empty
-      } catch (error) {
-      }
 
       itemsToReturn.push({
         name: item.name,
@@ -72,12 +61,12 @@ const matchItemsWithDescriptions = (items) => {
         dopplerInfo,
         exterior: getExteriorFromTags(item.tags),
         iconURL: item.icon_url,
-        inspectLink,
+        inspectLink: getInspectLink(item),
         quality,
         isStatrack,
         isSouvenir,
         starInName,
-        nametag: getNameTag(item, 'offer'),
+        nametag: getNameTag(item),
         owner: item.owner,
         type,
         floatInfo: null,

@@ -2,7 +2,7 @@ import {
   getItemByAssetID, getAssetIDOfElement, addDopplerPhase,
   makeItemColorful, addSSTandExtIndicators, addPriceIndicator,
   addFloatIndicator, getExteriorFromTags, getQuality,
-  getType, isCSGOInventoryActive,
+  getType, isCSGOInventoryActive, getInspectLink,
   getDopplerInfo, getActivePage, reloadPageOnExtensionReload, logExtensionPresence,
   updateLoggedInUserID, warnOfScammer, addPageControlEventListeners,
   addSearchListener, findElementByAssetID, getPattern, getNameTag,
@@ -86,21 +86,11 @@ const buildInventoryStructure = (inventory) => {
     const exterior = getExteriorFromTags(item.tags);
     const marketlink = genericMarketLink + item.market_hash_name;
     const quality = getQuality(item.tags);
-    let inspectLink = null;
     const dopplerInfo = (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon) : null;
     const isStatrack = item.name.includes('StatTrak™');
     const isSouvenir = item.name.includes('Souvenir');
     const starInName = item.name.includes('★');
     const type = getType(item.tags);
-
-    try {
-      if (item.actions !== undefined && item.actions[0] !== undefined) {
-        const beggining = item.actions[0].link.split('%20S')[0];
-        const end = item.actions[0].link.split('%assetid%')[1];
-        inspectLink = (`${beggining}%20S${item.owner}A${item.assetid}${end}`);
-      }
-      // eslint-disable-next-line no-empty
-    } catch (error) {}
 
     inventoryArrayToReturn.push({
       name: item.name,
@@ -114,12 +104,12 @@ const buildInventoryStructure = (inventory) => {
       dopplerInfo,
       exterior,
       iconURL: item.icon,
-      inspectLink,
+      inspectLink: getInspectLink(item),
       quality,
       isStatrack,
       isSouvenir,
       starInName,
-      nametag: getNameTag(item, 'offer'),
+      nametag: getNameTag(item),
       duplicates: duplicates[item.market_hash_name],
       owner: item.owner,
       type,
@@ -129,6 +119,7 @@ const buildInventoryStructure = (inventory) => {
     });
   });
 
+  console.log(inventoryArrayToReturn);
   return inventoryArrayToReturn.sort((a, b) => { return a.position - b.position; });
 };
 

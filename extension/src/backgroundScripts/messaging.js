@@ -1,7 +1,7 @@
 import { getFloatInfoFromCache, extractUsefulFloatInfo, addToFloatCache } from 'utils/floatCaching';
 import {
   getExteriorFromTags, getDopplerInfo, getQuality, getType, parseStickerInfo, getPattern,
-  goToInternalPage, validateSteamAPIKey, getAssetIDFromInspectLink, getNameTag,
+  goToInternalPage, validateSteamAPIKey, getAssetIDFromInspectLink, getNameTag, getInspectLink,
 } from 'utils/utilsModular';
 import { getShortDate } from 'utils/dateTime';
 import { getStickerPriceTotal, getPrice, prettyPrintPrice } from 'utils/pricing';
@@ -78,7 +78,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     const quality = getQuality(item.tags);
                     const stickers = parseStickerInfo(item.descriptions, 'direct', prices, result.pricingProvider, result.exchangeRate, result.currency);
                     const stickerPrice = getStickerPriceTotal(stickers, result.currency);
-                    let inspectLink = null;
                     const owner = steamID;
                     let price = null;
                     const type = getType(item.tags);
@@ -105,15 +104,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                       tradabilityShort = '';
                     }
 
-                    try {
-                      if (item.actions !== undefined && item.actions[0] !== undefined) {
-                        const beggining = item.actions[0].link.split('%20S')[0];
-                        const end = item.actions[0].link.split('%assetid%')[1];
-                        inspectLink = (`${beggining}%20S${owner}A${assetID}${end}`);
-                      }
-                      // eslint-disable-next-line no-empty
-                    } catch (error) {}
-
                     itemsPropertiesToReturn.push({
                       name,
                       market_hash_name: marketHashName,
@@ -129,14 +119,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                       iconURL: icon,
                       dopplerInfo,
                       exterior,
-                      inspectLink,
+                      inspectLink: getInspectLink(item, owner, assetID),
                       quality,
                       isStatrack: isStatTrack,
                       isSouvenir,
                       starInName,
                       stickers,
                       stickerPrice,
-                      nametag: getNameTag(item, 'inventory'),
+                      nametag: getNameTag(item),
                       duplicates: duplicates[marketHashName],
                       owner,
                       price,

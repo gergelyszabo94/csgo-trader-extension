@@ -106,19 +106,26 @@ const getExteriorFromTags = (tags) => {
   return null;
 };
 
-const getNameTag = (item, type) => {
-  let nameTag;
+const getNameTag = (item) => {
   try {
     if (item.fraudwarnings !== undefined || item.fraudwarnings[0] !== undefined) {
-      if (type === 'offer') {
-        nameTag = item.fraudwarnings[0].split('Name Tag: \'\'')[1].split('\'\'')[0];
-      } else if (type === 'inventory') {
-        nameTag = item.fraudwarnings[0].split('Name Tag: ')[1];
-      }
+      return item.fraudwarnings[0].split('Name Tag: \'\'')[1].split('\'\'')[0];
     }
     // eslint-disable-next-line no-empty
-  } catch (error) {}
-  return nameTag;
+  } catch (error) { return null; }
+};
+
+const getInspectLink = (item, owner, assetID) => {
+  try {
+    if (item.actions !== undefined && item.actions[0] !== undefined) {
+      const beggining = item.actions[0].link.split('%20S')[0];
+      const end = item.actions[0].link.split('%assetid%')[1];
+      return owner !== undefined
+        ? (`${beggining}%20S${owner}A${assetID}${end}`)
+        : (`${beggining}%20S${item.owner}A${item.assetid}${end}`);
+    }
+    // eslint-disable-next-line no-empty
+  } catch (error) { return null; }
 };
 
 const getDopplerInfo = (icon) => {
@@ -579,7 +586,7 @@ export {
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists, findElementByAssetID,
-  getFloatBarSkeleton, isCSGOInventoryActive,
+  getFloatBarSkeleton, isCSGOInventoryActive, getInspectLink,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   extractItemsFromOffers, warnOfScammer, toFixedNoRounding, getNameTag,
 };
