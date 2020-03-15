@@ -125,6 +125,12 @@ const itemTypes = {
     internal_name: 'Type_CustomPlayer',
     float: false,
   },
+  patch: {
+    key: 'patch',
+    name: 'Patch',
+    internal_name: 'CSGO_Tool_Patch',
+    float: false,
+  },
 };
 
 export default itemTypes;
