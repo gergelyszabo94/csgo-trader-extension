@@ -106,6 +106,21 @@ const getExteriorFromTags = (tags) => {
   return null;
 };
 
+const getNameTag = (item, type) => {
+  let nameTag;
+  try {
+    if (item.fraudwarnings !== undefined || item.fraudwarnings[0] !== undefined) {
+      if (type === 'offer') {
+        nameTag = item.fraudwarnings[0].split('Name Tag: \'\'')[1].split('\'\'')[0];
+      } else if (type === 'inventory') {
+        nameTag = item.fraudwarnings[0].split('Name Tag: ')[1];
+      }
+    }
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
+  return nameTag;
+};
+
 const getDopplerInfo = (icon) => {
   return iconToPhaseMapping[icon] !== undefined ? iconToPhaseMapping[icon] : dopplerPhases.unk;
 };
@@ -497,7 +512,7 @@ const getSessionID = () => {
 
 const extractItemsFromOffers = (offers) => {
   const itemsToReturn = [];
-  if (offers !== undefined || null) {
+  if (offers) {
     offers.forEach((offer) => {
       if (offer.items_to_give !== undefined) {
         offer.items_to_give.forEach((item) => {
@@ -566,5 +581,5 @@ export {
   getDataFilledFloatTechnical, souvenirExists, findElementByAssetID,
   getFloatBarSkeleton, isCSGOInventoryActive,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
-  extractItemsFromOffers, warnOfScammer, toFixedNoRounding,
+  extractItemsFromOffers, warnOfScammer, toFixedNoRounding, getNameTag,
 };

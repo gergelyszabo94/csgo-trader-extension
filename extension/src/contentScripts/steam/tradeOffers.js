@@ -4,7 +4,7 @@ import {
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
   getItemByAssetID,
   logExtensionPresence, updateLoggedInUserID, reloadPageOnExtensionReload,
-  extractItemsFromOffers,
+  extractItemsFromOffers, getNameTag,
 } from 'utils/utilsModular';
 import { prettyTimeAgo } from 'utils/dateTime';
 import { genericMarketLink } from 'utils/static/simpleStrings';
@@ -42,23 +42,13 @@ const matchItemsWithDescriptions = (items) => {
   items.forEach((item) => {
     // some items don't have descriptions for some reason - will have to be investigated later
     if (item.market_hash_name !== undefined) {
-      const exterior = getExteriorFromTags(item.tags);
-      const marketlink = genericMarketLink + item.market_hash_name;
       const quality = getQuality(item.tags);
-      let nametag;
       let inspectLink = null;
       const dopplerInfo = (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon_url) : null;
       const isStatrack = item.name.includes('StatTrak™');
       const isSouvenir = item.name.includes('Souvenir');
       const starInName = item.name.includes('★');
       const type = getType(item.tags);
-
-      try {
-        if (item.fraudwarnings !== undefined || item.fraudwarnings[0] !== undefined) {
-          nametag = item.fraudwarnings[0].split('Name Tag: \'\'')[1].split('\'\'')[0];
-        }
-        // eslint-disable-next-line no-empty
-      } catch (error) {}
 
       try {
         if (item.actions !== undefined && item.actions[0] !== undefined) {
@@ -74,20 +64,20 @@ const matchItemsWithDescriptions = (items) => {
         name: item.name,
         market_hash_name: item.market_hash_name,
         name_color: item.name_color,
-        marketlink,
+        marketlink: genericMarketLink + item.market_hash_name,
         classid: item.classid,
         instanceid: item.instanceid,
         assetid: item.assetid,
         position: item.position,
         dopplerInfo,
-        exterior,
+        exterior: getExteriorFromTags(item.tags),
         iconURL: item.icon_url,
         inspectLink,
         quality,
         isStatrack,
         isSouvenir,
         starInName,
-        nametag,
+        nametag: getNameTag(item, 'offer'),
         owner: item.owner,
         type,
         floatInfo: null,
@@ -179,6 +169,7 @@ const getOffersFromAPI = (type) => {
 };
 
 const addTotals = (offers, items) => {
+  console.log(offers);
   chrome.storage.local.get('currency', (result) => {
     let totalProfit = 0.0;
     let activeOfferCount = 0;

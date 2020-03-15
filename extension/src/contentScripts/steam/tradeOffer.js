@@ -5,7 +5,7 @@ import {
   getType, isCSGOInventoryActive,
   getDopplerInfo, getActivePage, reloadPageOnExtensionReload, logExtensionPresence,
   updateLoggedInUserID, warnOfScammer, addPageControlEventListeners,
-  addSearchListener, findElementByAssetID, getPattern,
+  addSearchListener, findElementByAssetID, getPattern, getNameTag,
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import { prettyPrintPrice } from 'utils/pricing';
@@ -86,20 +86,12 @@ const buildInventoryStructure = (inventory) => {
     const exterior = getExteriorFromTags(item.tags);
     const marketlink = genericMarketLink + item.market_hash_name;
     const quality = getQuality(item.tags);
-    let nametag;
     let inspectLink = null;
     const dopplerInfo = (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon) : null;
     const isStatrack = item.name.includes('StatTrak™');
     const isSouvenir = item.name.includes('Souvenir');
     const starInName = item.name.includes('★');
     const type = getType(item.tags);
-
-    try {
-      if (item.fraudwarnings !== undefined || item.fraudwarnings[0] !== undefined) {
-        nametag = item.fraudwarnings[0].split('Name Tag: \'\'')[1].split('\'\'')[0];
-      }
-      // eslint-disable-next-line no-empty
-    } catch (error) {}
 
     try {
       if (item.actions !== undefined && item.actions[0] !== undefined) {
@@ -127,7 +119,7 @@ const buildInventoryStructure = (inventory) => {
       isStatrack,
       isSouvenir,
       starInName,
-      nametag,
+      nametag: getNameTag(item, 'offer'),
       duplicates: duplicates[item.market_hash_name],
       owner: item.owner,
       type,

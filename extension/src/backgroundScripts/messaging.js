@@ -1,7 +1,7 @@
 import { getFloatInfoFromCache, extractUsefulFloatInfo, addToFloatCache } from 'utils/floatCaching';
 import {
   getExteriorFromTags, getDopplerInfo, getQuality, getType, parseStickerInfo, getPattern,
-  goToInternalPage, validateSteamAPIKey, getAssetIDFromInspectLink,
+  goToInternalPage, validateSteamAPIKey, getAssetIDFromInspectLink, getNameTag,
 } from 'utils/utilsModular';
 import { getShortDate } from 'utils/dateTime';
 import { getStickerPriceTotal, getPrice, prettyPrintPrice } from 'utils/pricing';
@@ -78,7 +78,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     const quality = getQuality(item.tags);
                     const stickers = parseStickerInfo(item.descriptions, 'direct', prices, result.pricingProvider, result.exchangeRate, result.currency);
                     const stickerPrice = getStickerPriceTotal(stickers, result.currency);
-                    let nameTag;
                     let inspectLink = null;
                     const owner = steamID;
                     let price = null;
@@ -96,13 +95,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                       price = getPrice(marketHashName, dopplerInfo, prices,
                         result.pricingProvider, result.exchangeRate, result.currency);
                     } else price = { price: '', display: '' };
-
-                    try {
-                      if (item.fraudwarnings !== undefined || item.fraudwarnings[0] !== undefined) {
-                        nameTag = item.fraudwarnings[0].split('Name Tag: ')[1];
-                      }
-                      // eslint-disable-next-line no-empty
-                    } catch (error) {}
 
                     if (item.tradable === 0) {
                       tradability = item.cache_expiration;
@@ -144,7 +136,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                       starInName,
                       stickers,
                       stickerPrice,
-                      nametag: nameTag,
+                      nametag: getNameTag(item, 'inventory'),
                       duplicates: duplicates[marketHashName],
                       owner,
                       price,
