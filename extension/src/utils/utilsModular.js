@@ -133,8 +133,8 @@ const getType = (tags) => {
   if (tags !== undefined) {
     for (const tag of tags) {
       if (tag.category === 'Type') {
-        for (const itemType in itemTypes) {
-          if (itemTypes[itemType].internal_name === tag.internal_name) return itemTypes[itemType];
+        for (const itemType of Object.values(itemTypes)) {
+          if (itemType.internal_name === tag.internal_name) return itemType;
         }
 
         // if the category is unknown to the extension - for example a new item type was introduced
