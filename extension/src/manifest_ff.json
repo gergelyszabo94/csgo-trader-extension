@@ -78,12 +78,6 @@
       "css": ["/css/generalCSTStyle.css"]
     },
     {
-      "matches": ["*://steamcommunity.com/games/*/announcements/detail/*"],
-      "run_at" : "document_idle",
-      "js": ["js/contentScripts/steam/announcements.bundle.js"],
-      "css": ["/css/generalCSTStyle.css"]
-    },
-    {
       "matches": ["*://steamcommunity.com/chat/*"],
       "run_at" : "document_idle",
       "js": ["js/contentScripts/steam/webChat.bundle.js"],

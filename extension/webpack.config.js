@@ -62,7 +62,6 @@ module.exports = {
     'js/contentScripts/tradersAutoLogin': path.join(__dirname, 'src', 'contentScripts', 'tradersAutoLogin.js'),
 
     // contents scripts that run on Steam pages
-    'js/contentScripts/steam/announcements': path.join(__dirname, 'src', 'contentScripts/steam', 'announcements.js'),
     'js/contentScripts/steam/apiKey': path.join(__dirname, 'src', 'contentScripts/steam', 'apiKey.js'),
     'js/contentScripts/steam/friends': path.join(__dirname, 'src', 'contentScripts/steam', 'friends.js'),
     'js/contentScripts/steam/group': path.join(__dirname, 'src', 'contentScripts/steam', 'group.js'),
