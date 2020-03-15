@@ -116,6 +116,7 @@ const addListingStartingAtPricesAndTotal = (sellListings) => {
           listingID,
           appID,
           market_hash_name: marketHashName,
+          retries: 0,
           callBackFunction: addStartingAtPriceInfoToPage,
         });
 
@@ -348,6 +349,7 @@ if (orders) {
           orderID,
           appID,
           market_hash_name: marketHashName,
+          retries: 0,
           callBackFunction: addHighestBuyOrderPrice,
         });
 

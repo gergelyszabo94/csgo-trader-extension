@@ -54,6 +54,12 @@ const getPriceOverview = (appID, marketHashName) => {
   });
 };
 
+const priceQueueFailure = (error, job) => {
+  console.log(error, job);
+  priceQueue.lastJobSuccessful = false;
+  priceQueue.jobs.push({ ...job, retries: job.retries + 1 });
+};
+
 const workOnPriceQueue = () => {
   if (priceQueue.jobs.length !== 0) { // if there are no jobs then there is no recursion
     const delay = priceQueue.lastJobSuccessful ? 3000 : 15000;
@@ -68,57 +74,51 @@ const workOnPriceQueue = () => {
 
       const job = priceQueue.jobs.shift();
 
-      if (job.type === 'my_listing') {
-        // non-active listing pages are not kept in DOM
-        // so if you switch back a page the starting at prices have to be readded
-        // to avoid making additional requests
-        // lowest prices are stored on a local (exclusive to the current page) only cache
-        if (priceQueue.localCache[job.listingID] !== undefined) {
-          job.callBackFunction(job.listingID, priceQueue.localCache[job.listingID]);
-          priceQueue.active = false;
-          workOnPriceQueue();
-        } else {
+      if (job.retries < 5) { // limits the number of retries to avoid infinite loop
+        if (job.type === 'my_listing') {
+          // non-active listing pages are not kept in the DOM
+          // so if you switch back pages the starting at prices have to be re-added
+          // to avoid making additional requests
+          // lowest prices are stored on a local only (exclusive to the current page) cache
+          if (priceQueue.localCache[job.listingID] !== undefined) {
+            job.callBackFunction(job.listingID, priceQueue.localCache[job.listingID]);
+            priceQueue.active = false;
+            workOnPriceQueue();
+          } else {
+            getPriceOverview(job.appID, job.market_hash_name).then(
+              (priceOverview) => {
+                priceQueue.lastJobSuccessful = true;
+                if (priceOverview.lowest_price !== undefined) {
+                  job.callBackFunction(job.listingID, priceOverview.lowest_price);
+                  priceQueue.localCache[job.listingID] = priceOverview.lowest_price;
+                }
+              }, (error) => {
+                priceQueueFailure(error, job);
+              },
+            );
+          }
+        } else if (job.type === 'my_buy_order' || job.type === 'inventory_mass_sell_instant_sell') {
+          getHighestBuyOrder(job.appID, job.market_hash_name).then(
+            (highestBuyOrder) => {
+              if (highestBuyOrder !== undefined) {
+                priceQueue.lastJobSuccessful = true;
+                if (job.type === 'my_buy_order') job.callBackFunction(job, highestBuyOrder);
+                else if (job.type === 'inventory_mass_sell_instant_sell') job.callBackFunction(job.market_hash_name, highestBuyOrder);
+              } else priceQueueFailure('highestBuyOrder is undefined', job);
+            }, (error) => {
+              priceQueueFailure(error, job);
+            },
+          );
+        } else if (job.type === 'inventory_mass_sell_starting_at') {
           getPriceOverview(job.appID, job.market_hash_name).then(
             (priceOverview) => {
               priceQueue.lastJobSuccessful = true;
-              if (priceOverview.lowest_price !== undefined) {
-                job.callBackFunction(job.listingID, priceOverview.lowest_price);
-                priceQueue.localCache[job.listingID] = priceOverview.lowest_price;
-              }
+              job.callBackFunction(job.market_hash_name, priceOverview.lowest_price);
             }, (error) => {
-              priceQueue.lastJobSuccessful = false;
-              console.log(error);
+              priceQueueFailure(error, job);
             },
           );
         }
-      } else if (job.type === 'my_buy_order' || job.type === 'inventory_mass_sell_instant_sell') {
-        getHighestBuyOrder(job.appID, job.market_hash_name).then(
-          (highestBuyOrder) => {
-            if (highestBuyOrder !== undefined && job.type === 'my_buy_order') {
-              priceQueue.lastJobSuccessful = true;
-              job.callBackFunction(job, highestBuyOrder);
-            } else if (job.type === 'inventory_mass_sell_instant_sell') {
-              job.callBackFunction(true, job.market_hash_name, highestBuyOrder);
-            } else priceQueue.lastJobSuccessful = false;
-          }, (error) => {
-            priceQueue.lastJobSuccessful = false;
-            if (job.type === 'inventory_mass_sell_instant_sell') {
-              job.callBackFunction(false, job.market_hash_name);
-            }
-            console.log(error);
-          },
-        );
-      } else if (job.type === 'inventory_mass_sell_starting_at') {
-        getPriceOverview(job.appID, job.market_hash_name).then(
-          (priceOverview) => {
-            priceQueue.lastJobSuccessful = true;
-            job.callBackFunction(true, job.market_hash_name, priceOverview.lowest_price);
-          }, (error) => {
-            priceQueue.lastJobSuccessful = false;
-            job.callBackFunction(true, job.market_hash_name);
-            console.log(error);
-          },
-        );
       }
     } else { // when there are jobs in the queue but work is already being done at the moment
       setTimeout(() => { workOnPriceQueue(); }, delay); // in this case is retries with a delay

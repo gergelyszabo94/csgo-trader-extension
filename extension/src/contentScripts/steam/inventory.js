@@ -676,7 +676,7 @@ const addListingRow = (item) => {
     });
 };
 
-const addStartingAtAndQuickSellPrice = (success, marketHashName, startingAtPrice) => {
+const addStartingAtAndQuickSellPrice = (marketHashName, startingAtPrice) => {
   const listingRow = getListingRow(marketHashName);
 
   // the user might have unselected the item while it as in the queue
@@ -685,7 +685,7 @@ const addStartingAtAndQuickSellPrice = (success, marketHashName, startingAtPrice
     const startingAtElement = listingRow.querySelector('.itemStartingAt');
     const quickSell = listingRow.querySelector('.itemQuickSell');
 
-    if (startingAtPrice !== undefined && success) {
+    if (startingAtPrice !== undefined) {
       const priceInCents = steamFormattedPriceToCents(startingAtPrice);
       const quickSellPrice = steamFormattedPriceToCents(startingAtPrice) - 1;
 
@@ -706,7 +706,7 @@ const addStartingAtAndQuickSellPrice = (success, marketHashName, startingAtPrice
   }
 };
 
-const addInstantSellPrice = (success, marketHashName, highestOrder) => {
+const addInstantSellPrice = (marketHashName, highestOrder) => {
   const listingRow = getListingRow(marketHashName);
 
   // the user might have unselected the item while it as in the queue
@@ -714,7 +714,7 @@ const addInstantSellPrice = (success, marketHashName, highestOrder) => {
   if (listingRow !== null) {
     const instantElement = listingRow.querySelector('.itemInstantSell');
 
-    if (highestOrder !== undefined && success) {
+    if (highestOrder !== undefined) {
       instantElement.innerText = centsToSteamFormattedPrice(highestOrder);
       instantElement.setAttribute('data-price-set', true.toString());
       instantElement.setAttribute('data-price-in-cents', highestOrder);
@@ -739,6 +739,7 @@ const addToPriceQueueIfNeeded = (item) => {
       type: 'inventory_mass_sell_starting_at',
       appID: '730',
       market_hash_name: item.market_hash_name,
+      retries: 0,
       callBackFunction: addStartingAtAndQuickSellPrice,
     });
     workOnPriceQueue();
@@ -753,6 +754,7 @@ const addToPriceQueueIfNeeded = (item) => {
       type: 'inventory_mass_sell_instant_sell',
       appID: '730',
       market_hash_name: item.market_hash_name,
+      retries: 0,
       callBackFunction: addInstantSellPrice,
     });
     workOnPriceQueue();
