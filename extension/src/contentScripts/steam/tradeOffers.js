@@ -4,7 +4,7 @@ import {
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
   getItemByAssetID, getInspectLink,
   logExtensionPresence, updateLoggedInUserID, reloadPageOnExtensionReload,
-  extractItemsFromOffers, getNameTag,
+  getNameTag,
 } from 'utils/utilsModular';
 import { prettyTimeAgo } from 'utils/dateTime';
 import { genericMarketLink } from 'utils/static/simpleStrings';
@@ -91,6 +91,34 @@ const getItemByIDs = (items, IDs) => {
     })[0];
   }
   return items.filter((item) => item.classid === IDs.classid)[0];
+};
+
+const extractItemsFromOffers = (offers) => {
+  const itemsToReturn = [];
+  if (offers) {
+    offers.forEach((offer) => {
+      if (offer.items_to_give !== undefined) {
+        offer.items_to_give.forEach((item, index) => {
+          itemsToReturn.push({
+            ...item,
+            owner: getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
+            position: index,
+          });
+        });
+      }
+      if (offer.items_to_receive !== undefined) {
+        offer.items_to_receive.forEach((item, index) => {
+          itemsToReturn.push({
+            ...item,
+            owner: getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
+            position: index,
+          });
+        });
+      }
+    });
+  }
+
+  return itemsToReturn;
 };
 
 const addItemInfo = (items) => {
@@ -509,7 +537,10 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
 
     tradeOffersList.insertAdjacentHTML('afterbegin', `
         <div id="tradeoffers_summary" class="trade_offers_module">Waiting for Steam API...</div>
-        <div id="tradeOffersSortingMenu" class="trade_offers_module hidden"><span>Sorting: </span><select id="offerSortingMethod"></select></div>`);
+        <div id="tradeOffersSortingMenu" class="trade_offers_module hidden">
+            <span>Sorting: </span>
+            <select id="offerSortingMethod"/>
+        </div>`);
 
     // populates and adds listener to sorting select
     const sortingSelect = document.getElementById('offerSortingMethod');
@@ -537,6 +568,7 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
         allItemsInOffer = allItemsInOffer.concat(
           extractItemsFromOffers(offers.trade_offers_received),
         );
+
 
         const itemsWithMoreInfo = [];
         if (allItemsInOffer) {

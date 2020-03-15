@@ -7,7 +7,7 @@ import patterns from 'utils/static/patterns';
 import { getPrice } from 'utils/pricing';
 import collectionsWithSouvenirs from 'utils/static/collectionsWithSouvenirs';
 import { injectScript } from 'utils/injection';
-import { getUserSteamID, getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
+import { getUserSteamID } from 'utils/steamID';
 
 const toFixedNoRounding = (number, n) => {
   const reg = new RegExp(`^-?\\d+(?:\\.\\d{0,${n}})?`, 'g');
@@ -517,32 +517,6 @@ const getSessionID = () => {
   return injectScript(getSessionIDScript, true, 'getSessionID', 'sessionid');
 };
 
-const extractItemsFromOffers = (offers) => {
-  const itemsToReturn = [];
-  if (offers) {
-    offers.forEach((offer) => {
-      if (offer.items_to_give !== undefined) {
-        offer.items_to_give.forEach((item) => {
-          itemsToReturn.push({
-            ...item,
-            owner: getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
-          });
-        });
-      }
-      if (offer.items_to_receive !== undefined) {
-        offer.items_to_receive.forEach((item) => {
-          itemsToReturn.push({
-            ...item,
-            owner: getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
-          });
-        });
-      }
-    });
-  }
-
-  return itemsToReturn;
-};
-
 const warnOfScammer = (steamID, page) => {
   chrome.runtime.sendMessage({ getSteamRepInfo: steamID }, (response) => {
     if (response.SteamRepInfo !== 'error') {
@@ -588,5 +562,5 @@ export {
   getDataFilledFloatTechnical, souvenirExists, findElementByAssetID,
   getFloatBarSkeleton, isCSGOInventoryActive, getInspectLink,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
-  extractItemsFromOffers, warnOfScammer, toFixedNoRounding, getNameTag,
+  warnOfScammer, toFixedNoRounding, getNameTag,
 };
