@@ -17,4 +17,27 @@ const getUserSteamID = () => {
   return injectScript(getUserSteamIDScript, true, 'steamidOfLoggedinUser', 'steamidOfLoggedinUser');
 };
 
-export { getProperStyleSteamIDFromOfferStyle, getOfferStyleSteamID, getUserSteamID };
+// gets the steam id of the user that's profile this script is run on
+const getProfileOwnerSteamID = () => {
+  const steamIDOfProfileOwnerScript = 'document.querySelector(\'body\').setAttribute(\'steamidOfProfileOwner\', g_rgProfileData.steamid);';
+  return injectScript(steamIDOfProfileOwnerScript, true, 'steamidOfProfileOwner', 'steamidOfProfileOwner');
+};
+
+const getGroupID = () => {
+  return document.querySelector('input[name=groupId]').value;
+};
+
+const getSharedFileIDAndOwner = () => {
+  const pagingElement = document.querySelector('.commentthread_paging');
+
+  const ownerID = pagingElement.id.split('commentthread_PublishedFile_Public_')[1].split('_')[0];
+  const sharedFileID = pagingElement.id.split('_pagecontrols')[0].split('_')[4];
+
+  return { ownerID, sharedFileID };
+};
+
+export {
+  getProperStyleSteamIDFromOfferStyle, getOfferStyleSteamID,
+  getUserSteamID, getProfileOwnerSteamID, getGroupID,
+  getSharedFileIDAndOwner,
+};

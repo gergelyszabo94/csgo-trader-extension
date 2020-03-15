@@ -9,14 +9,8 @@ import { goldenMiniProfileHandler, goldenCommenters } from 'utils/goldening';
 import steamTextFormattingTags from 'utils/static/steamTextFormatingTags';
 import { overrideShowTradeOffer } from 'utils/steamOverriding';
 import steamProfileStatuses from 'utils/static/steamProfileStatuses';
-import { injectScript, injectStyle } from 'utils/injection';
-import { getUserSteamID } from 'utils/steamID';
-
-// gets the steam id of the user that's profile this script is run on
-const getProfileOwnerSteamID = () => {
-  const steamidOfProfileOwnerScript = 'document.querySelector(\'body\').setAttribute(\'steamidOfProfileOwner\', g_rgProfileData.steamid);';
-  return injectScript(steamidOfProfileOwnerScript, true, 'steamidOfProfileOwner', 'steamidOfProfileOwner');
-};
+import { injectStyle } from 'utils/injection';
+import { getUserSteamID, getProfileOwnerSteamID } from 'utils/steamID';
 
 // ensures that we are on a profile page, it's not possible with simple regex
 if (document.querySelector('body').classList.contains('profile_page')) {
@@ -212,7 +206,7 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         }
       }
     });
-    reportComments();
+    reportComments('profile', profileOwnerSteamID);
   }
 
   chrome.storage.local.get('nsfwFilter', (result) => {

@@ -43,6 +43,7 @@ const commentPatternsToReport = [
   'giveaway',
   'SKINSRENT.STORE',
   'skins-market.org',
+  'ave a nice holida',
 ];
 
 export default commentPatternsToReport;

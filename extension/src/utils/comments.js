@@ -1,6 +1,7 @@
 import { trackEvent } from 'utils/analytics';
 import { goldenCommenters } from 'utils/goldening';
 import commentPatternsToReport from 'utils/static/commentPatternsToReport';
+import { getSessionID } from 'utils/utilsModular';
 
 const handleReplyToCommentFunctionality = (event) => {
   // analytics
@@ -55,7 +56,42 @@ const addCommentsMutationObserver = () => {
   }
 };
 
-const reportComments = () => {
+const hideAndReport = (type, pageID, commentID) => {
+  const headers = new Headers();
+  headers.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+
+  let URL = '';
+  if (type === 'profile') {
+    URL = `https://steamcommunity.com/comment/Profile/hideandreport/${pageID}/-1/?`;
+  } else if (type === 'group') {
+    URL = `https://steamcommunity.com/comment/Clan/hideandreport/${pageID}/-1/?`;
+  } else if (type === 'shared_file') {
+    URL = `https://steamcommunity.com/comment/PublishedFile_Public/hideandreport/${pageID.ownerID}/${pageID.sharedFileID}/-1/?`;
+  }
+
+  const request = new Request(URL,
+    {
+      method: 'POST',
+      headers,
+      body: `sessionid=${getSessionID()}&gidcomment=${commentID}&hide=1&start=0&count=6&feature2=-1`,
+    });
+
+  fetch(request).then((response) => {
+    if (!response.ok) {
+      console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+    }
+    return response.json();
+  }).then((response) => {
+    console.log(response);
+    if (response.comments_html) {
+      document.querySelector('.commentthread_comment_container').innerHTML = response.comments_html;
+    }
+  }).catch((err) => {
+    console.log(err);
+  });
+};
+
+const reportComments = (type, pageID) => {
   chrome.storage.local.get(['flagScamComments', 'customCommentsToReport'], (result) => {
     if (result.flagScamComments) {
       const mergedStringToReport = result.customCommentsToReport.concat(commentPatternsToReport);
@@ -69,7 +105,9 @@ const reportComments = () => {
             type: 'event',
             action: 'CommentReported',
           });
-          comment.querySelector('a.report_and_hide').querySelector('img').click();
+
+          const commentID = comment.id.split('comment_')[1];
+          hideAndReport(type, pageID, commentID);
         }
       });
     }
