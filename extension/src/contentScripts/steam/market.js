@@ -65,14 +65,18 @@ const addStartingAtPriceInfoToPage = (listingID, lowestPrice) => {
   // the listing might not be there for example if the page was switched
   // the per page listing count was changed or the listing was removed
   if (listingRow !== null) {
-    const priceElement = listingRow.querySelector('.market_listing_price');
-    const listedPrice = priceElement.querySelectorAll('span')[1].innerText;
-    const cheapest = listedPrice === lowestPrice ? 'cheapest' : 'not_cheapest';
+    const startingAt = listingRow.querySelector('.startingAtPrice');
+    // also avoid adding the same element multiple times by checking if it exist already
+    if (startingAt === null) {
+      const priceElement = listingRow.querySelector('.market_listing_price');
+      const listedPrice = priceElement.querySelectorAll('span')[1].innerText;
+      const cheapest = listedPrice === lowestPrice ? 'cheapest' : 'not_cheapest';
 
-    priceElement.insertAdjacentHTML('beforeend',
-      `<div class="${cheapest}" title="This is the price of the lowest listing right now.">
+      priceElement.insertAdjacentHTML('beforeend',
+        `<div class="startingAtPrice ${cheapest}" title="This is the price of the lowest listing right now.">
                 ${lowestPrice}
              </div>`);
+    }
   }
 };
 
