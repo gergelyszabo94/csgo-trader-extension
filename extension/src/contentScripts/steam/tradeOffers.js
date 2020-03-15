@@ -51,6 +51,7 @@ const matchItemsWithDescriptions = (items) => {
         instanceid: item.instanceid,
         assetid: item.assetid,
         position: item.position,
+        side: item.side,
         dopplerInfo: (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon_url) : null,
         exterior: getExteriorFromTags(item.tags),
         iconURL: item.icon_url,
@@ -84,10 +85,14 @@ const getIDsFromElement = (element) => {
   };
 };
 
-const getItemByIDs = (items, IDs) => {
+// class and instance IDs are the only IDs that can be extracted from the page
+// they are not enough to match every item exactly all the time
+// side of the offer and position must be used to to uniquely match items
+const findItem = (items, IDs, side, position) => {
   if (IDs.instanceid !== null) {
     return items.filter((item) => {
-      return item.classid === IDs.classid && item.instanceid === IDs.instanceid;
+      return item.classid === IDs.classid && item.instanceid === IDs.instanceid
+        && item.position === position && item.side === side;
     })[0];
   }
   return items.filter((item) => item.classid === IDs.classid)[0];
@@ -103,6 +108,8 @@ const extractItemsFromOffers = (offers) => {
             ...item,
             owner: getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
             position: index,
+            inOffer: offer.tradeofferid,
+            side: 'your',
           });
         });
       }
@@ -112,6 +119,8 @@ const extractItemsFromOffers = (offers) => {
             ...item,
             owner: getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
             position: index,
+            inOffer: offer.tradeofferid,
+            side: 'their',
           });
         });
       }
@@ -124,20 +133,29 @@ const extractItemsFromOffers = (offers) => {
 const addItemInfo = (items) => {
   let activeItemElements = [];
   document.querySelectorAll('.tradeoffer').forEach((offerElement) => {
-    const offerItemsElement = offerElement.querySelector('.tradeoffer_items_ctn');
-
     if (isOfferActive(offerElement)) {
-      const activeItemElementsInOffer = [...offerItemsElement.querySelectorAll('.trade_item')].map((item) => {
-        return item;
+      const primary = offerElement.querySelector('.tradeoffer_items.primary');
+      const secondary = offerElement.querySelector('.tradeoffer_items.secondary');
+      const theirSide = activePage === 'incoming_offers' ? primary : secondary;
+      const yourSide = activePage === 'incoming_offers' ? secondary : primary;
+
+      const yourSideItems = [...yourSide.querySelectorAll('.trade_item')].map((itemElement, index) => {
+        return { itemElement, side: 'your', position: index };
       });
+
+      const theirSideItems = [...theirSide.querySelectorAll('.trade_item')].map((itemElement, index) => {
+        return { itemElement, side: 'their', position: index };
+      });
+
+      const activeItemElementsInOffer = yourSideItems.concat(theirSideItems);
       activeItemElements = activeItemElements.concat(activeItemElementsInOffer);
     }
   });
 
   chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice'], (result) => {
-    activeItemElements.forEach((itemElement) => {
+    activeItemElements.forEach(({ itemElement, side, position }) => {
       if ((itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') && isCSGOItemElement(itemElement)) {
-        const item = getItemByIDs(items, getIDsFromElement(itemElement));
+        const item = findItem(items, getIDsFromElement(itemElement), side, position);
 
         if (item !== undefined) {
           addDopplerPhase(itemElement, item.dopplerInfo);
@@ -179,7 +197,6 @@ const getOffersFromAPI = (type) => {
 };
 
 const addTotals = (offers, items) => {
-  console.log(offers);
   chrome.storage.local.get('currency', (result) => {
     let totalProfit = 0.0;
     let activeOfferCount = 0;
@@ -583,8 +600,11 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
 
         const matchedItems = matchItemsWithDescriptions(itemsWithMoreInfo);
 
-        chrome.runtime.sendMessage({ addPricesAndFloatsToInventory: matchedItems }, (response) => {
-          const itemsWithAllInfo = response.addPricesAndFloatsToInventory;
+        chrome.runtime.sendMessage({
+          addPricesAndFloatsToInventory: matchedItems,
+        }, ({ addPricesAndFloatsToInventory }) => {
+          const itemsWithAllInfo = addPricesAndFloatsToInventory;
+
           addItemInfo(itemsWithAllInfo);
 
           if (activePage === 'incoming_offers') {
