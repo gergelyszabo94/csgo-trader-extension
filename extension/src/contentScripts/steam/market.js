@@ -249,39 +249,55 @@ injectStyle(`
 const sellListings = document.getElementById('tabContentsMyActiveMarketListingsTable');
 
 if (sellListings !== null) {
-  const tabContentRows = document.getElementById('tabContentsMyActiveMarketListingsRows');
-
-  if (tabContentRows !== null) {
-    // listens for listing changes like removal, page switching
-    const observer = new MutationObserver(() => {
-      if (sellListings.parentElement.style.display !== 'none') { // only execute if it's the active tab
-        addListingStartingAtPricesAndTotal(sellListings);
-      }
-    });
-
-    observer.observe(tabContentRows, {
-      subtree: false,
-      childList: true,
-      attributes: false,
-    });
-  }
-
   const tableHeader = sellListings.querySelector('.market_listing_table_header');
-  const removeColumnHeader = tableHeader.querySelector('.market_listing_right_cell.market_listing_edit_buttons.placeholder');
 
-  removeColumnHeader.innerText = 'REMOVE ALL';
-  removeColumnHeader.setAttribute('title', 'Click here to remove all listings from this page!');
-  removeColumnHeader.classList.add('clickable');
+  // if there are listings
+  if (tableHeader !== null) {
+    const tabContentRows = document.getElementById('tabContentsMyActiveMarketListingsRows');
 
-  // adds remove selected column header/button
-  removeColumnHeader.insertAdjacentHTML('afterend', `
+    if (tabContentRows !== null) {
+      // listens for listing changes like removal, page switching
+      const observer = new MutationObserver(() => {
+        if (sellListings.parentElement.style.display !== 'none') { // only execute if it's the active tab
+          addListingStartingAtPricesAndTotal(sellListings);
+        }
+      });
+
+      observer.observe(tabContentRows, {
+        subtree: false,
+        childList: true,
+        attributes: false,
+      });
+    }
+
+    const removeColumnHeader = tableHeader.querySelector('.market_listing_right_cell.market_listing_edit_buttons.placeholder');
+
+    removeColumnHeader.innerText = 'REMOVE ALL';
+    removeColumnHeader.setAttribute('title', 'Click here to remove all listings from this page!');
+    removeColumnHeader.classList.add('clickable');
+
+    // adds remove selected column header/button
+    removeColumnHeader.insertAdjacentHTML('afterend', `
         <span id="removeSelected" class="market_listing_right_cell market_listing_edit_buttons placeholder clickable" title="Click to remove the selected listings.">
             REMOVE
         </span>`);
 
-  document.getElementById('removeSelected').addEventListener('click', () => {
-    sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((listingRow) => {
-      if (listingRow.querySelector('input').checked) {
+    document.getElementById('removeSelected').addEventListener('click', () => {
+      sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((listingRow) => {
+        if (listingRow.querySelector('input').checked) {
+          const listingID = getMyListingIDFromElement(listingRow);
+          removeListing(listingID).then(
+            () => {
+              listingRow.remove();
+              switchToNextPageIfEmpty(sellListings);
+            },
+          );
+        }
+      });
+    });
+
+    removeColumnHeader.addEventListener('click', () => {
+      sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((listingRow) => {
         const listingID = getMyListingIDFromElement(listingRow);
         removeListing(listingID).then(
           () => {
@@ -289,106 +305,98 @@ if (sellListings !== null) {
             switchToNextPageIfEmpty(sellListings);
           },
         );
-      }
+      });
     });
-  });
 
-  removeColumnHeader.addEventListener('click', () => {
-    sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((listingRow) => {
-      const listingID = getMyListingIDFromElement(listingRow);
-      removeListing(listingID).then(
-        () => {
-          listingRow.remove();
-          switchToNextPageIfEmpty(sellListings);
-        },
-      );
-    });
-  });
-
-  addListingStartingAtPricesAndTotal(sellListings);
+    addListingStartingAtPricesAndTotal(sellListings);
+  }
 }
 
 // buy order related functionality, highest buy order price, cancel selected, cancel all
 const orders = document.querySelectorAll('.my_listing_section.market_content_block.market_home_listing_table')[1];
-if (orders !== null && orders !== undefined) {
+if (orders) {
   const orderRows = orders.querySelectorAll('.market_listing_row.market_recent_listing_row');
-  let totalOrderAmount = 0;
 
-  // add starting at prices and total
-  orderRows.forEach((orderRow) => {
-    // adds selection checkboxes
-    const priceElement = orderRow.querySelector('.market_listing_right_cell.market_listing_my_price');
-    if (priceElement !== null) {
-      priceElement.insertAdjacentHTML('beforebegin', `
+  // if there are actually any orders
+  if (orderRows.length !== 0) {
+    let totalOrderAmount = 0;
+
+    // add starting at prices and total
+    orderRows.forEach((orderRow) => {
+      // adds selection checkboxes
+      const priceElement = orderRow.querySelector('.market_listing_right_cell.market_listing_my_price');
+      if (priceElement !== null) {
+        priceElement.insertAdjacentHTML('beforebegin', `
             <div class="market_listing_right_cell market_listing_edit_buttons">
                 <input type="checkbox">
             </div>`);
-    }
+      }
 
-    const nameElement = orderRow.querySelector('.market_listing_item_name_link');
-    if (nameElement !== null) {
-      const marketLink = nameElement.getAttribute('href');
-      const appID = getAppIDAndItemNameFromLink(marketLink).appID;
-      const marketHashName = getAppIDAndItemNameFromLink(marketLink).marketHashName;
-      const orderID = getMyOrderIDFromElement(orderRow);
+      const nameElement = orderRow.querySelector('.market_listing_item_name_link');
+      if (nameElement !== null) {
+        const marketLink = nameElement.getAttribute('href');
+        const appID = getAppIDAndItemNameFromLink(marketLink).appID;
+        const marketHashName = getAppIDAndItemNameFromLink(marketLink).marketHashName;
+        const orderID = getMyOrderIDFromElement(orderRow);
 
-      const orderPrice = orderRow.querySelector('.market_listing_price').innerText;
+        const orderPrice = orderRow.querySelector('.market_listing_price').innerText;
 
-      totalOrderAmount += parseInt(steamFormattedPriceToCents(orderPrice));
+        totalOrderAmount += parseInt(steamFormattedPriceToCents(orderPrice));
 
-      priceQueue.jobs.push({
-        type: 'my_buy_order',
-        orderID,
-        appID,
-        market_hash_name: marketHashName,
-        callBackFunction: addHighestBuyOrderPrice,
-      });
+        priceQueue.jobs.push({
+          type: 'my_buy_order',
+          orderID,
+          appID,
+          market_hash_name: marketHashName,
+          callBackFunction: addHighestBuyOrderPrice,
+        });
 
-      if (!priceQueue.active) workOnPriceQueue();
-    }
-  });
+        if (!priceQueue.active) workOnPriceQueue();
+      }
+    });
 
-  orders.insertAdjacentHTML('afterend',
-    `<div style="margin: -15px 0 15px;">
+    orders.insertAdjacentHTML('afterend',
+      `<div style="margin: -15px 0 15px;">
                    Orders placed total value: ${centsToSteamFormattedPrice(totalOrderAmount)}
                </div>`);
 
-  const tableHeader = orders.querySelector('.market_listing_table_header');
-  const cancelColumnHeader = tableHeader.querySelector('.market_listing_right_cell.market_listing_edit_buttons.placeholder');
+    const tableHeader = orders.querySelector('.market_listing_table_header');
+    const cancelColumnHeader = tableHeader.querySelector('.market_listing_right_cell.market_listing_edit_buttons.placeholder');
 
-  cancelColumnHeader.innerText = 'CANCEL ALL';
-  cancelColumnHeader.setAttribute('title', 'Click here to cancel all your buy orders!');
-  cancelColumnHeader.classList.add('clickable');
+    cancelColumnHeader.innerText = 'CANCEL ALL';
+    cancelColumnHeader.setAttribute('title', 'Click here to cancel all your buy orders!');
+    cancelColumnHeader.classList.add('clickable');
 
-  // adds cancel selected column header/button
-  cancelColumnHeader.insertAdjacentHTML('afterend', `
+    // adds cancel selected column header/button
+    cancelColumnHeader.insertAdjacentHTML('afterend', `
         <span id="cancelSelected" class="market_listing_right_cell market_listing_edit_buttons placeholder clickable" title="Click to cancel the selected buy orders.">
             CANCEL
         </span>`);
 
-  document.getElementById('cancelSelected').addEventListener('click', () => {
-    orderRows.forEach((orderRow) => {
-      if (orderRow.querySelector('input').checked) {
+    document.getElementById('cancelSelected').addEventListener('click', () => {
+      orderRows.forEach((orderRow) => {
+        if (orderRow.querySelector('input').checked) {
+          const orderID = getMyOrderIDFromElement(orderRow);
+          cancelOrder(orderID).then(
+            () => {
+              orderRow.remove();
+            },
+          );
+        }
+      });
+    });
+
+    cancelColumnHeader.addEventListener('click', () => {
+      orderRows.forEach((orderRow) => {
         const orderID = getMyOrderIDFromElement(orderRow);
         cancelOrder(orderID).then(
           () => {
             orderRow.remove();
           },
         );
-      }
+      });
     });
-  });
-
-  cancelColumnHeader.addEventListener('click', () => {
-    orderRows.forEach((orderRow) => {
-      const orderID = getMyOrderIDFromElement(orderRow);
-      cancelOrder(orderID).then(
-        () => {
-          orderRow.remove();
-        },
-      );
-    });
-  });
+  }
 }
 
 // market history features
