@@ -42,13 +42,6 @@ const matchItemsWithDescriptions = (items) => {
   items.forEach((item) => {
     // some items don't have descriptions for some reason - will have to be investigated later
     if (item.market_hash_name !== undefined) {
-      const quality = getQuality(item.tags);
-      const dopplerInfo = (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon_url) : null;
-      const isStatrack = item.name.includes('StatTrak™');
-      const isSouvenir = item.name.includes('Souvenir');
-      const starInName = item.name.includes('★');
-      const type = getType(item.tags);
-
       itemsToReturn.push({
         name: item.name,
         market_hash_name: item.market_hash_name,
@@ -58,17 +51,17 @@ const matchItemsWithDescriptions = (items) => {
         instanceid: item.instanceid,
         assetid: item.assetid,
         position: item.position,
-        dopplerInfo,
+        dopplerInfo: (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon_url) : null,
         exterior: getExteriorFromTags(item.tags),
         iconURL: item.icon_url,
         inspectLink: getInspectLink(item),
-        quality,
-        isStatrack,
-        isSouvenir,
-        starInName,
+        quality: getQuality(item.tags),
+        isStatrack: item.name.includes('StatTrak™'),
+        isSouvenir: item.name.includes('Souvenir'),
+        starInName: item.name.includes('★'),
         nametag: getNameTag(item),
         owner: item.owner,
-        type,
+        type: getType(item.tags),
         floatInfo: null,
         patternInfo: null,
         descriptions: item.descriptions,

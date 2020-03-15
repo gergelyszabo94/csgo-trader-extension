@@ -63,21 +63,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                   if (asset.classid === item.classid && asset.instanceid === item.instanceid) {
                     const name = item.name;
                     const marketHashName = item.market_hash_name;
-                    const nameColor = item.name_color;
-                    const marketLink = `https://steamcommunity.com/market/listings/730/${item.market_hash_name}`;
-                    const classID = item.classid;
-                    const instanceId = item.instanceid;
-                    const exterior = getExteriorFromTags(item.tags);
                     let tradability = 'Tradable';
                     let tradabilityShort = 'T';
                     const icon = item.icon_url;
                     const dopplerInfo = (name.includes('Doppler') || name.includes('doppler')) ? getDopplerInfo(icon) : null;
-                    const isStatTrack = name.includes('StatTrak™');
-                    const isSouvenir = name.includes('Souvenir');
-                    const starInName = name.includes('★');
-                    const quality = getQuality(item.tags);
                     const stickers = parseStickerInfo(item.descriptions, 'direct', prices, result.pricingProvider, result.exchangeRate, result.currency);
-                    const stickerPrice = getStickerPriceTotal(stickers, result.currency);
                     const owner = steamID;
                     let price = null;
                     const type = getType(item.tags);
@@ -107,10 +97,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     itemsPropertiesToReturn.push({
                       name,
                       market_hash_name: marketHashName,
-                      name_color: nameColor,
-                      marketlink: marketLink,
-                      classid: classID,
-                      instanceid: instanceId,
+                      name_color: item.name_color,
+                      marketlink: `https://steamcommunity.com/market/listings/730/${marketHashName}`,
+                      classid: item.classid,
+                      instanceid: item.instanceid,
                       assetid: assetID,
                       position,
                       tradability,
@@ -118,14 +108,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                       marketable: item.marketable,
                       iconURL: icon,
                       dopplerInfo,
-                      exterior,
+                      exterior: getExteriorFromTags(item.tags),
                       inspectLink: getInspectLink(item, owner, assetID),
-                      quality,
-                      isStatrack: isStatTrack,
-                      isSouvenir,
-                      starInName,
+                      quality: getQuality(item.tags),
+                      isStatrack: name.includes('StatTrak™'),
+                      isSouvenir: name.includes('Souvenir'),
+                      starInName: name.includes('★'),
                       stickers,
-                      stickerPrice,
+                      stickerPrice: getStickerPriceTotal(stickers, result.currency),
                       nametag: getNameTag(item),
                       duplicates: duplicates[marketHashName],
                       owner,

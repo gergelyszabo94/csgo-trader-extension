@@ -83,43 +83,32 @@ const buildInventoryStructure = (inventory) => {
   });
 
   inventory.forEach((item) => {
-    const exterior = getExteriorFromTags(item.tags);
-    const marketlink = genericMarketLink + item.market_hash_name;
-    const quality = getQuality(item.tags);
-    const dopplerInfo = (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon) : null;
-    const isStatrack = item.name.includes('StatTrak™');
-    const isSouvenir = item.name.includes('Souvenir');
-    const starInName = item.name.includes('★');
-    const type = getType(item.tags);
-
     inventoryArrayToReturn.push({
       name: item.name,
       market_hash_name: item.market_hash_name,
       name_color: item.name_color,
-      marketlink,
+      marketlink: genericMarketLink + item.market_hash_name,
       classid: item.classid,
       instanceid: item.instanceid,
       assetid: item.assetid,
       position: item.position,
-      dopplerInfo,
-      exterior,
+      dopplerInfo: (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon) : null,
+      exterior: getExteriorFromTags(item.tags),
       iconURL: item.icon,
       inspectLink: getInspectLink(item),
-      quality,
-      isStatrack,
-      isSouvenir,
-      starInName,
+      quality: getQuality(item.tags),
+      isStatrack: item.name.includes('StatTrak™'),
+      isSouvenir: item.name.includes('Souvenir'),
+      starInName: item.name.includes('★'),
       nametag: getNameTag(item),
       duplicates: duplicates[item.market_hash_name],
       owner: item.owner,
-      type,
+      type: getType(item.tags),
       floatInfo: null,
       patternInfo: null,
       descriptions: item.descriptions,
     });
   });
-
-  console.log(inventoryArrayToReturn);
   return inventoryArrayToReturn.sort((a, b) => { return a.position - b.position; });
 };
 
