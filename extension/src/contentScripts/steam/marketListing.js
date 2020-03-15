@@ -399,8 +399,8 @@ const addPricesInOtherCurrencies = () => {
 
                 listingRow.querySelector('.market_table_value').insertAdjacentHTML('beforeend',
                   `<div class="originalPrice" data-currency-id="${currencyID}" data-converted="false">
-                           <div class="market_listing_price_original_after_fees">${priceWithFees}</div>
-                           <div class="market_listing_price_original_before_fees">${price}</div>
+                           <div class="market_listing_price_original_after_fees" title="Price including market fees in the seller's currency">${priceWithFees}</div>
+                           <div class="market_listing_price_original_before_fees" title="The amount the seller receives after fees in their own currency">${price}</div>
                          </div>`);
               }
             }
