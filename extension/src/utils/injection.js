@@ -15,7 +15,7 @@ const injectScript = (scriptString, toRemove, id, executeAndReturn) => {
     'inventoryInfo', 'allItemsLoaded', 'offerInventoryInfo', 'steamWalletCurrency', 'steamWallet', 'formattedToInt', 'intToFormatted',
     'priceAfterFees', 'sessionid'];
   const result = simpleAttributeParsing.includes(executeAndReturn) ? document.querySelector('body').getAttribute(executeAndReturn) : null;
-  document.querySelector('body').setAttribute(executeAndReturn, '');
+  if (result !== null) document.querySelector('body').setAttribute(executeAndReturn, '');
 
   if (toRemove) document.head.removeChild(toInject);
   return result;

@@ -81,11 +81,19 @@ const hideAndReport = (type, pageID, commentID) => {
       console.log(`Error code: ${response.status} Status: ${response.statusText}`);
     }
     return response.json();
-  }).then((response) => {
-    console.log(response);
-    if (response.comments_html) {
-      document.querySelector('.commentthread_comment_container').innerHTML = response.comments_html;
-    }
+  }).then(() => {
+    const commentContentElement = document.getElementById(`comment_content_${commentID}`);
+    const originalCommentText = commentContentElement.innerText;
+    commentContentElement.innerHTML = `
+    <p>This comment was <b>automatically reported to Steam by CSGO Trader Extension</b> for being scam/spam.</p>
+    <p>If you think it was misidentified please contact: <a href"=https://csgotrader.app/" target="_blank">support@csgotrader.app</a>.</p>
+    <p>To set your own reporting rules or turn this feature off go to the options and look for
+    <b>"Flag scam comments"</b> and <b>"Your strings to report"</b> under General.
+    The comment said: </p>
+    <div>
+        <span class="bb_spoiler">${originalCommentText}</span>
+    </div>
+    `;
   }).catch((err) => {
     console.log(err);
   });
