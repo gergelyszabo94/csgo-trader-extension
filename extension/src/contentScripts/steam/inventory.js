@@ -262,7 +262,7 @@ const addFloatDataToPage = (job, activeFloatQueue, floatInfo) => {
     activeFloatQueue.jobs.find((floatJob, index) => {
       if (floatJob.type === 'inventory_floatbar' && job.assetID === floatJob.assetID) {
         updateFloatAndPatternElements(item);
-        removeFromArray(activeFloatQueue, index);
+        removeFromArray(activeFloatQueue.jobs, index);
       }
       return null;
     });
@@ -862,6 +862,7 @@ const generateItemsList = () => {
   const showTradability = document.getElementById('generate_tradability').checked;
   const includeDupes = document.getElementById('generate_duplicates').checked;
   const includeNonMarketable = document.getElementById('generate_non_market').checked;
+  const selectedOnly = document.getElementById('selected_only').checked;
 
   let lineCount = 0;
   let characterCount = 0;
@@ -886,8 +887,9 @@ const generateItemsList = () => {
 
     if (lineCount < limit) {
       if (includeDupes || (!includeDupes && !namesAlreadyInList.includes(item.market_hash_name))) {
-        if ((!includeNonMarketable && item.tradability !== 'Not Tradable')
-          || (item.tradability === 'Not Tradable' && includeNonMarketable)) {
+        if (((!includeNonMarketable && item.tradability !== 'Not Tradable')
+          || (item.tradability === 'Not Tradable' && includeNonMarketable))
+        && (!selectedOnly || (selectedOnly && itemElement.classList.contains('selected')))) {
           namesAlreadyInList.push(item.market_hash_name);
           copyTextArea.value += line;
           csvContent += lineCSV;
@@ -957,6 +959,8 @@ const addFunctionBar = () => {
                                 <input id="generate_duplicates" type="checkbox">
                                 <span>Non-Marketable</span>
                                 <input id="generate_non_market" type="checkbox">
+                                <span>Selected only</span>
+                                <input id="selected_only" type="checkbox">
                             </div>
                             
                             <div>
