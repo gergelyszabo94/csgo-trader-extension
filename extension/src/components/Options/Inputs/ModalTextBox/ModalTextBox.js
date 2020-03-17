@@ -70,14 +70,13 @@ const ModalTextBox = ({
         opener={<FontAwesomeIcon icon={faEdit} />}
         validator={inputValidator}
       >
-        <div
-          contentEditable="true"
+        <textarea
           className="modalTextArea"
           placeholder="Type your text here"
           onChange={onChangeHandler}
         >
           {state.content}
-        </div>
+        </textarea>
         <div className={`warning ${state.inputValid ? 'hidden' : null}`}>
           <FontAwesomeIcon icon={faExclamationTriangle} />
           <span className="warning">

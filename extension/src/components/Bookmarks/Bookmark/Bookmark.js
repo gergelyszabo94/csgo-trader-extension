@@ -96,14 +96,13 @@ const Bookmark = ({
       <div className="actions">
         <Action title="Add or edit a comment">
           <Modal modalTitle="Add your comment" opener={<FontAwesomeIcon icon={faComment} />} validator={saveComment}>
-            <div
-              contentEditable="true"
+            <textarea
               className="modalTextArea"
               placeholder="Type your comment here"
               onChange={commentChangeHandler}
             >
               {comment}
-            </div>
+            </textarea>
           </Modal>
         </Action>
         <Action title="Edit notifications options" className={(itemInfo.tradability === 'Tradable' || itemInfo.tradability === 'Not Tradable') ? 'hidden' : null}>
