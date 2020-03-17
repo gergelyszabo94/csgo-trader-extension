@@ -18,7 +18,7 @@ import { trackEvent } from 'utils/analytics';
 import {
   genericMarketLink, souvenir, starChar, stattrak, stattrakPretty,
 } from 'utils/static/simpleStrings';
-import { injectScript } from 'utils/injection';
+import { injectScript, injectStyle } from 'utils/injection';
 
 const inBrowserInspectButtonPopupLink = `
     <a class="popup_menu_item" id="inbrowser_inspect" href="http://csgo.gallery/" target="_blank">
@@ -137,6 +137,15 @@ const addStickers = () => {
     image.remove();
   });
 
+  // inject style to modify the listing row
+  injectStyle(`
+  .extension__row {
+    overflow: initial;
+    float: left;
+    max-width: 100%;
+   }
+  `, 'listingRowOverRide');
+
   const listings = getListings();
   const listingsSection = document.getElementById('searchResultsRows');
 
@@ -148,7 +157,9 @@ const addStickers = () => {
           const listingID = getListingIDFromElement(listingRow);
 
           if (listingRow.querySelector('.stickerHolderMarket') === null) { // if stickers elements not added already
-            listingRow.querySelector('.market_listing_item_name_block').insertAdjacentHTML('beforeend',
+            const nameBlock = listingRow.querySelector('.market_listing_item_name_block');
+            nameBlock.classList.add('extension__row');
+            nameBlock.insertAdjacentHTML('beforeend',
               `<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`);
             const stickers = listings[listingID].asset.stickers;
 

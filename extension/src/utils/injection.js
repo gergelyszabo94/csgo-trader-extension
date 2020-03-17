@@ -22,10 +22,13 @@ const injectScript = (scriptString, toRemove, id, executeAndReturn) => {
 };
 
 const injectStyle = (styleString, elementID) => {
-  const styleElement = document.createElement('style');
-  styleElement.id = elementID;
-  styleElement.innerHTML = styleString;
-  document.querySelector('body').appendChild(styleElement);
+  const existingStyleElement = document.getElementById(elementID);
+  if (existingStyleElement === null) {
+    const styleElement = document.createElement('style');
+    styleElement.id = elementID;
+    styleElement.innerHTML = styleString;
+    document.querySelector('body').appendChild(styleElement);
+  }
 };
 
 export { injectScript, injectStyle };
