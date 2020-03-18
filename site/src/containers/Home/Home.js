@@ -72,7 +72,7 @@ const home = (props) => {
                     <iframe
                         width='560'
                         height='315'
-                        src='https://www.youtube.com/embed/tLbdq26GAgA'
+                        src='https://www.youtube.com/embed/6OOGxAlc8O8'
                         frameBorder='0'
                         allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'
                         title='CSGO Trader - Steam Trading Enhancer Extension - Feature Showcase'
@@ -140,11 +140,15 @@ const featureShowcase = [
     },
     {
         title: 'Bookmark and notify menu',
-        imgSrc: '/img/features/bookmarkandnotify.jpg'
+        imgSrc: '/img/features/bookmarks.png'
+    },
+    {
+        title: 'Trade offer',
+        imgSrc: '/img/features/tradeoffer.png'
     },
     {
         title: 'Options menu',
-        imgSrc: '/img/features/cstoptions.jpg'
+        imgSrc: '/img/features/options_pricing.png'
     },
     {
         title: 'Other features',

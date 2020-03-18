@@ -18,6 +18,7 @@ const footer = () => {
                 <BrandIcon link='https://steamcommunity.com/groups/csgotraderextension' brand='steam'/>
                 <BrandIcon link='https://chrome.google.com/webstore/detail/csgo-trader-steam-trading/kaibcgikagnkfgjnibflebpldakfhfih' brand='chrome'/>
                 <BrandIcon link='https://addons.mozilla.org/en-US/firefox/addon/csgo-trader-steam-trading/' brand='firefox'/>
+                <BrandIcon link='https://www.youtube.com/channel/UCkDNavvHkCFHFCZ2bmG4zzw' brand='youtube'/>
             </div>
             <span className='footerNavLink'>
                 <Link to='/privacy/'>Privacy</Link>

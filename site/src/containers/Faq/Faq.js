@@ -81,12 +81,7 @@ const faq = (props) => {
                     <h4 id='installfromsource'>From source</h4>
                     <p>
                         If you want the latest and greatest "nightly" version of the extension you will have to install it from source.
-                        <NewTabLink to='https://github.com/gergelyszabo94/csgo-trader-extension'> The repo is available on GitHub</NewTabLink>, clone or download it to your computer.
-                        If you have downloaded the .zip then extract the extension directory.
-                        For Chromium based browsers follow the instructions from above, you will have to pick the chrome directory when loading the extension.
-                        For firefox you will either have to grab the manifest.json from the firefox directory and copy (and overwrite)
-                        the one in the chrome directory or copy everything except the manifest.json from the chrome directory to the firefox directory.
-                        There are no other build steps at the moment, but it will soon change when I will refactor the extension to use the React framework.
+                        Check <NewTabLink to='https://github.com/gergelyszabo94/csgo-trader-extension/tree/master/extension'> the instructions about building the project.</NewTabLink>
                     </p>
                 </Question>
                 <Question id='support' title='How do I get support?'>
