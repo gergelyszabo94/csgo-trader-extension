@@ -3,6 +3,7 @@ import { Container } from 'react-bootstrap';
 
 import Head from '../../components/Head/Head';
 import NewTabLink from '../../components/NewTabLink/NewTabLink';
+import ShowcaseImage from '../../components/ShowcaseImage/ShowcaseImage';
 
 import './Home.css';
 
@@ -81,13 +82,9 @@ const home = (props) => {
                 {
                     featureShowcase.map(showcase => {
                         return  (
-                            <Container key={showcase.imgSrc} className='showcase'>
+                            <Container key={showcase.imgSrc}>
                                 <h3>{showcase.title}</h3>
-                                <img
-                                    src={showcase.imgSrc}
-                                    title={showcase.title}
-                                    alt={showcase.title}
-                                    className='showcaseImage'/>
+                                <ShowcaseImage src={showcase.imgSrc} title={showcase.title}/>
                             </Container>
                         );
                     })

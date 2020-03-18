@@ -1,0 +1,12 @@
+.showcase {
+    margin: 30px auto;
+}
+
+.showcaseImage {
+    height: auto;
+    max-width: 100%;
+}
+
+.center {
+    text-align: center;
+}

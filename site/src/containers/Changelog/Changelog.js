@@ -23,6 +23,42 @@ const changelog = (props) => {
                 This means that the latest version might not have rolled out to your platform yet when you are reading this.
             </Container>
             <Container className='buildingBlock'>
+                <h2>Version 2.0 - 2020-03-18</h2>
+                <ul>
+                    <li>
+                        The extension popup, the options and the bookmarks pages received a new look
+                        <GithubIssueLink issueNumber={122}/>
+                        Check out the <Link to='/release-notes/#2.0'> Release Notes </Link> for more info.
+                    </li>
+                    <li>
+                        Fixed a bug that made the Market History Export not appear for users who did not have market listings and buy orders.
+                        <GithubIssueLink issueNumber={123}/>
+                        <Credit to='https://steamcommunity.com/profiles/76561198024029179'>hellgaet</Credit>
+                    </li>
+                    <li>
+                        Price loading now retried when failed for Market mass selling
+                        <GithubIssueLink issueNumber={128}/>
+                    </li>
+                    <li>
+                        Fixed a bug that made the same kind of item on both sides show the same float value on the incoming offers page.
+                        <GithubIssueLink issueNumber={129}/>
+                    </li>
+                    <li>
+                        Spam/scam comments are now reported silently (no page jerk) and an explanation is added to reported comments
+                        <GithubIssueLink issueNumber={125}/>
+                    </li>
+                    <li>
+                        Added an option to only include selected items when exporting list of inventory items.
+                        <GithubIssueLink issueNumber={118}/>
+                    </li>
+                    <li>
+                        Market listing sticker tooltips now always shown in their full length
+                        <GithubIssueLink issueNumber={127}/>
+                        <Credit to='https://steamcommunity.com/profiles/76561198285371555'>UwU danto OwO</Credit>
+                    </li>
+                </ul>
+            </Container>
+            <Container className='buildingBlock'>
                 <h2>Version 1.26.1 - 2020-02-10</h2>
                 <ul>
                     <li>Fixed some very rare items showing no price when pricing is set to CSGOTRADER</li>
