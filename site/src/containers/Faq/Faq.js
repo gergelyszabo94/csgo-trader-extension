@@ -29,8 +29,10 @@ const faq = (props) => {
                         Installing from a distribution platform is the recommended way of installing the extension as it's the easiest way and guarantees that you will receive updates automatically.
                         The extension is available in the
                         <NewTabLink to='https://chrome.google.com/webstore/detail/csgo-trader-steam-trading/kaibcgikagnkfgjnibflebpldakfhfih'> Chrome Web Store </NewTabLink>
+                        at
+                        <NewTabLink to='https://microsoftedge.microsoft.com/addons/detail/emcdnkamomgiafjejbhdpcfgbeeimpdb'> Microsoft Edge Addons </NewTabLink>
                         and at
-                        <NewTabLink to='https://addons.mozilla.org/en-US/firefox/addon/csgo-trader-steam-trading/'> AMO</NewTabLink>.
+                        <NewTabLink to='https://addons.mozilla.org/en-US/firefox/addon/csgo-trader-steam-trading/'> AMO</NewTabLink>
                         These release versions are usually updated every 1-2 weeks.
                     </p>
                     <p>
@@ -40,7 +42,7 @@ const faq = (props) => {
                     </p>
                     <p>
                         If you have a browser that is not Chrome or Firefox don't worry, not all is lost.
-                        If you have a Chromium based browser like Opera, Ungoogled Chromium, Brave or the new Microsoft Edge you should be able to install the Chrome version.
+                        If you have a Chromium based browser like Opera, Ungoogled Chromium, or Brave you should be able to install the Chrome version.
                     </p>
                     <p>
                         I have even heard about a guy getting it to work on Android with Yandex browser, but I haven't tried it myself and I can't guarantee that it won't be buggy if it works at all like that.
