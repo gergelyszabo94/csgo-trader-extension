@@ -300,13 +300,13 @@ def lambda_handler(event, context):
             price = float("{0:.2f}".format(steam_aggregate["price"]))
         elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and csmoney_prices[item]["price"] != 0:
             price = float("{0:.2f}".format(float(csmoney_prices[item]["price"]) * st_csm * week_to_day))
-            case = "E"
+            case = "F"
         elif item in bitskins_prices and "price" in bitskins_prices[item] and bitskins_prices[item]["price"] != "null":
             price = float("{0:.2f}".format(float(bitskins_prices[item]["price"]) * st_bit * week_to_day))
-            case = "F"
+            case = "G"
         elif item in own_prices:
             price = own_prices[item]
-            case = "G"
+            case = "H"
 
         if "Doppler" in item:
             doppler = {}
@@ -315,7 +315,7 @@ def lambda_handler(event, context):
             if stage == "dev":
                 csgotrader_prices[item] = {
                     "price": price,
-                    "case": "I",
+                    "case": "J",
                     "doppler": doppler
                 }
             else:
@@ -330,6 +330,22 @@ def lambda_handler(event, context):
             }
         else:
             csgotrader_prices[item] = {"price": price}
+
+    print("Check if the non-st version is cheaper")
+    for item in csgotrader_prices:
+        is_st = True if "StatTrak\u2122" in item else False
+        if is_st:
+            none_st_name = get_non_st_name(item)
+            if none_st_name in csgotrader_prices and csgotrader_prices[none_st_name]["price"] != "null"\
+                    and csgotrader_prices[item]["price"] != "null" and float(csgotrader_prices[none_st_name]["price"]) > float(csgotrader_prices[item]["price"]):
+                # if the st version is cheaper then the non-st's price is used
+                if stage == "dev":
+                    csgotrader_prices[item] = {
+                        "price": float(csgotrader_prices[none_st_name]["price"]) * 1.1,
+                        "case": "E"
+                    }
+                else:
+                    csgotrader_prices[item] = {"price": float(csgotrader_prices[none_st_name]["price"]) * 1.1}
 
     print("csgotrader prices created")
     push_to_s3(csgotrader_prices, 'csgotrader', stage)
@@ -454,7 +470,7 @@ def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
 
     return {
         "price": "null",
-        "case": "H"
+        "case": "I"
     }
 
 
@@ -476,3 +492,10 @@ def is_mispriced_knife(item_name, price):
         return True
     else:
         return False
+
+
+def get_non_st_name(name):
+    if name.split("StatTrak\u2122")[0] == "":  # when simple st (not a knife)
+        return name.split("StatTrak\u2122 ")[1]
+    else:
+        return "".join(name.split("StatTrak\u2122 "))

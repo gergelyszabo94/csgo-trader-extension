@@ -51,28 +51,33 @@ const prices = (props) => {
                         there is no weekly data at all the monthly average is taken after adjusted with market
                         trends.
                     </li>
+                    <li>
+                        <span className="orange">E,</span> If the item is StatTrak then the prices are compared to the non-st one.
+                        If the price of the StatTrak one is lower then the non-st one's price is taken and an additional 10% is added.
+                        This case should be pretty rare.
+                    </li>
                 </ul>
                 If there is no market sales data the algorithm proceeds to other providers
                 <br/>
                 <ul>
                     <li>
-                        <span className="orange">E,</span> If there is pricing info on CS.MONEY it takes
+                        <span className="orange">F,</span> If there is pricing info on CS.MONEY it takes
                         that price and adjusts with the average difference between CS.MONEY and market
                         prices.
                     </li>
                     <li>
-                        <span className="orange">F,</span> If there is no CS.MONEY price it tries taking the
+                        <span className="orange">G,</span> If there is no CS.MONEY price it tries taking the
                         Bitskins price and adjusts with the average difference between Bitskins and market
                         prices.
                     </li>
                     <li>
-                        <span className="orange">G,</span> If there is no Bitskins price it takes a price
+                        <span className="orange">H,</span> If there is no Bitskins price it takes a price
                         from a database table where prices are set manually.
                         This is pretty much unused for now. I have built this functionality so I can add
                         prices for new items when there is no data from the providers yet.
                     </li>
                     <li>
-                        <span className="orange">H,</span> If all of the above doesn't happen then the
+                        <span className="orange">I,</span> If all of the above doesn't happen then the
                         extension does not set any price to the item.
                     </li>
                 </ul>
@@ -80,7 +85,7 @@ const prices = (props) => {
                 <br/>
                 <ul>
                     <li>
-                        <span className="orange">I,</span> Doppler and Gamma doppler knives have special
+                        <span className="orange">J,</span> Doppler and Gamma doppler knives have special
                         pricing,
                         if there is price info for the given phase for the knife on CS.MONEY, it takes
                         that price and adjusts with the average difference between CS.MONEY and market
