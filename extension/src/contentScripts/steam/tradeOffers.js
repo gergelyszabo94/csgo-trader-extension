@@ -66,6 +66,7 @@ const matchItemsWithDescriptions = (items) => {
         floatInfo: null,
         patternInfo: null,
         descriptions: item.descriptions,
+        inOffer: item.inOffer,
       });
     }
   });
@@ -592,13 +593,10 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
 
     getOffersFromAPI('active').then(
       (offers) => {
-        updateActiveOffers(offers);
-
         let allItemsInOffer = extractItemsFromOffers(offers.trade_offers_sent);
         allItemsInOffer = allItemsInOffer.concat(
           extractItemsFromOffers(offers.trade_offers_received),
         );
-
 
         const itemsWithMoreInfo = [];
         if (allItemsInOffer) {
@@ -618,6 +616,7 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
         }, ({ addPricesAndFloatsToInventory }) => {
           const itemsWithAllInfo = addPricesAndFloatsToInventory;
 
+          updateActiveOffers(itemsWithAllInfo);
           addItemInfo(itemsWithAllInfo);
 
           if (activePage === 'incoming_offers') {

@@ -22,6 +22,9 @@ let yourInventory = null;
 let theirInventory = null;
 let combinedInventories = [];
 
+const getOfferIDScript = "document.querySelector('body').setAttribute('offerID', g_strTradePartnerInventoryLoadURL.split('tradeoffer/')[1].split('/partner')[0])";
+const offerID = injectScript(getOfferIDScript, true, 'getOfferID', 'offerID');
+
 const getItemInfoFromPage = (who) => {
   const getItemsScript = `
             inventory = User${who}.getInventory(730,2);
@@ -112,34 +115,47 @@ const buildInventoryStructure = (inventory) => {
   return inventoryArrayToReturn.sort((a, b) => { return a.position - b.position; });
 };
 
+const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
+  const duplicates = activeOfferItems.filter((offerItem) => {
+    return offerItem.assetid === item.assetid && offerItem.inOffer !== offerID;
+  });
+  if (duplicates.length !== 0) {
+    itemElement.insertAdjacentHTML('beforeend', '<span class="inOtherOffer"></span>');
+  }
+};
+
 const addItemInfo = () => {
   removeSIHStuff();
 
   const itemElements = document.querySelectorAll('.item.app730.context2');
   if (itemElements.length !== 0) {
-    chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice'], (result) => {
-      itemElements.forEach((itemElement) => {
-        if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') {
-          // in case the inventory is not loaded yet it retires in a second
-          if (itemElement.id === undefined) {
-            setTimeout(() => {
-              addItemInfo();
-            }, 1000);
-            return false;
+    chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice', 'activeOffers'],
+      ({
+        colorfulItems, showStickerPrice, autoFloatOffer, activeOffers,
+      }) => {
+        itemElements.forEach((itemElement) => {
+          if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') {
+            // in case the inventory is not loaded yet it retires in a second
+            if (itemElement.id === undefined) {
+              setTimeout(() => {
+                addItemInfo();
+              }, 1000);
+              return false;
+            }
+
+            const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
+            addDopplerPhase(itemElement, item.dopplerInfo);
+            makeItemColorful(itemElement, item, colorfulItems);
+            addSSTandExtIndicators(itemElement, item, showStickerPrice);
+            addPriceIndicator(itemElement, item.price);
+            addInOtherTradeIndicator(itemElement, item, activeOffers.offers);
+            if (autoFloatOffer) addFloatIndicator(itemElement, item.floatInfo);
+
+            // marks the item "processed" to avoid additional unnecessary work later
+            itemElement.setAttribute('data-processed', 'true');
           }
-
-          const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
-          addDopplerPhase(itemElement, item.dopplerInfo);
-          makeItemColorful(itemElement, item, result.colorfulItems);
-          addSSTandExtIndicators(itemElement, item, result.showStickerPrice);
-          addPriceIndicator(itemElement, item.price);
-          if (result.autoFloatOffer) addFloatIndicator(itemElement, item.floatInfo);
-
-          // marks the item "processed" to avoid additional unnecessary work later
-          itemElement.setAttribute('data-processed', 'true');
-        }
+        });
       });
-    });
   } else { // in case the inventory is not loaded yet
     setTimeout(() => {
       addItemInfo();

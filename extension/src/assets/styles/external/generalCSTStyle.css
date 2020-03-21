@@ -321,6 +321,14 @@ progress {
     margin-bottom: 1rem;
 }
 
+.inOtherOffer {
+    position: absolute;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    background-color: white;
+}
+
 .customStickers{
     position: absolute;
     top: 5px;
