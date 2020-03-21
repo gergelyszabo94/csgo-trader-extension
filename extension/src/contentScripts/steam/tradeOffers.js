@@ -20,7 +20,7 @@ import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 let activePage = 'incoming_offers';
 if (window.location.href.includes('/tradeoffers/?history=1')) activePage = 'incoming_offers_history';
 else if (window.location.href.includes('/tradeoffers/sent/?history=1')) activePage = 'sent_offers_history';
-else if (window.location.href.includes('/tradeoffers/sent/')) activePage = 'sent_offers';
+else if (window.location.href.includes('/tradeoffers/sent')) activePage = 'sent_offers';
 
 const isOfferActive = (offerElement) => {
   if (offerElement === null) return null;
