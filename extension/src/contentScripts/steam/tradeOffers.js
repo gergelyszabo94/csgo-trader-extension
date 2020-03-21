@@ -437,6 +437,17 @@ const updateOfferHistoryData = () => {
   );
 };
 
+// info about the active offers is kept in storage
+// so we can check if an item is present in another offer
+const updateActiveOffers = (offers) => {
+  chrome.storage.local.set({
+    activeOffers: {
+      lastFullUpdate: Math.floor(Date.now() / 1000),
+      offers,
+    },
+  }, () => {});
+};
+
 logExtensionPresence();
 overrideDecline();
 overrideShowTradeOffer();
@@ -581,6 +592,8 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
 
     getOffersFromAPI('active').then(
       (offers) => {
+        updateActiveOffers(offers);
+
         let allItemsInOffer = extractItemsFromOffers(offers.trade_offers_sent);
         allItemsInOffer = allItemsInOffer.concat(
           extractItemsFromOffers(offers.trade_offers_received),
