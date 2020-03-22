@@ -25,6 +25,26 @@ let combinedInventories = [];
 const getOfferIDScript = "document.querySelector('body').setAttribute('offerID', g_strTradePartnerInventoryLoadURL.split('tradeoffer/')[1].split('/partner')[0])";
 const offerID = injectScript(getOfferIDScript, true, 'getOfferID', 'offerID');
 
+const addInOtherOffersInfoBlock = (item, otherOfferItems) => {
+  const headline = document.querySelector('.trade_partner_headline');
+  if (headline !== null) {
+    const inOtherOffer = document.querySelector('.in_other_offer');
+    if (inOtherOffer !== null) inOtherOffer.remove(); // removing it if it was added already
+    
+    const otherOffers = otherOfferItems.map((otherOfferItem) => {
+      return `<ul><a href="https://steamcommunity.com/tradeoffer/${otherOfferItem.inOffer}/" target="_blank">${otherOfferItem.inOffer}</a></ul>`;
+    });
+
+    const listString = `<li>${otherOffers.join('')}</li>`;
+
+    headline.insertAdjacentHTML('afterend',
+      `<div class="trade_partner_info_block in_other_offer" style="color: lightgray"> 
+               ${item.name} is also in:
+               ${listString}
+              </div>`);
+  }
+};
+
 const getItemInfoFromPage = (who) => {
   const getItemsScript = `
             inventory = User${who}.getInventory(730,2);
@@ -116,11 +136,15 @@ const buildInventoryStructure = (inventory) => {
 };
 
 const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
-  const duplicates = activeOfferItems.filter((offerItem) => {
+  const inOtherOffers = activeOfferItems.filter((offerItem) => {
     return offerItem.assetid === item.assetid && offerItem.inOffer !== offerID;
   });
-  if (duplicates.length !== 0) {
-    itemElement.insertAdjacentHTML('beforeend', '<span class="inOtherOffer"></span>');
+  if (inOtherOffers.length !== 0) {
+    itemElement.insertAdjacentHTML('beforeend',
+      '<span class="inOtherOffer clickable" title="Item also in other offer, click to see in which one(s)"></span>');
+    itemElement.querySelector('.inOtherOffer').addEventListener('click', () => {
+      addInOtherOffersInfoBlock(item, inOtherOffers);
+    });
   }
 };
 
@@ -684,10 +708,14 @@ getInventories();
 overrideHandleTradeActionMenu();
 
 injectStyle(`
-    .slot_app_fraudwarning{
+    .slot_app_fraudwarning {
         top: 19px !important;
         left: 75px !important;
     }`, 'nametagWarning');
+injectStyle(`
+    a.inventory_item_link {
+        top: 15px !important;
+    }`, 'itemLinkSmaller');
 updateLoggedInUserID();
 trackEvent({
   type: 'pageview',
