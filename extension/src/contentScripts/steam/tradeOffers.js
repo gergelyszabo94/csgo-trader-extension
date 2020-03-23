@@ -15,8 +15,9 @@ import { overrideDecline, overrideShowTradeOffer } from 'utils/steamOverriding';
 import { trackEvent } from 'utils/analytics';
 import { offersSortingModes } from 'utils/static/sortingModes';
 import { injectScript, injectStyle } from 'utils/injection';
-import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
+import { getProperStyleSteamIDFromOfferStyle, getUserSteamID } from 'utils/steamID';
 
+const userID = getUserSteamID();
 let activePage = 'incoming_offers';
 if (window.location.href.includes('/tradeoffers/?history=1')) activePage = 'incoming_offers_history';
 else if (window.location.href.includes('/tradeoffers/sent/?history=1')) activePage = 'sent_offers_history';
@@ -107,7 +108,7 @@ const extractItemsFromOffers = (offers) => {
         offer.items_to_give.forEach((item, index) => {
           itemsToReturn.push({
             ...item,
-            owner: getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
+            owner: userID,
             position: index,
             inOffer: offer.tradeofferid,
             side: 'your',

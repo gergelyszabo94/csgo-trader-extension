@@ -17,6 +17,7 @@ import { genericMarketLink } from 'utils/static/simpleStrings';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import { overrideHandleTradeActionMenu } from 'utils/steamOverriding';
 import { injectScript, injectStyle } from 'utils/injection';
+import { getUserSteamID } from 'utils/steamID';
 
 let yourInventory = null;
 let theirInventory = null;
@@ -24,18 +25,31 @@ let combinedInventories = [];
 
 const getOfferIDScript = "document.querySelector('body').setAttribute('offerID', g_strTradePartnerInventoryLoadURL.split('tradeoffer/')[1].split('/partner')[0])";
 const offerID = injectScript(getOfferIDScript, true, 'getOfferID', 'offerID');
+const userID = getUserSteamID();
 
 const addInOtherOffersInfoBlock = (item, otherOfferItems) => {
   const headline = document.querySelector('.trade_partner_headline');
   if (headline !== null) {
     const inOtherOffer = document.querySelector('.in_other_offer');
     if (inOtherOffer !== null) inOtherOffer.remove(); // removing it if it was added already
-    
-    const otherOffers = otherOfferItems.map((otherOfferItem) => {
-      return `<ul><a href="https://steamcommunity.com/tradeoffer/${otherOfferItem.inOffer}/" target="_blank">${otherOfferItem.inOffer}</a></ul>`;
+
+    const otherOffers = otherOfferItems.map((otherOfferItem, index) => {
+      const offerLink = otherOfferItem.owner === userID
+        ? `https://steamcommunity.com/profiles/${otherOfferItem.owner}/tradeoffers/sent#tradeofferid_${otherOfferItem.inOffer}`
+        : `https://steamcommunity.com/tradeoffer/${otherOfferItem.inOffer}/`;
+
+      const afterLinkChars = index === otherOfferItems.length - 1
+        ? '' // if it's the last one
+        : index !== 0 && index % 4 === 0
+          ? ', \n' // if it's the 4th, 8th, etc. add a new line since only 4 fits on a line
+          : ', '; // normal case
+
+      return `<a href="${offerLink}" target="_blank">
+            ${otherOfferItem.inOffer}${afterLinkChars}
+           </a>`;
     });
 
-    const listString = `<li>${otherOffers.join('')}</li>`;
+    const listString = `<div>${otherOffers.join('')}</div>`;
 
     headline.insertAdjacentHTML('afterend',
       `<div class="trade_partner_info_block in_other_offer" style="color: lightgray"> 
