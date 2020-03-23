@@ -17,7 +17,6 @@ import { genericMarketLink } from 'utils/static/simpleStrings';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import { overrideHandleTradeActionMenu } from 'utils/steamOverriding';
 import { injectScript, injectStyle } from 'utils/injection';
-import { getUserSteamID } from 'utils/steamID';
 
 let yourInventory = null;
 let theirInventory = null;
@@ -25,7 +24,6 @@ let combinedInventories = [];
 
 const getOfferIDScript = "document.querySelector('body').setAttribute('offerID', g_strTradePartnerInventoryLoadURL.split('tradeoffer/')[1].split('/partner')[0])";
 const offerID = injectScript(getOfferIDScript, true, 'getOfferID', 'offerID');
-const userID = getUserSteamID();
 
 const addInOtherOffersInfoBlock = (item, otherOfferItems) => {
   const headline = document.querySelector('.trade_partner_headline');
@@ -34,7 +32,7 @@ const addInOtherOffersInfoBlock = (item, otherOfferItems) => {
     if (inOtherOffer !== null) inOtherOffer.remove(); // removing it if it was added already
 
     const otherOffers = otherOfferItems.map((otherOfferItem, index) => {
-      const offerLink = otherOfferItem.owner === userID
+      const offerLink = otherOfferItem.offerOrigin === 'sent'
         ? `https://steamcommunity.com/profiles/${otherOfferItem.owner}/tradeoffers/sent#tradeofferid_${otherOfferItem.inOffer}`
         : `https://steamcommunity.com/tradeoffer/${otherOfferItem.inOffer}/`;
 

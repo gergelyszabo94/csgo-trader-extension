@@ -100,7 +100,7 @@ const findItem = (items, IDs, side, position) => {
   return items.filter((item) => item.classid === IDs.classid)[0];
 };
 
-const extractItemsFromOffers = (offers) => {
+const extractItemsFromOffers = (offers, sentOrReceived) => {
   const itemsToReturn = [];
   if (offers) {
     offers.forEach((offer) => {
@@ -112,6 +112,7 @@ const extractItemsFromOffers = (offers) => {
             position: index,
             inOffer: offer.tradeofferid,
             side: 'your',
+            offerOrigin: sentOrReceived,
           });
         });
       }
@@ -123,6 +124,7 @@ const extractItemsFromOffers = (offers) => {
             position: index,
             inOffer: offer.tradeofferid,
             side: 'their',
+            offerOrigin: sentOrReceived,
           });
         });
       }
@@ -594,9 +596,9 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
 
     getOffersFromAPI('active').then(
       (offers) => {
-        let allItemsInOffer = extractItemsFromOffers(offers.trade_offers_sent);
+        let allItemsInOffer = extractItemsFromOffers(offers.trade_offers_sent, 'sent');
         allItemsInOffer = allItemsInOffer.concat(
-          extractItemsFromOffers(offers.trade_offers_received),
+          extractItemsFromOffers(offers.trade_offers_received, 'received'),
         );
 
         const itemsWithMoreInfo = [];
