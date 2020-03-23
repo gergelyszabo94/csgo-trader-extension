@@ -145,7 +145,8 @@
     "images/paperclip.png",
     "images/reply.png",
     "images/hand-pointer-solid.svg",
-    "images/table-solid.svg"
+    "images/table-solid.svg",
+    "images/list-solid.svg"
   ],
   "browser_action": {
     "default_popup": "index.html?page=popup",

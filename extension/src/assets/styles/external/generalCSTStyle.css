@@ -323,10 +323,11 @@ progress {
 
 .inOtherOffer {
     position: absolute;
-    left: 0;
-    width: 10px;
-    height: 10px;
-    background-color: white;
+    left: 5px;
+    top: 5px;
+    width: 15px !important;
+    height: 15px;
+    filter: invert(97%) sepia(91%) saturate(7144%) hue-rotate(184deg) brightness(123%) contrast(96%);
 }
 
 .customStickers{

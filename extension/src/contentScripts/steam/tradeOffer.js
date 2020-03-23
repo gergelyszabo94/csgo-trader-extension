@@ -150,12 +150,19 @@ const buildInventoryStructure = (inventory) => {
 };
 
 const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
+  const listIcon = chrome.runtime.getURL('images/list-solid.svg');
+
   const inOtherOffers = activeOfferItems.filter((offerItem) => {
     return offerItem.assetid === item.assetid && offerItem.inOffer !== offerID;
   });
   if (inOtherOffers.length !== 0) {
     itemElement.insertAdjacentHTML('beforeend',
-      '<span class="inOtherOffer clickable" title="Item also in other offer, click to see in which one(s)"></span>');
+      `<img
+                class="inOtherOffer clickable"
+                title="Item also in other offer, click to see in which one(s)"
+                alt="Item also in other offer, click to see in which one(s)"
+                src="${listIcon}"
+              />`);
     itemElement.querySelector('.inOtherOffer').addEventListener('click', () => {
       addInOtherOffersInfoBlock(item, inOtherOffers);
     });
@@ -728,7 +735,7 @@ injectStyle(`
     }`, 'nametagWarning');
 injectStyle(`
     a.inventory_item_link {
-        top: 15px !important;
+        top: 20px !important;
     }`, 'itemLinkSmaller');
 updateLoggedInUserID();
 trackEvent({
