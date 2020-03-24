@@ -2,7 +2,7 @@ import {
   getItemByAssetID, getAssetIDOfElement, addDopplerPhase,
   makeItemColorful, addSSTandExtIndicators, addPriceIndicator,
   addFloatIndicator, getExteriorFromTags, getQuality,
-  getType, isCSGOInventoryActive, getInspectLink,
+  getType, isCSGOInventoryActive, getInspectLink, repositionNameTagIcons,
   getDopplerInfo, getActivePage, reloadPageOnExtensionReload, logExtensionPresence,
   updateLoggedInUserID, warnOfScammer, addPageControlEventListeners,
   addSearchListener, findElementByAssetID, getPattern, getNameTag,
@@ -726,11 +726,8 @@ getInventories();
 // adds "get float value" action item
 overrideHandleTradeActionMenu();
 
-injectStyle(`
-    .slot_app_fraudwarning {
-        top: 19px !important;
-        left: 75px !important;
-    }`, 'nametagWarning');
+repositionNameTagIcons();
+
 injectStyle(`
     a.inventory_item_link {
         top: 20px !important;

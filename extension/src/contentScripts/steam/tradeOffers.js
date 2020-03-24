@@ -4,7 +4,7 @@ import {
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
   getItemByAssetID, getInspectLink,
   logExtensionPresence, updateLoggedInUserID, reloadPageOnExtensionReload,
-  getNameTag,
+  getNameTag, repositionNameTagIcons,
 } from 'utils/utilsModular';
 import { prettyTimeAgo } from 'utils/dateTime';
 import { genericMarketLink } from 'utils/static/simpleStrings';
@@ -517,6 +517,7 @@ const updateActiveOffers = (items) => {
 };
 
 logExtensionPresence();
+repositionNameTagIcons();
 overrideDecline();
 overrideShowTradeOffer();
 updateLoggedInUserID();

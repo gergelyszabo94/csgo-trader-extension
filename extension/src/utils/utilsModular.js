@@ -6,7 +6,7 @@ import itemTypes from 'utils/static/itemTypes';
 import patterns from 'utils/static/patterns';
 import { getPrice } from 'utils/pricing';
 import collectionsWithSouvenirs from 'utils/static/collectionsWithSouvenirs';
-import { injectScript } from 'utils/injection';
+import { injectScript, injectStyle } from 'utils/injection';
 import { getUserSteamID } from 'utils/steamID';
 
 const toFixedNoRounding = (number, n) => {
@@ -537,6 +537,14 @@ const warnOfScammer = (steamID, page) => {
   });
 };
 
+const repositionNameTagIcons = () => {
+  injectStyle(`
+    .slot_app_fraudwarning {
+        top: 19px !important;
+        left: 75px !important;
+    }`, 'nametagWarning');
+};
+
 
 //  unused atm
 // const generateRandomString = (length) => {
@@ -562,5 +570,5 @@ export {
   getDataFilledFloatTechnical, souvenirExists, findElementByAssetID,
   getFloatBarSkeleton, isCSGOInventoryActive, getInspectLink,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
-  warnOfScammer, toFixedNoRounding, getNameTag,
+  warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
 };

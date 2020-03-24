@@ -4,7 +4,7 @@ import {
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists,
   findElementByAssetID, getFloatBarSkeleton,
-  logExtensionPresence, isCSGOInventoryActive,
+  logExtensionPresence, isCSGOInventoryActive, repositionNameTagIcons,
   updateLoggedInUserID, reloadPageOnExtensionReload, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, toFixedNoRounding,
 }
@@ -26,7 +26,7 @@ import { overridePopulateActions } from 'utils/steamOverriding';
 import { trackEvent } from 'utils/analytics';
 import itemTypes from 'utils/static/itemTypes';
 import exteriors from 'utils/static/exteriors';
-import { injectScript, injectStyle } from 'utils/injection';
+import { injectScript } from 'utils/injection';
 import { getUserSteamID } from 'utils/steamID';
 
 let items = [];
@@ -1259,11 +1259,7 @@ if (document.getElementById('no_inventories') === null
   });
 }
 
-injectStyle(`
-    .slot_app_fraudwarning{
-        top: 19px !important;
-        left: 75px !important;
-    }`, 'nametagWarning');
+repositionNameTagIcons();
 addSearchListener('inventory', addFloatIndicatorsToPage);
 overridePopulateActions();
 updateLoggedInUserID();
