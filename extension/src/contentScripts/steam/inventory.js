@@ -28,7 +28,7 @@ import itemTypes from 'utils/static/itemTypes';
 import exteriors from 'utils/static/exteriors';
 import { injectScript } from 'utils/injection';
 import { getUserSteamID } from 'utils/steamID';
-import { listIcon } from 'utils/static/miscElements';
+import { inOtherOfferIndicator } from 'utils/static/miscElements';
 
 let items = [];
 // variables for the countdown recursive logic
@@ -579,13 +579,7 @@ const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
     return offerItem.assetid === item.assetid;
   });
   if (inOffers.length !== 0) {
-    itemElement.insertAdjacentHTML('beforeend',
-      `<img
-                class="inOtherOffer"
-                title="Item also in other offer"
-                alt="Item also in other offer"
-                src="${listIcon}"
-            />`);
+    itemElement.insertAdjacentHTML('beforeend', inOtherOfferIndicator);
   }
 };
 

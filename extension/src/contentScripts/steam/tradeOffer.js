@@ -17,7 +17,7 @@ import { genericMarketLink } from 'utils/static/simpleStrings';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import { overrideHandleTradeActionMenu } from 'utils/steamOverriding';
 import { injectScript, injectStyle } from 'utils/injection';
-import { listIcon } from 'utils/static/miscElements';
+import { inOtherOfferIndicator } from 'utils/static/miscElements';
 
 let yourInventory = null;
 let theirInventory = null;
@@ -154,13 +154,7 @@ const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
   });
 
   if (inOtherOffers.length !== 0) {
-    itemElement.insertAdjacentHTML('beforeend',
-      `<img
-                class="inOtherOffer clickable"
-                title="Item also in other offer, click to see in which one(s)"
-                alt="Item also in other offer, click to see in which one(s)"
-                src="${listIcon}"
-              />`);
+    itemElement.insertAdjacentHTML('beforeend', inOtherOfferIndicator);
     itemElement.querySelector('.inOtherOffer').addEventListener('click', () => {
       addInOtherOffersInfoBlock(item, inOtherOffers);
     });

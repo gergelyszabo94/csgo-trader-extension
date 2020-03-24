@@ -16,7 +16,7 @@ import { trackEvent } from 'utils/analytics';
 import { offersSortingModes } from 'utils/static/sortingModes';
 import { injectScript, injectStyle } from 'utils/injection';
 import { getProperStyleSteamIDFromOfferStyle, getUserSteamID } from 'utils/steamID';
-import { listIcon } from 'utils/static/miscElements';
+import { inOtherOfferIndicator } from 'utils/static/miscElements';
 
 const userID = getUserSteamID();
 let activePage = 'incoming_offers';
@@ -140,13 +140,7 @@ const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
   });
 
   if (inOtherOffers.length !== 0) {
-    itemElement.insertAdjacentHTML('beforeend',
-      `<img
-                class="inOtherOffer clickable"
-                title="Item also in other offer"
-                alt="Item also in other offer"
-                src="${listIcon}"
-              />`);
+    itemElement.insertAdjacentHTML('beforeend', inOtherOfferIndicator);
     itemElement.querySelector('.inOtherOffer').addEventListener('click', () => {
       addInOtherOffersInfoBlock(item, inOtherOffers, offerElement);
     });
