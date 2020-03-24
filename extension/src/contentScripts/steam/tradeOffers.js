@@ -2,7 +2,7 @@ import {
   getExteriorFromTags, getQuality, getDopplerInfo,
   getType, addDopplerPhase, makeItemColorful,
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
-  getItemByAssetID, getInspectLink,
+  getItemByAssetID, getInspectLink, removeOfferFromActiveOffers,
   logExtensionPresence, updateLoggedInUserID, reloadPageOnExtensionReload,
   getNameTag, repositionNameTagIcons, jumpToAnchor,
 } from 'utils/utilsModular';
@@ -629,8 +629,29 @@ const acceptTradeScriptString = `
                 }`;
 if (activePage === 'incoming_offers') injectScript(acceptTradeScriptString, false, 'acceptTradeScript', false);
 
-// adds trade offer summary/help bar and sorting
+
 if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
+  chrome.storage.local.get('itemInOtherOffers', ({ itemInOtherOffers }) => {
+    if (itemInOtherOffers) {
+      // adds listeners to cancel/decline buttons
+      // and removes the offer from active offers when clicked
+      const buttons = [];
+      document.querySelectorAll('.tradeoffer_footer_actions').forEach((offerActionsElement) => {
+        const actions = offerActionsElement.querySelectorAll('a');
+        buttons.push(actions[actions.length - 1]); // they are always the last
+      });
+
+      buttons.forEach((button) => {
+        button.addEventListener('click', (event) => {
+          removeOfferFromActiveOffers(getOfferIDFromElement(
+            event.target.parentElement.parentElement.parentElement,
+          ));
+        });
+      });
+    }
+  });
+
+
   const tradeOffersList = document.querySelector('.profile_leftcol');
   if (tradeOffersList !== null && document.querySelector('.profile_fatalerror') === null) {
     updateOfferHistoryData();

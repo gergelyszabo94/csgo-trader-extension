@@ -551,6 +551,32 @@ const jumpToAnchor = (anchor) => {
   }
 };
 
+const removeOfferFromActiveOffers = (offerID) => {
+  chrome.storage.local.get(['activeOffers'], ({ activeOffers }) => {
+    const itemsNotInThisOffer = activeOffers.items.filter((item) => {
+      return item.inOffer !== offerID;
+    });
+
+    const sentNotThisOffer = activeOffers.sent.filter((offer) => {
+      return offer.tradeofferid !== offerID;
+    });
+
+    const receivedNotThisOffer = activeOffers.received.filter((offer) => {
+      return offer.tradeofferid !== offerID;
+    });
+
+    chrome.storage.local.set({
+      activeOffers: {
+        lastFullUpdate: activeOffers.lastFullUpdate,
+        items: itemsNotInThisOffer,
+        sent: sentNotThisOffer,
+        received: receivedNotThisOffer,
+        descriptions: activeOffers.descriptions,
+      },
+    }, () => {});
+  });
+};
+
 //  unused atm
 // const generateRandomString = (length) => {
 //   let text = '';
@@ -576,4 +602,5 @@ export {
   getFloatBarSkeleton, isCSGOInventoryActive, getInspectLink,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
+  removeOfferFromActiveOffers,
 };

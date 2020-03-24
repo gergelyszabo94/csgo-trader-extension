@@ -6,6 +6,7 @@ import {
   getDopplerInfo, getActivePage, reloadPageOnExtensionReload, logExtensionPresence,
   updateLoggedInUserID, warnOfScammer, addPageControlEventListeners,
   addSearchListener, findElementByAssetID, getPattern, getNameTag,
+  removeOfferFromActiveOffers,
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import { prettyPrintPrice } from 'utils/pricing';
@@ -716,7 +717,6 @@ logExtensionPresence();
 // initiates all logic that needs access to item info
 getInventories();
 
-
 // adds "get float value" action item
 overrideHandleTradeActionMenu();
 
@@ -809,6 +809,11 @@ if (theirInventoryTab !== null) {
     singleClickControlClick();
     setTimeout(() => { addFloatIndicatorsToPage('page'); }, 500);
   });
+}
+
+const declineButton = document.getElementById('btn_decline_trade_offer');
+if (declineButton !== null) {
+  removeOfferFromActiveOffers(offerID);
 }
 
 addFunctionBars();
