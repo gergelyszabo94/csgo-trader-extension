@@ -229,7 +229,7 @@ const addItemInfo = (items) => {
             makeItemColorful(itemElement, item, colorfulItems);
             addSSTandExtIndicators(itemElement, item, showStickerPrice);
             addPriceIndicator(itemElement, item.price);
-            addInOtherTradeIndicator(itemElement, item, activeOffers.offers);
+            addInOtherTradeIndicator(itemElement, item, activeOffers.items);
 
             if (autoFloatOffer && item.inspectLink !== null) {
               if (item.floatInfo === null && itemTypes[item.type.key].float) {
@@ -507,11 +507,11 @@ const updateOfferHistoryData = () => {
 
 // info about the active offers is kept in storage
 // so we can check if an item is present in another offer
-const updateActiveOffers = (offers) => {
+const updateActiveOffers = (items) => {
   chrome.storage.local.set({
     activeOffers: {
       lastFullUpdate: Math.floor(Date.now() / 1000),
-      offers,
+      items,
     },
   }, () => {});
 };

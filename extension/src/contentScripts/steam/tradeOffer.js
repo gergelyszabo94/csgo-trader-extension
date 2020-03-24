@@ -148,12 +148,12 @@ const buildInventoryStructure = (inventory) => {
 };
 
 const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
-  const listIcon = chrome.runtime.getURL('images/list-solid.svg');
-
   const inOtherOffers = activeOfferItems.filter((offerItem) => {
     return offerItem.assetid === item.assetid && offerItem.inOffer !== offerID;
   });
+
   if (inOtherOffers.length !== 0) {
+    const listIcon = chrome.runtime.getURL('images/list-solid.svg');
     itemElement.insertAdjacentHTML('beforeend',
       `<img
                 class="inOtherOffer clickable"
@@ -191,7 +191,7 @@ const addItemInfo = () => {
             makeItemColorful(itemElement, item, colorfulItems);
             addSSTandExtIndicators(itemElement, item, showStickerPrice);
             addPriceIndicator(itemElement, item.price);
-            addInOtherTradeIndicator(itemElement, item, activeOffers.offers);
+            addInOtherTradeIndicator(itemElement, item, activeOffers.items);
             if (autoFloatOffer) addFloatIndicator(itemElement, item.floatInfo);
 
             // marks the item "processed" to avoid additional unnecessary work later
