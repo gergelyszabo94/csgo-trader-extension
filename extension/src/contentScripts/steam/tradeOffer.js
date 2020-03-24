@@ -172,9 +172,9 @@ const addItemInfo = () => {
 
   const itemElements = document.querySelectorAll('.item.app730.context2');
   if (itemElements.length !== 0) {
-    chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice', 'activeOffers'],
+    chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice', 'activeOffers', 'itemInOtherOffers'],
       ({
-        colorfulItems, showStickerPrice, autoFloatOffer, activeOffers,
+        colorfulItems, showStickerPrice, autoFloatOffer, activeOffers, itemInOtherOffers,
       }) => {
         itemElements.forEach((itemElement) => {
           if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') {
@@ -191,7 +191,7 @@ const addItemInfo = () => {
             makeItemColorful(itemElement, item, colorfulItems);
             addSSTandExtIndicators(itemElement, item, showStickerPrice);
             addPriceIndicator(itemElement, item.price);
-            addInOtherTradeIndicator(itemElement, item, activeOffers.items);
+            if (itemInOtherOffers) addInOtherTradeIndicator(itemElement, item, activeOffers.items);
             if (autoFloatOffer) addFloatIndicator(itemElement, item.floatInfo);
 
             // marks the item "processed" to avoid additional unnecessary work later

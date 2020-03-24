@@ -216,9 +216,9 @@ const addItemInfo = (items) => {
     }
   });
 
-  chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice', 'activeOffers'],
+  chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice', 'activeOffers', 'itemInOtherOffers'],
     ({
-      colorfulItems, showStickerPrice, autoFloatOffer, activeOffers,
+      colorfulItems, showStickerPrice, autoFloatOffer, activeOffers, itemInOtherOffers,
     }) => {
       activeItemElements.forEach(({ itemElement, side, position }) => {
         if ((itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') && isCSGOItemElement(itemElement)) {
@@ -229,7 +229,7 @@ const addItemInfo = (items) => {
             makeItemColorful(itemElement, item, colorfulItems);
             addSSTandExtIndicators(itemElement, item, showStickerPrice);
             addPriceIndicator(itemElement, item.price);
-            addInOtherTradeIndicator(itemElement, item, activeOffers.items);
+            if (itemInOtherOffers) addInOtherTradeIndicator(itemElement, item, activeOffers.items);
 
             if (autoFloatOffer && item.inspectLink !== null) {
               if (item.floatInfo === null && itemTypes[item.type.key].float) {

@@ -56,8 +56,15 @@ const storageKeys = {
   showStickerPrice: true,
   activeOffers: {
     lastFullUpdate: '',
-    offers: {},
+    offers: {
+      items: [],
+      sent: [],
+      received: [],
+      descriptions: [],
+    },
   },
+  itemInOffersInventory: true,
+  itemInOtherOffers: true,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID', 'tradeHistoryLastUpdate'];

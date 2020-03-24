@@ -89,6 +89,18 @@ const tradeOffer = () => {
         )}
       />
       <Row
+        name="Mark items in other offers"
+        id="itemInOtherOffers"
+        type="flipSwitchStorage"
+        description={(
+          <>
+            Shows an indicator on the items if they are in present in other trade offers.
+            Clicking the indicator adds links to the other offers it is present in.&nbsp;
+            <FontAwesomeIcon icon={faCode} className="apiIcon" />
+          </>
+        )}
+      />
+      <Row
         name="Offer header to left"
         id="tradeOfferHeaderToLeft"
         type="flipSwitchStorage"

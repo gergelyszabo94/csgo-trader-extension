@@ -45,6 +45,19 @@ const inventory = () => {
           </>
          )}
       />
+      <Row
+        name="Mark items in offer"
+        id="itemInOffersInventory"
+        type="flipSwitchStorage"
+        description={(
+          <>
+            Shows an indicator on the items if they are in trade offers.
+            Making an item the active item in the inventory
+            adds links to the offers it is present in.&nbsp;
+            <FontAwesomeIcon icon={faCode} className="apiIcon" />
+          </>
+        )}
+      />
     </Category>
   );
 };

@@ -425,37 +425,39 @@ const addRightSideElements = () => {
         });
 
         // adds the in-offer module
-        chrome.storage.local.get(['activeOffers'], ({ activeOffers }) => {
-          const inOffers = activeOffers.items.filter((offerItem) => {
-            return offerItem.assetid === item.assetid;
-          });
-
-          if (inOffers.length !== 0) {
-            const offerLinks = inOffers.map((offerItem, index) => {
-              const offerLink = offerItem.offerOrigin === 'sent'
-                ? `https://steamcommunity.com/profiles/${offerItem.owner}/tradeoffers/sent#tradeofferid_${offerItem.inOffer}`
-                : `https://steamcommunity.com/tradeoffer/${offerItem.inOffer}/`;
-
-              const afterLinkChars = index === inOffers.length - 1
-                ? '' // if it's the last one
-                : ', ';
-
-              return `<a href="${offerLink}" target="_blank">
-                        ${offerItem.inOffer}${afterLinkChars}
-                      </a>`;
+        chrome.storage.local.get(['activeOffers', 'itemInOffersInventory'], ({ activeOffers, itemInOffersInventory }) => {
+          if (itemInOffersInventory) {
+            const inOffers = activeOffers.items.filter((offerItem) => {
+              return offerItem.assetid === item.assetid;
             });
 
-            const listString = `<div>${offerLinks.join('')}</div>`;
-            const inTradesInfoModule = `
+            if (inOffers.length !== 0) {
+              const offerLinks = inOffers.map((offerItem, index) => {
+                const offerLink = offerItem.offerOrigin === 'sent'
+                  ? `https://steamcommunity.com/profiles/${offerItem.owner}/tradeoffers/sent#tradeofferid_${offerItem.inOffer}`
+                  : `https://steamcommunity.com/tradeoffer/${offerItem.inOffer}/`;
+
+                const afterLinkChars = index === inOffers.length - 1
+                  ? '' // if it's the last one
+                  : ', ';
+
+                return `<a href="${offerLink}" target="_blank">
+                        ${offerItem.inOffer}${afterLinkChars}
+                      </a>`;
+              });
+
+              const listString = `<div>${offerLinks.join('')}</div>`;
+              const inTradesInfoModule = `
                 <div class="descriptor inTradesInfoModule">
                     In offer${inOffers.length > 1 ? 's' : ''}:
                     ${listString}
                 </div>`;
 
-            document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
-              .forEach((descriptor) => {
-                descriptor.insertAdjacentHTML('afterend', inTradesInfoModule);
-              });
+              document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
+                .forEach((descriptor) => {
+                  descriptor.insertAdjacentHTML('afterend', inTradesInfoModule);
+                });
+            }
           }
         });
 
@@ -591,9 +593,9 @@ const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
 const addPerItemInfo = () => {
   const itemElements = document.querySelectorAll('.item.app730.context2');
   if (itemElements.length !== 0) {
-    chrome.storage.local.get(['colorfulItems', 'autoFloatInventory', 'showStickerPrice', 'activeOffers'],
+    chrome.storage.local.get(['colorfulItems', 'autoFloatInventory', 'showStickerPrice', 'activeOffers', 'itemInOffersInventory'],
       ({
-        colorfulItems, showStickerPrice, autoFloatInventory, activeOffers,
+        colorfulItems, showStickerPrice, autoFloatInventory, activeOffers, itemInOffersInventory,
       }) => {
         itemElements.forEach((itemElement) => {
           if (itemElement.getAttribute('data-processed') === null
@@ -621,7 +623,9 @@ const addPerItemInfo = () => {
             makeItemColorful(itemElement, item, colorfulItems);
             addSSTandExtIndicators(itemElement, item, showStickerPrice);
             addPriceIndicator(itemElement, item.price);
-            addInOtherTradeIndicator(itemElement, item, activeOffers.items);
+            if (itemInOffersInventory) {
+              addInOtherTradeIndicator(itemElement, item, activeOffers.items);
+            }
             if (autoFloatInventory) addFloatIndicator(itemElement, item.floatInfo);
 
             // marks the item "processed" to avoid additional unnecessary work later
