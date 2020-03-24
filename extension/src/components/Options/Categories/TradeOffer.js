@@ -1,7 +1,6 @@
 import React from 'react';
 import Row from 'components/Options/Row';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCode } from '@fortawesome/free-solid-svg-icons';
+import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
 
 import { sortingModes, offersSortingModes } from 'utils/static/sortingModes';
 
@@ -83,8 +82,8 @@ const tradeOffer = () => {
         description={(
           <>
             Show the number of offers received from a user and how many was
-            sent to them (on the tradeoffers and the individual offer pages)&nbsp;
-            <FontAwesomeIcon icon={faCode} className="apiIcon" />
+            sent to them (on the tradeoffers and the individual offer pages)
+            <ApiKeyIndicator />
           </>
         )}
       />
@@ -95,8 +94,8 @@ const tradeOffer = () => {
         description={(
           <>
             Shows an indicator on the items if they are in present in other trade offers.
-            Clicking the indicator adds links to the other offers it is present in.&nbsp;
-            <FontAwesomeIcon icon={faCode} className="apiIcon" />
+            Clicking the indicator adds links to the other offers it is present in.
+            <ApiKeyIndicator />
           </>
         )}
       />

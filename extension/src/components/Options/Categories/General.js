@@ -1,9 +1,7 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCode } from '@fortawesome/free-solid-svg-icons';
 
 import NewTabLink from 'components/NewTabLink/NewTabLink';
-
+import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
 import Category from 'components/Options/Category/Category';
 import Row from 'components/Options/Row';
 
@@ -34,9 +32,8 @@ const general = () => {
             <NewTabLink to="https://developer.valvesoftware.com/wiki/Steam_Web_API">
               Steam Web API
             </NewTabLink>
-            , functions that need an API key will be tagged with this
-            icon:&nbsp;
-            <FontAwesomeIcon icon={faCode} className="apiIcon" />
+            , functions that need an API key will be tagged with this icon
+            <ApiKeyIndicator />
             <br />
             You can get an API key by filling out&nbsp;
             <NewTabLink to="https://steamcommunity.com/dev/apikey">
