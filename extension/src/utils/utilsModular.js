@@ -546,7 +546,9 @@ const repositionNameTagIcons = () => {
 };
 
 const jumpToAnchor = (anchor) => {
-  window.location = `${window.location.origin}${window.location.pathname}${anchor}`;
+  if (anchor !== '') {
+    window.location = `${window.location.origin}${window.location.pathname}${anchor}`;
+  }
 };
 
 //  unused atm
