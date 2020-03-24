@@ -16,6 +16,7 @@ import { trackEvent } from 'utils/analytics';
 import { offersSortingModes } from 'utils/static/sortingModes';
 import { injectScript, injectStyle } from 'utils/injection';
 import { getProperStyleSteamIDFromOfferStyle, getUserSteamID } from 'utils/steamID';
+import { listIcon } from 'utils/static/miscElements';
 
 const userID = getUserSteamID();
 let activePage = 'incoming_offers';
@@ -139,8 +140,6 @@ const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
   });
 
   if (inOtherOffers.length !== 0) {
-    const listIcon = chrome.runtime.getURL('images/list-solid.svg');
-
     itemElement.insertAdjacentHTML('beforeend',
       `<img
                 class="inOtherOffer clickable"
