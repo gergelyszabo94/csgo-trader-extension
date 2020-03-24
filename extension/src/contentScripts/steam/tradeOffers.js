@@ -507,11 +507,14 @@ const updateOfferHistoryData = () => {
 
 // info about the active offers is kept in storage
 // so we can check if an item is present in another offer
-const updateActiveOffers = (items) => {
+const updateActiveOffers = (offers, items) => {
   chrome.storage.local.set({
     activeOffers: {
       lastFullUpdate: Math.floor(Date.now() / 1000),
       items,
+      sent: offers.trade_offers_sent,
+      received: offers.trade_offers_received,
+      descriptions: offers.descriptions,
     },
   }, () => {});
 };
@@ -684,7 +687,7 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
         }, ({ addPricesAndFloatsToInventory }) => {
           const itemsWithAllInfo = addPricesAndFloatsToInventory;
 
-          updateActiveOffers(itemsWithAllInfo);
+          updateActiveOffers(offers, itemsWithAllInfo);
           addItemInfo(itemsWithAllInfo);
 
           if (activePage === 'incoming_offers') {
