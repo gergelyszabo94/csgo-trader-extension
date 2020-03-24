@@ -99,9 +99,16 @@ const addInOtherOffersInfoBlock = (item, otherOfferItems, offerElement) => {
   if (inOtherOffer !== null) inOtherOffer.remove(); // removing it if it was added already
 
   const otherOffers = otherOfferItems.map((otherOfferItem, index) => {
-    const offerLink = otherOfferItem.offerOrigin === 'sent'
-      ? `https://steamcommunity.com/profiles/${otherOfferItem.owner}/tradeoffers/sent#tradeofferid_${otherOfferItem.inOffer}`
-      : `#tradeofferid_${otherOfferItem.inOffer}`;
+    let offerLink = '';
+    if (activePage === 'incoming_offers') {
+      offerLink = otherOfferItem.offerOrigin === 'sent'
+        ? `https://steamcommunity.com/profiles/${otherOfferItem.owner}/tradeoffers/sent#tradeofferid_${otherOfferItem.inOffer}`
+        : `#tradeofferid_${otherOfferItem.inOffer}`;
+    } else if (activePage === 'sent_offers') {
+      offerLink = otherOfferItem.offerOrigin === 'sent'
+        ? `#tradeofferid_${otherOfferItem.inOffer}`
+        : `https://steamcommunity.com/tradeoffer/${otherOfferItem.inOffer}/`;
+    }
 
     const afterLinkChars = index === otherOfferItems.length - 1
       ? '' // if it's the last one
