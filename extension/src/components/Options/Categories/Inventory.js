@@ -1,8 +1,7 @@
 import React from 'react';
 
 import Row from 'components/Options/Row';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCode } from '@fortawesome/free-solid-svg-icons';
+import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
 import { sortingModes } from 'utils/static/sortingModes';
 import Category from '../Category/Category';
 
@@ -40,10 +39,23 @@ const inventory = () => {
         type="flipSwitchStorage"
         description={(
           <>
-            Show the number of offers received from a user and how many was sent to them&nbsp;
-            <FontAwesomeIcon icon={faCode} className="apiIcon" />
+            Show the number of offers received from a user and how many was sent to them
+            <ApiKeyIndicator />
           </>
          )}
+      />
+      <Row
+        name="Mark items in offer"
+        id="itemInOffersInventory"
+        type="flipSwitchStorage"
+        description={(
+          <>
+            Shows an indicator on the items if they are in trade offers.
+            Making an item the active item in the inventory
+            adds links to the offers it is present in.
+            <ApiKeyIndicator />
+          </>
+        )}
       />
     </Category>
   );

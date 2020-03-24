@@ -6,7 +6,7 @@ import itemTypes from 'utils/static/itemTypes';
 import patterns from 'utils/static/patterns';
 import { getPrice } from 'utils/pricing';
 import collectionsWithSouvenirs from 'utils/static/collectionsWithSouvenirs';
-import { injectScript } from 'utils/injection';
+import { injectScript, injectStyle } from 'utils/injection';
 import { getUserSteamID } from 'utils/steamID';
 
 const toFixedNoRounding = (number, n) => {
@@ -537,6 +537,45 @@ const warnOfScammer = (steamID, page) => {
   });
 };
 
+const repositionNameTagIcons = () => {
+  injectStyle(`
+    .slot_app_fraudwarning {
+        top: 19px !important;
+        left: 75px !important;
+    }`, 'nametagWarning');
+};
+
+const jumpToAnchor = (anchor) => {
+  if (anchor !== '') {
+    window.location = `${window.location.origin}${window.location.pathname}${anchor}`;
+  }
+};
+
+const removeOfferFromActiveOffers = (offerID) => {
+  chrome.storage.local.get(['activeOffers'], ({ activeOffers }) => {
+    const itemsNotInThisOffer = activeOffers.items.filter((item) => {
+      return item.inOffer !== offerID;
+    });
+
+    const sentNotThisOffer = activeOffers.sent.filter((offer) => {
+      return offer.tradeofferid !== offerID;
+    });
+
+    const receivedNotThisOffer = activeOffers.received.filter((offer) => {
+      return offer.tradeofferid !== offerID;
+    });
+
+    chrome.storage.local.set({
+      activeOffers: {
+        lastFullUpdate: activeOffers.lastFullUpdate,
+        items: itemsNotInThisOffer,
+        sent: sentNotThisOffer,
+        received: receivedNotThisOffer,
+        descriptions: activeOffers.descriptions,
+      },
+    }, () => {});
+  });
+};
 
 //  unused atm
 // const generateRandomString = (length) => {
@@ -554,7 +593,7 @@ export {
   logExtensionPresence, scrapeSteamAPIkey, arrayFromArrayOrNotArray,
   getExteriorFromTags, getDopplerInfo, getQuality, parseStickerInfo,
   handleStickerNamesWithCommas, removeFromArray, getType,
-  getPattern, goToInternalPage,
+  getPattern, goToInternalPage, jumpToAnchor,
   validateSteamAPIKey, getAssetIDFromInspectLink, uuidv4, updateLoggedInUserID,
   listenToLocationChange, addPageControlEventListeners, getItemByAssetID,
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
@@ -562,5 +601,6 @@ export {
   getDataFilledFloatTechnical, souvenirExists, findElementByAssetID,
   getFloatBarSkeleton, isCSGOInventoryActive, getInspectLink,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
-  warnOfScammer, toFixedNoRounding, getNameTag,
+  warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
+  removeOfferFromActiveOffers,
 };

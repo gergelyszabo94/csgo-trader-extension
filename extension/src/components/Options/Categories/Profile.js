@@ -1,8 +1,7 @@
 import React from 'react';
 import Row from 'components/Options/Row';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCode } from '@fortawesome/free-solid-svg-icons';
+import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
 import Category from '../Category/Category';
 
 const profile = () => {
@@ -49,8 +48,8 @@ const profile = () => {
         description={(
           <>
             Shows users&apos; real chat status on their profile
-            - if they are away it will show away.&nbsp;
-            <FontAwesomeIcon icon={faCode} className="apiIcon" />
+            - if they are away it will show away.
+            <ApiKeyIndicator />
           </>
         )}
       />

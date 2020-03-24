@@ -2,9 +2,9 @@ import {
   getExteriorFromTags, getQuality, getDopplerInfo,
   getType, addDopplerPhase, makeItemColorful,
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
-  getItemByAssetID, getInspectLink,
+  getItemByAssetID, getInspectLink, removeOfferFromActiveOffers,
   logExtensionPresence, updateLoggedInUserID, reloadPageOnExtensionReload,
-  getNameTag,
+  getNameTag, repositionNameTagIcons, jumpToAnchor,
 } from 'utils/utilsModular';
 import { prettyTimeAgo } from 'utils/dateTime';
 import { genericMarketLink } from 'utils/static/simpleStrings';
@@ -15,8 +15,10 @@ import { overrideDecline, overrideShowTradeOffer } from 'utils/steamOverriding';
 import { trackEvent } from 'utils/analytics';
 import { offersSortingModes } from 'utils/static/sortingModes';
 import { injectScript, injectStyle } from 'utils/injection';
-import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
+import { getProperStyleSteamIDFromOfferStyle, getUserSteamID } from 'utils/steamID';
+import { inOtherOfferIndicator } from 'utils/static/miscElements';
 
+const userID = getUserSteamID();
 let activePage = 'incoming_offers';
 if (window.location.href.includes('/tradeoffers/?history=1')) activePage = 'incoming_offers_history';
 else if (window.location.href.includes('/tradeoffers/sent/?history=1')) activePage = 'sent_offers_history';
@@ -27,6 +29,10 @@ const isOfferActive = (offerElement) => {
   const offerItemsElement = offerElement.querySelector('.tradeoffer_items_ctn');
   if (offerItemsElement !== null) return !offerItemsElement.classList.contains('inactive');
   return false;
+};
+
+const getOfferIDFromElement = (element) => {
+  return element.id.split('tradeofferid_')[1];
 };
 
 const selectItemElementByIDs = (classid, instanceid) => {
@@ -66,6 +72,8 @@ const matchItemsWithDescriptions = (items) => {
         floatInfo: null,
         patternInfo: null,
         descriptions: item.descriptions,
+        inOffer: item.inOffer,
+        offerOrigin: item.offerOrigin,
       });
     }
   });
@@ -85,6 +93,60 @@ const getIDsFromElement = (element) => {
   };
 };
 
+const addInOtherOffersInfoBlock = (item, otherOfferItems, offerElement) => {
+  const offerFooter = offerElement.querySelector('.tradeoffer_footer');
+
+  const inOtherOffer = offerFooter.querySelector('.in_other_offer');
+  if (inOtherOffer !== null) inOtherOffer.remove(); // removing it if it was added already
+
+  const otherOffers = otherOfferItems.map((otherOfferItem, index) => {
+    let offerLink = '';
+    if (activePage === 'incoming_offers') {
+      offerLink = otherOfferItem.offerOrigin === 'sent'
+        ? `https://steamcommunity.com/profiles/${otherOfferItem.owner}/tradeoffers/sent#tradeofferid_${otherOfferItem.inOffer}`
+        : `#tradeofferid_${otherOfferItem.inOffer}`;
+    } else if (activePage === 'sent_offers') {
+      offerLink = otherOfferItem.offerOrigin === 'sent'
+        ? `#tradeofferid_${otherOfferItem.inOffer}`
+        : `https://steamcommunity.com/tradeoffer/${otherOfferItem.inOffer}/`;
+    }
+
+    const afterLinkChars = index === otherOfferItems.length - 1
+      ? '' // if it's the last one
+      : index !== 0 && index % 4 === 0
+        ? ', \n' // if it's the 4th, 8th, etc. add a new line since only 4 fits on a line
+        : ', '; // normal case
+
+    return `<a href="${offerLink}" ${otherOfferItem.offerOrigin === 'sent' ? 'target="_blank"' : ''}>
+            ${otherOfferItem.inOffer}${afterLinkChars}
+           </a>`;
+  });
+
+  const listString = `<div>${otherOffers.join('')}</div>`;
+
+  offerFooter.insertAdjacentHTML('afterbegin',
+    `<div class="trade_partner_info_block in_other_offer" style="color: lightgray"> 
+               ${item.name} is also in:
+               ${listString}
+              </div>`);
+};
+
+const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
+  const offerElement = itemElement.parentElement.parentElement.parentElement.parentElement;
+  const offerID = getOfferIDFromElement(offerElement);
+
+  const inOtherOffers = activeOfferItems.filter((offerItem) => {
+    return offerItem.assetid === item.assetid && offerItem.inOffer !== offerID;
+  });
+
+  if (inOtherOffers.length !== 0) {
+    itemElement.insertAdjacentHTML('beforeend', inOtherOfferIndicator);
+    itemElement.querySelector('.inOtherOffer').addEventListener('click', () => {
+      addInOtherOffersInfoBlock(item, inOtherOffers, offerElement);
+    });
+  }
+};
+
 // class and instance IDs are the only IDs that can be extracted from the page
 // they are not enough to match every item exactly all the time
 // side of the offer and position must be used to to uniquely match items
@@ -98,7 +160,7 @@ const findItem = (items, IDs, side, position) => {
   return items.filter((item) => item.classid === IDs.classid)[0];
 };
 
-const extractItemsFromOffers = (offers) => {
+const extractItemsFromOffers = (offers, sentOrReceived) => {
   const itemsToReturn = [];
   if (offers) {
     offers.forEach((offer) => {
@@ -106,10 +168,11 @@ const extractItemsFromOffers = (offers) => {
         offer.items_to_give.forEach((item, index) => {
           itemsToReturn.push({
             ...item,
-            owner: getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
+            owner: userID,
             position: index,
             inOffer: offer.tradeofferid,
             side: 'your',
+            offerOrigin: sentOrReceived,
           });
         });
       }
@@ -121,6 +184,7 @@ const extractItemsFromOffers = (offers) => {
             position: index,
             inOffer: offer.tradeofferid,
             side: 'their',
+            offerOrigin: sentOrReceived,
           });
         });
       }
@@ -152,37 +216,41 @@ const addItemInfo = (items) => {
     }
   });
 
-  chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice'], (result) => {
-    activeItemElements.forEach(({ itemElement, side, position }) => {
-      if ((itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') && isCSGOItemElement(itemElement)) {
-        const item = findItem(items, getIDsFromElement(itemElement), side, position);
+  chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice', 'activeOffers', 'itemInOtherOffers'],
+    ({
+      colorfulItems, showStickerPrice, autoFloatOffer, activeOffers, itemInOtherOffers,
+    }) => {
+      activeItemElements.forEach(({ itemElement, side, position }) => {
+        if ((itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') && isCSGOItemElement(itemElement)) {
+          const item = findItem(items, getIDsFromElement(itemElement), side, position);
 
-        if (item !== undefined) {
-          addDopplerPhase(itemElement, item.dopplerInfo);
-          makeItemColorful(itemElement, item, result.colorfulItems);
-          addSSTandExtIndicators(itemElement, item, result.showStickerPrice);
-          addPriceIndicator(itemElement, item.price);
+          if (item !== undefined) {
+            addDopplerPhase(itemElement, item.dopplerInfo);
+            makeItemColorful(itemElement, item, colorfulItems);
+            addSSTandExtIndicators(itemElement, item, showStickerPrice);
+            addPriceIndicator(itemElement, item.price);
+            if (itemInOtherOffers) addInOtherTradeIndicator(itemElement, item, activeOffers.items);
 
-          if (result.autoFloatOffer && item.inspectLink !== null) {
-            if (item.floatInfo === null && itemTypes[item.type.key].float) {
-              floatQueue.jobs.push({
-                type: 'offersPage',
-                assetID: item.assetid,
-                classid: item.classid,
-                instanceid: item.instanceid,
-                inspectLink: item.inspectLink,
-                callBackFunction: addFloatDataToPage,
-              });
-              if (!floatQueue.active) workOnFloatQueue();
-            } else addFloatIndicator(itemElement, item.floatInfo);
+            if (autoFloatOffer && item.inspectLink !== null) {
+              if (item.floatInfo === null && itemTypes[item.type.key].float) {
+                floatQueue.jobs.push({
+                  type: 'offersPage',
+                  assetID: item.assetid,
+                  classid: item.classid,
+                  instanceid: item.instanceid,
+                  inspectLink: item.inspectLink,
+                  callBackFunction: addFloatDataToPage,
+                });
+                if (!floatQueue.active) workOnFloatQueue();
+              } else addFloatIndicator(itemElement, item.floatInfo);
+            }
           }
-        }
 
-        // marks the item "processed" to avoid additional unnecessary work later
-        itemElement.setAttribute('data-processed', 'true');
-      }
+          // marks the item "processed" to avoid additional unnecessary work later
+          itemElement.setAttribute('data-processed', 'true');
+        }
+      });
     });
-  });
 };
 
 // sends a message to the "back end" to request offers (history or active only with descriptions)
@@ -437,7 +505,22 @@ const updateOfferHistoryData = () => {
   );
 };
 
+// info about the active offers is kept in storage
+// so we can check if an item is present in another offer
+const updateActiveOffers = (offers, items) => {
+  chrome.storage.local.set({
+    activeOffers: {
+      lastFullUpdate: Math.floor(Date.now() / 1000),
+      items,
+      sent: offers.trade_offers_sent,
+      received: offers.trade_offers_received,
+      descriptions: offers.descriptions,
+    },
+  }, () => {});
+};
+
 logExtensionPresence();
+repositionNameTagIcons();
 overrideDecline();
 overrideShowTradeOffer();
 updateLoggedInUserID();
@@ -499,7 +582,7 @@ if (activePage === 'incoming_offers') {
 if (activePage === 'incoming_offers') {
   document.querySelectorAll('.tradeoffer').forEach((offerElement) => {
     if (isOfferActive(offerElement)) {
-      const offerID = offerElement.id.split('tradeofferid_')[1];
+      const offerID = getOfferIDFromElement(offerElement);
       const partnerID = getProperStyleSteamIDFromOfferStyle(offerElement.querySelector('.playerAvatar').getAttribute('data-miniprofile'));
       offerElement.querySelector('.tradeoffer_footer_actions').insertAdjacentHTML('afterbegin',
         `<a href="javascript:AcceptTradeOffer( '${offerID}', '${partnerID}' );" class="whiteLink">Accept Trade</a> | `);
@@ -546,8 +629,29 @@ const acceptTradeScriptString = `
                 }`;
 if (activePage === 'incoming_offers') injectScript(acceptTradeScriptString, false, 'acceptTradeScript', false);
 
-// adds trade offer summary/help bar and sorting
+
 if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
+  chrome.storage.local.get('itemInOtherOffers', ({ itemInOtherOffers }) => {
+    if (itemInOtherOffers) {
+      // adds listeners to cancel/decline buttons
+      // and removes the offer from active offers when clicked
+      const buttons = [];
+      document.querySelectorAll('.tradeoffer_footer_actions').forEach((offerActionsElement) => {
+        const actions = offerActionsElement.querySelectorAll('a');
+        buttons.push(actions[actions.length - 1]); // they are always the last
+      });
+
+      buttons.forEach((button) => {
+        button.addEventListener('click', (event) => {
+          removeOfferFromActiveOffers(getOfferIDFromElement(
+            event.target.parentElement.parentElement.parentElement,
+          ));
+        });
+      });
+    }
+  });
+
+
   const tradeOffersList = document.querySelector('.profile_leftcol');
   if (tradeOffersList !== null && document.querySelector('.profile_fatalerror') === null) {
     updateOfferHistoryData();
@@ -581,11 +685,10 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
 
     getOffersFromAPI('active').then(
       (offers) => {
-        let allItemsInOffer = extractItemsFromOffers(offers.trade_offers_sent);
+        let allItemsInOffer = extractItemsFromOffers(offers.trade_offers_sent, 'sent');
         allItemsInOffer = allItemsInOffer.concat(
-          extractItemsFromOffers(offers.trade_offers_received),
+          extractItemsFromOffers(offers.trade_offers_received, 'received'),
         );
-
 
         const itemsWithMoreInfo = [];
         if (allItemsInOffer) {
@@ -605,6 +708,7 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
         }, ({ addPricesAndFloatsToInventory }) => {
           const itemsWithAllInfo = addPricesAndFloatsToInventory;
 
+          updateActiveOffers(offers, itemsWithAllInfo);
           addItemInfo(itemsWithAllInfo);
 
           if (activePage === 'incoming_offers') {
@@ -617,9 +721,10 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
 
           document.getElementById('tradeoffers_summary').innerHTML = '<b>Trade offer summary:</b>';
 
-          chrome.storage.local.get('tradeOffersSortingMode', (result) => {
-            document.querySelector(`#offerSortingMethod [value="${result.tradeOffersSortingMode}"]`).selected = true;
-            sortOffers(result.tradeOffersSortingMode);
+          chrome.storage.local.get('tradeOffersSortingMode', ({ tradeOffersSortingMode }) => {
+            document.querySelector(`#offerSortingMethod [value="${tradeOffersSortingMode}"]`).selected = true;
+            sortOffers(tradeOffersSortingMode);
+            if (activePage === 'sent_offers') jumpToAnchor(window.location.hash);
             document.getElementById('tradeOffersSortingMenu').classList.remove('hidden');
           });
         });

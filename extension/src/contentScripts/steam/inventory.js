@@ -4,7 +4,7 @@ import {
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists,
   findElementByAssetID, getFloatBarSkeleton,
-  logExtensionPresence, isCSGOInventoryActive,
+  logExtensionPresence, isCSGOInventoryActive, repositionNameTagIcons,
   updateLoggedInUserID, reloadPageOnExtensionReload, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, toFixedNoRounding,
 }
@@ -26,8 +26,9 @@ import { overridePopulateActions } from 'utils/steamOverriding';
 import { trackEvent } from 'utils/analytics';
 import itemTypes from 'utils/static/itemTypes';
 import exteriors from 'utils/static/exteriors';
-import { injectScript, injectStyle } from 'utils/injection';
+import { injectScript } from 'utils/injection';
 import { getUserSteamID } from 'utils/steamID';
+import { inOtherOfferIndicator } from 'utils/static/miscElements';
 
 let items = [];
 // variables for the countdown recursive logic
@@ -70,7 +71,7 @@ const isOwnInventory = () => {
 };
 
 const cleanUpElements = (nonCSGOInventory) => {
-  document.querySelectorAll('.upperModule, .lowerModule, .otherExteriors, .custom_name, .startingAtVolume').forEach((element) => {
+  document.querySelectorAll('.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name, .startingAtVolume').forEach((element) => {
     element.remove();
   });
 
@@ -306,7 +307,7 @@ const addStartingAtPrice = (marketHashName) => {
   );
 };
 
-const addElements = () => {
+const addRightSideElements = () => {
   // only add elements if the CS:GO inventory is the active one
   if (isCSGOInventoryActive('inventory')) {
     const activeID = getAssetIDofActive();
@@ -424,6 +425,43 @@ const addElements = () => {
           }
         });
 
+        // adds the in-offer module
+        chrome.storage.local.get(['activeOffers', 'itemInOffersInventory'], ({ activeOffers, itemInOffersInventory }) => {
+          if (itemInOffersInventory) {
+            const inOffers = activeOffers.items.filter((offerItem) => {
+              return offerItem.assetid === item.assetid;
+            });
+
+            if (inOffers.length !== 0) {
+              const offerLinks = inOffers.map((offerItem, index) => {
+                const offerLink = offerItem.offerOrigin === 'sent'
+                  ? `https://steamcommunity.com/profiles/${offerItem.owner}/tradeoffers/sent#tradeofferid_${offerItem.inOffer}`
+                  : `https://steamcommunity.com/tradeoffer/${offerItem.inOffer}/`;
+
+                const afterLinkChars = index === inOffers.length - 1
+                  ? '' // if it's the last one
+                  : ', ';
+
+                return `<a href="${offerLink}" target="_blank">
+                        ${offerItem.inOffer}${afterLinkChars}
+                      </a>`;
+              });
+
+              const listString = `<div>${offerLinks.join('')}</div>`;
+              const inTradesInfoModule = `
+                <div class="descriptor inTradesInfoModule">
+                    In offer${inOffers.length > 1 ? 's' : ''}:
+                    ${listString}
+                </div>`;
+
+              document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
+                .forEach((descriptor) => {
+                  descriptor.insertAdjacentHTML('afterend', inTradesInfoModule);
+                });
+            }
+          }
+        });
+
 
         // adds doppler phase  to the name and makes it a link to the market listings page
         const name = getItemByAssetID(getItemInfoFromPage(), activeID).description.name;
@@ -536,12 +574,23 @@ const addFloatIndicatorsToPage = (page) => {
   });
 };
 
+const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
+  const inOffers = activeOfferItems.filter((offerItem) => {
+    return offerItem.assetid === item.assetid;
+  });
+  if (inOffers.length !== 0) {
+    itemElement.insertAdjacentHTML('beforeend', inOtherOfferIndicator);
+  }
+};
+
 // adds everything that is per item, like trade lock, exterior, doppler phases, border colors
 const addPerItemInfo = () => {
   const itemElements = document.querySelectorAll('.item.app730.context2');
   if (itemElements.length !== 0) {
-    chrome.storage.local.get(['colorfulItems', 'autoFloatInventory', 'showStickerPrice'],
-      (result) => {
+    chrome.storage.local.get(['colorfulItems', 'autoFloatInventory', 'showStickerPrice', 'activeOffers', 'itemInOffersInventory'],
+      ({
+        colorfulItems, showStickerPrice, autoFloatInventory, activeOffers, itemInOffersInventory,
+      }) => {
         itemElements.forEach((itemElement) => {
           if (itemElement.getAttribute('data-processed') === null
             || itemElement.getAttribute('data-processed') === 'false') {
@@ -565,10 +614,13 @@ const addPerItemInfo = () => {
             }
 
             addDopplerPhase(itemElement, item.dopplerInfo);
-            makeItemColorful(itemElement, item, result.colorfulItems);
-            addSSTandExtIndicators(itemElement, item, result.showStickerPrice);
+            makeItemColorful(itemElement, item, colorfulItems);
+            addSSTandExtIndicators(itemElement, item, showStickerPrice);
             addPriceIndicator(itemElement, item.price);
-            if (result.autoFloatInventory) addFloatIndicator(itemElement, item.floatInfo);
+            if (itemInOffersInventory) {
+              addInOtherTradeIndicator(itemElement, item, activeOffers.items);
+            }
+            if (autoFloatInventory) addFloatIndicator(itemElement, item.floatInfo);
 
             // marks the item "processed" to avoid additional unnecessary work later
             itemElement.setAttribute('data-processed', 'true');
@@ -889,7 +941,7 @@ const generateItemsList = () => {
       if (includeDupes || (!includeDupes && !namesAlreadyInList.includes(item.market_hash_name))) {
         if (((!includeNonMarketable && item.tradability !== 'Not Tradable')
           || (item.tradability === 'Not Tradable' && includeNonMarketable))
-        && (!selectedOnly || (selectedOnly && itemElement.classList.contains('selected')))) {
+          && (!selectedOnly || (selectedOnly && itemElement.classList.contains('selected')))) {
           namesAlreadyInList.push(item.market_hash_name);
           copyTextArea.value += line;
           csvContent += lineCSV;
@@ -1112,7 +1164,7 @@ const requestInventory = () => {
     if (!(response === undefined || response.inventory === undefined
       || response.inventory === '' || response.inventory === 'error')) {
       items = response.inventory;
-      addElements();
+      addRightSideElements();
       addPerItemInfo();
       setInventoryTotal(items);
       addFunctionBar();
@@ -1181,7 +1233,7 @@ logExtensionPresence();
 // this is a workaround for waiting for ajax calls to finish when the page changes
 const observer = new MutationObserver(() => {
   if (isCSGOInventoryActive('inventory')) {
-    addElements();
+    addRightSideElements();
     addFunctionBar();
   } else cleanUpElements(true);
 });
@@ -1205,11 +1257,7 @@ if (document.getElementById('no_inventories') === null
   });
 }
 
-injectStyle(`
-    .slot_app_fraudwarning{
-        top: 19px !important;
-        left: 75px !important;
-    }`, 'nametagWarning');
+repositionNameTagIcons();
 addSearchListener('inventory', addFloatIndicatorsToPage);
 overridePopulateActions();
 updateLoggedInUserID();

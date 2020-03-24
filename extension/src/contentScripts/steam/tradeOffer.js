@@ -2,10 +2,11 @@ import {
   getItemByAssetID, getAssetIDOfElement, addDopplerPhase,
   makeItemColorful, addSSTandExtIndicators, addPriceIndicator,
   addFloatIndicator, getExteriorFromTags, getQuality,
-  getType, isCSGOInventoryActive, getInspectLink,
+  getType, isCSGOInventoryActive, getInspectLink, repositionNameTagIcons,
   getDopplerInfo, getActivePage, reloadPageOnExtensionReload, logExtensionPresence,
   updateLoggedInUserID, warnOfScammer, addPageControlEventListeners,
   addSearchListener, findElementByAssetID, getPattern, getNameTag,
+  removeOfferFromActiveOffers,
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import { prettyPrintPrice } from 'utils/pricing';
@@ -17,10 +18,46 @@ import { genericMarketLink } from 'utils/static/simpleStrings';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import { overrideHandleTradeActionMenu } from 'utils/steamOverriding';
 import { injectScript, injectStyle } from 'utils/injection';
+import { inOtherOfferIndicator } from 'utils/static/miscElements';
 
 let yourInventory = null;
 let theirInventory = null;
 let combinedInventories = [];
+
+const getOfferIDScript = "document.querySelector('body').setAttribute('offerID', g_strTradePartnerInventoryLoadURL.split('tradeoffer/')[1].split('/partner')[0])";
+const offerID = injectScript(getOfferIDScript, true, 'getOfferID', 'offerID');
+
+const addInOtherOffersInfoBlock = (item, otherOfferItems) => {
+  const headline = document.querySelector('.trade_partner_headline');
+  if (headline !== null) {
+    const inOtherOffer = document.querySelector('.in_other_offer');
+    if (inOtherOffer !== null) inOtherOffer.remove(); // removing it if it was added already
+
+    const otherOffers = otherOfferItems.map((otherOfferItem, index) => {
+      const offerLink = otherOfferItem.offerOrigin === 'sent'
+        ? `https://steamcommunity.com/profiles/${otherOfferItem.owner}/tradeoffers/sent#tradeofferid_${otherOfferItem.inOffer}`
+        : `https://steamcommunity.com/tradeoffer/${otherOfferItem.inOffer}/`;
+
+      const afterLinkChars = index === otherOfferItems.length - 1
+        ? '' // if it's the last one
+        : index !== 0 && index % 4 === 0
+          ? ', \n' // if it's the 4th, 8th, etc. add a new line since only 4 fits on a line
+          : ', '; // normal case
+
+      return `<a href="${offerLink}" target="_blank">
+            ${otherOfferItem.inOffer}${afterLinkChars}
+           </a>`;
+    });
+
+    const listString = `<div>${otherOffers.join('')}</div>`;
+
+    headline.insertAdjacentHTML('afterend',
+      `<div class="trade_partner_info_block in_other_offer" style="color: lightgray"> 
+               ${item.name} is also in:
+               ${listString}
+              </div>`);
+  }
+};
 
 const getItemInfoFromPage = (who) => {
   const getItemsScript = `
@@ -112,34 +149,51 @@ const buildInventoryStructure = (inventory) => {
   return inventoryArrayToReturn.sort((a, b) => { return a.position - b.position; });
 };
 
+const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
+  const inOtherOffers = activeOfferItems.filter((offerItem) => {
+    return offerItem.assetid === item.assetid && offerItem.inOffer !== offerID;
+  });
+
+  if (inOtherOffers.length !== 0) {
+    itemElement.insertAdjacentHTML('beforeend', inOtherOfferIndicator);
+    itemElement.querySelector('.inOtherOffer').addEventListener('click', () => {
+      addInOtherOffersInfoBlock(item, inOtherOffers);
+    });
+  }
+};
+
 const addItemInfo = () => {
   removeSIHStuff();
 
   const itemElements = document.querySelectorAll('.item.app730.context2');
   if (itemElements.length !== 0) {
-    chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice'], (result) => {
-      itemElements.forEach((itemElement) => {
-        if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') {
-          // in case the inventory is not loaded yet it retires in a second
-          if (itemElement.id === undefined) {
-            setTimeout(() => {
-              addItemInfo();
-            }, 1000);
-            return false;
+    chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice', 'activeOffers', 'itemInOtherOffers'],
+      ({
+        colorfulItems, showStickerPrice, autoFloatOffer, activeOffers, itemInOtherOffers,
+      }) => {
+        itemElements.forEach((itemElement) => {
+          if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') {
+            // in case the inventory is not loaded yet it retires in a second
+            if (itemElement.id === undefined) {
+              setTimeout(() => {
+                addItemInfo();
+              }, 1000);
+              return false;
+            }
+
+            const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
+            addDopplerPhase(itemElement, item.dopplerInfo);
+            makeItemColorful(itemElement, item, colorfulItems);
+            addSSTandExtIndicators(itemElement, item, showStickerPrice);
+            addPriceIndicator(itemElement, item.price);
+            if (itemInOtherOffers) addInOtherTradeIndicator(itemElement, item, activeOffers.items);
+            if (autoFloatOffer) addFloatIndicator(itemElement, item.floatInfo);
+
+            // marks the item "processed" to avoid additional unnecessary work later
+            itemElement.setAttribute('data-processed', 'true');
           }
-
-          const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
-          addDopplerPhase(itemElement, item.dopplerInfo);
-          makeItemColorful(itemElement, item, result.colorfulItems);
-          addSSTandExtIndicators(itemElement, item, result.showStickerPrice);
-          addPriceIndicator(itemElement, item.price);
-          if (result.autoFloatOffer) addFloatIndicator(itemElement, item.floatInfo);
-
-          // marks the item "processed" to avoid additional unnecessary work later
-          itemElement.setAttribute('data-processed', 'true');
-        }
+        });
       });
-    });
   } else { // in case the inventory is not loaded yet
     setTimeout(() => {
       addItemInfo();
@@ -663,15 +717,15 @@ logExtensionPresence();
 // initiates all logic that needs access to item info
 getInventories();
 
-
 // adds "get float value" action item
 overrideHandleTradeActionMenu();
 
+repositionNameTagIcons();
+
 injectStyle(`
-    .slot_app_fraudwarning{
-        top: 19px !important;
-        left: 75px !important;
-    }`, 'nametagWarning');
+    a.inventory_item_link {
+        top: 20px !important;
+    }`, 'itemLinkSmaller');
 updateLoggedInUserID();
 trackEvent({
   type: 'pageview',
@@ -755,6 +809,11 @@ if (theirInventoryTab !== null) {
     singleClickControlClick();
     setTimeout(() => { addFloatIndicatorsToPage('page'); }, 500);
   });
+}
+
+const declineButton = document.getElementById('btn_decline_trade_offer');
+if (declineButton !== null) {
+  removeOfferFromActiveOffers(offerID);
 }
 
 addFunctionBars();
