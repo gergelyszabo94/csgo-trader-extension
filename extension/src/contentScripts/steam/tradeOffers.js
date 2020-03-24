@@ -4,7 +4,7 @@ import {
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
   getItemByAssetID, getInspectLink,
   logExtensionPresence, updateLoggedInUserID, reloadPageOnExtensionReload,
-  getNameTag, repositionNameTagIcons,
+  getNameTag, repositionNameTagIcons, jumpToAnchor,
 } from 'utils/utilsModular';
 import { prettyTimeAgo } from 'utils/dateTime';
 import { genericMarketLink } from 'utils/static/simpleStrings';
@@ -700,9 +700,10 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
 
           document.getElementById('tradeoffers_summary').innerHTML = '<b>Trade offer summary:</b>';
 
-          chrome.storage.local.get('tradeOffersSortingMode', (result) => {
-            document.querySelector(`#offerSortingMethod [value="${result.tradeOffersSortingMode}"]`).selected = true;
-            sortOffers(result.tradeOffersSortingMode);
+          chrome.storage.local.get('tradeOffersSortingMode', ({ tradeOffersSortingMode }) => {
+            document.querySelector(`#offerSortingMethod [value="${tradeOffersSortingMode}"]`).selected = true;
+            sortOffers(tradeOffersSortingMode);
+            if (activePage === 'sent_offers') jumpToAnchor(window.location.hash);
             document.getElementById('tradeOffersSortingMenu').classList.remove('hidden');
           });
         });

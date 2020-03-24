@@ -545,6 +545,9 @@ const repositionNameTagIcons = () => {
     }`, 'nametagWarning');
 };
 
+const jumpToAnchor = (anchor) => {
+  window.location = `${window.location.origin}${window.location.pathname}${anchor}`;
+};
 
 //  unused atm
 // const generateRandomString = (length) => {
@@ -562,7 +565,7 @@ export {
   logExtensionPresence, scrapeSteamAPIkey, arrayFromArrayOrNotArray,
   getExteriorFromTags, getDopplerInfo, getQuality, parseStickerInfo,
   handleStickerNamesWithCommas, removeFromArray, getType,
-  getPattern, goToInternalPage,
+  getPattern, goToInternalPage, jumpToAnchor,
   validateSteamAPIKey, getAssetIDFromInspectLink, uuidv4, updateLoggedInUserID,
   listenToLocationChange, addPageControlEventListeners, getItemByAssetID,
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
