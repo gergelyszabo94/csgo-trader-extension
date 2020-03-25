@@ -78,6 +78,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     chrome.browserAction.setBadgeText({ text: 'U' });
 
     // notifies the user when the extension is updated
+    chrome.storage.local.set({ showUpdatedRibbon: true }, () => {});
     chrome.storage.local.get('notifyOnUpdate', (result) => {
       if (result.notifyOnUpdate) {
         const version = chrome.runtime.getManifest().version;

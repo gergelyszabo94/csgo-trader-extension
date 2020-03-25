@@ -10,6 +10,7 @@ import {
   souvenirExists,
   updateLoggedInUserID,
   toFixedNoRounding,
+  addUpdatedRibbon,
 } from 'utils/utilsModular';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import exteriors from 'utils/static/exteriors';
@@ -444,6 +445,7 @@ const addPricesInOtherCurrencies = () => {
 
 logExtensionPresence();
 updateLoggedInUserID();
+addUpdatedRibbon();
 trackEvent({
   type: 'pageview',
   action: 'ListingView',

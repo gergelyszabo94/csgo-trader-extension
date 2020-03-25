@@ -1,6 +1,6 @@
 import {
   reloadPageOnExtensionReload, logExtensionPresence,
-  updateLoggedInUserID,
+  updateLoggedInUserID, addUpdatedRibbon,
 } from 'utils/utilsModular';
 import { removeListing, getMarketHistory, cancelOrder } from 'utils/market';
 import { trackEvent } from 'utils/analytics';
@@ -236,6 +236,7 @@ const addHighestBuyOrderPrice = (job, highestBuyOrder) => {
 
 logExtensionPresence();
 updateLoggedInUserID();
+addUpdatedRibbon();
 trackEvent({
   type: 'pageview',
   action: 'marketMainPage',

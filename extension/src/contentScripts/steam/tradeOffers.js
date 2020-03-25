@@ -1,6 +1,6 @@
 import {
   getExteriorFromTags, getQuality, getDopplerInfo,
-  getType, addDopplerPhase, makeItemColorful,
+  getType, addDopplerPhase, makeItemColorful, addUpdatedRibbon,
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
   getItemByAssetID, getInspectLink, removeOfferFromActiveOffers,
   logExtensionPresence, updateLoggedInUserID, reloadPageOnExtensionReload,
@@ -524,6 +524,7 @@ repositionNameTagIcons();
 overrideDecline();
 overrideShowTradeOffer();
 updateLoggedInUserID();
+addUpdatedRibbon();
 trackEvent({
   type: 'pageview',
   action: 'TradeOffersPageView',

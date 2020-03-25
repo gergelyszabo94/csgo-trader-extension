@@ -577,6 +577,27 @@ const removeOfferFromActiveOffers = (offerID) => {
   });
 };
 
+const addUpdatedRibbon = () => {
+  chrome.storage.local.get(['showUpdatedRibbon'], ({ showUpdatedRibbon }) => {
+    if (showUpdatedRibbon) {
+      document.querySelector('body').insertAdjacentHTML('afterbegin',
+        `<div id="extensionUpdatedRibbon">
+                     CSGO Trader Extension was updated to ${chrome.runtime.getManifest().version}. Check out the 
+                    <a href="https://csgotrader.app/changelog/" target="_blank" title="Open CSGOTrader Changelog">
+                        Changelog
+                    </a>
+                    for details
+                    <span class="clickable" id="closeUpdatedRibbon" title="Close ribbon until the next update">Close</span>
+                </div>`);
+      document.getElementById('closeUpdatedRibbon').addEventListener('click', () => {
+        chrome.storage.local.set({ showUpdatedRibbon: false }, () => {
+          document.getElementById('extensionUpdatedRibbon').classList.add('hidden');
+        });
+      });
+    }
+  });
+};
+
 //  unused atm
 // const generateRandomString = (length) => {
 //   let text = '';
@@ -602,5 +623,5 @@ export {
   getFloatBarSkeleton, isCSGOInventoryActive, getInspectLink,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
-  removeOfferFromActiveOffers,
+  removeOfferFromActiveOffers, addUpdatedRibbon,
 };

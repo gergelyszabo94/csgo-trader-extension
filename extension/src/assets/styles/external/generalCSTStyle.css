@@ -384,6 +384,18 @@ progress {
     width: 100%;
 }
 
+#extensionUpdatedRibbon {
+    background-color: #171a21;
+    color: lightgray;
+    padding: 5px;
+    text-align: center;
+}
+
+#closeUpdatedRibbon {
+    color: orangered;
+    margin-left: 20px;
+}
+
 .nametag{
     color: var(--steam-nametag-red);
     font-size: 1.2rem;

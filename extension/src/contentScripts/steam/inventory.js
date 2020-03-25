@@ -3,7 +3,7 @@ import {
   getAssetIDOfElement, makeItemColorful, addDopplerPhase,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists,
-  findElementByAssetID, getFloatBarSkeleton,
+  findElementByAssetID, getFloatBarSkeleton, addUpdatedRibbon,
   logExtensionPresence, isCSGOInventoryActive, repositionNameTagIcons,
   updateLoggedInUserID, reloadPageOnExtensionReload, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, toFixedNoRounding,
@@ -1261,6 +1261,7 @@ repositionNameTagIcons();
 addSearchListener('inventory', addFloatIndicatorsToPage);
 overridePopulateActions();
 updateLoggedInUserID();
+addUpdatedRibbon();
 trackEvent({
   type: 'pageview',
   action: 'InventoryView',

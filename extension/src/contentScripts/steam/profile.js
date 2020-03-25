@@ -1,6 +1,7 @@
 import {
   logExtensionPresence, updateLoggedInUserID,
   warnOfScammer, reloadPageOnExtensionReload,
+  addUpdatedRibbon,
 } from 'utils/utilsModular';
 import { dateToISODisplay } from 'utils/dateTime';
 import { trackEvent } from 'utils/analytics';
@@ -16,6 +17,7 @@ import { getUserSteamID, getProfileOwnerSteamID } from 'utils/steamID';
 if (document.querySelector('body').classList.contains('profile_page')) {
   logExtensionPresence();
   updateLoggedInUserID();
+  addUpdatedRibbon();
   trackEvent({
     type: 'pageview',
     action: 'ProfileView',

@@ -65,8 +65,9 @@ const storageKeys = {
   },
   itemInOffersInventory: true,
   itemInOtherOffers: true,
+  showUpdatedRibbon: false,
 };
 
-const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID', 'tradeHistoryLastUpdate'];
+const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID', 'tradeHistoryLastUpdate', 'activeOffers'];
 
 export { storageKeys, nonSettingStorageKeys };

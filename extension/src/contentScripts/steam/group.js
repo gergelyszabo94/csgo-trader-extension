@@ -1,5 +1,8 @@
 import { goldenMemberNames, goldenCommenters } from 'utils/goldening';
-import { logExtensionPresence, updateLoggedInUserID, listenToLocationChange } from 'utils/utilsModular';
+import {
+  logExtensionPresence, updateLoggedInUserID,
+  listenToLocationChange, addUpdatedRibbon,
+} from 'utils/utilsModular';
 import { reportComments, addReplyToCommentsFunctionality, addCommentsMutationObserver } from 'utils/comments';
 import { trackEvent } from 'utils/analytics';
 import { getGroupID } from 'utils/steamID';
@@ -10,6 +13,7 @@ addCommentsMutationObserver();
 if (!window.location.href.includes('/announcements/')) reportComments('group', getGroupID());
 goldenCommenters();
 updateLoggedInUserID();
+addUpdatedRibbon();
 listenToLocationChange(goldenMemberNames);
 trackEvent({
   type: 'pageview',

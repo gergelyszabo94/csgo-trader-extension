@@ -1,8 +1,9 @@
-import { logExtensionPresence, updateLoggedInUserID } from 'utils/utilsModular';
+import { logExtensionPresence, updateLoggedInUserID, addUpdatedRibbon } from 'utils/utilsModular';
 import { trackEvent } from 'utils/analytics';
 
 logExtensionPresence();
 updateLoggedInUserID();
+addUpdatedRibbon();
 trackEvent({
   type: 'pageview',
   action: 'friendListView',
