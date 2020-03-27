@@ -3,6 +3,7 @@ import { trackEvent, sendTelemetry } from 'utils/analytics';
 import { updatePrices, updateExchangeRates } from 'utils/pricing';
 import { scrapeSteamAPIkey, goToInternalPage, uuidv4 } from 'utils/utilsModular';
 import { trimFloatCache } from 'utils/floatCaching';
+import { getSteamNotificationCount } from 'utils/notifications';
 
 // handles install and update events
 chrome.runtime.onInstalled.addListener((details) => {
@@ -107,6 +108,7 @@ chrome.runtime.onInstalled.addListener((details) => {
   // and it fails to update prices/exchange rates
   updatePrices();
   updateExchangeRates();
+  chrome.alarms.create('getSteamNotificationCount', { periodInMinutes: 1 });
   chrome.alarms.create('updatePricesAndExchangeRates', { periodInMinutes: 1440 });
   chrome.alarms.create('retryUpdatePricesAndExchangeRates', { periodInMinutes: 1 });
   chrome.alarms.create('trimFloatCache', { periodInMinutes: 1440 });
@@ -146,7 +148,25 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     });
   } else if (alarm.name === 'trimFloatCache') trimFloatCache();
   else if (alarm.name === 'sendTelemetry') sendTelemetry(0);
-  else {
+  else if (alarm.name === 'getSteamNotificationCount') {
+    getSteamNotificationCount().then((res) => {
+      console.log(res);
+    }, (error) => {
+      console.log(error);
+      if (error === 401) { // user not logged in
+        console.log('User not logged in, suspending notification checks for an hour.');
+        chrome.alarms.clear('getSteamNotificationCount', () => {
+          const now = new Date();
+          now.setHours(now.getHours() + 1);
+          chrome.alarms.create('restartNotificationChecks', {
+            when: (now).valueOf(),
+          });
+        });
+      }
+    });
+  } else if (alarm.name === 'restartNotificationChecks') {
+    chrome.alarms.create('getSteamNotificationCount', { periodInMinutes: 1 });
+  } else {
     chrome.browserAction.getBadgeText({}, (result) => {
       if (result === '' || result === 'U' || result === 'I') chrome.browserAction.setBadgeText({ text: '1' });
       else chrome.browserAction.setBadgeText({ text: (parseInt(result) + 1).toString() });
