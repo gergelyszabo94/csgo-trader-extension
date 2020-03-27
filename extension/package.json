@@ -26,7 +26,7 @@
     "eslint-plugin-jsx-a11y": "6.2.3",
     "eslint-plugin-react": "7.18.0",
     "eslint-plugin-react-hooks": "^1.6.1",
-    "file-loader": "4.3.0",
+    "file-loader": "6.0.0",
     "html-loader": "0.5.5",
     "html-webpack-plugin": "4.0.0-beta.11",
     "identity-obj-proxy": "3.0.0",
