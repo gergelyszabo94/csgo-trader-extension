@@ -66,7 +66,10 @@ const storageKeys = {
   itemInOffersInventory: true,
   itemInOtherOffers: true,
   showUpdatedRibbon: false,
-  friendRequests: [],
+  friendRequests: {
+    inviters: [],
+    lastUpdated: Date.now(),
+  },
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

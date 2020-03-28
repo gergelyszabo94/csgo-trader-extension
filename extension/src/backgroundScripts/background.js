@@ -2,8 +2,9 @@ import { storageKeys } from 'utils/static/storageKeys';
 import { trackEvent, sendTelemetry } from 'utils/analytics';
 import { updatePrices, updateExchangeRates } from 'utils/pricing';
 import {
-  scrapeSteamAPIkey, goToInternalPage, uuidv4, getFriendRequests,
+  scrapeSteamAPIkey, goToInternalPage, uuidv4,
 } from 'utils/utilsModular';
+import { getFriendRequests } from 'utils/friendRequests';
 import { trimFloatCache } from 'utils/floatCaching';
 import { getSteamNotificationCount } from 'utils/notifications';
 
@@ -153,7 +154,9 @@ chrome.alarms.onAlarm.addListener((alarm) => {
   else if (alarm.name === 'getSteamNotificationCount') {
     getSteamNotificationCount().then(({ invites }) => {
       chrome.storage.local.get('friendRequests', ({ friendRequests }) => {
-        if (invites > friendRequests.length) {
+        const minutesFromLastCheck = ((Date.now()
+          - new Date(friendRequests.lastUpdated)) / 1000) / 60;
+        if (invites !== friendRequests.inviters.length || minutesFromLastCheck >= 30) {
           getFriendRequests().then((inviters) => {
             console.log(inviters);
           });
