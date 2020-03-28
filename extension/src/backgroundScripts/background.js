@@ -1,7 +1,9 @@
 import { storageKeys } from 'utils/static/storageKeys';
 import { trackEvent, sendTelemetry } from 'utils/analytics';
 import { updatePrices, updateExchangeRates } from 'utils/pricing';
-import { scrapeSteamAPIkey, goToInternalPage, uuidv4 } from 'utils/utilsModular';
+import {
+  scrapeSteamAPIkey, goToInternalPage, uuidv4, getFriendRequests,
+} from 'utils/utilsModular';
 import { trimFloatCache } from 'utils/floatCaching';
 import { getSteamNotificationCount } from 'utils/notifications';
 
@@ -149,8 +151,14 @@ chrome.alarms.onAlarm.addListener((alarm) => {
   } else if (alarm.name === 'trimFloatCache') trimFloatCache();
   else if (alarm.name === 'sendTelemetry') sendTelemetry(0);
   else if (alarm.name === 'getSteamNotificationCount') {
-    getSteamNotificationCount().then((res) => {
-      console.log(res);
+    getSteamNotificationCount().then(({ invites }) => {
+      chrome.storage.local.get('friendRequests', ({ friendRequests }) => {
+        if (invites > friendRequests.length) {
+          getFriendRequests().then((inviters) => {
+            console.log(inviters);
+          });
+        }
+      });
     }, (error) => {
       console.log(error);
       if (error === 401) { // user not logged in
