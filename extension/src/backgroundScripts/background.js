@@ -4,7 +4,7 @@ import { updatePrices, updateExchangeRates } from 'utils/pricing';
 import {
   scrapeSteamAPIkey, goToInternalPage, uuidv4,
 } from 'utils/utilsModular';
-import { getFriendRequests } from 'utils/friendRequests';
+import { getFriendRequests, getGroupInvites } from 'utils/friendRequests';
 import { trimFloatCache } from 'utils/floatCaching';
 import { getSteamNotificationCount } from 'utils/notifications';
 
@@ -153,11 +153,17 @@ chrome.alarms.onAlarm.addListener((alarm) => {
   else if (alarm.name === 'sendTelemetry') sendTelemetry(0);
   else if (alarm.name === 'getSteamNotificationCount') {
     getSteamNotificationCount().then(({ invites }) => {
-      chrome.storage.local.get('friendRequests', ({ friendRequests }) => {
+      chrome.storage.local.get(['friendRequests', 'groupInvites'], ({ friendRequests, groupInvites }) => {
         const minutesFromLastCheck = ((Date.now()
           - new Date(friendRequests.lastUpdated)) / 1000) / 60;
-        if (invites !== friendRequests.inviters.length || minutesFromLastCheck >= 30) {
+        const friendAndGroupInviteCount = friendRequests.inviters.length
+          + groupInvites.invitedTo.length;
+
+        if (invites !== friendAndGroupInviteCount || minutesFromLastCheck >= 30) {
           getFriendRequests().then((inviters) => {
+            console.log(inviters);
+          });
+          getGroupInvites().then((inviters) => {
             console.log(inviters);
           });
         }

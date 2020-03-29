@@ -70,10 +70,15 @@ const storageKeys = {
     inviters: [],
     lastUpdated: Date.now(),
   },
+  groupInvites: {
+    invitedTo: [],
+    lastUpdated: Date.now(),
+  },
   steamSessionID: '',
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
-  'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID'];
+  'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID', 'groupInvites',
+  'friendRequests'];
 
 export { storageKeys, nonSettingStorageKeys };
