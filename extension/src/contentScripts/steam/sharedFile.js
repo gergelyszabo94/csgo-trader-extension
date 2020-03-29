@@ -1,5 +1,5 @@
 import { goldenCommenters } from 'utils/goldening';
-import { logExtensionPresence, updateLoggedInUserID } from 'utils/utilsModular';
+import { logExtensionPresence, updateLoggedInUserInfo } from 'utils/utilsModular';
 import { reportComments, addReplyToCommentsFunctionality, addCommentsMutationObserver } from 'utils/comments';
 import { trackEvent } from 'utils/analytics';
 import { getSharedFileIDAndOwner } from 'utils/steamID';
@@ -9,7 +9,7 @@ addReplyToCommentsFunctionality();
 addCommentsMutationObserver();
 reportComments('shared_file', getSharedFileIDAndOwner());
 goldenCommenters();
-updateLoggedInUserID();
+updateLoggedInUserInfo();
 trackEvent({
   type: 'pageview',
   action: 'SharedFileView',

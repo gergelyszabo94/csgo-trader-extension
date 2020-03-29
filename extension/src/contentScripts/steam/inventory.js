@@ -5,7 +5,7 @@ import {
   getDataFilledFloatTechnical, souvenirExists,
   findElementByAssetID, getFloatBarSkeleton, addUpdatedRibbon,
   logExtensionPresence, isCSGOInventoryActive, repositionNameTagIcons,
-  updateLoggedInUserID, reloadPageOnExtensionReload, isSIHActive, getActivePage,
+  updateLoggedInUserInfo, reloadPageOnExtensionReload, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, toFixedNoRounding,
 }
   from 'utils/utilsModular';
@@ -1260,7 +1260,7 @@ if (document.getElementById('no_inventories') === null
 repositionNameTagIcons();
 addSearchListener('inventory', addFloatIndicatorsToPage);
 overridePopulateActions();
-updateLoggedInUserID();
+updateLoggedInUserInfo();
 addUpdatedRibbon();
 trackEvent({
   type: 'pageview',

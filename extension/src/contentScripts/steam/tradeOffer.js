@@ -4,7 +4,7 @@ import {
   addFloatIndicator, getExteriorFromTags, getQuality,
   getType, isCSGOInventoryActive, getInspectLink, repositionNameTagIcons,
   getDopplerInfo, getActivePage, reloadPageOnExtensionReload, logExtensionPresence,
-  updateLoggedInUserID, warnOfScammer, addPageControlEventListeners,
+  updateLoggedInUserInfo, warnOfScammer, addPageControlEventListeners,
   addSearchListener, findElementByAssetID, getPattern, getNameTag,
   removeOfferFromActiveOffers,
 } from 'utils/utilsModular';
@@ -726,7 +726,7 @@ injectStyle(`
     a.inventory_item_link {
         top: 20px !important;
     }`, 'itemLinkSmaller');
-updateLoggedInUserID();
+updateLoggedInUserInfo();
 trackEvent({
   type: 'pageview',
   action: 'TradeOfferView',

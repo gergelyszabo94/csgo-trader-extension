@@ -3,7 +3,7 @@ import {
   getType, addDopplerPhase, makeItemColorful, addUpdatedRibbon,
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
   getItemByAssetID, getInspectLink, removeOfferFromActiveOffers,
-  logExtensionPresence, updateLoggedInUserID, reloadPageOnExtensionReload,
+  logExtensionPresence, updateLoggedInUserInfo, reloadPageOnExtensionReload,
   getNameTag, repositionNameTagIcons, jumpToAnchor,
 } from 'utils/utilsModular';
 import { prettyTimeAgo } from 'utils/dateTime';
@@ -523,7 +523,7 @@ logExtensionPresence();
 repositionNameTagIcons();
 overrideDecline();
 overrideShowTradeOffer();
-updateLoggedInUserID();
+updateLoggedInUserInfo();
 addUpdatedRibbon();
 trackEvent({
   type: 'pageview',

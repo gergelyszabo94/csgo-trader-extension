@@ -1,8 +1,8 @@
-import { logExtensionPresence, updateLoggedInUserID, addUpdatedRibbon } from 'utils/utilsModular';
+import { logExtensionPresence, updateLoggedInUserInfo, addUpdatedRibbon } from 'utils/utilsModular';
 import { trackEvent } from 'utils/analytics';
 
 logExtensionPresence();
-updateLoggedInUserID();
+updateLoggedInUserInfo();
 addUpdatedRibbon();
 trackEvent({
   type: 'pageview',

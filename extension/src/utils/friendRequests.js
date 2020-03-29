@@ -41,5 +41,28 @@ const getFriendRequests = () => new Promise((resolve, reject) => {
   });
 });
 
-// eslint-disable-next-line import/prefer-default-export
-export { getFriendRequests };
+const ignoreRequest = (steamIDToIgnore) => {
+  chrome.storage.local.get(['steamIDOfUser', 'steamSessionID'], ({ steamIDOfUser, steamSessionID }) => {
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+
+    const apiRequest = new Request(`https://steamcommunity.com/profiles/${steamIDOfUser}/friends/action`,
+      {
+        method: 'POST',
+        headers: myHeaders,
+        body: `sessionid=${steamSessionID}&steamid=${steamIDOfUser}&ajax=1&action=ignore_invite&steamids%5B%5D=${steamIDToIgnore}`,
+      });
+
+    fetch(apiRequest).then((response) => {
+      if (!response.ok) {
+        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+      } else return response.json();
+    }).then((data) => {
+      console.log(data);
+    }).catch((err) => {
+      console.log(err);
+    });
+  });
+};
+
+export { getFriendRequests, ignoreRequest };

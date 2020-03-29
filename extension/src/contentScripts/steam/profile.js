@@ -1,5 +1,5 @@
 import {
-  logExtensionPresence, updateLoggedInUserID,
+  logExtensionPresence, updateLoggedInUserInfo,
   warnOfScammer, reloadPageOnExtensionReload,
   addUpdatedRibbon,
 } from 'utils/utilsModular';
@@ -16,7 +16,7 @@ import { getUserSteamID, getProfileOwnerSteamID } from 'utils/steamID';
 // ensures that we are on a profile page, it's not possible with simple regex
 if (document.querySelector('body').classList.contains('profile_page')) {
   logExtensionPresence();
-  updateLoggedInUserID();
+  updateLoggedInUserInfo();
   addUpdatedRibbon();
   trackEvent({
     type: 'pageview',

@@ -8,7 +8,7 @@ import {
   parseStickerInfo,
   reloadPageOnExtensionReload,
   souvenirExists,
-  updateLoggedInUserID,
+  updateLoggedInUserInfo,
   toFixedNoRounding,
   addUpdatedRibbon,
 } from 'utils/utilsModular';
@@ -444,7 +444,7 @@ const addPricesInOtherCurrencies = () => {
 };
 
 logExtensionPresence();
-updateLoggedInUserID();
+updateLoggedInUserInfo();
 addUpdatedRibbon();
 trackEvent({
   type: 'pageview',

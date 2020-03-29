@@ -312,12 +312,6 @@ const uuidv4 = () => {
     [1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) => (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> c / 4))).toString(16));
 };
 
-// updates the SteamID of the extension's user in storage
-const updateLoggedInUserID = () => {
-  const steamID = getUserSteamID();
-  if (steamID !== 'false' && steamID !== false) chrome.storage.local.set({ steamIDOfUser: steamID }, () => {});
-};
-
 const listenToLocationChange = (callBackFunction) => {
   let oldHref = document.location.href;
 
@@ -517,6 +511,17 @@ const getSessionID = () => {
   return injectScript(getSessionIDScript, true, 'getSessionID', 'sessionid');
 };
 
+// updates the SteamID of the extension's user in storage
+const updateLoggedInUserInfo = () => {
+  const steamID = getUserSteamID();
+  if (steamID !== 'false' && steamID !== false) {
+    chrome.storage.local.set({
+      steamIDOfUser: steamID,
+      steamSessionID: getSessionID(),
+    }, () => {});
+  }
+};
+
 const warnOfScammer = (steamID, page) => {
   chrome.runtime.sendMessage({ getSteamRepInfo: steamID }, (response) => {
     if (response.SteamRepInfo !== 'error') {
@@ -615,7 +620,7 @@ export {
   getExteriorFromTags, getDopplerInfo, getQuality, parseStickerInfo,
   handleStickerNamesWithCommas, removeFromArray, getType,
   getPattern, goToInternalPage, jumpToAnchor,
-  validateSteamAPIKey, getAssetIDFromInspectLink, uuidv4, updateLoggedInUserID,
+  validateSteamAPIKey, getAssetIDFromInspectLink, uuidv4, updateLoggedInUserInfo,
   listenToLocationChange, addPageControlEventListeners, getItemByAssetID,
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
