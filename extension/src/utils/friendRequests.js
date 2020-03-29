@@ -41,7 +41,7 @@ const getFriendRequests = () => new Promise((resolve, reject) => {
   });
 });
 
-const ignoreRequest = (steamIDToIgnore) => {
+const makeFriendActionCall = (targetSteamID, action) => {
   chrome.storage.local.get(['steamIDOfUser', 'steamSessionID'], ({ steamIDOfUser, steamSessionID }) => {
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
@@ -50,7 +50,7 @@ const ignoreRequest = (steamIDToIgnore) => {
       {
         method: 'POST',
         headers: myHeaders,
-        body: `sessionid=${steamSessionID}&steamid=${steamIDOfUser}&ajax=1&action=ignore_invite&steamids%5B%5D=${steamIDToIgnore}`,
+        body: `sessionid=${steamSessionID}&steamid=${steamIDOfUser}&ajax=1&action=${action}&steamids%5B%5D=${targetSteamID}`,
       });
 
     fetch(apiRequest).then((response) => {
@@ -65,4 +65,13 @@ const ignoreRequest = (steamIDToIgnore) => {
   });
 };
 
-export { getFriendRequests, ignoreRequest };
+const ignoreRequest = (steamIDToIgnore) => {
+  makeFriendActionCall(steamIDToIgnore, 'ignore_invite');
+};
+
+const acceptRequest = (steamIDToAccept) => {
+  makeFriendActionCall(steamIDToAccept, 'accept');
+};
+
+
+export { getFriendRequests, ignoreRequest, acceptRequest };
