@@ -73,5 +73,10 @@ const acceptRequest = (steamIDToAccept) => {
   makeFriendActionCall(steamIDToAccept, 'accept');
 };
 
+const blockRequest = (steamIDToAccept) => {
+  makeFriendActionCall(steamIDToAccept, 'block');
+};
 
-export { getFriendRequests, ignoreRequest, acceptRequest };
+export {
+  getFriendRequests, ignoreRequest, acceptRequest, blockRequest,
+};
