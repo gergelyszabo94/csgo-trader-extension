@@ -603,11 +603,11 @@ const addUpdatedRibbon = () => {
   });
 };
 
-const getPlayerBans = (steamID) => new Promise((resolve, reject) => {
+const getPlayerBans = (steamIDs) => new Promise((resolve, reject) => {
   chrome.storage.local.get(['apiKeyValid', 'steamAPIKey'], ({ apiKeyValid, steamAPIKey }) => {
     if (apiKeyValid) {
       const getRequest = new Request(
-        ` https://api.steampowered.com/ISteamUser/GetPlayerBans/v1/?key=${steamAPIKey}&steamids=${steamID}`,
+        `https://api.steampowered.com/ISteamUser/GetPlayerBans/v1/?key=${steamAPIKey}&steamids=${steamIDs.join(',')}`,
       );
 
       fetch(getRequest).then((response) => {
@@ -617,7 +617,7 @@ const getPlayerBans = (steamID) => new Promise((resolve, reject) => {
         } else return response.json();
       }).then((body) => {
         try {
-          resolve(body.players[0]);
+          resolve(body.players);
         } catch (e) {
           console.log(e);
           reject(e);

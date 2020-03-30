@@ -1,3 +1,5 @@
+import { getPlayerBans } from 'utils/utilsModular';
+
 const getFriendRequests = () => new Promise((resolve, reject) => {
   const getRequest = new Request('https://steamcommunity.com/my/friends/pending');
 
@@ -130,6 +132,15 @@ const logFriendRequestEvents = (events) => {
   });
 };
 
+const createFriendRequestEvent = (invite, type) => {
+  return {
+    type,
+    steamID: invite.steamID,
+    username: invite.name,
+    timestamp: Date.now(),
+  };
+};
+
 const updateFriendRequest = () => {
   getFriendRequests().then((inviters) => {
     // inviters here is the freshly loaded list
@@ -151,35 +162,45 @@ const updateFriendRequest = () => {
       });
 
       const disappearedInviteEvents = disappearedInvites.map((invite) => {
-        return {
-          type: 'disappeared',
-          steamID: invite.steamID,
-          username: invite.name,
-          timestamp: Date.now(),
-        };
+        return createFriendRequestEvent(invite, 'disappeared');
       });
 
       const newInvites = inviters.filter((inviter) => {
         return !staleInviterIDs.includes(inviter.steamID);
       });
 
+      const newInviteIDs = newInvites.map((invite) => {
+        return invite.steamID;
+      });
+
+      const unChangedInvites = friendRequests.inviters.filter((inviter) => {
+        return upToDateInviterIDs.includes(inviter.steamID);
+      });
+
+      getPlayerBans(newInviteIDs).then((bans) => {
+        const newInvitesWithBans = newInvites.map((invite) => {
+          const userBans = bans.find((ban) => {
+            return ban.SteamId === invite.steamID;
+          });
+          return {
+            ...invite,
+            bans: userBans,
+          };
+        });
+
+        chrome.storage.local.set({
+          friendRequests: {
+            inviters: [...unChangedInvites, ...newInvitesWithBans],
+            lastUpdated: Date.now(),
+          },
+        }, () => {});
+      });
+
       const newInviteEvents = newInvites.map((invite) => {
-        return {
-          type: 'new',
-          steamID: invite.steamID,
-          username: invite.name,
-          timestamp: Date.now(),
-        };
+        return createFriendRequestEvent(invite, 'new');
       });
 
       logFriendRequestEvents([...newInviteEvents, ...disappearedInviteEvents]);
-
-      chrome.storage.local.set({
-        friendRequests: {
-          inviters,
-          lastUpdated: Date.now(),
-        },
-      }, () => {});
     });
   });
 };
