@@ -4,7 +4,7 @@ import { updatePrices, updateExchangeRates } from 'utils/pricing';
 import {
   scrapeSteamAPIkey, goToInternalPage, uuidv4,
 } from 'utils/utilsModular';
-import { getFriendRequests, getGroupInvites } from 'utils/friendRequests';
+import { getGroupInvites, updateFriendRequest } from 'utils/friendRequests';
 import { trimFloatCache } from 'utils/floatCaching';
 import { getSteamNotificationCount } from 'utils/notifications';
 
@@ -13,11 +13,11 @@ chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
     // sets the default options for first run
     // (on install from the webstore/amo or when loaded in developer mode)
-    for (const key in storageKeys) {
+    for (const [key, value] of Object.entries(storageKeys)) {
       // id generated to identify the extension installation
       // a user can use use multiple installations of the extension
       if (key === 'clientID') chrome.storage.local.set({ [key]: uuidv4() }, () => {});
-      else chrome.storage.local.set({ [key]: storageKeys[key] }, () => {});
+      else chrome.storage.local.set({ [key]: value }, () => {});
     }
 
     trackEvent({
@@ -41,18 +41,15 @@ chrome.runtime.onInstalled.addListener((details) => {
     // runs when the extension updates or gets reloaded in developer mode
     // it checks whether the setting has ever been set
     // I consider removing older ones since there is no one updating from version that old
-    const keysArray = [];
-    for (const key of Object.keys(storageKeys)) {
-      keysArray.push(key);
-    }
+    const keys = Object.keys(storageKeys);
 
-    chrome.storage.local.get(keysArray, (result) => {
-      for (const key in storageKeys) {
-        if (result[key] === undefined) {
+    chrome.storage.local.get(keys, (result) => {
+      for (const [storageKey, storageValue] of Object.entries(storageKeys)) {
+        if (result[storageKey] === undefined) {
           // id generated to identify the extension installation
           // a user can use use multiple installations of the extension
-          if (key === 'clientID') chrome.storage.local.set({ [key]: uuidv4() }, () => {});
-          else chrome.storage.local.set({ [key]: storageKeys[key] }, () => {});
+          if (storageKey === 'clientID') chrome.storage.local.set({ [storageKey]: uuidv4() }, () => {});
+          else chrome.storage.local.set({ [storageKey]: storageValue }, () => {});
         }
       }
     });
@@ -160,9 +157,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
           + groupInvites.invitedTo.length;
 
         if (invites !== friendAndGroupInviteCount || minutesFromLastCheck >= 30) {
-          getFriendRequests().then((inviters) => {
-            console.log(inviters);
-          });
+          updateFriendRequest();
           getGroupInvites().then((inviters) => {
             console.log(inviters);
           });

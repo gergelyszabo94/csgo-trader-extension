@@ -75,10 +75,11 @@ const storageKeys = {
     lastUpdated: Date.now(),
   },
   steamSessionID: '',
+  friendRequestLogs: [],
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
   'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID', 'groupInvites',
-  'friendRequests'];
+  'friendRequests', 'friendRequestLogs'];
 
 export { storageKeys, nonSettingStorageKeys };

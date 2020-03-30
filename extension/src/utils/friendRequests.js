@@ -15,6 +15,7 @@ const getFriendRequests = () => new Promise((resolve, reject) => {
       const receivedInvitesElement = html.querySelector('#search_results');
       const inviters = [];
 
+      // TODO handle cases where the page does not load properly
       if (receivedInvitesElement !== null) {
         receivedInvitesElement.querySelectorAll('.invite_row').forEach((inviteRow) => {
           inviters.push({
@@ -25,15 +26,7 @@ const getFriendRequests = () => new Promise((resolve, reject) => {
           });
         });
       }
-
-      chrome.storage.local.set({
-        friendRequests: {
-          inviters,
-          lastUpdated: Date.now(),
-        },
-      }, () => {
-        resolve(inviters);
-      });
+      resolve(inviters);
     }
   }).catch((err) => {
     console.log(err);
@@ -129,7 +122,70 @@ const acceptGroupRequest = (steamIDToAccept) => {
   makeFriendActionCall(steamIDToAccept, 'group_accept');
 };
 
+const logFriendRequestEvents = (events) => {
+  chrome.storage.local.get(['friendRequestLogs'], ({ friendRequestLogs }) => {
+    chrome.storage.local.set({
+      friendRequestLogs: [...friendRequestLogs, ...events],
+    }, () => {});
+  });
+};
+
+const updateFriendRequest = () => {
+  getFriendRequests().then((inviters) => {
+    // inviters here is the freshly loaded list
+    // it only includes limited details though
+    const upToDateInviterIDs = inviters.map((inviter) => {
+      return inviter.steamID;
+    });
+
+    // loading previous invite info from storage that could be stale
+    chrome.storage.local.get(['friendRequests'], ({ friendRequests }) => {
+      const staleInviterIDs = friendRequests.inviters.map((inviter) => {
+        return inviter.steamID;
+      });
+
+      // if the invite was canceled by the sender or
+      // accepted, ignored or blocked by the user since the last check
+      const disappearedInvites = friendRequests.inviters.filter((inviter) => {
+        return !upToDateInviterIDs.includes(inviter.steamID);
+      });
+
+      const disappearedInviteEvents = disappearedInvites.map((invite) => {
+        return {
+          type: 'disappeared',
+          steamID: invite.steamID,
+          username: invite.name,
+          timestamp: Date.now(),
+        };
+      });
+
+      const newInvites = inviters.filter((inviter) => {
+        return !staleInviterIDs.includes(inviter.steamID);
+      });
+
+      const newInviteEvents = newInvites.map((invite) => {
+        return {
+          type: 'new',
+          steamID: invite.steamID,
+          username: invite.name,
+          timestamp: Date.now(),
+        };
+      });
+
+      logFriendRequestEvents([...newInviteEvents, ...disappearedInviteEvents]);
+
+      chrome.storage.local.set({
+        friendRequests: {
+          inviters,
+          lastUpdated: Date.now(),
+        },
+      }, () => {});
+    });
+  });
+};
+
 export {
   getFriendRequests, ignoreRequest, acceptRequest, blockRequest,
   getGroupInvites, ignoreGroupRequest, acceptGroupRequest,
+  updateFriendRequest,
 };
