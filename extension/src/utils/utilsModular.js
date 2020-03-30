@@ -603,6 +603,33 @@ const addUpdatedRibbon = () => {
   });
 };
 
+const getPlayerBans = (steamID) => new Promise((resolve, reject) => {
+  chrome.storage.local.get(['apiKeyValid', 'steamAPIKey'], ({ apiKeyValid, steamAPIKey }) => {
+    if (apiKeyValid) {
+      const getRequest = new Request(
+        ` https://api.steampowered.com/ISteamUser/GetPlayerBans/v1/?key=${steamAPIKey}&steamids=${steamID}`,
+      );
+
+      fetch(getRequest).then((response) => {
+        if (!response.ok) {
+          console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+          reject(response.statusText);
+        } else return response.json();
+      }).then((body) => {
+        try {
+          resolve(body.players[0]);
+        } catch (e) {
+          console.log(e);
+          reject(e);
+        }
+      }).catch((err) => {
+        console.log(err);
+        reject(err);
+      });
+    } else reject('api_key_invalid');
+  });
+});
+
 //  unused atm
 // const generateRandomString = (length) => {
 //   let text = '';
@@ -628,5 +655,5 @@ export {
   getFloatBarSkeleton, isCSGOInventoryActive, getInspectLink,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
-  removeOfferFromActiveOffers, addUpdatedRibbon,
+  removeOfferFromActiveOffers, addUpdatedRibbon, getPlayerBans,
 };
