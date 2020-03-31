@@ -1,4 +1,4 @@
-import { getPlayerBans } from 'utils/ISteamUser';
+import { getPlayerBans, getPlayerSummaries } from 'utils/ISteamUser';
 
 const getFriendRequests = () => new Promise((resolve, reject) => {
   const getRequest = new Request('https://steamcommunity.com/my/friends/pending');
@@ -177,20 +177,28 @@ const updateFriendRequest = () => {
         return upToDateInviterIDs.includes(inviter.steamID);
       });
 
-      getPlayerBans(newInviteIDs).then((bans) => {
-        const newInvitesWithBans = newInvites.map((invite) => {
+      getPlayerSummaries(newInviteIDs).then((summaries) => {
+        const newInvitesWithSummaries = newInvites.map((invite) => {
           return {
             ...invite,
-            bans: bans[invite.steamID],
+            summary: summaries[invite.steamID],
           };
         });
 
-        chrome.storage.local.set({
-          friendRequests: {
-            inviters: [...unChangedInvites, ...newInvitesWithBans],
-            lastUpdated: Date.now(),
-          },
-        }, () => {});
+        getPlayerBans(newInviteIDs).then((bans) => {
+          const newInvitesWithBans = newInvitesWithSummaries.map((invite) => {
+            return {
+              ...invite,
+              bans: bans[invite.steamID],
+            };
+          });
+          chrome.storage.local.set({
+            friendRequests: {
+              inviters: [...unChangedInvites, ...newInvitesWithBans],
+              lastUpdated: Date.now(),
+            },
+          }, () => {});
+        });
       });
 
       const newInviteEvents = newInvites.map((invite) => {
