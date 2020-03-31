@@ -179,12 +179,9 @@ const updateFriendRequest = () => {
 
       getPlayerBans(newInviteIDs).then((bans) => {
         const newInvitesWithBans = newInvites.map((invite) => {
-          const userBans = bans.find((ban) => {
-            return ban.SteamId === invite.steamID;
-          });
           return {
             ...invite,
-            bans: userBans,
+            bans: bans[invite.steamID],
           };
         });
 

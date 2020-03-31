@@ -12,7 +12,11 @@ const getPlayerBans = (steamIDs) => new Promise((resolve, reject) => {
         } else return response.json();
       }).then((body) => {
         try {
-          resolve(body.players);
+          const bans = {};
+          body.players.forEach((ban) => {
+            bans[ban.SteamId] = ban;
+          });
+          resolve(bans);
         } catch (e) {
           console.log(e);
           reject(e);
