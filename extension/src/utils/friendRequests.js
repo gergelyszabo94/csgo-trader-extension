@@ -1,4 +1,4 @@
-import { getPlayerBans } from 'utils/utilsModular';
+import { getPlayerBans } from 'utils/ISteamUser';
 
 const getFriendRequests = () => new Promise((resolve, reject) => {
   const getRequest = new Request('https://steamcommunity.com/my/friends/pending');

@@ -249,7 +249,7 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         if (statusDiv.classList.contains('online')) {
           const textDiv = statusDiv.querySelector('.profile_in_game_header');
 
-          chrome.runtime.sendMessage({ GetPlayerSummaries: profileOwnerSteamID }, (response) => {
+          chrome.runtime.sendMessage({ GetPersonaState: profileOwnerSteamID }, (response) => {
             if (response.apiKeyValid) {
               textDiv.innerText = steamProfileStatuses[response.personastate]
                 ? steamProfileStatuses[response.personastate]

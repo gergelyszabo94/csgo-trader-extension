@@ -6,6 +6,7 @@ import {
 import { getShortDate } from 'utils/dateTime';
 import { getStickerPriceTotal, getPrice, prettyPrintPrice } from 'utils/pricing';
 import itemTypes from 'utils/static/itemTypes';
+import { getPlayerSummaries } from 'utils/ISteamUser';
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.inventory !== undefined) {
@@ -217,34 +218,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       },
     );
     return true; // async return to signal that it will return later
-  } else if (request.GetPlayerSummaries !== undefined) {
-    chrome.storage.local.get(['apiKeyValid', 'steamAPIKey'], (result) => {
-      if (result.apiKeyValid) {
-        const apiKey = result.steamAPIKey;
-        const steamID = request.GetPlayerSummaries;
-
-        const getRequest = new Request(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=${steamID}`);
-
-        fetch(getRequest).then((response) => {
-          if (!response.ok) {
-            sendResponse('error');
-            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-          } else return response.json();
-        }).then((body) => {
-          try {
-            sendResponse({
-              personastate: body.response.players[0].personastate,
-              apiKeyValid: true,
-            });
-          } catch (e) {
-            console.log(e);
-            sendResponse('error');
-          }
-        }).catch((err) => {
-          console.log(err);
-          sendResponse('error');
-        });
-      } else sendResponse({ apiKeyValid: false });
+  } else if (request.GetPersonaState !== undefined) {
+    getPlayerSummaries([request.GetPersonaState]).then((summaries) => {
+      sendResponse({
+        personastate: summaries[request.GetPersonaState].personastate,
+        apiKeyValid: true,
+      });
+    }).catch((err) => {
+      console.log(err);
+      if (err === 'api_key_invalid') {
+        sendResponse({ apiKeyValid: false });
+      } else sendResponse('error');
     });
     return true; // async return to signal that it will return later
   } else if (request.fetchFloatInfo !== undefined) {
