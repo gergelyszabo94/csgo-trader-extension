@@ -141,6 +141,35 @@ const createFriendRequestEvent = (invite, type) => {
   };
 };
 
+const evaluateRequest = (invite, rules) => {
+  let verdict = {
+    action: 'no_action',
+    appliedRule: 0,
+  };
+  rules.forEach((rule, index) => {
+    if (rule.active) {
+      if (rule.condition.type === 'profile_private') {
+        if (rule.condition.value && invite.summary.communityvisibilitystate === 1) {
+          verdict = {
+            action: rule.action,
+            appliedRule: index,
+          };
+        }
+      }
+    }
+  });
+  return verdict;
+};
+
+const executeVerdict = (invite, verdict) => {
+  switch (verdict) {
+    case 'ignore': ignoreRequest(invite.steamID); break;
+    case 'block': blockRequest(invite.steamID); break;
+    case 'accept': acceptRequest(invite.schema); break;
+    default: break;
+  }
+};
+
 const updateFriendRequest = () => {
   getFriendRequests().then((inviters) => {
     // inviters here is the freshly loaded list
@@ -150,7 +179,7 @@ const updateFriendRequest = () => {
     });
 
     // loading previous invite info from storage that could be stale
-    chrome.storage.local.get(['friendRequests'], ({ friendRequests }) => {
+    chrome.storage.local.get(['friendRequests', 'friendRequestEvalRules'], ({ friendRequests, friendRequestEvalRules }) => {
       const staleInviterIDs = friendRequests.inviters.map((inviter) => {
         return inviter.steamID;
       });
@@ -192,9 +221,28 @@ const updateFriendRequest = () => {
               bans: bans[invite.steamID],
             };
           });
+
+          const evaluationEvents = [];
+
+          const evaluatedInvites = newInvitesWithBans.map((invite) => {
+            const requestVerdict = evaluateRequest(invite, friendRequestEvalRules);
+            if (requestVerdict.action !== 'no_action') {
+              executeVerdict(invite, requestVerdict.action);
+              evaluationEvents.push(
+                createFriendRequestEvent(invite, requestVerdict.action),
+              );
+            }
+            return {
+              ...invite,
+              evaluation: requestVerdict,
+            };
+          });
+
+          logFriendRequestEvents(evaluationEvents);
+
           chrome.storage.local.set({
             friendRequests: {
-              inviters: [...unChangedInvites, ...newInvitesWithBans],
+              inviters: [...unChangedInvites, ...evaluatedInvites],
               lastUpdated: Date.now(),
             },
           }, () => {});

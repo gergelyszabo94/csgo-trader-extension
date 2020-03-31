@@ -76,10 +76,20 @@ const storageKeys = {
   },
   steamSessionID: '',
   friendRequestLogs: [],
+  friendRequestEvalRules: [
+    {
+      active: true,
+      condition: {
+        type: 'profile_private',
+        value: true,
+      },
+      action: 'ignore',
+    },
+  ],
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
   'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID', 'groupInvites',
-  'friendRequests', 'friendRequestLogs'];
+  'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules'];
 
 export { storageKeys, nonSettingStorageKeys };
