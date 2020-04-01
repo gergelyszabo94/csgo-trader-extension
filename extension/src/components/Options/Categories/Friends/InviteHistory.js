@@ -13,7 +13,7 @@ const InviteHistory = () => {
   }, []);
 
   return (
-    <>
+    <div className="col-6">
       <h3>Friend Request History</h3>
       <table className="inviteHistoryTable">
         <thead>
@@ -43,7 +43,7 @@ const InviteHistory = () => {
           })}
         </tbody>
       </table>
-    </>
+    </div>
   );
 };
 
