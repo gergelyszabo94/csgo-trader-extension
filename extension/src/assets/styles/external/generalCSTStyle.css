@@ -396,6 +396,11 @@ progress {
     margin-left: 20px;
 }
 
+.friendInvitesBanner {
+    color: white;
+    margin-bottom: 10px;
+}
+
 .nametag{
     color: var(--steam-nametag-red);
     font-size: 1.2rem;
