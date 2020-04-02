@@ -1,4 +1,5 @@
 import { getPlayerBans, getPlayerSummaries } from 'utils/ISteamUser';
+import { actions, conditions, eventTypes } from 'utils/static/friendRequests';
 
 const getFriendRequests = () => new Promise((resolve, reject) => {
   const getRequest = new Request('https://steamcommunity.com/my/friends/pending');
@@ -133,8 +134,15 @@ const logFriendRequestEvents = (events) => {
 };
 
 const createFriendRequestEvent = (invite, type) => {
+  let eventType;
+  switch (type) {
+    case actions.accept: eventType = eventTypes.auto_accepted.key; break;
+    case actions.ignore: eventType = eventTypes.auto_ignored.key; break;
+    case actions.blocked: eventType = eventTypes.auto_blocked.key; break;
+    default: eventType = type;
+  }
   return {
-    type,
+    type: eventType,
     steamID: invite.steamID,
     username: invite.name,
     timestamp: Date.now(),
@@ -143,12 +151,12 @@ const createFriendRequestEvent = (invite, type) => {
 
 const evaluateRequest = (invite, rules) => {
   let verdict = {
-    action: 'no_action',
+    action: eventTypes.no_action.key,
     appliedRule: 0,
   };
   rules.forEach((rule, index) => {
     if (rule.active) {
-      if (rule.condition.type === 'profile_private') {
+      if (rule.condition.type === conditions.profile_private.key) {
         if (rule.condition.value && invite.summary.communityvisibilitystate === 1) {
           verdict = {
             action: rule.action,
@@ -163,9 +171,9 @@ const evaluateRequest = (invite, rules) => {
 
 const executeVerdict = (invite, verdict) => {
   switch (verdict) {
-    case 'ignore': ignoreRequest(invite.steamID); break;
-    case 'block': blockRequest(invite.steamID); break;
-    case 'accept': acceptRequest(invite.schema); break;
+    case actions.ignore.key: ignoreRequest(invite.steamID); break;
+    case actions.block.key: blockRequest(invite.steamID); break;
+    case actions.accept.key: acceptRequest(invite.schema); break;
     default: break;
   }
 };
@@ -191,7 +199,7 @@ const updateFriendRequest = () => {
       });
 
       const disappearedInviteEvents = disappearedInvites.map((invite) => {
-        return createFriendRequestEvent(invite, 'disappeared');
+        return createFriendRequestEvent(invite, eventTypes.disappeared.key);
       });
 
       const newInvites = inviters.filter((inviter) => {
@@ -226,7 +234,7 @@ const updateFriendRequest = () => {
 
           const evaluatedInvites = newInvitesWithBans.map((invite) => {
             const requestVerdict = evaluateRequest(invite, friendRequestEvalRules);
-            if (requestVerdict.action !== 'no_action') {
+            if (requestVerdict.action !== eventTypes.no_action.key) {
               executeVerdict(invite, requestVerdict.action);
               evaluationEvents.push(
                 createFriendRequestEvent(invite, requestVerdict.action),
@@ -250,7 +258,7 @@ const updateFriendRequest = () => {
       });
 
       const newInviteEvents = newInvites.map((invite) => {
-        return createFriendRequestEvent(invite, 'new');
+        return createFriendRequestEvent(invite, eventTypes.new.key);
       });
 
       logFriendRequestEvents([...newInviteEvents, ...disappearedInviteEvents]);

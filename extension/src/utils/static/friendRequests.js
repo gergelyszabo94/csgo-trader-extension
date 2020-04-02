@@ -24,4 +24,37 @@ const actions = {
   },
 };
 
-export { conditions, actions };
+const eventTypes = {
+  new: {
+    key: 'new',
+    pretty: 'New Invite',
+    description: 'New invite spotted by the extension',
+  },
+  disappeared: {
+    key: 'disappeared',
+    pretty: 'Invite Disappeared',
+    description: 'The invite was either canceled or accepted / ignored / blocked by you',
+  },
+  no_action: {
+    key: 'no_action',
+    pretty: 'No action',
+    description: 'No action taken by the extension',
+  },
+  auto_ignored: {
+    key: 'auto_ignored',
+    pretty: 'Auto-ignored',
+    description: 'Automatically ignored by the extension',
+  },
+  auto_accepted: {
+    key: 'auto_accepted',
+    pretty: 'Auto-accepted',
+    description: 'Automatically accepted by the extension',
+  },
+  auto_blocked: {
+    key: 'auto_blocked',
+    pretty: 'Auto-blocked',
+    description: 'Automatically blocked by the extension',
+  },
+};
+
+export { conditions, actions, eventTypes };
