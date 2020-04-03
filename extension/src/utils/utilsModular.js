@@ -523,23 +523,25 @@ const updateLoggedInUserInfo = () => {
 };
 
 const warnOfScammer = (steamID, page) => {
-  chrome.runtime.sendMessage({ getSteamRepInfo: steamID }, (response) => {
-    if (response.SteamRepInfo !== 'error') {
-      if (response.SteamRepInfo.reputation.summary === 'SCAMMER') {
-        const backgroundURL = chrome.runtime.getURL('images/scammerbackground.jpg');
-        document.querySelector('body').insertAdjacentHTML('beforebegin',
-          `<div style="background-color: red; color: white; padding: 5px; text-align: center;" class="scammerWarning">
+  if (steamID) {
+    chrome.runtime.sendMessage({ getSteamRepInfo: steamID }, (response) => {
+      if (response.SteamRepInfo !== 'error') {
+        if (response.SteamRepInfo.reputation.summary === 'SCAMMER') {
+          const backgroundURL = chrome.runtime.getURL('images/scammerbackground.jpg');
+          document.querySelector('body').insertAdjacentHTML('beforebegin',
+            `<div style="background-color: red; color: white; padding: 5px; text-align: center;" class="scammerWarning">
                                 <span>
                                     Watch out, this user was banned on SteamRep for scamming! You can check the details of what they did on 
                                     <a style="color: black; font-weight: bold" href='https://steamrep.com/profiles/${steamID}'>steamrep.com</a>
                                 </span>
                            </div>`);
 
-        if (page === 'offer') document.querySelector('body').setAttribute('style', `background-image: url('${backgroundURL}')`);
-        else if (page === 'profile') document.querySelector('.no_header.profile_page').setAttribute('style', `background-image: url('${backgroundURL}')`);
-      }
-    } else console.log('Could not get SteamRep info');
-  });
+          if (page === 'offer') document.querySelector('body').setAttribute('style', `background-image: url('${backgroundURL}')`);
+          else if (page === 'profile') document.querySelector('.no_header.profile_page').setAttribute('style', `background-image: url('${backgroundURL}')`);
+        }
+      } else console.log('Could not get SteamRep info');
+    });
+  }
 };
 
 const repositionNameTagIcons = () => {
