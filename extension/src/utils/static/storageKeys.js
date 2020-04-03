@@ -1,6 +1,7 @@
 import { pricingProviders, currencies } from 'utils/static/pricing';
 import { sortingModes, offersSortingModes } from 'utils/static/sortingModes';
 import defaultPopupLinks from 'utils/static/defaultPopupLinks';
+import { actions, conditions } from 'utils/static/friendRequests';
 
 const storageKeys = {
   quickDeclineOffer: true,
@@ -78,14 +79,14 @@ const storageKeys = {
   friendRequestLogs: [],
   friendRequestEvalRules: [
     {
-      active: true,
+      active: false,
       condition: {
-        type: 'profile_private',
-        value: true,
+        type: conditions.profile_private.key,
       },
-      action: 'ignore',
+      action: actions.ignore.key,
     },
   ],
+  ignoreGroupInvites: false,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

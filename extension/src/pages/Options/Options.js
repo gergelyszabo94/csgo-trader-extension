@@ -58,7 +58,7 @@ const routes = [
   },
   {
     to: 'friends-invites/',
-    name: 'Friends and Invites',
+    name: 'Friends, Groups and Invites',
     component: Friends,
   },
   {

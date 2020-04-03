@@ -4,7 +4,7 @@ import { updatePrices, updateExchangeRates } from 'utils/pricing';
 import {
   scrapeSteamAPIkey, goToInternalPage, uuidv4,
 } from 'utils/utilsModular';
-import { getGroupInvites, updateFriendRequest } from 'utils/friendRequests';
+import { getGroupInvites, updateFriendRequest, ignoreGroupRequest } from 'utils/friendRequests';
 import { trimFloatCache } from 'utils/floatCaching';
 import { getSteamNotificationCount } from 'utils/notifications';
 
@@ -150,19 +150,24 @@ chrome.alarms.onAlarm.addListener((alarm) => {
   else if (alarm.name === 'sendTelemetry') sendTelemetry(0);
   else if (alarm.name === 'getSteamNotificationCount') {
     getSteamNotificationCount().then(({ invites }) => {
-      chrome.storage.local.get(['friendRequests', 'groupInvites'], ({ friendRequests, groupInvites }) => {
-        const minutesFromLastCheck = ((Date.now()
-          - new Date(friendRequests.lastUpdated)) / 1000) / 60;
-        const friendAndGroupInviteCount = friendRequests.inviters.length
-          + groupInvites.invitedTo.length;
+      chrome.storage.local.get(['friendRequests', 'groupInvites', 'ignoreGroupInvites'],
+        ({ friendRequests, groupInvites, ignoreGroupInvites }) => {
+          const minutesFromLastCheck = ((Date.now()
+            - new Date(friendRequests.lastUpdated)) / 1000) / 60;
+          const friendAndGroupInviteCount = friendRequests.inviters.length
+            + groupInvites.invitedTo.length;
 
-        if (invites !== friendAndGroupInviteCount || minutesFromLastCheck >= 30) {
-          updateFriendRequest();
-          getGroupInvites().then((inviters) => {
-            console.log(inviters);
-          });
-        }
-      });
+          if (invites !== friendAndGroupInviteCount || minutesFromLastCheck >= 30) {
+            updateFriendRequest();
+            getGroupInvites().then((inviters) => {
+              if (ignoreGroupInvites) {
+                inviters.forEach((inviter) => {
+                  ignoreGroupRequest(inviter.steamID);
+                });
+              }
+            });
+          }
+        });
     }, (error) => {
       console.log(error);
       if (error === 401) { // user not logged in
