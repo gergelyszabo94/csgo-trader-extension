@@ -85,6 +85,14 @@ const storageKeys = {
       },
       action: actions.ignore.key,
     },
+    {
+      active: false,
+      condition: {
+        type: conditions.steam_level_under.key,
+        value: 5,
+      },
+      action: actions.ignore.key,
+    },
   ],
   ignoreGroupInvites: false,
 };

@@ -133,16 +133,30 @@ const logFriendRequestEvents = (events) => {
   });
 };
 
-const createFriendRequestEvent = (invite, type) => {
+const createFriendRequestEvent = (invite, type, appliedRule) => {
   let eventType;
+  let rule;
   switch (type) {
-    case actions.accept: eventType = eventTypes.auto_accepted.key; break;
-    case actions.ignore: eventType = eventTypes.auto_ignored.key; break;
-    case actions.blocked: eventType = eventTypes.auto_blocked.key; break;
+    case actions.accept.key: {
+      eventType = eventTypes.auto_accepted.key;
+      rule = appliedRule;
+      break;
+    }
+    case actions.ignore.key: {
+      eventType = eventTypes.auto_ignored.key;
+      rule = appliedRule;
+      break;
+    }
+    case actions.block.key: {
+      eventType = eventTypes.auto_blocked.key;
+      rule = appliedRule;
+      break;
+    }
     default: eventType = type;
   }
   return {
     type: eventType,
+    rule,
     steamID: invite.steamID,
     username: invite.name,
     timestamp: Date.now(),
@@ -150,30 +164,50 @@ const createFriendRequestEvent = (invite, type) => {
 };
 
 const evaluateRequest = (invite, rules) => {
-  let verdict = {
-    action: eventTypes.no_action.key,
-    appliedRule: 0,
-  };
-  rules.forEach((rule, index) => {
+  for (const [index, rule] of rules.entries()) {
     if (rule.active) {
-      if (rule.condition.type === conditions.profile_private.key) {
-        if (rule.condition.value && invite.summary.communityvisibilitystate === 1) {
-          verdict = {
-            action: rule.action,
-            appliedRule: index,
-          };
-        }
+      if (rule.condition.type === conditions.profile_private.key
+        && invite.summary.communityvisibilitystate === 1) {
+        return {
+          action: rule.action,
+          appliedRule: index + 1,
+        };
+      }
+      if (rule.condition.type === conditions.profile_public.key
+        && invite.summary.communityvisibilitystate === 3) {
+        return {
+          action: rule.action,
+          appliedRule: index + 1,
+        };
+      }
+      if (rule.condition.type === conditions.steam_level_under.key
+        && parseInt(invite.level) <= rule.condition.value) {
+        return {
+          action: rule.action,
+          appliedRule: index + 1,
+        };
+      }
+      if (rule.condition.type === conditions.steam_level_over.key
+        && parseInt(invite.level) > rule.condition.value) {
+        return {
+          action: rule.action,
+          appliedRule: index + 1,
+        };
       }
     }
-  });
-  return verdict;
+  }
+
+  return {
+    action: actions.no_action.key,
+    appliedRule: 0,
+  };
 };
 
 const executeVerdict = (invite, verdict) => {
   switch (verdict) {
     case actions.ignore.key: ignoreRequest(invite.steamID); break;
     case actions.block.key: blockRequest(invite.steamID); break;
-    case actions.accept.key: acceptRequest(invite.schema); break;
+    case actions.accept.key: acceptRequest(invite.steamID); break;
     default: break;
   }
 };
@@ -231,19 +265,20 @@ const updateFriendRequest = () => {
           });
 
           const evaluationEvents = [];
-
-          const evaluatedInvites = newInvitesWithBans.map((invite) => {
+          const evaluatedInvites = [];
+          newInvitesWithBans.forEach((invite) => {
             const requestVerdict = evaluateRequest(invite, friendRequestEvalRules);
-            if (requestVerdict.action !== eventTypes.no_action.key) {
+            if (requestVerdict.action !== actions.no_action.key) {
               executeVerdict(invite, requestVerdict.action);
               evaluationEvents.push(
-                createFriendRequestEvent(invite, requestVerdict.action),
+                createFriendRequestEvent(invite, requestVerdict.action, requestVerdict.appliedRule),
               );
+            } else {
+              evaluatedInvites.push({
+                ...invite,
+                evaluation: requestVerdict,
+              });
             }
-            return {
-              ...invite,
-              evaluation: requestVerdict,
-            };
           });
 
           logFriendRequestEvents(evaluationEvents);

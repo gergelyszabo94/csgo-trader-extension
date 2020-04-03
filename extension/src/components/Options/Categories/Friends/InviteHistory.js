@@ -33,7 +33,7 @@ const InviteHistory = () => {
                   </NewTabLink>
                 </td>
                 <td>
-                  <HistoryEvent eventType={event.type} />
+                  <HistoryEvent eventType={event.type} ruleApplied={event.rule} />
                 </td>
                 <td title={dateToISODisplay(event.timestamp / 1000)}>
                   {prettyTimeAgo(event.timestamp / 1000)}

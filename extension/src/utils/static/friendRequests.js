@@ -4,6 +4,21 @@ const conditions = {
     pretty: 'Private profile',
     description: 'The user has a private Steam profile',
   },
+  profile_public: {
+    key: 'profile_public',
+    pretty: 'Private public',
+    description: 'The user has a public Steam profile',
+  },
+  steam_level_under: {
+    key: 'steam_level_under',
+    pretty: 'Steam lever under',
+    description: 'User\' Steam profile lever is under or the same as the set number',
+  },
+  steam_level_over: {
+    key: 'steam_level_over',
+    pretty: 'Steam lever over',
+    description: 'User\' Steam profile lever is over the set number',
+  },
 };
 
 const actions = {
@@ -21,6 +36,11 @@ const actions = {
     key: 'block',
     pretty: 'Block',
     description: 'Ignore friend request and block user',
+  },
+  no_action: {
+    key: 'no_action',
+    pretty: 'No action',
+    description: 'Do nothing',
   },
 };
 
