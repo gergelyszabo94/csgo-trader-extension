@@ -1,5 +1,6 @@
 import { getPlayerBans, getPlayerSummaries } from 'utils/ISteamUser';
 import { actions, conditions, eventTypes } from 'utils/static/friendRequests';
+import { getSteamRepInfo } from 'utils/utilsModular';
 
 const getFriendRequests = () => new Promise((resolve, reject) => {
   const getRequest = new Request('https://steamcommunity.com/my/friends/pending');
@@ -195,6 +196,46 @@ const addBansToInvites = () => {
   });
 };
 
+const addSteamRepInfoToInvites = () => {
+  chrome.storage.local.get(['friendRequests'], ({ friendRequests }) => {
+    const invitesWithSteamRep = [];
+    const noSteamRepInvites = [];
+
+    friendRequests.inviters.forEach((invite) => {
+      if (invite.steamRepInfo === undefined) {
+        noSteamRepInvites.push(invite);
+      } else invitesWithSteamRep.push(invite);
+    });
+
+    const nowWithSteamRepInfo = [];
+
+    noSteamRepInvites.forEach((invite) => {
+      getSteamRepInfo(invite.steamID).then((steamRepInfo) => {
+        nowWithSteamRepInfo.push({
+          ...invite,
+          steamRepInfo,
+        });
+      });
+    });
+
+    setTimeout(() => {
+      const nowWithSteamRepInfoIDs = nowWithSteamRepInfo.map((invite) => {
+        return invite.steamID;
+      });
+      const stillNoSteamRep = noSteamRepInvites.filter((invite) => {
+        return !nowWithSteamRepInfoIDs.includes(invite.steamID);
+      });
+
+      chrome.storage.local.set({
+        friendRequests: {
+          inviters: [...invitesWithSteamRep, ...stillNoSteamRep, ...nowWithSteamRepInfo],
+          lastUpdated: Date.now(),
+        },
+      }, () => {});
+    }, 4000);
+  });
+};
+
 const createFriendRequestEvent = (invite, type, appliedRule) => {
   let eventType;
   switch (type) {
@@ -213,7 +254,7 @@ const createFriendRequestEvent = (invite, type, appliedRule) => {
 };
 
 const evaluateRequest = (invite, rules) => {
-  if (invite.summary && invite.bans) {
+  if (invite.summary && invite.bans && invite.steamRepInfo) {
     for (const [index, rule] of rules.entries()) {
       if (rule.active) {
         if (rule.condition.type === conditions.profile_private.key
@@ -304,11 +345,13 @@ const evaluateInvites = () => {
           evaluationEvents.push(
             createFriendRequestEvent(invite, requestVerdict.action, requestVerdict.appliedRule),
           );
-          evaluatedInvites.push({
-            ...invite,
-            evalTries: invite.evalTries + 1,
-            evaluation: requestVerdict,
-          });
+          if (requestVerdict.action === actions.no_action.key) {
+            evaluatedInvites.push({
+              ...invite,
+              evalTries: invite.evalTries + 1,
+              evaluation: requestVerdict,
+            });
+          }
         } else {
           evaluatedInvites.push({
             ...invite,
@@ -372,8 +415,11 @@ const updateFriendRequest = () => {
           addBansToInvites();
         }, 5000);
         setTimeout(() => {
-          evaluateInvites();
+          addSteamRepInfoToInvites();
         }, 10000);
+        setTimeout(() => {
+          evaluateInvites();
+        }, 15000);
       });
 
       const newInviteEvents = newInvites.map((invite) => {
