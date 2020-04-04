@@ -2,6 +2,7 @@ import { getFloatInfoFromCache, extractUsefulFloatInfo, addToFloatCache } from '
 import {
   getExteriorFromTags, getDopplerInfo, getQuality, getType, parseStickerInfo, getPattern,
   goToInternalPage, validateSteamAPIKey, getAssetIDFromInspectLink, getNameTag, getInspectLink,
+  getSteamRepInfo,
 } from 'utils/utilsModular';
 import { getShortDate } from 'utils/dateTime';
 import { getStickerPriceTotal, getPrice, prettyPrintPrice } from 'utils/pricing';
@@ -256,19 +257,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     } else sendResponse('nofloat');
     return true; // async return to signal that it will return later
   } else if (request.getSteamRepInfo !== undefined) {
-    const steamID = request.getSteamRepInfo;
-
-    const getRequest = new Request(`https://steamrep.com/api/beta4/reputation/${steamID}?json=1`);
-
-    fetch(getRequest).then((response) => {
-      if (!response.ok) {
-        sendResponse('error');
-        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-      } else return response.json();
-    }).then((body) => {
-      sendResponse({ SteamRepInfo: body.steamrep });
-    }).catch((err) => {
-      console.log(err);
+    getSteamRepInfo(request.getSteamRepInfo).then((steamRepInfo) => {
+      sendResponse({ SteamRepInfo: steamRepInfo });
+    }).catch(() => {
       sendResponse({ SteamRepInfo: 'error' });
     });
     return true; // async return to signal that it will return later

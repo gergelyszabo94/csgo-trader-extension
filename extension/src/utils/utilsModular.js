@@ -524,9 +524,9 @@ const updateLoggedInUserInfo = () => {
 
 const warnOfScammer = (steamID, page) => {
   if (steamID) {
-    chrome.runtime.sendMessage({ getSteamRepInfo: steamID }, (response) => {
-      if (response.SteamRepInfo !== 'error') {
-        if (response.SteamRepInfo.reputation.summary === 'SCAMMER') {
+    chrome.runtime.sendMessage({ getSteamRepInfo: steamID }, ({ SteamRepInfo }) => {
+      if (SteamRepInfo !== 'error') {
+        if (SteamRepInfo.reputation.summary === 'SCAMMER') {
           const backgroundURL = chrome.runtime.getURL('images/scammerbackground.jpg');
           document.querySelector('body').insertAdjacentHTML('beforebegin',
             `<div style="background-color: red; color: white; padding: 5px; text-align: center;" class="scammerWarning">
@@ -605,6 +605,22 @@ const addUpdatedRibbon = () => {
   });
 };
 
+const getSteamRepInfo = (steamID) => new Promise((resolve, reject) => {
+  const getRequest = new Request(`https://steamrep.com/api/beta4/reputation/${steamID}?json=1`);
+
+  fetch(getRequest).then((response) => {
+    if (!response.ok) {
+      reject(response);
+      console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+    } else return response.json();
+  }).then((body) => {
+    resolve(body.steamrep);
+  }).catch((err) => {
+    console.log(err);
+    reject(err);
+  });
+});
+
 //  unused atm
 // const generateRandomString = (length) => {
 //   let text = '';
@@ -630,5 +646,5 @@ export {
   getFloatBarSkeleton, isCSGOInventoryActive, getInspectLink,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
-  removeOfferFromActiveOffers, addUpdatedRibbon,
+  removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo,
 };
