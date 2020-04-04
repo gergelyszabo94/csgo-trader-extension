@@ -194,6 +194,32 @@ const evaluateRequest = (invite, rules) => {
           appliedRule: index + 1,
         };
       }
+      if (rule.condition.type === conditions.vac_banned.key && invite.bans.VACBanned) {
+        return {
+          action: rule.action,
+          appliedRule: index + 1,
+        };
+      }
+      if (rule.condition.type === conditions.community_banned.key && invite.bans.CommunityBanned) {
+        return {
+          action: rule.action,
+          appliedRule: index + 1,
+        };
+      }
+      if (rule.condition.type === conditions.game_banned.key
+        && invite.bans.NumberOfGameBans !== 0) {
+        return {
+          action: rule.action,
+          appliedRule: index + 1,
+        };
+      }
+      if (rule.condition.type === conditions.trade_banned.key
+        && (invite.bans.EconomyBan === 'banned' || invite.bans.EconomyBan === 'probation')) {
+        return {
+          action: rule.action,
+          appliedRule: index + 1,
+        };
+      }
     }
   }
 

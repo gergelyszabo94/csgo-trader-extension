@@ -93,6 +93,27 @@ const storageKeys = {
       },
       action: actions.ignore.key,
     },
+    {
+      active: false,
+      condition: {
+        type: conditions.vac_banned.key,
+      },
+      action: actions.ignore.key,
+    },
+    {
+      active: false,
+      condition: {
+        type: conditions.community_banned.key,
+      },
+      action: actions.ignore.key,
+    },
+    {
+      active: false,
+      condition: {
+        type: conditions.trade_banned.key,
+      },
+      action: actions.ignore.key,
+    },
   ],
   ignoreGroupInvites: false,
 };

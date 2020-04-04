@@ -19,6 +19,26 @@ const conditions = {
     pretty: 'Steam lever over',
     description: 'User\' Steam profile lever is over the set number',
   },
+  vac_banned: {
+    key: 'vac_banned',
+    pretty: 'Vac banned',
+    description: 'The user has VAC ban(s) on their account',
+  },
+  community_banned: {
+    key: 'community_banned',
+    pretty: 'Community banned',
+    description: 'The user is community banned on Steam',
+  },
+  game_banned: {
+    key: 'game_banned',
+    pretty: 'Game banned',
+    description: 'The user is banned in some games (for example CS:GO Overwatch banned)',
+  },
+  trade_banned: {
+    key: 'trade_banned',
+    pretty: 'Trade banned',
+    description: 'The user is trade banned or on trade ban probation',
+  },
 };
 
 const actions = {
