@@ -312,6 +312,13 @@ const evaluateRequest = (invite, rules) => {
             appliedRule: index + 1,
           };
         }
+        if (rule.condition.type === conditions.streamrep_banned.key
+          && invite.steamRepInfo.reputation.summary === 'SCAMMER') {
+          return {
+            action: rule.action,
+            appliedRule: index + 1,
+          };
+        }
       }
     }
 

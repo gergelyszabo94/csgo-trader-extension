@@ -39,6 +39,11 @@ const conditions = {
     pretty: 'Trade banned',
     description: 'The user is trade banned or on trade ban probation',
   },
+  streamrep_banned: {
+    key: 'streamrep_banned',
+    pretty: 'SteamRep banned',
+    description: 'The user is a convicted scammer on steamrep.com',
+  },
 };
 
 const actions = {
