@@ -7,6 +7,7 @@ import {
 import { getGroupInvites, updateFriendRequest, ignoreGroupRequest } from 'utils/friendRequests';
 import { trimFloatCache } from 'utils/floatCaching';
 import { getSteamNotificationCount } from 'utils/notifications';
+import { actions, conditions } from 'utils/static/friendRequests';
 
 // handles install and update events
 chrome.runtime.onInstalled.addListener((details) => {
@@ -36,6 +37,46 @@ chrome.runtime.onInstalled.addListener((details) => {
       message: 'Go to the options to set your Steam API key and customize your experience!',
     }, () => {});
   } else if (details.reason === 'update') {
+    chrome.storage.local.set({
+      friendRequestEvalRules: [
+        {
+          active: true,
+          condition: {
+            type: conditions.profile_private.key,
+          },
+          action: actions.ignore.key,
+        },
+        {
+          active: true,
+          condition: {
+            type: conditions.vac_banned.key,
+          },
+          action: actions.ignore.key,
+        },
+        {
+          active: true,
+          condition: {
+            type: conditions.community_banned.key,
+          },
+          action: actions.ignore.key,
+        },
+        {
+          active: true,
+          condition: {
+            type: conditions.trade_banned.key,
+          },
+          action: actions.ignore.key,
+        },
+        {
+          active: true,
+          condition: {
+            type: conditions.game_banned.key,
+          },
+          action: actions.ignore.key,
+        },
+      ],
+    });
+
     // sets defaults options for new options that haven't been set yet
     // (for features introduced since the last version)
     // runs when the extension updates or gets reloaded in developer mode

@@ -26,6 +26,7 @@ const getFriendRequests = () => new Promise((resolve, reject) => {
             accountID: inviteRow.getAttribute('data-accountid'),
             name: inviteRow.querySelector('.invite_block_name').firstElementChild.innerText,
             level: inviteRow.querySelector('.friendPlayerLevelNum').innerText,
+            evalTries: 0,
           });
         });
       }
@@ -133,30 +134,78 @@ const logFriendRequestEvents = (events) => {
   });
 };
 
+const addSummariesToInvites = () => {
+  chrome.storage.local.get(['friendRequests'], ({ friendRequests }) => {
+    const invitesWithSummaries = [];
+    const noSummaryInvites = [];
+    const noSummaryInvitesIDs = [];
+    friendRequests.inviters.forEach((invite) => {
+      if (invite.summary === undefined) {
+        noSummaryInvites.push(invite);
+        noSummaryInvitesIDs.push(invite.steamID);
+      } else invitesWithSummaries.push(invite);
+    });
+
+    getPlayerSummaries(noSummaryInvitesIDs).then((summaries) => {
+      const nowWithSummaries = noSummaryInvites.map((invite) => {
+        return {
+          ...invite,
+          summary: summaries[invite.steamID],
+        };
+      });
+
+      chrome.storage.local.set({
+        friendRequests: {
+          inviters: [...invitesWithSummaries, ...nowWithSummaries],
+          lastUpdated: Date.now(),
+        },
+      }, () => {});
+    });
+  });
+};
+
+const addBansToInvites = () => {
+  chrome.storage.local.get(['friendRequests'], ({ friendRequests }) => {
+    const invitesWithBans = [];
+    const noBansInvites = [];
+    const noBansInvitesIDs = [];
+
+    friendRequests.inviters.forEach((invite) => {
+      if (invite.bans === undefined) {
+        noBansInvites.push(invite);
+        noBansInvitesIDs.push(invite.steamID);
+      } else invitesWithBans.push(invite);
+    });
+
+    getPlayerBans(noBansInvitesIDs).then((bans) => {
+      const nowWithBans = noBansInvites.map((invite) => {
+        return {
+          ...invite,
+          bans: bans[invite.steamID],
+        };
+      });
+
+      chrome.storage.local.set({
+        friendRequests: {
+          inviters: [...invitesWithBans, ...nowWithBans],
+          lastUpdated: Date.now(),
+        },
+      }, () => {});
+    });
+  });
+};
+
 const createFriendRequestEvent = (invite, type, appliedRule) => {
   let eventType;
-  let rule;
   switch (type) {
-    case actions.accept.key: {
-      eventType = eventTypes.auto_accepted.key;
-      rule = appliedRule;
-      break;
-    }
-    case actions.ignore.key: {
-      eventType = eventTypes.auto_ignored.key;
-      rule = appliedRule;
-      break;
-    }
-    case actions.block.key: {
-      eventType = eventTypes.auto_blocked.key;
-      rule = appliedRule;
-      break;
-    }
+    case actions.accept.key: eventType = eventTypes.auto_accepted.key; break;
+    case actions.ignore.key: eventType = eventTypes.auto_ignored.key; break;
+    case actions.block.key: eventType = eventTypes.auto_blocked.key; break;
     default: eventType = type;
   }
   return {
     type: eventType,
-    rule,
+    rule: appliedRule,
     steamID: invite.steamID,
     username: invite.name,
     timestamp: Date.now(),
@@ -164,69 +213,73 @@ const createFriendRequestEvent = (invite, type, appliedRule) => {
 };
 
 const evaluateRequest = (invite, rules) => {
-  for (const [index, rule] of rules.entries()) {
-    if (rule.active) {
-      if (rule.condition.type === conditions.profile_private.key
-        && invite.summary.communityvisibilitystate === 1) {
-        return {
-          action: rule.action,
-          appliedRule: index + 1,
-        };
-      }
-      if (rule.condition.type === conditions.profile_public.key
-        && invite.summary.communityvisibilitystate === 3) {
-        return {
-          action: rule.action,
-          appliedRule: index + 1,
-        };
-      }
-      if (rule.condition.type === conditions.steam_level_under.key
-        && parseInt(invite.level) <= rule.condition.value) {
-        return {
-          action: rule.action,
-          appliedRule: index + 1,
-        };
-      }
-      if (rule.condition.type === conditions.steam_level_over.key
-        && parseInt(invite.level) > rule.condition.value) {
-        return {
-          action: rule.action,
-          appliedRule: index + 1,
-        };
-      }
-      if (rule.condition.type === conditions.vac_banned.key && invite.bans.VACBanned) {
-        return {
-          action: rule.action,
-          appliedRule: index + 1,
-        };
-      }
-      if (rule.condition.type === conditions.community_banned.key && invite.bans.CommunityBanned) {
-        return {
-          action: rule.action,
-          appliedRule: index + 1,
-        };
-      }
-      if (rule.condition.type === conditions.game_banned.key
-        && invite.bans.NumberOfGameBans !== 0) {
-        return {
-          action: rule.action,
-          appliedRule: index + 1,
-        };
-      }
-      if (rule.condition.type === conditions.trade_banned.key
-        && (invite.bans.EconomyBan === 'banned' || invite.bans.EconomyBan === 'probation')) {
-        return {
-          action: rule.action,
-          appliedRule: index + 1,
-        };
+  if (invite.summary && invite.bans) {
+    for (const [index, rule] of rules.entries()) {
+      if (rule.active) {
+        if (rule.condition.type === conditions.profile_private.key
+          && invite.summary.communityvisibilitystate === 1) {
+          return {
+            action: rule.action,
+            appliedRule: index + 1,
+          };
+        }
+        if (rule.condition.type === conditions.profile_public.key
+          && invite.summary.communityvisibilitystate === 3) {
+          return {
+            action: rule.action,
+            appliedRule: index + 1,
+          };
+        }
+        if (rule.condition.type === conditions.steam_level_under.key
+          && parseInt(invite.level) <= rule.condition.value) {
+          return {
+            action: rule.action,
+            appliedRule: index + 1,
+          };
+        }
+        if (rule.condition.type === conditions.steam_level_over.key
+          && parseInt(invite.level) > rule.condition.value) {
+          return {
+            action: rule.action,
+            appliedRule: index + 1,
+          };
+        }
+        if (rule.condition.type === conditions.vac_banned.key && invite.bans.VACBanned) {
+          return {
+            action: rule.action,
+            appliedRule: index + 1,
+          };
+        }
+        if (rule.condition.type === conditions.community_banned.key
+          && invite.bans.CommunityBanned) {
+          return {
+            action: rule.action,
+            appliedRule: index + 1,
+          };
+        }
+        if (rule.condition.type === conditions.game_banned.key
+          && invite.bans.NumberOfGameBans !== 0) {
+          return {
+            action: rule.action,
+            appliedRule: index + 1,
+          };
+        }
+        if (rule.condition.type === conditions.trade_banned.key
+          && (invite.bans.EconomyBan === 'banned' || invite.bans.EconomyBan === 'probation')) {
+          return {
+            action: rule.action,
+            appliedRule: index + 1,
+          };
+        }
       }
     }
-  }
 
-  return {
-    action: actions.no_action.key,
-    appliedRule: 0,
-  };
+    return {
+      action: actions.no_action.key,
+      appliedRule: 0,
+    };
+  }
+  return null;
 };
 
 const executeVerdict = (invite, verdict) => {
@@ -238,6 +291,44 @@ const executeVerdict = (invite, verdict) => {
   }
 };
 
+const evaluateInvites = () => {
+  chrome.storage.local.get(['friendRequests', 'friendRequestEvalRules'], ({ friendRequests, friendRequestEvalRules }) => {
+    const alreadyEvaluated = [];
+    const evaluationEvents = [];
+    const evaluatedInvites = [];
+    friendRequests.inviters.forEach((invite) => {
+      if (invite.evaluation === undefined && invite.evalTries < 5) {
+        const requestVerdict = evaluateRequest(invite, friendRequestEvalRules);
+        if (requestVerdict !== null) {
+          executeVerdict(invite, requestVerdict.action);
+          evaluationEvents.push(
+            createFriendRequestEvent(invite, requestVerdict.action, requestVerdict.appliedRule),
+          );
+          evaluatedInvites.push({
+            ...invite,
+            evalTries: invite.evalTries + 1,
+            evaluation: requestVerdict,
+          });
+        } else {
+          evaluatedInvites.push({
+            ...invite,
+            evalTries: invite.evalTries + 1,
+          });
+        }
+      } else alreadyEvaluated.push(invite);
+    });
+
+    chrome.storage.local.set({
+      friendRequests: {
+        inviters: [...alreadyEvaluated, ...evaluatedInvites],
+        lastUpdated: Date.now(),
+      },
+    }, () => {});
+
+    logFriendRequestEvents(evaluationEvents);
+  });
+};
+
 const updateFriendRequest = () => {
   getFriendRequests().then((inviters) => {
     // inviters here is the freshly loaded list
@@ -247,7 +338,7 @@ const updateFriendRequest = () => {
     });
 
     // loading previous invite info from storage that could be stale
-    chrome.storage.local.get(['friendRequests', 'friendRequestEvalRules'], ({ friendRequests, friendRequestEvalRules }) => {
+    chrome.storage.local.get(['friendRequests'], ({ friendRequests }) => {
       const staleInviterIDs = friendRequests.inviters.map((inviter) => {
         return inviter.steamID;
       });
@@ -266,56 +357,23 @@ const updateFriendRequest = () => {
         return !staleInviterIDs.includes(inviter.steamID);
       });
 
-      const newInviteIDs = newInvites.map((invite) => {
-        return invite.steamID;
-      });
-
       const unChangedInvites = friendRequests.inviters.filter((inviter) => {
         return upToDateInviterIDs.includes(inviter.steamID);
       });
 
-      getPlayerSummaries(newInviteIDs).then((summaries) => {
-        const newInvitesWithSummaries = newInvites.map((invite) => {
-          return {
-            ...invite,
-            summary: summaries[invite.steamID],
-          };
-        });
-
-        getPlayerBans(newInviteIDs).then((bans) => {
-          const newInvitesWithBans = newInvitesWithSummaries.map((invite) => {
-            return {
-              ...invite,
-              bans: bans[invite.steamID],
-            };
-          });
-
-          const evaluationEvents = [];
-          const evaluatedInvites = [];
-          newInvitesWithBans.forEach((invite) => {
-            const requestVerdict = evaluateRequest(invite, friendRequestEvalRules);
-            if (requestVerdict.action !== actions.no_action.key) {
-              executeVerdict(invite, requestVerdict.action);
-              evaluationEvents.push(
-                createFriendRequestEvent(invite, requestVerdict.action, requestVerdict.appliedRule),
-              );
-            } else {
-              evaluatedInvites.push({
-                ...invite,
-                evaluation: requestVerdict,
-              });
-            }
-          });
-
-          logFriendRequestEvents(evaluationEvents);
-
-          chrome.storage.local.set({
-            friendRequests: {
-              inviters: [...unChangedInvites, ...evaluatedInvites],
-              lastUpdated: Date.now(),
-            },
-          }, () => {});
-        });
+      chrome.storage.local.set({
+        friendRequests: {
+          inviters: [...unChangedInvites, ...newInvites],
+          lastUpdated: Date.now(),
+        },
+      }, () => {
+        addSummariesToInvites();
+        setTimeout(() => {
+          addBansToInvites();
+        }, 5000);
+        setTimeout(() => {
+          evaluateInvites();
+        }, 10000);
       });
 
       const newInviteEvents = newInvites.map((invite) => {
