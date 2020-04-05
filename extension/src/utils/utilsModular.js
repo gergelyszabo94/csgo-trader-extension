@@ -514,7 +514,7 @@ const getSessionID = () => {
 // updates the SteamID of the extension's user in storage
 const updateLoggedInUserInfo = () => {
   const steamID = getUserSteamID();
-  if (steamID !== 'false' && steamID !== false) {
+  if (steamID !== 'false' && steamID !== false && steamID !== null) {
     chrome.storage.local.set({
       steamIDOfUser: steamID,
       steamSessionID: getSessionID(),
