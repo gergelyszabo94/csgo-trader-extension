@@ -1,6 +1,7 @@
 import { getPlayerBans, getPlayerSummaries } from 'utils/ISteamUser';
 import { actions, conditions, eventTypes } from 'utils/static/friendRequests';
 import { getSteamRepInfo } from 'utils/utilsModular';
+import getUserCSGOInventory from 'utils/getUserCSGOInventory';
 
 const getFriendRequests = () => new Promise((resolve, reject) => {
   const getRequest = new Request('https://steamcommunity.com/my/friends/pending');
@@ -100,7 +101,7 @@ const makeFriendActionCall = (targetSteamID, action) => {
         console.log(`Error code: ${response.status} Status: ${response.statusText}`);
       } else return response.json();
     }).then((data) => {
-      console.log(data);
+      if (!data.success) console.log(data);
     }).catch((err) => {
       console.log(err);
     });
@@ -236,6 +237,56 @@ const addSteamRepInfoToInvites = () => {
   });
 };
 
+const addInventoryValueInfo = () => {
+  chrome.storage.local.get(['friendRequests'], ({ friendRequests }) => {
+    const invitesWithInventoryValue = [];
+    const noInventoryValueInvites = [];
+
+    friendRequests.inviters.forEach((invite) => {
+      if (invite.csgoInventoryValue === undefined) {
+        noInventoryValueInvites.push(invite);
+      } else invitesWithInventoryValue.push(invite);
+    });
+
+    const nowWithInventoryValue = [];
+
+    for (const [index, invite] of noInventoryValueInvites.entries()) {
+      if (index < 5) {
+        getUserCSGOInventory(invite.steamID).then(({ total }) => {
+          nowWithInventoryValue.push({
+            ...invite,
+            csgoInventoryValue: total,
+          });
+        }).catch((err) => {
+          if (err === 'inventory_private') {
+            nowWithInventoryValue.push({
+              ...invite,
+              csgoInventoryValue: 'inventory_private',
+            });
+          }
+        });
+      } else break;
+    }
+
+    setTimeout(() => {
+      const nowWithInventoryValueIDs = nowWithInventoryValue.map((invite) => {
+        return invite.steamID;
+      });
+      const stillNoInventoryValue = noInventoryValueInvites.filter((invite) => {
+        return !nowWithInventoryValueIDs.includes(invite.steamID);
+      });
+
+      chrome.storage.local.set({
+        friendRequests: {
+          inviters:
+            [...invitesWithInventoryValue, ...stillNoInventoryValue, ...nowWithInventoryValue],
+          lastUpdated: Date.now(),
+        },
+      }, () => {});
+    }, 4000);
+  });
+};
+
 const createFriendRequestEvent = (invite, type, appliedRule) => {
   let eventType;
   switch (type) {
@@ -254,7 +305,7 @@ const createFriendRequestEvent = (invite, type, appliedRule) => {
 };
 
 const evaluateRequest = (invite, rules) => {
-  if (invite.summary && invite.bans && invite.steamRepInfo) {
+  if (invite.summary && invite.bans && invite.steamRepInfo && invite.csgoInventoryValue) {
     for (const [index, rule] of rules.entries()) {
       if (rule.active) {
         if (rule.condition.type === conditions.profile_private.key
@@ -314,6 +365,29 @@ const evaluateRequest = (invite, rules) => {
         }
         if (rule.condition.type === conditions.streamrep_banned.key
           && invite.steamRepInfo.reputation.summary === 'SCAMMER') {
+          return {
+            action: rule.action,
+            appliedRule: index + 1,
+          };
+        }
+        if (rule.condition.type === conditions.csgo_inventory_value_under.key
+          && invite.csgoInventoryValue !== 'inventory_private'
+          && invite.csgoInventoryValue <= rule.condition.value) {
+          return {
+            action: rule.action,
+            appliedRule: index + 1,
+          };
+        }
+        if (rule.condition.type === conditions.csgo_inventory_value_over.key
+          && invite.csgoInventoryValue !== 'inventory_private'
+          && invite.csgoInventoryValue > rule.condition.value) {
+          return {
+            action: rule.action,
+            appliedRule: index + 1,
+          };
+        }
+        if (rule.condition.type === conditions.inventory_private.key
+          && invite.csgoInventoryValue === 'inventory_private') {
           return {
             action: rule.action,
             appliedRule: index + 1,
@@ -425,8 +499,11 @@ const updateFriendRequest = () => {
           addSteamRepInfoToInvites();
         }, 10000);
         setTimeout(() => {
-          evaluateInvites();
+          addInventoryValueInfo();
         }, 15000);
+        setTimeout(() => {
+          evaluateInvites();
+        }, 20000);
       });
 
       const newInviteEvents = newInvites.map((invite) => {

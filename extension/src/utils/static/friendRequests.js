@@ -44,6 +44,21 @@ const conditions = {
     pretty: 'SteamRep banned',
     description: 'The user is a convicted scammer on steamrep.com',
   },
+  csgo_inventory_value_over: {
+    key: 'csgo_inventory_value_over',
+    pretty: 'CS:GO Inventory value over',
+    description: 'The user\'s inventory value is over',
+  },
+  csgo_inventory_value_under: {
+    key: 'csgo_inventory_value_under',
+    pretty: 'CS:GO Inventory value under',
+    description: 'The user\'s inventory value is under or the equal to',
+  },
+  inventory_private: {
+    key: 'inventory_private',
+    pretty: 'Private inventory',
+    description: 'The user\'s inventory is not publicly viewable',
+  },
 };
 
 const actions = {

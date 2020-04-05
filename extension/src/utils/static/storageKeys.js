@@ -121,6 +121,13 @@ const storageKeys = {
       },
       action: actions.ignore.key,
     },
+    {
+      active: false,
+      condition: {
+        type: conditions.inventory_private.key,
+      },
+      action: actions.ignore.key,
+    },
   ],
   ignoreGroupInvites: false,
 };
