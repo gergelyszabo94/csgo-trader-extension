@@ -17,6 +17,7 @@ import { offersSortingModes } from 'utils/static/sortingModes';
 import { injectScript, injectStyle } from 'utils/injection';
 import { getProperStyleSteamIDFromOfferStyle, getUserSteamID } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
+import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
 
 const userID = getUserSteamID();
 let activePage = 'incoming_offers';
@@ -704,11 +705,8 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
 
         const matchedItems = matchItemsWithDescriptions(itemsWithMoreInfo);
 
-        chrome.runtime.sendMessage({
-          addPricesAndFloatsToInventory: matchedItems,
-        }, ({ addPricesAndFloatsToInventory }) => {
-          const itemsWithAllInfo = addPricesAndFloatsToInventory;
-
+        addPricesAndFloatsToInventory(matchedItems).then(({ items }) => {
+          const itemsWithAllInfo = items;
           updateActiveOffers(offers, itemsWithAllInfo);
           addItemInfo(itemsWithAllInfo);
 

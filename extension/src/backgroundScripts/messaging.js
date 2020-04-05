@@ -1,10 +1,8 @@
-import { getFloatInfoFromCache, extractUsefulFloatInfo, addToFloatCache } from 'utils/floatCaching';
+import { extractUsefulFloatInfo, addToFloatCache } from 'utils/floatCaching';
 import {
-  parseStickerInfo, getPattern, goToInternalPage, validateSteamAPIKey,
+  goToInternalPage, validateSteamAPIKey,
   getAssetIDFromInspectLink, getSteamRepInfo,
 } from 'utils/utilsModular';
-import { getStickerPriceTotal, getPrice, prettyPrintPrice } from 'utils/pricing';
-import itemTypes from 'utils/static/itemTypes';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import getUserCSGOInventory from 'utils/getUserCSGOInventory';
 
@@ -19,54 +17,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse('error');
     });
     return true; // async return to signal that it will return later
-  }
-  if (request.inventoryTotal !== undefined) {
-    const inventory = request.inventoryTotal;
-    let total = 0.0;
-    chrome.storage.local.get(['prices', 'exchangeRate', 'currency', 'pricingProvider'], (result) => {
-      inventory.forEach((item) => {
-        total += parseFloat(getPrice(item.market_hash_name, item.dopplerInfo, result.prices,
-          result.pricingProvider, result.exchangeRate, result.currency).price);
-      });
-      sendResponse({ inventoryTotal: prettyPrintPrice(result.currency, (total).toFixed(0)) });
-    });
-    return true;
-  }
-  if (request.addPricesAndFloatsToInventory !== undefined) {
-    const inventory = request.addPricesAndFloatsToInventory;
-    chrome.storage.local.get(
-      ['prices', 'exchangeRate', 'currency', 'itemPricing', 'pricingProvider'],
-      (result) => {
-        if (result.itemPricing) {
-          const floatCacheAssetIDs = inventory.map((item) => {
-            return item.assetid;
-          });
-          getFloatInfoFromCache(floatCacheAssetIDs).then(
-            (floatCache) => {
-              inventory.forEach((item) => {
-                if (result.prices[item.market_hash_name] !== undefined
-                  && result.prices[item.market_hash_name] !== 'null') {
-                  item.price = getPrice(item.market_hash_name, item.dopplerInfo, result.prices,
-                    result.pricingProvider, result.exchangeRate, result.currency);
-                }
-                if (floatCache[item.assetid] !== undefined && floatCache[item.assetid] !== null
-                  && itemTypes[item.type.key].float) {
-                  item.floatInfo = floatCache[item.assetid];
-                  item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintSeed);
-                }
-                const stickers = parseStickerInfo(item.descriptions, 'direct', result.prices,
-                  result.pricingProvider, result.exchangeRate, result.currency);
-                const stickerPrice = getStickerPriceTotal(stickers, result.currency);
-                item.stickers = stickers;
-                item.stickerPrice = stickerPrice;
-              });
-              sendResponse({ addPricesAndFloatsToInventory: inventory });
-            },
-          );
-        } else sendResponse({ addPricesAndFloatsToInventory: inventory });
-      },
-    );
-    return true;
   }
   if (request.badgetext !== undefined) {
     chrome.browserAction.setBadgeText({ text: request.badgetext });
