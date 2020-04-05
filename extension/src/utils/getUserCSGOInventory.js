@@ -28,6 +28,7 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
         const ids = body.rgInventory;
 
         const itemsPropertiesToReturn = [];
+        let inventoryTotal = 0.0;
         const duplicates = {};
         const floatCacheAssetIDs = [];
 
@@ -84,6 +85,7 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
                   if (itemPricing) {
                     price = getPrice(marketHashName, dopplerInfo, prices,
                       pricingProvider, exchangeRate, currency);
+                    inventoryTotal += parseFloat(price.price);
                   } else price = { price: '', display: '' };
 
                   if (item.tradable === 0) {
@@ -127,12 +129,14 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
                   });
                 }
               }
-              resolve(
-                itemsPropertiesToReturn.sort((a, b) => {
-                  return a.position - b.position;
-                }),
-              );
             }
+            const inventoryItems = itemsPropertiesToReturn.sort((a, b) => {
+              return a.position - b.position;
+            });
+            resolve({
+              items: inventoryItems,
+              total: inventoryTotal,
+            });
           },
         );
       }).catch((err) => {

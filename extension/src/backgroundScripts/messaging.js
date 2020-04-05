@@ -8,10 +8,13 @@ import itemTypes from 'utils/static/itemTypes';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import getUserCSGOInventory from 'utils/getUserCSGOInventory';
 
+// content scripts can't make cross domain requests because of security
+// most of the messaging required is to work around this limitation
+// and make the request from background script context
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.inventory !== undefined) {
-    getUserCSGOInventory(request.inventory).then((inventory) => {
-      sendResponse({ inventory });
+    getUserCSGOInventory(request.inventory).then(({ items, total }) => {
+      sendResponse({ items, total });
     }).catch(() => {
       sendResponse('error');
     });
