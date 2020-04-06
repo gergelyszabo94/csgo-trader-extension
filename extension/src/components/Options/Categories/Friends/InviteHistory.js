@@ -14,7 +14,7 @@ const InviteHistory = () => {
 
   return (
     <div className="col-6">
-      <h3>Friend Request History</h3>
+      <h5>Friend Request History</h5>
       <table className="inviteHistoryTable">
         <thead>
           <tr>
