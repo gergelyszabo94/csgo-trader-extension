@@ -16,7 +16,7 @@
     "bootstrap": "^4.4.1",
     "clean-webpack-plugin": "3.0.0",
     "copy-webpack-plugin": "5.1.1",
-    "css-loader": "3.4.2",
+    "css-loader": "3.5.0",
     "eslint": "^6.6.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-config-react-app": "^5.2.0",
