@@ -4,10 +4,12 @@ import { updatePrices, updateExchangeRates } from 'utils/pricing';
 import {
   scrapeSteamAPIkey, goToInternalPage, uuidv4,
 } from 'utils/utilsModular';
-import { getGroupInvites, updateFriendRequest, ignoreGroupRequest } from 'utils/friendRequests';
+import {
+  getGroupInvites, updateFriendRequest,
+  ignoreGroupRequest, removeOldFriendRequestEvents,
+} from 'utils/friendRequests';
 import { trimFloatCache } from 'utils/floatCaching';
 import { getSteamNotificationCount } from 'utils/notifications';
-import { actions, conditions } from 'utils/static/friendRequests';
 
 // handles install and update events
 chrome.runtime.onInstalled.addListener((details) => {
@@ -110,10 +112,8 @@ chrome.runtime.onInstalled.addListener((details) => {
   updatePrices();
   updateExchangeRates();
   chrome.alarms.create('getSteamNotificationCount', { periodInMinutes: 1 });
-  chrome.alarms.create('updatePricesAndExchangeRates', { periodInMinutes: 1440 });
   chrome.alarms.create('retryUpdatePricesAndExchangeRates', { periodInMinutes: 1 });
-  chrome.alarms.create('trimFloatCache', { periodInMinutes: 1440 });
-  chrome.alarms.create('sendTelemetry', { periodInMinutes: 1440 });
+  chrome.alarms.create('dailyScheduledTasks', { periodInMinutes: 1440 });
 });
 
 // redirects to feedback survey on uninstall
@@ -137,19 +137,12 @@ chrome.notifications.onClicked.addListener((notificationID) => {
 
 // handles periodic and timed events like bookmarked items becoming tradable
 chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === 'updatePricesAndExchangeRates') {
-    chrome.storage.local.get('itemPricing', (result) => {
-      if (result.itemPricing === true) updatePrices();
-    });
-    updateExchangeRates();
-  } else if (alarm.name === 'retryUpdatePricesAndExchangeRates') {
+  if (alarm.name === 'retryUpdatePricesAndExchangeRates') {
     chrome.storage.local.get('prices', (result) => {
       if (result.prices === null) updatePrices();
       else chrome.alarms.clear('retryUpdatePricesAndExchangeRates', () => {});
     });
-  } else if (alarm.name === 'trimFloatCache') trimFloatCache();
-  else if (alarm.name === 'sendTelemetry') sendTelemetry(0);
-  else if (alarm.name === 'getSteamNotificationCount') {
+  } else if (alarm.name === 'getSteamNotificationCount') {
     getSteamNotificationCount().then(({ invites }) => {
       chrome.storage.local.get(['friendRequests', 'groupInvites', 'ignoreGroupInvites'],
         ({ friendRequests, groupInvites, ignoreGroupInvites }) => {
@@ -184,6 +177,14 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     });
   } else if (alarm.name === 'restartNotificationChecks') {
     chrome.alarms.create('getSteamNotificationCount', { periodInMinutes: 1 });
+  } else if (alarm.name === 'dailyScheduledTasks') {
+    sendTelemetry(0);
+    trimFloatCache();
+    removeOldFriendRequestEvents();
+    chrome.storage.local.get('itemPricing', ({ itemPricing }) => {
+      if (itemPricing) updatePrices();
+    });
+    updateExchangeRates();
   } else {
     chrome.browserAction.getBadgeText({}, (result) => {
       if (result === '' || result === 'U' || result === 'I') chrome.browserAction.setBadgeText({ text: '1' });

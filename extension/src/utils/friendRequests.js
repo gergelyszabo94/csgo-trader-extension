@@ -515,8 +515,22 @@ const updateFriendRequest = () => {
   });
 };
 
+const removeOldFriendRequestEvents = () => {
+  chrome.storage.local.get(['friendRequestLogs'], ({ friendRequestLogs }) => {
+    const now = Date.now();
+    const recentEvents = friendRequestLogs.filter((event) => {
+      const delta = (now - event.timestamp) / 1000;
+      return delta < 86400 * 7;
+    });
+
+    chrome.storage.local.set({
+      friendRequestLogs: recentEvents,
+    }, () => {});
+  });
+};
+
 export {
   getFriendRequests, ignoreRequest, acceptRequest, blockRequest,
   getGroupInvites, ignoreGroupRequest, acceptGroupRequest,
-  updateFriendRequest,
+  updateFriendRequest, removeOldFriendRequestEvents,
 };
