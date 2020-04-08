@@ -2,7 +2,7 @@ import React from 'react';
 import Condition from 'components/Options/Categories/Friends/Condition';
 import Action from 'components/Options/Categories/Friends/Action';
 
-const InviteRule = ({ details, index }) => {
+const InviteRule = ({ details, index, saveRuleState }) => {
   const { active, condition, action } = details;
 
   return (
@@ -21,6 +21,7 @@ const InviteRule = ({ details, index }) => {
           <input
             type="checkbox"
             checked={active}
+            onChange={() => { saveRuleState(index, !active); }}
           />
           <span className="slider round" />
         </label>

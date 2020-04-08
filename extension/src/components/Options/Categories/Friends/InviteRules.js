@@ -5,6 +5,27 @@ import InviteRule from './InviteRule';
 const InviteRules = () => {
   const [rules, setRules] = useState([]);
 
+  const saveRules = (newRules) => {
+    chrome.storage.local.set({
+      friendRequestEvalRules: newRules,
+    }, () => {
+      setRules(newRules);
+    });
+  };
+
+  const setRuleState = (ruleIndex, state) => {
+    const newRules = rules.map((rule, index) => {
+      if (index === ruleIndex) {
+        return {
+          ...rule,
+          active: state,
+        };
+      }
+      return rule;
+    });
+    saveRules(newRules);
+  };
+
   useEffect(() => {
     chrome.storage.local.get(['friendRequestEvalRules'], ({ friendRequestEvalRules }) => {
       setRules(friendRequestEvalRules);
@@ -39,6 +60,7 @@ const InviteRules = () => {
                 key={rule.condition.type + rule.condition.value + rule.action + rule.active}
                 details={rule}
                 index={index}
+                saveRuleState={setRuleState}
               />
             );
           })}
