@@ -24,6 +24,19 @@ const InviteRules = () => {
     });
   };
 
+  const changeOrder = (ruleIndex, change) => {
+    const rule = rules[ruleIndex];
+    const newRules = [...rules];
+    newRules.splice(ruleIndex, 1);
+    newRules.splice(ruleIndex + change, 0, rule);
+
+    chrome.storage.local.set({
+      friendRequestEvalRules: newRules,
+    }, () => {
+      setRules(newRules);
+    });
+  };
+
   const saveRuleState = (ruleIndex, state) => {
     const newRules = rules.map((rule, index) => {
       if (index === ruleIndex) {
@@ -58,7 +71,7 @@ const InviteRules = () => {
       <table className="inviteRules">
         <thead>
           <tr>
-            <th title="Rule number">Number</th>
+            <th title="Rule number/order">Order</th>
             <th title="Condition to match incoming invites">Condition</th>
             <th title="What action should the extension take when the invite matches the condition?">Action</th>
             <th title="Turn the individual rules on of off">State</th>
@@ -66,6 +79,11 @@ const InviteRules = () => {
         </thead>
         <tbody>
           {rules.map((rule, index) => {
+            const position = index === 0
+              ? 'top'
+              : index === (rules.length - 1)
+                ? 'bottom'
+                : 'middle';
             return (
               <InviteRule
                 key={rule.condition.type + rule.condition.value + rule.action + rule.active}
@@ -73,6 +91,8 @@ const InviteRules = () => {
                 index={index}
                 saveRuleState={saveRuleState}
                 removeRule={removeRule}
+                changeOrder={changeOrder}
+                position={position}
               />
             );
           })}
