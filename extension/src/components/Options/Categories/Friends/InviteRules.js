@@ -13,7 +13,18 @@ const InviteRules = () => {
     });
   };
 
-  const setRuleState = (ruleIndex, state) => {
+  const removeRule = (ruleIndex) => {
+    const newRules = rules.filter((rule, index) => {
+      return index !== ruleIndex;
+    });
+    chrome.storage.local.set({
+      friendRequestEvalRules: newRules,
+    }, () => {
+      setRules(newRules);
+    });
+  };
+
+  const saveRuleState = (ruleIndex, state) => {
     const newRules = rules.map((rule, index) => {
       if (index === ruleIndex) {
         return {
@@ -60,7 +71,8 @@ const InviteRules = () => {
                 key={rule.condition.type + rule.condition.value + rule.action + rule.active}
                 details={rule}
                 index={index}
-                saveRuleState={setRuleState}
+                saveRuleState={saveRuleState}
+                removeRule={removeRule}
               />
             );
           })}
