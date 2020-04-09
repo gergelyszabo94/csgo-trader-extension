@@ -305,7 +305,8 @@ const createFriendRequestEvent = (invite, type, appliedRule) => {
 };
 
 const evaluateRequest = (invite, rules) => {
-  if (invite.summary && invite.bans && invite.steamRepInfo && invite.csgoInventoryValue) {
+  if (invite.summary && invite.bans && invite.steamRepInfo
+    && (invite.csgoInventoryValue !== undefined)) {
     for (const [index, rule] of rules.entries()) {
       if (rule.active) {
         if (rule.condition.type === conditions.profile_private.key
