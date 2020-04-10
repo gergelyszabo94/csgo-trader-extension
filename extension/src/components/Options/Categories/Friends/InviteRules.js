@@ -73,7 +73,7 @@ const InviteRules = () => {
         </span>
         <ApiKeyIndicator />
       </div>
-      <table className="inviteRules">
+      <table className="spacedTable">
         <thead>
           <tr>
             <th title="Rule number/order">Order</th>

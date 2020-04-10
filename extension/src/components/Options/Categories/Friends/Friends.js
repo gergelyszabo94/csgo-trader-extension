@@ -2,8 +2,9 @@ import React from 'react';
 
 import Category from 'components/Options/Category/Category';
 import Row from 'components/Options/Row';
-import InviteHistory from './InviteHistory';
-import InviteRules from './InviteRules';
+import InviteHistory from 'components/Options/Categories/Friends/InviteHistory';
+import InviteRules from 'components/Options/Categories/Friends/InviteRules';
+import IncomingInvites from 'components/Options/Categories/Friends/IncomingInvites';
 
 const Friends = () => {
   return (
@@ -17,6 +18,7 @@ const Friends = () => {
       <div className="row">
         <InviteRules />
         <InviteHistory />
+        <IncomingInvites />
       </div>
     </Category>
   );
