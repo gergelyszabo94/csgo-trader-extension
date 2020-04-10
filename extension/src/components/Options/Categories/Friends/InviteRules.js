@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
+import AddInviteRule from 'components/Options/Categories/Friends/AddInviteRule';
 import InviteRule from './InviteRule';
 
 const InviteRules = () => {
@@ -50,6 +51,10 @@ const InviteRules = () => {
     saveRules(newRules);
   };
 
+  const addNewRule = (rule) => {
+    saveRules([...rules, rule]);
+  };
+
   useEffect(() => {
     chrome.storage.local.get(['friendRequestEvalRules'], ({ friendRequestEvalRules }) => {
       setRules(friendRequestEvalRules);
@@ -98,6 +103,7 @@ const InviteRules = () => {
           })}
         </tbody>
       </table>
+      <AddInviteRule add={addNewRule} />
     </div>
   );
 };

@@ -3,61 +3,73 @@ const conditions = {
     key: 'profile_private',
     pretty: 'Private profile',
     description: 'The user has a private Steam profile',
+    with_value: false,
   },
   profile_public: {
     key: 'profile_public',
     pretty: 'Private public',
     description: 'The user has a public Steam profile',
+    with_value: false,
   },
   steam_level_under: {
     key: 'steam_level_under',
     pretty: 'Steam lever under',
     description: 'User\' Steam profile lever is under or the same as the set number',
+    with_value: true,
   },
   steam_level_over: {
     key: 'steam_level_over',
     pretty: 'Steam lever over',
     description: 'User\' Steam profile lever is over the set number',
+    with_value: true,
   },
   vac_banned: {
     key: 'vac_banned',
     pretty: 'Vac banned',
     description: 'The user has VAC ban(s) on their account',
+    with_value: false,
   },
   community_banned: {
     key: 'community_banned',
     pretty: 'Community banned',
     description: 'The user is community banned on Steam',
+    with_value: false,
   },
   game_banned: {
     key: 'game_banned',
     pretty: 'Game banned',
     description: 'The user is banned in some games (for example CS:GO Overwatch banned)',
+    with_value: false,
   },
   trade_banned: {
     key: 'trade_banned',
     pretty: 'Trade banned',
     description: 'The user is trade banned or on trade ban probation',
+    with_value: false,
   },
   streamrep_banned: {
     key: 'streamrep_banned',
     pretty: 'SteamRep banned',
     description: 'The user is a convicted scammer on steamrep.com',
+    with_value: false,
   },
   csgo_inventory_value_over: {
     key: 'csgo_inventory_value_over',
     pretty: 'CS:GO Inventory value over',
     description: 'The user\'s inventory value is over',
+    with_value: true,
   },
   csgo_inventory_value_under: {
     key: 'csgo_inventory_value_under',
     pretty: 'CS:GO Inventory value under',
     description: 'The user\'s inventory value is under or the equal to',
+    with_value: true,
   },
   inventory_private: {
     key: 'inventory_private',
     pretty: 'Private inventory',
     description: 'The user\'s inventory is not publicly viewable',
+    with_value: false,
   },
 };
 

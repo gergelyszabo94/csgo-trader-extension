@@ -46,7 +46,7 @@ const InviteRule = ({
         <Action action={action} />
       </td>
       <td>
-        <label className="switch">
+        <label className="switch" title="Switch the rule on or off">
           <input
             type="checkbox"
             checked={active}
