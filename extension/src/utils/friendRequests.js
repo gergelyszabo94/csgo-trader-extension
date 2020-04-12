@@ -565,7 +565,7 @@ const updateFriendRequest = () => {
     });
 
     // loading previous invite info from storage that could be stale
-    chrome.storage.local.get(['friendRequests'], ({ friendRequests }) => {
+    chrome.storage.local.get(['friendRequests', 'apiKeyValid'], ({ friendRequests, apiKeyValid }) => {
       const staleInviterIDs = friendRequests.inviters.map((inviter) => {
         return inviter.steamID;
       });
@@ -594,22 +594,24 @@ const updateFriendRequest = () => {
           lastUpdated: Date.now(),
         },
       }, () => {
-        addSummariesToInvites();
-        setTimeout(() => {
-          addBansToInvites();
-        }, 5000);
-        setTimeout(() => {
-          addSteamRepInfoToInvites();
-        }, 10000);
-        setTimeout(() => {
-          addInventoryValueInfo();
-        }, 15000);
-        setTimeout(() => {
-          addCommonFriendsInfo();
-        }, 20000);
-        setTimeout(() => {
-          evaluateInvites();
-        }, 25000);
+        if (apiKeyValid) {
+          addSummariesToInvites();
+          setTimeout(() => {
+            addBansToInvites();
+          }, 5000);
+          setTimeout(() => {
+            addSteamRepInfoToInvites();
+          }, 10000);
+          setTimeout(() => {
+            addInventoryValueInfo();
+          }, 15000);
+          setTimeout(() => {
+            addCommonFriendsInfo();
+          }, 20000);
+          setTimeout(() => {
+            evaluateInvites();
+          }, 25000);
+        }
       });
 
       const newInviteEvents = newInvites.map((invite) => {
