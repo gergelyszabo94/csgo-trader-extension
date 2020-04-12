@@ -25,6 +25,7 @@ const IncomingInvites = () => {
             <th title="The country the user has set on their Steam profile">Country</th>
             <th title="The user's Steam community profile's privacy state">Profile</th>
             <th title="The user's CS:GO inventory value">Inventory Value</th>
+            <th title="Your trade offer history with the user">Offers</th>
             <th title="The summary fo the users's bans">Bans</th>
             <th title="The extension retries to gather all information for the friend request to be evaluated, this is the count of the retries">Evaluations</th>
           </tr>
