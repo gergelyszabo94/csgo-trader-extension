@@ -530,8 +530,22 @@ const removeOldFriendRequestEvents = () => {
   });
 };
 
+const getBansSummaryText = (bans, steamRepInfo) => {
+  if (bans && steamRepInfo) {
+    let bansText = '';
+    if (bans.CommunityBanned) bansText += 'Community banned\n';
+    if (bans.EconomyBan === 'banned' || bans.EconomyBan === 'probation') bansText += 'Trade banned\n';
+    if (bans.NumberOfGameBans !== 0) bansText += 'Game banned\n';
+    if (bans.VACBanned) bansText += 'VAC banned\n';
+    if (steamRepInfo.reputation.summary === 'SCAMMER') bansText += 'SteamRep banned scammer';
+    if (bansText === '') bansText = 'No bans';
+    return bansText;
+  }
+  return 'Could not load ban info';
+};
+
 export {
   getFriendRequests, ignoreRequest, acceptRequest, blockRequest,
   getGroupInvites, ignoreGroupRequest, acceptGroupRequest,
-  updateFriendRequest, removeOldFriendRequestEvents,
+  updateFriendRequest, removeOldFriendRequestEvents, getBansSummaryText,
 };
