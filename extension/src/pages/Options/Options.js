@@ -17,6 +17,7 @@ import Market from 'components/Options/Categories/Market';
 import Popup from 'components/Options/Categories/Popup';
 import Profile from 'components/Options/Categories/Profile';
 import TradeOffer from 'components/Options/Categories/TradeOffer';
+import Friends from 'components/Options/Categories/Friends/Friends';
 import { trackEvent } from 'utils/analytics';
 
 const routes = [
@@ -54,6 +55,11 @@ const routes = [
     to: 'market/',
     name: 'Market',
     component: Market,
+  },
+  {
+    to: 'friends-invites/',
+    name: 'Friends, Groups and Invites',
+    component: Friends,
   },
   {
     to: 'notifications/',

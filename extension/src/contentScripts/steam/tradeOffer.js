@@ -4,7 +4,7 @@ import {
   addFloatIndicator, getExteriorFromTags, getQuality,
   getType, isCSGOInventoryActive, getInspectLink, repositionNameTagIcons,
   getDopplerInfo, getActivePage, reloadPageOnExtensionReload, logExtensionPresence,
-  updateLoggedInUserID, warnOfScammer, addPageControlEventListeners,
+  updateLoggedInUserInfo, warnOfScammer, addPageControlEventListeners,
   addSearchListener, findElementByAssetID, getPattern, getNameTag,
   removeOfferFromActiveOffers,
 } from 'utils/utilsModular';
@@ -19,6 +19,7 @@ import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import { overrideHandleTradeActionMenu } from 'utils/steamOverriding';
 import { injectScript, injectStyle } from 'utils/injection';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
+import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
 
 let yourInventory = null;
 let theirInventory = null;
@@ -201,20 +202,25 @@ const addItemInfo = () => {
   }
 };
 
-const addInventoryTotals = (yourInventoryWithPrices, theirInventoryWithPrices) => {
-  chrome.runtime.sendMessage({ inventoryTotal: yourInventoryWithPrices }, (response) => {
-    if (!(response === undefined || response.inventoryTotal === undefined || response.inventoryTotal === '' || response.inventoryTotal === 'error')) {
-      const yourInventoryTitleDiv = document.getElementById('inventory_select_your_inventory').querySelector('div');
-      yourInventoryTitleDiv.style.fontSize = '16px';
-      yourInventoryTitleDiv.innerText = `${yourInventoryTitleDiv.innerText} (${response.inventoryTotal})`;
-    }
-  });
-  chrome.runtime.sendMessage({ inventoryTotal: theirInventoryWithPrices }, (response) => {
-    if (!(response === undefined || response.inventoryTotal === undefined || response.inventoryTotal === '' || response.inventoryTotal === 'error')) {
-      const theirInventoryTitleDiv = document.getElementById('inventory_select_their_inventory').querySelector('div');
-      theirInventoryTitleDiv.style.fontSize = '16px';
-      theirInventoryTitleDiv.innerText = `${theirInventoryTitleDiv.innerText} (${response.inventoryTotal})`;
-    }
+const addInventoryTotals = (yourInventoryTotal, theirInventoryTotal) => {
+  chrome.storage.local.get(['currency'], ({ currency }) => {
+    const yourInventoryTitleDiv = document.getElementById('inventory_select_your_inventory').querySelector('div');
+    yourInventoryTitleDiv.style.fontSize = '16px';
+    const yourPrettyPrice = prettyPrintPrice(
+      currency,
+      (yourInventoryTotal).toFixed(0),
+    );
+    yourInventoryTitleDiv.innerText = `${yourInventoryTitleDiv.innerText} (${yourPrettyPrice})`;
+
+    const theirInventoryTitleDiv = document.getElementById('inventory_select_their_inventory').querySelector('div');
+    theirInventoryTitleDiv.style.fontSize = '16px';
+
+    const theirPrettyPrice = prettyPrintPrice(
+      currency,
+      (theirInventoryTotal).toFixed(0),
+    );
+
+    theirInventoryTitleDiv.innerText = `${theirInventoryTitleDiv.innerText} (${theirPrettyPrice})`;
   });
 };
 
@@ -432,24 +438,19 @@ const getInventories = () => {
     const yourBuiltInventory = buildInventoryStructure(yourInventory);
     const theirBuiltInventory = buildInventoryStructure(theirInventory);
 
-    chrome.runtime.sendMessage(
-      { addPricesAndFloatsToInventory: yourBuiltInventory }, (firstResponse) => {
-        const yourInventoryWithPrices = firstResponse.addPricesAndFloatsToInventory;
-        chrome.runtime.sendMessage(
-          { addPricesAndFloatsToInventory: theirBuiltInventory }, (secondResponse) => {
-            const theirInventoryWithPrices = secondResponse.addPricesAndFloatsToInventory;
-            combinedInventories = yourInventoryWithPrices.concat(theirInventoryWithPrices);
-
-            addItemInfo();
-            addInventoryTotals(yourInventoryWithPrices, theirInventoryWithPrices);
-            addInTradeTotals('your');
-            addInTradeTotals('their');
-            periodicallyUpdateTotals();
-            doInitSorting();
-          },
-        );
-      },
-    );
+    addPricesAndFloatsToInventory(yourBuiltInventory).then(({ items, total }) => {
+      const yourInventoryWithPrices = items;
+      addPricesAndFloatsToInventory(theirBuiltInventory).then((theirInventoryRes) => {
+        const theirInventoryWithPrices = theirInventoryRes.items;
+        combinedInventories = yourInventoryWithPrices.concat(theirInventoryWithPrices);
+        addItemInfo();
+        addInventoryTotals(total, theirInventoryRes.total);
+        addInTradeTotals('your');
+        addInTradeTotals('their');
+        periodicallyUpdateTotals();
+        doInitSorting();
+      });
+    });
   } else {
     setTimeout(() => {
       getInventories();
@@ -726,7 +727,7 @@ injectStyle(`
     a.inventory_item_link {
         top: 20px !important;
     }`, 'itemLinkSmaller');
-updateLoggedInUserID();
+updateLoggedInUserInfo();
 trackEvent({
   type: 'pageview',
   action: 'TradeOfferView',

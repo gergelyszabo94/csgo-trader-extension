@@ -1,5 +1,5 @@
 import {
-  logExtensionPresence, updateLoggedInUserID,
+  logExtensionPresence, updateLoggedInUserInfo,
   warnOfScammer, reloadPageOnExtensionReload,
   addUpdatedRibbon,
 } from 'utils/utilsModular';
@@ -16,7 +16,7 @@ import { getUserSteamID, getProfileOwnerSteamID } from 'utils/steamID';
 // ensures that we are on a profile page, it's not possible with simple regex
 if (document.querySelector('body').classList.contains('profile_page')) {
   logExtensionPresence();
-  updateLoggedInUserID();
+  updateLoggedInUserInfo();
   addUpdatedRibbon();
   trackEvent({
     type: 'pageview',
@@ -249,7 +249,7 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         if (statusDiv.classList.contains('online')) {
           const textDiv = statusDiv.querySelector('.profile_in_game_header');
 
-          chrome.runtime.sendMessage({ GetPlayerSummaries: profileOwnerSteamID }, (response) => {
+          chrome.runtime.sendMessage({ GetPersonaState: profileOwnerSteamID }, (response) => {
             if (response.apiKeyValid) {
               textDiv.innerText = steamProfileStatuses[response.personastate]
                 ? steamProfileStatuses[response.personastate]

@@ -1,8 +1,8 @@
-import { logExtensionPresence, updateLoggedInUserID } from 'utils/utilsModular';
+import { logExtensionPresence, updateLoggedInUserInfo } from 'utils/utilsModular';
 import { trackEvent } from 'utils/analytics';
 
 logExtensionPresence();
-updateLoggedInUserID();
+updateLoggedInUserInfo();
 
 chrome.storage.local.get('autoSetSteamAPIKey', (result) => {
   trackEvent({

@@ -30,4 +30,39 @@ const reverseWhenNotifDetails = (tradability, notifTime) => {
   };
 };
 
-export { reverseWhenNotifDetails, determineNotificationDate };
+const getSteamNotificationCount = () => new Promise((resolve, reject) => {
+  const getRequest = new Request('https://steamcommunity.com/actions/GetNotificationCounts');
+
+  fetch(getRequest).then((response) => {
+    if (!response.ok) {
+      console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+      reject(response.status);
+      return null;
+    } return response.json();
+  }).then((body) => {
+    if (body !== null) {
+      const { notifications } = body;
+
+      // notification types from:
+      // https://github.com/WebVRRocks/moonrise/blob/c555aac08dd7f59ebd2dbe7607255cb003703410/src/plugins/notifications/index.js
+      resolve({
+        tradeOffers: notifications[1],
+        gameTurns: notifications[2],
+        moderatorMessages: notifications[3],
+        comments: notifications[4],
+        items: notifications[5],
+        invites: notifications[6],
+        // 7 is not known
+        gifts: notifications[8],
+        messages: notifications[9],
+        helpRequestReplies: notifications[10],
+        accountAlerts: notifications[11],
+      });
+    }
+  }).catch((err) => {
+    console.log(err);
+    reject(err);
+  });
+});
+
+export { reverseWhenNotifDetails, determineNotificationDate, getSteamNotificationCount };

@@ -8,5 +8,11 @@ const inOtherOfferIndicator = `
         src="${listIcon}"
     />`;
 
-// eslint-disable-next-line import/prefer-default-export
-export { listIcon, inOtherOfferIndicator };
+const friendAndInvitesBanner = `
+    <div class="friendInvitesBanner">
+        <b>CSGO Trader Extension:</b>
+         You can set rules to friend requests and check invite history in the <b>Extension Options</b>
+         under <b>"Friends and Invites"</b>
+    </div>`;
+
+export { listIcon, inOtherOfferIndicator, friendAndInvitesBanner };

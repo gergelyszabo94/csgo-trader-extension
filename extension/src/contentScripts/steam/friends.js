@@ -1,8 +1,9 @@
-import { logExtensionPresence, updateLoggedInUserID, addUpdatedRibbon } from 'utils/utilsModular';
+import { logExtensionPresence, updateLoggedInUserInfo, addUpdatedRibbon } from 'utils/utilsModular';
 import { trackEvent } from 'utils/analytics';
+import { friendAndInvitesBanner } from 'utils/static/miscElements';
 
 logExtensionPresence();
-updateLoggedInUserID();
+updateLoggedInUserInfo();
 addUpdatedRibbon();
 trackEvent({
   type: 'pageview',
@@ -20,3 +21,9 @@ document.querySelectorAll('.selectable.friend_block_v2.persona').forEach((friend
     friendBlock.classList.add('golden');
   }
 });
+
+// adds links to friends and invites options
+const friendTitle = document.querySelector('.profile_friends.title_bar');
+if (friendTitle !== null) {
+  friendTitle.insertAdjacentHTML('beforeBegin', friendAndInvitesBanner);
+}

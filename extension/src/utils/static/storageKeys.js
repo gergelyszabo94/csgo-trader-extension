@@ -1,6 +1,7 @@
 import { pricingProviders, currencies } from 'utils/static/pricing';
 import { sortingModes, offersSortingModes } from 'utils/static/sortingModes';
 import defaultPopupLinks from 'utils/static/defaultPopupLinks';
+import { actions, conditions } from 'utils/static/friendRequests';
 
 const storageKeys = {
   quickDeclineOffer: true,
@@ -66,8 +67,73 @@ const storageKeys = {
   itemInOffersInventory: true,
   itemInOtherOffers: true,
   showUpdatedRibbon: false,
+  friendRequests: {
+    inviters: [],
+    lastUpdated: Date.now(),
+  },
+  groupInvites: {
+    invitedTo: [],
+    lastUpdated: Date.now(),
+  },
+  steamSessionID: '',
+  friendRequestLogs: [],
+  friendRequestEvalRules: [
+    {
+      active: false,
+      condition: {
+        type: conditions.profile_private.key,
+      },
+      action: actions.ignore.key,
+    },
+    {
+      active: false,
+      condition: {
+        type: conditions.steam_level_under.key,
+        value: 5,
+      },
+      action: actions.ignore.key,
+    },
+    {
+      active: false,
+      condition: {
+        type: conditions.vac_banned.key,
+      },
+      action: actions.ignore.key,
+    },
+    {
+      active: false,
+      condition: {
+        type: conditions.community_banned.key,
+      },
+      action: actions.ignore.key,
+    },
+    {
+      active: false,
+      condition: {
+        type: conditions.trade_banned.key,
+      },
+      action: actions.ignore.key,
+    },
+    {
+      active: false,
+      condition: {
+        type: conditions.streamrep_banned.key,
+      },
+      action: actions.ignore.key,
+    },
+    {
+      active: false,
+      condition: {
+        type: conditions.inventory_private.key,
+      },
+      action: actions.ignore.key,
+    },
+  ],
+  ignoreGroupInvites: false,
 };
 
-const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID', 'tradeHistoryLastUpdate', 'activeOffers'];
+const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
+  'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID', 'groupInvites',
+  'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules'];
 
 export { storageKeys, nonSettingStorageKeys };

@@ -5,7 +5,7 @@ import {
   getDataFilledFloatTechnical, souvenirExists,
   findElementByAssetID, getFloatBarSkeleton, addUpdatedRibbon,
   logExtensionPresence, isCSGOInventoryActive, repositionNameTagIcons,
-  updateLoggedInUserID, reloadPageOnExtensionReload, isSIHActive, getActivePage,
+  updateLoggedInUserInfo, reloadPageOnExtensionReload, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, toFixedNoRounding,
 }
   from 'utils/utilsModular';
@@ -31,6 +31,7 @@ import { getUserSteamID } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
 
 let items = [];
+let inventoryTotal = 0.0;
 // variables for the countdown recursive logic
 let countingDown = false;
 let countDownID = '';
@@ -634,18 +635,13 @@ const addPerItemInfo = () => {
   }
 };
 
-const setInventoryTotal = (inventoryItems) => {
-  const inventoryTotalValueElement = document.getElementById('inventoryTotalValue');
-  chrome.runtime.sendMessage({ inventoryTotal: inventoryItems }, (response) => {
-    if (!(response === undefined || response.inventoryTotal === undefined
-      || response.inventoryTotal === '' || response.inventoryTotal === 'error'
-      || inventoryTotalValueElement === null)) {
-      inventoryTotalValueElement.innerText = response.inventoryTotal;
-    } else {
-      setTimeout(() => {
-        setInventoryTotal(inventoryItems);
-      }, 1000);
-    }
+const setInventoryTotal = () => {
+  chrome.storage.local.get(['currency'], ({ currency }) => {
+    const inventoryTotalValueElement = document.getElementById('inventoryTotalValue');
+    inventoryTotalValueElement.innerText = prettyPrintPrice(
+      currency,
+      (inventoryTotal).toFixed(0),
+    );
   });
 };
 
@@ -1134,7 +1130,7 @@ const addFunctionBar = () => {
     document.getElementById('generate_list').addEventListener('click', () => { document.getElementById('functionBarGenerateMenu').classList.toggle('hidden'); });
 
     document.getElementById('generate_button').addEventListener('click', generateItemsList);
-  } else setTimeout(() => { setInventoryTotal(items); }, 1000);
+  } else setTimeout(() => { setInventoryTotal(); }, 1000);
 };
 
 const loadFullInventory = () => {
@@ -1161,22 +1157,16 @@ const loadFullInventory = () => {
 // sends a message to the "back end" to request inventory contents
 const requestInventory = () => {
   chrome.runtime.sendMessage({ inventory: getInventoryOwnerID() }, (response) => {
-    if (!(response === undefined || response.inventory === undefined
-      || response.inventory === '' || response.inventory === 'error')) {
-      items = response.inventory;
+    console.log(response);
+    if (response !== 'error') {
+      items = response.items;
+      inventoryTotal = response.total;
       addRightSideElements();
       addPerItemInfo();
-      setInventoryTotal(items);
+      setInventoryTotal();
       addFunctionBar();
       loadFullInventory();
       addPageControlEventListeners('inventory', addFloatIndicatorsToPage);
-    } else {
-      console.log("Wasn't able to get the inventory, it's most likely steam not working properly or you loading inventory pages at the same time");
-      console.log('Retrying in 30 seconds');
-
-      setTimeout(() => {
-        requestInventory(); // this rarely works, consider removing
-      }, 30000);
     }
   });
 };
@@ -1260,7 +1250,7 @@ if (document.getElementById('no_inventories') === null
 repositionNameTagIcons();
 addSearchListener('inventory', addFloatIndicatorsToPage);
 overridePopulateActions();
-updateLoggedInUserID();
+updateLoggedInUserInfo();
 addUpdatedRibbon();
 trackEvent({
   type: 'pageview',

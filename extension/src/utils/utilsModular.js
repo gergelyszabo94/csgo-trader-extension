@@ -312,12 +312,6 @@ const uuidv4 = () => {
     [1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) => (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> c / 4))).toString(16));
 };
 
-// updates the SteamID of the extension's user in storage
-const updateLoggedInUserID = () => {
-  const steamID = getUserSteamID();
-  if (steamID !== 'false' && steamID !== false) chrome.storage.local.set({ steamIDOfUser: steamID }, () => {});
-};
-
 const listenToLocationChange = (callBackFunction) => {
   let oldHref = document.location.href;
 
@@ -517,24 +511,37 @@ const getSessionID = () => {
   return injectScript(getSessionIDScript, true, 'getSessionID', 'sessionid');
 };
 
+// updates the SteamID of the extension's user in storage
+const updateLoggedInUserInfo = () => {
+  const steamID = getUserSteamID();
+  if (steamID !== 'false' && steamID !== false && steamID !== null) {
+    chrome.storage.local.set({
+      steamIDOfUser: steamID,
+      steamSessionID: getSessionID(),
+    }, () => {});
+  }
+};
+
 const warnOfScammer = (steamID, page) => {
-  chrome.runtime.sendMessage({ getSteamRepInfo: steamID }, (response) => {
-    if (response.SteamRepInfo !== 'error') {
-      if (response.SteamRepInfo.reputation.summary === 'SCAMMER') {
-        const backgroundURL = chrome.runtime.getURL('images/scammerbackground.jpg');
-        document.querySelector('body').insertAdjacentHTML('beforebegin',
-          `<div style="background-color: red; color: white; padding: 5px; text-align: center;" class="scammerWarning">
+  if (steamID) {
+    chrome.runtime.sendMessage({ getSteamRepInfo: steamID }, ({ SteamRepInfo }) => {
+      if (SteamRepInfo !== 'error') {
+        if (SteamRepInfo.reputation.summary === 'SCAMMER') {
+          const backgroundURL = chrome.runtime.getURL('images/scammerbackground.jpg');
+          document.querySelector('body').insertAdjacentHTML('beforebegin',
+            `<div style="background-color: red; color: white; padding: 5px; text-align: center;" class="scammerWarning">
                                 <span>
                                     Watch out, this user was banned on SteamRep for scamming! You can check the details of what they did on 
                                     <a style="color: black; font-weight: bold" href='https://steamrep.com/profiles/${steamID}'>steamrep.com</a>
                                 </span>
                            </div>`);
 
-        if (page === 'offer') document.querySelector('body').setAttribute('style', `background-image: url('${backgroundURL}')`);
-        else if (page === 'profile') document.querySelector('.no_header.profile_page').setAttribute('style', `background-image: url('${backgroundURL}')`);
-      }
-    } else console.log('Could not get SteamRep info');
-  });
+          if (page === 'offer') document.querySelector('body').setAttribute('style', `background-image: url('${backgroundURL}')`);
+          else if (page === 'profile') document.querySelector('.no_header.profile_page').setAttribute('style', `background-image: url('${backgroundURL}')`);
+        }
+      } else console.log('Could not get SteamRep info');
+    });
+  }
 };
 
 const repositionNameTagIcons = () => {
@@ -598,6 +605,22 @@ const addUpdatedRibbon = () => {
   });
 };
 
+const getSteamRepInfo = (steamID) => new Promise((resolve, reject) => {
+  const getRequest = new Request(`https://steamrep.com/api/beta4/reputation/${steamID}?json=1`);
+
+  fetch(getRequest).then((response) => {
+    if (!response.ok) {
+      reject(response);
+      console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+    } else return response.json();
+  }).then((body) => {
+    resolve(body.steamrep);
+  }).catch((err) => {
+    console.log(err);
+    reject(err);
+  });
+});
+
 //  unused atm
 // const generateRandomString = (length) => {
 //   let text = '';
@@ -615,7 +638,7 @@ export {
   getExteriorFromTags, getDopplerInfo, getQuality, parseStickerInfo,
   handleStickerNamesWithCommas, removeFromArray, getType,
   getPattern, goToInternalPage, jumpToAnchor,
-  validateSteamAPIKey, getAssetIDFromInspectLink, uuidv4, updateLoggedInUserID,
+  validateSteamAPIKey, getAssetIDFromInspectLink, uuidv4, updateLoggedInUserInfo,
   listenToLocationChange, addPageControlEventListeners, getItemByAssetID,
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
@@ -623,5 +646,5 @@ export {
   getFloatBarSkeleton, isCSGOInventoryActive, getInspectLink,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
-  removeOfferFromActiveOffers, addUpdatedRibbon,
+  removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo,
 };

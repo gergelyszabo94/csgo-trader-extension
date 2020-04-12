@@ -1,0 +1,12 @@
+.spacedTable {
+  border-collapse: separate;
+  border-spacing: 10px;
+
+  .removeRule {
+    color: $steam-nametag-red
+  }
+}
+
+.clickAbleColumnHeader {
+  cursor: pointer;
+}

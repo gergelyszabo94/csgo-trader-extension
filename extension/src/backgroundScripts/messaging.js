@@ -1,194 +1,22 @@
-import { getFloatInfoFromCache, extractUsefulFloatInfo, addToFloatCache } from 'utils/floatCaching';
+import { extractUsefulFloatInfo, addToFloatCache } from 'utils/floatCaching';
 import {
-  getExteriorFromTags, getDopplerInfo, getQuality, getType, parseStickerInfo, getPattern,
-  goToInternalPage, validateSteamAPIKey, getAssetIDFromInspectLink, getNameTag, getInspectLink,
+  goToInternalPage, validateSteamAPIKey,
+  getAssetIDFromInspectLink, getSteamRepInfo,
 } from 'utils/utilsModular';
-import { getShortDate } from 'utils/dateTime';
-import { getStickerPriceTotal, getPrice, prettyPrintPrice } from 'utils/pricing';
-import itemTypes from 'utils/static/itemTypes';
+import { getPlayerSummaries } from 'utils/ISteamUser';
+import getUserCSGOInventory from 'utils/getUserCSGOInventory';
 
+// content scripts can't make cross domain requests because of security
+// most of the messaging required is to work around this limitation
+// and make the request from background script context
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.inventory !== undefined) {
-    chrome.storage.local.get(
-      ['itemPricing', 'prices', 'currency', 'exchangeRate', 'pricingProvider'],
-      (result) => {
-        const prices = result.prices;
-        const steamID = request.inventory;
-
-        const getRequest = new Request(`https://steamcommunity.com/profiles/${steamID}/inventory/json/730/2/?l=english`);
-
-        fetch(getRequest).then((response) => {
-          if (!response.ok) {
-            sendResponse('error');
-            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-          } else return response.json();
-        }).then((body) => {
-          const items = body.rgDescriptions;
-          const ids = body.rgInventory;
-
-          const itemsPropertiesToReturn = [];
-          const duplicates = {};
-          const floatCacheAssetIDs = [];
-
-
-          // counts duplicates
-          for (const asset of Object.values(ids)) {
-            const assetID = asset.id;
-            floatCacheAssetIDs.push(assetID);
-
-            for (const item of Object.values(items)) {
-              if (asset.classid === item.classid
-                && asset.instanceid === item.instanceid) {
-                const marketHashName = item.market_hash_name;
-                if (duplicates[marketHashName] === undefined) {
-                  const instances = [assetID];
-                  duplicates[marketHashName] = {
-                    num: 1,
-                    instances,
-                  };
-                } else {
-                  duplicates[marketHashName].num += 1;
-                  duplicates[marketHashName].instances.push(assetID);
-                }
-              }
-            }
-          }
-          getFloatInfoFromCache(floatCacheAssetIDs).then(
-            (floatCache) => {
-              for (const asset of Object.values(ids)) {
-                const assetID = asset.id;
-                const position = asset.pos;
-
-                for (const item of Object.values(items)) {
-                  if (asset.classid === item.classid && asset.instanceid === item.instanceid) {
-                    const name = item.name;
-                    const marketHashName = item.market_hash_name;
-                    let tradability = 'Tradable';
-                    let tradabilityShort = 'T';
-                    const icon = item.icon_url;
-                    const dopplerInfo = (name.includes('Doppler') || name.includes('doppler')) ? getDopplerInfo(icon) : null;
-                    const stickers = parseStickerInfo(item.descriptions, 'direct', prices, result.pricingProvider, result.exchangeRate, result.currency);
-                    const owner = steamID;
-                    let price = null;
-                    const type = getType(item.tags);
-                    let floatInfo = null;
-                    if (floatCache[assetID] !== undefined
-                      && floatCache[assetID] !== null && itemTypes[type.key].float) {
-                      floatInfo = floatCache[assetID];
-                    }
-                    const patternInfo = (floatInfo !== null)
-                      ? getPattern(marketHashName, floatInfo.paintseed)
-                      : null;
-
-                    if (result.itemPricing) {
-                      price = getPrice(marketHashName, dopplerInfo, prices,
-                        result.pricingProvider, result.exchangeRate, result.currency);
-                    } else price = { price: '', display: '' };
-
-                    if (item.tradable === 0) {
-                      tradability = item.cache_expiration;
-                      tradabilityShort = getShortDate(tradability);
-                    }
-                    if (item.marketable === 0) {
-                      tradability = 'Not Tradable';
-                      tradabilityShort = '';
-                    }
-
-                    itemsPropertiesToReturn.push({
-                      name,
-                      market_hash_name: marketHashName,
-                      name_color: item.name_color,
-                      marketlink: `https://steamcommunity.com/market/listings/730/${marketHashName}`,
-                      classid: item.classid,
-                      instanceid: item.instanceid,
-                      assetid: assetID,
-                      position,
-                      tradability,
-                      tradabilityShort,
-                      marketable: item.marketable,
-                      iconURL: icon,
-                      dopplerInfo,
-                      exterior: getExteriorFromTags(item.tags),
-                      inspectLink: getInspectLink(item, owner, assetID),
-                      quality: getQuality(item.tags),
-                      isStatrack: name.includes('StatTrak™'),
-                      isSouvenir: name.includes('Souvenir'),
-                      starInName: name.includes('★'),
-                      stickers,
-                      stickerPrice: getStickerPriceTotal(stickers, result.currency),
-                      nametag: getNameTag(item),
-                      duplicates: duplicates[marketHashName],
-                      owner,
-                      price,
-                      type,
-                      floatInfo,
-                      patternInfo,
-                    });
-                  }
-                }
-              }
-              sendResponse({
-                inventory: itemsPropertiesToReturn.sort((a, b) => {
-                  return a.position - b.position;
-                }),
-              });
-            },
-          );
-        }).catch((err) => {
-          console.log(err);
-          sendResponse({ inventory: 'error' });
-        });
-      },
-    );
-    return true; // async return to signal that it will return later
-  }
-  if (request.inventoryTotal !== undefined) {
-    const inventory = request.inventoryTotal;
-    let total = 0.0;
-    chrome.storage.local.get(['prices', 'exchangeRate', 'currency', 'pricingProvider'], (result) => {
-      inventory.forEach((item) => {
-        total += parseFloat(getPrice(item.market_hash_name, item.dopplerInfo, result.prices,
-          result.pricingProvider, result.exchangeRate, result.currency).price);
-      });
-      sendResponse({ inventoryTotal: prettyPrintPrice(result.currency, (total).toFixed(0)) });
+    getUserCSGOInventory(request.inventory).then(({ items, total }) => {
+      sendResponse({ items, total });
+    }).catch(() => {
+      sendResponse('error');
     });
-    return true;
-  }
-  if (request.addPricesAndFloatsToInventory !== undefined) {
-    const inventory = request.addPricesAndFloatsToInventory;
-    chrome.storage.local.get(
-      ['prices', 'exchangeRate', 'currency', 'itemPricing', 'pricingProvider'],
-      (result) => {
-        if (result.itemPricing) {
-          const floatCacheAssetIDs = inventory.map((item) => {
-            return item.assetid;
-          });
-          getFloatInfoFromCache(floatCacheAssetIDs).then(
-            (floatCache) => {
-              inventory.forEach((item) => {
-                if (result.prices[item.market_hash_name] !== undefined
-                  && result.prices[item.market_hash_name] !== 'null') {
-                  item.price = getPrice(item.market_hash_name, item.dopplerInfo, result.prices,
-                    result.pricingProvider, result.exchangeRate, result.currency);
-                }
-                if (floatCache[item.assetid] !== undefined && floatCache[item.assetid] !== null
-                  && itemTypes[item.type.key].float) {
-                  item.floatInfo = floatCache[item.assetid];
-                  item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintSeed);
-                }
-                const stickers = parseStickerInfo(item.descriptions, 'direct', result.prices,
-                  result.pricingProvider, result.exchangeRate, result.currency);
-                const stickerPrice = getStickerPriceTotal(stickers, result.currency);
-                item.stickers = stickers;
-                item.stickerPrice = stickerPrice;
-              });
-              sendResponse({ addPricesAndFloatsToInventory: inventory });
-            },
-          );
-        } else sendResponse({ addPricesAndFloatsToInventory: inventory });
-      },
-    );
-    return true;
+    return true; // async return to signal that it will return later
   }
   if (request.badgetext !== undefined) {
     chrome.browserAction.setBadgeText({ text: request.badgetext });
@@ -217,34 +45,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       },
     );
     return true; // async return to signal that it will return later
-  } else if (request.GetPlayerSummaries !== undefined) {
-    chrome.storage.local.get(['apiKeyValid', 'steamAPIKey'], (result) => {
-      if (result.apiKeyValid) {
-        const apiKey = result.steamAPIKey;
-        const steamID = request.GetPlayerSummaries;
-
-        const getRequest = new Request(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=${steamID}`);
-
-        fetch(getRequest).then((response) => {
-          if (!response.ok) {
-            sendResponse('error');
-            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-          } else return response.json();
-        }).then((body) => {
-          try {
-            sendResponse({
-              personastate: body.response.players[0].personastate,
-              apiKeyValid: true,
-            });
-          } catch (e) {
-            console.log(e);
-            sendResponse('error');
-          }
-        }).catch((err) => {
-          console.log(err);
-          sendResponse('error');
-        });
-      } else sendResponse({ apiKeyValid: false });
+  } else if (request.GetPersonaState !== undefined) {
+    getPlayerSummaries([request.GetPersonaState]).then((summaries) => {
+      sendResponse({
+        personastate: summaries[request.GetPersonaState].personastate,
+        apiKeyValid: true,
+      });
+    }).catch((err) => {
+      console.log(err);
+      if (err === 'api_key_invalid') {
+        sendResponse({ apiKeyValid: false });
+      } else sendResponse('error');
     });
     return true; // async return to signal that it will return later
   } else if (request.fetchFloatInfo !== undefined) {
@@ -272,19 +83,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     } else sendResponse('nofloat');
     return true; // async return to signal that it will return later
   } else if (request.getSteamRepInfo !== undefined) {
-    const steamID = request.getSteamRepInfo;
-
-    const getRequest = new Request(`https://steamrep.com/api/beta4/reputation/${steamID}?json=1`);
-
-    fetch(getRequest).then((response) => {
-      if (!response.ok) {
-        sendResponse('error');
-        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-      } else return response.json();
-    }).then((body) => {
-      sendResponse({ SteamRepInfo: body.steamrep });
-    }).catch((err) => {
-      console.log(err);
+    getSteamRepInfo(request.getSteamRepInfo).then((steamRepInfo) => {
+      sendResponse({ SteamRepInfo: steamRepInfo });
+    }).catch(() => {
       sendResponse({ SteamRepInfo: 'error' });
     });
     return true; // async return to signal that it will return later

@@ -1,19 +1,26 @@
 import { storageKeys } from 'utils/static/storageKeys';
 import { trackEvent, sendTelemetry } from 'utils/analytics';
 import { updatePrices, updateExchangeRates } from 'utils/pricing';
-import { scrapeSteamAPIkey, goToInternalPage, uuidv4 } from 'utils/utilsModular';
+import {
+  scrapeSteamAPIkey, goToInternalPage, uuidv4,
+} from 'utils/utilsModular';
+import {
+  getGroupInvites, updateFriendRequest,
+  ignoreGroupRequest, removeOldFriendRequestEvents,
+} from 'utils/friendRequests';
 import { trimFloatCache } from 'utils/floatCaching';
+import { getSteamNotificationCount } from 'utils/notifications';
 
 // handles install and update events
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
     // sets the default options for first run
     // (on install from the webstore/amo or when loaded in developer mode)
-    for (const key in storageKeys) {
+    for (const [key, value] of Object.entries(storageKeys)) {
       // id generated to identify the extension installation
       // a user can use use multiple installations of the extension
       if (key === 'clientID') chrome.storage.local.set({ [key]: uuidv4() }, () => {});
-      else chrome.storage.local.set({ [key]: storageKeys[key] }, () => {});
+      else chrome.storage.local.set({ [key]: value }, () => {});
     }
 
     trackEvent({
@@ -37,18 +44,15 @@ chrome.runtime.onInstalled.addListener((details) => {
     // runs when the extension updates or gets reloaded in developer mode
     // it checks whether the setting has ever been set
     // I consider removing older ones since there is no one updating from version that old
-    const keysArray = [];
-    for (const key of Object.keys(storageKeys)) {
-      keysArray.push(key);
-    }
+    const keys = Object.keys(storageKeys);
 
-    chrome.storage.local.get(keysArray, (result) => {
-      for (const key in storageKeys) {
-        if (result[key] === undefined) {
+    chrome.storage.local.get(keys, (result) => {
+      for (const [storageKey, storageValue] of Object.entries(storageKeys)) {
+        if (result[storageKey] === undefined) {
           // id generated to identify the extension installation
           // a user can use use multiple installations of the extension
-          if (key === 'clientID') chrome.storage.local.set({ [key]: uuidv4() }, () => {});
-          else chrome.storage.local.set({ [key]: storageKeys[key] }, () => {});
+          if (storageKey === 'clientID') chrome.storage.local.set({ [storageKey]: uuidv4() }, () => {});
+          else chrome.storage.local.set({ [storageKey]: storageValue }, () => {});
         }
       }
     });
@@ -107,10 +111,9 @@ chrome.runtime.onInstalled.addListener((details) => {
   // and it fails to update prices/exchange rates
   updatePrices();
   updateExchangeRates();
-  chrome.alarms.create('updatePricesAndExchangeRates', { periodInMinutes: 1440 });
+  chrome.alarms.create('getSteamNotificationCount', { periodInMinutes: 1 });
   chrome.alarms.create('retryUpdatePricesAndExchangeRates', { periodInMinutes: 1 });
-  chrome.alarms.create('trimFloatCache', { periodInMinutes: 1440 });
-  chrome.alarms.create('sendTelemetry', { periodInMinutes: 1440 });
+  chrome.alarms.create('dailyScheduledTasks', { periodInMinutes: 1440 });
 });
 
 // redirects to feedback survey on uninstall
@@ -134,19 +137,55 @@ chrome.notifications.onClicked.addListener((notificationID) => {
 
 // handles periodic and timed events like bookmarked items becoming tradable
 chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === 'updatePricesAndExchangeRates') {
-    chrome.storage.local.get('itemPricing', (result) => {
-      if (result.itemPricing === true) updatePrices();
-    });
-    updateExchangeRates();
-  } else if (alarm.name === 'retryUpdatePricesAndExchangeRates') {
+  if (alarm.name === 'retryUpdatePricesAndExchangeRates') {
     chrome.storage.local.get('prices', (result) => {
       if (result.prices === null) updatePrices();
       else chrome.alarms.clear('retryUpdatePricesAndExchangeRates', () => {});
     });
-  } else if (alarm.name === 'trimFloatCache') trimFloatCache();
-  else if (alarm.name === 'sendTelemetry') sendTelemetry(0);
-  else {
+  } else if (alarm.name === 'getSteamNotificationCount') {
+    getSteamNotificationCount().then(({ invites }) => {
+      chrome.storage.local.get(['friendRequests', 'groupInvites', 'ignoreGroupInvites'],
+        ({ friendRequests, groupInvites, ignoreGroupInvites }) => {
+          const minutesFromLastCheck = ((Date.now()
+            - new Date(friendRequests.lastUpdated)) / 1000) / 60;
+          const friendAndGroupInviteCount = friendRequests.inviters.length
+            + groupInvites.invitedTo.length;
+
+          if (invites !== friendAndGroupInviteCount || minutesFromLastCheck >= 30) {
+            updateFriendRequest();
+            getGroupInvites().then((inviters) => {
+              if (ignoreGroupInvites) {
+                inviters.forEach((inviter) => {
+                  ignoreGroupRequest(inviter.steamID);
+                });
+              }
+            });
+          }
+        });
+    }, (error) => {
+      console.log(error);
+      if (error === 401) { // user not logged in
+        console.log('User not logged in, suspending notification checks for an hour.');
+        chrome.alarms.clear('getSteamNotificationCount', () => {
+          const now = new Date();
+          now.setHours(now.getHours() + 1);
+          chrome.alarms.create('restartNotificationChecks', {
+            when: (now).valueOf(),
+          });
+        });
+      }
+    });
+  } else if (alarm.name === 'restartNotificationChecks') {
+    chrome.alarms.create('getSteamNotificationCount', { periodInMinutes: 1 });
+  } else if (alarm.name === 'dailyScheduledTasks') {
+    sendTelemetry(0);
+    trimFloatCache();
+    removeOldFriendRequestEvents();
+    chrome.storage.local.get('itemPricing', ({ itemPricing }) => {
+      if (itemPricing) updatePrices();
+    });
+    updateExchangeRates();
+  } else {
     chrome.browserAction.getBadgeText({}, (result) => {
       if (result === '' || result === 'U' || result === 'I') chrome.browserAction.setBadgeText({ text: '1' });
       else chrome.browserAction.setBadgeText({ text: (parseInt(result) + 1).toString() });
