@@ -393,7 +393,7 @@ const createFriendRequestEvent = (invite, type, appliedRule) => {
 };
 
 const evaluateRequest = (invite, rules) => {
-  if (invite.summary && invite.bans && invite.steamRepInfo
+  if (invite.summary && invite.bans && invite.steamRepInfo && invite.commonFriends
     && (invite.csgoInventoryValue !== undefined)) {
     for (const [index, rule] of rules.entries()) {
       if (rule.active) {
@@ -477,6 +477,20 @@ const evaluateRequest = (invite, rules) => {
         }
         if (rule.condition.type === conditions.inventory_private.key
           && invite.csgoInventoryValue === 'inventory_private') {
+          return {
+            action: rule.action,
+            appliedRule: index + 1,
+          };
+        }
+        if (rule.condition.type === conditions.common_friends_over.key
+          && invite.commonFriends.length > rule.condition.value) {
+          return {
+            action: rule.action,
+            appliedRule: index + 1,
+          };
+        }
+        if (rule.condition.type === conditions.common_friends_under.key
+          && invite.commonFriends.length <= rule.condition.value) {
           return {
             action: rule.action,
             appliedRule: index + 1,

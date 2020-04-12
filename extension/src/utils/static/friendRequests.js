@@ -71,6 +71,18 @@ const conditions = {
     description: 'The user\'s inventory is not publicly viewable',
     with_value: false,
   },
+  common_friends_over: {
+    key: 'common_friends_over',
+    pretty: 'Common friends more than',
+    description: 'You have more common friends with the user than this number',
+    with_value: true,
+  },
+  common_friends_under: {
+    key: 'common_friends_under',
+    pretty: 'Common friends same or less than',
+    description: 'You have fewer or the same number of common friends with the user than this number',
+    with_value: true,
+  },
 };
 
 const actions = {
