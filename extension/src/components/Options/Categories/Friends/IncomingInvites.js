@@ -61,11 +61,18 @@ const IncomingInvites = () => {
     setInvites(sorted);
   };
 
-  useEffect(() => {
+  const loadInvites = () => {
     chrome.storage.local.get(['friendRequests', 'currency'], ({ friendRequests, currency }) => {
       setCurr(currencies[currency]);
       sortInvites(sortingMode, friendRequests.inviters);
     });
+  };
+
+  useEffect(() => {
+    loadInvites();
+    setInterval(() => {
+      loadInvites();
+    }, 60000);
   }, []);
 
   return (
