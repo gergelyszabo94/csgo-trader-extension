@@ -35,7 +35,7 @@ const Backup = ({
       download="csgotrader_data_backup.json"
       id={id}
     >
-            Backup
+      Backup
     </a>
   );
 };

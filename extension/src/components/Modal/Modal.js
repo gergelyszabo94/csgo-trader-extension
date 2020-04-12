@@ -24,10 +24,10 @@ const Modal = ({
         </BSModal.Body>
         <BSModal.Footer>
           <Button className="button button__cancel" onClick={handleClose}>
-                        Close
+            Close
           </Button>
           <Button className="button button__save" onClick={() => { validator(handleClose); }}>
-                        Save Changes
+            Save Changes
           </Button>
         </BSModal.Footer>
       </BSModal>

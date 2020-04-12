@@ -4,14 +4,14 @@ const STS = ({ st, s }) => {
   if (st) {
     return (
       <span className="statTrak">
-                StatTrak™
+        StatTrak™
       </span>
     );
   }
   if (s) {
     return (
       <span className="souvenir">
-                Souvenir
+        Souvenir
       </span>
     );
   }
