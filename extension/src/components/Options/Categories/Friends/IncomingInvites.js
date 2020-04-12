@@ -6,13 +6,19 @@ const IncomingInvites = () => {
   const [invites, setInvites] = useState([]);
   const [curr, setCurr] = useState(currencies.USD);
 
+  const removeInvite = (indexToRemove) => {
+    const newInvites = invites.filter((invite, index) => {
+      return index !== indexToRemove;
+    });
+    setInvites(newInvites);
+  };
+
   useEffect(() => {
     chrome.storage.local.get(['friendRequests', 'currency'], ({ friendRequests, currency }) => {
       setCurr(currencies[currency]);
       setInvites(friendRequests.inviters);
     });
   }, []);
-
 
   return (
     <div className="my-5">
@@ -28,6 +34,7 @@ const IncomingInvites = () => {
             <th title="The user's CS:GO inventory value">Inventory Value</th>
             <th title="Your trade offer history with the user">Offers</th>
             <th title="The summary fo the users's bans">Bans</th>
+            <th title="Accept, ignore or block the user's request">Actions</th>
             <th title="The extension retries to gather all information for the friend request to be evaluated, this is the count of the retries">Evaluations</th>
           </tr>
         </thead>
@@ -40,6 +47,7 @@ const IncomingInvites = () => {
                   details={invite}
                   index={index}
                   currency={curr}
+                  remove={removeInvite}
                 />
               );
             })
