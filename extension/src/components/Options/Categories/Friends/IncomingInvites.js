@@ -15,7 +15,7 @@ const IncomingInvites = () => {
 
 
   return (
-    <div>
+    <div className="my-5">
       <h5>Incoming Friend Requests</h5>
       <table className="spacedTable">
         <thead>
@@ -23,6 +23,7 @@ const IncomingInvites = () => {
             <th title="Steam username of requester at the time of the extension noticing the invite">Username</th>
             <th title="The user's Steam profile level">Steam Level</th>
             <th title="The country the user has set on their Steam profile">Country</th>
+            <th title="How many common friends you and this user has">Common Friends</th>
             <th title="The user's Steam community profile's privacy state">Profile</th>
             <th title="The user's CS:GO inventory value">Inventory Value</th>
             <th title="Your trade offer history with the user">Offers</th>

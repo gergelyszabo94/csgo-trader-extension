@@ -20,7 +20,6 @@ const getFriendRequests = () => new Promise((resolve, reject) => {
       const receivedInvitesElement = html.querySelector('#search_results');
       const inviters = [];
 
-      // TODO handle cases where the page does not load properly
       if (receivedInvitesElement !== null) {
         receivedInvitesElement.querySelectorAll('.invite_row').forEach((inviteRow) => {
           inviters.push({
@@ -127,6 +126,43 @@ const ignoreGroupRequest = (steamIDToIgnore) => {
 const acceptGroupRequest = (steamIDToAccept) => {
   makeFriendActionCall(steamIDToAccept, 'group_accept');
 };
+
+const getCommonFriends = (accountID) => new Promise((resolve, reject) => {
+  const request = new Request(`https://steamcommunity.com/actions/PlayerList/?type=friendsincommon&target=${accountID}`,
+    {
+      method: 'GET',
+    });
+
+  fetch(request).then((response) => {
+    if (!response.ok) {
+      console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+      reject(response);
+      return null;
+    }
+    return response.text();
+  }).then((body) => {
+    if (body !== null) {
+      const html = document.createElement('html');
+      html.innerHTML = body;
+      const friends = [];
+      html.querySelectorAll('.friendBlock.persona').forEach((friendBlock) => {
+        const nickNameBlock = friendBlock.querySelector('.nickname_block');
+
+        friends.push({
+          profileLink: friendBlock.querySelector('.friendBlockLinkOverlay').getAttribute('href'),
+          accountID: friendBlock.getAttribute('data-miniprofile'),
+          name: friendBlock.querySelector('.friendBlockContent').firstChild.nodeValue.trim(),
+          avatar: friendBlock.querySelector('.playerAvatar').firstElementChild.getAttribute('src'),
+          nickname: nickNameBlock !== null ? nickNameBlock.innerText : '',
+        });
+      });
+      resolve(friends);
+    }
+  }).catch((err) => {
+    console.log(err);
+    reject(err);
+  });
+});
 
 const logFriendRequestEvents = (events) => {
   chrome.storage.local.get(['friendRequestLogs'], ({ friendRequestLogs }) => {
@@ -280,6 +316,58 @@ const addInventoryValueInfo = () => {
         friendRequests: {
           inviters:
             [...invitesWithInventoryValue, ...stillNoInventoryValue, ...nowWithInventoryValue],
+          lastUpdated: Date.now(),
+        },
+      }, () => {});
+    }, 4000);
+  });
+};
+
+const addCommonFriendsInfo = () => {
+  chrome.storage.local.get(['friendRequests'], ({ friendRequests }) => {
+    const invitesWithCommonFriendsInfo = [];
+    const noCommonFriendInfoInvites = [];
+
+    friendRequests.inviters.forEach((invite) => {
+      if (invite.commonFriends === undefined) {
+        noCommonFriendInfoInvites.push(invite);
+      } else invitesWithCommonFriendsInfo.push(invite);
+    });
+
+    const nowWithCommonFriendInfo = [];
+
+    for (const [index, invite] of noCommonFriendInfoInvites.entries()) {
+      if (index < 5) {
+        getCommonFriends(invite.accountID).then((commonFriends) => {
+          nowWithCommonFriendInfo.push({
+            ...invite,
+            commonFriends,
+          });
+        }).catch((err) => {
+          console.log(err);
+          nowWithCommonFriendInfo.push({
+            ...invite,
+            commonFriends: [],
+          });
+        });
+      } else break;
+    }
+
+    setTimeout(() => {
+      const nowWithCommonFriendInfoIDs = nowWithCommonFriendInfo.map((invite) => {
+        return invite.steamID;
+      });
+      const stillNoCommonFriendInfo = noCommonFriendInfoInvites.filter((invite) => {
+        return !nowWithCommonFriendInfoIDs.includes(invite.steamID);
+      });
+      chrome.storage.local.set({
+        friendRequests: {
+          inviters:
+            [
+              ...invitesWithCommonFriendsInfo,
+              ...stillNoCommonFriendInfo,
+              ...nowWithCommonFriendInfo,
+            ],
           lastUpdated: Date.now(),
         },
       }, () => {});
@@ -503,8 +591,11 @@ const updateFriendRequest = () => {
           addInventoryValueInfo();
         }, 15000);
         setTimeout(() => {
-          evaluateInvites();
+          addCommonFriendsInfo();
         }, 20000);
+        setTimeout(() => {
+          evaluateInvites();
+        }, 25000);
       });
 
       const newInviteEvents = newInvites.map((invite) => {
@@ -546,6 +637,6 @@ const getBansSummaryText = (bans, steamRepInfo) => {
 
 export {
   getFriendRequests, ignoreRequest, acceptRequest, blockRequest,
-  getGroupInvites, ignoreGroupRequest, acceptGroupRequest,
+  getGroupInvites, ignoreGroupRequest, acceptGroupRequest, getCommonFriends,
   updateFriendRequest, removeOldFriendRequestEvents, getBansSummaryText,
 };

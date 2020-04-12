@@ -44,6 +44,13 @@ const Invite = ({ details, currency }) => {
       </td>
       <td>
         {
+          details.commonFriends !== undefined
+            ? details.commonFriends.length
+            : '-'
+        }
+      </td>
+      <td>
+        {
           details.summary
             ? details.summary.profilestate === 1
               ? 'Public'
