@@ -647,7 +647,7 @@ const setInventoryTotal = () => {
 
 const unselectAllItems = () => {
   document.querySelectorAll('.item.app730.context2').forEach((item) => {
-    item.classList.remove('selected');
+    item.classList.remove('cstSelected');
   });
 };
 
@@ -656,10 +656,10 @@ const updateMassSaleTotal = () => {
   let totalAfterFees = 0;
   document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr')
     .forEach((listingRow) => {
-      total += parseInt(listingRow.querySelector('.selected')
+      total += parseInt(listingRow.querySelector('.cstSelected')
         .getAttribute('data-price-in-cents'))
         * parseInt(listingRow.querySelector('.itemAmount').innerText);
-      totalAfterFees += parseInt(listingRow.querySelector('.selected')
+      totalAfterFees += parseInt(listingRow.querySelector('.cstSelected')
         .getAttribute('data-listing-price'))
         * parseInt(listingRow.querySelector('.itemAmount').innerText);
     });
@@ -675,7 +675,7 @@ const removeUnselectedItemsFromTable = () => {
   document.getElementById('listingTable').querySelector('tbody')
     .querySelectorAll('tr').forEach((listingRow) => {
       const assetIDs = listingRow.getAttribute('data-assetids').split(',');
-      const remainingIDs = assetIDs.filter((assetID) => findElementByAssetID(assetID).classList.contains('selected'));
+      const remainingIDs = assetIDs.filter((assetID) => findElementByAssetID(assetID).classList.contains('cstSelected'));
       if (remainingIDs.length === 0) listingRow.remove();
       else {
         listingRow.setAttribute('data-assetids', remainingIDs.toString());
@@ -689,7 +689,7 @@ const addListingRow = (item) => {
         <tr data-assetids="${item.assetid}" data-sold-ids="" data-item-name="${item.market_hash_name}">
             <td class="itemName"><a href="https://steamcommunity.com/market/listings/730/${item.market_hash_name}" target="_blank">${item.market_hash_name}</a></td>
             <td class="itemAmount">1</td>
-            <td class="itemExtensionPrice selected clickable" data-price-in-cents="${userPriceToProperPrice(item.price.price)}" data-listing-price="${getPriceAfterFees(userPriceToProperPrice(item.price.price))}">${item.price.display}</td>
+            <td class="itemExtensionPrice cstSelected clickable" data-price-in-cents="${userPriceToProperPrice(item.price.price)}" data-listing-price="${getPriceAfterFees(userPriceToProperPrice(item.price.price))}">${item.price.display}</td>
             <td class="itemStartingAt clickable">Loading...</td>
             <td class="itemQuickSell clickable">Loading...</td>
             <td class="itemInstantSell clickable">Loading...</td>
@@ -706,18 +706,18 @@ const addListingRow = (item) => {
       event.target.parentElement.setAttribute('data-price-in-cents', priceInt);
       event.target.parentElement.setAttribute('data-listing-price', getPriceAfterFees(priceInt));
       event.target.value = centsToSteamFormattedPrice(priceInt);
-      event.target.parentElement.classList.add('selected');
+      event.target.parentElement.classList.add('cstSelected');
       event.target.parentElement.parentElement.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell')
-        .forEach((priceType) => priceType.classList.remove('selected'));
+        .forEach((priceType) => priceType.classList.remove('cstSelected'));
       updateMassSaleTotal();
     });
 
   listingRow.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell')
     .forEach((priceType) => {
       priceType.addEventListener('click', (event) => {
-        event.target.classList.add('selected');
+        event.target.classList.add('cstSelected');
         event.target.parentNode.querySelectorAll('td').forEach((column) => {
-          if (column !== event.target) column.classList.remove('selected');
+          if (column !== event.target) column.classList.remove('cstSelected');
         });
         updateMassSaleTotal();
       });
@@ -810,7 +810,7 @@ const addToPriceQueueIfNeeded = (item) => {
 };
 
 const updateSelectedItemsSummary = () => {
-  const selectedItems = document.querySelectorAll('.item.app730.context2.selected');
+  const selectedItems = document.querySelectorAll('.item.app730.context2.cstSelected');
   const numberOfSelectedItems = selectedItems.length;
   let selectedTotal = 0;
 
@@ -857,10 +857,10 @@ const listenSelectClicks = (event) => {
             items,
             getAssetIDOfElement(item),
           ).market_hash_name === marketHashNameToLookFor) {
-            item.classList.toggle('selected');
+            item.classList.toggle('cstSelected');
           }
         });
-    } else event.target.parentElement.classList.toggle('selected');
+    } else event.target.parentElement.classList.toggle('cstSelected');
     updateSelectedItemsSummary();
   }
 };
@@ -937,7 +937,7 @@ const generateItemsList = () => {
       if (includeDupes || (!includeDupes && !namesAlreadyInList.includes(item.market_hash_name))) {
         if (((!includeNonMarketable && item.tradability !== 'Not Tradable')
           || (item.tradability === 'Not Tradable' && includeNonMarketable))
-          && (!selectedOnly || (selectedOnly && itemElement.classList.contains('selected')))) {
+          && (!selectedOnly || (selectedOnly && itemElement.classList.contains('cstSelected')))) {
           namesAlreadyInList.push(item.market_hash_name);
           copyTextArea.value += line;
           csvContent += lineCSV;
@@ -1157,7 +1157,6 @@ const loadFullInventory = () => {
 // sends a message to the "back end" to request inventory contents
 const requestInventory = () => {
   chrome.runtime.sendMessage({ inventory: getInventoryOwnerID() }, (response) => {
-    console.log(response);
     if (response !== 'error') {
       items = response.items;
       inventoryTotal = response.total;
@@ -1295,7 +1294,7 @@ if (isOwnInventory()) {
                     soldFromRow.setAttribute('data-sold-ids', soldIDs.toString());
                     let itemElement = document.getElementById('730_2_' + assetID);
                     itemElement.classList.add('sold');
-                    itemElement.classList.remove('selected');
+                    itemElement.classList.remove('cstSelected');
             
                     sellNext();
                  }
@@ -1317,7 +1316,7 @@ if (isOwnInventory()) {
         
                 for (let assetID of assetIDs) {
                     if (!soldIDs.includes(assetID)) {
-                        sellItemOnPage(listingRow.getAttribute('data-item-name'), assetID, listingRow.querySelector('.selected').getAttribute('data-listing-price'));
+                        sellItemOnPage(listingRow.getAttribute('data-item-name'), assetID, listingRow.querySelector('.cstSelected').getAttribute('data-listing-price'));
                         return;
                     }
                 }

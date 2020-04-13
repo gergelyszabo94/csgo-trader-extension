@@ -386,7 +386,7 @@ const rightClickControlHandler = (event) => {
     event.preventDefault();
     // prevents the default behavior from happening
     // which would be the context menu appearing in this case
-    event.target.parentNode.classList.toggle('selected');
+    event.target.parentNode.classList.toggle('cstSelected');
     return false;
   }
 };
@@ -507,7 +507,7 @@ const addAPartysFunctionBar = (whose) => {
     let selectedRemoved = 0;
 
     const selectedItems = [...itemElements].map((item) => {
-      if (item.classList.contains('selected')) {
+      if (item.classList.contains('cstSelected')) {
         return getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name;
       }
       return null;
@@ -590,7 +590,7 @@ const addFunctionBars = () => {
 
         // goes through the items and collects the names of the selected ones
         const selectedItems = [...itemElements].map((item) => {
-          if (item.classList.contains('selected')) {
+          if (item.classList.contains('cstSelected')) {
             return getItemByAssetID(
               combinedInventories,
               getAssetIDOfElement(item),

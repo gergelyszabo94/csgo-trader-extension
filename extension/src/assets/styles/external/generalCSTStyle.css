@@ -363,7 +363,7 @@ progress {
     border-color: white !important;
 }
 
-.selected{
+.cstSelected{
     border: 1px dashed white !important;
 }
 
