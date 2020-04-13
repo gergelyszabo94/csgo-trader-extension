@@ -70,9 +70,11 @@ const IncomingInvites = () => {
 
   useEffect(() => {
     loadInvites();
-    setInterval(() => {
+    const loadInvitesPeriodically = setInterval(() => {
       loadInvites();
     }, 60000);
+
+    return () => clearInterval(loadInvitesPeriodically);
   }, []);
 
   return (

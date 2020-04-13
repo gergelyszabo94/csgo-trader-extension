@@ -109,7 +109,7 @@ const options = ({ match }) => {
                 </Nav>
               </div>
             </div>
-            <div className="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4 options__content">
+            <div className="col-md-10 ml-sm-auto col-lg-10 pt-3 px-4 options__content">
               <Switch>
                 {routes.map((route) => (
                   <Route

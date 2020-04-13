@@ -12,13 +12,15 @@ const InviteHistory = () => {
     chrome.storage.local.get(['friendRequestLogs'], ({ friendRequestLogs }) => {
       setHistoryEvents(friendRequestLogs.reverse());
     });
-    setInterval(() => {
-      loadHistoryEvents();
-    }, 60000);
   };
 
   useEffect(() => {
     loadHistoryEvents();
+    const loadHistoryEventsPeriodically = setInterval(() => {
+      loadHistoryEvents();
+    }, 60000);
+
+    return () => clearInterval(loadHistoryEventsPeriodically);
   }, []);
 
   const onShowAll = () => {
