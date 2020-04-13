@@ -28,19 +28,25 @@ const ReverseIncDecPercentage = () => {
 
   return (
     <div className="calCategory">
-      <span
-        className="calcSubtitle"
-        title="Find what the original number was before it was increased or decreased by a certain percentage"
-      >
-        Increment/decrement by
-      </span>
-      <span>{result}</span>
-      <span> is the number </span>
-      <select defaultValue={option} onChange={onSelectChange} className="select">
-        <option value="inc">increased</option>
-        <option value="dec">decreased</option>
-      </select>
-      <span> by </span>
+      <div>
+        <span
+          className="calcSubtitle"
+          title="Find what the original number was before it was increased or decreased by a certain percentage"
+        >
+          Increment/decrement by
+        </span>
+      </div>
+      <div>
+        <span>{result}</span>
+        <span> is the number </span>
+      </div>
+      <div>
+        <select defaultValue={option} onChange={onSelectChange} className="select-theme">
+          <option value="inc">increased</option>
+          <option value="dec">decreased</option>
+        </select>
+        <span> by </span>
+      </div>
       <input type="number" value={percentage} onChange={onPercentageChange} className="numberInput numberInput__narrow" />
       <span>% when the result is </span>
       <input type="number" value={number} onChange={onNumberChange} className="numberInput numberInput__narrow" />

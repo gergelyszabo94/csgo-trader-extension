@@ -27,7 +27,7 @@ const CurrencySelect = ({ id, selected, setSelected }) => {
 
   return (
     <select
-      className="select"
+      className="select-theme"
       id={id}
       value={selected}
       onChange={applySelection}

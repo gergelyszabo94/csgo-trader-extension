@@ -19,7 +19,7 @@ const Select = ({
 
   return (
     <select
-      className="select"
+      className="select-theme"
       id={id}
       onChange={changeHandler}
       value={value}
