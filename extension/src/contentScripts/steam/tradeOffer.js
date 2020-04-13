@@ -451,7 +451,7 @@ const getInventories = () => {
         doInitSorting();
       });
     });
-  } else {
+  } else if (document.getElementById('error_msg') === null) {
     setTimeout(() => {
       getInventories();
     }, 500);
