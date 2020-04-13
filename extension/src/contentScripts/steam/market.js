@@ -224,8 +224,8 @@ const addHighestBuyOrderPrice = (job, highestBuyOrder) => {
   // the per page order count was changed or the order was canceled
   if (orderRow !== null) {
     const priceElement = orderRow.querySelector('.market_listing_price');
-    const orderPrice = priceElement.innerText;
-    const highest = orderPrice === priceOfHighestOrder ? 'highest' : 'not_highest';
+    const orderPrice = parseInt(steamFormattedPriceToCents(priceElement.innerText));
+    const highest = orderPrice >= highestBuyOrder ? 'highest' : 'not_highest';
 
     priceElement.insertAdjacentHTML('beforeend',
       `<div class="${highest}" title="This is the price of the highest buy order right now.">
