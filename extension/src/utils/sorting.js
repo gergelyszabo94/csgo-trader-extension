@@ -162,16 +162,25 @@ const doTheSorting = (items, itemElements, method, pages, type) => {
     const numberOfItemsPerPage = type === 'offer' ? 16 : 25;
 
     pages.forEach((page) => {
+      const emptySlots = [];
+      page.querySelectorAll('.itemHolder').forEach((itemHolder) => {
+        if (itemHolder.children.length === 1) emptySlots.push(itemHolder);
+      });
+
       page.innerHTML = '';
 
       for (let i = 0; i < numberOfItemsPerPage; i += 1) {
-        const item = sortedElements.pop();
+        if (emptySlots[i] !== undefined) {
+          page.appendChild(emptySlots[i]);
+        } else {
+          const item = sortedElements.pop();
 
-        if (item !== undefined) page.appendChild(item.parentElement);
-        else {
-          const emptySlot = document.createElement('div');
-          emptySlot.classList.add('itemHolder', 'disabled');
-          page.appendChild(emptySlot);
+          if (item !== undefined) page.appendChild(item.parentElement);
+          else {
+            const emptySlot = document.createElement('div');
+            emptySlot.classList.add('itemHolder', 'disabled');
+            page.appendChild(emptySlot);
+          }
         }
       }
     });
