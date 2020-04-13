@@ -163,9 +163,11 @@ const doTheSorting = (items, itemElements, method, pages, type) => {
 
     pages.forEach((page) => {
       const emptySlots = [];
-      page.querySelectorAll('.itemHolder').forEach((itemHolder) => {
-        if (itemHolder.children.length === 1) emptySlots.push(itemHolder);
-      });
+      if (type === 'offer') {
+        page.querySelectorAll('.itemHolder').forEach((itemHolder) => {
+          if (itemHolder.children.length === 1) emptySlots.push(itemHolder);
+        });
+      }
 
       page.innerHTML = '';
 
