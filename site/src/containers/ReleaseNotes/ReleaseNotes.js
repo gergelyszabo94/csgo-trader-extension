@@ -23,7 +23,58 @@ const releaseNotes = (props) => {
               The platforms (Chrome Web Store, Mozzila Addons) review submissions before they are available for download.
               This means that the latest version might not have rolled out to your platform yet when you are reading this.
           </Container>
-
+          <Container className='buildingBlock' id='2.1'>
+              <h2>2.1 - Friend request evaluation, items present in other offers indicated</h2>
+              <p>
+                  Two new features, several bug fixes and smaller improvements were made in this update.
+                  It's easier to show the changes in a video format so I made one of those too this time:
+              </p>
+              <div className='video-container'>
+                  <iframe
+                    width='560'
+                    height='315'
+                    src='https://www.youtube.com/embed/XeXiAItf5s4'
+                    frameBorder='0'
+                    allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'
+                    title='CSGO Trader Updated 2.1 Release Notes'
+                    allowFullScreen>
+                  </iframe>
+              </div>
+              <br />
+              <p>
+                  The feature I put a lot of work in is what I call "Friend request evaluation automation".
+                  You can find it in the options under "Friends, Groups and Invites".
+                  This is personally a huge help and time saver for me so I am very happy that it's out now.
+                  I have been testing it on my account the past week or so and it probably saved me hours of work already.
+                  I personally get around 100 friend requests a day.
+                  If I were to talk to everyone who adds me than that would be the only thing I ever do.
+                  This is why I have to limit who I accept to my friend list and allocate time to talk to.
+                  I trade for profit so I have been trying to accept people who are good prospects.
+                  I set certain rules who I accept to make my life easier.
+                  I was using these rules manually up to this point, but now my extension does it for me automatically.
+                  I have the above rules set myself:
+              </p>
+              <ShowcaseImage src='/img/release-notes/invite_rules.png' title='The rules I have set.'/>
+              <p>
+                  There are a bunch of conditons and 3 actions so plenty of combinations to play with, be creative!
+              </p>
+              <p>
+                  You can check your friend request history and what actions the extension has taken if any for the last week.
+                  Here is a snippet of mine:
+              </p>
+              <ShowcaseImage src='/img/release-notes/request_history.png' title='My friend request history'/>
+              <p>
+                  The list of incoming friend requests is also available with detailed information about each user.
+              </p>
+              <ShowcaseImage src='/img/release-notes/incoming_requests_table.png' title='My incoming friend requests'/>
+              <p>
+                  The other major new feature is to be able to see if an items is present in other offers (in case of trade offers).
+                  Or if it is in any offers (indicated in inventories).
+                  Here is how it looks in practice. The M9 in question has an indicator as it is present in two other offers.
+                  Clicking that indicator adds links to the other offers.
+              </p>
+              <ShowcaseImage src='/img/release-notes/in_offer_indicator.png' title='Item in-offer indicator'/>
+          </Container>
           <Container className='buildingBlock' id='2.0'>
               <h2>2.0 - UI Refresh, Project Restructure</h2>
               <p>

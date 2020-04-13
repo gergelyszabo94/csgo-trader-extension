@@ -23,6 +23,57 @@ const changelog = (props) => {
                 This means that the latest version might not have rolled out to your platform yet when you are reading this.
             </Container>
             <Container className='buildingBlock'>
+                <h2>Version 2.1- 2020-04-13</h2>
+                <ul>
+                    <li>
+                        Items that are present in multiple offers are highlighted and on click reveal in which ones.
+                        <GithubIssueLink issueNumber={78}/>
+                        Check out the <Link to='/release-notes/#2.1'> Release Notes </Link> for more info.
+                    </li>
+                    <li>
+                        Added feature to make the extension act on incoming friend requests by user set rules.
+                        <GithubIssueLink issueNumber={134}/>
+                        Check out the <Link to='/release-notes/#2.1'> Release Notes </Link> for more info.
+                    </li>
+                    <li>
+                        CSGOTraders.net autobumping now navigates away from error page.
+                    </li>
+                    <li>
+                       Fixed a bug that made opening a link to a sent offer not showing the correct offer on the page after sorting.
+                    </li>
+                    <li>
+                        Added more spam comment patterns.
+                    </li>
+                    <li>
+                        A ribbon is added to Steam pages after the a new version of the extension was installed.
+                        It can be dismissed until the next update.
+                    </li>
+                    <li>
+                        Added an option to auto-ignore Steam group invites.
+                    </li>
+                    <li>
+                        Changed how partner trade offer history information is shown on profiles to be consistent with offers and inventories.
+                    </li>
+                    <li>
+                        Fixed a small bug that made "Favorite" buttons on artworks have a visible border.
+                    </li>
+                    <li>
+                        Fixed a select element styling and calculator layout in Firefox.
+                        <GithubIssueLink issueNumber={132}/>
+                    </li>
+                    <li>
+                        Fixed a bug that sometimes showed a buy order as not the highest if the highest's price was lower.
+                        <GithubIssueLink issueNumber={174}/>
+                        <Credit to='https://steamcommunity.com/profiles/76561198104585268'>caluo</Credit>
+                    </li>
+                    <li>
+                        Fixed a bug that made items in an offer disappear when the user tried to remove them.
+                        <GithubIssueLink issueNumber={168}/>
+                        <Credit to='https://steamcommunity.com/profiles/76561198103971634'>⸸ Dᴊᴇɴᴛ ⸸</Credit>
+                    </li>
+                </ul>
+            </Container>
+            <Container className='buildingBlock'>
                 <h2>Version 2.0 - 2020-03-18</h2>
                 <ul>
                     <li>
