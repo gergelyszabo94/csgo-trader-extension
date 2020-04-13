@@ -20,7 +20,22 @@ const workOnFloatQueue = () => {
             if (response !== 'error') {
               job.callBackFunction(job, response.floatInfo, floatQueue);
             }
-            workOnFloatQueue();
+            chrome.storage.local.get(['floatQueueActivity'], ({ floatQueueActivity }) => {
+              const secondsFromLastUse = ((Date.now()
+                - new Date(floatQueueActivity.lastUsed)) / 1000);
+              // tries to avoid having multiple float queues running concurrently on different pages
+              if (secondsFromLastUse < 5 && floatQueueActivity.usedAt !== window.location.href) {
+                setTimeout(() => {
+                  workOnFloatQueue();
+                }, 5000);
+              } else workOnFloatQueue();
+              chrome.storage.local.set({
+                floatQueueActivity: {
+                  lastUsed: Date.now(),
+                  usedAt: window.location.href,
+                },
+              });
+            });
           });
         }
       },

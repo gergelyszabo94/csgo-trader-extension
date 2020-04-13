@@ -130,10 +130,14 @@ const storageKeys = {
     },
   ],
   ignoreGroupInvites: false,
+  floatQueueActivity: {
+    lastUsed: Date.now(),
+    usedAt: '',
+  },
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
   'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID', 'groupInvites',
-  'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules'];
+  'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules', 'floatQueueActivity'];
 
 export { storageKeys, nonSettingStorageKeys };
