@@ -128,7 +128,7 @@ const IncomingInvites = () => {
             <th title="Your trade offer history with the user">Offers</th>
             <th title="The summary fo the users's bans">Bans</th>
             <th title="Accept, ignore or block the user's request">Actions</th>
-            <th title="The extension retries to gather all information for the friend request to be evaluated, this is the count of the retries">Evaluations</th>
+            <th title="The extension retries to gather all information for the friend request to be evaluated, this is the count of the retries">Evals</th>
           </tr>
         </thead>
         <tbody>

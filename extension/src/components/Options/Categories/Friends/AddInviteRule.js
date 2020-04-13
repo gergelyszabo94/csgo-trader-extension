@@ -77,7 +77,7 @@ const AddInviteRule = ({ add }) => {
       <CustomA11yButton action={addRule} title="Add new rule" className="mx-3">
         <FontAwesomeIcon icon={faPlus} />
       </CustomA11yButton>
-      <select className="select" onChange={onConditionChange} defaultValue={rule.condition}>
+      <select className="select-theme" onChange={onConditionChange} defaultValue={rule.condition}>
         <Options />
       </select>
       {
@@ -85,7 +85,7 @@ const AddInviteRule = ({ add }) => {
           ? <input type="number" className="numberInput numberInput__narrow" value={rule.value} onChange={onValueChange} />
           : null
       }
-      <select className="select" onChange={onActionChange} defaultValue={rule.action}>
+      <select className="select-theme" onChange={onActionChange} defaultValue={rule.action}>
         <Actions />
       </select>
     </div>
