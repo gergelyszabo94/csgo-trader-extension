@@ -57,12 +57,10 @@ const storageKeys = {
   showStickerPrice: true,
   activeOffers: {
     lastFullUpdate: '',
-    offers: {
-      items: [],
-      sent: [],
-      received: [],
-      descriptions: [],
-    },
+    items: [],
+    sent: [],
+    received: [],
+    descriptions: [],
   },
   itemInOffersInventory: true,
   itemInOtherOffers: true,
