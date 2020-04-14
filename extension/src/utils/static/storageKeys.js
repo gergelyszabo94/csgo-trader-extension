@@ -132,6 +132,7 @@ const storageKeys = {
     lastUsed: Date.now(),
     usedAt: '',
   },
+  removeWebChatHeader: true,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
