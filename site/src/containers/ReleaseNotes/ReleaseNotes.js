@@ -25,6 +25,12 @@ const releaseNotes = (props) => {
           </Container>
           <Container className='buildingBlock' id='2.1'>
               <h2>2.1 - Friend request evaluation, items present in other offers indicated</h2>
+              <div className="text-danger">
+                  There was a bug identified in this update that causes features to break.
+                  If you are facing issues and are still on this version you can work around it:
+                  Make sure you have your Steam API key set in the options the  go to your inventory, click "Trade offers".
+                  This opens the incoming trade offers page and the extension updates the active offer information, fixing the problem.
+              </div>
               <p>
                   Two new features, several bug fixes and smaller improvements were made in this update.
                   It's easier to show the changes in a video format so I made one of those too this time:
@@ -56,7 +62,7 @@ const releaseNotes = (props) => {
               </p>
               <ShowcaseImage src='/img/release-notes/invite_rules.png' title='The rules I have set.'/>
               <p>
-                  There are a bunch of conditons and 3 actions so plenty of combinations to play with, be creative!
+                  There are a bunch of conditions and 3 actions so plenty of combinations to play with, be creative!
               </p>
               <p>
                   You can check your friend request history and what actions the extension has taken if any for the last week.

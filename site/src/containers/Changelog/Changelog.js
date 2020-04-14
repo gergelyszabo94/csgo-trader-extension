@@ -30,6 +30,12 @@ const changelog = (props) => {
             </Container>
             <Container className='buildingBlock'>
                 <h2>Version 2.1- 2020-04-13</h2>
+                <div className="text-danger">
+                    There was a bug identified in this update that causes features to break.
+                    If you are facing issues and are still on this version you can work around it:
+                    Make sure you have your Steam API key set in the options the  go to your inventory, click "Trade offers".
+                    This opens the incoming trade offers page and the extension updates the active offer information, fixing the problem.
+                </div>
                 <ul>
                     <li>
                         Items that are present in multiple offers are highlighted and on click reveal in which ones.
