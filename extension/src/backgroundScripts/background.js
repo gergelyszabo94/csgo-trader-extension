@@ -114,6 +114,20 @@ chrome.runtime.onInstalled.addListener((details) => {
   chrome.alarms.create('getSteamNotificationCount', { periodInMinutes: 1 });
   chrome.alarms.create('retryUpdatePricesAndExchangeRates', { periodInMinutes: 1 });
   chrome.alarms.create('dailyScheduledTasks', { periodInMinutes: 1440 });
+
+  // hotfix for updating users from 2.1 or 2.1.1
+  if (details.previousVersion === '2.1' || details.previousVersion === '2.1.1') {
+    chrome.storage.local.set({
+      activeOffers: {
+        lastFullUpdate: Math.floor(Date.now() / 1000),
+        items: [],
+        sent: [],
+        received: [],
+        descriptions: [],
+      },
+    }, () => {
+    });
+  }
 });
 
 // redirects to feedback survey on uninstall
