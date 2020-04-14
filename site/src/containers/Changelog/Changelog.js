@@ -23,6 +23,12 @@ const changelog = (props) => {
                 This means that the latest version might not have rolled out to your platform yet when you are reading this.
             </Container>
             <Container className='buildingBlock'>
+                <h2>Version 2.1.1 - 2020-04-14</h2>
+                <ul>
+                    <li>Fixed a bug that made most of the features break when the user has not loaded the incoming offers page after installing or updating.</li>
+                </ul>
+            </Container>
+            <Container className='buildingBlock'>
                 <h2>Version 2.1- 2020-04-13</h2>
                 <ul>
                     <li>
