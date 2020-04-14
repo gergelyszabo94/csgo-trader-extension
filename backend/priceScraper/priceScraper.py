@@ -20,6 +20,8 @@ knives = ["Bayonet", "Bowie Knife", "Butterfly Knife", "Falchion Knife", "Flip K
           "Shadow Daggers", "Stiletto Knife", "Talon Knife", "Ursus Knife", "Nomad Knife",
           "Skeleton Knife", "Survival Knife", "Paracord Knife", "Classic Knife"]
 
+gloves = ["Gloves", "Hand Wraps"]
+
 def lambda_handler(event, context):
     arn_split = context.invoked_function_arn.split(':')
     stage_candidate = arn_split[len(arn_split) - 1]
@@ -296,7 +298,9 @@ def lambda_handler(event, context):
         case = steam_aggregate["case"]  # only used to debug pricing in dev mode
         price = "null"
 
-        if steam_aggregate["price"] != "null" and steam_aggregate["price"] != 0.0 and not is_mispriced_knife(item, steam_aggregate["price"]):
+        if steam_aggregate["price"] != "null" and steam_aggregate["price"] != 0.0\
+                and not is_mispriced_knife(item, steam_aggregate["price"]) \
+                and not is_mispriced_glove(item, steam_aggregate["price"]):
             price = float("{0:.2f}".format(steam_aggregate["price"]))
         elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and csmoney_prices[item]["price"] != 0:
             price = float("{0:.2f}".format(float(csmoney_prices[item]["price"]) * st_csm * week_to_day))
@@ -489,6 +493,19 @@ def is_mispriced_knife(item_name, price):
             contains = True
 
     if contains and price < 50:
+        return True
+    else:
+        return False
+
+
+def is_mispriced_glove(item_name, price):
+    contains = False
+
+    for glove in gloves:
+        if glove in item_name:
+            contains = True
+
+    if contains and price < 60:
         return True
     else:
         return False
