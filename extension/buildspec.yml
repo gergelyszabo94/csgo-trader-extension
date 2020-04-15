@@ -19,7 +19,7 @@ phases:
       - cd ..
   post_build:
     commands:
-      - aws s3 sync ./publish $BUCKET/extension/test
+      - aws s3 sync ./publish $BUCKET/extension/latest/
       - |
           if expr "$ENV" : "PROD"; then
             aws cloudfront create-invalidation --distribution-id $CLOUDFRONT --paths "/extension/latest*"
