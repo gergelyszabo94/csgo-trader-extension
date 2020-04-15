@@ -7,11 +7,13 @@ phases:
   pre_build:
     commands:
       - cd extension
+      - zip -r ../source.zip .
+      - mkdir publish
+      - cp ../source.zip ./publish/source.zip # the source must be submitted as well on addons.mozilla.org
       - npm ci
   build:
     commands:
       - npm run build
-      - mkdir publish
       - cd build
       - zip -r ../publish/chrome.zip .
       - cp ../src/manifest_ff.json manifest.json # only the manifest file is different on firefox
