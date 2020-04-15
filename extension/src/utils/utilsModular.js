@@ -528,7 +528,7 @@ const warnOfScammer = (steamID, page) => {
       if (SteamRepInfo !== 'error') {
         if (SteamRepInfo.reputation.summary === 'SCAMMER') {
           const backgroundURL = chrome.runtime.getURL('images/scammerbackground.jpg');
-          document.querySelector('body').insertAdjacentHTML('beforebegin',
+          document.querySelector('body').insertAdjacentHTML('afterbegin',
             `<div style="background-color: red; color: white; padding: 5px; text-align: center;" class="scammerWarning">
                                 <span>
                                     Watch out, this user was banned on SteamRep for scamming! You can check the details of what they did on 
