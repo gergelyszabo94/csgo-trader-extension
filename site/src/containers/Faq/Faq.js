@@ -63,7 +63,7 @@ const faq = (props) => {
                         To install the extension in development mode in a Chromium based browser (Chrome, Edge, Opera or Brave):
                         <ul>
                             {/*Absolute routes are used to trick react-snap because it does not have an exclude option*/}
-                            <li>Grab the latest <NewTabLink to='https://csgotrader.app/extension/chrome.zip'>chrome.zip</NewTabLink></li>
+                            <li>Grab the latest <NewTabLink to='https://csgotrader.app/extension/latest/chrome.zip'>chrome.zip</NewTabLink></li>
                             <li>Unpack it in a folder on your computer</li>
                             <li>Open the Extensions page ( chrome://extensions )</li>
                             <li>Enable developer mode with the toggle</li>
@@ -72,7 +72,7 @@ const faq = (props) => {
                         </ul>
                         For Firefox:
                         <ul>
-                            <li>Grab the latest <NewTabLink to='https://csgotrader.app/extension/firefox.zip'>firefox.zip</NewTabLink></li>
+                            <li>Grab the latest <NewTabLink to='https://csgotrader.app/extension/latest/firefox.zip'>firefox.zip</NewTabLink></li>
                             <li>Unpack it in a folder on your computer</li>
                             <li>Open tha Extensions page ( about:addons )</li>
                             <li>Click the Gear icon then "Debug Add-ons"</li>
