@@ -6,6 +6,7 @@ import NewTabLink from 'components/NewTabLink/NewTabLink';
 import { trackEvent } from 'utils/analytics';
 import Calculator from 'components/Popup/Calculator/Calculator';
 import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
+import TelemetryConsent from 'components/Popup/TelemetryConsent';
 
 const Popup = () => {
   // if there is any badge text it gets removed
@@ -16,26 +17,38 @@ const Popup = () => {
     action: 'ExtensionPopupView',
   });
 
+  const [showTelemetryConsent, setShowTelemetryConsent] = useState(false);
   const [links, setLinks] = useState([]);
   const [showCalc, doShowCalc] = useState(false);
 
-  useEffect(() => {
-    chrome.storage.local.get(['popupLinks', 'steamIDOfUser'], (result) => {
-      const navLinks = result.popupLinks.map((link) => {
-        if (link.active) {
-          const URL = link.id === 'tradeoffers'
-            ? `https://steamcommunity.com/profiles/${result.steamIDOfUser}/tradeoffers`
-            : link.url;
-          return (
-            <div key={link.id}>
-              <NewTabLink to={URL}>{link.name}</NewTabLink>
-            </div>
-          );
-        }
-        return null;
-      });
-      setLinks(navLinks);
+  const saveConsentResult = (consented) => {
+    chrome.storage.local.set({
+      telemetryOn: consented,
+      telemetryConsentSubmitted: true,
+    }, () => {
+      setShowTelemetryConsent(false);
     });
+  };
+
+  useEffect(() => {
+    chrome.storage.local.get(['popupLinks', 'steamIDOfUser', 'telemetryConsentSubmitted'],
+      ({ popupLinks, steamIDOfUser, telemetryConsentSubmitted }) => {
+        const navLinks = popupLinks.map((link) => {
+          if (link.active) {
+            const URL = link.id === 'tradeoffers'
+              ? `https://steamcommunity.com/profiles/${steamIDOfUser}/tradeoffers`
+              : link.url;
+            return (
+              <div key={link.id}>
+                <NewTabLink to={URL}>{link.name}</NewTabLink>
+              </div>
+            );
+          }
+          return null;
+        });
+        setLinks(navLinks);
+        if (!telemetryConsentSubmitted) setShowTelemetryConsent(true);
+      });
   }, []);
 
   const LogoAndLinks = () => {
@@ -50,7 +63,9 @@ const Popup = () => {
             </span>
           </h5>
         </NewTabLink>
-        {links}
+        {
+          showTelemetryConsent ? <TelemetryConsent submitConsent={saveConsentResult} /> : links
+        }
       </>
     );
   };

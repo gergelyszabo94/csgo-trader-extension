@@ -20,7 +20,13 @@ chrome.runtime.onInstalled.addListener((details) => {
       // id generated to identify the extension installation
       // a user can use use multiple installations of the extension
       if (key === 'clientID') chrome.storage.local.set({ [key]: uuidv4() }, () => {});
-      else chrome.storage.local.set({ [key]: value }, () => {});
+      else if (key === 'telemetryConsentSubmitted') {
+        // mozilla addons requires user consent to be given so it's off by default for firefox
+        // but it is on by default on chrome, edge, etc.
+        if (chrome.extension.getURL('/index.html').includes('chrome-extension')) {
+          chrome.storage.local.set({ [key]: true });
+        } else chrome.storage.local.set({ [key]: false });
+      } else chrome.storage.local.set({ [key]: value }, () => {});
     }
 
     trackEvent({
@@ -39,6 +45,11 @@ chrome.runtime.onInstalled.addListener((details) => {
       message: 'Go to the options to set your Steam API key and customize your experience!',
     }, () => {});
   } else if (details.reason === 'update') {
+    const path = chrome.extension.getURL('/index.html');
+    if (path.includes('chrome-extension')) {
+      chrome.storage.local.set({ telemetryConsent: true });
+    }
+
     // sets defaults options for new options that haven't been set yet
     // (for features introduced since the last version)
     // runs when the extension updates or gets reloaded in developer mode
@@ -52,7 +63,13 @@ chrome.runtime.onInstalled.addListener((details) => {
           // id generated to identify the extension installation
           // a user can use use multiple installations of the extension
           if (storageKey === 'clientID') chrome.storage.local.set({ [storageKey]: uuidv4() }, () => {});
-          else chrome.storage.local.set({ [storageKey]: storageValue }, () => {});
+          else if (storageKey === 'telemetryConsentSubmitted') {
+            // mozilla addons requires user consent to be given so it's off by default for firefox
+            // but it is on by default on chrome, edge, etc.
+            if (chrome.extension.getURL('/index.html').includes('chrome-extension')) {
+              chrome.storage.local.set({ [storageKey]: true });
+            } else chrome.storage.local.set({ [storageKey]: false });
+          } else chrome.storage.local.set({ [storageKey]: storageValue }, () => {});
         }
       }
     });
