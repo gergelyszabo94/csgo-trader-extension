@@ -195,8 +195,12 @@ chrome.alarms.onAlarm.addListener((alarm) => {
         });
     }, (error) => {
       console.log(error);
-      if (error === 401) { // user not logged in
-        console.log('User not logged in, suspending notification checks for an hour.');
+      if (error === 401 || error === 403) {
+        if (error === 401) { // user not logged in
+          console.log('User not logged in, suspending notification checks for an hour.');
+        } else if (error === 403) { // Steam is temporarily blocking this ip
+          console.log('Steam is denying access, suspending notification checks for an hour.');
+        }
         chrome.alarms.clear('getSteamNotificationCount', () => {
           const now = new Date();
           now.setHours(now.getHours() + 1);
