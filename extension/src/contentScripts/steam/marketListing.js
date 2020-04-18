@@ -1,3 +1,5 @@
+import DOMPurify from 'dompurify';
+
 import { dopplerPhases } from 'utils/static/dopplerPhases';
 import {
   getDataFilledFloatTechnical,
@@ -41,7 +43,7 @@ if (originalInspectButton !== null) {
             ${chrome.i18n.getMessage('inspect_in_browser')}
         </span>
     </a>`;
-  document.getElementById('largeiteminfo_item_actions').insertAdjacentHTML('beforeend', inBrowserInspectButton);
+  document.getElementById('largeiteminfo_item_actions').insertAdjacentHTML('beforeend', DOMPurify.sanitize(inBrowserInspectButton));
   document.getElementById('inbrowser_inspect_button').addEventListener('click', () => {
     // analytics
     trackEvent({
@@ -90,15 +92,15 @@ const getListingIDFromElement = (listingElement) => {
 const addPhasesIndicator = () => {
   if (window.location.href.includes('Doppler')) {
     document.querySelectorAll('.market_listing_item_img_container').forEach((container) => {
-      container.insertAdjacentHTML('beforeend', dopplerPhase);
+      container.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhase));
       const phase = getDopplerInfo(container.querySelector('img').getAttribute('src').split('economy/image/')[1].split('/')[0]);
       const dopplerElement = container.querySelector('.dopplerPhaseMarket');
 
       switch (phase.short) {
-        case dopplerPhases.sh.short: dopplerElement.insertAdjacentHTML('beforeend', dopplerPhases.sh.element); break;
-        case dopplerPhases.rb.short: dopplerElement.insertAdjacentHTML('beforeend', dopplerPhases.rb.element); break;
-        case dopplerPhases.em.short: dopplerElement.insertAdjacentHTML('beforeend', dopplerPhases.em.element); break;
-        case dopplerPhases.bp.short: dopplerElement.insertAdjacentHTML('beforeend', dopplerPhases.bp.element); break;
+        case dopplerPhases.sh.short: dopplerElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.sh.element)); break;
+        case dopplerPhases.rb.short: dopplerElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.rb.element)); break;
+        case dopplerPhases.em.short: dopplerElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.em.element)); break;
+        case dopplerPhases.bp.short: dopplerElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.bp.element)); break;
         default: dopplerElement.querySelector('span').innerText = phase.short;
       }
     });
@@ -160,20 +162,26 @@ const addStickers = () => {
           if (listingRow.querySelector('.stickerHolderMarket') === null) { // if stickers elements not added already
             const nameBlock = listingRow.querySelector('.market_listing_item_name_block');
             nameBlock.classList.add('extension__row');
-            nameBlock.insertAdjacentHTML('beforeend',
-              `<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`);
+            nameBlock.insertAdjacentHTML(
+              'beforeend',
+              DOMPurify.sanitize(`<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`),
+            );
             const stickers = listings[listingID].asset.stickers;
 
             stickers.forEach((stickerInfo) => {
-              listingRow.querySelector('.stickerHolderMarket').insertAdjacentHTML('beforeend', `
-                            <span class="stickerSlotMarket" data-tooltip-market="${stickerInfo.name}">
-                                <a href="${stickerInfo.marketURL}" target="_blank">
-                                    <img src="${stickerInfo.iconURL}" class="stickerIcon">
-                                </a>
-                            </span>`);
+              listingRow.querySelector('.stickerHolderMarket').insertAdjacentHTML(
+                'beforeend',
+                DOMPurify.sanitize(
+                  `<span class="stickerSlotMarket" data-tooltip-market="${stickerInfo.name}">
+                        <a href="${stickerInfo.marketURL}" target="_blank">
+                            <img src="${stickerInfo.iconURL}" class="stickerIcon">
+                        </a>
+                     </span>`,
+                ),
+              );
             });
             listingRow.querySelector('.stickerHolderMarket').insertAdjacentHTML('afterend',
-              '<div class="stickersTotal" data-tooltip-market="Total Price of Stickers on this item"></div>');
+              DOMPurify.sanitize('<div class="stickersTotal" data-tooltip-market="Total Price of Stickers on this item"></div>'));
           }
         }
       },
@@ -186,7 +194,7 @@ const populateFloatInfo = (listingID, floatInfo) => {
 
   // if for example the user has changed page and the listing is not there anymore
   if (listingElement !== null) {
-    listingElement.querySelector('.floatTechnical').innerHTML = getDataFilledFloatTechnical(floatInfo);
+    listingElement.querySelector('.floatTechnical').innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo));
 
     const position = ((toFixedNoRounding(floatInfo.floatvalue, 2) * 100) - 2);
     listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
@@ -249,7 +257,10 @@ const addPatterns = (listingID, floatInfo) => {
 
     if (listingElement !== null) {
       const patternClass = patternInfo.type === 'marble_fade' ? 'marbleFadeGradient' : 'fadeGradient';
-      listingElement.querySelector('.market_listing_item_name').insertAdjacentHTML('afterend', `<span class="${patternClass}"> ${patternInfo.value}</span>`);
+      listingElement.querySelector('.market_listing_item_name').insertAdjacentHTML(
+        'afterend',
+        DOMPurify.sanitize(`<span class="${patternClass}"> ${patternInfo.value}</span>`),
+      );
     }
   }
 };
@@ -307,7 +318,7 @@ const addFloatBarSkeletons = () => {
           listingNameBlocks.forEach((listingNameBlock) => {
             if (listingNameBlock.getAttribute('data-floatBar-added') === null
               || listingNameBlock.getAttribute('data-floatBar-added') === false) {
-              listingNameBlock.insertAdjacentHTML('beforeend', getFloatBarSkeleton('market'));
+              listingNameBlock.insertAdjacentHTML('beforeend', DOMPurify.sanitize(getFloatBarSkeleton('market')));
               listingNameBlock.setAttribute('data-floatBar-added', 'true');
 
               // adds "show technical" hide and show logic
@@ -409,11 +420,15 @@ const addPricesInOtherCurrencies = () => {
                 const priceWithFees = price + parseInt(listings[listingID].fee);
                 const currencyID = parseInt(listings[listingID].currencyid) - 2000;
 
-                listingRow.querySelector('.market_table_value').insertAdjacentHTML('beforeend',
-                  `<div class="originalPrice" data-currency-id="${currencyID}" data-converted="false">
+                listingRow.querySelector('.market_table_value').insertAdjacentHTML(
+                  'beforeend',
+                  DOMPurify.sanitize(
+                    `<div class="originalPrice" data-currency-id="${currencyID}" data-converted="false">
                            <div class="market_listing_price_original_after_fees" title="Price including market fees in the seller's currency">${priceWithFees}</div>
                            <div class="market_listing_price_original_before_fees" title="The amount the seller receives after fees in their own currency">${price}</div>
-                         </div>`);
+                         </div>`,
+                  ),
+                );
               }
             }
           },
@@ -467,12 +482,12 @@ const otherExteriors = `
 
 const descriptor = document.getElementById('largeiteminfo_item_descriptors');
 if (fullName.split('(')[1] !== undefined && descriptor !== null) {
-  descriptor.insertAdjacentHTML('beforeend', otherExteriors);
+  descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(otherExteriors));
 }
 
 // adds the in-browser inspect button to the context menu
 document.getElementById('market_action_popup_itemactions')
-  .insertAdjacentHTML('afterend', inBrowserInspectButtonPopupLink);
+  .insertAdjacentHTML('afterend', DOMPurify.sanitize(inBrowserInspectButtonPopupLink));
 
 // adds the proper link to the context menu before it gets clicked
 // needed because the context menu resets when clicked
@@ -494,7 +509,8 @@ document.getElementById('inbrowser_inspect').addEventListener('click', () => {
 const searchBar = document.querySelector('.market_listing_filter_contents');
 if (searchBar !== null) {
   searchBar.insertAdjacentHTML('beforeend',
-    `<div class="market_sorting">
+    DOMPurify.sanitize(
+      `<div class="market_sorting">
              <span class="market_listing_filter_searchhint">Sort on page by:</span>
              <select id="sortSelect">
                <option value="price_asc">Cheapest to most expensive</option>
@@ -504,7 +520,8 @@ if (searchBar !== null) {
                <option value="sticker_price_asc">Sticker price cheapest to most expensive</option>
                <option value="sticker_price_desc">Sticker price most expensive to cheapest</option>
              </select>
-           </div>`);
+           </div>`,
+    ));
 
   document.getElementById('sortSelect').addEventListener(
     'change',

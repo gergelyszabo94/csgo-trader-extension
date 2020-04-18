@@ -1,3 +1,5 @@
+import DOMPurify from 'dompurify';
+
 import {
   addPageControlEventListeners, getItemByAssetID,
   getAssetIDOfElement, makeItemColorful, addDopplerPhase,
@@ -181,7 +183,7 @@ const changeName = (name, color, link, dopplerInfo) => {
     : `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name}</a>`;
 
   document.querySelectorAll('.hover_item_name').forEach((nameElement) => {
-    nameElement.insertAdjacentHTML('afterend', newNameElement);
+    nameElement.insertAdjacentHTML('afterend', DOMPurify.sanitize(newNameElement));
     nameElement.classList.add('hidden');
   });
 };
@@ -190,7 +192,7 @@ const setFloatBarWithData = (floatInfo) => {
   const floatTechnicalElement = getDataFilledFloatTechnical(floatInfo);
 
   document.querySelectorAll('.floatTechnical').forEach((floatTechnical) => {
-    floatTechnical.innerHTML = floatTechnicalElement;
+    floatTechnical.innerHTML = DOMPurify.sanitize(floatTechnicalElement);
   });
 
   const position = (toFixedNoRounding(floatInfo.floatvalue, 2) * 100) - 2;
@@ -292,7 +294,7 @@ const addStartingAtPrice = (marketHashName) => {
           const volume = priceOverview.volume === undefined ? 'Unknown amount' : priceOverview.volume;
 
           marketActions.insertAdjacentHTML('afterbegin',
-            `<div class="startingAtVolume">
+            DOMPurify.sanitize(`<div class="startingAtVolume">
                      <div style="height: 24px;">
                         <a href="https://steamcommunity.com/market/listings/730/${marketHashName}">
                             View in Community Market
@@ -302,7 +304,7 @@ const addStartingAtPrice = (marketHashName) => {
                         Starting at: ${startingAt}<br>Volume: ${volume} sold in the last 24 hours<br>
                      </div>
                    </div>
-                `);
+                `));
         });
     }, (error) => { console.log(error); },
   );
@@ -331,7 +333,7 @@ const addRightSideElements = () => {
 
       // adds float bar, sticker info, nametag
       document.querySelectorAll('.item_desc_icon').forEach((icon) => {
-        icon.insertAdjacentHTML('afterend', upperModule);
+        icon.insertAdjacentHTML('afterend', DOMPurify.sanitize(upperModule));
       });
 
       // listens to click on "show technical"
@@ -353,7 +355,7 @@ const addRightSideElements = () => {
       // adds the lower module that includes tradability, countdown  and bookmarking
       document.querySelectorAll('#iteminfo1_item_actions, #iteminfo0_item_actions')
         .forEach((action) => {
-          action.insertAdjacentHTML('afterend', lowerModule);
+          action.insertAdjacentHTML('afterend', DOMPurify.sanitize(lowerModule));
         });
 
       document.querySelectorAll('.lowerModule').forEach((module) => {
@@ -387,13 +389,13 @@ const addRightSideElements = () => {
           // adds own sticker elements
           item.stickers.forEach((stickerInfo) => {
             document.querySelectorAll('.customStickers').forEach((customStickers) => {
-              customStickers.innerHTML += `
+              customStickers.innerHTML += DOMPurify.sanitize(`
                                     <div class="stickerSlot" data-tooltip="${stickerInfo.name} (${stickerInfo.price.display})">
                                         <a href="${stickerInfo.marketURL}" target="_blank">
                                             <img src="${stickerInfo.iconURL}" class="stickerIcon">
                                         </a>
                                     </div>
-                                    `;
+                                    `);
             });
           });
         }
@@ -407,18 +409,18 @@ const addRightSideElements = () => {
         // sets the tradability info
         document.querySelectorAll('.tradabilityDiv').forEach((tradabilityDiv) => {
           if (item.tradability === 'Tradable') {
-            tradabilityDiv.innerHTML = tradable;
+            tradabilityDiv.innerHTML = DOMPurify.sanitize(tradable);
             document.querySelectorAll('.countdown').forEach((countdown) => {
               countdown.style.display = 'none';
             });
           } else if (item.tradability === 'Not Tradable') {
-            tradabilityDiv.innerHTML = notTradable;
+            tradabilityDiv.innerHTML = DOMPurify.sanitize(notTradable);
             document.querySelectorAll('.countdown').forEach((countdown) => {
               countdown.style.display = 'none';
             });
           } else {
             const tradableAt = new Date(item.tradability).toString().split('GMT')[0];
-            tradabilityDiv.innerHTML = `<span class='not_tradable'>Tradable After ${tradableAt}</span>`;
+            tradabilityDiv.innerHTML = DOMPurify.sanitize(`<span class='not_tradable'>Tradable After ${tradableAt}</span>`);
             countDown(tradableAt);
             document.querySelectorAll('.countdown').forEach((countdown) => {
               countdown.style.display = 'block';
@@ -457,7 +459,7 @@ const addRightSideElements = () => {
 
               document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
                 .forEach((descriptor) => {
-                  descriptor.insertAdjacentHTML('afterend', inTradesInfoModule);
+                  descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(inTradesInfoModule));
                 });
             }
           }
@@ -538,7 +540,7 @@ const addRightSideElements = () => {
         if (item.exterior !== undefined) {
           document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
             .forEach((descriptor) => {
-              descriptor.insertAdjacentHTML('afterend', otherExteriors);
+              descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(otherExteriors));
             });
         }
 
@@ -580,7 +582,7 @@ const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
     return offerItem.assetid === item.assetid;
   });
   if (inOffers.length !== 0) {
-    itemElement.insertAdjacentHTML('beforeend', inOtherOfferIndicator);
+    itemElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(inOtherOfferIndicator));
   }
 };
 
@@ -606,11 +608,11 @@ const addPerItemInfo = () => {
             const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
             // adds tradability indicator
             if (item.tradability === 'Tradable') {
-              itemElement.insertAdjacentHTML('beforeend', '<div class="perItemDate tradable">T</div>');
+              itemElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize('<div class="perItemDate tradable">T</div>'));
             } else if (item.tradability !== 'Not Tradable') {
               itemElement.insertAdjacentHTML(
                 'beforeend',
-                `<div class="perItemDate not_tradable">${item.tradabilityShort}</div>`,
+                DOMPurify.sanitize(`<div class="perItemDate not_tradable">${item.tradabilityShort}</div>`),
               );
             }
 
@@ -697,7 +699,7 @@ const addListingRow = (item) => {
         </tr>`;
 
   document.getElementById('listingTable').querySelector('tbody')
-    .insertAdjacentHTML('beforeend', row);
+    .insertAdjacentHTML('beforeend', DOMPurify.sanitize(row));
   const listingRow = getListingRow(item.market_hash_name);
 
   listingRow.querySelector('.itemUserPrice').querySelector('input[type=text]')
@@ -965,8 +967,8 @@ const addFunctionBar = () => {
     const handPointer = chrome.runtime.getURL('images/hand-pointer-solid.svg');
     const table = chrome.runtime.getURL('images/table-solid.svg');
 
-    document.querySelector('.filter_ctn.inventory_filters').insertAdjacentHTML('afterend',
-      `<div id="inventory_function_bar">
+    document.querySelector('.filter_ctn.inventory_filters').insertAdjacentHTML('afterend', DOMPurify.sanitize(`
+            <div id="inventory_function_bar">
                     <div id="functionBarValues" class="functionBarRow">
                         <span id="selectedTotal"><span>Selected Items Value: </span><span id="selectedTotalValue">0.00</span></span>
                         <span id="inventoryTotal"><span>Total Inventory Value: </span><span id="inventoryTotalValue">0.00</span></span>
@@ -1050,7 +1052,7 @@ const addFunctionBar = () => {
                         <div id="massSellError" class="hidden not_tradable"></div>
                     </div>
                 </div>
-                `);
+                `));
 
     document.getElementById('sellButton').addEventListener('click',
       (event) => {
@@ -1347,24 +1349,28 @@ if (!isOwnInventory()) {
         if (header !== null) {
           if (result.apiKeyValid) {
             header.insertAdjacentHTML('beforeend',
-              `<div class="trade_partner_info_block"> 
+              DOMPurify.sanitize(
+                `<div class="trade_partner_info_block"> 
                         <div title="${dateToISODisplay(offerHistory.last_received)}">
                           Offers Received: ${offerHistory.offers_received} Last:  ${offerHistory.offers_received !== 0 ? prettyTimeAgo(offerHistory.last_received) : '-'}
                         </div>
                         <div title="${dateToISODisplay(offerHistory.last_sent)}">
                           Offers Sent: ${offerHistory.offers_sent} Last:  ${offerHistory.offers_sent !== 0 ? prettyTimeAgo(offerHistory.last_sent) : '-'}
                         </div>
-                     </div>`);
+                     </div>`,
+              ));
           } else {
             header.insertAdjacentHTML('beforeend',
-              `<div class="trade_partner_info_block" style="color: lightgray"> 
-                      <div>
-                        <b>CSGOTrader Extension:</b> It looks like you don't have your Steam API Key set yet.
-                      </div>
-                      <div>
-                        If you had that you would see partner offer history here. Check the <a href="https://csgotrader.app/release-notes#1.23">Release Notes</a> for more info.
-                      </div>
-                    </div>`);
+              DOMPurify.sanitize(
+                `<div class="trade_partner_info_block" style="color: lightgray"> 
+                        <div>
+                          <b>CSGOTrader Extension:</b> It looks like you don't have your Steam API Key set yet.
+                        </div>
+                        <div>
+                          If you had that you would see partner offer history here. Check the <a href="https://csgotrader.app/release-notes#1.23">Release Notes</a> for more info.
+                        </div>
+                      </div>`,
+              ));
           }
         }
       }

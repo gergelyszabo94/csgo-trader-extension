@@ -12,6 +12,7 @@ import { overrideShowTradeOffer } from 'utils/steamOverriding';
 import steamProfileStatuses from 'utils/static/steamProfileStatuses';
 import { injectStyle } from 'utils/injection';
 import { getUserSteamID, getProfileOwnerSteamID } from 'utils/steamID';
+import DOMPurify from 'dompurify';
 
 // ensures that we are on a profile page, it's not possible with simple regex
 if (document.querySelector('body').classList.contains('profile_page')) {
@@ -70,7 +71,7 @@ if (document.querySelector('body').classList.contains('profile_page')) {
       if (result.showReoccButton) {
         const reooccButton = '<div style="float: right; text-align: center; margin-top: 6px;" class="commentthread_user_avatar playerAvatar"><span class="btn_green_white_innerfade btn_small" id="reocc" style="padding: 5px;">Reocc<span></div>';
 
-        commentThreadEntryBox.insertAdjacentHTML('afterend', reooccButton);
+        commentThreadEntryBox.insertAdjacentHTML('afterend', DOMPurify.sanitize(reooccButton));
 
         document.getElementById('reocc').addEventListener('click', () => {
           // analytics
@@ -111,7 +112,10 @@ if (document.querySelector('body').classList.contains('profile_page')) {
             <img style="width: 16px; height: 16px" src="https://steamcommunity-a.akamaihd.net/public/images/profile/icon_tradeoffers.png">
             &nbsp; Show Offer History
         </a>`;
-    profileActionPopup.querySelector('.popup_body.popup_menu.shadow_content').insertAdjacentHTML('beforeend', copyPermalink + showOfferSummary);
+    profileActionPopup.querySelector('.popup_body.popup_menu.shadow_content').insertAdjacentHTML(
+      'beforeend',
+      DOMPurify.sanitize(copyPermalink + showOfferSummary),
+    );
 
     // this is a workaround to only being able to copy text
     // to the clipboard that is selected in a textbox
@@ -126,7 +130,7 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         type: 'event',
         action: 'ProfilePermalinkCopied',
       });
-      document.querySelector('body').insertAdjacentHTML('beforeend', textareaToCopy);
+      document.querySelector('body').insertAdjacentHTML('beforeend', DOMPurify.sanitize(textareaToCopy));
       const textAreaElement = document.getElementById('text_area_to_copy_permalink');
       textAreaElement.select();
       document.execCommand('copy');
@@ -178,8 +182,8 @@ if (document.querySelector('body').classList.contains('profile_page')) {
 
         const profileStatusElement = document.querySelector('.responsive_status_info');
 
-        if (profileStatusElement !== null) profileStatusElement.insertAdjacentHTML('beforeend', offerSummaryElement);
-        else document.querySelector('.profile_header_badgeinfo').insertAdjacentHTML('beforeend', offerSummaryElement);
+        if (profileStatusElement !== null) profileStatusElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(offerSummaryElement));
+        else document.querySelector('.profile_header_badgeinfo').insertAdjacentHTML('beforeend', DOMPurify.sanitize(offerSummaryElement));
 
         // for the context menu to go away
         document.querySelector('.playerAvatarAutoSizeInner').click();
@@ -197,7 +201,7 @@ if (document.querySelector('body').classList.contains('profile_page')) {
             </div>`;
 
         if (commentThreadEntryBox !== null) {
-          commentThreadEntryBox.insertAdjacentHTML('afterend', repButton);
+          commentThreadEntryBox.insertAdjacentHTML('afterend', DOMPurify.sanitize(repButton));
           document.getElementById('repper').addEventListener('click', () => {
             // analytics
             trackEvent({
