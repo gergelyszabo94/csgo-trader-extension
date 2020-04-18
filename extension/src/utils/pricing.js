@@ -276,14 +276,14 @@ const userPriceToProperPrice = (userInput) => {
 
 // converts cent integers to pretty formatted string
 const centsToSteamFormattedPrice = (centsPrice) => {
-  const intToFormattedScript = `document.querySelector('body').setAttribute('intToFormatted', v_currencyformat(${DOMPurify.sanitize(centsPrice)}, GetCurrencyCode(g_rgWalletInfo.wallet_currency)));`;
+  const intToFormattedScript = `document.querySelector('body').setAttribute('intToFormatted', v_currencyformat(${DOMPurify.sanitize(centsPrice.toString())}, GetCurrencyCode(g_rgWalletInfo.wallet_currency)));`;
   return injectScript(intToFormattedScript, true, 'intToFormattedScript', 'intToFormatted');
 };
 
 // to convert the formatted price string
 // that the price overview api call returns to cent int (for market listing)
 const steamFormattedPriceToCents = (formattedPrice) => {
-  const formattedToIntScript = `document.querySelector('body').setAttribute('formattedToInt', GetPriceValueAsInt('${DOMPurify.sanitize(formattedPrice)}'));`;
+  const formattedToIntScript = `document.querySelector('body').setAttribute('formattedToInt', GetPriceValueAsInt('${DOMPurify.sanitize(formattedPrice).toString()}'));`;
   return injectScript(formattedToIntScript, true, 'formattedToIntScript', 'formattedToInt');
 };
 

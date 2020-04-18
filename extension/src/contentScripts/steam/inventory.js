@@ -698,7 +698,11 @@ const addListingRow = (item) => {
                 </a>
             </td>
             <td class="itemAmount">1</td>
-            <td class="itemExtensionPrice cstSelected clickable" data-price-in-cents="${DOMPurify.sanitize(userPriceToProperPrice(item.price.price))}" data-listing-price="${DOMPurify.sanitize(getPriceAfterFees(userPriceToProperPrice(item.price.price)))}">
+            <td
+                class="itemExtensionPrice cstSelected clickable"
+                data-price-in-cents="${DOMPurify.sanitize(userPriceToProperPrice(item.price.price).toString())}"
+                data-listing-price="${DOMPurify.sanitize(getPriceAfterFees(userPriceToProperPrice(item.price.price)).toString())}"
+                >
                 ${DOMPurify.sanitize(item.price.display)}
             </td>
             <td class="itemStartingAt clickable">Loading...</td>
