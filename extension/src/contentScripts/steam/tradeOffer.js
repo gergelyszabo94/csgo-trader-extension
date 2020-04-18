@@ -68,7 +68,7 @@ const addInOtherOffersInfoBlock = (item, otherOfferItems) => {
 
 const getItemInfoFromPage = (who) => {
   const getItemsScript = `
-            inventory = User${who}.getInventory(730,2);
+            inventory = User${DOMPurify.sanitize(who)}.getInventory(730,2);
             assets = inventory.rgInventory;
             steamID = inventory.owner.strSteamId;
             trimmedAssets = [];

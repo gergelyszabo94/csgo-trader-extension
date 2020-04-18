@@ -560,7 +560,7 @@ if (searchResultsRows !== null) {
 
 chrome.storage.local.get('numberOfListings', (result) => {
   if (result.numberOfListings !== 10) {
-    const loadMoreMarketAssets = `g_oSearchResults.m_cPageSize = ${result.numberOfListings}; g_oSearchResults.GoToPage(0, true);`;
+    const loadMoreMarketAssets = `g_oSearchResults.m_cPageSize = ${DOMPurify.sanitize(result.numberOfListings)}; g_oSearchResults.GoToPage(0, true);`;
     injectScript(loadMoreMarketAssets, true, 'loadMoreMarketAssets', null);
   }
 });
