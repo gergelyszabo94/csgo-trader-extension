@@ -687,11 +687,20 @@ const removeUnselectedItemsFromTable = () => {
 };
 
 const addListingRow = (item) => {
+  // html tables are special beasts and validating a single row alone does not work as expected
+  // (tr and td tags get removed) more: https://github.com/cure53/DOMPurify/issues/324
+  // this is why not the whole thing is validated but the individual variables used
   const row = `
-        <tr data-assetids="${item.assetid}" data-sold-ids="" data-item-name="${item.market_hash_name}">
-            <td class="itemName"><a href="https://steamcommunity.com/market/listings/730/${item.market_hash_name}" target="_blank">${item.market_hash_name}</a></td>
+        <tr data-assetids="${DOMPurify.sanitize(item.assetid)}" data-sold-ids="" data-item-name="${DOMPurify.sanitize(item.market_hash_name)}">
+            <td class="itemName">
+                <a href="https://steamcommunity.com/market/listings/730/${DOMPurify.sanitize(item.market_hash_name)}" target="_blank">
+                    ${DOMPurify.sanitize(item.market_hash_name)}
+                </a>
+            </td>
             <td class="itemAmount">1</td>
-            <td class="itemExtensionPrice cstSelected clickable" data-price-in-cents="${userPriceToProperPrice(item.price.price)}" data-listing-price="${getPriceAfterFees(userPriceToProperPrice(item.price.price))}">${item.price.display}</td>
+            <td class="itemExtensionPrice cstSelected clickable" data-price-in-cents="${DOMPurify.sanitize(userPriceToProperPrice(item.price.price))}" data-listing-price="${DOMPurify.sanitize(getPriceAfterFees(userPriceToProperPrice(item.price.price)))}">
+                ${DOMPurify.sanitize(item.price.display)}
+            </td>
             <td class="itemStartingAt clickable">Loading...</td>
             <td class="itemQuickSell clickable">Loading...</td>
             <td class="itemInstantSell clickable">Loading...</td>
@@ -699,7 +708,7 @@ const addListingRow = (item) => {
         </tr>`;
 
   document.getElementById('listingTable').querySelector('tbody')
-    .insertAdjacentHTML('beforeend', DOMPurify.sanitize(row));
+    .insertAdjacentHTML('beforeend', row);
   const listingRow = getListingRow(item.market_hash_name);
 
   listingRow.querySelector('.itemUserPrice').querySelector('input[type=text]')
