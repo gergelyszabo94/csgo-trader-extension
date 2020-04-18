@@ -464,8 +464,10 @@ if (marketHistoryButton !== null) {
   );
 
   // inserts export tab content
-  document.getElementById('myListings').insertAdjacentHTML('beforeend', DOMPurify.sanitize(`
-        <div id="tabContentsMyMarketHistoryExport" class="my_listing_section market_content_block" style="display: none;">
+  document.getElementById('myListings').insertAdjacentHTML(
+    'beforeend',
+    DOMPurify.sanitize(
+      `<div id="tabContentsMyMarketHistoryExport" class="my_listing_section market_content_block" style="display: none;">
             <h1 class="historyExportTitle">Export Market History (<span class="numberOfHistoryEvents">0</span> history events)</h1> 
             <p>
                 Exporting your market history can be great if you want to analyse it in a spreadsheet for example.
@@ -499,7 +501,9 @@ if (marketHistoryButton !== null) {
                 <a class="hidden" id="market_history_download" href="" download="market_history.csv">Download market_history.csv</a> 
             </div>
         </div>    
-    `));
+    `,
+    ),
+  );
 
   const marketHistoryExportButton = document.getElementById('exportMarketHistory');
   const marketHistoryExportContent = document.getElementById('tabContentsMyMarketHistoryExport');

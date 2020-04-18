@@ -146,7 +146,7 @@ const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
   });
 
   if (inOtherOffers.length !== 0) {
-    itemElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(inOtherOfferIndicator));
+    itemElement.insertAdjacentHTML('beforeend', inOtherOfferIndicator);
     itemElement.querySelector('.inOtherOffer').addEventListener('click', () => {
       addInOtherOffersInfoBlock(item, inOtherOffers, offerElement);
     });

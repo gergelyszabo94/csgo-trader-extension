@@ -582,7 +582,7 @@ const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
     return offerItem.assetid === item.assetid;
   });
   if (inOffers.length !== 0) {
-    itemElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(inOtherOfferIndicator));
+    itemElement.insertAdjacentHTML('beforeend', (inOtherOfferIndicator));
   }
 };
 
@@ -967,12 +967,15 @@ const addFunctionBar = () => {
     const handPointer = chrome.runtime.getURL('images/hand-pointer-solid.svg');
     const table = chrome.runtime.getURL('images/table-solid.svg');
 
-    document.querySelector('.filter_ctn.inventory_filters').insertAdjacentHTML('afterend', DOMPurify.sanitize(`
-            <div id="inventory_function_bar">
-                    <div id="functionBarValues" class="functionBarRow">
-                        <span id="selectedTotal"><span>Selected Items Value: </span><span id="selectedTotalValue">0.00</span></span>
-                        <span id="inventoryTotal"><span>Total Inventory Value: </span><span id="inventoryTotalValue">0.00</span></span>
-                    </div>
+    document.querySelector('.filter_ctn.inventory_filters').insertAdjacentHTML(
+      'afterend',
+      // DOMPurify sanitization breaks the svg icons and
+      // the rest is static anyways, no external data here
+      `<div id="inventory_function_bar">
+                <div id="functionBarValues" class="functionBarRow">
+                    <span id="selectedTotal"><span>Selected Items Value: </span><span id="selectedTotalValue">0.00</span></span>
+                    <span id="inventoryTotal"><span>Total Inventory Value: </span><span id="inventoryTotalValue">0.00</span></span>
+                </div>
                     <div id="functionBarActions" class="functionBarRow">
                         <span id="selectMenu">
                             <img id ="selectButton" class="clickable" src="${handPointer}" title="Start Selecting Items">
@@ -1027,8 +1030,12 @@ const addFunctionBar = () => {
                     </div>
                     <div id="massListing" class="hidden">
                     <h2>Mass Market Listing - Select Items to Start</h2>
-                    <h3>Check out the <a href="https://csgotrader.app/release-notes#1.22" target="_blank">Release Notes</a> for a quick guide about the Mass Listing feature</h3>
-                    <div class="hidden not_tradable" id="currency_mismatch_warning">Warning: Your Steam Wallet currency and CSGO Trader currency are not the same. <span class="underline clickable" id="changeCurrency">Click here to fix this</span></div>
+                    <h3>
+                        Check out the <a href="https://csgotrader.app/release-notes#1.22" target="_blank">Release Notes</a> for a quick guide about the Mass Listing feature
+                    </h3>
+                    <div class="hidden not_tradable" id="currency_mismatch_warning">
+                    Warning: Your Steam Wallet currency and CSGO Trader currency are not the same.
+                    <span class="underline clickable" id="changeCurrency">Click here to fix this</span></div>
                         <table id="listingTable">
                             <thead>
                                 <tr>
@@ -1051,8 +1058,8 @@ const addFunctionBar = () => {
                         </span>
                         <div id="massSellError" class="hidden not_tradable"></div>
                     </div>
-                </div>
-                `));
+                </div>`,
+    );
 
     document.getElementById('sellButton').addEventListener('click',
       (event) => {
