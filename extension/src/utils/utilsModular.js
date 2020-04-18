@@ -8,6 +8,7 @@ import { getPrice } from 'utils/pricing';
 import collectionsWithSouvenirs from 'utils/static/collectionsWithSouvenirs';
 import { injectScript, injectStyle } from 'utils/injection';
 import { getUserSteamID } from 'utils/steamID';
+import DOMPurify from 'dompurify';
 
 const toFixedNoRounding = (number, n) => {
   const reg = new RegExp(`^-?\\d+(?:\\.\\d{0,${n}})?`, 'g');
@@ -54,7 +55,7 @@ const scrapeSteamAPIkey = () => {
     else return response.text();
   }).then((body) => {
     const html = document.createElement('html');
-    html.innerHTML = body;
+    html.innerHTML = DOMPurify.sanitize(body);
     let apiKey = null;
 
     try {
@@ -308,7 +309,7 @@ const goToInternalPage = (targetURL) => {
 
 const uuidv4 = () => {
   return (
-    // eslint-disable-next-line no-bitwise
+  // eslint-disable-next-line no-bitwise
     [1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) => (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> c / 4))).toString(16));
 };
 
@@ -376,10 +377,10 @@ const addDopplerPhase = (item, dopplerInfo) => {
     dopplerDiv.classList.add('dopplerPhase');
 
     switch (dopplerInfo.short) {
-      case 'SH': dopplerDiv.insertAdjacentHTML('beforeend', dopplerPhases.sh.element); break;
-      case 'RB': dopplerDiv.insertAdjacentHTML('beforeend', dopplerPhases.rb.element); break;
-      case 'EM': dopplerDiv.insertAdjacentHTML('beforeend', dopplerPhases.em.element); break;
-      case 'BP': dopplerDiv.insertAdjacentHTML('beforeend', dopplerPhases.bp.element); break;
+      case 'SH': dopplerDiv.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.sh.element)); break;
+      case 'RB': dopplerDiv.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.rb.element)); break;
+      case 'EM': dopplerDiv.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.em.element)); break;
+      case 'BP': dopplerDiv.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.bp.element)); break;
       default: dopplerDiv.innerText = dopplerInfo.short;
     }
 
@@ -402,25 +403,34 @@ const addSSTandExtIndicators = (itemElement, item, showStickerPrice) => {
   const stickerPrice = item.stickerPrice !== null ? item.stickerPrice.display : '';
   const showStickersClass = showStickerPrice ? '' : 'hidden';
 
-  itemElement.insertAdjacentHTML('beforeend', `
-        <div class='exteriorSTInfo'>
-            <span class="souvenirYellow">${souvenir}</span>
-            <span class="stattrakOrange">${stattrak}</span>
-            <span class="exteriorIndicator">${exterior}</span>
-        </div>
-        <div class="stickerPrice ${showStickersClass}">${stickerPrice}</div>`);
+  itemElement.insertAdjacentHTML(
+    'beforeend',
+    DOMPurify.sanitize(
+      `<div class='exteriorSTInfo'>
+              <span class="souvenirYellow">${souvenir}</span>
+              <span class="stattrakOrange">${stattrak}</span>
+              <span class="exteriorIndicator">${exterior}</span>
+             </div>
+             <div class="stickerPrice ${showStickersClass}">${stickerPrice}</div>`,
+    ),
+  );
 };
 
 const addFloatIndicator = (itemElement, floatInfo) => {
   if (floatInfo !== null && itemElement !== null
-    && itemElement.querySelector('div.floatIndicator') === null) {
-    itemElement.insertAdjacentHTML('beforeend', `<div class="floatIndicator">${toFixedNoRounding(floatInfo.floatvalue, 4)}</div>`);
+      && itemElement.querySelector('div.floatIndicator') === null) {
+    itemElement.insertAdjacentHTML(
+      'beforeend',
+      DOMPurify.sanitize(`<div class="floatIndicator">${toFixedNoRounding(floatInfo.floatvalue, 4)}</div>`),
+    );
   }
 };
 
 const addPriceIndicator = (itemElement, priceInfo) => {
   if (priceInfo !== undefined && priceInfo !== 'null' && priceInfo !== null) {
-    itemElement.insertAdjacentHTML('beforeend', `<div class='priceIndicator'>${priceInfo.display}</div>`);
+    itemElement.insertAdjacentHTML(
+      'beforeend', DOMPurify.sanitize(`<div class='priceIndicator'>${priceInfo.display}</div>`),
+    );
   }
 };
 
@@ -528,13 +538,17 @@ const warnOfScammer = (steamID, page) => {
       if (SteamRepInfo !== 'error') {
         if (SteamRepInfo.reputation.summary === 'SCAMMER') {
           const backgroundURL = chrome.runtime.getURL('images/scammerbackground.jpg');
-          document.querySelector('body').insertAdjacentHTML('afterbegin',
-            `<div style="background-color: red; color: white; padding: 5px; text-align: center;" class="scammerWarning">
-                                <span>
-                                    Watch out, this user was banned on SteamRep for scamming! You can check the details of what they did on 
-                                    <a style="color: black; font-weight: bold" href='https://steamrep.com/profiles/${steamID}'>steamrep.com</a>
-                                </span>
-                           </div>`);
+          document.querySelector('body').insertAdjacentHTML(
+            'afterbegin',
+            DOMPurify.sanitize(
+              `<div style="background-color: red; color: white; padding: 5px; text-align: center;" class="scammerWarning">
+                        <span>
+                            Watch out, this user was banned on SteamRep for scamming! You can check the details of what they did on 
+                            <a style="color: black; font-weight: bold" href='https://steamrep.com/profiles/${steamID}'>steamrep.com</a>
+                        </span>
+                     </div>`,
+            ),
+          );
 
           if (page === 'offer') document.querySelector('body').setAttribute('style', `background-image: url('${backgroundURL}')`);
           else if (page === 'profile') document.querySelector('.no_header.profile_page').setAttribute('style', `background-image: url('${backgroundURL}')`);
@@ -587,15 +601,19 @@ const removeOfferFromActiveOffers = (offerID) => {
 const addUpdatedRibbon = () => {
   chrome.storage.local.get(['showUpdatedRibbon'], ({ showUpdatedRibbon }) => {
     if (showUpdatedRibbon) {
-      document.querySelector('body').insertAdjacentHTML('afterbegin',
-        `<div id="extensionUpdatedRibbon">
-                     CSGO Trader Extension was updated to ${chrome.runtime.getManifest().version}. Check out the 
-                    <a href="https://csgotrader.app/changelog/" target="_blank" title="Open CSGOTrader Changelog">
-                        Changelog
-                    </a>
-                    for details
-                    <span class="clickable" id="closeUpdatedRibbon" title="Close ribbon until the next update">Close</span>
-                </div>`);
+      document.querySelector('body').insertAdjacentHTML(
+        'afterbegin',
+        DOMPurify.sanitize(
+          `<div id="extensionUpdatedRibbon">
+                       CSGO Trader Extension was updated to ${chrome.runtime.getManifest().version}. Check out the 
+                      <a href="https://csgotrader.app/changelog/" target="_blank" title="Open CSGOTrader Changelog">
+                          Changelog
+                      </a>
+                      for details
+                      <span class="clickable" id="closeUpdatedRibbon" title="Close ribbon until the next update">Close</span>
+                    </div>`,
+        ),
+      );
       document.getElementById('closeUpdatedRibbon').addEventListener('click', () => {
         chrome.storage.local.set({ showUpdatedRibbon: false }, () => {
           document.getElementById('extensionUpdatedRibbon').classList.add('hidden');

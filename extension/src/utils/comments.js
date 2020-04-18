@@ -2,6 +2,7 @@ import { trackEvent } from 'utils/analytics';
 import { goldenCommenters } from 'utils/goldening';
 import commentPatternsToReport from 'utils/static/commentPatternsToReport';
 import { getSessionID } from 'utils/utilsModular';
+import DOMPurify from 'dompurify';
 
 const handleReplyToCommentFunctionality = (event) => {
   // analytics
@@ -24,10 +25,14 @@ const handleReplyToCommentFunctionality = (event) => {
 const addReplyToCommentsFunctionality = () => {
   document.querySelectorAll('.commentthread_comment_actions').forEach((commentThread) => {
     if (commentThread.querySelector('.replybutton') === null) {
-      commentThread.insertAdjacentHTML('beforeend',
-        `<a class="actionlink replybutton" data-tooltip-text="Reply">
-                        <img style="height: 16px; width: 16px" src="${chrome.runtime.getURL('images/reply.png')}">
-                       </a>`);
+      commentThread.insertAdjacentHTML(
+        'beforeend',
+        DOMPurify.sanitize(
+          `<a class="actionlink replybutton" data-tooltip-text="Reply">
+                      <img style="height: 16px; width: 16px" src="${chrome.runtime.getURL('images/reply.png')}">
+                     </a>`,
+        ),
+      );
     }
   });
 
@@ -84,7 +89,7 @@ const hideAndReport = (type, pageID, commentID) => {
   }).then(() => {
     const commentContentElement = document.getElementById(`comment_content_${commentID}`);
     const originalCommentText = commentContentElement.innerText;
-    commentContentElement.innerHTML = `
+    commentContentElement.innerHTML = DOMPurify.sanitize(`
     <p>This comment was <b>automatically reported to Steam by CSGO Trader Extension</b> for being scam/spam.</p>
     <p>If you think it was misidentified please contact: <a href"=https://csgotrader.app/" target="_blank">support@csgotrader.app</a>.</p>
     <p>To set your own reporting rules or turn this feature off go to the options and look for
@@ -93,7 +98,7 @@ const hideAndReport = (type, pageID, commentID) => {
     <div>
         <span class="bb_spoiler">${originalCommentText}</span>
     </div>
-    `;
+    `);
   }).catch((err) => {
     console.log(err);
   });
@@ -107,7 +112,7 @@ const reportComments = (type, pageID) => {
 
       document.querySelectorAll('.commentthread_comment.responsive_body_text').forEach((comment) => {
         if (spamTextCheck.test(comment.querySelector('.commentthread_comment_text').innerText)
-          && !comment.classList.contains('hidden_post')) {
+            && !comment.classList.contains('hidden_post')) {
           // analytics
           trackEvent({
             type: 'event',
