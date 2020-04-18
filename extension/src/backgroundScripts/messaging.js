@@ -67,7 +67,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       fetch(getRequest).then((response) => {
         if (!response.ok) {
           console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-          sendResponse('error');
+          if (response.status === 500) sendResponse(response.status);
+          else sendResponse('error');
         } else return response.json();
       }).then((body) => {
         if (body.iteminfo.floatvalue !== undefined) {

@@ -17,7 +17,7 @@ const workOnFloatQueue = () => {
           workOnFloatQueue();
         } else {
           chrome.runtime.sendMessage({ fetchFloatInfo: job.inspectLink }, (response) => {
-            if (response !== 'error') {
+            if (response !== 'error' && response !== 500) {
               job.callBackFunction(job, response.floatInfo, floatQueue);
             }
             chrome.storage.local.get(['floatQueueActivity'], ({ floatQueueActivity }) => {
@@ -28,7 +28,15 @@ const workOnFloatQueue = () => {
                 setTimeout(() => {
                   workOnFloatQueue();
                 }, 5000);
+              } else if (response === 500) {
+                // csgofloat usually returns 500 when it is not able to access steam
+                // or when cloudflare throttles the requests
+                // let's have a longer delay in this case
+                setTimeout(() => {
+                  workOnFloatQueue();
+                }, 30000);
               } else workOnFloatQueue();
+
               chrome.storage.local.set({
                 floatQueueActivity: {
                   lastUsed: Date.now(),
