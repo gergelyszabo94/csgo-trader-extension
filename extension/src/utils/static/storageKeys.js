@@ -134,10 +134,11 @@ const storageKeys = {
     usedAt: '',
   },
   removeWebChatHeader: true,
+  discussionsToAutoBump: [],
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
   'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID', 'groupInvites',
-  'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules', 'floatQueueActivity'];
+  'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules', 'floatQueueActivity', 'discussionsToAutoBump'];
 
 export { storageKeys, nonSettingStorageKeys };
