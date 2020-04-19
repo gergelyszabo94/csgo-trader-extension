@@ -194,11 +194,13 @@ const populateFloatInfo = (listingID, floatInfo) => {
 
   // if for example the user has changed page and the listing is not there anymore
   if (listingElement !== null) {
-    listingElement.querySelector('.floatTechnical').innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo));
-
-    const position = ((toFixedNoRounding(floatInfo.floatvalue, 2) * 100) - 2);
-    listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
-    listingElement.querySelector('.floatDropTarget').innerText = toFixedNoRounding(floatInfo.floatvalue, 4);
+    const floatTechnical = listingElement.querySelector('.floatTechnical');
+    if (floatTechnical !== null) {
+      floatTechnical.innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo));
+      const position = ((toFixedNoRounding(floatInfo.floatvalue, 2) * 100) - 2);
+      listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
+      listingElement.querySelector('.floatDropTarget').innerText = toFixedNoRounding(floatInfo.floatvalue, 4);
+    }
   }
 };
 
@@ -534,7 +536,6 @@ if (searchBar !== null) {
 addFloatBarSkeletons();
 addPhasesIndicator();
 addStickers();
-addListingsToFloatQueue();
 addPricesInOtherCurrencies();
 
 const observer = new MutationObserver((mutations) => {
@@ -558,11 +559,13 @@ if (searchResultsRows !== null) {
   });
 }
 
-chrome.storage.local.get('numberOfListings', (result) => {
-  if (result.numberOfListings !== 10) {
-    const loadMoreMarketAssets = `g_oSearchResults.m_cPageSize = ${DOMPurify.sanitize(result.numberOfListings)}; g_oSearchResults.GoToPage(0, true);`;
+chrome.storage.local.get('numberOfListings', ({ numberOfListings }) => {
+  const numberOfListingsInt = parseInt(numberOfListings);
+  // eslint-disable-next-line no-restricted-globals
+  if (!isNaN(numberOfListingsInt) && numberOfListingsInt !== 10) {
+    const loadMoreMarketAssets = `g_oSearchResults.m_cPageSize = ${numberOfListingsInt}; g_oSearchResults.GoToPage(0, true);`;
     injectScript(loadMoreMarketAssets, true, 'loadMoreMarketAssets', null);
-  }
+  } else addListingsToFloatQueue();
 });
 
 reloadPageOnExtensionReload();
