@@ -150,9 +150,10 @@ const featureList = [
   'Sticker wear (condition percentage) in inventories and on the market',
   'Copy a user\'s permanent profile link (scammers often change their links automatically)',
   'Duplicate items count in inventories',
-  'Other small features, automations, conveniences',
   'Set rules to for incoming friend requests (accept, ignore or block on matching conditions',
   'See if an item is present in another offer',
+  'Auto-bump your Steam trading posts in groups and forums',
+  'Other small features, automations, conveniences',
 ];
 
 const featureShowcase = [
