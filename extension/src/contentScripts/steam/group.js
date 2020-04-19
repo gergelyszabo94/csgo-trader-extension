@@ -7,21 +7,23 @@ import { reportComments, addReplyToCommentsFunctionality, addCommentsMutationObs
 import { trackEvent } from 'utils/analytics';
 import { getGroupID } from 'utils/steamID';
 
-logExtensionPresence();
-addReplyToCommentsFunctionality();
-addCommentsMutationObserver();
-if (!window.location.href.includes('/announcements/')) reportComments('group', getGroupID());
-goldenCommenters();
-updateLoggedInUserInfo();
-addUpdatedRibbon();
-listenToLocationChange(goldenMemberNames);
-trackEvent({
-  type: 'pageview',
-  action: 'GroupView',
-});
+if (!window.location.href.includes('/discussions/')) {
+  logExtensionPresence();
+  addReplyToCommentsFunctionality();
+  addCommentsMutationObserver();
+  if (!window.location.href.includes('/announcements/')) reportComments('group', getGroupID());
+  goldenCommenters();
+  updateLoggedInUserInfo();
+  addUpdatedRibbon();
+  listenToLocationChange(goldenMemberNames);
+  trackEvent({
+    type: 'pageview',
+    action: 'GroupView',
+  });
 
-if (document.location.href.includes('/members')) goldenMemberNames();
+  if (document.location.href.includes('/members')) goldenMemberNames();
 
-setInterval(() => {
-  if (/#announcements|#comments/.test(window.location.href)) addReplyToCommentsFunctionality();
-}, 2000);
+  setInterval(() => {
+    if (/#announcements|#comments/.test(window.location.href)) addReplyToCommentsFunctionality();
+  }, 2000);
+}
