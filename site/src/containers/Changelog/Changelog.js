@@ -23,6 +23,21 @@ const changelog = (props) => {
                 This means that the latest version might not have rolled out to your platform yet when you are reading this.
             </Container>
             <Container className='buildingBlock'>
+                <h2>Version 2.2 - 2020-04-19</h2>
+                <ul>
+                    <li>
+                        Discussion posts (group, trading, forum) can now be set to be automatically bumped by the extension.
+                        <GithubIssueLink issueNumber={187}/>
+                        Check out the <Link to='/release-notes/#2.2'> Release Notes </Link> for more info.
+                    </li>
+                    <li>Added an option to remove the header in Steam Web Chat</li>
+                    <li>Tweaked the appearance the the warning message that gets added to scammers' profiles</li>
+                    <li>Security improvements that fix issues flagged by Mozilla</li>
+                    <li>Added usage data collection consent prompt for new Firefox users</li>
+                    <li>Fixed a bug that broke float value loading on market listings when a non-default number of listings were set to load per page</li>
+                </ul>
+            </Container>
+            <Container className='buildingBlock'>
                 <h2>Version 2.1.2 - 2020-04-14</h2>
                 <ul>
                     <li>Fixed the same issue as 2.1.1 but for all users (including users updating from 2.1 and 2.1.1</li>
