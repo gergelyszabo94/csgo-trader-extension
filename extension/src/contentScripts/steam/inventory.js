@@ -183,7 +183,7 @@ const changeName = (name, color, link, dopplerInfo) => {
     : `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name}</a>`;
 
   document.querySelectorAll('.hover_item_name').forEach((nameElement) => {
-    nameElement.insertAdjacentHTML('afterend', DOMPurify.sanitize(newNameElement));
+    nameElement.insertAdjacentHTML('afterend', DOMPurify.sanitize(newNameElement, { ADD_ATTR: ['target'] }));
     nameElement.classList.add('hidden');
   });
 };
@@ -192,7 +192,7 @@ const setFloatBarWithData = (floatInfo) => {
   const floatTechnicalElement = getDataFilledFloatTechnical(floatInfo);
 
   document.querySelectorAll('.floatTechnical').forEach((floatTechnical) => {
-    floatTechnical.innerHTML = DOMPurify.sanitize(floatTechnicalElement);
+    floatTechnical.innerHTML = DOMPurify.sanitize(floatTechnicalElement, { ADD_ATTR: ['target'] });
   });
 
   const position = (toFixedNoRounding(floatInfo.floatvalue, 2) * 100) - 2;
@@ -395,7 +395,7 @@ const addRightSideElements = () => {
                                             <img src="${stickerInfo.iconURL}" class="stickerIcon">
                                         </a>
                                     </div>
-                                    `);
+                                    `, { ADD_ATTR: ['target'] });
             });
           });
         }
@@ -459,7 +459,7 @@ const addRightSideElements = () => {
 
               document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
                 .forEach((descriptor) => {
-                  descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(inTradesInfoModule));
+                  descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(inTradesInfoModule, { ADD_ATTR: ['target'] }));
                 });
             }
           }
@@ -540,7 +540,7 @@ const addRightSideElements = () => {
         if (item.exterior !== undefined) {
           document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
             .forEach((descriptor) => {
-              descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(otherExteriors));
+              descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(otherExteriors, { ADD_ATTR: ['target'] }));
             });
         }
 

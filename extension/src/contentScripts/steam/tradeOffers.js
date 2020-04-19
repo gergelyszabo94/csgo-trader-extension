@@ -133,6 +133,7 @@ const addInOtherOffersInfoBlock = (item, otherOfferItems, offerElement) => {
             ${item.name} is also in:
             ${listString}
           </div>`,
+      { ADD_ATTR: ['target'] },
     ),
   );
 };
@@ -745,11 +746,13 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
         });
       }, (error) => {
         if (error === 'apiKeyInvalid') {
-          document.getElementById('tradeoffers_summary').innerHTML = DOMPurify.sanitize(`
-            <b>CSGOTrader Extension:</b> You don't have your Steam API key set.<br> 
-            For more functionality on this page you must set your API key.
-             You can do so by <a href="https://steamcommunity.com/dev/apikey" target="_blank">clicking here</a>.
-            Check what you are missing in the <a href="https://csgotrader.app/release-notes#1.20" target="_blank">Release Notes</a>`);
+          document.getElementById('tradeoffers_summary').innerHTML = DOMPurify.sanitize(
+            `<b>CSGOTrader Extension:</b> You don't have your Steam API key set.<br> 
+                     For more functionality on this page you must set your API key.
+                     You can do so by <a href="https://steamcommunity.com/dev/apikey" target="_blank">clicking here</a>.
+                     Check what you are missing in the <a href="https://csgotrader.app/release-notes#1.20" target="_blank">Release Notes</a>`,
+            { ADD_ATTR: ['target'] },
+          );
         }
       },
     );

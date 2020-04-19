@@ -61,6 +61,7 @@ const addInOtherOffersInfoBlock = (item, otherOfferItems) => {
                ${item.name} is also in:
                ${listString}
               </div>`,
+        { ADD_ATTR: ['target'] },
       ),
     );
   }

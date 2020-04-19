@@ -87,16 +87,17 @@ const hideAndReport = (type, pageID, commentID) => {
   }).then(() => {
     const commentContentElement = document.getElementById(`comment_content_${commentID}`);
     const originalCommentText = commentContentElement.innerText;
-    commentContentElement.innerHTML = DOMPurify.sanitize(`
-    <p>This comment was <b>automatically reported to Steam by CSGO Trader Extension</b> for being scam/spam.</p>
-    <p>If you think it was misidentified please contact: <a href"=https://csgotrader.app/" target="_blank">support@csgotrader.app</a>.</p>
-    <p>To set your own reporting rules or turn this feature off go to the options and look for
-    <b>"Flag scam comments"</b> and <b>"Your strings to report"</b> under General.
-    The comment said: </p>
-    <div>
-        <span class="bb_spoiler">${originalCommentText}</span>
-    </div>
-    `);
+    commentContentElement.innerHTML = DOMPurify.sanitize(
+      `<p>This comment was <b>automatically reported to Steam by CSGO Trader Extension</b> for being scam/spam.</p>
+            <p>If you think it was misidentified please contact: <a href"=https://csgotrader.app/" target="_blank">support@csgotrader.app</a>.</p>
+            <p>To set your own reporting rules or turn this feature off go to the options and look for
+            <b>"Flag scam comments"</b> and <b>"Your strings to report"</b> under General.
+            The comment said: </p>
+            <div>
+                <span class="bb_spoiler">${originalCommentText}</span>
+            </div>`,
+      { ADD_ATTR: ['target'] },
+    );
   }).catch((err) => {
     console.log(err);
   });

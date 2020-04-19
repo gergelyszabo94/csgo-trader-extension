@@ -612,6 +612,7 @@ const addUpdatedRibbon = () => {
                       for details
                       <span class="clickable" id="closeUpdatedRibbon" title="Close ribbon until the next update">Close</span>
                     </div>`,
+          { ADD_ATTR: ['target'] },
         ),
       );
       document.getElementById('closeUpdatedRibbon').addEventListener('click', () => {

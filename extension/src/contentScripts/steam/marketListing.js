@@ -43,7 +43,10 @@ if (originalInspectButton !== null) {
             ${chrome.i18n.getMessage('inspect_in_browser')}
         </span>
     </a>`;
-  document.getElementById('largeiteminfo_item_actions').insertAdjacentHTML('beforeend', DOMPurify.sanitize(inBrowserInspectButton));
+  document.getElementById('largeiteminfo_item_actions').insertAdjacentHTML(
+    'beforeend',
+    DOMPurify.sanitize(inBrowserInspectButton, { ADD_ATTR: ['target'] }),
+  );
   document.getElementById('inbrowser_inspect_button').addEventListener('click', () => {
     // analytics
     trackEvent({
@@ -177,6 +180,7 @@ const addStickers = () => {
                             <img src="${stickerInfo.iconURL}" class="stickerIcon">
                         </a>
                      </span>`,
+                  { ADD_ATTR: ['target'] },
                 ),
               );
             });
@@ -196,7 +200,7 @@ const populateFloatInfo = (listingID, floatInfo) => {
   if (listingElement !== null) {
     const floatTechnical = listingElement.querySelector('.floatTechnical');
     if (floatTechnical !== null) {
-      floatTechnical.innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo));
+      floatTechnical.innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo), { ADD_ATTR: ['target'] });
       const position = ((toFixedNoRounding(floatInfo.floatvalue, 2) * 100) - 2);
       listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
       listingElement.querySelector('.floatDropTarget').innerText = toFixedNoRounding(floatInfo.floatvalue, 4);
@@ -484,12 +488,12 @@ const otherExteriors = `
 
 const descriptor = document.getElementById('largeiteminfo_item_descriptors');
 if (fullName.split('(')[1] !== undefined && descriptor !== null) {
-  descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(otherExteriors));
+  descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(otherExteriors, { ADD_ATTR: ['target'] }));
 }
 
 // adds the in-browser inspect button to the context menu
 document.getElementById('market_action_popup_itemactions')
-  .insertAdjacentHTML('afterend', DOMPurify.sanitize(inBrowserInspectButtonPopupLink));
+  .insertAdjacentHTML('afterend', DOMPurify.sanitize(inBrowserInspectButtonPopupLink, { ADD_ATTR: ['target'] }));
 
 // adds the proper link to the context menu before it gets clicked
 // needed because the context menu resets when clicked

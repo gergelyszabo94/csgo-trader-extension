@@ -502,6 +502,7 @@ if (marketHistoryButton !== null) {
             </div>
         </div>    
     `,
+      { ADD_ATTR: ['target'] },
     ),
   );
 
