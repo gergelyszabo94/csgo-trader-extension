@@ -2,6 +2,7 @@ import { getPlayerBans, getPlayerSummaries } from 'utils/ISteamUser';
 import { actions, conditions, eventTypes } from 'utils/static/friendRequests';
 import { getSteamRepInfo } from 'utils/utilsModular';
 import getUserCSGOInventory from 'utils/getUserCSGOInventory';
+import DOMPurify from 'dompurify';
 
 const getFriendRequests = () => new Promise((resolve, reject) => {
   const getRequest = new Request('https://steamcommunity.com/my/friends/pending');
@@ -16,7 +17,7 @@ const getFriendRequests = () => new Promise((resolve, reject) => {
   }).then((body) => {
     if (body !== null) {
       const html = document.createElement('html');
-      html.innerHTML = body;
+      html.innerHTML = DOMPurify.sanitize(body);
       const receivedInvitesElement = html.querySelector('#search_results');
       const inviters = [];
 
@@ -52,7 +53,7 @@ const getGroupInvites = () => new Promise((resolve, reject) => {
   }).then((body) => {
     if (body !== null) {
       const html = document.createElement('html');
-      html.innerHTML = body;
+      html.innerHTML = DOMPurify.sanitize(body);
       const receivedInvitesElement = html.querySelector('#search_results');
       const invitedTo = [];
 
@@ -143,7 +144,7 @@ const getCommonFriends = (accountID) => new Promise((resolve, reject) => {
   }).then((body) => {
     if (body !== null) {
       const html = document.createElement('html');
-      html.innerHTML = body;
+      html.innerHTML = DOMPurify.sanitize(body);
       const friends = [];
       html.querySelectorAll('.friendBlock.persona').forEach((friendBlock) => {
         const nickNameBlock = friendBlock.querySelector('.nickname_block');

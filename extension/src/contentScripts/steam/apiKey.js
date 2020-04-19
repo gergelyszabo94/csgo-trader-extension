@@ -1,5 +1,6 @@
 import { logExtensionPresence, updateLoggedInUserInfo } from 'utils/utilsModular';
 import { trackEvent } from 'utils/analytics';
+import DOMPurify from 'dompurify';
 
 logExtensionPresence();
 updateLoggedInUserInfo();
@@ -21,17 +22,25 @@ chrome.storage.local.get('autoSetSteamAPIKey', (result) => {
       chrome.runtime.sendMessage({ apikeytovalidate: apiKey }, (response) => {
         if (response.valid) {
           chrome.storage.local.set({ steamAPIKey: apiKey, apiKeyValid: true }, () => {
-            document.getElementById('editForm').insertAdjacentHTML('afterend',
-              `<div style="color:green; margin-top: 10px;">
-                                        Added API key to CSGOTrader Extension
-                                   </div>`);
+            document.getElementById('editForm').insertAdjacentHTML(
+              'afterend',
+              DOMPurify.sanitize(
+                `<div style="color:green; margin-top: 10px;">
+                        Added API key to CSGOTrader Extension
+                    </div>`,
+              ),
+            );
             console.log('api key valid');
           });
         } else {
-          document.getElementById('editForm').insertAdjacentHTML('afterend',
-            `<div style="color:red; margin-top: 10px;">
-                                    CSGOTrader Extension could not validate your API key, please try again.
-                              </div>`);
+          document.getElementById('editForm').insertAdjacentHTML(
+            'afterend',
+            DOMPurify.sanitize(
+              `<div style="color:red; margin-top: 10px;">
+                    CSGOTrader Extension could not validate your API key, please try again.
+                  </div>`,
+            ),
+          );
           console.log('API key could not be validated');
         }
       });

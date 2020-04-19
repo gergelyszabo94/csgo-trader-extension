@@ -18,6 +18,7 @@ import { injectScript, injectStyle } from 'utils/injection';
 import { getProperStyleSteamIDFromOfferStyle, getUserSteamID } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
+import DOMPurify from 'dompurify';
 
 const userID = getUserSteamID();
 let activePage = 'incoming_offers';
@@ -125,11 +126,16 @@ const addInOtherOffersInfoBlock = (item, otherOfferItems, offerElement) => {
 
   const listString = `<div>${otherOffers.join('')}</div>`;
 
-  offerFooter.insertAdjacentHTML('afterbegin',
-    `<div class="trade_partner_info_block in_other_offer" style="color: lightgray"> 
-               ${item.name} is also in:
-               ${listString}
-              </div>`);
+  offerFooter.insertAdjacentHTML(
+    'afterbegin',
+    DOMPurify.sanitize(
+      `<div class="trade_partner_info_block in_other_offer" style="color: lightgray"> 
+            ${item.name} is also in:
+            ${listString}
+          </div>`,
+      { ADD_ATTR: ['target'] },
+    ),
+  );
 };
 
 const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
@@ -317,16 +323,21 @@ const addTotals = (offers, items) => {
           totalProfit += profitOrLoss;
           numberOfProfitableOffers += 1;
         }
-        offerElement.querySelector('.tradeoffer_header').insertAdjacentHTML('beforeend', `
-                    <span class="profitOrLoss" data-profit-or-loss="${profitOrLoss}" data-p-l-percentage="${PLPercentage}" data-updated="${offer.time_updated}">
-                    ${prettyPrintPrice(result.currency, (profitOrLoss).toFixed(2))}</span>`);
+        offerElement.querySelector('.tradeoffer_header').insertAdjacentHTML(
+          'beforeend',
+          DOMPurify.sanitize(
+            `<span class="profitOrLoss" data-profit-or-loss="${profitOrLoss}" data-p-l-percentage="${PLPercentage}" data-updated="${offer.time_updated}">
+                    ${prettyPrintPrice(result.currency, (profitOrLoss).toFixed(2))}
+                </span>`,
+          ),
+        );
       }
     });
 
-    document.getElementById('tradeoffers_summary').innerHTML = `
+    document.getElementById('tradeoffers_summary').innerHTML = DOMPurify.sanitize(`
             <div id="active_offers_count"><b>Active Offers: </b>${activeOfferCount}</div>
             <div id="profitable_offers_count"><b>Profitable Offers: </b>${numberOfProfitableOffers}</div>
-            <div id="potential_profit"><b>Potential profit: </b>${prettyPrintPrice(result.currency, (totalProfit).toFixed(2))}</div>`;
+            <div id="potential_profit"><b>Potential profit: </b>${prettyPrintPrice(result.currency, (totalProfit).toFixed(2))}</div>`);
   });
 };
 
@@ -412,11 +423,11 @@ const addPartnerOfferSummary = (offers, nthRun) => {
                 const receivedElement = offerHistorySummary.offers_received === 0
                   ? '<span  class="offerHistory">Received: 0</span>'
                   : `<span class="offerHistory">Received: ${offerHistorySummary.offers_received} Last: ${prettyTimeAgo(offerHistorySummary.last_received)}</span>`;
-                offerElement.querySelector('.tradeoffer_items.primary').insertAdjacentHTML('beforeend', receivedElement);
+                offerElement.querySelector('.tradeoffer_items.primary').insertAdjacentHTML('beforeend', DOMPurify.sanitize(receivedElement));
 
                 let sentElement = `<span  class="offerHistory">Sent: ${offerHistorySummary.offers_sent} Last: ${prettyTimeAgo(offerHistorySummary.last_sent)}</span>`;
                 if (offerHistorySummary.offers_sent === 0) sentElement = '<span  class="offerHistory">Sent: 0</span>';
-                offerElement.querySelector('.tradeoffer_items.secondary').insertAdjacentHTML('beforeend', sentElement);
+                offerElement.querySelector('.tradeoffer_items.secondary').insertAdjacentHTML('beforeend', DOMPurify.sanitize(sentElement));
               }
             }
           });
@@ -586,8 +597,10 @@ if (activePage === 'incoming_offers') {
     if (isOfferActive(offerElement)) {
       const offerID = getOfferIDFromElement(offerElement);
       const partnerID = getProperStyleSteamIDFromOfferStyle(offerElement.querySelector('.playerAvatar').getAttribute('data-miniprofile'));
-      offerElement.querySelector('.tradeoffer_footer_actions').insertAdjacentHTML('afterbegin',
-        `<a href="javascript:AcceptTradeOffer( '${offerID}', '${partnerID}' );" class="whiteLink">Accept Trade</a> | `);
+      offerElement.querySelector('.tradeoffer_footer_actions').insertAdjacentHTML(
+        'afterbegin',
+        `<a href="javascript:AcceptTradeOffer( '${DOMPurify.sanitize(offerID)}', '${DOMPurify.sanitize(partnerID)}' );" class="whiteLink">Accept Trade</a> | `,
+      );
     }
   });
 }
@@ -658,12 +671,16 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
   if (tradeOffersList !== null && document.querySelector('.profile_fatalerror') === null) {
     updateOfferHistoryData();
 
-    tradeOffersList.insertAdjacentHTML('afterbegin', `
-        <div id="tradeoffers_summary" class="trade_offers_module">Waiting for Steam API...</div>
-        <div id="tradeOffersSortingMenu" class="trade_offers_module hidden">
-            <span>Sorting: </span>
-            <select id="offerSortingMethod"/>
-        </div>`);
+    tradeOffersList.insertAdjacentHTML(
+      'afterbegin',
+      DOMPurify.sanitize(
+        `<div id="tradeoffers_summary" class="trade_offers_module">Waiting for Steam API...</div>
+            <div id="tradeOffersSortingMenu" class="trade_offers_module hidden">
+                <span>Sorting: </span>
+                <select id="offerSortingMethod"/>
+            </div>`,
+      ),
+    );
 
     // populates and adds listener to sorting select
     const sortingSelect = document.getElementById('offerSortingMethod');
@@ -718,7 +735,7 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
             addPartnerOfferSummary(offers.trade_offers_sent, 0);
           }
 
-          document.getElementById('tradeoffers_summary').innerHTML = '<b>Trade offer summary:</b>';
+          document.getElementById('tradeoffers_summary').innerHTML = DOMPurify.sanitize('<b>Trade offer summary:</b>');
 
           chrome.storage.local.get('tradeOffersSortingMode', ({ tradeOffersSortingMode }) => {
             document.querySelector(`#offerSortingMethod [value="${tradeOffersSortingMode}"]`).selected = true;
@@ -729,11 +746,13 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
         });
       }, (error) => {
         if (error === 'apiKeyInvalid') {
-          document.getElementById('tradeoffers_summary').innerHTML = `
-            <b>CSGOTrader Extension:</b> You don't have your Steam API key set.<br> 
-            For more functionality on this page you must set your API key.
-             You can do so by <a href="https://steamcommunity.com/dev/apikey" target="_blank">clicking here</a>.
-            Check what you are missing in the <a href="https://csgotrader.app/release-notes#1.20" target="_blank">Release Notes</a>`;
+          document.getElementById('tradeoffers_summary').innerHTML = DOMPurify.sanitize(
+            `<b>CSGOTrader Extension:</b> You don't have your Steam API key set.<br> 
+                     For more functionality on this page you must set your API key.
+                     You can do so by <a href="https://steamcommunity.com/dev/apikey" target="_blank">clicking here</a>.
+                     Check what you are missing in the <a href="https://csgotrader.app/release-notes#1.20" target="_blank">Release Notes</a>`,
+            { ADD_ATTR: ['target'] },
+          );
         }
       },
     );

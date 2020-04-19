@@ -1,5 +1,6 @@
 import { pricingProviders, currencies } from 'utils/static/pricing';
 import { injectScript } from 'utils/injection';
+import DOMPurify from 'dompurify';
 
 const priceQueue = {
   active: false,
@@ -16,7 +17,9 @@ const getSteamWalletInfo = () => {
 };
 
 const getSteamWalletCurrency = () => {
-  const getCurrencyScript = `document.querySelector('body').setAttribute('steamWalletCurrency', GetCurrencyCode(${getSteamWalletInfo().wallet_currency}));`;
+  const getCurrencyScript = `
+  document.querySelector('body').setAttribute('steamWalletCurrency', GetCurrencyCode(${DOMPurify.sanitize(getSteamWalletInfo().wallet_currency)}));
+  `;
   return injectScript(getCurrencyScript, true, 'steamWalletCurrencyScript', 'steamWalletCurrency');
 };
 
@@ -247,7 +250,9 @@ const prettyPrintPrice = (currency, price) => {
 const getPriceAfterFees = (priceBeforeFees) => {
   // TODO get the publisher fee dynamically
   const priceAfterFeesScript = `
-        document.querySelector('body').setAttribute('priceAfterFees', ${priceBeforeFees} - CalculateFeeAmount( ${priceBeforeFees}, g_rgWalletInfo['wallet_publisher_fee_percent_default'] ).fees);`;
+        document.querySelector('body').setAttribute(
+          'priceAfterFees',
+          ${DOMPurify.sanitize(priceBeforeFees)} - CalculateFeeAmount( ${DOMPurify.sanitize(priceBeforeFees)}, g_rgWalletInfo['wallet_publisher_fee_percent_default'] ).fees);`;
   return parseInt(injectScript(priceAfterFeesScript, true, 'priceAfterFeesScript', 'priceAfterFees'));
 };
 
@@ -271,14 +276,14 @@ const userPriceToProperPrice = (userInput) => {
 
 // converts cent integers to pretty formatted string
 const centsToSteamFormattedPrice = (centsPrice) => {
-  const intToFormattedScript = `document.querySelector('body').setAttribute('intToFormatted', v_currencyformat(${centsPrice}, GetCurrencyCode(g_rgWalletInfo.wallet_currency)));`;
+  const intToFormattedScript = `document.querySelector('body').setAttribute('intToFormatted', v_currencyformat(${DOMPurify.sanitize(centsPrice.toString())}, GetCurrencyCode(g_rgWalletInfo.wallet_currency)));`;
   return injectScript(intToFormattedScript, true, 'intToFormattedScript', 'intToFormatted');
 };
 
 // to convert the formatted price string
 // that the price overview api call returns to cent int (for market listing)
 const steamFormattedPriceToCents = (formattedPrice) => {
-  const formattedToIntScript = `document.querySelector('body').setAttribute('formattedToInt', GetPriceValueAsInt('${formattedPrice}'));`;
+  const formattedToIntScript = `document.querySelector('body').setAttribute('formattedToInt', GetPriceValueAsInt('${DOMPurify.sanitize(formattedPrice).toString()}'));`;
   return injectScript(formattedToIntScript, true, 'formattedToIntScript', 'formattedToInt');
 };
 

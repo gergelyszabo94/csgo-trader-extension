@@ -1,3 +1,5 @@
+import DOMPurify from 'dompurify';
+
 import {
   reloadPageOnExtensionReload, logExtensionPresence,
   updateLoggedInUserInfo, addUpdatedRibbon,
@@ -73,9 +75,9 @@ const addStartingAtPriceInfoToPage = (listingID, lowestPrice) => {
       const cheapest = listedPrice === lowestPrice ? 'cheapest' : 'not_cheapest';
 
       priceElement.insertAdjacentHTML('beforeend',
-        `<div class="startingAtPrice ${cheapest}" title="This is the price of the lowest listing right now.">
+        DOMPurify.sanitize(`<div class="startingAtPrice ${cheapest}" title="This is the price of the lowest listing right now.">
                 ${lowestPrice}
-             </div>`);
+             </div>`));
     }
   }
 };
@@ -90,10 +92,10 @@ const addListingStartingAtPricesAndTotal = (sellListings) => {
       // adds selection checkboxes
       const priceElement = listingRow.querySelector('.market_listing_right_cell.market_listing_my_price');
       if (priceElement !== null) {
-        priceElement.insertAdjacentHTML('beforebegin', `
+        priceElement.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(`
             <div class="market_listing_right_cell market_listing_edit_buttons">
                 <input type="checkbox">
-            </div>`);
+            </div>`));
       }
 
       const nameElement = listingRow.querySelector('.market_listing_item_name_link');
@@ -127,15 +129,19 @@ const addListingStartingAtPricesAndTotal = (sellListings) => {
   const listingsTotal = document.getElementById('listingsTotal');
   if (listingsTotal !== null) listingsTotal.remove();
 
-  sellListings.insertAdjacentHTML('afterend',
-    `<div id='listingsTotal' style="margin: -15px 0 15px;">
-                   Total listed price: ${centsToSteamFormattedPrice(totalPrice)} You will receive: ${centsToSteamFormattedPrice(totalYouReceivePrice)} (on this page)
-               </div>`);
+  sellListings.insertAdjacentHTML(
+    'afterend',
+    DOMPurify.sanitize(
+      `<div id='listingsTotal' style="margin: -15px 0 15px;">
+                Total listed price: ${centsToSteamFormattedPrice(totalPrice)} You will receive: ${centsToSteamFormattedPrice(totalYouReceivePrice)} (on this page)
+            </div>`,
+    ),
+  );
 };
 
 const extractHistoryEvents = (resultHtml) => {
   const tempEl = document.createElement('div');
-  tempEl.innerHTML = resultHtml;
+  tempEl.innerHTML = DOMPurify.sanitize(resultHtml);
 
   const eventsToReturn = [];
 
@@ -227,10 +233,14 @@ const addHighestBuyOrderPrice = (job, highestBuyOrder) => {
     const orderPrice = parseInt(steamFormattedPriceToCents(priceElement.innerText));
     const highest = orderPrice >= highestBuyOrder ? 'highest' : 'not_highest';
 
-    priceElement.insertAdjacentHTML('beforeend',
-      `<div class="${highest}" title="This is the price of the highest buy order right now.">
+    priceElement.insertAdjacentHTML(
+      'beforeend',
+      DOMPurify.sanitize(
+        `<div class="${highest}" title="This is the price of the highest buy order right now.">
                 ${priceOfHighestOrder}
-             </div>`);
+             </div>`,
+      ),
+    );
   }
 };
 
@@ -279,10 +289,10 @@ if (sellListings !== null) {
     removeColumnHeader.classList.add('clickable');
 
     // adds remove selected column header/button
-    removeColumnHeader.insertAdjacentHTML('afterend', `
+    removeColumnHeader.insertAdjacentHTML('afterend', DOMPurify.sanitize(`
         <span id="removeSelected" class="market_listing_right_cell market_listing_edit_buttons placeholder clickable" title="Click to remove the selected listings.">
             REMOVE
-        </span>`);
+        </span>`));
 
     document.getElementById('removeSelected').addEventListener('click', () => {
       sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((listingRow) => {
@@ -328,10 +338,10 @@ if (orders) {
       // adds selection checkboxes
       const priceElement = orderRow.querySelector('.market_listing_right_cell.market_listing_my_price');
       if (priceElement !== null) {
-        priceElement.insertAdjacentHTML('beforebegin', `
+        priceElement.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(`
             <div class="market_listing_right_cell market_listing_edit_buttons">
                 <input type="checkbox">
-            </div>`);
+            </div>`));
       }
 
       const nameElement = orderRow.querySelector('.market_listing_item_name_link');
@@ -358,10 +368,14 @@ if (orders) {
       }
     });
 
-    orders.insertAdjacentHTML('afterend',
-      `<div style="margin: -15px 0 15px;">
+    orders.insertAdjacentHTML(
+      'afterend',
+      DOMPurify.sanitize(
+        `<div style="margin: -15px 0 15px;">
                    Orders placed total value: ${centsToSteamFormattedPrice(totalOrderAmount)}
-               </div>`);
+               </div>`,
+      ),
+    );
 
     const tableHeader = orders.querySelector('.market_listing_table_header');
     const cancelColumnHeader = tableHeader.querySelector('.market_listing_right_cell.market_listing_edit_buttons.placeholder');
@@ -371,10 +385,18 @@ if (orders) {
     cancelColumnHeader.classList.add('clickable');
 
     // adds cancel selected column header/button
-    cancelColumnHeader.insertAdjacentHTML('afterend', `
-        <span id="cancelSelected" class="market_listing_right_cell market_listing_edit_buttons placeholder clickable" title="Click to cancel the selected buy orders.">
-            CANCEL
-        </span>`);
+    cancelColumnHeader.insertAdjacentHTML(
+      'afterend',
+      DOMPurify.sanitize(
+        `<span
+                id="cancelSelected"
+                class="market_listing_right_cell market_listing_edit_buttons placeholder clickable"
+                title="Click to cancel the selected buy orders."
+              >
+                CANCEL
+              </span>`,
+      ),
+    );
 
     document.getElementById('cancelSelected').addEventListener('click', () => {
       orderRows.forEach((orderRow) => {
@@ -432,15 +454,20 @@ const myListingsButton = document.getElementById('tabMyListings');
 
 if (marketHistoryButton !== null) {
   // inserts export tab button
-  marketHistoryButton.insertAdjacentHTML('afterend', `
-        <a id="tabMyMarketHistoryExport" class="market_tab_well_tab market_tab_well_tab_inactive" href="#">
-            <span class="market_tab_well_tab_contents">Export Market History</span>
-        </a>
-    `);
+  marketHistoryButton.insertAdjacentHTML(
+    'afterend',
+    DOMPurify.sanitize(
+      `<a id="tabMyMarketHistoryExport" class="market_tab_well_tab market_tab_well_tab_inactive" href="#">
+                <span class="market_tab_well_tab_contents">Export Market History</span>
+            </a>`,
+    ),
+  );
 
   // inserts export tab content
-  document.getElementById('myListings').insertAdjacentHTML('beforeend', `
-        <div id="tabContentsMyMarketHistoryExport" class="my_listing_section market_content_block" style="display: none;">
+  document.getElementById('myListings').insertAdjacentHTML(
+    'beforeend',
+    DOMPurify.sanitize(
+      `<div id="tabContentsMyMarketHistoryExport" class="my_listing_section market_content_block" style="display: none;">
             <h1 class="historyExportTitle">Export Market History (<span class="numberOfHistoryEvents">0</span> history events)</h1> 
             <p>
                 Exporting your market history can be great if you want to analyse it in a spreadsheet for example.
@@ -474,7 +501,10 @@ if (marketHistoryButton !== null) {
                 <a class="hidden" id="market_history_download" href="" download="market_history.csv">Download market_history.csv</a> 
             </div>
         </div>    
-    `);
+    `,
+      { ADD_ATTR: ['target'] },
+    ),
+  );
 
   const marketHistoryExportButton = document.getElementById('exportMarketHistory');
   const marketHistoryExportContent = document.getElementById('tabContentsMyMarketHistoryExport');

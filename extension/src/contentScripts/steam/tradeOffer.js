@@ -1,3 +1,5 @@
+import DOMPurify from 'dompurify';
+
 import {
   getItemByAssetID, getAssetIDOfElement, addDopplerPhase,
   makeItemColorful, addSSTandExtIndicators, addPriceIndicator,
@@ -52,17 +54,22 @@ const addInOtherOffersInfoBlock = (item, otherOfferItems) => {
 
     const listString = `<div>${otherOffers.join('')}</div>`;
 
-    headline.insertAdjacentHTML('afterend',
-      `<div class="trade_partner_info_block in_other_offer" style="color: lightgray"> 
+    headline.insertAdjacentHTML(
+      'afterend',
+      DOMPurify.sanitize(
+        `<div class="trade_partner_info_block in_other_offer" style="color: lightgray"> 
                ${item.name} is also in:
                ${listString}
-              </div>`);
+              </div>`,
+        { ADD_ATTR: ['target'] },
+      ),
+    );
   }
 };
 
 const getItemInfoFromPage = (who) => {
   const getItemsScript = `
-            inventory = User${who}.getInventory(730,2);
+            inventory = User${DOMPurify.sanitize(who)}.getInventory(730,2);
             assets = inventory.rgInventory;
             steamID = inventory.owner.strSteamId;
             trimmedAssets = [];
@@ -238,7 +245,9 @@ const addInTradeTotals = (whose) => {
     if (whose === 'your') itemsTextDiv = document.getElementById('trade_yours').querySelector('h2.ellipsis');
     else itemsTextDiv = document.getElementById('trade_theirs').querySelector('.offerheader').querySelector('h2');
     chrome.storage.local.get('currency', (result) => {
-      itemsTextDiv.innerHTML = `${itemsTextDiv.innerText.split(':')[0]} (<span id="${whose}InTradeTotal">${prettyPrintPrice(result.currency, inTradeTotal)}</span>):`;
+      itemsTextDiv.innerHTML = DOMPurify.sanitize(
+        `${itemsTextDiv.innerText.split(':')[0]} (<span id="${whose}InTradeTotal">${prettyPrintPrice(result.currency, inTradeTotal)}</span>):`,
+      );
     });
   } else {
     chrome.storage.local.get('currency', (result) => {
@@ -460,8 +469,10 @@ const getInventories = () => {
 
 const addAPartysFunctionBar = (whose) => {
   // inserts "your" function bar
-  document.getElementById(`trade_${whose}s`).querySelector('.offerheader').insertAdjacentHTML('afterend', `
-            <div id="offer_${whose}_function_bar">
+  document.getElementById(`trade_${whose}s`).querySelector('.offerheader').insertAdjacentHTML(
+    'afterend',
+    DOMPurify.sanitize(
+      `<div id="offer_${whose}_function_bar">
                 <div id="offer_${whose}_sorting">
                     <span>Sorting:</span>
                     <select id="offer_${whose}_sorting_mode"></select>
@@ -474,8 +485,9 @@ const addAPartysFunctionBar = (whose) => {
                     <input type="number" id="remove_${whose}_number_of_selected" class="keyNumberInput">
                     <span class="offer_action clickable" id="remove_${whose}_selected" title="Select items with Ctrl + Right Click">Selected</span>
                 </div>
-            </div>
-            `);
+            </div>`,
+    ),
+  );
 
   // remove your/their everything functionality
   document.getElementById(`remove_${whose}_everything_button`).addEventListener('click', () => {
@@ -531,23 +543,26 @@ const addFunctionBars = () => {
   if (document.getElementById('responsivetrade_itemfilters') !== null) {
     if (document.getElementById('offer_function_bar') === null) {
       // inserts left side function bar
-      document.getElementById('responsivetrade_itemfilters').insertAdjacentHTML('beforebegin', `
-            <div id="offer_function_bar">
-                <div id="offer_sorting">
-                    <span>Sorting:</span>
-                    <select id="offer_sorting_mode"></select>
-                </div>
-                <div id="offer_take">
-                    <span>Take: </span>
-                    <span class="offer_action clickable" id="take_all_button">All page</span>
-                    <span class="offer_action clickable" id="take_everything_button">Everything</span>
-                    <input type="number" id="take_number_of_keys" class="keyNumberInput">
-                    <span class="offer_action clickable" id="take_keys">Keys</span>
-                    <input type="number" id="take_number_of_selected" class="keyNumberInput">
-                    <span class="offer_action clickable" id="take_selected" title="Select items with Ctrl + Right Click">Selected</span>
-                </div>
-            </div>
-            `);
+      document.getElementById('responsivetrade_itemfilters').insertAdjacentHTML(
+        'beforebegin',
+        DOMPurify.sanitize(
+          `<div id="offer_function_bar">
+                  <div id="offer_sorting">
+                      <span>Sorting:</span>
+                      <select id="offer_sorting_mode"></select>
+                  </div>
+                  <div id="offer_take">
+                      <span>Take: </span>
+                      <span class="offer_action clickable" id="take_all_button">All page</span>
+                      <span class="offer_action clickable" id="take_everything_button">Everything</span>
+                      <input type="number" id="take_number_of_keys" class="keyNumberInput">
+                      <span class="offer_action clickable" id="take_keys">Keys</span>
+                      <input type="number" id="take_number_of_selected" class="keyNumberInput">
+                      <span class="offer_action clickable" id="take_selected" title="Select items with Ctrl + Right Click">Selected</span>
+                  </div>
+                </div>`,
+        ),
+      );
 
       // take all from page functionality
       document.getElementById('take_all_button').addEventListener('click', () => {
@@ -696,17 +711,25 @@ const addPartnerOfferSummary = () => {
 
       if (headline !== null) {
         if (result.apiKeyValid) {
-          headline.insertAdjacentHTML('afterend', `
-                        <div class="trade_partner_info_block" style="color: lightgray"> 
-                            <div title="${dateToISODisplay(offerHistory.last_received)}">Offers Received: ${offerHistory.offers_received} Last:  ${offerHistory.offers_received !== 0 ? prettyTimeAgo(offerHistory.last_received) : '-'}</div>
-                            <div title="${dateToISODisplay(offerHistory.last_sent)}">Offers Sent: ${offerHistory.offers_sent} Last:  ${offerHistory.offers_sent !== 0 ? prettyTimeAgo(offerHistory.last_sent) : '-'}</div>
-                        </div>`);
+          headline.insertAdjacentHTML(
+            'afterend',
+            DOMPurify.sanitize(
+              `<div class="trade_partner_info_block" style="color: lightgray"> 
+                        <div title="${dateToISODisplay(offerHistory.last_received)}">Offers Received: ${offerHistory.offers_received} Last:  ${offerHistory.offers_received !== 0 ? prettyTimeAgo(offerHistory.last_received) : '-'}</div>
+                        <div title="${dateToISODisplay(offerHistory.last_sent)}">Offers Sent: ${offerHistory.offers_sent} Last:  ${offerHistory.offers_sent !== 0 ? prettyTimeAgo(offerHistory.last_sent) : '-'}</div>
+                    </div>`,
+            ),
+          );
         } else {
-          headline.insertAdjacentHTML('afterend', `
-                        <div class="trade_partner_info_block" style="color: lightgray"> 
-                            <div><b>CSGOTrader Extension:</b> It looks like you don't have your Steam API Key set yet.</div>
-                            <div>If you had that you would see partner offer history here. Check the <a href="https://csgotrader.app/release-notes#1.23">Release Notes</a> for more info.</div>
-                        </div>`);
+          headline.insertAdjacentHTML(
+            'afterend',
+            DOMPurify.sanitize(
+              `<div class="trade_partner_info_block" style="color: lightgray"> 
+                        <div><b>CSGOTrader Extension:</b> It looks like you don't have your Steam API Key set yet.</div>
+                        <div>If you had that you would see partner offer history here. Check the <a href="https://csgotrader.app/release-notes#1.23">Release Notes</a> for more info.</div>
+                    </div>`,
+            ),
+          );
         }
       }
     }
