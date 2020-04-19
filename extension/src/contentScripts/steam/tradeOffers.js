@@ -598,9 +598,7 @@ if (activePage === 'incoming_offers') {
       const partnerID = getProperStyleSteamIDFromOfferStyle(offerElement.querySelector('.playerAvatar').getAttribute('data-miniprofile'));
       offerElement.querySelector('.tradeoffer_footer_actions').insertAdjacentHTML(
         'afterbegin',
-        DOMPurify.sanitize(
-          `<a href="javascript:AcceptTradeOffer( '${offerID}', '${partnerID}' );" class="whiteLink">Accept Trade</a> | `,
-        ),
+        `<a href="javascript:AcceptTradeOffer( '${DOMPurify.sanitize(offerID)}', '${DOMPurify.sanitize(partnerID)}' );" class="whiteLink">Accept Trade</a> | `,
       );
     }
   });
