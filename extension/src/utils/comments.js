@@ -27,11 +27,9 @@ const addReplyToCommentsFunctionality = () => {
     if (commentThread.querySelector('.replybutton') === null) {
       commentThread.insertAdjacentHTML(
         'beforeend',
-        DOMPurify.sanitize(
-          `<a class="actionlink replybutton" data-tooltip-text="Reply">
-                      <img style="height: 16px; width: 16px" src="${chrome.runtime.getURL('images/reply.png')}">
-                     </a>`,
-        ),
+        `<a class="actionlink replybutton" data-tooltip-text="Reply">
+                <img style="height: 16px; width: 16px" src="${chrome.runtime.getURL('images/reply.png')}">
+              </a>`,
       );
     }
   });

@@ -114,7 +114,8 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         </a>`;
     profileActionPopup.querySelector('.popup_body.popup_menu.shadow_content').insertAdjacentHTML(
       'beforeend',
-      DOMPurify.sanitize(copyPermalink + showOfferSummary),
+      copyPermalink + showOfferSummary,
+      // not sanitized because it breaks the images and it's static anyways
     );
 
     // this is a workaround to only being able to copy text
