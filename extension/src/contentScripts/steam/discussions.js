@@ -59,7 +59,7 @@ if (searchElement !== null) {
 
       autoBumpInterval = setInterval(() => {
         doTheAutoBumping();
-      }, (15000)); // 30 minutes
+      }, (30 * 60 * 1000)); // 30 minutes
     } else autoBumpCheckBox.checked = false;
   });
 
