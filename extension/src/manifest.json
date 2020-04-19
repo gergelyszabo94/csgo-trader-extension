@@ -97,6 +97,17 @@
     },
     {
       "matches": [
+        "*://steamcommunity.com/groups/*/discussions/*",
+        "*://steamcommunity.com/app/*/discussions/*",
+        "*://steamcommunity.com/app/*/tradingforum/*",
+        "*://steamcommunity.com/app/*/eventcomments/*"
+      ],
+      "run_at" : "document_idle",
+      "js": ["js/contentScripts/steam/discussions.bundle.js"],
+      "css": ["/css/generalCSTStyle.css"]
+    },
+    {
+      "matches": [
         "*://steamcommunity.com/openid/login*"
       ],
       "run_at" : "document_idle",

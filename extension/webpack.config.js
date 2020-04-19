@@ -74,6 +74,7 @@ module.exports = {
     'js/contentScripts/steam/tradeOffer': path.join(__dirname, 'src', 'contentScripts/steam', 'tradeOffer.js'),
     'js/contentScripts/steam/tradeOffers': path.join(__dirname, 'src', 'contentScripts/steam', 'tradeOffers.js'),
     'js/contentScripts/steam/profile': path.join(__dirname, 'src', 'contentScripts/steam', 'profile.js'),
+    'js/contentScripts/steam/discussions': path.join(__dirname, 'src', 'contentScripts/steam', 'discussions.js'),
   },
   output: {
     publicPath: '',
