@@ -39,13 +39,13 @@ if (searchElement !== null) {
   searchElement.insertAdjacentHTML(
     'afterend',
     DOMPurify.sanitize(
-      `<div>
-                Auto-bump this post:
+      `<div class="discussionAutoBump">
+                CSGOTrader Auto-bump this post:
                 <input
                     type="checkbox"
                     id="autoBumpDiscussion"
-                    title="If you tick this checkbox CSGOTrader will periodically post a comment under this discussion on your behalf
-                    making the post appear on top of discussions. The post has to be kept open to be auto-bumped."
+                    title="If you tick this checkbox CSGOTrader will periodically (30 mins) post a comment under this discussion on your behalf
+                    making the post appear on top of discussions. The post has to be kept open on a page to be auto-bumped."
                 />
             </div>`,
     ),

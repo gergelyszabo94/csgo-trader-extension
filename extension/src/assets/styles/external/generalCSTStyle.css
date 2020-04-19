@@ -105,6 +105,12 @@ progress {
     }
 }
 
+.discussionAutoBump {
+    padding-top: 15px;
+    text-align: right;
+    font-size: 0.95rem;
+}
+
 .historyExportTitle {
     font-size: 1.5rem;
     font-weight: bold;
