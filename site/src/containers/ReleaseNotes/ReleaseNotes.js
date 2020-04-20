@@ -25,6 +25,11 @@ const releaseNotes = (props) => {
           </Container>
           <Container className='buildingBlock' id='2.2'>
               <h2>2.2 - Discussion bumping - security improvements</h2>
+              <div className="text-danger">
+                  It was brought to my attention that bumping discussions is against Steam's
+                  <NewTabLink to="https://support.steampowered.com/kb_article.php?ref=4045-USHJ-3810&l=english"> Rules and Guidelines For Steam: Discussions, Reviews, and User Generated Content </NewTabLink>
+                  so use it at your own risk!
+              </div>
               <p>
                   After publishing the version before this I got the results of a code review form Mozilla.
                   They flagged some security issues that I spent most of the work addressing.

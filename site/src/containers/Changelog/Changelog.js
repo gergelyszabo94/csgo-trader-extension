@@ -24,6 +24,11 @@ const changelog = (props) => {
             </Container>
             <Container className='buildingBlock'>
                 <h2>Version 2.2 - 2020-04-19</h2>
+                <div className="text-danger">
+                    It was brought to my attention that bumping discussions is against Steam's
+                    <NewTabLink to="https://support.steampowered.com/kb_article.php?ref=4045-USHJ-3810&l=english"> Rules and Guidelines For Steam: Discussions, Reviews, and User Generated Content </NewTabLink>
+                    so use it at your own risk!
+                </div>
                 <ul>
                     <li>
                         Discussion posts (group, trading, forum) can now be set to be automatically bumped by the extension.
