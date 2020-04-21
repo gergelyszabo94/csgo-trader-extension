@@ -126,7 +126,7 @@ module.exports = {
     modules: [path.resolve(__dirname, './src'), 'node_modules'],
     extensions: fileExtensions.map((extension) => (`.${extension}`)).concat(['.jsx', '.js', '.css']),
   },
-  devtool: 'inline-cheap-source-map',
+  devtool: '',
   plugins:
       (mode === 'production') ? [...pluginsToAlwaysUse, new CleanWebpackPlugin()] : pluginsToAlwaysUse, // CleanWebpackPlugin only needs to run when it's a production build
   devServer: {
