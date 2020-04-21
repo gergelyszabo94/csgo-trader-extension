@@ -77,7 +77,7 @@ module.exports = {
     'js/contentScripts/steam/discussions': path.join(__dirname, 'src', 'contentScripts/steam', 'discussions.js'),
   },
   output: {
-    publicPath: '',
+    publicPath: '/',
     path: path.join(__dirname, 'build'),
     filename: '[name].bundle.js',
   },

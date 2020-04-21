@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.scss';
@@ -9,26 +9,33 @@ import {
   Route,
   Redirect,
 } from 'react-router-dom';
-import Bookmarks from './pages/Bookmarks/Bookmarks';
-import Popup from './pages/Popup/Popup';
-import Options from './pages/Options/Options';
 import Navigation from './components/Navigation/Navigation';
+
+const Bookmarks = lazy(() => import('./pages/Bookmarks/Bookmarks'));
+const Popup = lazy(() => import('./pages/Popup/Popup'));
+const Options = lazy(() => import('./pages/Options/Options'));
 
 function App() {
   if (window.location.search === '?page=popup') {
-    return <Popup />;
+    return (
+      <Suspense fallback={<div>Loading...</div>}>
+        <Popup />
+      </Suspense>
+    );
   }
   return (
     <Router>
       <Navigation />
       <div className="content">
-        <Switch>
-          <Route path="/options/" component={Options} />
-          <Route path="/bookmarks/" component={Bookmarks} />
-          <Route>
-            <Redirect to="/options/general/" />
-          </Route>
-        </Switch>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Switch>
+            <Route path="/options/" component={Options} />
+            <Route path="/bookmarks/" component={Bookmarks} />
+            <Route>
+              <Redirect to="/options/general/" />
+            </Route>
+          </Switch>
+        </Suspense>
       </div>
       {window.location.search === '?page=bookmarks' ? (
         <Route>
