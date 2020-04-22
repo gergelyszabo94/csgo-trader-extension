@@ -31,8 +31,11 @@ const getFriendRequests = () => new Promise((resolve, reject) => {
             evalTries: 0,
           });
         });
+        resolve(inviters);
+      } else {
+        console.log('no received invites element');
+        reject(inviters);
       }
-      resolve(inviters);
     }
   }).catch((err) => {
     console.log(err);
@@ -59,9 +62,14 @@ const getGroupInvites = () => new Promise((resolve, reject) => {
 
       if (receivedInvitesElement !== null) {
         receivedInvitesElement.querySelectorAll('.invite_row').forEach((inviteRow) => {
-          const groupID = inviteRow.querySelector(
+          const acceptInviteButton = inviteRow.querySelector(
             '.linkStandard.btnv6_white_transparent.btn_small_tall',
-          ).getAttribute('href').split('\', \'')[1];
+          );
+          const groupID = acceptInviteButton !== null
+            ? acceptInviteButton.getAttribute('href') !== null
+              ? acceptInviteButton.getAttribute('href').split('\', \'')[1]
+              : null
+            : null;
           invitedTo.push({
             steamID: groupID,
             name: inviteRow.querySelector('.groupTitle').firstElementChild.innerText,
