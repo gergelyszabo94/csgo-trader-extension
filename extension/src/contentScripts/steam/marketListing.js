@@ -29,31 +29,35 @@ const inBrowserInspectButtonPopupLink = `
     </a>`;
 const dopplerPhase = '<div class="dopplerPhaseMarket"><span></span></div>';
 
-// adds the in-browser inspect button to the top of the page
-// some items don't have inspect buttons (like cases)
-const originalInspectButton = document.getElementById('largeiteminfo_item_actions')
-  .querySelector('.btn_small.btn_grey_white_innerfade');
 let itemWithInspectLink = false;
-if (originalInspectButton !== null) {
-  itemWithInspectLink = true;
-  const inspectLink = originalInspectButton.getAttribute('href');
-  const inBrowserInspectButton = `
+// adds the in-browser inspect button to the top of the page
+const actions = document.getElementById('largeiteminfo_item_actions');
+// sometimes the page does not load correctly, for example when Steam shows:
+// "There was an error getting listings for this item. Please try again later."
+if (actions !== null) {
+  const originalInspectButton = actions.querySelector('.btn_small.btn_grey_white_innerfade');
+  // some items don't have inspect buttons (like cases)
+  if (originalInspectButton !== null) {
+    itemWithInspectLink = true;
+    const inspectLink = originalInspectButton.getAttribute('href');
+    const inBrowserInspectButton = `
     <a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect_button" href="http://csgo.gallery/${inspectLink}" target="_blank">
         <span>
             ${chrome.i18n.getMessage('inspect_in_browser')}
         </span>
     </a>`;
-  document.getElementById('largeiteminfo_item_actions').insertAdjacentHTML(
-    'beforeend',
-    DOMPurify.sanitize(inBrowserInspectButton, { ADD_ATTR: ['target'] }),
-  );
-  document.getElementById('inbrowser_inspect_button').addEventListener('click', () => {
-    // analytics
-    trackEvent({
-      type: 'event',
-      action: 'MarketInspection',
+    document.getElementById('largeiteminfo_item_actions').insertAdjacentHTML(
+      'beforeend',
+      DOMPurify.sanitize(inBrowserInspectButton, { ADD_ATTR: ['target'] }),
+    );
+    document.getElementById('inbrowser_inspect_button').addEventListener('click', () => {
+      // analytics
+      trackEvent({
+        type: 'event',
+        action: 'MarketInspection',
+      });
     });
-  });
+  }
 }
 
 // it takes the visible descriptors and checks if the collection includes souvenirs
@@ -94,27 +98,39 @@ const getListingIDFromElement = (listingElement) => {
 
 const addPhasesIndicator = () => {
   if (window.location.href.includes('Doppler')) {
-    document.querySelectorAll('.market_listing_item_img_container').forEach((container) => {
-      container.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhase));
-      const phase = getDopplerInfo(container.querySelector('img').getAttribute('src').split('economy/image/')[1].split('/')[0]);
-      const dopplerElement = container.querySelector('.dopplerPhaseMarket');
+    const listingsTable = document.getElementById('searchResultsTable');
+    if (listingsTable !== null) {
+      listingsTable.querySelectorAll('.market_listing_item_img_container').forEach((container) => {
+        container.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhase));
+        const phase = getDopplerInfo(container.querySelector('img').getAttribute('src').split('economy/image/')[1].split('/')[0]);
+        const dopplerElement = container.querySelector('.dopplerPhaseMarket');
 
-      switch (phase.short) {
-        case dopplerPhases.sh.short: dopplerElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.sh.element)); break;
-        case dopplerPhases.rb.short: dopplerElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.rb.element)); break;
-        case dopplerPhases.em.short: dopplerElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.em.element)); break;
-        case dopplerPhases.bp.short: dopplerElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.bp.element)); break;
-        default: dopplerElement.querySelector('span').innerText = phase.short;
-      }
-    });
+        switch (phase.short) {
+          case dopplerPhases.sh.short:
+            dopplerElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.sh.element));
+            break;
+          case dopplerPhases.rb.short:
+            dopplerElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.rb.element));
+            break;
+          case dopplerPhases.em.short:
+            dopplerElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.em.element));
+            break;
+          case dopplerPhases.bp.short:
+            dopplerElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.bp.element));
+            break;
+          default:
+            dopplerElement.querySelector('span').innerText = phase.short;
+        }
+      });
+    }
   }
 };
 
 const getListings = () => {
   const getListingsScript = `
     document.querySelector('body').setAttribute('listingsInfo', JSON.stringify({
-        listings: g_rgListingInfo,
-        assets: g_rgAssets
+        listings: typeof g_rgListingInfo !== 'undefined' ? g_rgListingInfo : {},
+        assets: typeof g_rgAssets !== 'undefined' ? g_rgAssets : {730:{2:{}}}
     }));`;
 
   const listingsInfo = JSON.parse(injectScript(getListingsScript, true, 'getListings', 'listingsInfo'));
