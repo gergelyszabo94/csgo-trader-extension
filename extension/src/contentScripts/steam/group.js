@@ -7,7 +7,7 @@ import { reportComments, addReplyToCommentsFunctionality, addCommentsMutationObs
 import { trackEvent } from 'utils/analytics';
 import { getGroupID } from 'utils/steamID';
 
-if (!window.location.href.includes('/discussions/')) {
+if (!window.location.href.includes('/discussions')) {
   logExtensionPresence();
   addReplyToCommentsFunctionality();
   addCommentsMutationObserver();
