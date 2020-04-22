@@ -221,6 +221,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     });
     updateExchangeRates();
   } else {
+    // this is when bookmarks notification are handled
     chrome.browserAction.getBadgeText({}, (result) => {
       if (result === '' || result === 'U' || result === 'I') chrome.browserAction.setBadgeText({ text: '1' });
       else chrome.browserAction.setBadgeText({ text: (parseInt(result) + 1).toString() });
@@ -230,33 +231,38 @@ chrome.alarms.onAlarm.addListener((alarm) => {
         return element.itemInfo.assetid === alarm.name;
       });
 
-      if (item.notifType === 'chrome') {
-        const iconFullURL = `https://steamcommunity.com/economy/image/${item.itemInfo.iconURL}/128x128`;
-        chrome.permissions.contains({ permissions: ['tabs'] }, (permission) => {
-          const message = permission
-            ? 'Click here to see your bookmarks!'
-            : `${item.itemInfo.name} is tradable!`;
+      // check if the bookmark was found, it might have been deleted since the alarm was set
+      if (item) {
+        if (item.notifType === 'chrome') {
+          const iconFullURL = `https://steamcommunity.com/economy/image/${item.itemInfo.iconURL}/128x128`;
+          chrome.permissions.contains({ permissions: ['tabs'] }, (permission) => {
+            const message = permission
+              ? 'Click here to see your bookmarks!'
+              : `${item.itemInfo.name} is tradable!`;
 
-          chrome.notifications.create(alarm.name, {
-            type: 'basic',
-            iconUrl: iconFullURL,
-            title: `${item.itemInfo.name} is tradable!`,
-            message,
-          }, () => {});
-        });
-      } else if (item.notifType === 'alert') {
-        chrome.permissions.contains({ permissions: ['tabs'] }, (permission) => {
-          if (permission) {
-            goToInternalPage('index.html?page=bookmarks');
-            setTimeout(() => {
-              chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                chrome.tabs.sendMessage(tabs[0].id, {
-                  alert: item.itemInfo.name,
-                }, () => {});
-              });
-            }, 1000);
-          }
-        });
+            chrome.notifications.create(alarm.name, {
+              type: 'basic',
+              iconUrl: iconFullURL,
+              title: `${item.itemInfo.name} is tradable!`,
+              message,
+            }, () => {
+            });
+          });
+        } else if (item.notifType === 'alert') {
+          chrome.permissions.contains({ permissions: ['tabs'] }, (permission) => {
+            if (permission) {
+              goToInternalPage('index.html?page=bookmarks');
+              setTimeout(() => {
+                chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                  chrome.tabs.sendMessage(tabs[0].id, {
+                    alert: item.itemInfo.name,
+                  }, () => {
+                  });
+                });
+              }, 1000);
+            }
+          });
+        }
       }
     });
   }
