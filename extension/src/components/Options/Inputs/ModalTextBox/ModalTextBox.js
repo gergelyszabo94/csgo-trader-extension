@@ -74,9 +74,8 @@ const ModalTextBox = ({
           className="modalTextArea"
           placeholder="Type your text here"
           onChange={onChangeHandler}
-        >
-          {state.content}
-        </textarea>
+          value={state.content}
+        />
         <div className={`warning ${state.inputValid ? 'hidden' : null}`}>
           <FontAwesomeIcon icon={faExclamationTriangle} />
           <span className="warning">

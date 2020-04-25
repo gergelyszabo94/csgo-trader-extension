@@ -100,9 +100,8 @@ const Bookmark = ({
               className="modalTextArea"
               placeholder="Type your comment here"
               onChange={commentChangeHandler}
-            >
-              {comment}
-            </textarea>
+              value={comment}
+            />
           </Modal>
         </Action>
         <Action title="Edit notifications options" className={(itemInfo.tradability === 'Tradable' || itemInfo.tradability === 'Not Tradable') ? 'hidden' : null}>
