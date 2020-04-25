@@ -56,7 +56,7 @@ const getHistoryType = (historyRow) => {
   switch (gainOrLoss) {
     case '+': historyType = 'purchase'; break;
     case '-': historyType = 'sale'; break;
-    default: historyType = historyRow.querySelector('.market_listing_whoactedwith').innerText.trim();
+    default: historyType = historyRow.querySelector('.market_listing_whoactedwith').innerText.replace(/\s/g, '');
   }
   return historyType;
 };
@@ -230,17 +230,18 @@ const addHighestBuyOrderPrice = (job, highestBuyOrder) => {
   // the per page order count was changed or the order was canceled
   if (orderRow !== null) {
     const priceElement = orderRow.querySelector('.market_listing_price');
-    const orderPrice = parseInt(steamFormattedPriceToCents(priceElement.innerText));
-    const highest = orderPrice >= highestBuyOrder ? 'highest' : 'not_highest';
-
-    priceElement.insertAdjacentHTML(
-      'beforeend',
-      DOMPurify.sanitize(
-        `<div class="${highest}" title="This is the price of the highest buy order right now.">
+    if (priceElement.offsetParent !== null) { // if visible
+      const orderPrice = parseInt(steamFormattedPriceToCents(priceElement.innerText));
+      const highest = orderPrice >= highestBuyOrder ? 'highest' : 'not_highest';
+      priceElement.insertAdjacentHTML(
+        'beforeend',
+        DOMPurify.sanitize(
+          `<div class="${highest}" title="This is the price of the highest buy order right now.">
                 ${priceOfHighestOrder}
              </div>`,
-      ),
-    );
+        ),
+      );
+    }
   }
 };
 
