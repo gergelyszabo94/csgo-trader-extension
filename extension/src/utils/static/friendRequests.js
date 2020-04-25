@@ -96,6 +96,12 @@ const conditions = {
     with_value: true,
     value_type: 'string',
   },
+  request_received: {
+    key: 'request_received',
+    pretty: 'Received multiple friend request from',
+    description: 'The user has already sent a friend request in the past week',
+    with_value: false,
+  },
 };
 
 const actions = {

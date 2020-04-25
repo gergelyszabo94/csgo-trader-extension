@@ -384,6 +384,45 @@ const addCommonFriendsInfo = () => {
   });
 };
 
+const addPastRequestsInfo = () => {
+  chrome.storage.local.get(['friendRequests', 'friendRequestLogs'], ({ friendRequests, friendRequestLogs }) => {
+    const invitesWithPastRequestsInfo = [];
+    const noPastRequestsInfo = [];
+
+    friendRequests.inviters.forEach((invite) => {
+      if (invite.pastRequests === undefined) {
+        noPastRequestsInfo.push(invite);
+      } else invitesWithPastRequestsInfo.push(invite);
+    });
+
+    const nowWithPastRequestsInfo = noPastRequestsInfo.map((invite) => {
+      let pastRequests = 0;
+
+      friendRequestLogs.forEach((event) => {
+        if (event.steamID === invite.steamID && event.type === eventTypes.new.key) {
+          pastRequests += 1;
+        }
+      });
+
+      return {
+        ...invite,
+        pastRequests,
+      };
+    });
+
+    chrome.storage.local.set({
+      friendRequests: {
+        inviters:
+          [
+            ...invitesWithPastRequestsInfo,
+            ...nowWithPastRequestsInfo,
+          ],
+        lastUpdated: Date.now(),
+      },
+    }, () => {});
+  });
+};
+
 const createFriendRequestEvent = (invite, type, appliedRule) => {
   let eventType;
   switch (type) {
@@ -403,7 +442,7 @@ const createFriendRequestEvent = (invite, type, appliedRule) => {
 
 const evaluateRequest = (invite, rules) => {
   if (invite.summary && invite.bans && invite.steamRepInfo && invite.commonFriends
-    && (invite.csgoInventoryValue !== undefined)) {
+    && (invite.csgoInventoryValue !== undefined) && invite.pastRequests) {
     for (const [index, rule] of rules.entries()) {
       if (rule.active) {
         if (rule.condition.type === conditions.profile_private.key
@@ -507,6 +546,13 @@ const evaluateRequest = (invite, rules) => {
         }
         if (rule.condition.type === conditions.name_includes.key
           && invite.name.toLowerCase().includes(rule.condition.value)) {
+          return {
+            action: rule.action,
+            appliedRule: index + 1,
+          };
+        }
+        if (rule.condition.type === conditions.request_received.key
+          && invite.pastRequests !== null && invite.pastRequests > 1) {
           return {
             action: rule.action,
             appliedRule: index + 1,
@@ -625,8 +671,11 @@ const updateFriendRequest = () => {
             addCommonFriendsInfo();
           }, 20000);
           setTimeout(() => {
-            evaluateInvites();
+            addPastRequestsInfo();
           }, 25000);
+          setTimeout(() => {
+            evaluateInvites();
+          }, 26000);
         }
       });
 
