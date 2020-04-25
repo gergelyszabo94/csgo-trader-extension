@@ -47,6 +47,8 @@ const commentPatternsToReport = [
   'Yo bro, we\'ve played cs together last week, we\'d like to have you in our team.',
   'Hеy bro, I\'vе playеd cs against you rеcеntly',
   'IGXEKEY',
+  'Hey bro, I\'ve played cs against you recently and I\'d like to invite you in our team.',
+  '🎯🎯This guy is pro!🎯🎯',
 ];
 
 export default commentPatternsToReport;
