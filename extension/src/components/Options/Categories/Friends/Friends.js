@@ -8,7 +8,7 @@ import IncomingInvites from 'components/Options/Categories/Friends/IncomingInvit
 
 const Friends = () => {
   return (
-    <Category title="Friends, Groups and Invites (BETA)">
+    <Category title="Friends, Groups and Invites">
       <Row
         name="Ignore group invites"
         id="ignoreGroupInvites"
