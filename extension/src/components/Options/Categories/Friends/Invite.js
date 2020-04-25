@@ -41,6 +41,10 @@ const Invite = ({
     });
   }, []);
 
+  const invValue = details.csgoInventoryValue && details.csgoInventoryValue !== 'private'
+    ? prettyPrintPrice(currency.short, parseInt(details.csgoInventoryValue))
+    : '-';
+
   return (
     <tr>
       <td>
@@ -81,11 +85,9 @@ const Invite = ({
         }
       </td>
       <td>
-        {
-          details.csgoInventoryValue && details.csgoInventoryValue !== 'private'
-            ? prettyPrintPrice(currency.short, parseInt(details.csgoInventoryValue))
-            : '-'
-        }
+        <NewTabLink to={`https://steamcommunity.com/profiles/${details.steamID}/inventory/`}>
+          {invValue}
+        </NewTabLink>
       </td>
       <td>
         <span title={`Last: ${prettyTimeAgo(offerHistory.last_received)}`}>
