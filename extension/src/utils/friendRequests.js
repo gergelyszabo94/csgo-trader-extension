@@ -505,6 +505,13 @@ const evaluateRequest = (invite, rules) => {
             appliedRule: index + 1,
           };
         }
+        if (rule.condition.type === conditions.name_includes.key
+          && invite.name.toLowerCase().includes(rule.condition.value)) {
+          return {
+            action: rule.action,
+            appliedRule: index + 1,
+          };
+        }
       }
     }
 

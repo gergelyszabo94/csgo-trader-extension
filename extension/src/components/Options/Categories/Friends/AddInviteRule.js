@@ -3,6 +3,7 @@ import { conditions, actions } from 'utils/static/friendRequests';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
+import AddCondition from 'components/Options/Categories/Friends/AddCondition';
 
 const Options = () => {
   const optionsArr = [];
@@ -41,6 +42,7 @@ const AddInviteRule = ({ add }) => {
     condition: conditions.profile_private.key,
     action: actions.ignore.key,
     value: null,
+    valueType: null,
   });
 
   const onConditionChange = ((event) => {
@@ -48,7 +50,14 @@ const AddInviteRule = ({ add }) => {
     setRule({
       ...rule,
       condition: conditionType,
-      value: conditions[conditionType].with_value ? 0 : null,
+      value: conditions[conditionType].with_value
+        ? conditions[conditionType].value_type === 'string'
+          ? ''
+          : 0
+        : null,
+      valueType: conditions[conditionType].with_value
+        ? conditions[conditionType].value_type
+        : null,
     });
   });
 
@@ -82,7 +91,7 @@ const AddInviteRule = ({ add }) => {
       </select>
       {
         rule.value !== null
-          ? <input type="number" className="numberInput numberInput__narrow" value={rule.value} onChange={onValueChange} />
+          ? <AddCondition type={rule.valueType} value={rule.value} onValueChange={onValueChange} />
           : null
       }
       <select className="select-theme" onChange={onActionChange} defaultValue={rule.action}>

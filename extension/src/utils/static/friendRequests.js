@@ -16,12 +16,14 @@ const conditions = {
     pretty: 'Steam lever under',
     description: 'User\' Steam profile lever is under or the same as the set number',
     with_value: true,
+    value_type: 'number',
   },
   steam_level_over: {
     key: 'steam_level_over',
     pretty: 'Steam lever over',
     description: 'User\' Steam profile lever is over the set number',
     with_value: true,
+    value_type: 'number',
   },
   vac_banned: {
     key: 'vac_banned',
@@ -58,12 +60,14 @@ const conditions = {
     pretty: 'CS:GO Inventory value over',
     description: 'The user\'s inventory value is over',
     with_value: true,
+    value_type: 'number',
   },
   csgo_inventory_value_under: {
     key: 'csgo_inventory_value_under',
     pretty: 'CS:GO Inventory value under',
     description: 'The user\'s inventory value is under or the equal to',
     with_value: true,
+    value_type: 'number',
   },
   inventory_private: {
     key: 'inventory_private',
@@ -76,12 +80,21 @@ const conditions = {
     pretty: 'Common friends more than',
     description: 'You have more common friends with the user than this number',
     with_value: true,
+    value_type: 'number',
   },
   common_friends_under: {
     key: 'common_friends_under',
     pretty: 'Common friends same or less than',
     description: 'You have fewer or the same number of common friends with the user than this number',
     with_value: true,
+    value_type: 'number',
+  },
+  name_includes: {
+    key: 'name_includes',
+    pretty: 'Username includes',
+    description: 'The user\'s Steam username includes the specified string of characters',
+    with_value: true,
+    value_type: 'string',
   },
 };
 
