@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import NewTabLink from 'components/NewTabLink/NewTabLink';
 import { prettyPrintPrice } from 'utils/pricing';
 import {
-  acceptRequest, ignoreRequest, blockRequest, getBansSummaryText,
+  acceptRequest, ignoreRequest, blockRequest, getBansSummaryText, updateFriendRequest,
 } from 'utils/friendRequests';
 import { prettyTimeAgo } from 'utils/dateTime';
 import { faUserSlash, faUserPlus, faUserMinus } from '@fortawesome/free-solid-svg-icons';
@@ -22,16 +22,19 @@ const Invite = ({
   const onAcceptFriend = () => {
     acceptRequest(details.steamID);
     remove(index);
+    updateFriendRequest();
   };
 
   const onIgnoreFriend = () => {
     ignoreRequest(details.steamID);
     remove(index);
+    updateFriendRequest();
   };
 
   const onBlockFriend = () => {
     blockRequest(details.steamID);
     remove(index);
+    updateFriendRequest();
   };
 
   useEffect(() => {
