@@ -46,7 +46,7 @@ if (document.querySelector('body').classList.contains('profile_page')) {
   const topFriends = document.querySelector('.profile_friend_links');
   if (topFriends !== null) {
     topFriends.querySelectorAll('.friendBlock').forEach((friendBlock) => {
-      if (friendBlock.innerText.includes('csgotrader.app')) {
+      if (friendBlock.innerText.toLowerCase().includes('csgotrader.app')) {
         friendBlock.classList.add('golden');
         friendBlock.querySelector('.playerAvatar').classList.add('golden');
         friendBlock.addEventListener('mouseover', goldenMiniProfileHandler);
@@ -56,7 +56,7 @@ if (document.querySelector('body').classList.contains('profile_page')) {
 
   // profile name, level, avatar:
   const personaName = document.querySelector('.actual_persona_name');
-  if (personaName !== null && personaName.innerText.includes('csgotrader.app')) {
+  if (personaName !== null && personaName.innerText.toLowerCase().includes('csgotrader.app')) {
     personaName.classList.add('golden');
     const level = document.querySelector('.persona_level');
     if (level !== null) level.classList.add('golden');

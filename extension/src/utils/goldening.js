@@ -19,7 +19,7 @@ const goldenMiniProfileHandler = () => {
 
 const goldenCommenters = () => {
   document.querySelectorAll('.commentthread_author_link').forEach((commenter) => {
-    if (commenter.innerText.includes('csgotrader.app')) {
+    if (commenter.innerText.toLowerCase().includes('csgotrader.app')) {
       commenter.classList.add('golden');
       const avatar = commenter.parentElement.parentElement.parentElement.querySelector('.playerAvatar');
       avatar.classList.add('golden');
@@ -31,7 +31,7 @@ const goldenCommenters = () => {
 
 const goldenMemberNames = () => {
   document.querySelectorAll('.member_block').forEach((memberBlock) => {
-    if (memberBlock.querySelector('.linkFriend').innerText.includes('csgotrader.app')) {
+    if (memberBlock.querySelector('.linkFriend').innerText.toLowerCase().includes('csgotrader.app')) {
       memberBlock.querySelector('.playerAvatar').classList.add('golden');
       memberBlock.querySelector('.member_block_content').classList.remove('online', 'offline', 'in-game');
       memberBlock.querySelector('.member_block_content').classList.add('golden');
