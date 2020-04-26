@@ -1,7 +1,7 @@
 import {
   logExtensionPresence, updateLoggedInUserInfo,
   warnOfScammer, reloadPageOnExtensionReload,
-  addUpdatedRibbon,
+  addUpdatedRibbon, copyToClipboard,
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import { trackEvent } from 'utils/analytics';
@@ -11,7 +11,7 @@ import steamTextFormattingTags from 'utils/static/steamTextFormatingTags';
 import { overrideShowTradeOffer } from 'utils/steamOverriding';
 import steamProfileStatuses from 'utils/static/steamProfileStatuses';
 import { injectStyle } from 'utils/injection';
-import { getUserSteamID, getProfileOwnerSteamID } from 'utils/steamID';
+import { getUserSteamID, getProfileOwnerSteamID, getOfferStyleSteamID } from 'utils/steamID';
 import DOMPurify from 'dompurify';
 
 // ensures that we are on a profile page, it's not possible with simple regex
@@ -112,18 +112,16 @@ if (document.querySelector('body').classList.contains('profile_page')) {
             <img style="width: 16px; height: 16px" src="https://steamcommunity-a.akamaihd.net/public/images/profile/icon_tradeoffers.png">
             &nbsp; Show Offer History
         </a>`;
+    const copyTradeLink = `
+      <a class="popup_menu_item" href="#" id="copy_trade_link">
+        <img style="width: 16px; height: 16px" src="${chrome.runtime.getURL('images/paperclip.png')}">
+            &nbsp; Copy Trade Link
+      </a>`;
     profileActionPopup.querySelector('.popup_body.popup_menu.shadow_content').insertAdjacentHTML(
       'beforeend',
-      copyPermalink + showOfferSummary,
+      copyPermalink + showOfferSummary + copyTradeLink,
       // not sanitized because it breaks the images and it's static anyways
     );
-
-    // this is a workaround to only being able to copy text
-    // to the clipboard that is selected in a textbox
-    const textareaToCopy = `
-        <textarea id="text_area_to_copy_permalink" class="hidden-copy-textarea" readonly="">
-            https://steamcommunity.com/profiles/${profileOwnerSteamID}
-        </textarea>`;
 
     document.getElementById('copy_profile_perma_link').addEventListener('click', () => {
       // analytics
@@ -131,11 +129,7 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         type: 'event',
         action: 'ProfilePermalinkCopied',
       });
-      document.querySelector('body').insertAdjacentHTML('beforeend', DOMPurify.sanitize(textareaToCopy));
-      const textAreaElement = document.getElementById('text_area_to_copy_permalink');
-      textAreaElement.select();
-      document.execCommand('copy');
-      textAreaElement.remove();
+      copyToClipboard(`https://steamcommunity.com/profiles/${profileOwnerSteamID}`);
 
       // for the context menu to go away
       document.querySelector('.playerAvatarAutoSizeInner').click();
@@ -189,6 +183,30 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         // for the context menu to go away
         document.querySelector('.playerAvatarAutoSizeInner').click();
       });
+    });
+
+    document.getElementById('copy_trade_link').addEventListener('click', () => {
+      // analytics
+      trackEvent({
+        type: 'event',
+        action: 'TradeLinkCopied',
+      });
+
+      let tradeLink = `https://steamcommunity.com/tradeoffer/new/?partner=${getOfferStyleSteamID(profileOwnerSteamID)}`;
+      document.querySelectorAll('a').forEach((anchor) => {
+        const href = anchor.getAttribute('href');
+        if (href !== null && href.includes('steamcommunity.com/tradeoffer/new/?partner=')) {
+          const iDFromProfile = href.split('new/?partner=')[1].split('&token')[0];
+          if (iDFromProfile === getOfferStyleSteamID(profileOwnerSteamID).toString()) {
+            tradeLink = href;
+          }
+        }
+      });
+
+      copyToClipboard(tradeLink);
+
+      // for the context menu to go away
+      document.querySelector('.playerAvatarAutoSizeInner').click();
     });
 
     // handles rep button related stuff

@@ -4,7 +4,7 @@ import {
   addPageControlEventListeners, getItemByAssetID,
   getAssetIDOfElement, makeItemColorful, addDopplerPhase,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
-  getDataFilledFloatTechnical, souvenirExists,
+  getDataFilledFloatTechnical, souvenirExists, copyToClipboard,
   findElementByAssetID, getFloatBarSkeleton, addUpdatedRibbon,
   logExtensionPresence, isCSGOInventoryActive, repositionNameTagIcons,
   updateLoggedInUserInfo, reloadPageOnExtensionReload, isSIHActive, getActivePage,
@@ -910,8 +910,7 @@ const generateItemsList = () => {
   const sortedItems = doTheSorting(items,
     Array.from(document.querySelectorAll('.item.app730.context2')),
     sortingMode, null, 'simple_sort');
-  const copyTextArea = document.getElementById('generated_list_copy_textarea');
-  copyTextArea.value = '';
+  let copyText = '';
 
   const delimiter = document.getElementById('generate_delimiter').value;
 
@@ -954,7 +953,7 @@ const generateItemsList = () => {
           || (item.tradability === 'Not Tradable' && includeNonMarketable))
           && (!selectedOnly || (selectedOnly && itemElement.classList.contains('cstSelected')))) {
           namesAlreadyInList.push(item.market_hash_name);
-          copyTextArea.value += line;
+          copyText += line;
           csvContent += lineCSV;
           characterCount += line.length;
           lineCount += 1;
@@ -967,9 +966,8 @@ const generateItemsList = () => {
   downloadButton.setAttribute('href', encodedURI);
   downloadButton.classList.remove('hidden');
   downloadButton.setAttribute('download', `${getInventoryOwnerID()}_csgo_items.csv`);
-
-  copyTextArea.select();
-  document.execCommand('copy');
+  
+  copyToClipboard(copyText);
 
   document.getElementById('generation_result')
     .innerText = `${lineCount} lines (${characterCount} chars) generated and copied to clipboard`;
@@ -1039,7 +1037,6 @@ const addFunctionBar = () => {
                                 <span id="generation_result"></span>
                                 <a class="hidden" id="generate_download" href="" download="inventory_items.csv">Download .csv</a> 
                             </div>
-                            <textarea class="hidden-copy-textarea" id="generated_list_copy_textarea"></textarea>
                     </div>
                     <div id="massListing" class="hidden">
                     <h2>Mass Market Listing - Select Items to Start</h2>

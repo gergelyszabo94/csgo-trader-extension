@@ -641,6 +641,23 @@ const getSteamRepInfo = (steamID) => new Promise((resolve, reject) => {
   });
 });
 
+const copyToClipboard = (text) => {
+  // this is a workaround to only being able to copy text
+  // to the clipboard that is selected in a textbox
+  document.querySelector('body').insertAdjacentHTML(
+    'beforeend',
+    DOMPurify.sanitize(`
+        <textarea id="text_area_to_copy_to_clipboard" class="hidden-copy-textarea" readonly="">
+            ${text}
+        </textarea>`),
+  );
+
+  const textAreaElement = document.getElementById('text_area_to_copy_to_clipboard');
+  textAreaElement.select();
+  document.execCommand('copy');
+  textAreaElement.remove();
+};
+
 //  unused atm
 // const generateRandomString = (length) => {
 //   let text = '';
@@ -657,7 +674,7 @@ export {
   logExtensionPresence, scrapeSteamAPIkey, arrayFromArrayOrNotArray,
   getExteriorFromTags, getDopplerInfo, getQuality, parseStickerInfo,
   handleStickerNamesWithCommas, removeFromArray, getType,
-  getPattern, goToInternalPage, jumpToAnchor,
+  getPattern, goToInternalPage, jumpToAnchor, copyToClipboard,
   validateSteamAPIKey, getAssetIDFromInspectLink, uuidv4, updateLoggedInUserInfo,
   listenToLocationChange, addPageControlEventListeners, getItemByAssetID,
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
