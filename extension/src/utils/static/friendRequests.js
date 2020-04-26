@@ -17,6 +17,7 @@ const conditions = {
     description: 'User\' Steam profile lever is under or the same as the set number',
     with_value: true,
     value_type: 'number',
+    default_value: 5,
   },
   steam_level_over: {
     key: 'steam_level_over',
@@ -24,6 +25,7 @@ const conditions = {
     description: 'User\' Steam profile lever is over the set number',
     with_value: true,
     value_type: 'number',
+    default_value: 50,
   },
   vac_banned: {
     key: 'vac_banned',
@@ -61,6 +63,7 @@ const conditions = {
     description: 'The user\'s inventory value is over',
     with_value: true,
     value_type: 'number',
+    default_value: 500,
   },
   csgo_inventory_value_under: {
     key: 'csgo_inventory_value_under',
@@ -68,6 +71,7 @@ const conditions = {
     description: 'The user\'s inventory value is under or the equal to',
     with_value: true,
     value_type: 'number',
+    default_value: 50,
   },
   inventory_private: {
     key: 'inventory_private',
@@ -81,6 +85,7 @@ const conditions = {
     description: 'You have more common friends with the user than this number',
     with_value: true,
     value_type: 'number',
+    default_value: 10,
   },
   common_friends_under: {
     key: 'common_friends_under',
@@ -88,6 +93,7 @@ const conditions = {
     description: 'You have fewer or the same number of common friends with the user than this number',
     with_value: true,
     value_type: 'number',
+    default_value: 5,
   },
   name_includes: {
     key: 'name_includes',
@@ -95,12 +101,21 @@ const conditions = {
     description: 'The user\'s Steam username includes the specified string of characters',
     with_value: true,
     value_type: 'string',
+    default_value: '',
   },
   request_received: {
     key: 'request_received',
     pretty: 'Received multiple friend request from',
     description: 'The user has already sent a friend request in the past week',
     with_value: false,
+  },
+  from_country: {
+    key: 'from_country',
+    pretty: 'From country',
+    description: 'The user has this country set on their profile',
+    with_value: true,
+    value_type: 'country',
+    default_value: 'US',
   },
 };
 

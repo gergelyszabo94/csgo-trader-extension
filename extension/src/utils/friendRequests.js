@@ -558,6 +558,13 @@ const evaluateRequest = (invite, rules) => {
             appliedRule: index + 1,
           };
         }
+        if (rule.condition.type === conditions.from_country.key
+          && invite.summary.loccountrycode === rule.condition.value) {
+          return {
+            action: rule.action,
+            appliedRule: index + 1,
+          };
+        }
       }
     }
 

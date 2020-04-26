@@ -51,9 +51,7 @@ const AddInviteRule = ({ add }) => {
       ...rule,
       condition: conditionType,
       value: conditions[conditionType].with_value
-        ? conditions[conditionType].value_type === 'string'
-          ? ''
-          : 0
+        ? conditions[conditionType].default_value
         : null,
       valueType: conditions[conditionType].with_value
         ? conditions[conditionType].value_type
