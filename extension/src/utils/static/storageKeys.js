@@ -136,6 +136,7 @@ const storageKeys = {
   removeWebChatHeader: true,
   discussionsToAutoBump: [],
   usefulTitles: false,
+  reloadListingOnError: true,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

@@ -554,6 +554,22 @@ if (searchBar !== null) {
   );
 }
 
+// reload page on failure
+chrome.storage.local.get(['reloadListingOnError'], ({ reloadListingOnError }) => {
+  if (reloadListingOnError) {
+    const tableMessage = document.querySelector('.market_listing_table_message');
+    const largeItemImage = document.querySelector('.market_listing_largeimage');
+    // the table message includes an error message when the page failed to load
+    // it should not be there otherwise, but for some reason it's not reliable
+    // so check if the item image is's there too
+    if (tableMessage !== null && largeItemImage === null) {
+      setTimeout(() => {
+        window.location.reload();
+      }, 5000);
+    }
+  }
+});
+
 addFloatBarSkeletons();
 addPhasesIndicator();
 addStickers();

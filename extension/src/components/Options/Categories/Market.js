@@ -44,6 +44,12 @@ const market = () => {
         type="flipSwitchStorage"
         description={'Show the price of listings in the seller\'s currency too as well as what they will receive after fees.'}
       />
+      <Row
+        name="Reload listings on error"
+        id="reloadListingOnError"
+        type="flipSwitchStorage"
+        description="Reloads listings pages 5 seconds after they load if they don't load properly (load with an error message instead of the listings)."
+      />
     </Category>
   );
 };
