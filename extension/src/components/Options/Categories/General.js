@@ -82,6 +82,12 @@ const general = () => {
         description="Makes inventories and offers pretty by changing the background color of items based on rarity or in case of doppler, phase"
       />
       <Row
+        name="Useful titles"
+        id="usefulTitles"
+        type="flipSwitchStorage"
+        description="Changes inventory, profile, offer, market page titles to more apparent and readable ones"
+      />
+      <Row
         name="Collect usage data"
         id="telemetryOn"
         type="flipSwitchStorage"
