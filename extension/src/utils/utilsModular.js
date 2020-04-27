@@ -658,6 +658,21 @@ const copyToClipboard = (text) => {
   textAreaElement.remove();
 };
 
+const changePageTitle = (type, text) => {
+  let title = document.title.split(':: ')[1];
+  switch (type) {
+    case 'own_profile': title = 'My profile'; break;
+    case 'profile': title = `${title}'s profile`; break;
+    case 'market_listing': title = `${text} - Market Listings`; break;
+    case 'trade_offer': title = `${text} - Trade Offer`; break;
+    case 'own_inventory': title = 'My Inventory'; break;
+    case 'inventory': title = `${title}'s inventory`; break;
+    case 'trade_offers': title = text; break;
+    default: break;
+  }
+  document.title = title;
+};
+
 //  unused atm
 // const generateRandomString = (length) => {
 //   let text = '';
@@ -673,7 +688,7 @@ const copyToClipboard = (text) => {
 export {
   logExtensionPresence, scrapeSteamAPIkey, arrayFromArrayOrNotArray,
   getExteriorFromTags, getDopplerInfo, getQuality, parseStickerInfo,
-  handleStickerNamesWithCommas, removeFromArray, getType,
+  handleStickerNamesWithCommas, removeFromArray, getType, changePageTitle,
   getPattern, goToInternalPage, jumpToAnchor, copyToClipboard,
   validateSteamAPIKey, getAssetIDFromInspectLink, uuidv4, updateLoggedInUserInfo,
   listenToLocationChange, addPageControlEventListeners, getItemByAssetID,

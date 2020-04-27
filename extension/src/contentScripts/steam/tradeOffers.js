@@ -4,7 +4,7 @@ import {
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
   getItemByAssetID, getInspectLink, removeOfferFromActiveOffers,
   logExtensionPresence, updateLoggedInUserInfo, reloadPageOnExtensionReload,
-  getNameTag, repositionNameTagIcons, jumpToAnchor,
+  getNameTag, repositionNameTagIcons, jumpToAnchor, changePageTitle,
 } from 'utils/utilsModular';
 import { prettyTimeAgo } from 'utils/dateTime';
 import { genericMarketLink } from 'utils/static/simpleStrings';
@@ -541,6 +541,11 @@ trackEvent({
   type: 'pageview',
   action: 'TradeOffersPageView',
 });
+
+if (activePage === 'incoming_offers') changePageTitle('trade_offers', 'Incoming Trade Offers');
+else if (activePage === 'sent_offers') changePageTitle('trade_offers', 'Sent Trade Offers');
+else if (activePage === 'incoming_offers_history') changePageTitle('trade_offers', 'Incoming Trade Offers History');
+else if (activePage === 'sent_offers_history') changePageTitle('trade_offers', 'Sent Trade Offers History');
 
 // chrome background tab throttling causes steam's own js files to load later
 // than the these injections, so it does not override the functions

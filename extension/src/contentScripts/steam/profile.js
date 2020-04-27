@@ -1,7 +1,7 @@
 import {
   logExtensionPresence, updateLoggedInUserInfo,
   warnOfScammer, reloadPageOnExtensionReload,
-  addUpdatedRibbon, copyToClipboard,
+  addUpdatedRibbon, copyToClipboard, changePageTitle,
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import { trackEvent } from 'utils/analytics';
@@ -67,8 +67,8 @@ if (document.querySelector('body').classList.contains('profile_page')) {
   goldenCommenters();
 
   if (loggedInUserID === profileOwnerSteamID) { // when on the logged in user's own profile
-    chrome.storage.local.get(['reoccuringMessage', 'showReoccButton'], (result) => {
-      if (result.showReoccButton) {
+    chrome.storage.local.get(['reoccuringMessage', 'showReoccButton'], ({ reoccuringMessage, showReoccButton }) => {
+      if (showReoccButton) {
         const reooccButton = '<div style="float: right; text-align: center; margin-top: 6px;" class="commentthread_user_avatar playerAvatar"><span class="btn_green_white_innerfade btn_small" id="reocc" style="padding: 5px;">Reocc<span></div>';
 
         commentThreadEntryBox.insertAdjacentHTML('afterend', DOMPurify.sanitize(reooccButton));
@@ -89,17 +89,19 @@ if (document.querySelector('body').classList.contains('profile_page')) {
             toReplace += '\\s';
             const toReplaceRegex = new RegExp(toReplace, 'g');
 
-            if (commentThread.querySelector('.commentthread_comment_text').innerText.replace(toReplaceRegex, '') === result.reoccuringMessage.replace(toReplaceRegex, '')) {
+            if (commentThread.querySelector('.commentthread_comment_text').innerText.replace(toReplaceRegex, '') === reoccuringMessage.replace(toReplaceRegex, '')) {
               commentThread.querySelectorAll('img')[1].click();
             }
           });
-          document.querySelector('.commentthread_textarea').value = result.reoccuringMessage;
+          document.querySelector('.commentthread_textarea').value = reoccuringMessage;
           setTimeout(() => {
             document.querySelectorAll('.btn_green_white_innerfade.btn_small')[1].click();
           }, 2000);
         });
       }
     });
+
+    changePageTitle('own_profile');
   } else if (!isProfilePrivate) { // when on someone else's profile that is not private
     // adds "copy profile permalink" and "show offer history" to the context menu
     const copyPermalink = `
@@ -235,7 +237,9 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         }
       }
     });
+
     reportComments('profile', profileOwnerSteamID);
+    changePageTitle('profile');
   }
 
   chrome.storage.local.get('nsfwFilter', (result) => {

@@ -8,7 +8,7 @@ import {
   getDopplerInfo, getActivePage, reloadPageOnExtensionReload, logExtensionPresence,
   updateLoggedInUserInfo, warnOfScammer, addPageControlEventListeners,
   addSearchListener, findElementByAssetID, getPattern, getNameTag,
-  removeOfferFromActiveOffers,
+  removeOfferFromActiveOffers, changePageTitle,
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import { prettyPrintPrice } from 'utils/pricing';
@@ -755,6 +755,10 @@ trackEvent({
   type: 'pageview',
   action: 'TradeOfferView',
 });
+
+const getPartnerNameScript = "document.querySelector('body').setAttribute('partnerName', g_strTradePartnerPersonaName)";
+const partnerName = injectScript(getPartnerNameScript, true, 'partnerName', 'partnerName');
+changePageTitle('trade_offer', partnerName);
 
 // changes background and adds a banner if steamrep banned scammer detected
 chrome.storage.local.get('markScammers', (result) => {

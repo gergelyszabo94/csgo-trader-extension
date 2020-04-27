@@ -12,7 +12,7 @@ import {
   souvenirExists,
   updateLoggedInUserInfo,
   toFixedNoRounding,
-  addUpdatedRibbon,
+  addUpdatedRibbon, changePageTitle,
 } from 'utils/utilsModular';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import exteriors from 'utils/static/exteriors';
@@ -487,6 +487,7 @@ trackEvent({
   type: 'pageview',
   action: 'ListingView',
 });
+changePageTitle('market_listing', fullName);
 
 const otherExteriors = `
             <div class="descriptor otherExteriors">

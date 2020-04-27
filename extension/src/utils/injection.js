@@ -13,9 +13,12 @@ const injectScript = (scriptString, toRemove, id, executeAndReturn) => {
 
   const simpleAttributeParsing = ['steamidOfLoggedinUser', 'steamidOfProfileOwner', 'tradePartnerSteamID', 'inventoryOwnerID', 'listingsInfo',
     'inventoryInfo', 'allItemsLoaded', 'offerInventoryInfo', 'steamWalletCurrency', 'steamWallet', 'formattedToInt', 'intToFormatted',
-    'priceAfterFees', 'sessionid', 'offerID'];
-  const result = simpleAttributeParsing.includes(executeAndReturn) ? document.querySelector('body').getAttribute(executeAndReturn) : null;
-  if (result !== null) document.querySelector('body').setAttribute(executeAndReturn, '');
+    'priceAfterFees', 'sessionid', 'offerID', 'partnerName'];
+
+  const result = simpleAttributeParsing.includes(executeAndReturn)
+    ? document.querySelector('body').getAttribute(executeAndReturn)
+    : null;
+  if (result !== null) document.querySelector('body').removeAttribute(executeAndReturn);
 
   if (toRemove) document.head.removeChild(toInject);
   return result;

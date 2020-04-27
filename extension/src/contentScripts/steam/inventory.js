@@ -1,7 +1,7 @@
 import DOMPurify from 'dompurify';
 
 import {
-  addPageControlEventListeners, getItemByAssetID,
+  addPageControlEventListeners, getItemByAssetID, changePageTitle,
   getAssetIDOfElement, makeItemColorful, addDopplerPhase,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists, copyToClipboard,
@@ -966,7 +966,7 @@ const generateItemsList = () => {
   downloadButton.setAttribute('href', encodedURI);
   downloadButton.classList.remove('hidden');
   downloadButton.setAttribute('download', `${getInventoryOwnerID()}_csgo_items.csv`);
-  
+
   copyToClipboard(copyText);
 
   document.getElementById('generation_result')
@@ -1275,8 +1275,9 @@ trackEvent({
   action: 'InventoryView',
 });
 
-// injects selling script if own inventory
 if (isOwnInventory()) {
+  changePageTitle('own_inventory');
+  // injects selling script if own inventory
   const sellItemScriptString = `
         function sellItemOnPage(name, assetID, price) {
             let myHeaders = new Headers();
@@ -1343,9 +1344,8 @@ if (isOwnInventory()) {
             document.getElementById('sellButton').innerText = 'Start Mass Listing';
         }`;
   injectScript(sellItemScriptString, false, 'sellItemScript', false);
-}
-
-if (!isOwnInventory()) {
+} else {
+  changePageTitle('inventory');
   // shows trade offer history summary
   chrome.storage.local.get(
     ['tradeHistoryInventory', `offerHistory_${getInventoryOwnerID()}`, 'apiKeyValid'],
