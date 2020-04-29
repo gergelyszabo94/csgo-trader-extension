@@ -55,26 +55,22 @@ const getGroupInvites = () => new Promise((resolve, reject) => {
     return response.text();
   }).then((body) => {
     if (body !== null) {
-      const html = document.createElement('html');
-      html.innerHTML = DOMPurify.sanitize(body);
-      const receivedInvitesElement = html.querySelector('#search_results');
+      const rows = body.split('class="invite_row ');
       const invitedTo = [];
 
-      if (receivedInvitesElement !== null) {
-        receivedInvitesElement.querySelectorAll('.invite_row').forEach((inviteRow) => {
-          const acceptInviteButton = inviteRow.querySelector(
-            '.linkStandard.btnv6_white_transparent.btn_small_tall',
-          );
-          const groupID = acceptInviteButton !== null
-            ? acceptInviteButton.getAttribute('href') !== null
-              ? acceptInviteButton.getAttribute('href').split('\', \'')[1]
-              : null
-            : null;
+      if (rows.length > 1) { // if there are invite rows
+        // all this hacking with string splitting instead of DOM querying
+        // is because of DOMPurify removes the in-line js actions
+        // that are used to parse the group ID
+        for (let i = 1; i <= rows.length - 1; i += 1) {
+          const groupID = rows[i].split('ApplyFriendAction( \'group_accept\', \'')[1].split('\'')[0];
+          const name = rows[i].split('<div class="groupTitle">')[1].split('">')[1].split('</a>')[0];
+
           invitedTo.push({
             steamID: groupID,
-            name: inviteRow.querySelector('.groupTitle').firstElementChild.innerText,
+            name,
           });
-        });
+        }
       }
 
       chrome.storage.local.set({
