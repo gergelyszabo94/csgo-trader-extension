@@ -271,8 +271,8 @@ const pricingProviders = {
     name: 'csgotrader',
     long: 'CSGO Trader',
     short: 'CS',
-    url: 'http://csgotrader.app',
-    description: "The extension's own pricing, aims to be accurate and to provide some kind of price for every item.",
+    url: 'http://csgotrader.app/prices/',
+    description: 'The extension\'s own pricing, aims to be accurate and to provide some kind of price for every item.',
     pricing_modes: {
       csgotrader: {
         description: 'CSGO Trader price',
