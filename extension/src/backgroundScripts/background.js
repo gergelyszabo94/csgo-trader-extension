@@ -1,6 +1,6 @@
 import { storageKeys } from 'utils/static/storageKeys';
 import { trackEvent, sendTelemetry } from 'utils/analytics';
-import { updatePrices, updateExchangeRates } from 'utils/pricing';
+import { updatePrices, updateExchangeRates, getUserCurrencyBestGuess } from 'utils/pricing';
 import {
   scrapeSteamAPIkey, goToInternalPage, uuidv4,
 } from 'utils/utilsModular';
@@ -33,6 +33,19 @@ chrome.runtime.onInstalled.addListener((details) => {
       type: 'event',
       action: 'ExtensionInstall',
     });
+
+    // sets extension currency to Steam currency when possible
+    // the delay is to wait for exchange rates data to be set
+    setTimeout(() => {
+      getUserCurrencyBestGuess().then((currency) => {
+        chrome.storage.local.get(['exchangeRates'], ({ exchangeRates }) => {
+          chrome.storage.local.set({
+            currency,
+            exchangeRate: exchangeRates[currency],
+          });
+        });
+      });
+    }, 20000);
 
     // tries to set the api key - only works if the user has already generated one before
     scrapeSteamAPIkey();

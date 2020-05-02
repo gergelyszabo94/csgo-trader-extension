@@ -287,8 +287,78 @@ const steamFormattedPriceToCents = (formattedPrice) => {
   return injectScript(formattedToIntScript, true, 'formattedToIntScript', 'formattedToInt');
 };
 
+const getUserCurrencyBestGuess = () => new Promise((resolve) => {
+  // Steam stores this data in the g_rgCurrencyData var in global.js
+  const steamCurrencyCodes = {
+    1: 'USD',
+    2: 'GBP',
+    3: 'EUR',
+    4: 'CHF',
+    5: 'RUB',
+    6: 'PLN',
+    7: 'BRL',
+    9: 'NOK',
+    10: 'IDR',
+    11: 'MYR',
+    12: 'PHP',
+    13: 'SGD',
+    14: 'THB',
+    15: 'VND',
+    16: 'KRW',
+    17: 'TRY',
+    18: 'UAH',
+    19: 'MXN',
+    20: 'CAD',
+    21: 'AUD',
+    22: 'NZD',
+    23: 'CNY',
+    24: 'INR',
+    25: 'CLP',
+    26: 'PEN',
+    27: 'COP',
+    28: 'ZAR',
+    29: 'HKD',
+    30: 'TWD',
+    31: 'SAR',
+    32: 'AED',
+    34: 'ARS',
+    35: 'ILS',
+    36: 'BYN',
+    37: 'KZT',
+    38: 'KWD',
+    39: 'QAR',
+    40: 'CRC',
+    41: 'UYU',
+    9000: 'RMB',
+  };
+
+  const getRequest = new Request('https://steamcommunity.com/market/');
+
+  fetch(getRequest).then((response) => {
+    if (!response.ok) {
+      console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+      resolve(currencies.USD.short);
+    }
+    return response.text();
+  }).then((body) => {
+    const valueStart = body.split('var g_nWalletCurrency = ')[1];
+    if (valueStart !== undefined) {
+      const value = valueStart.split(';')[0];
+      const currencyFromCode = steamCurrencyCodes[value];
+      if (currencyFromCode !== undefined) {
+        if (currencies[currencyFromCode] !== undefined) {
+          resolve(currencies[currencyFromCode].short);
+        }
+      }
+    }
+  }).catch((err) => {
+    console.log(err);
+    resolve(currencies.USD.short);
+  });
+});
+
 export {
-  updatePrices, updateExchangeRates, getPrice,
+  updatePrices, updateExchangeRates, getPrice, getUserCurrencyBestGuess,
   getStickerPriceTotal, prettyPrintPrice, getPriceOverview,
   getPriceAfterFees, userPriceToProperPrice, centsToSteamFormattedPrice,
   steamFormattedPriceToCents, priceQueue, workOnPriceQueue,
