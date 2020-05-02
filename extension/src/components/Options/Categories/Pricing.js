@@ -42,7 +42,7 @@ const pricing = () => {
       />
       <Row
         name="Currency"
-        type="select"
+        type="currency"
         id="currency"
         description="The currency you want prices to show in for you"
         options={transformCurrencies()}

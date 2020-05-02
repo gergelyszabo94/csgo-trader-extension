@@ -1,5 +1,6 @@
 import React from 'react';
 
+import Currency from 'components/Options/Inputs/Currency/Currency';
 import FlipSwitchStorage from './Inputs/FlipSwitchStorage/FlipSwitchStorage';
 import FlipSwitchPermission from './Inputs/FlipSwitchPermission/FlipSwitchPermission';
 import ModalTextBox from './Inputs/ModalTextBox/ModalTextBox';
@@ -44,6 +45,8 @@ const typeSwitch = (type, key, permission, origins, modalTitle, options) => {
       return <Restore id={key} />;
     case 'doubleSelect':
       return <DoubleSelect id={[...key]} options={options} />;
+    case 'currency':
+      return <Currency id={key} options={options} />;
     default:
       return null;
   }
