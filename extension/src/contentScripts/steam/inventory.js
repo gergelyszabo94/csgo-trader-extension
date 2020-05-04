@@ -22,6 +22,7 @@ import {
   priceQueue, workOnPriceQueue, getSteamWalletCurrency,
 }
   from 'utils/pricing';
+import { listItem } from 'utils/market';
 import { sortingModes } from 'utils/static/sortingModes';
 import doTheSorting from 'utils/sorting';
 import { overridePopulateActions } from 'utils/steamOverriding';
@@ -973,6 +974,57 @@ const generateItemsList = () => {
     .innerText = `${lineCount} lines (${characterCount} chars) generated and copied to clipboard`;
 };
 
+const sellNext = () => {
+  for (const listingRow of document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr')) {
+    const assetIDs = listingRow.getAttribute('data-assetids').split(',');
+    const soldIDs = listingRow.getAttribute('data-sold-ids').split(',');
+
+    for (const assetID of assetIDs) {
+      if (!soldIDs.includes(assetID)) {
+        const name = listingRow.getAttribute('data-item-name');
+        listItem(
+          '730',
+          '2',
+          '1',
+          assetID,
+          listingRow.querySelector('.cstSelected').getAttribute('data-listing-price'),
+        ).then(() => {
+          const soldFromRow = document.getElementById('listingTable')
+            .querySelector('tbody').querySelector(`[data-item-name="${name}"]`);
+          const rowAssetIDs = soldFromRow.getAttribute('data-assetids').split(',');
+          let rowSoldIDs = soldFromRow.getAttribute('data-sold-ids').split(',');
+          rowSoldIDs = rowSoldIDs[0] === '' ? [] : rowSoldIDs;
+
+          rowSoldIDs.push(assetID);
+          if (rowAssetIDs.toString() === rowSoldIDs.toString()) soldFromRow.classList.add('strikethrough');
+          const quantityElement = soldFromRow.querySelector('.itemAmount');
+          quantityElement.innerText = parseInt(quantityElement.innerText) - 1;
+
+          // flashing the quantity as a visual feedback when it changes
+          quantityElement.classList.add('whiteBackground');
+          setTimeout(() => quantityElement.classList.remove('whiteBackground'), 200);
+
+          soldFromRow.setAttribute('data-sold-ids', rowSoldIDs.toString());
+          const itemElement = document.getElementById(`730_2_${assetID}`);
+          itemElement.classList.add('sold');
+          itemElement.classList.remove('cstSelected');
+
+          sellNext();
+        }).catch((err) => {
+          console.log(err);
+          if (err.message) {
+            const warningElement = document.getElementById('massSellError');
+            warningElement.innerText = err.message;
+            warningElement.classList.remove('hidden');
+          }
+        });
+        return;
+      }
+    }
+  }
+  document.getElementById('sellButton').innerText = 'Start Mass Listing';
+};
+
 const addFunctionBar = () => {
   if (document.getElementById('inventory_function_bar') === null) {
     const handPointer = chrome.runtime.getURL('images/hand-pointer-solid.svg');
@@ -1074,8 +1126,7 @@ const addFunctionBar = () => {
     document.getElementById('sellButton').addEventListener('click',
       (event) => {
         event.target.innerText = 'Mass Listing in Progress...';
-        const startSellingScript = 'sellNext()';
-        injectScript(startSellingScript, true, 'startSelling', false);
+        sellNext();
       });
 
     // shows currency mismatch warning and option to change currency
@@ -1228,13 +1279,6 @@ const hideOtherExtensionPrices = () => {
   });
 };
 
-// ready made for possible future usage, unused atm
-//
-// const sellItem = (assetID, price) => {
-//     const callSellItemOnPageScript = `sellItemOnPage(${price}, ${assetID})`;
-//     injectScript(callSellItemOnPageScript, true, 'callSellItemOnPage', false);
-// };
-
 logExtensionPresence();
 
 // mutation observer observes changes on the right side of the inventory interface
@@ -1278,72 +1322,6 @@ trackEvent({
 if (isOwnInventory()) {
   changePageTitle('own_inventory');
   // injects selling script if own inventory
-  const sellItemScriptString = `
-        function sellItemOnPage(name, assetID, price) {
-            let myHeaders = new Headers();
-            myHeaders.append('Content-Type', 'application/x-www-form-urlencoded');
-        
-            fetch(
-                'https://steamcommunity.com/market/sellitem/',
-                {
-                    "body":'sessionid=' + g_sessionID + '&appid=730&contextid=2&amount=1&assetid=' + assetID + '&price=' + price,
-                    "headers": myHeaders,
-                    "method":"POST"
-                }
-            ).then((response) => {
-                if (!response.ok) {
-                    console.log('error');
-                }
-                else return response.json();
-            }).then((body) => {
-                if (body.success) {
-                    let soldFromRow = document.getElementById('listingTable').querySelector('tbody').querySelector('[data-item-name="' + name + '"]');
-                    let assetIDs = soldFromRow.getAttribute('data-assetids').split(',');
-                    let soldIDs = soldFromRow.getAttribute('data-sold-ids').split(',');
-                    soldIDs = soldIDs[0] === '' ? [] : soldIDs;
-            
-                    soldIDs.push(assetID);
-                    if (assetIDs.toString() === soldIDs.toString()) soldFromRow.classList.add('strikethrough');
-                    let quantityElement = soldFromRow.querySelector('.itemAmount');
-                    quantityElement.innerText = parseInt(quantityElement.innerText) - 1;
-                    
-                    // flashing the quantity as a visual feedback when it changes
-                    quantityElement.classList.add('whiteBackground');
-                    setTimeout(() => quantityElement.classList.remove('whiteBackground'), 200);
-                    
-                    soldFromRow.setAttribute('data-sold-ids', soldIDs.toString());
-                    let itemElement = document.getElementById('730_2_' + assetID);
-                    itemElement.classList.add('sold');
-                    itemElement.classList.remove('cstSelected');
-            
-                    sellNext();
-                 }
-                 else {
-                    console.log(body);
-                    let warningElement = document.getElementById('massSellError');
-                    warningElement.innerText = body.message;
-                    warningElement.classList.remove('hidden');
-                 }
-            }).catch(err => {
-                console.log(err);
-            });
-        }
-        
-        function sellNext() {
-            for (let listingRow of document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr')) {
-                let assetIDs = listingRow.getAttribute('data-assetids').split(',');
-                let soldIDs = listingRow.getAttribute('data-sold-ids').split(',');
-        
-                for (let assetID of assetIDs) {
-                    if (!soldIDs.includes(assetID)) {
-                        sellItemOnPage(listingRow.getAttribute('data-item-name'), assetID, listingRow.querySelector('.cstSelected').getAttribute('data-listing-price'));
-                        return;
-                    }
-                }
-            }
-            document.getElementById('sellButton').innerText = 'Start Mass Listing';
-        }`;
-  injectScript(sellItemScriptString, false, 'sellItemScript', false);
 } else {
   changePageTitle('inventory');
   // shows trade offer history summary
