@@ -50,6 +50,7 @@ const commentPatternsToReport = [
   'Hey bro, I\'ve played cs against you recently and I\'d like to invite you in our team.',
   '🎯🎯This guy is pro!🎯🎯',
   'profile have won our weekly lottery',
+  'giftbytwitch.fun',
 ];
 
 export default commentPatternsToReport;
