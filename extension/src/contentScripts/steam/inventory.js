@@ -1022,7 +1022,7 @@ const sellNext = () => {
       }
     }
   }
-  document.getElementById('sellButton').innerText = 'Start Mass Listing';
+  document.getElementById('sellButton').innerText = 'List Items';
 };
 
 const addFunctionBar = () => {
@@ -1092,22 +1092,19 @@ const addFunctionBar = () => {
                     </div>
                     <div id="massListing" class="hidden">
                     <h2>Mass Market Listing - Select Items to Start</h2>
-                    <h3>
-                        Check out the <a href="https://csgotrader.app/release-notes#1.22" target="_blank">Release Notes</a> for a quick guide about the Mass Listing feature
-                    </h3>
                     <div class="hidden not_tradable" id="currency_mismatch_warning">
                     Warning: Your Steam Wallet currency and CSGO Trader currency are not the same.
                     <span class="underline clickable" id="changeCurrency">Click here to fix this</span></div>
                         <table id="listingTable">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Quantity</th>
-                                    <th>Extension price</th>
-                                    <th>Starting at</th>
-                                    <th>Quick sell</th>
-                                    <th>Instant Sell</th>
-                                    <th>Your price</th>
+                                    <th title="The name of the item">Name</th>
+                                    <th title="How many of these type of items are set to be sold">Quantity</th>
+                                    <th title="The price provided by the pricing provider you have selected in the options">Extension price</th>
+                                    <th title="The price of the current lowest listing for this item on Steam Community Market">Starting at</th>
+                                    <th title="Just below the starting at price, using it will make your listing the cheapest">Quick sell</th>
+                                    <th title="The price of the current highest buy order, your item should sell right after you list it">Instant Sell</th>
+                                    <th title="Price specified by you">Your price</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1116,7 +1113,7 @@ const addFunctionBar = () => {
                         <span>
                             <span style="font-weight: bold">Total:</span> To list <span id="numberOfItemsToSell">0</span> item(s) worth <span id="saleTotal">0</span>
                             and receive <span id="saleTotalAfterFees">0</span> after fees
-                            <span id="sellButton" class="clickable">Start Mass Listing</span>
+                            <span id="sellButton" class="clickable" title="Start the mass listing of the selected items">List Items</span>
                         </span>
                         <div id="massSellError" class="hidden not_tradable"></div>
                     </div>
