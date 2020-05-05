@@ -1032,11 +1032,18 @@ const sellNext = () => {
             sellNext();
           }).catch((err) => {
             console.log(err);
+            const warningElement = document.getElementById('massSellError');
             if (err.message) {
-              const warningElement = document.getElementById('massSellError');
               warningElement.innerText = err.message;
               warningElement.classList.remove('hidden');
             }
+            const retryEl = document.getElementById('massSaleRetry');
+            retryEl.classList.remove('hidden');
+            setTimeout(() => {
+              retryEl.classList.add('hidden');
+              if (!warningElement.classList.contains('hidden')) warningElement.classList.add('hidden');
+              sellNext();
+            }, 5000);
           });
 
           return;
@@ -1140,6 +1147,7 @@ const addFunctionBar = () => {
                         </span>
                         <span class="inProgress hidden">
                             Listing of <span id="remainingItems">0</span>/<span id="totalItems">0</span> in progress.
+                            <span class="hidden not_tradable" id="massSaleRetry">Retrying in 5 seconds</span>
                             <span id="stopSale" class="clickable" title="Stop listing" data-stopped="false">Stop Listing</span>
                         </span>
                         <div id="massSellError" class="hidden not_tradable"></div>
