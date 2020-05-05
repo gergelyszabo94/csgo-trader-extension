@@ -7,6 +7,7 @@ const priceQueue = {
   jobs: [],
   lastJobSuccessful: true,
   localCache: {},
+  cleanupFunction: () => {}, // optional function that is executed when all jobs are done
 };
 
 // tested and works in inventories, offers and market pages
@@ -126,7 +127,10 @@ const workOnPriceQueue = () => {
     } else { // when there are jobs in the queue but work is already being done at the moment
       setTimeout(() => { workOnPriceQueue(); }, delay); // in this case is retries with a delay
     }
-  } else priceQueue.active = false;
+  } else {
+    if (priceQueue.active) priceQueue.cleanupFunction();
+    priceQueue.active = false;
+  }
 };
 
 const updatePrices = () => {

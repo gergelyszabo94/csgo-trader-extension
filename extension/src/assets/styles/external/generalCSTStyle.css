@@ -82,6 +82,11 @@
     margin-right: 10px;
 }
 
+#startOnLoad {
+    float: right;
+    margin-right: 10px;
+}
+
 /*bootstrap progress bar*/
 progress {
     vertical-align: baseline;

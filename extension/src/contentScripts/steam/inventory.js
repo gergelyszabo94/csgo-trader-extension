@@ -279,6 +279,100 @@ const dealWithNewFloatData = (job, floatInfo, activeFloatQueue) => {
   else if (job.type === 'inventory_floatbar') hideFloatBars();
 };
 
+const sellNext = () => {
+  if (document.getElementById('stopSale').getAttribute('data-stopped') === 'false') {
+    for (const listingRow of document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr')) {
+      const assetIDs = listingRow.getAttribute('data-assetids').split(',');
+      const soldIDs = listingRow.getAttribute('data-sold-ids').split(',');
+
+      for (const assetID of assetIDs) {
+        if (!soldIDs.includes(assetID)) {
+          const name = listingRow.getAttribute('data-item-name');
+          listItem(
+            '730',
+            '2',
+            '1',
+            assetID,
+            listingRow.querySelector('.cstSelected').getAttribute('data-listing-price'),
+          ).then(() => {
+            const soldFromRow = document.getElementById('listingTable')
+              .querySelector('tbody').querySelector(`[data-item-name="${name}"]`);
+            const rowAssetIDs = soldFromRow.getAttribute('data-assetids').split(',');
+            let rowSoldIDs = soldFromRow.getAttribute('data-sold-ids').split(',');
+            rowSoldIDs = rowSoldIDs[0] === '' ? [] : rowSoldIDs;
+
+            rowSoldIDs.push(assetID);
+            if (rowAssetIDs.toString() === rowSoldIDs.toString()) soldFromRow.classList.add('strikethrough');
+            const quantityElement = soldFromRow.querySelector('.itemAmount');
+            quantityElement.innerText = parseInt(quantityElement.innerText) - 1;
+
+            // flashing quantity as visual feedback when it changes
+            quantityElement.classList.add('whiteBackground');
+            document.getElementById('remainingItems').classList.add('whiteBackground');
+            setTimeout(() => {
+              quantityElement.classList.remove('whiteBackground');
+              document.getElementById('remainingItems').classList.remove('whiteBackground');
+            }, 200);
+
+            soldFromRow.setAttribute('data-sold-ids', rowSoldIDs.toString());
+            const itemElement = document.getElementById(`730_2_${assetID}`);
+            itemElement.classList.add('sold');
+            itemElement.classList.remove('cstSelected');
+
+            // updates remaining and total items
+            const totalItems = parseInt(document.getElementById('numberOfItemsToSell').innerText);
+            document.getElementById('totalItems').innerText = totalItems.toString();
+
+            let alreadySold = 0;
+            for (const row of document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr')) {
+              const IDs = row.getAttribute('data-sold-ids').split(',');
+              alreadySold += IDs.length === 1
+                ? IDs[0] === ''
+                  ? 0
+                  : 1
+                : IDs.length;
+            }
+            document.getElementById('remainingItems').innerText = (totalItems - alreadySold).toString();
+
+            sellNext();
+          }).catch((err) => {
+            console.log(err);
+            const warningElement = document.getElementById('massSellError');
+            if (err.message) {
+              warningElement.innerText = err.message;
+              warningElement.classList.remove('hidden');
+            }
+            const retryEl = document.getElementById('massSaleRetry');
+            retryEl.classList.remove('hidden');
+            setTimeout(() => {
+              retryEl.classList.add('hidden');
+              if (!warningElement.classList.contains('hidden')) warningElement.classList.add('hidden');
+              sellNext();
+            }, 5000);
+          });
+
+          return;
+        }
+      }
+    }
+  }
+  document.querySelector('.beforeStart').classList.remove('hidden');
+  document.querySelector('.inProgress').classList.add('hidden');
+};
+
+const startMassSelling = () => {
+  document.querySelector('.beforeStart').classList.add('hidden');
+  document.querySelector('.inProgress').classList.remove('hidden');
+  document.getElementById('stopSale').setAttribute('data-stopped', 'false');
+  sellNext();
+};
+
+const onListingPricesLoaded = () => {
+  if (document.getElementById('startListingOnPriceLoad').checked) startMassSelling();
+};
+
+priceQueue.cleanupFunction = onListingPricesLoaded;
+
 // adds market info in other inventories
 const addStartingAtPrice = (marketHashName) => {
   getPriceOverview('730', marketHashName).then(
@@ -974,87 +1068,6 @@ const generateItemsList = () => {
     .innerText = `${lineCount} lines (${characterCount} chars) generated and copied to clipboard`;
 };
 
-const sellNext = () => {
-  if (document.getElementById('stopSale').getAttribute('data-stopped') === 'false') {
-    for (const listingRow of document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr')) {
-      const assetIDs = listingRow.getAttribute('data-assetids').split(',');
-      const soldIDs = listingRow.getAttribute('data-sold-ids').split(',');
-
-      for (const assetID of assetIDs) {
-        if (!soldIDs.includes(assetID)) {
-          const name = listingRow.getAttribute('data-item-name');
-          listItem(
-            '730',
-            '2',
-            '1',
-            assetID,
-            listingRow.querySelector('.cstSelected').getAttribute('data-listing-price'),
-          ).then(() => {
-            const soldFromRow = document.getElementById('listingTable')
-              .querySelector('tbody').querySelector(`[data-item-name="${name}"]`);
-            const rowAssetIDs = soldFromRow.getAttribute('data-assetids').split(',');
-            let rowSoldIDs = soldFromRow.getAttribute('data-sold-ids').split(',');
-            rowSoldIDs = rowSoldIDs[0] === '' ? [] : rowSoldIDs;
-
-            rowSoldIDs.push(assetID);
-            if (rowAssetIDs.toString() === rowSoldIDs.toString()) soldFromRow.classList.add('strikethrough');
-            const quantityElement = soldFromRow.querySelector('.itemAmount');
-            quantityElement.innerText = parseInt(quantityElement.innerText) - 1;
-
-            // flashing quantity as visual feedback when it changes
-            quantityElement.classList.add('whiteBackground');
-            document.getElementById('remainingItems').classList.add('whiteBackground');
-            setTimeout(() => {
-              quantityElement.classList.remove('whiteBackground');
-              document.getElementById('remainingItems').classList.remove('whiteBackground');
-            }, 200);
-
-            soldFromRow.setAttribute('data-sold-ids', rowSoldIDs.toString());
-            const itemElement = document.getElementById(`730_2_${assetID}`);
-            itemElement.classList.add('sold');
-            itemElement.classList.remove('cstSelected');
-
-            // updates remaining and total items
-            const totalItems = parseInt(document.getElementById('numberOfItemsToSell').innerText);
-            document.getElementById('totalItems').innerText = totalItems.toString();
-
-            let alreadySold = 0;
-            for (const row of document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr')) {
-              const IDs = row.getAttribute('data-sold-ids').split(',');
-              alreadySold += IDs.length === 1
-                ? IDs[0] === ''
-                  ? 0
-                  : 1
-                : IDs.length;
-            }
-            document.getElementById('remainingItems').innerText = (totalItems - alreadySold).toString();
-
-            sellNext();
-          }).catch((err) => {
-            console.log(err);
-            const warningElement = document.getElementById('massSellError');
-            if (err.message) {
-              warningElement.innerText = err.message;
-              warningElement.classList.remove('hidden');
-            }
-            const retryEl = document.getElementById('massSaleRetry');
-            retryEl.classList.remove('hidden');
-            setTimeout(() => {
-              retryEl.classList.add('hidden');
-              if (!warningElement.classList.contains('hidden')) warningElement.classList.add('hidden');
-              sellNext();
-            }, 5000);
-          });
-
-          return;
-        }
-      }
-    }
-  }
-  document.querySelector('.beforeStart').classList.remove('hidden');
-  document.querySelector('.inProgress').classList.add('hidden');
-};
-
 const addFunctionBar = () => {
   if (document.getElementById('inventory_function_bar') === null) {
     const handPointer = chrome.runtime.getURL('images/hand-pointer-solid.svg');
@@ -1144,6 +1157,12 @@ const addFunctionBar = () => {
                             <span style="font-weight: bold">Total:</span> To list <span id="numberOfItemsToSell">0</span> item(s) worth <span id="saleTotal">0</span>
                             and receive <span id="saleTotalAfterFees">0</span> after fees
                             <span id="sellButton" class="clickable" title="Start the mass listing of the selected items">List Items</span>
+                            <span id="startOnLoad">
+                              <span title="Start listing the items automatically when all the pricing info has been loaded">
+                                  Start on price load
+                              </span>
+                              <input type="checkbox" id="startListingOnPriceLoad">
+                            </span>
                         </span>
                         <span class="inProgress hidden">
                             Listing of <span id="remainingItems">0</span>/<span id="totalItems">0</span> in progress.
@@ -1157,10 +1176,7 @@ const addFunctionBar = () => {
 
     document.getElementById('sellButton').addEventListener('click',
       () => {
-        document.querySelector('.beforeStart').classList.add('hidden');
-        document.querySelector('.inProgress').classList.remove('hidden');
-        document.getElementById('stopSale').setAttribute('data-stopped', 'false');
-        sellNext();
+        startMassSelling();
       });
 
     document.getElementById('stopSale').setAttribute('data-stopped', 'true');
