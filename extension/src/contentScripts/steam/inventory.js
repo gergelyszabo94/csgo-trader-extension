@@ -1095,6 +1095,13 @@ const addFunctionBar = () => {
                             </select>
                         </div>
                     </div>
+                    <div id="functionBarSelectionMenu" class="functionBarRow hidden">
+                        <span id="selectAllPage" class="clickable underline" title="Select all the items on the page" style="margin-right: 30px">
+                            Select All Page
+                        </span>
+                        <span id="selectAllUnder" class="clickable underline" title="Select all items under this price">Select all under:</span>
+                        <input type="number" id="selectUnder" style="width: 50px" title="The items that are cheaper than this value will be selected, in your currency">
+                    </div>
                     <div id="functionBarGenerateMenu" class="functionBarRow hidden">
                         <div>
                             <span>Generate list of inventory items (for posting in groups, trading forums, etc.) </span>
@@ -1134,45 +1141,68 @@ const addFunctionBar = () => {
                             </div>
                     </div>
                     <div id="massListing" class="hidden">
-                    <h2>Mass Market Listing - Select Items to Start</h2>
-                    <div class="hidden not_tradable" id="currency_mismatch_warning">
-                    Warning: Your Steam Wallet currency and CSGO Trader currency are not the same.
-                    <span class="underline clickable" id="changeCurrency">Click here to fix this</span></div>
-                        <table id="listingTable">
-                            <thead>
-                                <tr>
-                                    <th title="The name of the item">Name</th>
-                                    <th title="How many of these type of items are set to be sold">Quantity</th>
-                                    <th title="The price provided by the pricing provider you have selected in the options">Extension price</th>
-                                    <th title="The price of the current lowest listing for this item on Steam Community Market">Starting at</th>
-                                    <th title="Just below the starting at price, using it will make your listing the cheapest">Quick sell</th>
-                                    <th title="The price of the current highest buy order, your item should sell right after you list it">Instant Sell</th>
-                                    <th title="Price specified by you">Your price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                        <span class="beforeStart">
-                            <span style="font-weight: bold">Total:</span> To list <span id="numberOfItemsToSell">0</span> item(s) worth <span id="saleTotal">0</span>
-                            and receive <span id="saleTotalAfterFees">0</span> after fees
-                            <span id="sellButton" class="clickable" title="Start the mass listing of the selected items">List Items</span>
-                            <span id="startOnLoad">
-                              <span title="Start listing the items automatically when all the pricing info has been loaded">
-                                  Start on price load
+                      <h2>Market Mass Listing</h2>
+                      <div class="hidden not_tradable" id="currency_mismatch_warning">
+                      Warning: Your Steam Wallet currency and CSGO Trader currency are not the same.
+                      <span class="underline clickable" id="changeCurrency">Click here to fix this</span></div>
+                          <table id="listingTable">
+                              <thead>
+                                  <tr>
+                                      <th title="The name of the item">Name</th>
+                                      <th title="How many of these type of items are set to be sold">Quantity</th>
+                                      <th title="The price provided by the pricing provider you have selected in the options">Extension price</th>
+                                      <th title="The price of the current lowest listing for this item on Steam Community Market">Starting at</th>
+                                      <th title="Just below the starting at price, using it will make your listing the cheapest">Quick sell</th>
+                                      <th title="The price of the current highest buy order, your item should sell right after you list it">Instant Sell</th>
+                                      <th title="Price specified by you">Your price</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                              </tbody>
+                          </table>
+                          <span class="beforeStart">
+                              <span style="font-weight: bold">Total:</span> To list <span id="numberOfItemsToSell">0</span> item(s) worth <span id="saleTotal">0</span>
+                              and receive <span id="saleTotalAfterFees">0</span> after fees
+                              <span id="sellButton" class="clickable" title="Start the mass listing of the selected items">List Items</span>
+                              <span id="startOnLoad">
+                                <span title="Start listing the items automatically when all the pricing info has been loaded">
+                                    Start on price load
+                                </span>
+                                <input type="checkbox" id="startListingOnPriceLoad">
                               </span>
-                              <input type="checkbox" id="startListingOnPriceLoad">
-                            </span>
-                        </span>
-                        <span class="inProgress hidden">
-                            Listing of <span id="remainingItems">0</span>/<span id="totalItems">0</span> in progress.
-                            <span class="hidden not_tradable" id="massSaleRetry">Retrying in 5 seconds</span>
-                            <span id="stopSale" class="clickable" title="Stop listing" data-stopped="false">Stop Listing</span>
-                        </span>
-                        <div id="massSellError" class="hidden not_tradable"></div>
+                          </span>
+                          <span class="inProgress hidden">
+                              Listing of <span id="remainingItems">0</span>/<span id="totalItems">0</span> in progress.
+                              <span class="hidden not_tradable" id="massSaleRetry">Retrying in 5 seconds</span>
+                              <span id="stopSale" class="clickable" title="Stop listing" data-stopped="false">Stop Listing</span>
+                          </span>
+                          <div id="massSellError" class="hidden not_tradable"></div>
                     </div>
                 </div>`,
     );
+
+    document.getElementById('selectAllPage').addEventListener('click', () => {
+      document.querySelectorAll('.inventory_page').forEach((page) => {
+        if (page.style.display === 'block') {
+          page.querySelectorAll('.item').forEach((item) => {
+            if (!item.classList.contains('cstSelected')) item.classList.add('cstSelected');
+          });
+        }
+      });
+      updateSelectedItemsSummary();
+    });
+
+    document.getElementById('selectAllUnder').addEventListener('click', () => {
+      const underThisPrice = parseFloat(document.getElementById('selectUnder').value);
+      document.getElementById('tabcontent_inventory').querySelectorAll('.item').forEach((itemElement) => {
+        const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+        if (item !== undefined && parseFloat(item.price.price) < underThisPrice
+          && !itemElement.classList.contains('cstSelected') && item.marketable === 1) {
+          itemElement.classList.add('cstSelected');
+        }
+      });
+      updateSelectedItemsSummary();
+    });
 
     document.getElementById('sellButton').addEventListener('click',
       () => {
@@ -1214,6 +1244,7 @@ const addFunctionBar = () => {
 
     document.getElementById('selectButton').addEventListener('click',
       (event) => {
+        const selectMenu = document.getElementById('functionBarSelectionMenu');
         if (event.target.classList.contains('selectionActive')) {
           // analytics
           trackEvent({
@@ -1224,6 +1255,7 @@ const addFunctionBar = () => {
           unselectAllItems();
           updateSelectedItemsSummary();
           event.target.classList.remove('selectionActive');
+          selectMenu.classList.add('hidden');
 
           if (isOwnInventory()) {
             document.getElementById('massListing').classList.add('hidden');
@@ -1239,6 +1271,7 @@ const addFunctionBar = () => {
 
           document.body.addEventListener('click', listenSelectClicks, false);
           event.target.classList.add('selectionActive');
+          selectMenu.classList.remove('hidden');
           if (isOwnInventory()) document.getElementById('massListing').classList.remove('hidden');
         }
       });
