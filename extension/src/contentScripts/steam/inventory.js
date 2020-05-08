@@ -783,14 +783,11 @@ const removeUnselectedItemsFromTable = () => {
 };
 
 const addListingRow = (item) => {
-  // html tables are special beasts and validating a single row alone does not work as expected
-  // (tr and td tags get removed) more: https://github.com/cure53/DOMPurify/issues/324
-  // this is why not the whole thing is validated but the individual variables used
   const row = `
-          <div class="row" data-assetids="${DOMPurify.sanitize(item.assetid)}" data-sold-ids="" data-item-name="${DOMPurify.sanitize(item.market_hash_name)}">
+          <div class="row" data-assetids="${item.assetid}" data-sold-ids="" data-item-name="${item.market_hash_name}">
               <div class="cell itemName">
-                  <a href="https://steamcommunity.com/market/listings/730/${DOMPurify.sanitize(item.market_hash_name)}" target="_blank">
-                      ${DOMPurify.sanitize(item.market_hash_name)}
+                  <a href="https://steamcommunity.com/market/listings/730/${item.market_hash_name}" target="_blank">
+                      ${item.market_hash_name}
                   </a>
               </div>
               <div class="cell itemAmount">
@@ -798,10 +795,10 @@ const addListingRow = (item) => {
               </div>
               <div
                   class="cell itemExtensionPrice cstSelected clickable"
-                  data-price-in-cents="${DOMPurify.sanitize(userPriceToProperPrice(item.price.price).toString())}"
-                  data-listing-price="${DOMPurify.sanitize(getPriceAfterFees(userPriceToProperPrice(item.price.price)).toString())}"
+                  data-price-in-cents="${userPriceToProperPrice(item.price.price).toString()}"
+                  data-listing-price="${getPriceAfterFees(userPriceToProperPrice(item.price.price)).toString()}"
                   >
-                  ${DOMPurify.sanitize(item.price.display)}
+                  ${item.price.display}
               </div>
               <div class="cell itemStartingAt clickable">Loading...</div>
               <div class="cell itemQuickSell clickable">Loading...</div>
@@ -810,7 +807,7 @@ const addListingRow = (item) => {
           </div>`;
 
   document.getElementById('listingTable').querySelector('.rowGroup')
-    .insertAdjacentHTML('beforeend', row);
+    .insertAdjacentHTML('beforeend', DOMPurify.sanitize(row));
   const listingRow = getListingRow(item.market_hash_name);
 
   listingRow.querySelector('.itemAmount').querySelector('input[type=number]')
