@@ -281,7 +281,7 @@ const dealWithNewFloatData = (job, floatInfo, activeFloatQueue) => {
 
 const sellNext = () => {
   if (document.getElementById('stopSale').getAttribute('data-stopped') === 'false') {
-    for (const listingRow of document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr')) {
+    for (const listingRow of document.getElementById('listingTable').querySelector('.rowGroup').querySelectorAll('.row')) {
       const assetIDs = listingRow.getAttribute('data-assetids').split(',');
       const soldIDs = listingRow.getAttribute('data-sold-ids').split(',');
 
@@ -296,21 +296,22 @@ const sellNext = () => {
             listingRow.querySelector('.cstSelected').getAttribute('data-listing-price'),
           ).then(() => {
             const soldFromRow = document.getElementById('listingTable')
-              .querySelector('tbody').querySelector(`[data-item-name="${name}"]`);
+              .querySelector('.rowGroup').querySelector(`[data-item-name="${name}"]`);
             const rowAssetIDs = soldFromRow.getAttribute('data-assetids').split(',');
             let rowSoldIDs = soldFromRow.getAttribute('data-sold-ids').split(',');
             rowSoldIDs = rowSoldIDs[0] === '' ? [] : rowSoldIDs;
 
             rowSoldIDs.push(assetID);
             if (rowAssetIDs.toString() === rowSoldIDs.toString()) soldFromRow.classList.add('strikethrough');
-            const quantityElement = soldFromRow.querySelector('.itemAmount');
-            quantityElement.innerText = parseInt(quantityElement.innerText) - 1;
+            const quantityCell = soldFromRow.querySelector('.itemAmount');
+            const quantityElement = quantityCell.querySelector('input');
+            quantityElement.value = (parseInt(quantityElement.value) - 1).toString();
 
             // flashing quantity as visual feedback when it changes
-            quantityElement.classList.add('whiteBackground');
+            quantityCell.classList.add('whiteBackground');
             document.getElementById('remainingItems').classList.add('whiteBackground');
             setTimeout(() => {
-              quantityElement.classList.remove('whiteBackground');
+              quantityCell.classList.remove('whiteBackground');
               document.getElementById('remainingItems').classList.remove('whiteBackground');
             }, 200);
 
@@ -324,7 +325,7 @@ const sellNext = () => {
             document.getElementById('totalItems').innerText = totalItems.toString();
 
             let alreadySold = 0;
-            for (const row of document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr')) {
+            for (const row of document.getElementById('listingTable').querySelector('.rowGroup').querySelectorAll('.row')) {
               const IDs = row.getAttribute('data-sold-ids').split(',');
               alreadySold += IDs.length === 1
                 ? IDs[0] === ''
@@ -751,25 +752,25 @@ const unselectAllItems = () => {
 const updateMassSaleTotal = () => {
   let total = 0;
   let totalAfterFees = 0;
-  document.getElementById('listingTable').querySelector('tbody').querySelectorAll('tr')
+  document.getElementById('listingTable').querySelector('.rowGroup').querySelectorAll('.row')
     .forEach((listingRow) => {
       total += parseInt(listingRow.querySelector('.cstSelected')
         .getAttribute('data-price-in-cents'))
-        * parseInt(listingRow.querySelector('.itemAmount').innerText);
+        * parseInt(listingRow.querySelector('.itemAmount').querySelector('input').value);
       totalAfterFees += parseInt(listingRow.querySelector('.cstSelected')
         .getAttribute('data-listing-price'))
-        * parseInt(listingRow.querySelector('.itemAmount').innerText);
+        * parseInt(listingRow.querySelector('.itemAmount').querySelector('input').value);
     });
   document.getElementById('saleTotal').innerText = centsToSteamFormattedPrice(total);
   document.getElementById('saleTotalAfterFees').innerText = centsToSteamFormattedPrice(totalAfterFees);
 };
 
 const getListingRow = (name) => {
-  return document.getElementById('listingTable').querySelector(`tr[data-item-name="${name}"]`);
+  return document.getElementById('listingTable').querySelector(`.row[data-item-name="${name}"]`);
 };
 
 const removeUnselectedItemsFromTable = () => {
-  document.getElementById('listingTable').querySelector('tbody')
+  document.getElementById('listingTable').querySelector('.rowGroup')
     .querySelectorAll('tr').forEach((listingRow) => {
       const assetIDs = listingRow.getAttribute('data-assetids').split(',');
       const remainingIDs = assetIDs.filter((assetID) => findElementByAssetID(assetID).classList.contains('cstSelected'));
@@ -786,29 +787,53 @@ const addListingRow = (item) => {
   // (tr and td tags get removed) more: https://github.com/cure53/DOMPurify/issues/324
   // this is why not the whole thing is validated but the individual variables used
   const row = `
-        <tr data-assetids="${DOMPurify.sanitize(item.assetid)}" data-sold-ids="" data-item-name="${DOMPurify.sanitize(item.market_hash_name)}">
-            <td class="itemName">
-                <a href="https://steamcommunity.com/market/listings/730/${DOMPurify.sanitize(item.market_hash_name)}" target="_blank">
-                    ${DOMPurify.sanitize(item.market_hash_name)}
-                </a>
-            </td>
-            <td class="itemAmount">1</td>
-            <td
-                class="itemExtensionPrice cstSelected clickable"
-                data-price-in-cents="${DOMPurify.sanitize(userPriceToProperPrice(item.price.price).toString())}"
-                data-listing-price="${DOMPurify.sanitize(getPriceAfterFees(userPriceToProperPrice(item.price.price)).toString())}"
-                >
-                ${DOMPurify.sanitize(item.price.display)}
-            </td>
-            <td class="itemStartingAt clickable">Loading...</td>
-            <td class="itemQuickSell clickable">Loading...</td>
-            <td class="itemInstantSell clickable">Loading...</td>
-            <td class="itemUserPrice"><input type="text" class="userPriceInput"></td>
-        </tr>`;
+          <div class="row" data-assetids="${DOMPurify.sanitize(item.assetid)}" data-sold-ids="" data-item-name="${DOMPurify.sanitize(item.market_hash_name)}">
+              <div class="cell itemName">
+                  <a href="https://steamcommunity.com/market/listings/730/${DOMPurify.sanitize(item.market_hash_name)}" target="_blank">
+                      ${DOMPurify.sanitize(item.market_hash_name)}
+                  </a>
+              </div>
+              <div class="cell itemAmount">
+                  <input type="number" min="0" max="5000" value="1" required>
+              </div>
+              <div
+                  class="cell itemExtensionPrice cstSelected clickable"
+                  data-price-in-cents="${DOMPurify.sanitize(userPriceToProperPrice(item.price.price).toString())}"
+                  data-listing-price="${DOMPurify.sanitize(getPriceAfterFees(userPriceToProperPrice(item.price.price)).toString())}"
+                  >
+                  ${DOMPurify.sanitize(item.price.display)}
+              </div>
+              <div class="cell itemStartingAt clickable">Loading...</div>
+              <div class="cell itemQuickSell clickable">Loading...</div>
+              <div class="cell itemInstantSell clickable">Loading...</div>
+              <div class="cell itemUserPrice"><input type="text" class="userPriceInput"></div>
+          </div>`;
 
-  document.getElementById('listingTable').querySelector('tbody')
+  document.getElementById('listingTable').querySelector('.rowGroup')
     .insertAdjacentHTML('beforeend', row);
   const listingRow = getListingRow(item.market_hash_name);
+
+  listingRow.querySelector('.itemAmount').querySelector('input[type=number]')
+    .addEventListener('change', (event) => {
+      const quantity = parseInt(event.target.value);
+      let selected = 0;
+      document.getElementById('tabcontent_inventory').querySelectorAll('.item').forEach((itemElement) => {
+        const itemInfo = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+        if (itemInfo !== undefined && itemInfo.market_hash_name === item.market_hash_name) {
+          if (selected < quantity) {
+            if (!itemElement.classList.contains('cstSelected')) itemElement.classList.add('cstSelected');
+            selected += 1;
+          } else if (itemElement.classList.contains('cstSelected')) itemElement.classList.remove('cstSelected');
+        }
+      });
+
+      if (quantity === 0) listingRow.remove();
+
+      listingRow.setAttribute('data-assetids', '');
+      // they use each other, one of them has to be declared first
+      // eslint-disable-next-line no-use-before-define
+      updateSelectedItemsSummary();
+    });
 
   listingRow.querySelector('.itemUserPrice').querySelector('input[type=text]')
     .addEventListener('change', (event) => {
@@ -940,7 +965,8 @@ const updateSelectedItemsSummary = () => {
         const previIDs = listingRow.getAttribute('data-assetids');
         if (!previIDs.includes(item.assetid)) {
           listingRow.setAttribute('data-assetids', `${previIDs},${item.assetid}`);
-          listingRow.querySelector('.itemAmount').innerText = previIDs.split(',').length + 1;
+          listingRow.querySelector('.itemAmount')
+            .querySelector('input').value = (previIDs.split(',').length + 1).toString();
         }
       }
     }
@@ -1145,21 +1171,18 @@ const addFunctionBar = () => {
                       <div class="hidden not_tradable" id="currency_mismatch_warning">
                       Warning: Your Steam Wallet currency and CSGO Trader currency are not the same.
                       <span class="underline clickable" id="changeCurrency">Click here to fix this</span></div>
-                          <table id="listingTable">
-                              <thead>
-                                  <tr>
-                                      <th title="The name of the item">Name</th>
-                                      <th title="How many of these type of items are set to be sold">Quantity</th>
-                                      <th title="The price provided by the pricing provider you have selected in the options">Extension price</th>
-                                      <th title="The price of the current lowest listing for this item on Steam Community Market">Starting at</th>
-                                      <th title="Just below the starting at price, using it will make your listing the cheapest">Quick sell</th>
-                                      <th title="The price of the current highest buy order, your item should sell right after you list it">Instant Sell</th>
-                                      <th title="Price specified by you">Your price</th>
-                                  </tr>
-                              </thead>
-                              <tbody>
-                              </tbody>
-                          </table>
+                          <div id="listingTable" class="table">
+                              <div class="header">
+                                <div class="cell" title="The name of the item">Name</div>
+                                <div class="cell" title="How many of these type of items are set to be sold">Quantity</div>
+                                <div class="cell" title="The price provided by the pricing provider you have selected in the options">Extension price</div>
+                                <div class="cell" title="The price of the current lowest listing for this item on Steam Community Market">Starting at</div>
+                                <div class="cell" title="Just below the starting at price, using it will make your listing the cheapest">Quick sell</div>
+                                <div class="cell" title="The price of the current highest buy order, your item should sell right after you list it">Instant Sell</div>
+                                <div class="cell" title="Price specified by you">Your price</div>
+                              </div>
+                              <div class="rowGroup"></div>
+                          </div>
                           <span class="beforeStart">
                               <span style="font-weight: bold">Total:</span> To list <span id="numberOfItemsToSell">0</span> item(s) worth <span id="saleTotal">0</span>
                               and receive <span id="saleTotalAfterFees">0</span> after fees
@@ -1259,7 +1282,7 @@ const addFunctionBar = () => {
 
           if (isOwnInventory()) {
             document.getElementById('massListing').classList.add('hidden');
-            document.getElementById('listingTable').querySelector('tbody').innerHTML = '';
+            document.getElementById('listingTable').querySelector('.rowGroup').innerHTML = '';
           }
           document.body.removeEventListener('click', listenSelectClicks, false);
         } else {

@@ -110,6 +110,31 @@ progress {
     }
 }
 
+.table {
+    display:table;
+}
+
+.header {
+    display:table-header-group;
+    font-weight:bold;
+}
+
+.row {
+    display:table-row;
+}
+
+.row:nth-child(even) {
+    background-color: #171a21;
+}
+
+.rowGroup {
+    display:table-row-group;
+}
+
+.cell {
+    display:table-cell;
+}
+
 .discussionAutoBump {
     padding-top: 15px;
     text-align: right;
