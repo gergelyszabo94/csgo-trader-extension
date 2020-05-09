@@ -95,6 +95,7 @@ const addBookmark = (module) => {
 
   const item = getItemByAssetID(items, getAssetIDofActive());
   const bookmark = {
+    added: Date.now(),
     itemInfo: item,
     owner: getInventoryOwnerID(),
     comment: '',
@@ -103,8 +104,8 @@ const addBookmark = (module) => {
     notifType: 'chrome',
   };
 
-  chrome.storage.local.get('bookmarks', (result) => {
-    chrome.storage.local.set({ bookmarks: [...result.bookmarks, bookmark] }, () => {
+  chrome.storage.local.get('bookmarks', ({ bookmarks }) => {
+    chrome.storage.local.set({ bookmarks: [...bookmarks, bookmark] }, () => {
       if (bookmark.itemInfo.tradability !== 'Tradable') {
         chrome.runtime.sendMessage({
           setAlarm: {
@@ -116,9 +117,9 @@ const addBookmark = (module) => {
 
       chrome.runtime.sendMessage({
         openInternalPage: 'index.html?page=bookmarks',
-      }, (response) => {
-        if (response.openInternalPage === 'no_tabs_api_access') {
-          module.querySelector('.descriptor.tradability.bookmark')
+      }, ({ openInternalPage }) => {
+        if (openInternalPage === 'no_tabs_api_access') {
+          module.parentElement.parentElement.querySelector('.descriptor.tradability.bookmark')
             .innerText = 'Bookmarked! Open the bookmarks menu to see what you have saved!';
         }
       });
@@ -979,8 +980,7 @@ const updateSelectedItemsSummary = () => {
 
 const listenSelectClicks = (event) => {
   if (event.target.parentElement.classList.contains('item')
-    && event.target.parentElement.classList.contains('app730')
-    && event.target.parentElement.classList.contains('context2')) {
+    && event.target.parentElement.parentElement.classList.contains('itemHolder')) {
     if (event.ctrlKey) {
       const marketHashNameToLookFor = getItemByAssetID(items,
         getAssetIDOfElement(event.target.parentNode)).market_hash_name;

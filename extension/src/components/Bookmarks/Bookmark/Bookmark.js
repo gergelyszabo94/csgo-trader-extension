@@ -17,7 +17,7 @@ const Bookmark = ({
   bookmarkData, editBookmark, removeBookmark,
 }) => {
   const {
-    itemInfo, notifTime, notifType, notify, owner,
+    added, itemInfo, notifTime, notifType, notify, owner,
   } = bookmarkData;
   const imageSRC = `https://steamcommunity.com/economy/image/${itemInfo.iconURL}/256x256`;
   const exterior = itemInfo.exterior ? itemInfo.exterior.localized_name : '';
@@ -80,7 +80,7 @@ const Bookmark = ({
   };
 
   const removeBookmarkFunction = () => {
-    removeBookmark(itemInfo.assetid);
+    removeBookmark(itemInfo.assetid, added);
   };
 
   return (

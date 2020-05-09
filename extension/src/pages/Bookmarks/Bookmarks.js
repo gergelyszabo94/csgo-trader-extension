@@ -25,8 +25,11 @@ const Bookmarks = () => {
     });
   };
 
-  const removeBookmark = (assetID) => {
-    const bookmarksToKeep = bookmarks.filter((bookmark) => bookmark.itemInfo.assetid !== assetID);
+  const removeBookmark = (assetID, added) => {
+    const bookmarksToKeep = bookmarks.filter((bookmark) => {
+      return (bookmark.itemInfo.assetid !== assetID || bookmark.added !== added);
+    });
+
     saveBookmarks(bookmarksToKeep);
   };
 
@@ -60,7 +63,7 @@ const BookmarkContent = (props) => {
 
   return props.bookmarks.map((bookmark) => (
     <Bookmark
-      key={bookmark.itemInfo.assetid}
+      key={bookmark.itemInfo.assetid + bookmark.added}
       bookmarkData={bookmark}
       removeBookmark={props.remove}
       editBookmark={props.edit}
