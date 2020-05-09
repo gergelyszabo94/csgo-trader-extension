@@ -52,6 +52,7 @@ const commentPatternsToReport = [
   'giftbytwitch.fun',
   'If you\'re interested - add our team leader',
   'Hey bro, I\'ve played against you recently and I\'d like to invite you in our team.',
+  'I\'d like to invitе you in our tеam. We are willing to pay weekly.',
 ];
 
 export default commentPatternsToReport;
