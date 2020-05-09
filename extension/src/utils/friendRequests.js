@@ -642,8 +642,8 @@ const updateFriendRequest = () => {
       // as a condition in the rule, it would match to all invites at this point
       // this can manifest in pretty ugly ways, for example ignoring all current friend requests
       // the conditions below try minimize the risk of this happening
-      if (inviters.length > 0 || friendRequests.invites.length === 0
-      || (friendRequests.invites.length < 2 && minutesFromLastCheck < 31)
+      if (inviters.length > 0 || friendRequests.inviters.length === 0
+      || (friendRequests.inviters.length < 2 && minutesFromLastCheck < 31)
       || minutesFromLastCheck > 61) {
         const staleInviterIDs = friendRequests.inviters.map((inviter) => {
           return inviter.steamID;
