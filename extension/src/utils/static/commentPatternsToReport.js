@@ -53,6 +53,7 @@ const commentPatternsToReport = [
   'If you\'re interested - add our team leader',
   'Hey bro, I\'ve played against you recently and I\'d like to invite you in our team.',
   'I\'d like to invitе you in our tеam. We are willing to pay weekly.',
+  'Code for get free key:',
 ];
 
 export default commentPatternsToReport;
