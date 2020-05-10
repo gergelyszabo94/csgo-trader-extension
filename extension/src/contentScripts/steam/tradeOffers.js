@@ -14,11 +14,11 @@ import { prettyPrintPrice } from 'utils/pricing';
 import { overrideShowTradeOffer } from 'utils/steamOverriding';
 import { trackEvent } from 'utils/analytics';
 import { offersSortingModes } from 'utils/static/sortingModes';
-import { injectScript, injectStyle } from 'utils/injection';
+import { injectStyle } from 'utils/injection';
 import { getProperStyleSteamIDFromOfferStyle, getUserSteamID } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
-import { declineOffer } from 'utils/tradeOffers';
+import { acceptOffer, declineOffer } from 'utils/tradeOffers';
 import DOMPurify from 'dompurify';
 
 const userID = getUserSteamID();
@@ -601,8 +601,36 @@ if (activePage === 'incoming_offers') {
       const partnerID = getProperStyleSteamIDFromOfferStyle(offerElement.querySelector('.playerAvatar').getAttribute('data-miniprofile'));
       offerElement.querySelector('.tradeoffer_footer_actions').insertAdjacentHTML(
         'afterbegin',
-        `<a href="javascript:AcceptTradeOffer( '${DOMPurify.sanitize(offerID)}', '${DOMPurify.sanitize(partnerID)}' );" class="whiteLink">Accept Trade</a> | `,
+        `<span id="accept_${partnerID}" class="whiteLink">Accept Trade</span> | `,
       );
+
+      const acceptButton = document.getElementById(`accept_${partnerID}`);
+
+      acceptButton.addEventListener('click', () => {
+        let message = '';
+        const offerContent = offerElement.querySelector('.tradeoffer_items_ctn');
+        const middleElement = offerContent.querySelector('.tradeoffer_items_rule');
+
+        acceptOffer(offerID, partnerID).then((res) => {
+          if (res.needs_email_confirmation || res.needs_mobile_confirmation) message = 'Accepted - Awaiting Confirmation';
+          else {
+            message = 'Trade Accepted';
+            middleElement.classList.add('accepted');
+          }
+          offerElement.querySelector('.tradeoffer_footer').style.display = 'none';
+        }).catch((err) => {
+          console.log(err);
+          message = err;
+        }).finally(() => {
+          offerContent.classList.remove('active');
+          offerContent.classList.add('inactive');
+
+          middleElement.classList.remove('tradeoffer_items_rule');
+          middleElement.classList.add('tradeoffer_items_banner');
+          middleElement.style.height = '';
+          middleElement.innerText = message;
+        });
+      });
     }
   });
 
@@ -654,46 +682,6 @@ if (activePage === 'incoming_offers') {
     }
   });
 }
-
-// injects accept trade functionality to page
-const acceptTradeScriptString = `
-                function AcceptTradeOffer(offerID, partnerID){
-                    let myHeaders = new Headers();
-                    myHeaders.append('Content-Type', 'application/x-www-form-urlencoded');
-                    
-                    fetch(
-                        'https://steamcommunity.com/tradeoffer/' + offerID + '/accept',
-                        {"referrer":'https://steamcommunity.com/tradeoffer/' + offerID + '/',
-                            "body":'sessionid=' + g_sessionID + '&serverid=1&tradeofferid=' + offerID + '&partner=' + partnerID + '&captcha=',
-                            "headers": myHeaders,
-                            "method":"POST"}
-                    ).then((response) => {
-                        if (!response.ok) {
-                            console.log('error');
-                        }
-                        else return response.json();
-                    }).then((body) => {
-                        let offerElement = document.getElementById('tradeofferid_' + offerID);
-                        let offerContent = offerElement.querySelector('.tradeoffer_items_ctn');
-                        offerContent.classList.remove('active');
-                        offerContent.classList.add('inactive');
-                        let middleElement = offerContent.querySelector('.tradeoffer_items_rule');
-                        middleElement.classList.remove('tradeoffer_items_rule');
-                        middleElement.classList.add('tradeoffer_items_banner');
-                        middleElement.style.height = '';
-                        offerElement.querySelector('.tradeoffer_footer').style.display = 'none';
-                
-                        if (body.needs_email_confirmation || body.needs_mobile_confirmation)  middleElement.innerText = 'Accepted - Awaiting Confirmation';
-                        else  {
-                            middleElement.innerText = 'Trade Accepted';
-                            middleElement.classList.add('accepted');
-                        }
-                    }).catch(err => {
-                        console.log(err);
-                    });
-                }`;
-if (activePage === 'incoming_offers') injectScript(acceptTradeScriptString, false, 'acceptTradeScript', false);
-
 
 if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
   chrome.storage.local.get('itemInOtherOffers', ({ itemInOtherOffers }) => {

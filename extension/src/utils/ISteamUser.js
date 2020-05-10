@@ -60,5 +60,4 @@ const getPlayerSummaries = (steamIDs) => new Promise((resolve, reject) => {
   });
 });
 
-// eslint-disable-next-line import/prefer-default-export
 export { getPlayerBans, getPlayerSummaries };
