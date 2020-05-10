@@ -759,7 +759,7 @@ trackEvent({
 
 const getPartnerNameScript = "document.querySelector('body').setAttribute('partnerName', g_strTradePartnerPersonaName)";
 const partnerName = injectScript(getPartnerNameScript, true, 'partnerName', 'partnerName');
-changePageTitle('trade_offer', partnerName);
+if (partnerName !== null) changePageTitle('trade_offer', partnerName);
 
 // changes background and adds a banner if steamrep banned scammer detected
 chrome.storage.local.get('markScammers', (result) => {
