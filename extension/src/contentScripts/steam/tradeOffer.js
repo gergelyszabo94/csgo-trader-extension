@@ -22,6 +22,7 @@ import { overrideHandleTradeActionMenu } from 'utils/steamOverriding';
 import { injectScript, injectStyle } from 'utils/injection';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
+import { declineOffer } from 'utils/tradeOffers';
 
 let yourInventory = null;
 let theirInventory = null;
@@ -839,9 +840,26 @@ if (theirInventoryTab !== null) {
   });
 }
 
-const declineButton = document.getElementById('btn_decline_trade_offer');
-if (declineButton !== null) {
-  removeOfferFromActiveOffers(offerID);
+// if it's an existing trade offer with an id and not a new one to be created
+if (offerID !== 'new') {
+  const declineButton = document.getElementById('btn_decline_trade_offer');
+  if (declineButton !== null) {
+    declineButton.addEventListener('click', () => {
+      removeOfferFromActiveOffers(offerID);
+    });
+
+    document.querySelector('.readystate.modify_trade_offer').addEventListener('click', () => {
+      declineButton.setAttribute('onclick', '');
+      declineButton.style.display = 'inline-block';
+      declineButton.addEventListener('click', () => {
+        declineOffer(offerID).then(() => {
+          removeOfferFromActiveOffers(offerID);
+          if (window.opener !== null) window.close();
+          else window.location.reload();
+        });
+      });
+    });
+  }
 }
 
 addFunctionBars();
