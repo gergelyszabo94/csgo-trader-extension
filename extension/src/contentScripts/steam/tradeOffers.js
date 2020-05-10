@@ -11,13 +11,14 @@ import { genericMarketLink } from 'utils/static/simpleStrings';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import itemTypes from 'utils/static/itemTypes';
 import { prettyPrintPrice } from 'utils/pricing';
-import { overrideDecline, overrideShowTradeOffer } from 'utils/steamOverriding';
+import { overrideShowTradeOffer } from 'utils/steamOverriding';
 import { trackEvent } from 'utils/analytics';
 import { offersSortingModes } from 'utils/static/sortingModes';
 import { injectScript, injectStyle } from 'utils/injection';
 import { getProperStyleSteamIDFromOfferStyle, getUserSteamID } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
+import { declineOffer } from 'utils/tradeOffers';
 import DOMPurify from 'dompurify';
 
 const userID = getUserSteamID();
@@ -533,7 +534,6 @@ const updateActiveOffers = (offers, items) => {
 
 logExtensionPresence();
 repositionNameTagIcons();
-overrideDecline();
 overrideShowTradeOffer();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
@@ -555,7 +555,6 @@ let thisManyTimes = 15;
 const intervalID = setInterval(() => {
   if (thisManyTimes > 0) {
     overrideShowTradeOffer();
-    overrideDecline();
   } else clearInterval(intervalID);
   thisManyTimes -= 1;
 }, 1000);
@@ -588,16 +587,14 @@ document.querySelectorAll('.playerAvatar').forEach((avatarDiv) => {
   if (link !== null) link.setAttribute('target', '_blank');
 });
 
-// makes the middle of the active trade offers a bit bigger
-// making it the same size as a declined offer so it does not jerk the page when declining
 if (activePage === 'incoming_offers') {
+  // makes the middle of the active trade offers a bit bigger
+  // making it the same size as a declined offer so it does not jerk the page when declining
   document.querySelectorAll('.tradeoffer_items_rule').forEach((rule) => {
     rule.style.height = '46px';
   });
-}
 
-// adds "accept trade" action to offers
-if (activePage === 'incoming_offers') {
+  // adds "accept trade" action to offers
   document.querySelectorAll('.tradeoffer').forEach((offerElement) => {
     if (isOfferActive(offerElement)) {
       const offerID = getOfferIDFromElement(offerElement);
@@ -606,6 +603,54 @@ if (activePage === 'incoming_offers') {
         'afterbegin',
         `<a href="javascript:AcceptTradeOffer( '${DOMPurify.sanitize(offerID)}', '${DOMPurify.sanitize(partnerID)}' );" class="whiteLink">Accept Trade</a> | `,
       );
+    }
+  });
+
+
+  // overrides steam's trade offer declining logic to skip the confirmation
+  // (when set to do so in the options)
+  chrome.storage.local.get(['quickDeclineOffer'], ({ quickDeclineOffer }) => {
+    if (quickDeclineOffer) {
+      document.querySelectorAll('.tradeoffer_footer_actions').forEach((actionsEl) => {
+        const actions = actionsEl.querySelectorAll('a.whiteLink');
+        const declineButton = actions[actions.length - 1];
+
+        // the original decline button is getting removed and replaced by a new button
+        const declineText = declineButton.innerText;
+        const oldHref = declineButton.getAttribute('href');
+        const offerID = oldHref.split(' \'')[1].split('\'')[0];
+        declineButton.remove();
+
+        const newDeclineButton = document.createElement('span');
+        newDeclineButton.classList.add('whiteLink');
+        newDeclineButton.innerText = declineText;
+        actionsEl.appendChild(newDeclineButton);
+
+        newDeclineButton.addEventListener('click', () => {
+          let message = '';
+
+          declineOffer(offerID).then(() => {
+            message = 'Trade Declined';
+          }).catch((err) => {
+            console.log(err);
+            message = `Could not decline offer, error message from Steam: ${err}`;
+          }).finally(() => {
+            const offerElement = document.getElementById(`tradeofferid_${offerID}`);
+            const offerContent = offerElement.querySelector('.tradeoffer_items_ctn');
+
+            offerContent.classList.remove('active');
+            offerContent.classList.add('inactive');
+
+            const middleElement = offerContent.querySelector('.tradeoffer_items_rule');
+            middleElement.classList.remove('tradeoffer_items_rule');
+            middleElement.classList.add('tradeoffer_items_banner');
+            middleElement.style.height = '';
+            middleElement.innerText = message;
+
+            offerElement.querySelector('.tradeoffer_footer').style.display = 'none';
+          });
+        });
+      });
     }
   });
 }

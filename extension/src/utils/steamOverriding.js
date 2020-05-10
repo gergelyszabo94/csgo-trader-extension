@@ -22,19 +22,6 @@ const overrideShowTradeOffer = () => {
   });
 };
 
-// overrides steam's trade offer declining logic to skip the confirmation
-const overrideDecline = () => {
-  const overRideDeclineTradeOfferScript = `
-    function DeclineTradeOffer( tradeOfferID )
-    {
-        ActOnTradeOffer( tradeOfferID, 'decline', 'Trade Declined', 'Decline Trade' );
-    }
-    `;
-  chrome.storage.local.get(['quickDeclineOffer'], (result) => {
-    if (result.quickDeclineOffer) injectScript(overRideDeclineTradeOfferScript, false, 'overrideDeclineTradeOffer', null);
-  });
-};
-
 // adds In-browser inspect as action - in trade offers
 const overrideHandleTradeActionMenu = () => {
   const overrideHandleTradeActionMenuScript = `
@@ -189,5 +176,5 @@ const overridePopulateActions = () => {
 };
 
 export {
-  overrideShowTradeOffer, overrideDecline, overridePopulateActions, overrideHandleTradeActionMenu,
+  overrideShowTradeOffer, overridePopulateActions, overrideHandleTradeActionMenu,
 };
