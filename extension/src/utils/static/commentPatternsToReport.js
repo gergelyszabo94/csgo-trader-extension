@@ -55,6 +55,7 @@ const commentPatternsToReport = [
   'I\'d like to invitе you in our tеam. We are willing to pay weekly.',
   'Code for get free key:',
   'HITLER DID NOTHING WRONG',
+  '赢得了我们的',
 ];
 
 export default commentPatternsToReport;
