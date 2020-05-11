@@ -656,16 +656,16 @@ if (activePage === 'incoming_offers') {
 
         newDeclineButton.addEventListener('click', () => {
           let message = '';
+          const offerElement = document.getElementById(`tradeofferid_${offerID}`);
+          const offerContent = offerElement.querySelector('.tradeoffer_items_ctn');
 
           declineOffer(offerID).then(() => {
             message = 'Trade Declined';
+            offerElement.querySelector('.tradeoffer_footer').style.display = 'none';
           }).catch((err) => {
             console.log(err);
-            message = `Could not decline offer, error message from Steam: ${err}`;
+            message = 'Could not decline offer, most likely Steam is having problems.';
           }).finally(() => {
-            const offerElement = document.getElementById(`tradeofferid_${offerID}`);
-            const offerContent = offerElement.querySelector('.tradeoffer_items_ctn');
-
             offerContent.classList.remove('active');
             offerContent.classList.add('inactive');
 
@@ -674,8 +674,6 @@ if (activePage === 'incoming_offers') {
             middleElement.classList.add('tradeoffer_items_banner');
             middleElement.style.height = '';
             middleElement.innerText = message;
-
-            offerElement.querySelector('.tradeoffer_footer').style.display = 'none';
           });
         });
       });
