@@ -232,34 +232,59 @@ const addInventoryTotals = (yourInventoryTotal, theirInventoryTotal) => {
   });
 };
 
+// also generates the offer summary
 const addInTradeTotals = (whose) => {
-  const itemsInTrade = document.getElementById(`${whose}_slots`).querySelectorAll('.item.app730.context2');
-  let inTradeTotal = 0;
+  chrome.storage.local.get('currency', ({ currency }) => {
+    const itemsInTrade = document.getElementById(`${whose}_slots`).querySelectorAll('.item');
+    let inTradeTotal = 0;
+    let numberOfItemsInTrade = 0;
+    const inTradeItemsSummary = {};
 
-  itemsInTrade.forEach((inTradeItem) => {
-    const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(inTradeItem));
-    if (item.price !== undefined) inTradeTotal += parseFloat(item.price.price);
-  });
+    itemsInTrade.forEach((inTradeItem) => {
+      const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(inTradeItem));
+      if (item !== undefined) {
+        if (item.price !== undefined) inTradeTotal += parseFloat(item.price.price);
+        if (inTradeItemsSummary[item.type.key] !== undefined) {
+          inTradeItemsSummary[item.type.key] += 1;
+        } else inTradeItemsSummary[item.type.key] = 1;
+      } else if (inTradeItemsSummary.nonCSGO !== undefined) {
+        inTradeItemsSummary.nonCSGO += 1;
+      } else inTradeItemsSummary.nonCSGO = 1;
+      numberOfItemsInTrade += 1;
+    });
 
-  if (document.getElementById(`${whose}InTradeTotal`) === null) {
-    let itemsTextDiv;
-    if (whose === 'your') itemsTextDiv = document.getElementById('trade_yours').querySelector('h2.ellipsis');
-    else itemsTextDiv = document.getElementById('trade_theirs').querySelector('.offerheader').querySelector('h2');
-    chrome.storage.local.get('currency', (result) => {
+    const summaryEl = document.getElementById(`${whose}Summary`);
+    const itemList = summaryEl.querySelector('ul');
+    itemList.innerHTML = '';
+    const numberOfItems = summaryEl.querySelector('.numberOfItems');
+    numberOfItems.innerText = numberOfItemsInTrade;
+    const inTradeTotalValue = summaryEl.querySelector('.total');
+    inTradeTotalValue.innerText = prettyPrintPrice(currency, inTradeTotal);
+
+    for (const [name, value] of Object.entries(inTradeItemsSummary)) {
+      const listItem = document.createElement('li');
+      const type = itemTypes[name] !== undefined ? itemTypes[name].name : 'Non-CSGO';
+      listItem.innerText = `${type}: ${value}`;
+      itemList.appendChild(listItem);
+    }
+
+    if (document.getElementById(`${whose}InTradeTotal`) === null) {
+      let itemsTextDiv;
+      if (whose === 'your') itemsTextDiv = document.getElementById('trade_yours').querySelector('h2.ellipsis');
+      else itemsTextDiv = document.getElementById('trade_theirs').querySelector('.offerheader').querySelector('h2');
       itemsTextDiv.innerHTML = DOMPurify.sanitize(
-        `${itemsTextDiv.innerText.split(':')[0]} (<span id="${whose}InTradeTotal">${prettyPrintPrice(result.currency, inTradeTotal)}</span>):`,
+        `${itemsTextDiv.innerText.split(':')[0]} (<span id="${whose}InTradeTotal">${prettyPrintPrice(currency, inTradeTotal)}</span>):`,
       );
-    });
-  } else {
-    chrome.storage.local.get('currency', (result) => {
-      document.getElementById(`${whose}InTradeTotal`).innerText = prettyPrintPrice(result.currency, inTradeTotal);
-    });
-  }
+    } else {
+      document.getElementById(`${whose}InTradeTotal`).innerText = prettyPrintPrice(currency, inTradeTotal);
+    }
+  });
 };
 
 const periodicallyUpdateTotals = () => {
   setInterval(() => {
-    if (!document.hidden) {
+    // if in focus and can be modified
+    if (!document.hidden && document.getElementById('modify_trade_offer_opts').style.display === 'none') {
       addInTradeTotals('your');
       addInTradeTotals('their');
     }
@@ -860,6 +885,42 @@ if (offerID !== 'new') {
       });
     });
   }
+}
+
+// trade summary
+const filterMenu = document.getElementById('nonresponsivetrade_itemfilters');
+if (filterMenu !== null) {
+  filterMenu.insertAdjacentHTML('beforebegin',
+    `<div id="offerSummary">
+            <div>
+                <span class="clickable bold" id="showSummary">
+                    Show trade summary
+                </span>
+            </div>
+            <div id="summary" class="hidden">
+              <div id="yourSummary" class="sideSummary">
+                  <span class="bold underline">Your items</span>
+                  <ul class="summaryList"></ul>
+                  <div class="summaryTotal">
+                    <span class="numberOfItems">1</span>
+                    item(s) worth
+                    <span class="total">$</span>
+                  </div>
+              </div>
+              <div id="theirSummary" class="sideSummary">
+                  <span class="bold underline">Their items</span>
+                  <ul class="summaryList"></ul>
+                   <div class="summaryTotal">
+                    <span class="numberOfItems">1</span>
+                    item(s) worth
+                    <span class="total">$</span>
+                  </div>
+              </div>
+            </div>
+          </div>`);
+  document.getElementById('showSummary').addEventListener('click', () => {
+    document.getElementById('summary').classList.remove('hidden');
+  });
 }
 
 addFunctionBars();

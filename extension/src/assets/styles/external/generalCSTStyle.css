@@ -135,6 +135,33 @@ progress {
     display:table-cell;
 }
 
+#offerSummary {
+    padding-top: 10px;
+    text-align: center;
+}
+
+#summary {
+    margin-top: 10px;
+}
+
+.sideSummary {
+    width: 49%;
+    display: inline-block;
+    background-color: #292929;
+    padding: 10px 0 10px 0;
+    vertical-align:top;
+}
+
+.summaryList {
+    text-align: left;
+    list-style-type:none;
+}
+
+.summaryTotal {
+    border-top: 1px solid;
+    padding-top: 1px;
+}
+
 .discussionAutoBump {
     padding-top: 15px;
     text-align: right;
@@ -529,6 +556,10 @@ progress {
 
 .clickable {
     cursor: pointer;
+}
+
+.bold {
+    font-weight: bold;
 }
 
 /**
