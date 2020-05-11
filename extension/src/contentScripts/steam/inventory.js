@@ -1123,7 +1123,7 @@ const addFunctionBar = () => {
                             Select All Page
                         </span>
                         <span id="selectAllUnder" class="clickable underline" title="Select all items under this price">Select all under:</span>
-                        <input type="number" id="selectUnder" style="width: 50px" title="The items that are cheaper than this value will be selected, in your currency">
+                        <input type="number" id="selectUnder" min="0" style="width: 50px" title="The items that are cheaper than this value will be selected, in your currency">
                     </div>
                     <div id="functionBarGenerateMenu" class="functionBarRow hidden">
                         <div>
