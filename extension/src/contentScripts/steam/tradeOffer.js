@@ -283,8 +283,7 @@ const addInTradeTotals = (whose) => {
 
 const periodicallyUpdateTotals = () => {
   setInterval(() => {
-    // if in focus and can be modified
-    if (!document.hidden && document.getElementById('modify_trade_offer_opts').style.display === 'none') {
+    if (!document.hidden) {
       addInTradeTotals('your');
       addInTradeTotals('their');
     }
