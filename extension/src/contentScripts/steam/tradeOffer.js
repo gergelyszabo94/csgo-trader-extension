@@ -273,12 +273,31 @@ const addInTradeTotals = (whose) => {
       if (whose === 'your') itemsTextDiv = document.getElementById('trade_yours').querySelector('h2.ellipsis');
       else itemsTextDiv = document.getElementById('trade_theirs').querySelector('.offerheader').querySelector('h2');
       itemsTextDiv.innerHTML = DOMPurify.sanitize(
-        `${itemsTextDiv.innerText.split(':')[0]} (<span id="${whose}InTradeTotal">${prettyPrintPrice(currency, inTradeTotal)}</span>):`,
+        `${itemsTextDiv.innerText.split(':')[0]} (<span id="${whose}InTradeTotal" data-total="${inTradeTotal}">${prettyPrintPrice(currency, inTradeTotal)}</span>):`,
       );
     } else {
-      document.getElementById(`${whose}InTradeTotal`).innerText = prettyPrintPrice(currency, inTradeTotal);
+      const totalEl = document.getElementById(`${whose}InTradeTotal`);
+      totalEl.innerText = prettyPrintPrice(currency, inTradeTotal);
+      totalEl.setAttribute('data-total', inTradeTotal);
     }
   });
+};
+
+const addPLInfo = () => {
+  const yourTotalEl = document.getElementById('yourInTradeTotal');
+  const theirTotalEl = document.getElementById('theirInTradeTotal');
+
+  if (yourTotalEl !== null && theirTotalEl !== null) {
+    chrome.storage.local.get('currency', ({ currency }) => {
+      const yourTotal = parseFloat(yourTotalEl.getAttribute('data-total'));
+      const theirTotal = parseFloat(theirTotalEl.getAttribute('data-total'));
+      const profitOrLoss = theirTotal - yourTotal;
+
+      const pLClass = profitOrLoss > 0.0 ? 'profit' : 'loss';
+      document.getElementById('showSummary').innerHTML = DOMPurify.sanitize(`
+        Show trade Summary (<span class="${pLClass}">${prettyPrintPrice(currency, (profitOrLoss).toFixed(2))}</span>)`);
+    });
+  }
 };
 
 const periodicallyUpdateTotals = () => {
@@ -286,6 +305,7 @@ const periodicallyUpdateTotals = () => {
     if (!document.hidden) {
       addInTradeTotals('your');
       addInTradeTotals('their');
+      addPLInfo();
     }
   }, 1000);
 };
@@ -481,6 +501,7 @@ const getInventories = () => {
         addInventoryTotals(total, theirInventoryRes.total);
         addInTradeTotals('your');
         addInTradeTotals('their');
+        addPLInfo();
         periodicallyUpdateTotals();
         doInitSorting();
       });
