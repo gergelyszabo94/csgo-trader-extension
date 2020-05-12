@@ -403,17 +403,33 @@ const sortOffers = (sortingMode) => {
   });
 };
 
+// adds receive/sent offers and the last time they happened
+// also adds "incoming friend request from" message
 const addPartnerOfferSummary = (offers) => {
-  chrome.storage.local.get('tradeHistoryOffers', (firstResult) => {
-    if (firstResult.tradeHistoryOffers) {
+  chrome.storage.local.get(['tradeHistoryOffers', 'friendRequests'], ({ tradeHistoryOffers, friendRequests }) => {
+    if (tradeHistoryOffers) {
       offers.forEach((offer) => {
         const partnerID = getProperStyleSteamIDFromOfferStyle(offer.accountid_other);
-        const storageKey = `offerHistory_${partnerID}`;
-        chrome.storage.local.get(storageKey, (secondResult) => {
-          const offerHistorySummary = secondResult[storageKey];
-          if (offerHistorySummary !== undefined) {
-            const offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
+        const offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
 
+        // checks if there is an incoming friend request from this user
+        const friendRequestFromPartner = friendRequests.inviters.filter((inviter) => {
+          return inviter.steamID === partnerID;
+        });
+        if (friendRequestFromPartner.length === 1) {
+          const friendRequestFrom = offerElement.querySelector('.friendRequestFrom');
+          if (friendRequestFrom !== null) friendRequestFrom.remove();
+
+          offerElement.querySelector('.tradeoffer_header').insertAdjacentHTML(
+            'afterend',
+            '<div class="friendRequestFrom">You have an incoming friend request from this user</div>',
+          );
+        }
+
+        const storageKey = `offerHistory_${partnerID}`;
+        chrome.storage.local.get(storageKey, (result) => {
+          const offerHistorySummary = result[storageKey];
+          if (offerHistorySummary !== undefined) {
             // removes elements from previous runs
             offerElement.querySelectorAll('.offerHistory').forEach((offerHistoryElement) => {
               offerHistoryElement.remove();

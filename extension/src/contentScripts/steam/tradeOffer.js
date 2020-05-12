@@ -761,6 +761,35 @@ const addPartnerOfferSummary = () => {
   });
 };
 
+// adds an info card if there is an incoming friend request
+// from the trade partner
+const addFriendRequestInfo = () => {
+  const partnerSteamID = getTradePartnerSteamID();
+  chrome.storage.local.get(['friendRequests'], ({ friendRequests }) => {
+    // checks if there is an incoming friend request from this user
+    const friendRequestFromPartner = friendRequests.inviters.filter((inviter) => {
+      return inviter.steamID === partnerSteamID;
+    });
+
+    if (friendRequestFromPartner.length === 1) {
+      const headline = document.querySelector('.trade_partner_headline');
+      if (headline !== null) {
+        headline.insertAdjacentHTML(
+          'afterend',
+          DOMPurify.sanitize(
+            `<div class="trade_partner_info_block" style="color: lightgray"> 
+                    <a href="https://steamcommunity.com/profiles/${partnerSteamID}" target="_blank">
+                        You have an incoming friend request from this user
+                    </a>    
+                  </div>`,
+            { ADD_ATTR: ['target'] },
+          ),
+        );
+      }
+    }
+  });
+};
+
 logExtensionPresence();
 
 // initiates all logic that needs access to item info
@@ -924,5 +953,6 @@ if (filterMenu !== null) {
 
 addFunctionBars();
 addPartnerOfferSummary();
+addFriendRequestInfo();
 
 reloadPageOnExtensionReload();

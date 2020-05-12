@@ -173,6 +173,11 @@ progress {
     font-weight: bold;
 }
 
+.friendRequestFrom {
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+}
+
 .cheapest, .highest {
     color: var(--steam-ingame-green);
 }
