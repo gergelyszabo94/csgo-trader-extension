@@ -178,7 +178,20 @@ progress {
     margin-bottom: 5px;
 }
 
-.cheapest, .highest {
+.profitOrLoss {
+    background-color: black;
+    padding: 5px;
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    font-size: 1rem;
+}
+
+.loss {
+    color: red;
+}
+
+.cheapest, .highest, .profit {
     color: var(--steam-ingame-green);
 }
 

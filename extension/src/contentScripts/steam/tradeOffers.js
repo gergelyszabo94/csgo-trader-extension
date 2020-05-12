@@ -320,14 +320,22 @@ const addTotals = (offers, items) => {
 
         const profitOrLoss = theirItemsTotal - yourItemsTotal;
         const PLPercentage = theirItemsTotal / yourItemsTotal;
+
+        let pLClass = 'loss';
         if (profitOrLoss > 0.0) {
           totalProfit += profitOrLoss;
           numberOfProfitableOffers += 1;
+          pLClass = 'profit';
         }
-        offerElement.querySelector('.tradeoffer_header').insertAdjacentHTML(
-          'beforeend',
+        offerElement.querySelector('.tradeoffer_items_ctn').insertAdjacentHTML(
+          'afterbegin',
           DOMPurify.sanitize(
-            `<span class="profitOrLoss" data-profit-or-loss="${profitOrLoss}" data-p-l-percentage="${PLPercentage}" data-updated="${offer.time_updated}">
+            `<span
+                    class="profitOrLoss ${pLClass}"
+                    data-profit-or-loss="${profitOrLoss}"
+                    data-p-l-percentage="${PLPercentage}"
+                    data-updated="${offer.time_updated}"
+                    title="Projected P/L">
                     ${prettyPrintPrice(result.currency, (profitOrLoss).toFixed(2))}
                 </span>`,
           ),
