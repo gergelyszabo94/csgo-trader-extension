@@ -137,6 +137,7 @@ const storageKeys = {
   discussionsToAutoBump: [],
   usefulTitles: false,
   reloadListingOnError: true,
+  monitorFriendRequests: true,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

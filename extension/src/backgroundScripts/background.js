@@ -174,15 +174,17 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     });
   } else if (alarm.name === 'getSteamNotificationCount') {
     getSteamNotificationCount().then(({ invites }) => {
-      chrome.storage.local.get(['friendRequests', 'groupInvites', 'ignoreGroupInvites'],
-        ({ friendRequests, groupInvites, ignoreGroupInvites }) => {
+      chrome.storage.local.get(['friendRequests', 'groupInvites', 'ignoreGroupInvites', 'monitorFriendRequests'],
+        ({
+          friendRequests, groupInvites, ignoreGroupInvites, monitorFriendRequests,
+        }) => {
           const minutesFromLastCheck = ((Date.now()
             - new Date(friendRequests.lastUpdated)) / 1000) / 60;
           const friendAndGroupInviteCount = friendRequests.inviters.length
             + groupInvites.invitedTo.length;
 
           if (invites !== friendAndGroupInviteCount || minutesFromLastCheck >= 30) {
-            updateFriendRequest();
+            if (monitorFriendRequests) updateFriendRequest();
             getGroupInvites().then((inviters) => {
               if (ignoreGroupInvites) {
                 inviters.forEach((inviter) => {

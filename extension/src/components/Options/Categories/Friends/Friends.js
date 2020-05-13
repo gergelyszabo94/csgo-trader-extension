@@ -15,6 +15,12 @@ const Friends = () => {
         type="flipSwitchStorage"
         description="Ignore all Steam group invites automatically"
       />
+      <Row
+        name="Monitor friend requests"
+        id="monitorFriendRequests"
+        type="flipSwitchStorage"
+        description="If you have the extension installed on multiple computers you might want to turn it off in some of them to save requests to Steam."
+      />
       <div className="row">
         <InviteRules />
         <InviteHistory />
