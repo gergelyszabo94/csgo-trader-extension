@@ -413,7 +413,6 @@ const sortOffers = (sortingMode) => {
 
 // adds receive/sent offers and the last time they happened
 // also adds "incoming friend request from" message
-// also adds "this user has trade hold" message
 const addPartnerOfferSummary = (offers) => {
   chrome.storage.local.get(['tradeHistoryOffers', 'friendRequests'], ({ tradeHistoryOffers, friendRequests }) => {
     if (tradeHistoryOffers) {
@@ -432,16 +431,6 @@ const addPartnerOfferSummary = (offers) => {
           offerElement.querySelector('.tradeoffer_header').insertAdjacentHTML(
             'afterend',
             '<div class="friendRequestFrom">You have an incoming friend request from this user</div>',
-          );
-        }
-
-        if (offer.escrow_end_date !== 0) {
-          const userHasTradeHold = offerElement.querySelector('.userHasTradeHold');
-          if (userHasTradeHold !== null) userHasTradeHold.remove();
-
-          offerElement.querySelector('.tradeoffer_header').insertAdjacentHTML(
-            'afterend',
-            '<div class="userHasTradeHold">This user has Trade Hold</div>',
           );
         }
 
