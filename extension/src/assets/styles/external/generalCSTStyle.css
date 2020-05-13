@@ -203,6 +203,11 @@ progress {
     color: var(--steam-sale-golden) !important;
 }
 
+.userHasTradeHold {
+    color: var(--steam-souvenir-yellow);
+    margin: 5px 0 5px 0;
+}
+
 .purchase {
     background-color: rgba(0,255,0 ,0.3) !important;
 }
