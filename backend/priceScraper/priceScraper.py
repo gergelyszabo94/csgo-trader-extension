@@ -5,6 +5,7 @@ import pyotp
 import os
 import gzip
 from datetime import date
+import base64
 
 bitskins_secret = os.environ['BITSKINS_SECRET']
 bitskins_token = pyotp.TOTP(bitskins_secret)
@@ -13,6 +14,8 @@ result_s3_bucket = os.environ['RESULTS_BUCKET']
 sns_topic = os.environ['SNS_TOPIC_ARN']
 own_prices_table = os.environ['OWN_PRICES_TABLE']
 steam_apis_key = os.environ['STEAM_APIS_COM_API_KEY']
+skinbay_cliend_id = os.environ['SKINBAY_CLIENT_ID']
+skinbay_cliend_secret = os.environ['SKINBAY_CLIENT_SECRET']
 
 special_phases = ["Ruby", "Sapphire", "Black Pearl", "Emerald"]
 knives = ["Bayonet", "Bowie Knife", "Butterfly Knife", "Falchion Knife", "Flip Knife",
@@ -242,6 +245,51 @@ def lambda_handler(event, context):
             'body': json.dumps(error)
         }
 
+    # base64 encoding of auth header per docs:
+    # https://docs.skinbay.com/#authentication
+    auth_string = (base64.b64encode((skinbay_cliend_id + ":" + skinbay_cliend_secret).encode('ascii'))).decode('ascii')
+    print(auth_string)
+    print("Requesting prices from skinbay.com")
+    response = requests.get(
+        "https://api.skinbay.com/v1/items?app_id=730",
+        headers={"Authorization": "Basic " + auth_string},
+    )
+    print("Received response from skinbay.com")
+
+    if response.status_code == 200:
+        print("Valid response from skinbay.com")
+        items = response.json()
+        print("Extracting pricing information")
+
+        skinbay_prices = {}
+        for item in items:
+            name = item.get('market_hash_name')
+            suggested_price = item.get('suggested_price')
+            steam_price = item.get('steam_price')
+            instant_price = item.get('instant_price')
+            starting_at = item.get('min_price')
+
+            skinbay_prices[name] = {
+                "suggested_price": suggested_price,
+                "steam_price": steam_price,
+                "instant_price": instant_price,
+                "starting_at": starting_at,
+            }
+            add_to_master_list(master_list, name, True)
+
+        print("Pricing information extracted")
+        push_to_s3(skinbay_prices, 'skinbay', stage)
+
+    else:
+        error = "Could not get items from skinbay.com"
+        alert_via_sns(error)
+        print(error, " status code: ", response.status_code)
+        return {
+            'statusCode': response.status_code,
+            'body': json.dumps(error)
+        }
+
+
     print("Creates own pricing")
     print("Calculate market trends")
 
@@ -384,6 +432,10 @@ def lambda_handler(event, context):
             extract[item]["csmoney"] = csmoney_prices[item]
         else:
             extract[item]["csmoney"] = "null"
+        if item in skinbay_prices:
+            extract[item]["skinbay"] = skinbay_prices[item]
+        else:
+            extract[item]["skinbay"] = "null"
         if item in csgotrader_prices:
             extract[item]["csgotrader"] = csgotrader_prices[item]
         else:
