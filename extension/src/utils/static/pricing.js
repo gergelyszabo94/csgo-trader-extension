@@ -366,6 +366,35 @@ const pricingProviders = {
       },
     },
   },
+  skinbay: {
+    name: 'skinbay',
+    long: 'Skinbay.com',
+    short: 'SB',
+    url: 'https://skinbay.com/?r=gery',
+    description: 'Skinbay is a real money skin marketplace offering good prices and premium service',
+    pricing_modes: {
+      suggested_price: {
+        description: 'Skinbay suggested price',
+        name: 'suggested_price',
+        long: 'Skinbay suggested price',
+      },
+      steam_price: {
+        description: 'Skinbay Steam price',
+        name: 'steam_price',
+        long: 'Skinbay Steam price',
+      },
+      instant_price: {
+        description: 'Skinbay instant price',
+        name: 'instant_price',
+        long: 'Skinbay instant price',
+      },
+      starting_at: {
+        description: 'Skinbay starting at price',
+        name: 'starting_at',
+        long: 'Skinbay starting at',
+      },
+    },
+  },
 };
 
 export { currencies, pricingProviders };

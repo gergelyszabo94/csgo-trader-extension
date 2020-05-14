@@ -159,7 +159,8 @@ const updatePrices = () => {
         const keys = Object.keys(pricesJSON);
 
         if (provider === pricingProviders.steam.name
-          || provider === pricingProviders.bitskins.name) {
+          || provider === pricingProviders.bitskins.name
+          || provider === pricingProviders.skinbay.name) {
           let pricingMode = mode;
           if (mode === pricingProviders.bitskins.pricing_modes.bitskins.name) pricingMode = 'price';
           else if (mode === pricingProviders.bitskins.pricing_modes.instant_sale.name) {
