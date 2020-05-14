@@ -117,6 +117,12 @@ const conditions = {
     value_type: 'country',
     default_value: 'US',
   },
+  all_users: {
+    key: 'all_users',
+    pretty: 'All users',
+    description: 'Matches all users, useful if you want to accept or ignore everyone for example',
+    with_value: false,
+  },
 };
 
 const actions = {

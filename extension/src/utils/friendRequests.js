@@ -441,6 +441,12 @@ const evaluateRequest = (invite, rules) => {
     && (invite.csgoInventoryValue !== undefined) && invite.pastRequests) {
     for (const [index, rule] of rules.entries()) {
       if (rule.active) {
+        if (rule.condition.type === conditions.all_users.key) {
+          return {
+            action: rule.action,
+            appliedRule: index + 1,
+          };
+        }
         if (rule.condition.type === conditions.profile_private.key
           && invite.summary.communityvisibilitystate === 1) {
           return {
