@@ -58,7 +58,7 @@ const Invite = ({
           {details.name}
         </NewTabLink>
         <CustomA11yButton action={() => copyToClipboard(details.name)} title="Copy name to clipboard" className="mx-1">
-          <FontAwesomeIcon icon={faClipboard} className="golden" />
+          <FontAwesomeIcon icon={faClipboard} />
         </CustomA11yButton>
       </td>
       <td>
