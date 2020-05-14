@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { currencies, pricingProviders } from 'utils/static/pricing';
+import NewTabLink from 'components/NewTabLink/NewTabLink';
 import Category from '../Category/Category';
 import Row from '../Row';
 
@@ -50,7 +51,13 @@ const pricing = () => {
       <Row
         name="Provider"
         type="pricingProvider"
-        description="The pricing provider and pricing mode you want to get your prices from"
+        description={(
+          <>
+            The pricing provider and pricing mode you want to get your prices from.
+            Learn more about pricing and price on the
+            <NewTabLink to="https://csgotrader.app/prices/"> prices page</NewTabLink>
+          </>
+        )}
         options={pricingProviders}
       />
       <Row
