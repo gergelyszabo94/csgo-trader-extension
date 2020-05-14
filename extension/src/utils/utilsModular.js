@@ -647,9 +647,7 @@ const copyToClipboard = (text) => {
   document.querySelector('body').insertAdjacentHTML(
     'beforeend',
     DOMPurify.sanitize(`
-        <textarea id="text_area_to_copy_to_clipboard" class="hidden-copy-textarea" readonly="">
-            ${text}
-        </textarea>`),
+        <textarea id="text_area_to_copy_to_clipboard" class="hidden-copy-textarea" readonly="">${text}</textarea>`),
   );
 
   const textAreaElement = document.getElementById('text_area_to_copy_to_clipboard');

@@ -5,7 +5,10 @@ import {
   acceptRequest, ignoreRequest, blockRequest, getBansSummaryText, updateFriendRequest,
 } from 'utils/friendRequests';
 import { prettyTimeAgo } from 'utils/dateTime';
-import { faUserSlash, faUserPlus, faUserMinus } from '@fortawesome/free-solid-svg-icons';
+import { copyToClipboard } from 'utils/utilsModular';
+import {
+  faUserSlash, faUserPlus, faUserMinus, faClipboard,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
 
@@ -54,6 +57,9 @@ const Invite = ({
         <NewTabLink to={`https://steamcommunity.com/profiles/${details.steamID}`}>
           {details.name}
         </NewTabLink>
+        <CustomA11yButton action={() => copyToClipboard(details.name)} title="Copy name to clipboard" className="mx-1">
+          <FontAwesomeIcon icon={faClipboard} className="golden" />
+        </CustomA11yButton>
       </td>
       <td>
         {details.level}
