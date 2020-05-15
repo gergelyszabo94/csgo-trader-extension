@@ -23,6 +23,43 @@ const changelog = (props) => {
                 This means that the latest version might not have rolled out to your platform yet when you are reading this.
             </Container>
             <Container className='buildingBlock'>
+                <h2>Version 2.3 - 2020-05-15</h2>
+                Check out the <Link to='/release-notes/#2.3'> Release Notes </Link> for more info on the new features.
+                <ul>
+                    <li>
+                        Added
+                        <NewTabLink to='https://skinbay.com/?r=gery'> Skinbay.com </NewTabLink>
+                        as a pricing provider
+                    </li>
+                    <li>
+                        Added links to
+                        <NewTabLink to='https://skinbay.com/?r=gery'> Skinbay.com </NewTabLink>
+                        to market listing pages (can be turned off)
+                    </li>
+                    <li>
+                        Fixed an issue where after currency change the exchange rates did not update in the background immediately
+                    </li>
+                    <li>
+                        For new users (new installations) the extension currency will be set to match their Steam Wallet currency.
+                        <GithubIssueLink issueNumber={161}/>
+                    </li>
+                    <li>Added a disclaimer to the discussion auto-bumping feature</li>
+                    <li>
+                        Made numerous improvements to the Steam Market Mass Listing feature
+                        <GithubIssueLink issueNumber={201}/>
+                    </li>
+                    <li>Added new scam/spam comment patterns to report (mostly "join our team" like ones)</li>
+                    <li>
+                        Made numerous improvements to the the incoming trade offers page and to trade offers
+                        <GithubIssueLink issueNumber={215}/>
+                    </li>
+                    <li>Improvements to the friend request evaluation feature, including new conditions, request summary, other niceties
+                        <GithubIssueLink issueNumber={195}/>
+                    </li>
+                    <li>Even users with capitalized "CSGOTRADER.APP" in their name will be highlighted in gold colors</li>
+                </ul>
+            </Container>
+            <Container className='buildingBlock'>
                 <h2>Version 2.2 - 2020-04-19</h2>
                 <div className="text-danger">
                     It was brought to my attention that bumping discussions is against Steam's
