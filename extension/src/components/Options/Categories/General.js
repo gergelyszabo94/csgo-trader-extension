@@ -40,6 +40,10 @@ const general = () => {
               this form
             </NewTabLink>
             &nbsp;(you can put anything in as domain name).
+            <br />
+            <NewTabLink to="https://csgotrader.app/faq/#steamapikey">
+              Why does it need Steam API key explained in more detail.
+            </NewTabLink>
           </>
         )}
         modalTitle="Enter your Steam API key here"

@@ -114,6 +114,18 @@ const faq = (props) => {
                         meaning that every piece of code that runs in your browser can be read by anyone, no guessing or speculating needed!
                     </p>
                 </Question>
+                <Question id='steamapikey' title='Why does it need Steam API key? Isn&apos;t that for scamming??'>
+                    <p>
+                        Even though I think I have this explained in the options pretty well, I get this question a lot.
+                        Let me start by explaining what the Steam API and your key for it is.
+                        The Steam API allows programs (like my extension) to interact with Steam on your behalf.
+                        There are some features in the extension that use it, for example when loading trade offers.
+                        If you are afraid, you can choose to not set your API key in the options but you will be missing out on some features.
+                        <NewTabLink to='https://steamcommunity.com/sharedfiles/filedetails/?id=1408053055'> Although scammers started using it to cancel trade offers in recent times, </NewTabLink>
+                        no the Steam API is not for scamming.
+                        Do you really think that Steam designed a feature for scammers so they can steal your items?
+                    </p>
+                </Question>
                 <Question title='How can I support it?'>
                     <p>
                         Leaving a positive review or rating in the
