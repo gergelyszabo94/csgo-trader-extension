@@ -20,6 +20,7 @@ const footer = () => {
                 <BrandIcon link='https://addons.mozilla.org/en-US/firefox/addon/csgo-trader-steam-trading/' brand='firefox'/>
                 <BrandIcon link='https://microsoftedge.microsoft.com/addons/detail/emcdnkamomgiafjejbhdpcfgbeeimpdb' brand='edge'/>
                 <BrandIcon link='https://www.youtube.com/channel/UCkDNavvHkCFHFCZ2bmG4zzw' brand='youtube'/>
+                <BrandIcon link='https://www.instagram.com/gerytrading/' brand='instagram'/>
             </div>
             <span className='footerNavLink'>
                 <Link to='/privacy/'>Privacy</Link>
