@@ -64,6 +64,7 @@ if (actions !== null) {
 let textOfDescriptors = '';
 document.querySelectorAll('.descriptor').forEach((descriptor) => { textOfDescriptors += descriptor.innerText; });
 const thereSouvenirForThisItem = souvenirExists(textOfDescriptors);
+const isCommodityItem = document.getElementById('searchResultsRows') === null;
 
 let weaponName = '';
 const fullName = decodeURIComponent(window.location.href).split('listings/730/')[1];
@@ -169,11 +170,9 @@ const addStickers = () => {
   `, 'listingRowOverRide');
 
   const listings = getListings();
-  const listingsSection = document.getElementById('searchResultsRows');
 
-  // so it does not throw any errors when it can't find it on commodity items
-  if (listingsSection !== null) {
-    listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
+  if (!isCommodityItem) {
+    document.getElementById('searchResultsRows').querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
       (listingRow) => {
         if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
           const listingID = getListingIDFromElement(listingRow);
@@ -595,6 +594,54 @@ if (searchResultsRows !== null) {
     childList: true,
   });
 }
+
+chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }) => {
+  if (showRealMoneySiteLinks) {
+    const elementToInsertTo = isCommodityItem
+      ? document.getElementById('market_commodity_order_spread')
+      : document.getElementById('market_buyorder_info');
+
+    if (elementToInsertTo !== null) {
+      elementToInsertTo.insertAdjacentHTML(
+        'beforebegin',
+        DOMPurify.sanitize(
+          `<div class="realMoneySite">
+                <a href="https://skinbay.com/market/730?search=${fullName}&r=gery" target="_blank" id="skinbayLink" class="skinbayLink">
+                    You can buy this item 20-30% cheaper on Skinbay
+                </a>
+                <span id="realMoneyExpand" class="clickable" title="Click to learn more about what this is">What is this?</span>
+                <div id="realMoneyMoreInfo" class="hidden">
+                    <div style="margin: 10px 0 10px 0">
+                      <a href="https://skinbay.com/market/730?r=gery" target="_blank" class="skinbayLink">Skinbay</a>
+                      is a real money marketplace where you can buy and sell skins. <br>
+                      They have a very simple to use interface, good prices and great support. <br>
+                      You can save money by buying items there instead of the market. <br>
+                      <a href="https://skinbay.com/market/730?search=${fullName}&r=gery" target="_blank" class="skinbayLink">
+                          Follow this link to check listings for his item on Skinbay.com
+                      </a>
+                    </div>
+                    <div>
+                      This message was added by the CSGO Trader extension. using the above link to purchase something helps the development of the extension.
+                      If you don't wish to see this message in the future you can go the options and turn the feature off.
+                    </div>
+                </div>
+            </div>`,
+          { ADD_ATTR: ['target'] },
+        ),
+      );
+
+      document.querySelectorAll('.skinbayLink').forEach((link) => {
+        link.addEventListener('click', () => {
+          trackEvent('marketSkinbayLinkClicked');
+        });
+      });
+
+      document.getElementById('realMoneyExpand').addEventListener('click', () => {
+        document.getElementById('realMoneyMoreInfo').classList.remove('hidden');
+      });
+    }
+  }
+});
 
 chrome.storage.local.get('numberOfListings', ({ numberOfListings }) => {
   const numberOfListingsInt = parseInt(numberOfListings);

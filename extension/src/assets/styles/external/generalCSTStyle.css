@@ -211,6 +211,14 @@ progress {
     background-color: rgba(255,0,0 ,0.3) !important;
 }
 
+.realMoneySite {
+    margin: 10px;
+}
+
+#skinbayLink {
+    font-size: 1.1rem;
+}
+
 .trade_offers_module{
     padding-top: 24px;
     padding-left: 48px;
