@@ -606,18 +606,18 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
         'beforebegin',
         DOMPurify.sanitize(
           `<div class="realMoneySite">
-                <a href="https://skinbay.com/market/730?search=${fullName}&r=gery" target="_blank" id="skinbayLink" class="skinbayLink">
+                <a href="https://skincay.com/market/730?search=${fullName}&r=gery" target="_blank" id="skincayLink" class="skincayLink">
                     You can buy this item 20-30% cheaper on Skinbay
                 </a>
                 <span id="realMoneyExpand" class="clickable" title="Click to learn more about what this is">What is this?</span>
                 <div id="realMoneyMoreInfo" class="hidden">
                     <div style="margin: 10px 0 10px 0">
-                      <a href="https://skinbay.com/market/730?r=gery" target="_blank" class="skinbayLink">Skinbay</a>
+                      <a href="https://skincay.com/market/730?r=gery" target="_blank" class="skincayLink">Skincay</a>
                       is a real money marketplace where you can buy and sell skins. <br>
                       They have a very simple to use interface, good prices and great support. <br>
                       You can save money by buying items there instead of the market. <br>
-                      <a href="https://skinbay.com/market/730?search=${fullName}&r=gery" target="_blank" class="skinbayLink">
-                          Follow this link to check listings for his item on Skinbay.com
+                      <a href="https://skincay.com/market/730?search=${fullName}&r=gery" target="_blank" class="skincayLink">
+                          Follow this link to check listings for his item on Skincay.com
                       </a>
                     </div>
                     <div>
@@ -630,9 +630,9 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
         ),
       );
 
-      document.querySelectorAll('.skinbayLink').forEach((link) => {
+      document.querySelectorAll('.skincayLink').forEach((link) => {
         link.addEventListener('click', () => {
-          trackEvent('marketSkinbayLinkClicked');
+          trackEvent('marketSkincayLinkClicked');
         });
       });
 

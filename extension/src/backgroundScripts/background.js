@@ -10,6 +10,7 @@ import {
 } from 'utils/friendRequests';
 import { trimFloatCache } from 'utils/floatCaching';
 import { getSteamNotificationCount } from 'utils/notifications';
+import { pricingProviders } from 'utils/static/pricing';
 
 // handles install and update events
 chrome.runtime.onInstalled.addListener((details) => {
@@ -87,21 +88,13 @@ chrome.runtime.onInstalled.addListener((details) => {
       }
     });
 
-    // during the React refactor the links had to be changed
-    // remove this code in a couple of months when the majority of the users have updated
-    chrome.storage.local.get('popupLinks', (result) => {
-      for (const popupLink of result.popupLinks) {
-        if (popupLink.id === 'about') {
-          popupLink.id = 'faq';
-          popupLink.name = 'FAQ';
-          popupLink.url = 'https://csgotrader.app/faq/';
-        } else if (popupLink.id === 'options') {
-          popupLink.url = 'index.html';
-        } else if (popupLink.id === 'bookmarks') {
-          popupLink.url = 'index.html?page=bookmarks';
-        }
+    // skinbay was renamed to skincay
+    // this snipped changes the pricing provider's name accordingly
+    // remove in a few months
+    chrome.storage.local.get('pricingProvider', ({ pricingProvider }) => {
+      if (pricingProvider === 'skinbay') {
+        chrome.storage.local.set({ pricingProvider: pricingProviders.skincay.name }, () => {});
       }
-      chrome.storage.local.set({ popupLinks: result.popupLinks }, () => {});
     });
 
     trackEvent({

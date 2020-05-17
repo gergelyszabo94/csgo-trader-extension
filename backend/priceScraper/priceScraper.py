@@ -14,8 +14,8 @@ result_s3_bucket = os.environ['RESULTS_BUCKET']
 sns_topic = os.environ['SNS_TOPIC_ARN']
 own_prices_table = os.environ['OWN_PRICES_TABLE']
 steam_apis_key = os.environ['STEAM_APIS_COM_API_KEY']
-skinbay_cliend_id = os.environ['SKINBAY_CLIENT_ID']
-skinbay_cliend_secret = os.environ['SKINBAY_CLIENT_SECRET']
+skincay_cliend_id = os.environ['SKINCAY_CLIENT_ID']
+skincay_cliend_secret = os.environ['SKINCAY_CLIENT_SECRET']
 
 special_phases = ["Ruby", "Sapphire", "Black Pearl", "Emerald"]
 knives = ["Bayonet", "Bowie Knife", "Butterfly Knife", "Falchion Knife", "Flip Knife",
@@ -246,22 +246,22 @@ def lambda_handler(event, context):
         }
 
     # base64 encoding of auth header per docs:
-    # https://docs.skinbay.com/#authentication
-    auth_string = (base64.b64encode((skinbay_cliend_id + ":" + skinbay_cliend_secret).encode('ascii'))).decode('ascii')
+    # https://docs.skincay.com/#authentication
+    auth_string = (base64.b64encode((skincay_cliend_id + ":" + skincay_cliend_secret).encode('ascii'))).decode('ascii')
     print(auth_string)
-    print("Requesting prices from skinbay.com")
+    print("Requesting prices from skincay.com")
     response = requests.get(
-        "https://api.skinbay.com/v1/items?app_id=730",
+        "https://api.skincay.com/v1/items?app_id=730",
         headers={"Authorization": "Basic " + auth_string},
     )
-    print("Received response from skinbay.com")
+    print("Received response from skincay.com")
 
     if response.status_code == 200:
-        print("Valid response from skinbay.com")
+        print("Valid response from skincay.com")
         items = response.json()
         print("Extracting pricing information")
 
-        skinbay_prices = {}
+        skincay_prices = {}
         for item in items:
             name = item.get('market_hash_name')
             suggested_price = item.get('suggested_price')
@@ -269,7 +269,7 @@ def lambda_handler(event, context):
             instant_price = item.get('instant_price')
             starting_at = item.get('min_price')
 
-            skinbay_prices[name] = {
+            skincay_prices[name] = {
                 "suggested_price": suggested_price,
                 "steam_price": steam_price,
                 "instant_price": instant_price,
@@ -278,10 +278,10 @@ def lambda_handler(event, context):
             add_to_master_list(master_list, name, True)
 
         print("Pricing information extracted")
-        push_to_s3(skinbay_prices, 'skinbay', stage)
+        push_to_s3(skincay_prices, 'skincay', stage)
 
     else:
-        error = "Could not get items from skinbay.com"
+        error = "Could not get items from skincay.com"
         alert_via_sns(error)
         print(error, " status code: ", response.status_code)
         return {
@@ -432,16 +432,16 @@ def lambda_handler(event, context):
             extract[item]["csmoney"] = csmoney_prices[item]
         else:
             extract[item]["csmoney"] = "null"
-        if item in skinbay_prices:
-            extract[item]["skinbay"] = skinbay_prices[item]
+        if item in skincay_prices:
+            extract[item]["skincay"] = skincay_prices[item]
         else:
-            extract[item]["skinbay"] = "null"
+            extract[item]["skincay"] = "null"
         if item in csgotrader_prices:
             extract[item]["csgotrader"] = csgotrader_prices[item]
         else:
             extract[item]["csgotrader"] = "null"
 
-    push_to_s3(extract, 'prices_v3', stage)
+    push_to_s3(extract, 'prices_v4', stage)
     return {
         'statusCode': 200,
         'body': json.dumps('Success!')

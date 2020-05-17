@@ -82,7 +82,7 @@ const releaseNotes = (props) => {
               </p>
               <ShowcaseImage src='/img/release-notes/offer_summary.png' title='Trade offer summary'/>
               <p>
-                  I have partnered with  <NewTabLink to='https://skinbay.com/?r=gery'> Skinbay.com </NewTabLink>.
+                  I have partnered with  <NewTabLink to='https://skincay.com/?r=gery'> Skincay.com </NewTabLink>.
                   I added them as a pricing provider inside the extension as well as placed links to their marketplace on market listing pages.
                   These are affiliate links and if you use them when you sign up to the site you will support the development of the extension.
                   I hope it is not too intrusive, but if it bothers you then you can go to the options and set it to not show for you.
