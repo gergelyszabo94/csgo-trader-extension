@@ -414,10 +414,10 @@ const addRightSideElements = () => {
     if (activeID !== null) {
       const item = getItemByAssetID(items, activeID);
 
-      // removes "tags" and "tradable after" in one's own inventory
+      // hides "tags" and "tradable after" in one's own inventory
       document.querySelectorAll('#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors')
         .forEach((tagsElement) => {
-          tagsElement.remove();
+          if (!tagsElement.classList.contains('hidden')) tagsElement.classList.add('hidden');
         });
 
       // cleans up previously added elements
@@ -1397,7 +1397,14 @@ const observer = new MutationObserver(() => {
   if (isCSGOInventoryActive('inventory')) {
     addRightSideElements();
     addFunctionBar();
-  } else cleanUpElements(true);
+  } else {
+    cleanUpElements(true);
+    // unhides "tags" in non-csgo inventories
+    document.querySelectorAll('#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors')
+      .forEach((tagsElement) => {
+        tagsElement.classList.remove('hidden');
+      });
+  }
 });
 
 const observer2 = new MutationObserver(() => {
