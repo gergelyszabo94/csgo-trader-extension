@@ -849,7 +849,7 @@ const addListingRow = (item) => {
     .forEach((priceType) => {
       priceType.addEventListener('click', (event) => {
         event.target.classList.add('cstSelected');
-        event.target.parentNode.querySelectorAll('td').forEach((column) => {
+        event.target.parentNode.querySelectorAll('.cell').forEach((column) => {
           if (column !== event.target) column.classList.remove('cstSelected');
         });
         updateMassSaleTotal();
