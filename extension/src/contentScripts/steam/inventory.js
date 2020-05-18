@@ -772,13 +772,13 @@ const getListingRow = (name) => {
 
 const removeUnselectedItemsFromTable = () => {
   document.getElementById('listingTable').querySelector('.rowGroup')
-    .querySelectorAll('tr').forEach((listingRow) => {
+    .querySelectorAll('.row').forEach((listingRow) => {
       const assetIDs = listingRow.getAttribute('data-assetids').split(',');
       const remainingIDs = assetIDs.filter((assetID) => findElementByAssetID(assetID).classList.contains('cstSelected'));
       if (remainingIDs.length === 0) listingRow.remove();
       else {
         listingRow.setAttribute('data-assetids', remainingIDs.toString());
-        listingRow.querySelector('.itemAmount').innerText = remainingIDs.length;
+        listingRow.querySelector('.itemAmount').querySelector('input').value = remainingIDs.length.toString();
       }
     });
 };
