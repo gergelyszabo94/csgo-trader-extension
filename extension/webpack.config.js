@@ -16,21 +16,26 @@ const pluginsToAlwaysUse = [
     DEBUG: false,
   }),
   // copies assets that don't need bundling
-  new CopyWebpackPlugin([
-    'src/manifest.json',
-    {
-      from: 'src/assets/styles/external/generalCSTStyle.css',
-      to: 'css/generalCSTStyle.css',
-    },
-    {
-      from: 'src/assets/_locales',
-      to: '_locales/',
-    },
-    {
-      from: 'src/assets/images',
-      to: 'images/',
-    },
-  ], { copyUnmodified: true }),
+  new CopyWebpackPlugin({
+    patterns: [
+      {
+        from: 'src/manifest.json',
+        to: 'manifest.json',
+      },
+      {
+        from: 'src/assets/styles/external/generalCSTStyle.css',
+        to: 'css/generalCSTStyle.css',
+      },
+      {
+        from: 'src/assets/_locales',
+        to: '_locales/',
+      },
+      {
+        from: 'src/assets/images',
+        to: 'images/',
+      },
+    ],
+  }),
   new HtmlWebpackPlugin({
     template: path.join(__dirname, 'src', 'index.html'),
     filename: 'index.html',
@@ -128,7 +133,7 @@ module.exports = {
   },
   devtool: '',
   plugins:
-      (mode === 'production') ? [...pluginsToAlwaysUse, new CleanWebpackPlugin()] : pluginsToAlwaysUse, // CleanWebpackPlugin only needs to run when it's a production build
+    (mode === 'production') ? [...pluginsToAlwaysUse, new CleanWebpackPlugin()] : pluginsToAlwaysUse, // CleanWebpackPlugin only needs to run when it's a production build
   devServer: {
     writeToDisk: true,
     contentBase: path.join(__dirname, '../build'),
