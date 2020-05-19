@@ -397,4 +397,17 @@ const pricingProviders = {
   },
 };
 
-export { currencies, pricingProviders };
+const realTimePricingModes = {
+  starting_at: {
+    key: 'starting_at',
+    name: 'Current lowest listing / starting at',
+    description: 'The price of the current lowest listing for the item, also known as the starting at price',
+  },
+  highest_order: {
+    key: 'highest_order',
+    name: 'Current highest buy order',
+    description: 'The value of the current highest buy order / bid for the item, also known as instant sell',
+  },
+};
+
+export { currencies, pricingProviders, realTimePricingModes };

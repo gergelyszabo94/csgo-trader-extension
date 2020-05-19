@@ -26,7 +26,7 @@ const Select = ({
     >
       {options.map((option) => {
         return (
-          <option key={id + option.key} value={option.key}>
+          <option key={id + option.key} value={option.key} title={option.description ? option.description : ''}>
             {option.text}
           </option>
         );

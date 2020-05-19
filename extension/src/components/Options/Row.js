@@ -13,6 +13,7 @@ import LinksToShow from './Inputs/LinksToShow/LinksToShow';
 import Backup from './Inputs/Backup/Backup';
 import Restore from './Inputs/Restore/Restore';
 import Number from './Inputs/Number/Number';
+import RealTimePricingMode from './Inputs/RealTimePricingMode/RealTimePricingMode';
 
 import './Row.css';
 
@@ -50,6 +51,8 @@ const typeSwitch = (type, key, permission, origins, modalTitle, options) => {
       return <Currency id={key} options={options} />;
     case 'number':
       return <Number id={key} />;
+    case 'realtimepricingmode':
+      return <RealTimePricingMode id={key} options={options} />;
     default:
       return null;
   }

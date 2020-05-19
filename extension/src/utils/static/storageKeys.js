@@ -1,4 +1,4 @@
-import { pricingProviders, currencies } from 'utils/static/pricing';
+import { pricingProviders, currencies, realTimePricingModes } from 'utils/static/pricing';
 import { sortingModes, offersSortingModes } from 'utils/static/sortingModes';
 import defaultPopupLinks from 'utils/static/defaultPopupLinks';
 import { actions, conditions } from 'utils/static/friendRequests';
@@ -141,6 +141,7 @@ const storageKeys = {
   showRealMoneySiteLinks: true,
   realTimePricesFreqSuccess: 3000,
   realTimePricesFreqFailure: 15000,
+  realTimePricesMode: realTimePricingModes.starting_at.key,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
