@@ -68,6 +68,21 @@ const pricing = () => {
                     These two events are not synced so you might have a bit outdated prices.
                     Refreshing the prices makes sure that you have the latest. Refreshing multiple times in a short period of time is pointless."
       />
+      <Row
+        name="RealTime price fetching frequency"
+        type="number"
+        id="realTimePricesFreqSuccess"
+        description="The frequency to fetch RealTime prices at from Steam in milliseconds.
+                     The default is 3000, which is 3 seconds, if you set it too low then the the requests will start failing often."
+      />
+      <Row
+        name="RealTime price fetching failure delay"
+        type="number"
+        id="realTimePricesFreqFailure"
+        description="The extension will wait this much to start loading RealTime prices again if it fails once.
+                     It's in milliseconds, the default value is 15000, which is 15 seconds.
+                     If you set it too low then the extension will keep retrying too often and you risk getting a temporary ip ban from Steam."
+      />
     </Category>
   );
 };

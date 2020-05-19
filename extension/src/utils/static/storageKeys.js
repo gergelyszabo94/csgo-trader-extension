@@ -139,6 +139,8 @@ const storageKeys = {
   reloadListingOnError: true,
   monitorFriendRequests: true,
   showRealMoneySiteLinks: true,
+  realTimePricesFreqSuccess: 3000,
+  realTimePricesFreqFailure: 15000,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

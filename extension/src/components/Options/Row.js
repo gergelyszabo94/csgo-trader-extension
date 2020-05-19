@@ -12,6 +12,7 @@ import Refresh from './Inputs/Refresh/Refresh';
 import LinksToShow from './Inputs/LinksToShow/LinksToShow';
 import Backup from './Inputs/Backup/Backup';
 import Restore from './Inputs/Restore/Restore';
+import Number from './Inputs/Number/Number';
 
 import './Row.css';
 
@@ -47,6 +48,8 @@ const typeSwitch = (type, key, permission, origins, modalTitle, options) => {
       return <DoubleSelect id={[...key]} options={options} />;
     case 'currency':
       return <Currency id={key} options={options} />;
+    case 'number':
+      return <Number id={key} />;
     default:
       return null;
   }
