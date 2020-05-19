@@ -142,6 +142,7 @@ const storageKeys = {
   realTimePricesFreqSuccess: 3000,
   realTimePricesFreqFailure: 15000,
   realTimePricesMode: realTimePricingModes.starting_at.key,
+  realTimePricesAutoLoadOffer: true,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

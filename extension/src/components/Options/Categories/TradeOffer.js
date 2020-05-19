@@ -32,6 +32,12 @@ const tradeOffer = () => {
   return (
     <Category title="Trade Offer">
       <Row
+        name="Load RealTime prices"
+        id="realTimePricesAutoLoadOffer"
+        type="flipSwitchStorage"
+        description="Adds RealTime prices to items on trade offer pages"
+      />
+      <Row
         name="Quick decline offers"
         id="quickDeclineOffer"
         type="flipSwitchStorage"
