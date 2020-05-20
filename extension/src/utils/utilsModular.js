@@ -366,10 +366,19 @@ const getItemByAssetID = (items, assetIDToFind) => {
   return items.filter((item) => item.assetid === assetIDToFind)[0];
 };
 
+const getIDsFromElement = (element) => {
+  if (element === null || element.id.includes('anonymous_element')) return null;
+  const IDs = element.id.split('_');
+  return {
+    appID: IDs[0].split('item')[1],
+    contextID: IDs[1],
+    assetID: IDs[2],
+  };
+};
+
 const getAssetIDOfElement = (element) => {
-  if (element === null) return null;
-  const assetID = element.id.split('730_2_')[1];
-  return assetID === undefined ? null : assetID;
+  const IDs = getIDsFromElement(element);
+  return IDs === null ? null : IDs.assetID;
 };
 
 const addDopplerPhase = (item, dopplerInfo) => {
@@ -697,7 +706,7 @@ export {
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists, findElementByAssetID,
-  getFloatBarSkeleton, isCSGOInventoryActive, getInspectLink,
+  getFloatBarSkeleton, isCSGOInventoryActive, getInspectLink, getIDsFromElement,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo,
