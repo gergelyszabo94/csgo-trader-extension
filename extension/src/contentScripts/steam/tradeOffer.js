@@ -9,9 +9,12 @@ import {
   updateLoggedInUserInfo, warnOfScammer, addPageControlEventListeners,
   addSearchListener, findElementByAssetID, getPattern, getNameTag,
   removeOfferFromActiveOffers, changePageTitle, getIDsFromElement,
+  getItemByIDs,
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
-import { prettyPrintPrice } from 'utils/pricing';
+import {
+  priceQueue, workOnPriceQueue, prettyPrintPrice, addRealTimePriceIndicator,
+} from 'utils/pricing';
 import doTheSorting from 'utils/sorting';
 import { sortingModes } from 'utils/static/sortingModes';
 import { trackEvent } from 'utils/analytics';
@@ -87,6 +90,8 @@ const getActiveInventoryIDs = () => {
     };
 };
 
+const findElementByIDs = (appID, contextID, assetID) => document.getElementById(`item${appID}_${contextID}_${assetID}`);
+
 const getItemInfoFromPage = (who) => {
   // gathers the app and contexts ids from the active inventory
   // and the items inside the offer
@@ -132,6 +137,7 @@ const getItemInfoFromPage = (who) => {
                         descriptions: asset.descriptions,
                         market_actions: asset.market_actions,
                         market_hash_name: asset.market_hash_name,
+                        marketable: asset.marketable,
                         name: asset.name,
                         name_color: asset.name_color,
                         position: asset.pos,
@@ -188,6 +194,9 @@ const buildInventoryStructure = (inventory) => {
       classid: item.classid,
       instanceid: item.instanceid,
       assetid: item.assetid,
+      appid: item.appid.toString(),
+      contextid: item.contextid,
+      marketable: item.marketable,
       position: item.position,
       dopplerInfo: (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon) : null,
       exterior: getExteriorFromTags(item.tags),
@@ -437,6 +446,56 @@ const addFloatIndicatorsToPage = (type) => {
   });
 };
 
+const addRealTimePriceToPage = (appID, assetID, contextID, marketHashName, price) => {
+  addRealTimePriceIndicator(findElementByIDs(appID, contextID, assetID), price);
+};
+
+const addRealTimePricesToQueue = (type) => {
+  chrome.storage.local.get(
+    ['realTimePricesAutoLoadOffer', 'realTimePricesMode'],
+    ({ realTimePricesAutoLoadOffer, realTimePricesMode }) => {
+      if (realTimePricesAutoLoadOffer) {
+        let itemElements;
+        if (type === 'page') {
+          const page = getActivePage('offer', getActiveInventory);
+          if (page !== null) itemElements = page.querySelectorAll('.item');
+          else {
+            setTimeout(() => {
+              addRealTimePricesToQueue(type);
+            }, 1000);
+          }
+        } else {
+          const page = document.getElementById(`trade_${type}s`);
+          if (page !== null) itemElements = page.querySelectorAll('.item');
+          else {
+            setTimeout(() => {
+              addRealTimePricesToQueue(type);
+            }, 1000);
+          }
+        }
+
+        itemElements.forEach((itemElement) => {
+          const IDs = getIDsFromElement(itemElement);
+          const item = getItemByIDs(combinedInventories, IDs.appID, IDs.contextID, IDs.assetID);
+
+          if (item.marketable === 1) {
+            priceQueue.jobs.push({
+              type: `offer_${realTimePricesMode}`,
+              assetID: item.assetid,
+              appID: item.appid,
+              contextID: item.contextid,
+              market_hash_name: item.market_hash_name,
+              retries: 0,
+              callBackFunction: addRealTimePriceToPage,
+            });
+          }
+        });
+        if (!priceQueue.active) workOnPriceQueue();
+      }
+    },
+  );
+};
+
 // removes buggy slots that remain behind and break the ui
 const removeLeftOverSlots = () => {
   setTimeout(() => {
@@ -515,8 +574,11 @@ const doInitSorting = () => {
     sortItems(result.offerSortingMode, 'offer');
 
     addFloatIndicatorsToPage('their');
-    addFloatIndicatorsToPage('page');
     addFloatIndicatorsToPage('your');
+    addFloatIndicatorsToPage('page');
+    addRealTimePricesToQueue('their');
+    addRealTimePricesToQueue('your');
+    addRealTimePricesToQueue('page');
 
     document.querySelector(`#offer_sorting_mode [value="${result.offerSortingMode}"]`).selected = true;
     document.querySelector(`#offer_your_sorting_mode [value="${result.offerSortingMode}"]`).selected = true;
@@ -582,22 +644,16 @@ const getInventories = () => {
             items: theirInventoryRes.items,
           },
         };
-        for (const [key, value] of Object.entries(yourInventoryWithPrices)) {
-          value.items.forEach((item) => {
-            combinedInventories.push({
-              ...item,
-              appID: key,
-              contextID: value.contextID,
-            });
+
+        for (const app of Object.values(yourInventoryWithPrices)) {
+          app.items.forEach((item) => {
+            combinedInventories.push(item);
           });
         }
-        for (const [key, value] of Object.entries(theirInventoryWithPrices)) {
-          value.items.forEach((item) => {
-            combinedInventories.push({
-              ...item,
-              appID: key,
-              contextID: value.contextID,
-            });
+
+        for (const app of Object.values(theirInventoryWithPrices)) {
+          app.items.forEach((item) => {
+            combinedInventories.push(item);
           });
         }
 

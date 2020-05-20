@@ -400,6 +400,14 @@ progress {
     font-size: 0.8rem;
 }
 
+.realTimePriceIndicator {
+    position: absolute;
+    bottom: 17px;
+    right: 2px;
+    font-size: 0.7rem;
+    color: #f9f96d;
+}
+
 .exteriorIndicator{
     color: var(--steam-note-blue);
 }

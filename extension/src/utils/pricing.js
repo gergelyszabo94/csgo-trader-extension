@@ -1,4 +1,4 @@
-import { pricingProviders, currencies } from 'utils/static/pricing';
+import { pricingProviders, currencies, realTimePricingModes } from 'utils/static/pricing';
 import { injectScript } from 'utils/injection';
 import DOMPurify from 'dompurify';
 
@@ -123,6 +123,21 @@ const workOnPriceQueue = () => {
                 (priceOverview) => {
                   priceQueue.lastJobSuccessful = true;
                   job.callBackFunction(job.market_hash_name, priceOverview.lowest_price);
+                }, (error) => {
+                  priceQueueFailure(error, job);
+                },
+              );
+            } else if (job.type === `offer_${realTimePricingModes.starting_at.key}`) {
+              getPriceOverview(job.appID, job.market_hash_name).then(
+                (priceOverview) => {
+                  priceQueue.lastJobSuccessful = true;
+                  job.callBackFunction(
+                    job.appID,
+                    job.assetID,
+                    job.contextID,
+                    job.market_hash_name,
+                    priceOverview.lowest_price,
+                  );
                 }, (error) => {
                   priceQueueFailure(error, job);
                 },
@@ -369,10 +384,18 @@ const getUserCurrencyBestGuess = () => new Promise((resolve) => {
   });
 });
 
+const addRealTimePriceIndicator = (itemElement, price) => {
+  itemElement.insertAdjacentHTML(
+    'beforeend',
+    DOMPurify.sanitize(`<div class="realTimePriceIndicator">${price}</div>`),
+  );
+};
+
 export {
   updatePrices, updateExchangeRates, getPrice, getUserCurrencyBestGuess,
   getStickerPriceTotal, prettyPrintPrice, getPriceOverview,
   getPriceAfterFees, userPriceToProperPrice, centsToSteamFormattedPrice,
   steamFormattedPriceToCents, priceQueue, workOnPriceQueue,
   getHighestBuyOrder, getSteamWalletCurrency, getSteamWalletInfo,
+  addRealTimePriceIndicator,
 };

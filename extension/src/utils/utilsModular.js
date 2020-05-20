@@ -366,6 +366,13 @@ const getItemByAssetID = (items, assetIDToFind) => {
   return items.filter((item) => item.assetid === assetIDToFind)[0];
 };
 
+const getItemByIDs = (items, appID, contextID, assetID) => {
+  if (items === undefined || items.length === 0) return null;
+  return items.filter((item) => {
+    return (item.assetid === assetID && item.appid === appID && item.contextid === contextID);
+  })[0];
+};
+
 const getIDsFromElement = (element) => {
   if (element === null || element.id.includes('anonymous_element')) return null;
   const IDs = element.id.split('_');
@@ -700,7 +707,7 @@ export {
   logExtensionPresence, scrapeSteamAPIkey, arrayFromArrayOrNotArray,
   getExteriorFromTags, getDopplerInfo, getQuality, parseStickerInfo,
   handleStickerNamesWithCommas, removeFromArray, getType, changePageTitle,
-  getPattern, goToInternalPage, jumpToAnchor, copyToClipboard,
+  getPattern, goToInternalPage, jumpToAnchor, copyToClipboard, getItemByIDs,
   validateSteamAPIKey, getAssetIDFromInspectLink, uuidv4, updateLoggedInUserInfo,
   listenToLocationChange, addPageControlEventListeners, getItemByAssetID,
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
