@@ -106,13 +106,23 @@ const workOnPriceQueue = () => {
                   },
                 );
               }
-            } else if (job.type === 'my_buy_order' || job.type === 'inventory_mass_sell_instant_sell') {
+            } else if (job.type === 'my_buy_order' || job.type === 'inventory_mass_sell_instant_sell'
+              || job.type === `offer_${realTimePricingModes.highest_order.key}`) {
               getHighestBuyOrder(job.appID, job.market_hash_name).then(
                 (highestBuyOrder) => {
                   if (highestBuyOrder !== undefined) {
                     priceQueue.lastJobSuccessful = true;
                     if (job.type === 'my_buy_order') job.callBackFunction(job, highestBuyOrder);
-                    else if (job.type === 'inventory_mass_sell_instant_sell') job.callBackFunction(job.market_hash_name, highestBuyOrder);
+                    else if (job.type === 'inventory_mass_sell_instant_sell'
+                      || job.type === `offer_${realTimePricingModes.highest_order.key}`) {
+                      job.callBackFunction(
+                        job.market_hash_name,
+                        highestBuyOrder,
+                        job.appID,
+                        job.assetID,
+                        job.contextID,
+                      );
+                    }
                   } else priceQueueFailure('highestBuyOrder is undefined', job);
                 }, (error) => {
                   priceQueueFailure(error, job);
