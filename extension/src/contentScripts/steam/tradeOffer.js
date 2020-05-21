@@ -446,7 +446,7 @@ const addFloatIndicatorsToPage = (type) => {
   });
 };
 
-const addRealTimePriceToPage = (appID, assetID, contextID, marketHashName, price) => {
+const addRealTimePriceToPage = (marketHashName, price, appID, assetID, contextID) => {
   addRealTimePriceIndicator(findElementByIDs(appID, contextID, assetID), price);
 };
 

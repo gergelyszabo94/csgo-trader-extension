@@ -118,25 +118,17 @@ const workOnPriceQueue = () => {
                   priceQueueFailure(error, job);
                 },
               );
-            } else if (job.type === 'inventory_mass_sell_starting_at') {
-              getPriceOverview(job.appID, job.market_hash_name).then(
-                (priceOverview) => {
-                  priceQueue.lastJobSuccessful = true;
-                  job.callBackFunction(job.market_hash_name, priceOverview.lowest_price);
-                }, (error) => {
-                  priceQueueFailure(error, job);
-                },
-              );
-            } else if (job.type === `offer_${realTimePricingModes.starting_at.key}`) {
+            } else if (job.type === 'inventory_mass_sell_starting_at'
+              || job.type === `offer_${realTimePricingModes.starting_at.key}`) {
               getPriceOverview(job.appID, job.market_hash_name).then(
                 (priceOverview) => {
                   priceQueue.lastJobSuccessful = true;
                   job.callBackFunction(
+                    job.market_hash_name,
+                    priceOverview.lowest_price,
                     job.appID,
                     job.assetID,
                     job.contextID,
-                    job.market_hash_name,
-                    priceOverview.lowest_price,
                   );
                 }, (error) => {
                   priceQueueFailure(error, job);
