@@ -20,12 +20,13 @@ const getSteamWalletInfo = () => {
   return JSON.parse(injectScript(getWalletInfoScript, true, 'steamWalletScript', 'steamWallet'));
 };
 
-const initPriceQueue = () => {
+const initPriceQueue = (cleanupFunction) => {
   chrome.storage.local.get(
     ['realTimePricesFreqSuccess', 'realTimePricesFreqFailure'],
     ({ realTimePricesFreqSuccess, realTimePricesFreqFailure }) => {
       priceQueue.delaySuccess = realTimePricesFreqSuccess;
       priceQueue.delayFailure = realTimePricesFreqFailure;
+      priceQueue.cleanupFunction = cleanupFunction !== undefined ? cleanupFunction : () => {};
     },
   );
 };
@@ -195,7 +196,7 @@ const workOnPriceQueue = () => {
             );
           }
         }
-      }
+      } else workOnPriceQueue();
     }
   } else {
     if (priceQueue.active) priceQueue.cleanupFunction();

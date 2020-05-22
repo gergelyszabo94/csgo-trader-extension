@@ -373,8 +373,6 @@ const onListingPricesLoaded = () => {
   if (document.getElementById('startListingOnPriceLoad').checked) startMassSelling();
 };
 
-priceQueue.cleanupFunction = onListingPricesLoaded;
-
 // adds market info in other inventories
 const addStartingAtPrice = (marketHashName) => {
   getPriceOverview('730', marketHashName).then(
@@ -1390,7 +1388,7 @@ const hideOtherExtensionPrices = () => {
 };
 
 logExtensionPresence();
-initPriceQueue();
+initPriceQueue(onListingPricesLoaded);
 
 // mutation observer observes changes on the right side of the inventory interface
 // this is a workaround for waiting for ajax calls to finish when the page changes
