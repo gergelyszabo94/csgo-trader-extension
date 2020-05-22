@@ -607,7 +607,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
         DOMPurify.sanitize(
           `<div class="realMoneySite">
                 <a href="https://skincay.com/market/730?search=${fullName}&r=gery" target="_blank" id="skincayLink" class="skincayLink">
-                    You can buy this item 20-30% cheaper on Skinbay
+                    You can buy this item 20-30% cheaper on Skincay
                 </a>
                 <span id="realMoneyExpand" class="clickable" title="Click to learn more about what this is">What is this?</span>
                 <div id="realMoneyMoreInfo" class="hidden">
