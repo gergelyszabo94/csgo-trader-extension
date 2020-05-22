@@ -80,7 +80,7 @@ const priceQueueFailure = (error, job) => {
     priceQueue.active = false;
     // eslint-disable-next-line no-use-before-define
     workOnPriceQueue();
-  }, priceQueue.delaySuccess);
+  }, priceQueue.delayFailure);
 };
 
 const priceQueueSuccess = () => {
