@@ -13,7 +13,7 @@ import {
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
-  priceQueue, workOnPriceQueue, prettyPrintPrice,
+  priceQueue, workOnPriceQueue, prettyPrintPrice, initPriceQueue,
   addRealTimePriceIndicator, centsToSteamFormattedPrice,
 } from 'utils/pricing';
 import { realTimePricingModes } from 'utils/static/pricing';
@@ -981,6 +981,8 @@ const addFriendRequestInfo = () => {
 };
 
 logExtensionPresence();
+
+initPriceQueue();
 
 // initiates all logic that needs access to item info
 getInventories();

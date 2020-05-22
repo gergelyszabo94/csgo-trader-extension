@@ -19,7 +19,7 @@ import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import {
   getPriceOverview, getPriceAfterFees, userPriceToProperPrice,
   centsToSteamFormattedPrice, prettyPrintPrice, steamFormattedPriceToCents,
-  priceQueue, workOnPriceQueue, getSteamWalletCurrency,
+  priceQueue, workOnPriceQueue, getSteamWalletCurrency, initPriceQueue,
 }
   from 'utils/pricing';
 import { listItem } from 'utils/market';
@@ -1390,6 +1390,7 @@ const hideOtherExtensionPrices = () => {
 };
 
 logExtensionPresence();
+initPriceQueue();
 
 // mutation observer observes changes on the right side of the inventory interface
 // this is a workaround for waiting for ajax calls to finish when the page changes
