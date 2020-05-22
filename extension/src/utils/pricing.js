@@ -199,7 +199,7 @@ const workOnPriceQueue = () => {
       } else workOnPriceQueue();
     }
   } else {
-    if (priceQueue.active) priceQueue.cleanupFunction();
+    priceQueue.cleanupFunction();
     priceQueue.active = false;
   }
 };
