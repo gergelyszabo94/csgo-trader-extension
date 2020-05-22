@@ -28,12 +28,12 @@ const changelog = (props) => {
                 <ul>
                     <li>
                         Added
-                        <NewTabLink to='https://skincay.com/?r=gery'> Skinbay.com </NewTabLink>
+                        <NewTabLink to='https://skincay.com/?r=gery'> Skincay.com </NewTabLink>
                         as a pricing provider
                     </li>
                     <li>
                         Added links to
-                        <NewTabLink to='https://skincay.com/?r=gery'> Skinbay.com </NewTabLink>
+                        <NewTabLink to='https://skincay.com/?r=gery'> Skincay.com </NewTabLink>
                         to market listing pages (can be turned off)
                     </li>
                     <li>
