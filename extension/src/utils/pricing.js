@@ -93,7 +93,7 @@ const getLowestListingPrice = (appID, marketHashName) => {
           if (listingInfo.length !== 0) {
             const lowestListing = listingInfo[0];
             resolve(lowestListing.converted_price + lowestListing.converted_fee);
-          } else reject('empty listings array');
+          } else reject('empty_listings_array'); // no listings at all on the market
         } else reject('no listing data');
         resolve(listingsJSONData);
       } else reject('success:false');
@@ -104,18 +104,6 @@ const getLowestListingPrice = (appID, marketHashName) => {
   });
 };
 
-const priceQueueFailure = (error, job) => {
-  console.log(error, job);
-  priceQueue.lastJobSuccessful = false;
-  priceQueue.jobs.push({ ...job, retries: job.retries + 1 });
-
-  setTimeout(() => {
-    priceQueue.active = false;
-    // eslint-disable-next-line no-use-before-define
-    workOnPriceQueue();
-  }, priceQueue.delayFailure);
-};
-
 const priceQueueSuccess = () => {
   priceQueue.lastJobSuccessful = true;
   setTimeout(() => {
@@ -123,6 +111,21 @@ const priceQueueSuccess = () => {
     // eslint-disable-next-line no-use-before-define
     workOnPriceQueue();
   }, priceQueue.delaySuccess);
+};
+
+const priceQueueFailure = (error, job) => {
+  console.log(error, job);
+  priceQueue.lastJobSuccessful = false;
+
+  if (error !== 'empty_listings_array') {
+    priceQueue.jobs.push({ ...job, retries: job.retries + 1 });
+
+    setTimeout(() => {
+      priceQueue.active = false;
+      // eslint-disable-next-line no-use-before-define
+      workOnPriceQueue();
+    }, priceQueue.delayFailure);
+  } else priceQueueSuccess();
 };
 
 const priceQueueCacheHit = () => {
