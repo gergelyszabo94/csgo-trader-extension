@@ -1,5 +1,4 @@
 import { storageKeys, nonSettingStorageKeys } from 'utils/static/storageKeys';
-import { eventTypes } from 'utils/static/friendRequests';
 
 const trackEvent = (event) => {
   const analyticsInfo = {
