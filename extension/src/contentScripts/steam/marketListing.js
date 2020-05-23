@@ -632,7 +632,10 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
 
       document.querySelectorAll('.skincayLink').forEach((link) => {
         link.addEventListener('click', () => {
-          trackEvent('marketSkincayLinkClicked');
+          trackEvent({
+            type: 'event',
+            action: 'marketSkincayLinkClicked',
+          });
         });
       });
 
