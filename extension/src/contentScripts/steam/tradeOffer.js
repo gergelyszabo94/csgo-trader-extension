@@ -94,17 +94,30 @@ const getActiveInventoryIDs = () => {
 const findElementByIDs = (appID, contextID, assetID) => document.getElementById(`item${appID}_${contextID}_${assetID}`);
 
 const getItemInfoFromPage = (who) => {
+  const getAppInfoScript = `
+    appIDs = {};
+    appIDsArray = Object.keys(User${who}.rgAppInfo);
+    appIDsArray.forEach((appID) => {
+      appIDs[appID] = appID;
+    });
+    
+    document.querySelector('body').setAttribute('userAppInfo', JSON.stringify(appIDs));
+  `;
+  const appInfo = JSON.parse(injectScript(getAppInfoScript, true, 'getAppInfo', 'userAppInfo'));
+
   // gathers the app and contexts ids from the active inventory
   // and the items inside the offer
   let sideAppAndContextIDs = [];
   const activeInventoryIDs = getActiveInventoryIDs();
-  if (activeInventoryIDs !== null) sideAppAndContextIDs.push(activeInventoryIDs);
+  if (activeInventoryIDs !== null && appInfo[activeInventoryIDs.appID] !== undefined) {
+    sideAppAndContextIDs.push(activeInventoryIDs);
+  }
   const whose = who === 'You' ? 'your' : 'their';
   const side = document.getElementById(`trade_${whose}s`);
 
   side.querySelectorAll('.item').forEach((itemEl) => {
     const itemIDs = getIDsFromElement(itemEl);
-    if (itemIDs !== null && itemIDs.appID !== 'anonymous') {
+    if (itemIDs !== null && itemIDs.appID !== 'anonymous' && appInfo[itemIDs.appID] !== undefined) {
       sideAppAndContextIDs = sideAppAndContextIDs.filter((IDs) => {
         return !(IDs.appID === itemIDs.appID && IDs.contextID === itemIDs.contextID);
       });
@@ -115,6 +128,7 @@ const getItemInfoFromPage = (who) => {
       });
     }
   });
+
   const inventoryInfos = {};
 
   for (const IDs of sideAppAndContextIDs) {
@@ -477,23 +491,26 @@ const addRealTimePricesToQueue = (type) => {
           }
         }
 
-        itemElements.forEach((itemElement) => {
-          const IDs = getIDsFromElement(itemElement);
-          const item = getItemByIDs(combinedInventories, IDs.appID, IDs.contextID, IDs.assetID);
+        if (itemElements) {
+          itemElements.forEach((itemElement) => {
+            const IDs = getIDsFromElement(itemElement);
+            const item = getItemByIDs(combinedInventories, IDs.appID, IDs.contextID, IDs.assetID);
 
-          if (item.marketable === 1) {
-            priceQueue.jobs.push({
-              type: `offer_${realTimePricesMode}`,
-              assetID: item.assetid,
-              appID: item.appid,
-              contextID: item.contextid,
-              market_hash_name: item.market_hash_name,
-              retries: 0,
-              callBackFunction: addRealTimePriceToPage,
-            });
-          }
-        });
-        if (!priceQueue.active) workOnPriceQueue();
+            if (item.marketable === 1) {
+              priceQueue.jobs.push({
+                type: `offer_${realTimePricesMode}`,
+                assetID: item.assetid,
+                appID: item.appid,
+                contextID: item.contextid,
+                market_hash_name: item.market_hash_name,
+                retries: 0,
+                callBackFunction: addRealTimePriceToPage,
+              });
+            }
+          });
+
+          if (!priceQueue.active) workOnPriceQueue();
+        }
       }
     },
   );

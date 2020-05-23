@@ -310,7 +310,7 @@ const goToInternalPage = (targetURL) => {
 
 const uuidv4 = () => {
   return (
-  // eslint-disable-next-line no-bitwise
+    // eslint-disable-next-line no-bitwise
     [1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) => (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> c / 4))).toString(16));
 };
 
@@ -341,9 +341,13 @@ const getActivePage = (type, getActiveInventory) => {
       if (page.style.display !== 'none') activePage = page;
     });
   } else if (type === 'offer') {
-    getActiveInventory().querySelectorAll('.inventory_page').forEach((page) => {
-      if (page.style.display !== 'none') activePage = page;
-    });
+    const activeInventory = getActiveInventory();
+    if (activeInventory !== null) {
+      activeInventory.querySelectorAll('.inventory_page')
+        .forEach((page) => {
+          if (page.style.display !== 'none') activePage = page;
+        });
+    }
   }
   return activePage;
 };
@@ -435,7 +439,7 @@ const addSSTandExtIndicators = (itemElement, item, showStickerPrice) => {
 
 const addFloatIndicator = (itemElement, floatInfo) => {
   if (floatInfo !== null && itemElement !== null
-      && itemElement.querySelector('div.floatIndicator') === null) {
+    && itemElement.querySelector('div.floatIndicator') === null) {
     itemElement.insertAdjacentHTML(
       'beforeend',
       DOMPurify.sanitize(`<div class="floatIndicator">${toFixedNoRounding(floatInfo.floatvalue, 4)}</div>`),
