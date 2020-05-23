@@ -16,7 +16,6 @@ import {
   priceQueue, workOnPriceQueue, prettyPrintPrice, initPriceQueue,
   addRealTimePriceIndicator, centsToSteamFormattedPrice,
 } from 'utils/pricing';
-import { realTimePricingModes } from 'utils/static/pricing';
 import doTheSorting from 'utils/sorting';
 import { sortingModes } from 'utils/static/sortingModes';
 import { trackEvent } from 'utils/analytics';
@@ -448,13 +447,10 @@ const addFloatIndicatorsToPage = (type) => {
   });
 };
 
-const addStartingAtPriceToPage = (marketHashName, price, appID, assetID, contextID) => {
-  addRealTimePriceIndicator(findElementByIDs(appID, contextID, assetID), price);
-};
-
-const addHighestBuyOrderPriceToPAge = (marketHashName, centsPrice, appID, assetID, contextID) => {
-  const steamPrettyPrice = centsToSteamFormattedPrice(centsPrice);
-  addRealTimePriceIndicator(findElementByIDs(appID, contextID, assetID), steamPrettyPrice);
+const addRealTimePriceToPage = (marketHashName, price, appID, assetID, contextID) => {
+  addRealTimePriceIndicator(
+    findElementByIDs(appID, contextID, assetID), centsToSteamFormattedPrice(price),
+  );
 };
 
 const addRealTimePricesToQueue = (type) => {
@@ -493,9 +489,7 @@ const addRealTimePricesToQueue = (type) => {
               contextID: item.contextid,
               market_hash_name: item.market_hash_name,
               retries: 0,
-              callBackFunction: realTimePricesMode === realTimePricingModes.starting_at.key
-                ? addStartingAtPriceToPage
-                : addHighestBuyOrderPriceToPAge,
+              callBackFunction: addRealTimePriceToPage,
             });
           }
         });

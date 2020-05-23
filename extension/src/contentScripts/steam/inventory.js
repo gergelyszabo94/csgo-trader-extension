@@ -855,7 +855,7 @@ const addListingRow = (item) => {
     });
 };
 
-const addStartingAtAndQuickSellPrice = (marketHashName, startingAtPrice) => {
+const addStartingAtAndQuickSellPrice = (marketHashName, priceInCents) => {
   const listingRow = getListingRow(marketHashName);
 
   // the user might have unselected the item while it as in the queue
@@ -863,25 +863,21 @@ const addStartingAtAndQuickSellPrice = (marketHashName, startingAtPrice) => {
   if (listingRow !== null) {
     const startingAtElement = listingRow.querySelector('.itemStartingAt');
     const quickSell = listingRow.querySelector('.itemQuickSell');
+    const quickSellPrice = priceInCents - 1;
 
-    if (startingAtPrice !== undefined) {
-      const priceInCents = steamFormattedPriceToCents(startingAtPrice);
-      const quickSellPrice = steamFormattedPriceToCents(startingAtPrice) - 1;
+    startingAtElement.innerText = centsToSteamFormattedPrice(priceInCents);
+    startingAtElement.setAttribute('data-price-set', true.toString());
+    startingAtElement.setAttribute('data-price-in-cents', priceInCents);
+    startingAtElement.setAttribute('data-listing-price', getPriceAfterFees(priceInCents).toString());
+    quickSell.setAttribute('data-price-in-cents', quickSellPrice.toString());
+    quickSell.setAttribute('data-listing-price', getPriceAfterFees(quickSellPrice).toString());
+    quickSell.innerText = centsToSteamFormattedPrice(quickSellPrice);
 
-      startingAtElement.innerText = startingAtPrice;
-      startingAtElement.setAttribute('data-price-set', true.toString());
-      startingAtElement.setAttribute('data-price-in-cents', priceInCents);
-      startingAtElement.setAttribute('data-listing-price', getPriceAfterFees(priceInCents).toString());
-      quickSell.setAttribute('data-price-in-cents', quickSellPrice.toString());
-      quickSell.setAttribute('data-listing-price', getPriceAfterFees(quickSellPrice).toString());
-      quickSell.innerText = centsToSteamFormattedPrice(quickSellPrice);
-
-      // if the quicksell price is higher than the extension price
-      // then select that one as default instead
-      const extensionPrice = parseInt(listingRow.querySelector('.itemExtensionPrice')
-        .getAttribute('data-price-in-cents'));
-      if (extensionPrice < quickSellPrice) quickSell.click();
-    } else startingAtElement.setAttribute('data-price-set', false.toString());
+    // if the quicksell price is higher than the extension price
+    // then select that one as default instead
+    const extensionPrice = parseInt(listingRow.querySelector('.itemExtensionPrice')
+      .getAttribute('data-price-in-cents'));
+    if (extensionPrice < quickSellPrice) quickSell.click();
   }
 };
 

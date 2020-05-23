@@ -72,6 +72,38 @@ const getPriceOverview = (appID, marketHashName) => {
   });
 };
 
+const getLowestListingPrice = (appID, marketHashName) => {
+  return new Promise((resolve, reject) => {
+    const currencyID = getSteamWalletInfo().wallet_currency;
+    const request = new Request(
+      `https://steamcommunity.com/market/listings/${appID}/${marketHashName}/render/?query=&start=0&count=1&country=US&language=english&currency=${currencyID}`,
+    );
+
+    fetch(request).then((response) => {
+      if (!response.ok) {
+        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+        reject({ status: response.status, statusText: response.statusText });
+      }
+      return response.json();
+    }).then((listingsJSONData) => {
+      if (listingsJSONData === null) reject('success:false');
+      else if (listingsJSONData.success === true) {
+        if (listingsJSONData.listinginfo) {
+          const listingInfo = Object.values(listingsJSONData.listinginfo);
+          if (listingInfo.length !== 0) {
+            const lowestListing = listingInfo[0];
+            resolve(lowestListing.converted_price + lowestListing.converted_fee);
+          } else reject('empty listings array');
+        } else reject('no listing data');
+        resolve(listingsJSONData);
+      } else reject('success:false');
+    }).catch((err) => {
+      console.log(err);
+      reject(err);
+    });
+  });
+};
+
 const priceQueueFailure = (error, job) => {
   console.log(error, job);
   priceQueue.lastJobSuccessful = false;
@@ -167,18 +199,18 @@ const workOnPriceQueue = () => {
             }
             priceQueueCacheHit();
           } else {
-            getPriceOverview(job.appID, job.market_hash_name).then(
-              (priceOverview) => {
-                if (priceOverview.lowest_price !== undefined) {
+            getLowestListingPrice(job.appID, job.market_hash_name).then(
+              (lowestListingPrice) => {
+                if (lowestListingPrice !== undefined) {
                   if (job.type === 'my_listing') {
                     job.callBackFunction(
                       job.listingID,
-                      priceOverview.lowest_price,
+                      lowestListingPrice,
                     );
                   } else {
                     job.callBackFunction(
                       job.market_hash_name,
-                      priceOverview.lowest_price,
+                      lowestListingPrice,
                       job.appID,
                       job.assetID,
                       job.contextID,
@@ -187,7 +219,7 @@ const workOnPriceQueue = () => {
                   priceQueue
                     .localCache[
                       job.appID + job.market_hash_name + job.type
-                    ] = priceOverview.lowest_price;
+                    ] = lowestListingPrice;
                   priceQueueSuccess();
                 } else priceQueueFailure('lowest_price is undefined', job);
               }, (error) => {
@@ -446,5 +478,5 @@ export {
   getPriceAfterFees, userPriceToProperPrice, centsToSteamFormattedPrice,
   steamFormattedPriceToCents, priceQueue, workOnPriceQueue,
   getHighestBuyOrder, getSteamWalletCurrency, getSteamWalletInfo,
-  addRealTimePriceIndicator, initPriceQueue,
+  addRealTimePriceIndicator, initPriceQueue, getLowestListingPrice,
 };

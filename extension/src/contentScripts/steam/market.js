@@ -72,11 +72,12 @@ const addStartingAtPriceInfoToPage = (listingID, lowestPrice) => {
     if (startingAt === null) {
       const priceElement = listingRow.querySelector('.market_listing_price');
       const listedPrice = priceElement.querySelectorAll('span')[1].innerText;
-      const cheapest = listedPrice === lowestPrice ? 'cheapest' : 'not_cheapest';
+      const formattedPrice = centsToSteamFormattedPrice(lowestPrice);
+      const cheapest = listedPrice === formattedPrice ? 'cheapest' : 'not_cheapest';
 
       priceElement.insertAdjacentHTML('beforeend',
         DOMPurify.sanitize(`<div class="startingAtPrice ${cheapest}" title="This is the price of the lowest listing right now.">
-                ${lowestPrice}
+                ${formattedPrice}
              </div>`));
     }
   }
