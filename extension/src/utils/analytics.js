@@ -1,4 +1,5 @@
 import { storageKeys, nonSettingStorageKeys } from 'utils/static/storageKeys';
+import { eventTypes } from 'utils/static/friendRequests';
 
 const trackEvent = (event) => {
   const analyticsInfo = {
@@ -40,10 +41,13 @@ const sendTelemetry = (retries) => {
           eventsSummary.pageviews[date] = {};
         }
 
-        // eslint-disable-next-line no-unused-expressions
-        eventsSummary[`${event.type}s`][date][event.action] !== undefined
-          ? eventsSummary[`${event.type}s`][date][event.action] += 1
-          : eventsSummary[`${event.type}s`][date][event.action] = 1;
+        // there was a bug that created malformed events with no type
+        if (event.type !== undefined) {
+          // eslint-disable-next-line no-unused-expressions
+          eventsSummary[`${event.type}s`][date][event.action] !== undefined
+            ? eventsSummary[`${event.type}s`][date][event.action] += 1
+            : eventsSummary[`${event.type}s`][date][event.action] = 1;
+        }
       });
 
       const preferences = {};
