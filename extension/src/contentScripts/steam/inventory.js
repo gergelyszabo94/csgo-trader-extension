@@ -18,7 +18,7 @@ import {
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import {
   getPriceOverview, getPriceAfterFees, userPriceToProperPrice,
-  centsToSteamFormattedPrice, prettyPrintPrice, steamFormattedPriceToCents,
+  centsToSteamFormattedPrice, prettyPrintPrice,
   priceQueue, workOnPriceQueue, getSteamWalletCurrency, initPriceQueue,
 }
   from 'utils/pricing';
