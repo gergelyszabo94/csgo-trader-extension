@@ -879,6 +879,7 @@ const addFunctionBars = () => {
 
         sortItems(sortingSelect.options[sortingSelect.selectedIndex].value, 'offer');
         addFloatIndicatorsToPage('page');
+        addRealTimePricesToQueue('page');
       });
       yourSortingSelect.addEventListener('change', () => {
         // analytics
@@ -889,6 +890,7 @@ const addFunctionBars = () => {
 
         sortItems(yourSortingSelect.options[yourSortingSelect.selectedIndex].value, 'your');
         addFloatIndicatorsToPage('your');
+        addRealTimePricesToQueue('your');
       });
       theirSortingSelect.addEventListener('change', () => {
         // analytics
@@ -899,6 +901,7 @@ const addFunctionBars = () => {
 
         sortItems(theirSortingSelect.options[theirSortingSelect.selectedIndex].value, 'their');
         addFloatIndicatorsToPage('their');
+        addRealTimePricesToQueue('their');
       });
     }
   } else {
@@ -1084,15 +1087,24 @@ chrome.storage.local.get('tradeOfferHeaderToLeft', (result) => {
   }
 });
 
-addPageControlEventListeners('offer', addFloatIndicatorsToPage);
-addSearchListener('offer', addFloatIndicatorsToPage);
+addPageControlEventListeners('offer', () => {
+  addFloatIndicatorsToPage('page');
+  addRealTimePricesToQueue('page');
+});
+addSearchListener('offer', () => {
+  addFloatIndicatorsToPage('page');
+  addRealTimePricesToQueue('page');
+});
 
 const theirInventoryTab = document.getElementById('inventory_select_their_inventory');
 if (theirInventoryTab !== null) {
   // if the offer is "active"
   document.getElementById('inventory_select_their_inventory').addEventListener('click', () => {
     singleClickControlClick();
-    setTimeout(() => { addFloatIndicatorsToPage('page'); }, 500);
+    setTimeout(() => {
+      addFloatIndicatorsToPage('page');
+      addRealTimePricesToQueue('page');
+    }, 500);
   });
 }
 
