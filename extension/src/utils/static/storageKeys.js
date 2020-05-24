@@ -143,10 +143,15 @@ const storageKeys = {
   realTimePricesFreqFailure: 15000,
   realTimePricesMode: realTimePricingModes.starting_at.key,
   realTimePricesAutoLoadOffer: true,
+  priceQueueActivity: {
+    lastUsed: Date.now(),
+    usedAt: '',
+  },
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
   'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID', 'groupInvites',
-  'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules', 'floatQueueActivity', 'discussionsToAutoBump'];
+  'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules', 'floatQueueActivity', 'discussionsToAutoBump',
+  'priceQueueActivity'];
 
 export { storageKeys, nonSettingStorageKeys };
