@@ -1104,6 +1104,16 @@ document.querySelectorAll('#inventory_select_their_inventory, #inventory_select_
     });
   });
 
+// app selection
+document.querySelectorAll('.appselect_options').forEach((appSelect) => {
+  appSelect.addEventListener('click', () => {
+    getInventories();
+    setTimeout(() => {
+      getInventories();
+    }, 1000);
+  });
+});
+
 // if it's an existing trade offer with an id and not a new one to be created
 if (offerID !== 'new') {
   const declineButton = document.getElementById('btn_decline_trade_offer');
