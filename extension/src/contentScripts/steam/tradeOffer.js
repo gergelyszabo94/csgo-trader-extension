@@ -585,19 +585,19 @@ const singleClickControlClick = () => {
   });
 };
 
-const doInitSorting = () => {
-  chrome.storage.local.get(['offerSortingMode', 'switchToOtherInventory'], (result) => {
-    if (result.switchToOtherInventory) {
+const doInitSorting = (initial) => {
+  chrome.storage.local.get(['offerSortingMode', 'switchToOtherInventory'], ({ offerSortingMode, switchToOtherInventory }) => {
+    if (switchToOtherInventory && initial) {
       const inventoryTab = document.getElementById('inventory_select_their_inventory');
       inventoryTab.click();
-      sortItems(result.offerSortingMode, 'their');
+      sortItems(offerSortingMode, 'their');
       inventoryTab.classList.add('sorted');
     } else {
       const inventoryTab = document.getElementById('inventory_select_your_inventory');
-      sortItems(result.offerSortingMode, 'your');
+      sortItems(offerSortingMode, 'your');
       inventoryTab.classList.add('sorted');
     }
-    sortItems(result.offerSortingMode, 'offer');
+    sortItems(offerSortingMode, 'offer');
 
     addFloatIndicatorsToPage('their');
     addFloatIndicatorsToPage('your');
@@ -606,15 +606,15 @@ const doInitSorting = () => {
     addRealTimePricesToQueue('your');
     addRealTimePricesToQueue('page');
 
-    document.querySelector(`#offer_sorting_mode [value="${result.offerSortingMode}"]`).selected = true;
-    document.querySelector(`#offer_your_sorting_mode [value="${result.offerSortingMode}"]`).selected = true;
-    document.querySelector(`#offer_their_sorting_mode [value="${result.offerSortingMode}"]`).selected = true;
+    document.querySelector(`#offer_sorting_mode [value="${offerSortingMode}"]`).selected = true;
+    document.querySelector(`#offer_your_sorting_mode [value="${offerSortingMode}"]`).selected = true;
+    document.querySelector(`#offer_their_sorting_mode [value="${offerSortingMode}"]`).selected = true;
 
     singleClickControlClick();
   });
 };
 
-const getInventories = () => {
+const getInventories = (initial) => {
   yourInventory = getItemInfoFromPage('You');
   theirInventory = getItemInfoFromPage('Them');
 
@@ -684,17 +684,19 @@ const getInventories = () => {
         }
 
         addItemInfo();
-        addInventoryTotals(total, theirInventoryRes.total);
-        addInTradeTotals('your');
-        addInTradeTotals('their');
-        addPLInfo();
-        periodicallyUpdateTotals();
-        doInitSorting();
+        doInitSorting(initial);
+        if (initial) {
+          addInventoryTotals(total, theirInventoryRes.total);
+          addInTradeTotals('your');
+          addInTradeTotals('their');
+          addPLInfo();
+          periodicallyUpdateTotals();
+        }
       });
     });
   } else if (document.getElementById('error_msg') === null) {
     setTimeout(() => {
-      getInventories();
+      getInventories(initial);
     }, 500);
   }
 };
@@ -1005,7 +1007,7 @@ logExtensionPresence();
 initPriceQueue();
 
 // initiates all logic that needs access to item info
-getInventories();
+getInventories(true);
 overrideHandleTradeActionMenu();
 repositionNameTagIcons();
 
@@ -1114,10 +1116,10 @@ document.querySelectorAll('#inventory_select_their_inventory, #inventory_select_
 // app selection
 document.querySelectorAll('.appselect_options').forEach((appSelect) => {
   appSelect.addEventListener('click', () => {
-    getInventories();
+    getInventories(false);
     setTimeout(() => {
-      getInventories();
-    }, 1000);
+      getInventories(false);
+    }, 2000);
   });
 });
 
