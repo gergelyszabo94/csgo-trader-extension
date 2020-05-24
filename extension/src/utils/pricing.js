@@ -76,7 +76,7 @@ const getLowestListingPrice = (appID, marketHashName) => {
   return new Promise((resolve, reject) => {
     const currencyID = getSteamWalletInfo().wallet_currency;
     const request = new Request(
-      `https://steamcommunity.com/market/listings/${appID}/${marketHashName}/render/?query=&start=0&count=1&country=US&language=english&currency=${currencyID}`,
+      `https://steamcommunity.com/market/listings/${appID}/${marketHashName}/render/?query=&start=0&count=3&country=US&language=english&currency=${currencyID}`,
     );
 
     fetch(request).then((response) => {
@@ -91,8 +91,13 @@ const getLowestListingPrice = (appID, marketHashName) => {
         if (listingsJSONData.listinginfo) {
           const listingInfo = Object.values(listingsJSONData.listinginfo);
           if (listingInfo.length !== 0) {
-            const lowestListing = listingInfo[0];
-            resolve(lowestListing.converted_price + lowestListing.converted_fee);
+            for (const listing of listingInfo) {
+              if (listing.converted_price !== undefined && listing.converted_fee !== undefined) {
+                resolve(listing.converted_price + listing.converted_fee);
+                return;
+              }
+            }
+            reject('no_prices_on_listings');
           } else reject('empty_listings_array'); // no listings at all on the market
         } else reject('no listing data');
         resolve(listingsJSONData);
