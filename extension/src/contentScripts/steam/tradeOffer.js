@@ -444,7 +444,7 @@ const addFloatIndicatorsToPage = (type) => {
       }
       itemElements.forEach((itemElement) => {
         const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
-        if (item.inspectLink !== null) {
+        if (item && item.inspectLink !== null) {
           if (item.floatInfo === null && itemTypes[item.type.key].float) {
             floatQueue.jobs.push({
               type: 'offer',
@@ -461,9 +461,16 @@ const addFloatIndicatorsToPage = (type) => {
 };
 
 const addRealTimePriceToPage = (marketHashName, price, appID, assetID, contextID) => {
+  const itemElement = findElementByIDs(appID, contextID, assetID);
+
   addRealTimePriceIndicator(
-    findElementByIDs(appID, contextID, assetID),
+    itemElement,
     price !== null ? centsToSteamFormattedPrice(price) : 'No Data',
+  );
+
+  itemElement.setAttribute(
+    'data-realtime-price',
+    price !== null ? price.toString() : '0',
   );
 };
 
@@ -489,19 +496,22 @@ const addRealTimePricesToQueue = (type) => {
 
         if (itemElements) {
           itemElements.forEach((itemElement) => {
-            const IDs = getIDsFromElement(itemElement);
-            const item = getItemByIDs(combinedInventories, IDs.appID, IDs.contextID, IDs.assetID);
+            if (itemElement.getAttribute('data-realtime-price') === null) {
+              const IDs = getIDsFromElement(itemElement);
+              const item = getItemByIDs(combinedInventories, IDs.appID, IDs.contextID, IDs.assetID);
 
-            if (item && item.marketable === 1) {
-              priceQueue.jobs.push({
-                type: `offer_${realTimePricesMode}`,
-                assetID: item.assetid,
-                appID: item.appid,
-                contextID: item.contextid,
-                market_hash_name: item.market_hash_name,
-                retries: 0,
-                callBackFunction: addRealTimePriceToPage,
-              });
+              itemElement.setAttribute('data-realtime-price', '0');
+              if (item && item.marketable === 1) {
+                priceQueue.jobs.push({
+                  type: `offer_${realTimePricesMode}`,
+                  assetID: item.assetid,
+                  appID: item.appid,
+                  contextID: item.contextid,
+                  market_hash_name: item.market_hash_name,
+                  retries: 0,
+                  callBackFunction: addRealTimePriceToPage,
+                });
+              }
             }
           });
 

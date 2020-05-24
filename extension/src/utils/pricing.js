@@ -140,6 +140,7 @@ const priceQueueCacheHit = () => {
 };
 
 const workOnPriceQueue = () => {
+  console.log(priceQueue);
   if (priceQueue.jobs.length !== 0) { // if there are no jobs then there is no recursion
     if (!priceQueue.active) { // only start the work if the queue is inactive at the moment
       priceQueue.active = true; // marks the queue active
