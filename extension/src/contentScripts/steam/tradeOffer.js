@@ -463,7 +463,8 @@ const addFloatIndicatorsToPage = (type) => {
 
 const addRealTimePriceToPage = (marketHashName, price, appID, assetID, contextID) => {
   addRealTimePriceIndicator(
-    findElementByIDs(appID, contextID, assetID), centsToSteamFormattedPrice(price),
+    findElementByIDs(appID, contextID, assetID),
+    price !== null ? centsToSteamFormattedPrice(price) : 'No Data',
   );
 };
 

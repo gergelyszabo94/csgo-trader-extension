@@ -890,10 +890,17 @@ const addInstantSellPrice = (marketHashName, highestOrder) => {
     const instantElement = listingRow.querySelector('.itemInstantSell');
 
     if (highestOrder !== undefined) {
-      instantElement.innerText = centsToSteamFormattedPrice(highestOrder);
-      instantElement.setAttribute('data-price-set', true.toString());
-      instantElement.setAttribute('data-price-in-cents', highestOrder);
-      instantElement.setAttribute('data-listing-price', getPriceAfterFees(highestOrder).toString());
+      if (highestOrder === null) { // when there aren'y any buy orders for the item
+        instantElement.innerText = 'No Orders';
+        instantElement.setAttribute('data-price-set', true.toString());
+        instantElement.setAttribute('data-price-in-cents', '0');
+        instantElement.setAttribute('data-listing-price', '0');
+      } else {
+        instantElement.innerText = centsToSteamFormattedPrice(highestOrder);
+        instantElement.setAttribute('data-price-set', true.toString());
+        instantElement.setAttribute('data-price-in-cents', highestOrder);
+        instantElement.setAttribute('data-listing-price', getPriceAfterFees(highestOrder).toString());
+      }
     } else instantElement.setAttribute('data-price-set', false.toString());
 
     instantElement.setAttribute('data-price-in-progress', false.toString());
