@@ -408,6 +408,11 @@ progress {
     color: #f9f96d;
 }
 
+.realTimePriceTradeTotal {
+    float: right;
+    color: #f9f96d;
+}
+
 .exteriorIndicator{
     color: var(--steam-note-blue);
 }

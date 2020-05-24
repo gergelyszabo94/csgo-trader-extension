@@ -311,11 +311,16 @@ const addInTradeTotals = (whose) => {
   chrome.storage.local.get('currency', ({ currency }) => {
     const itemsInTrade = document.getElementById(`${whose}_slots`).querySelectorAll('.item');
     let inTradeTotal = 0;
+    let inTradeRealTimeTotal = 0;
     let numberOfItemsInTrade = 0;
     const inTradeItemsSummary = {};
 
     itemsInTrade.forEach((inTradeItem) => {
-      const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(inTradeItem));
+      const realTimePrice = inTradeItem.getAttribute('data-realtime-price');
+      if (realTimePrice !== null) inTradeRealTimeTotal += parseFloat(realTimePrice);
+      
+      const IDs = getIDsFromElement(inTradeItem);
+      const item = getItemByIDs(combinedInventories, IDs.appID, IDs.contextID, IDs.assetID);
       if (item !== undefined) {
         if (item.price !== undefined) inTradeTotal += parseFloat(item.price.price);
         if (inTradeItemsSummary[item.type.key] !== undefined) {
@@ -342,17 +347,33 @@ const addInTradeTotals = (whose) => {
       itemList.appendChild(listItem);
     }
 
-    if (document.getElementById(`${whose}InTradeTotal`) === null) {
+    const totalEl = document.getElementById(`${whose}InTradeTotal`);
+    if (totalEl === null) {
       let itemsTextDiv;
       if (whose === 'your') itemsTextDiv = document.getElementById('trade_yours').querySelector('h2.ellipsis');
       else itemsTextDiv = document.getElementById('trade_theirs').querySelector('.offerheader').querySelector('h2');
       itemsTextDiv.innerHTML = DOMPurify.sanitize(
-        `${itemsTextDiv.innerText.split(':')[0]} (<span id="${whose}InTradeTotal" data-total="${inTradeTotal}">${prettyPrintPrice(currency, inTradeTotal)}</span>):`,
+        `${itemsTextDiv.innerText.split(':')[0]} (<span id="${whose}InTradeTotal" data-total="${inTradeTotal}" title="In-trade total">${prettyPrintPrice(currency, inTradeTotal)}</span>):`,
       );
     } else {
-      const totalEl = document.getElementById(`${whose}InTradeTotal`);
       totalEl.innerText = prettyPrintPrice(currency, inTradeTotal);
       totalEl.setAttribute('data-total', inTradeTotal);
+    }
+
+    if (inTradeRealTimeTotal !== 0) {
+      const realTimeTotalEl = document.getElementById(`${whose}InTradeRealTimeTotal`);
+      if (realTimeTotalEl === null) {
+        const itemBox = document.getElementById(`trade_${whose}s`).querySelector('.trade_item_box');
+        itemBox.style['margin-bottom'] = '20px';
+        itemBox.insertAdjacentHTML(
+          'beforeend',
+          DOMPurify.sanitize(
+            `<div id="${whose}InTradeRealTimeTotal" class="realTimePriceTradeTotal" title="RealTime price total">
+                    ${prettyPrintPrice(currency, inTradeRealTimeTotal / 100)}
+                </div>`,
+          ),
+        );
+      } else realTimeTotalEl.innerText = prettyPrintPrice(currency, inTradeRealTimeTotal / 100);
     }
   });
 };
