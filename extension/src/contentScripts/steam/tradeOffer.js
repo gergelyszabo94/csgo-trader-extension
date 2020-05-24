@@ -264,7 +264,6 @@ const addItemInfo = () => {
               }, 1000);
               return false;
             }
-
             const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
             addDopplerPhase(itemElement, item.dopplerInfo);
             makeItemColorful(itemElement, item, colorfulItems);
@@ -473,23 +472,19 @@ const addRealTimePricesToQueue = (type) => {
     ['realTimePricesAutoLoadOffer', 'realTimePricesMode'],
     ({ realTimePricesAutoLoadOffer, realTimePricesMode }) => {
       if (realTimePricesAutoLoadOffer) {
-        let itemElements;
-        if (type === 'page') {
-          const page = getActivePage('offer', getActiveInventory);
-          if (page !== null) itemElements = page.querySelectorAll('.item');
-          else {
-            setTimeout(() => {
-              addRealTimePricesToQueue(type);
-            }, 1000);
-          }
+        const itemElements = [];
+        let page = null;
+        if (type === 'page') page = getActivePage('offer', getActiveInventory);
+        else page = document.getElementById(`trade_${type}s`);
+
+        if (page !== null) {
+          page.querySelectorAll('.item').forEach((item) => {
+            if (!item.classList.contains('unknownItem')) itemElements.push(item);
+          });
         } else {
-          const page = document.getElementById(`trade_${type}s`);
-          if (page !== null) itemElements = page.querySelectorAll('.item');
-          else {
-            setTimeout(() => {
-              addRealTimePricesToQueue(type);
-            }, 1000);
-          }
+          setTimeout(() => {
+            addRealTimePricesToQueue(type);
+          }, 1000);
         }
 
         if (itemElements) {
@@ -497,7 +492,7 @@ const addRealTimePricesToQueue = (type) => {
             const IDs = getIDsFromElement(itemElement);
             const item = getItemByIDs(combinedInventories, IDs.appID, IDs.contextID, IDs.assetID);
 
-            if (item.marketable === 1) {
+            if (item && item.marketable === 1) {
               priceQueue.jobs.push({
                 type: `offer_${realTimePricesMode}`,
                 assetID: item.assetid,
