@@ -142,13 +142,13 @@ const getItemInfoFromPage = (who) => {
                 for (const asset of Object.values(assets)){
                     trimmedAssets.push({
                         amount: asset.amount,
-                        appid:  asset.appid,
-                        assetid: asset.id,
+                        appid:  asset.appid.toString(),
+                        assetid: asset.id.toString(),
                         actions: asset.actions,
                         classid: asset.classid,
                         icon: asset.icon_url,
-                        instanceid: asset.instanceid,
-                        contextid: asset.contextid,
+                        instanceid: asset.instanceid.toString(),
+                        contextid: asset.contextid.toString(),
                         descriptions: asset.descriptions,
                         market_actions: asset.market_actions,
                         market_hash_name: asset.market_hash_name,
@@ -1097,17 +1097,17 @@ addSearchListener('offer', () => {
   addRealTimePricesToQueue('page');
 });
 
-const theirInventoryTab = document.getElementById('inventory_select_their_inventory');
-if (theirInventoryTab !== null) {
-  // if the offer is "active"
-  document.getElementById('inventory_select_their_inventory').addEventListener('click', () => {
-    singleClickControlClick();
-    setTimeout(() => {
-      addFloatIndicatorsToPage('page');
-      addRealTimePricesToQueue('page');
-    }, 500);
+// when the user switches between inventory tabs (your/their inventory)
+document.querySelectorAll('#inventory_select_their_inventory, #inventory_select_your_inventory')
+  .forEach((inventoryLink) => {
+    inventoryLink.addEventListener('click', () => {
+      singleClickControlClick();
+      setTimeout(() => {
+        addFloatIndicatorsToPage('page');
+        addRealTimePricesToQueue('page');
+      }, 500);
+    });
   });
-}
 
 // if it's an existing trade offer with an id and not a new one to be created
 if (offerID !== 'new') {
