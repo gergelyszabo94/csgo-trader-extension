@@ -1006,10 +1006,7 @@ initPriceQueue();
 
 // initiates all logic that needs access to item info
 getInventories();
-
-// adds "get float value" action item
 overrideHandleTradeActionMenu();
-
 repositionNameTagIcons();
 
 injectStyle(`
