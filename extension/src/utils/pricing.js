@@ -112,7 +112,7 @@ const getLowestListingPrice = (appID, marketHashName) => {
 const getMidPrice = (appID, marketHashName) => {
   return new Promise((resolve, reject) => {
     getHighestBuyOrder(appID, marketHashName).then((highestBuyOrder) => {
-      if (highestBuyOrder !== undefined) {
+      if (highestBuyOrder !== undefined && highestBuyOrder !== null) {
         let highestOrderPrice = 0;
         try {
           highestOrderPrice = parseFloat(highestBuyOrder);

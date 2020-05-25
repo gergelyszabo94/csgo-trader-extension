@@ -369,11 +369,16 @@ const addInTradeTotals = (whose) => {
           'beforeend',
           DOMPurify.sanitize(
             `<div id="${whose}InTradeRealTimeTotal" class="realTimePriceTradeTotal" title="RealTime price total">
-                    ${prettyPrintPrice(currency, inTradeRealTimeTotal / 100)}
+                    ${prettyPrintPrice(currency, (inTradeRealTimeTotal / 100).toFixed(2))}
                 </div>`,
           ),
         );
-      } else realTimeTotalEl.innerText = prettyPrintPrice(currency, inTradeRealTimeTotal / 100);
+      } else {
+        realTimeTotalEl.innerText = prettyPrintPrice(
+          currency,
+          (inTradeRealTimeTotal / 100).toFixed(2),
+        );
+      }
     }
   });
 };
