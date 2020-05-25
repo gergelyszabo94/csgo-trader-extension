@@ -141,7 +141,7 @@ const storageKeys = {
   showRealMoneySiteLinks: true,
   realTimePricesFreqSuccess: 3000,
   realTimePricesFreqFailure: 15000,
-  realTimePricesMode: realTimePricingModes.starting_at.key,
+  realTimePricesMode: realTimePricingModes.ask_price.key,
   realTimePricesAutoLoadOffer: true,
   priceQueueActivity: {
     lastUsed: Date.now(),

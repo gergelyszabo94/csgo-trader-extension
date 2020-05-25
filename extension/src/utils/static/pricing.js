@@ -398,20 +398,20 @@ const pricingProviders = {
 };
 
 const realTimePricingModes = {
-  starting_at: {
-    key: 'starting_at',
-    name: 'Current lowest listing / starting at',
-    description: 'The price of the current lowest listing for the item, also known as the starting at price',
-  },
-  highest_order: {
-    key: 'highest_order',
-    name: 'Current highest buy order',
-    description: 'The value of the current highest buy order / bid for the item, also known as instant sell',
+  bid_price: {
+    key: 'bid_price',
+    name: 'Bid price - Current highest buy order',
+    description: 'Bid price - The value of the current highest buy order / bid for the item, also known as instant sell',
   },
   mid_price: {
     key: 'mid_price',
-    name: 'Mid price, average of the ask and bid prices',
+    name: 'Mid price - Average of the ask and bid prices',
     description: 'Mid price - The average of ask and bid prices',
+  },
+  ask_price: {
+    key: 'ask_price',
+    name: 'Ask price - Current lowest listing / starting at',
+    description: 'The asking price, the price of the current lowest listing for the item, also known as the starting at price',
   },
 };
 

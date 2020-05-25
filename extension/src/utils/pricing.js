@@ -179,7 +179,7 @@ const workOnPriceQueue = () => {
         if (secondsFromLastUse > 10 || priceQueueActivity.usedAt === window.location.href) {
           if (job.retries < 5) { // limits the number of retries to avoid infinite loop
             if (job.type === 'my_buy_order' || job.type === 'inventory_mass_sell_instant_sell'
-              || job.type === `offer_${realTimePricingModes.highest_order.key}`) {
+              || job.type === `offer_${realTimePricingModes.bid_price.key}`) {
               if (priceQueue.localCache[
                 job.appID + job.market_hash_name + job.type
               ] !== undefined) {
@@ -201,7 +201,7 @@ const workOnPriceQueue = () => {
                     if (highestBuyOrder !== undefined) {
                       if (job.type === 'my_buy_order') job.callBackFunction(job, highestBuyOrder);
                       else if (job.type === 'inventory_mass_sell_instant_sell'
-                        || job.type === `offer_${realTimePricingModes.highest_order.key}`) {
+                        || job.type === `offer_${realTimePricingModes.bid_price.key}`) {
                         job.callBackFunction(
                           job.market_hash_name,
                           highestBuyOrder,
@@ -221,7 +221,7 @@ const workOnPriceQueue = () => {
                 );
               }
             } else if (job.type === 'inventory_mass_sell_starting_at'
-              || job.type === `offer_${realTimePricingModes.starting_at.key}`
+              || job.type === `offer_${realTimePricingModes.ask_price.key}`
               || job.type === 'my_listing') {
               if (priceQueue.localCache[
                 job.appID + job.market_hash_name + job.type
