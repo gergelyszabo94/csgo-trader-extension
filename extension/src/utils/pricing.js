@@ -109,6 +109,33 @@ const getLowestListingPrice = (appID, marketHashName) => {
   });
 };
 
+const getMidPrice = (appID, marketHashName) => {
+  return new Promise((resolve, reject) => {
+    getHighestBuyOrder(appID, marketHashName).then((highestBuyOrder) => {
+      if (highestBuyOrder !== undefined) {
+        let highestOrderPrice = 0;
+        try {
+          highestOrderPrice = parseFloat(highestBuyOrder);
+        } catch (e) {
+          // most likely there aren't any orders
+          console.log(e);
+        }
+        getLowestListingPrice(appID, marketHashName).then((lowestListing) => {
+          if (lowestListing !== undefined) {
+            resolve((highestOrderPrice + lowestListing) / 2);
+          }
+        }).catch((err) => {
+          console.log(err);
+          reject(err);
+        });
+      }
+    }).catch((err) => {
+      console.log(err);
+      reject(err);
+    });
+  });
+};
+
 const priceQueueSuccess = () => {
   priceQueue.lastJobSuccessful = true;
   setTimeout(() => {
@@ -243,6 +270,22 @@ const workOnPriceQueue = () => {
                   },
                 );
               }
+            } else if (job.type === `offer_${realTimePricingModes.mid_price.key}`) {
+              getMidPrice(job.appID, job.market_hash_name).then((midPrice) => {
+                job.callBackFunction(
+                  job.market_hash_name,
+                  midPrice,
+                  job.appID,
+                  job.assetID,
+                  job.contextID,
+                );
+                priceQueue.localCache[
+                  job.appID + job.market_hash_name + job.type
+                ] = midPrice;
+                priceQueueSuccess();
+              }, (error) => {
+                priceQueueFailure(error, job);
+              });
             }
             // updates storage to signal that the price queue is being used
             chrome.storage.local.set({
@@ -499,7 +542,7 @@ const addRealTimePriceIndicator = (itemElement, price) => {
 
 export {
   updatePrices, updateExchangeRates, getPrice, getUserCurrencyBestGuess,
-  getStickerPriceTotal, prettyPrintPrice, getPriceOverview,
+  getStickerPriceTotal, prettyPrintPrice, getPriceOverview, getMidPrice,
   getPriceAfterFees, userPriceToProperPrice, centsToSteamFormattedPrice,
   steamFormattedPriceToCents, priceQueue, workOnPriceQueue,
   getHighestBuyOrder, getSteamWalletCurrency, getSteamWalletInfo,

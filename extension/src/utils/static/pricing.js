@@ -408,6 +408,11 @@ const realTimePricingModes = {
     name: 'Current highest buy order',
     description: 'The value of the current highest buy order / bid for the item, also known as instant sell',
   },
+  mid_price: {
+    key: 'mid_price',
+    name: 'Mid price, average of the ask and bid prices',
+    description: 'Mid price - The average of ask and bid prices',
+  },
 };
 
 export { currencies, pricingProviders, realTimePricingModes };
