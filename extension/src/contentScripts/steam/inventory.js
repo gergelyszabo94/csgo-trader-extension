@@ -851,6 +851,7 @@ const addListingRow = (item) => {
               </div>
               <div class="cell itemStartingAt clickable">Loading...</div>
               <div class="cell itemQuickSell clickable">Loading...</div>
+              <div class="cell itemMidPrice clickable">Loading...</div>
               <div class="cell itemInstantSell clickable">Loading...</div>
               <div class="cell itemUserPrice"><input type="text" class="userPriceInput"></div>
           </div>`;
@@ -888,12 +889,12 @@ const addListingRow = (item) => {
       event.target.parentElement.setAttribute('data-listing-price', getPriceAfterFees(priceInt));
       event.target.value = centsToSteamFormattedPrice(priceInt);
       event.target.parentElement.classList.add('cstSelected');
-      event.target.parentElement.parentElement.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell')
+      event.target.parentElement.parentElement.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell,.itemMidPrice')
         .forEach((priceType) => priceType.classList.remove('cstSelected'));
       updateMassSaleTotal();
     });
 
-  listingRow.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell')
+  listingRow.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell,.itemMidPrice')
     .forEach((priceType) => {
       priceType.addEventListener('click', (event) => {
         event.target.classList.add('cstSelected');
@@ -957,10 +958,37 @@ const addInstantSellPrice = (marketHashName, highestOrder) => {
   }
 };
 
+const addMidPrice = (marketHashName, midPrice) => {
+  const listingRow = getListingRow(marketHashName);
+
+  // the user might have unselected the item while it as in the queue
+  // and now there is nowhere to add the price to
+  if (listingRow !== null) {
+    const midPriceElement = listingRow.querySelector('.itemMidPrice');
+
+    if (midPrice !== undefined) {
+      if (midPrice === null) { // when there aren't nay buy orders or listings
+        midPriceElement.innerText = 'No price';
+        midPriceElement.setAttribute('data-price-set', true.toString());
+        midPriceElement.setAttribute('data-price-in-cents', '0');
+        midPriceElement.setAttribute('data-listing-price', '0');
+      } else {
+        midPriceElement.innerText = centsToSteamFormattedPrice(midPrice);
+        midPriceElement.setAttribute('data-price-set', true.toString());
+        midPriceElement.setAttribute('data-price-in-cents', parseInt(midPrice).toString());
+        midPriceElement.setAttribute('data-listing-price', getPriceAfterFees(midPrice).toString());
+      }
+    } else midPriceElement.setAttribute('data-price-set', false.toString());
+
+    midPriceElement.setAttribute('data-price-in-progress', false.toString());
+  }
+};
+
 const addToPriceQueueIfNeeded = (item) => {
   const listingRow = getListingRow(item.market_hash_name);
   const startingAtElement = listingRow.querySelector('.itemStartingAt');
   const instantElement = listingRow.querySelector('.itemInstantSell');
+  const midPriceElement = listingRow.querySelector('.itemMidPrice');
 
   // check if price is already set or in progress
   if (startingAtElement.getAttribute('data-price-set') !== true
@@ -991,6 +1019,21 @@ const addToPriceQueueIfNeeded = (item) => {
     });
     workOnPriceQueue();
   }
+
+  // check if price is already set or in progress
+  if (midPriceElement.getAttribute('data-price-set') !== true
+    && midPriceElement.getAttribute('data-price-in-progress') !== true) {
+    midPriceElement.setAttribute('data-price-in-progress', true.toString());
+
+    priceQueue.jobs.push({
+      type: 'inventory_mass_sell_mid_price',
+      appID: '730',
+      market_hash_name: item.market_hash_name,
+      retries: 0,
+      callBackFunction: addMidPrice,
+    });
+    workOnPriceQueue();
+  }
 };
 
 const updateSelectedItemsSummary = () => {
@@ -1002,7 +1045,7 @@ const updateSelectedItemsSummary = () => {
 
   selectedItems.forEach((itemElement) => {
     const IDs = getIDsFromElement(itemElement, 'inventory');
-    const item = getItemByIDs(itemElement, { IDs });
+    const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
     selectedTotal += parseFloat(item.price.price);
 
     if (item.marketable === 1) {
@@ -1046,6 +1089,7 @@ const listenSelectClicks = (event) => {
           }
         });
     } else event.target.parentElement.classList.toggle('cstSelected');
+    console.log('listen');
     updateSelectedItemsSummary();
   }
 };
@@ -1226,9 +1270,10 @@ const addFunctionBar = () => {
                               <div class="header">
                                 <div class="cell" title="The name of the item">Name</div>
                                 <div class="cell" title="How many of these type of items are set to be sold">Quantity</div>
-                                <div class="cell" title="The price provided by the pricing provider you have selected in the options">Extension price</div>
+                                <div class="cell" title="The price provided by the pricing provider you have selected in the options">Ext. price</div>
                                 <div class="cell" title="The price of the current lowest listing for this item on Steam Community Market">Starting at</div>
                                 <div class="cell" title="Just below the starting at price, using it will make your listing the cheapest">Quick sell</div>
+                                <div class="cell" title="The average price of the ask and bid prices">Mid price</div>
                                 <div class="cell" title="The price of the current highest buy order, your item should sell right after you list it">Instant Sell</div>
                                 <div class="cell" title="Price specified by you">Your price</div>
                               </div>
@@ -1269,7 +1314,7 @@ const addFunctionBar = () => {
     document.getElementById('selectAllUnder').addEventListener('click', () => {
       const underThisPrice = parseFloat(document.getElementById('selectUnder').value);
       document.getElementById('tabcontent_inventory').querySelectorAll('.item').forEach((itemElement) => {
-        const IDs = getIDsFromElement(items, 'inventory');
+        const IDs = getIDsFromElement(itemElement, 'inventory');
         const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
         if (item !== undefined && parseFloat(item.price.price) < underThisPrice
           && !itemElement.classList.contains('cstSelected') && item.marketable === 1) {

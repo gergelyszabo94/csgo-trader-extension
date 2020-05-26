@@ -17,7 +17,7 @@ const getItemByIDs = (items, appID, contextID, assetID) => {
 
 // gets the different item ids from the element id
 const getIDsFromElement = (element, type) => {
-  if (element === null || element.id.includes('anonymous_element')) return null;
+  if (element === null || element === undefined || element.id.includes('anonymous_element')) return null;
   const IDs = element.id.split('_');
   return {
     appID: type === 'inventory' ? IDs[0] : IDs[0].split('item')[1],

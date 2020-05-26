@@ -275,7 +275,8 @@ const workOnPriceQueue = () => {
                 );
               }
             } else if (job.type === `offer_${realTimePricingModes.mid_price.key}`
-            || job.type === `inventory_${realTimePricingModes.mid_price.key}`) {
+              || job.type === `inventory_${realTimePricingModes.mid_price.key}`
+              || job.type === 'inventory_mass_sell_mid_price') {
               getMidPrice(job.appID, job.market_hash_name).then((midPrice) => {
                 job.callBackFunction(
                   job.market_hash_name,
