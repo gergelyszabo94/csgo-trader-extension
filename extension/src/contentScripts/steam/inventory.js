@@ -18,10 +18,11 @@ import {
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import {
   getPriceOverview, getPriceAfterFees, userPriceToProperPrice,
-  centsToSteamFormattedPrice, prettyPrintPrice,
+  centsToSteamFormattedPrice, prettyPrintPrice, addRealTimePriceToPage,
   priceQueue, workOnPriceQueue, getSteamWalletCurrency, initPriceQueue,
 }
   from 'utils/pricing';
+import { getItemByIDs, getIDsFromElement } from 'utils/itemsToElementsToItems';
 import { listItem } from 'utils/market';
 import { sortingModes } from 'utils/static/sortingModes';
 import doTheSorting from 'utils/sorting';
@@ -650,26 +651,75 @@ const addRightSideElements = () => {
   }
 };
 
-const addFloatIndicatorsToPage = (page) => {
-  chrome.storage.local.get('autoFloatInventory', (result) => {
-    if (result.autoFloatInventory) {
-      page.querySelectorAll('.item.app730.context2').forEach((itemElement) => {
-        const assetID = getAssetIDOfElement(itemElement);
-        const item = getItemByAssetID(items, assetID);
-        if (item.inspectLink !== null && itemTypes[item.type.key].float) {
-          if (item.floatInfo === null) {
-            floatQueue.jobs.push({
-              type: 'inventory',
-              assetID,
-              inspectLink: item.inspectLink,
-              callBackFunction: dealWithNewFloatData,
-            });
-          } else addFloatIndicator(itemElement, item.floatInfo);
-        }
-      });
-      if (!floatQueue.active) workOnFloatQueue();
+const addFloatIndicatorsToPage = () => {
+  chrome.storage.local.get('autoFloatInventory', (autoFloatInventory) => {
+    if (autoFloatInventory) {
+      const page = getActivePage('inventory');
+      if (page !== null) {
+        page.querySelectorAll('.item.app730.context2').forEach((itemElement) => {
+          const assetID = getAssetIDOfElement(itemElement);
+          const item = getItemByAssetID(items, assetID);
+          if (item.inspectLink !== null && itemTypes[item.type.key].float) {
+            if (item.floatInfo === null) {
+              floatQueue.jobs.push({
+                type: 'inventory',
+                assetID,
+                inspectLink: item.inspectLink,
+                callBackFunction: dealWithNewFloatData,
+              });
+            } else addFloatIndicator(itemElement, item.floatInfo);
+          }
+        });
+        if (!floatQueue.active) workOnFloatQueue();
+      }
     }
   });
+};
+
+const addRealTimePricesToQueue = () => {
+  chrome.storage.local.get(
+    ['realTimePricesAutoLoadInventory', 'realTimePricesMode'],
+    ({ realTimePricesAutoLoadInventory, realTimePricesMode }) => {
+      if (realTimePricesAutoLoadInventory) {
+        const itemElements = [];
+        const page = getActivePage('inventory');
+
+        if (page !== null) {
+          page.querySelectorAll('.item').forEach((item) => {
+            if (!item.classList.contains('unknownItem')) itemElements.push(item);
+          });
+        } else {
+          setTimeout(() => {
+            addRealTimePricesToQueue();
+          }, 1000);
+        }
+
+        if (itemElements) {
+          itemElements.forEach((itemElement) => {
+            if (itemElement.getAttribute('data-realtime-price') === null) {
+              const IDs = getIDsFromElement(itemElement, 'inventory');
+              const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
+
+              itemElement.setAttribute('data-realtime-price', '0');
+              if (item && item.marketable === 1) {
+                priceQueue.jobs.push({
+                  type: `inventory_${realTimePricesMode}`,
+                  assetID: item.assetid,
+                  appID: item.appid,
+                  contextID: item.contextid,
+                  market_hash_name: item.market_hash_name,
+                  retries: 0,
+                  callBackFunction: addRealTimePriceToPage,
+                });
+              }
+            }
+          });
+
+          if (!priceQueue.active) workOnPriceQueue();
+        }
+      }
+    },
+  );
 };
 
 const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
@@ -699,8 +749,8 @@ const addPerItemInfo = () => {
               }, 1000);
               return false;
             }
-
-            const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+            const IDs = getIDsFromElement(itemElement, 'inventory');
+            const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
             // adds tradability indicator
             if (item.tradability === 'Tradable') {
               itemElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize('<div class="perItemDate tradable">T</div>'));
@@ -951,7 +1001,8 @@ const updateSelectedItemsSummary = () => {
   document.getElementById('numberOfItemsToSell').innerText = numberOfSelectedItems.toString();
 
   selectedItems.forEach((itemElement) => {
-    const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+    const IDs = getIDsFromElement(itemElement, 'inventory');
+    const item = getItemByIDs(itemElement, { IDs });
     selectedTotal += parseFloat(item.price.price);
 
     if (item.marketable === 1) {
@@ -1013,7 +1064,8 @@ const doInitSorting = () => {
     sortItems(items, result.inventorySortingMode);
     document.querySelector(`#sortingMethod [value="${result.inventorySortingMode}"]`).selected = true;
     document.querySelector(`#generate_sort [value="${result.inventorySortingMode}"]`).selected = true;
-    addFloatIndicatorsToPage(getActivePage('inventory'));
+    addFloatIndicatorsToPage();
+    addRealTimePricesToQueue();
   });
 };
 
@@ -1054,7 +1106,8 @@ const generateItemsList = () => {
   csvContent += headers;
 
   sortedItems.forEach((itemElement) => {
-    const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+    const IDs = getIDsFromElement(itemElement, 'inventory');
+    const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
     const price = (showPrice && item.price !== null) ? ` ${delimiter} ${item.price.display}` : '';
     const priceCSV = (showPrice && item.price !== null) ? `,${item.price.display}` : '';
     const exterior = (item.exterior !== undefined && item.exterior !== null) ? item.exterior[exteriorType] : '';
@@ -1216,7 +1269,8 @@ const addFunctionBar = () => {
     document.getElementById('selectAllUnder').addEventListener('click', () => {
       const underThisPrice = parseFloat(document.getElementById('selectUnder').value);
       document.getElementById('tabcontent_inventory').querySelectorAll('.item').forEach((itemElement) => {
-        const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+        const IDs = getIDsFromElement(items, 'inventory');
+        const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
         if (item !== undefined && parseFloat(item.price.price) < underThisPrice
           && !itemElement.classList.contains('cstSelected') && item.marketable === 1) {
           itemElement.classList.add('cstSelected');
@@ -1305,7 +1359,8 @@ const addFunctionBar = () => {
       });
 
       sortItems(items, sortingSelect.options[sortingSelect.selectedIndex].value);
-      addFloatIndicatorsToPage(getActivePage('inventory'));
+      addFloatIndicatorsToPage();
+      addRealTimePricesToQueue();
     });
 
     document.getElementById('generate_list').addEventListener('click', () => { document.getElementById('functionBarGenerateMenu').classList.toggle('hidden'); });
@@ -1346,7 +1401,10 @@ const requestInventory = () => {
       setInventoryTotal();
       addFunctionBar();
       loadFullInventory();
-      addPageControlEventListeners('inventory', addFloatIndicatorsToPage);
+      addPageControlEventListeners('inventory', () => {
+        addFloatIndicatorsToPage();
+        addRealTimePricesToQueue();
+      });
     }
   });
 };
@@ -1355,7 +1413,8 @@ const updateTradabilityIndicators = () => {
   const itemElements = document.querySelectorAll('.item.app730.context2');
   if (itemElements.length !== 0) {
     itemElements.forEach((itemElement) => {
-      const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+      const IDs = getIDsFromElement(itemElement, 'inventory');
+      const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
       const itemDateElement = itemElement.querySelector('.perItemDate');
 
       if (itemDateElement !== null) {
@@ -1429,7 +1488,10 @@ if (document.getElementById('no_inventories') === null
 }
 
 repositionNameTagIcons();
-addSearchListener('inventory', addFloatIndicatorsToPage);
+addSearchListener('inventory', () => {
+  addFloatIndicatorsToPage();
+  addRealTimePricesToQueue();
+});
 overridePopulateActions();
 updateLoggedInUserInfo();
 addUpdatedRibbon();

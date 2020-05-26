@@ -2,6 +2,7 @@ import { pricingProviders, currencies, realTimePricingModes } from 'utils/static
 import { injectScript } from 'utils/injection';
 import DOMPurify from 'dompurify';
 import { storageKeys } from 'utils/static/storageKeys';
+import { findElementByIDs } from 'utils/itemsToElementsToItems';
 
 const priceQueue = {
   active: false,
@@ -179,7 +180,8 @@ const workOnPriceQueue = () => {
         if (secondsFromLastUse > 10 || priceQueueActivity.usedAt === window.location.href) {
           if (job.retries < 5) { // limits the number of retries to avoid infinite loop
             if (job.type === 'my_buy_order' || job.type === 'inventory_mass_sell_instant_sell'
-              || job.type === `offer_${realTimePricingModes.bid_price.key}`) {
+              || job.type === `offer_${realTimePricingModes.bid_price.key}`
+              || job.type === `inventory_${realTimePricingModes.bid_price.key}`) {
               if (priceQueue.localCache[
                 job.appID + job.market_hash_name + job.type
               ] !== undefined) {
@@ -222,6 +224,7 @@ const workOnPriceQueue = () => {
               }
             } else if (job.type === 'inventory_mass_sell_starting_at'
               || job.type === `offer_${realTimePricingModes.ask_price.key}`
+              || job.type === `inventory_${realTimePricingModes.ask_price.key}`
               || job.type === 'my_listing') {
               if (priceQueue.localCache[
                 job.appID + job.market_hash_name + job.type
@@ -257,6 +260,7 @@ const workOnPriceQueue = () => {
                           job.appID,
                           job.assetID,
                           job.contextID,
+                          job.type,
                         );
                       }
                       priceQueue
@@ -270,7 +274,8 @@ const workOnPriceQueue = () => {
                   },
                 );
               }
-            } else if (job.type === `offer_${realTimePricingModes.mid_price.key}`) {
+            } else if (job.type === `offer_${realTimePricingModes.mid_price.key}`
+            || job.type === `inventory_${realTimePricingModes.mid_price.key}`) {
               getMidPrice(job.appID, job.market_hash_name).then((midPrice) => {
                 job.callBackFunction(
                   job.market_hash_name,
@@ -278,6 +283,7 @@ const workOnPriceQueue = () => {
                   job.appID,
                   job.assetID,
                   job.contextID,
+                  job.type,
                 );
                 priceQueue.localCache[
                   job.appID + job.market_hash_name + job.type
@@ -540,6 +546,20 @@ const addRealTimePriceIndicator = (itemElement, price) => {
   );
 };
 
+const addRealTimePriceToPage = (marketHashName, price, appID, assetID, contextID, type) => {
+  const itemElement = findElementByIDs(appID, contextID, assetID, type);
+
+  addRealTimePriceIndicator(
+    itemElement,
+    price !== null ? centsToSteamFormattedPrice(price) : 'No Data',
+  );
+
+  itemElement.setAttribute(
+    'data-realtime-price',
+    price !== null ? price.toString() : '0',
+  );
+};
+
 export {
   updatePrices, updateExchangeRates, getPrice, getUserCurrencyBestGuess,
   getStickerPriceTotal, prettyPrintPrice, getPriceOverview, getMidPrice,
@@ -547,4 +567,5 @@ export {
   steamFormattedPriceToCents, priceQueue, workOnPriceQueue,
   getHighestBuyOrder, getSteamWalletCurrency, getSteamWalletInfo,
   addRealTimePriceIndicator, initPriceQueue, getLowestListingPrice,
+  addRealTimePriceToPage,
 };

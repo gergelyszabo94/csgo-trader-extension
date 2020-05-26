@@ -9,6 +9,7 @@ import collectionsWithSouvenirs from 'utils/static/collectionsWithSouvenirs';
 import { injectScript, injectStyle } from 'utils/injection';
 import { getUserSteamID } from 'utils/steamID';
 import DOMPurify from 'dompurify';
+import { getIDsFromElement } from 'utils/itemsToElementsToItems';
 
 const toFixedNoRounding = (number, n) => {
   const reg = new RegExp(`^-?\\d+(?:\\.\\d{0,${n}})?`, 'g');
@@ -370,23 +371,6 @@ const getItemByAssetID = (items, assetIDToFind) => {
   return items.filter((item) => item.assetid === assetIDToFind)[0];
 };
 
-const getItemByIDs = (items, appID, contextID, assetID) => {
-  if (items === undefined || items.length === 0) return null;
-  return items.filter((item) => {
-    return (item.assetid === assetID && item.appid === appID && item.contextid === contextID);
-  })[0];
-};
-
-const getIDsFromElement = (element) => {
-  if (element === null || element.id.includes('anonymous_element')) return null;
-  const IDs = element.id.split('_');
-  return {
-    appID: IDs[0].split('item')[1],
-    contextID: IDs[1],
-    assetID: IDs[2],
-  };
-};
-
 const getAssetIDOfElement = (element) => {
   const IDs = getIDsFromElement(element);
   return IDs === null ? null : IDs.assetID;
@@ -711,13 +695,13 @@ export {
   logExtensionPresence, scrapeSteamAPIkey, arrayFromArrayOrNotArray,
   getExteriorFromTags, getDopplerInfo, getQuality, parseStickerInfo,
   handleStickerNamesWithCommas, removeFromArray, getType, changePageTitle,
-  getPattern, goToInternalPage, jumpToAnchor, copyToClipboard, getItemByIDs,
+  getPattern, goToInternalPage, jumpToAnchor, copyToClipboard,
   validateSteamAPIKey, getAssetIDFromInspectLink, uuidv4, updateLoggedInUserInfo,
   listenToLocationChange, addPageControlEventListeners, getItemByAssetID,
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists, findElementByAssetID,
-  getFloatBarSkeleton, isCSGOInventoryActive, getInspectLink, getIDsFromElement,
+  getFloatBarSkeleton, isCSGOInventoryActive, getInspectLink,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo,

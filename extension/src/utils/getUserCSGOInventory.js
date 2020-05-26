@@ -103,6 +103,8 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
                       market_hash_name: marketHashName,
                       name_color: item.name_color,
                       marketlink: `https://steamcommunity.com/market/listings/730/${marketHashName}`,
+                      appid: item.appid,
+                      contextid: '2',
                       classid: item.classid,
                       instanceid: item.instanceid,
                       assetid: assetID,

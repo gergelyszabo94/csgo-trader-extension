@@ -8,14 +8,14 @@ import {
   getDopplerInfo, getActivePage, reloadPageOnExtensionReload, logExtensionPresence,
   updateLoggedInUserInfo, warnOfScammer, addPageControlEventListeners,
   addSearchListener, findElementByAssetID, getPattern, getNameTag,
-  removeOfferFromActiveOffers, changePageTitle, getIDsFromElement,
-  getItemByIDs,
+  removeOfferFromActiveOffers, changePageTitle,
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
   priceQueue, workOnPriceQueue, prettyPrintPrice, initPriceQueue,
-  addRealTimePriceIndicator, centsToSteamFormattedPrice,
+  addRealTimePriceToPage,
 } from 'utils/pricing';
+import { getItemByIDs, getIDsFromElement } from 'utils/itemsToElementsToItems';
 import doTheSorting from 'utils/sorting';
 import { sortingModes } from 'utils/static/sortingModes';
 import { trackEvent } from 'utils/analytics';
@@ -91,8 +91,6 @@ const getActiveInventoryIDs = () => {
     };
 };
 
-const findElementByIDs = (appID, contextID, assetID) => document.getElementById(`item${appID}_${contextID}_${assetID}`);
-
 const getItemInfoFromPage = (who) => {
   const getAppInfoScript = `
     appIDs = {};
@@ -116,7 +114,7 @@ const getItemInfoFromPage = (who) => {
   const side = document.getElementById(`trade_${whose}s`);
 
   side.querySelectorAll('.item').forEach((itemEl) => {
-    const itemIDs = getIDsFromElement(itemEl);
+    const itemIDs = getIDsFromElement(itemEl, 'offer');
     if (itemIDs !== null && itemIDs.appID !== 'anonymous' && appInfo[itemIDs.appID] !== undefined) {
       sideAppAndContextIDs = sideAppAndContextIDs.filter((IDs) => {
         return !(IDs.appID === itemIDs.appID && IDs.contextID === itemIDs.contextID);
@@ -319,7 +317,7 @@ const addInTradeTotals = (whose) => {
       const realTimePrice = inTradeItem.getAttribute('data-realtime-price');
       if (realTimePrice !== null) inTradeRealTimeTotal += parseFloat(realTimePrice);
       
-      const IDs = getIDsFromElement(inTradeItem);
+      const IDs = getIDsFromElement(inTradeItem, 'offer');
       const item = getItemByIDs(combinedInventories, IDs.appID, IDs.contextID, IDs.assetID);
       if (item !== undefined) {
         if (item.price !== undefined) inTradeTotal += parseFloat(item.price.price);
@@ -486,20 +484,6 @@ const addFloatIndicatorsToPage = (type) => {
   });
 };
 
-const addRealTimePriceToPage = (marketHashName, price, appID, assetID, contextID) => {
-  const itemElement = findElementByIDs(appID, contextID, assetID);
-
-  addRealTimePriceIndicator(
-    itemElement,
-    price !== null ? centsToSteamFormattedPrice(price) : 'No Data',
-  );
-
-  itemElement.setAttribute(
-    'data-realtime-price',
-    price !== null ? price.toString() : '0',
-  );
-};
-
 const addRealTimePricesToQueue = (type) => {
   chrome.storage.local.get(
     ['realTimePricesAutoLoadOffer', 'realTimePricesMode'],
@@ -523,7 +507,7 @@ const addRealTimePricesToQueue = (type) => {
         if (itemElements) {
           itemElements.forEach((itemElement) => {
             if (itemElement.getAttribute('data-realtime-price') === null) {
-              const IDs = getIDsFromElement(itemElement);
+              const IDs = getIDsFromElement(itemElement, 'offer');
               const item = getItemByIDs(combinedInventories, IDs.appID, IDs.contextID, IDs.assetID);
 
               itemElement.setAttribute('data-realtime-price', '0');
