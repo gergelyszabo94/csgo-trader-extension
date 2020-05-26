@@ -535,7 +535,7 @@ const addRealTimePriceToPage = (marketHashName, price, appID, assetID, contextID
     chrome.storage.local.get(['currency'], ({ currency }) => {
       addRealTimePriceIndicator(
         itemElement,
-        price !== null ? prettyPrintPrice(currency, price / 100) : 'No Data',
+        price !== null ? prettyPrintPrice(currency, (price / 100).toFixed(2)) : 'No Data',
       );
     });
   } else {
