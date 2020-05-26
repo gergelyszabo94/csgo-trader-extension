@@ -1,4 +1,6 @@
-import { pricingProviders, currencies, realTimePricingModes } from 'utils/static/pricing';
+import {
+  pricingProviders, currencies, realTimePricingModes, steamCurrencyCodes,
+} from 'utils/static/pricing';
 import { injectScript } from 'utils/injection';
 import DOMPurify from 'dompurify';
 import { storageKeys } from 'utils/static/storageKeys';
@@ -41,13 +43,22 @@ const getSteamWalletCurrency = () => {
 
 const getHighestBuyOrder = (appID, marketHashName) => {
   return new Promise((resolve, reject) => {
-    const currencyID = getSteamWalletInfo().wallet_currency;
-    chrome.runtime.sendMessage(
-      { getBuyOrderInfo: { appID, currencyID, marketHashName } }, (response) => {
-        if (response !== 'error') resolve(response.getBuyOrderInfo.highest_buy_order);
-        else reject('error');
-      },
-    );
+    chrome.storage.local.get(['currency'], ({ currency }) => {
+      const steamWalletInfo = getSteamWalletInfo();
+      let currencyID = 1;
+      if (steamWalletInfo !== null) currencyID = steamWalletInfo.wallet_currency;
+      else {
+        for (const [code, short] of Object.entries(steamCurrencyCodes)) {
+          if (short === currency) currencyID = code;
+        }
+      }
+      chrome.runtime.sendMessage(
+        { getBuyOrderInfo: { appID, currencyID, marketHashName } }, (response) => {
+          if (response !== 'error') resolve(response.getBuyOrderInfo.highest_buy_order);
+          else reject('error');
+        },
+      );
+    });
   });
 };
 
@@ -75,37 +86,46 @@ const getPriceOverview = (appID, marketHashName) => {
 
 const getLowestListingPrice = (appID, marketHashName) => {
   return new Promise((resolve, reject) => {
-    const currencyID = getSteamWalletInfo().wallet_currency;
-    const request = new Request(
-      `https://steamcommunity.com/market/listings/${appID}/${marketHashName}/render/?query=&start=0&count=3&country=US&language=english&currency=${currencyID}`,
-    );
-
-    fetch(request).then((response) => {
-      if (!response.ok) {
-        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-        reject({ status: response.status, statusText: response.statusText });
+    chrome.storage.local.get(['currency'], ({ currency }) => {
+      const steamWalletInfo = getSteamWalletInfo();
+      let currencyID = 1;
+      if (steamWalletInfo !== null) currencyID = steamWalletInfo.wallet_currency;
+      else {
+        for (const [code, short] of Object.entries(steamCurrencyCodes)) {
+          if (short === currency) currencyID = code;
+        }
       }
-      return response.json();
-    }).then((listingsJSONData) => {
-      if (listingsJSONData === null) reject('success:false');
-      else if (listingsJSONData.success === true) {
-        if (listingsJSONData.listinginfo) {
-          const listingInfo = Object.values(listingsJSONData.listinginfo);
-          if (listingInfo.length !== 0) {
-            for (const listing of listingInfo) {
-              if (listing.converted_price !== undefined && listing.converted_fee !== undefined) {
-                resolve(listing.converted_price + listing.converted_fee);
-                return;
+      const request = new Request(
+        `https://steamcommunity.com/market/listings/${appID}/${marketHashName}/render/?query=&start=0&count=3&country=US&language=english&currency=${currencyID}`,
+      );
+
+      fetch(request).then((response) => {
+        if (!response.ok) {
+          console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+          reject({ status: response.status, statusText: response.statusText });
+        }
+        return response.json();
+      }).then((listingsJSONData) => {
+        if (listingsJSONData === null) reject('success:false');
+        else if (listingsJSONData.success === true) {
+          if (listingsJSONData.listinginfo) {
+            const listingInfo = Object.values(listingsJSONData.listinginfo);
+            if (listingInfo.length !== 0) {
+              for (const listing of listingInfo) {
+                if (listing.converted_price !== undefined && listing.converted_fee !== undefined) {
+                  resolve(listing.converted_price + listing.converted_fee);
+                  return;
+                }
               }
-            }
-            reject('no_prices_on_listings');
-          } else reject('empty_listings_array'); // no listings at all on the market
-        } else reject('no listing data');
-        resolve(listingsJSONData);
-      } else reject('success:false');
-    }).catch((err) => {
-      console.log(err);
-      reject(err);
+              reject('no_prices_on_listings');
+            } else reject('empty_listings_array'); // no listings at all on the market
+          } else reject('no listing data');
+          resolve(listingsJSONData);
+        } else reject('success:false');
+      }).catch((err) => {
+        console.log(err);
+        reject(err);
+      });
     });
   });
 };
@@ -181,6 +201,7 @@ const workOnPriceQueue = () => {
           if (job.retries < 5) { // limits the number of retries to avoid infinite loop
             if (job.type === 'my_buy_order' || job.type === 'inventory_mass_sell_instant_sell'
               || job.type === `offer_${realTimePricingModes.bid_price.key}`
+              || job.type === `offers_${realTimePricingModes.bid_price.key}`
               || job.type === `inventory_${realTimePricingModes.bid_price.key}`) {
               if (priceQueue.localCache[
                 job.appID + job.market_hash_name + job.type
@@ -224,6 +245,7 @@ const workOnPriceQueue = () => {
               }
             } else if (job.type === 'inventory_mass_sell_starting_at'
               || job.type === `offer_${realTimePricingModes.ask_price.key}`
+              || job.type === `offers_${realTimePricingModes.ask_price.key}`
               || job.type === `inventory_${realTimePricingModes.ask_price.key}`
               || job.type === 'my_listing') {
               if (priceQueue.localCache[
@@ -275,6 +297,7 @@ const workOnPriceQueue = () => {
                 );
               }
             } else if (job.type === `offer_${realTimePricingModes.mid_price.key}`
+              || job.type === `offers_${realTimePricingModes.mid_price.key}`
               || job.type === `inventory_${realTimePricingModes.mid_price.key}`
               || job.type === 'inventory_mass_sell_mid_price') {
               getMidPrice(job.appID, job.market_hash_name).then((midPrice) => {
@@ -471,50 +494,6 @@ const steamFormattedPriceToCents = (formattedPrice) => {
 };
 
 const getUserCurrencyBestGuess = () => new Promise((resolve) => {
-  // Steam stores this data in the g_rgCurrencyData var in global.js
-  const steamCurrencyCodes = {
-    1: 'USD',
-    2: 'GBP',
-    3: 'EUR',
-    4: 'CHF',
-    5: 'RUB',
-    6: 'PLN',
-    7: 'BRL',
-    9: 'NOK',
-    10: 'IDR',
-    11: 'MYR',
-    12: 'PHP',
-    13: 'SGD',
-    14: 'THB',
-    15: 'VND',
-    16: 'KRW',
-    17: 'TRY',
-    18: 'UAH',
-    19: 'MXN',
-    20: 'CAD',
-    21: 'AUD',
-    22: 'NZD',
-    23: 'CNY',
-    24: 'INR',
-    25: 'CLP',
-    26: 'PEN',
-    27: 'COP',
-    28: 'ZAR',
-    29: 'HKD',
-    30: 'TWD',
-    31: 'SAR',
-    32: 'AED',
-    34: 'ARS',
-    35: 'ILS',
-    36: 'BYN',
-    37: 'KZT',
-    38: 'KWD',
-    39: 'QAR',
-    40: 'CRC',
-    41: 'UYU',
-    9000: 'RMB',
-  };
-
   const getRequest = new Request('https://steamcommunity.com/market/');
 
   fetch(getRequest).then((response) => {
@@ -550,11 +529,21 @@ const addRealTimePriceIndicator = (itemElement, price) => {
 const addRealTimePriceToPage = (marketHashName, price, appID, assetID, contextID, type) => {
   const itemElement = findElementByIDs(appID, contextID, assetID, type);
 
-  addRealTimePriceIndicator(
-    itemElement,
-    price !== null ? centsToSteamFormattedPrice(price) : 'No Data',
-  );
-
+  // the steam wallet global var is not defined in the trade offer page
+  // this is a workaround to that
+  if (type.includes('offers')) {
+    chrome.storage.local.get(['currency'], ({ currency }) => {
+      addRealTimePriceIndicator(
+        itemElement,
+        price !== null ? prettyPrintPrice(currency, price / 100) : 'No Data',
+      );
+    });
+  } else {
+    addRealTimePriceIndicator(
+      itemElement,
+      price !== null ? centsToSteamFormattedPrice(price) : 'No Data',
+    );
+  }
   itemElement.setAttribute(
     'data-realtime-price',
     price !== null ? price.toString() : '0',
