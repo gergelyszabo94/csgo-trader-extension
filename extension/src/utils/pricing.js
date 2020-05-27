@@ -300,22 +300,36 @@ const workOnPriceQueue = () => {
               || job.type === `offers_${realTimePricingModes.mid_price.key}`
               || job.type === `inventory_${realTimePricingModes.mid_price.key}`
               || job.type === 'inventory_mass_sell_mid_price') {
-              getMidPrice(job.appID, job.market_hash_name).then((midPrice) => {
+              if (priceQueue.localCache[
+                job.appID + job.market_hash_name + job.type
+              ] !== undefined) {
                 job.callBackFunction(
                   job.market_hash_name,
-                  midPrice,
+                  priceQueue.localCache[job.appID + job.market_hash_name + job.type],
                   job.appID,
                   job.assetID,
                   job.contextID,
                   job.type,
                 );
-                priceQueue.localCache[
-                  job.appID + job.market_hash_name + job.type
-                ] = midPrice;
-                priceQueueSuccess();
-              }, (error) => {
-                priceQueueFailure(error, job);
-              });
+                priceQueueCacheHit();
+              } else {
+                getMidPrice(job.appID, job.market_hash_name).then((midPrice) => {
+                  job.callBackFunction(
+                    job.market_hash_name,
+                    midPrice,
+                    job.appID,
+                    job.assetID,
+                    job.contextID,
+                    job.type,
+                  );
+                  priceQueue.localCache[
+                    job.appID + job.market_hash_name + job.type
+                  ] = midPrice;
+                  priceQueueSuccess();
+                }, (error) => {
+                  priceQueueFailure(error, job);
+                });
+              }
             }
             // updates storage to signal that the price queue is being used
             chrome.storage.local.set({

@@ -380,7 +380,8 @@ const startMassSelling = () => {
 };
 
 const onListingPricesLoaded = () => {
-  if (document.getElementById('startListingOnPriceLoad').checked) startMassSelling();
+  const onLoadBox = document.getElementById('startListingOnPriceLoad');
+  if (onLoadBox && onLoadBox.checked) startMassSelling();
 };
 
 // adds market info in other inventories
