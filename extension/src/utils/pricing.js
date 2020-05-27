@@ -197,7 +197,7 @@ const workOnPriceQueue = () => {
           - new Date(priceQueueActivity.lastUsed)) / 1000);
 
         // tries to avoid having multiple price queues running concurrently on different pages
-        if (secondsFromLastUse > 10 || priceQueueActivity.usedAt === window.location.href) {
+        if (secondsFromLastUse > 10 || priceQueueActivity.usedAt === window.location.pathname) {
           if (job.retries < 5) { // limits the number of retries to avoid infinite loop
             if (job.type === 'my_buy_order' || job.type === 'inventory_mass_sell_instant_sell'
               || job.type === `offer_${realTimePricingModes.bid_price.key}`
@@ -321,7 +321,7 @@ const workOnPriceQueue = () => {
             chrome.storage.local.set({
               priceQueueActivity: {
                 lastUsed: Date.now(),
-                usedAt: window.location.href,
+                usedAt: window.location.pathname,
               },
             });
           } else workOnPriceQueue();
