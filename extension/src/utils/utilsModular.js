@@ -480,12 +480,6 @@ const getFloatBarSkeleton = (type) => {
     </div>`;
 };
 
-// if CS:GO is selected - active
-const isCSGOInventoryActive = (where) => {
-  if (where === 'offer') return document.getElementById('appselect_activeapp').querySelector('img').src.includes('/730/');
-  if (where === 'inventory') return document.querySelector('.games_list_tab.active').getAttribute('href') === '#730';
-};
-
 const reloadPageOnExtensionReload = () => {
   // reloads the page on extension update/reload/uninstall
   chrome.runtime.connect().onDisconnect.addListener(() => {
@@ -701,7 +695,7 @@ export {
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists, findElementByAssetID,
-  getFloatBarSkeleton, isCSGOInventoryActive, getInspectLink,
+  getFloatBarSkeleton, getInspectLink,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo,

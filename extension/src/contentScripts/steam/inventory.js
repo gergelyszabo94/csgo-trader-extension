@@ -6,7 +6,7 @@ import {
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists, copyToClipboard,
   findElementByAssetID, getFloatBarSkeleton, addUpdatedRibbon,
-  logExtensionPresence, isCSGOInventoryActive, repositionNameTagIcons,
+  logExtensionPresence, repositionNameTagIcons,
   updateLoggedInUserInfo, reloadPageOnExtensionReload, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, toFixedNoRounding,
 }
@@ -33,6 +33,7 @@ import exteriors from 'utils/static/exteriors';
 import { injectScript } from 'utils/injection';
 import { getUserSteamID } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
+import steamApps from 'utils/static/steamApps';
 
 let items = [];
 let inventoryTotal = 0.0;
@@ -73,6 +74,10 @@ const getAssetIDofActive = () => {
 // works in inventory and profile pages
 const isOwnInventory = () => {
   return getUserSteamID() === getInventoryOwnerID();
+};
+
+const getActiveInventoryAppID = () => {
+  return document.querySelector('.games_list_tab.active').getAttribute('href').split('#')[1];
 };
 
 const cleanUpElements = (nonCSGOInventory) => {
@@ -159,23 +164,26 @@ const countDown = (dateToCountDownTo) => {
   }
 };
 
-const getItemInfoFromPage = () => {
-  const getItemsSccript = `
-        inventory = UserYou.getInventory(730,2);
-        assets = inventory.m_rgAssets;
-        assetKeys= Object.keys(assets);
+const getItemInfoFromPage = (appID, contextID) => {
+  const getItemsScript = `
+        inventory = UserYou.getInventory(${appID},${contextID});
         trimmedAssets = [];
                 
-        for(let assetKey of assetKeys){
-            trimmedAssets.push({
-                amount: assets[assetKey].amount,
-                assetid: assets[assetKey].assetid,
-                contextid: assets[assetKey].contextid,
-                description: assets[assetKey].description
-            });
+        for (const asset of Object.values(inventory.m_rgAssets)) {
+            if (asset.hasOwnProperty('appid')) {
+              trimmedAssets.push({
+                  amount: asset.amount,
+                  appid: asset.appid.toString(),
+                  assetid: asset.assetid,
+                  classid: asset.classid,
+                  contextid: asset.contextid,
+                  instanceid: asset.instanceid,
+                  description: asset.description
+              });
+            }
         }
         document.querySelector('body').setAttribute('inventoryInfo', JSON.stringify(trimmedAssets));`;
-  return JSON.parse(injectScript(getItemsSccript, true, 'getInventory', 'inventoryInfo'));
+  return JSON.parse(injectScript(getItemsScript, true, 'getInventory', 'inventoryInfo'));
 };
 
 // it hides the original item name element and replaces it with one
@@ -408,7 +416,7 @@ const addStartingAtPrice = (marketHashName) => {
 
 const addRightSideElements = () => {
   // only add elements if the CS:GO inventory is the active one
-  if (isCSGOInventoryActive('inventory')) {
+  if (getActiveInventoryAppID() === steamApps.CSGO.appID) {
     const activeID = getAssetIDofActive();
     if (activeID !== null) {
       const item = getItemByAssetID(items, activeID);
@@ -563,7 +571,7 @@ const addRightSideElements = () => {
 
 
         // adds doppler phase  to the name and makes it a link to the market listings page
-        const name = getItemByAssetID(getItemInfoFromPage(), activeID).description.name;
+        const name = getItemByAssetID(getItemInfoFromPage(steamApps.CSGO.appID, '2'), activeID).description.name;
         changeName(name, item.name_color, item.marketlink, item.dopplerInfo);
 
         // removes sih "Get Float" button
@@ -1095,7 +1103,7 @@ const listenSelectClicks = (event) => {
 };
 
 const sortItems = (inventoryItems, method) => {
-  if (isCSGOInventoryActive('inventory')) {
+  if (getActiveInventoryAppID() === steamApps.CSGO.appID) {
     const itemElements = document.querySelectorAll('.item.app730.context2');
     const inventoryPages = document.getElementById('inventories').querySelectorAll('.inventory_page');
     doTheSorting(inventoryItems, Array.from(itemElements), method, Array.from(inventoryPages), 'inventory');
@@ -1500,7 +1508,7 @@ initPriceQueue(onListingPricesLoaded);
 // mutation observer observes changes on the right side of the inventory interface
 // this is a workaround for waiting for ajax calls to finish when the page changes
 const observer = new MutationObserver(() => {
-  if (isCSGOInventoryActive('inventory')) {
+  if (getActiveInventoryAppID() === steamApps.CSGO.appID) {
     addRightSideElements();
     addFunctionBar();
   } else {

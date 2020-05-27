@@ -4,7 +4,7 @@ import {
   getItemByAssetID, getAssetIDOfElement, addDopplerPhase,
   makeItemColorful, addSSTandExtIndicators, addPriceIndicator,
   addFloatIndicator, getExteriorFromTags, getQuality,
-  getType, isCSGOInventoryActive, getInspectLink, repositionNameTagIcons,
+  getType, getInspectLink, repositionNameTagIcons,
   getDopplerInfo, getActivePage, reloadPageOnExtensionReload, logExtensionPresence,
   updateLoggedInUserInfo, warnOfScammer, addPageControlEventListeners,
   addSearchListener, findElementByAssetID, getPattern, getNameTag,
@@ -419,7 +419,7 @@ const loadAllItemsProperly = () => {
 };
 
 const sortItems = (method, type) => {
-  if (isCSGOInventoryActive('offer')) {
+  if (getActiveInventoryIDs().appID === steamApps.CSGO.appID) {
     if (type === 'offer') {
       const activeInventory = getActiveInventory();
       const items = activeInventory.querySelectorAll('.item.app730.context2');
@@ -447,7 +447,7 @@ const addFloatDataToPage = (job, floatInfo) => {
 
 const addFloatIndicatorsToPage = (type) => {
   chrome.storage.local.get('autoFloatOffer', ({ autoFloatOffer }) => {
-    if (autoFloatOffer && isCSGOInventoryActive('offer')) {
+    if (autoFloatOffer && getActiveInventoryIDs().appID === steamApps.CSGO.appID) {
       let itemElements;
       if (type === 'page') {
         const page = getActivePage('offer', getActiveInventory);
@@ -1061,7 +1061,7 @@ const inventorySelector = document.getElementById('appselect');
 if (inventorySelector !== null) {
   document.getElementById('appselect').addEventListener('click', () => {
     setTimeout(() => {
-      if (isCSGOInventoryActive('offer')) addItemInfo();
+      if (getActiveInventoryIDs().appID === steamApps.CSGO.appID) addItemInfo();
     }, 2000);
   });
 }
