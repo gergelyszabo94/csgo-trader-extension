@@ -173,12 +173,13 @@ const getItemInfoFromPage = (appID, contextID) => {
             if (asset.hasOwnProperty('appid')) {
               trimmedAssets.push({
                   amount: asset.amount,
-                  appid: asset.appid.toString(),
                   assetid: asset.assetid,
                   classid: asset.classid,
                   contextid: asset.contextid,
                   instanceid: asset.instanceid,
-                  description: asset.description
+                  description: asset.description,
+                  ...asset.description,
+                  appid: asset.appid.toString(),
               });
             }
         }
@@ -1097,7 +1098,6 @@ const listenSelectClicks = (event) => {
           }
         });
     } else event.target.parentElement.classList.toggle('cstSelected');
-    console.log('listen');
     updateSelectedItemsSummary();
   }
 };
@@ -1504,6 +1504,30 @@ const hideOtherExtensionPrices = () => {
 
 logExtensionPresence();
 initPriceQueue(onListingPricesLoaded);
+
+// listens to manual inventory tab/game changes
+const inventoriesMenu = document.querySelector('.games_list_tabs');
+if (inventoriesMenu !== null) {
+  inventoriesMenu.querySelectorAll('.games_list_tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const appID = getActiveInventoryAppID();
+      // 2 is the default context for standard games
+      // 6 is the community context for steam
+      const contextID = appID === steamApps.STEAM.appID ? '6' : '2';
+      let inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
+      if (inventory.length !== 0) {
+        items = items.concat(inventory);
+        addRealTimePricesToQueue();
+      } else {
+        setTimeout(() => {
+          inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
+          items = items.concat(inventory);
+          addRealTimePricesToQueue();
+        }, 5000);
+      }
+    });
+  });
+}
 
 // mutation observer observes changes on the right side of the inventory interface
 // this is a workaround for waiting for ajax calls to finish when the page changes
