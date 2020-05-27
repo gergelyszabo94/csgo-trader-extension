@@ -1105,7 +1105,7 @@ const listenSelectClicks = (event) => {
 const sortItems = (inventoryItems, method) => {
   if (getActiveInventoryAppID() === steamApps.CSGO.appID) {
     const itemElements = document.querySelectorAll('.item.app730.context2');
-    const inventoryPages = document.getElementById('inventories').querySelectorAll('.inventory_page');
+    const inventoryPages = document.getElementById(`inventory_${getInventoryOwnerID()}_730_2`).querySelectorAll('.inventory_page');
     doTheSorting(inventoryItems, Array.from(itemElements), method, Array.from(inventoryPages), 'inventory');
     addPerItemInfo();
   }
