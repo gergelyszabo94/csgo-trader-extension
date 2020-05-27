@@ -413,6 +413,12 @@ progress {
     color: #f9f96d;
 }
 
+.offerRealTimeTotal {
+    position: absolute;
+    right: 0;
+    color: #f9f96d;
+}
+
 .exteriorIndicator{
     color: var(--steam-note-blue);
 }

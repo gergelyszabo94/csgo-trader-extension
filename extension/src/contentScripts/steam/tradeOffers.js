@@ -567,6 +567,42 @@ const updateActiveOffers = (offers, items) => {
   }, () => {});
 };
 
+const periodicallyUpdateRealTimeTotals = (offerEl) => {
+  setInterval(() => {
+    chrome.storage.local.get(['currency'], ({ currency }) => {
+      const offerPrimarySide = offerEl.querySelector('.tradeoffer_items.primary');
+      const offerSecondarySide = offerEl.querySelector('.tradeoffer_items.secondary');
+      let primaryTotal = 0;
+      let secondaryTotal = 0;
+
+      offerPrimarySide.querySelectorAll('.trade_item').forEach((itemEl) => {
+        const realTimePrice = itemEl.getAttribute('data-realtime-price');
+        if (realTimePrice !== null) primaryTotal += parseInt(realTimePrice);
+      });
+      const primaryTotalEl = offerPrimarySide.querySelector('.offerRealTimeTotal');
+      const primaryTotalFormatted = prettyPrintPrice(currency, (primaryTotal / 100).toFixed(2));
+      if (primaryTotalEl !== null) primaryTotalEl.innerText = primaryTotalFormatted; else {
+        offerPrimarySide.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
+          `<div class="offerRealTimeTotal">${primaryTotalFormatted}</div>`,
+        ));
+      }
+
+      const secondaryTotalEl = offerSecondarySide.querySelector('.offerRealTimeTotal');
+      offerSecondarySide.querySelectorAll('.trade_item').forEach((itemEl) => {
+        const realTimePrice = itemEl.getAttribute('data-realtime-price');
+        if (realTimePrice !== null) secondaryTotal += parseInt(realTimePrice);
+      });
+      const secondaryTotalFormatted = prettyPrintPrice(currency, (secondaryTotal / 100).toFixed(2));
+      if (secondaryTotalEl !== null) secondaryTotalEl.innerText = secondaryTotalFormatted;
+      else {
+        offerSecondarySide.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
+          `<div class="offerRealTimeTotal">${secondaryTotalFormatted}</div>`,
+        ));
+      }
+    });
+  }, 3000);
+};
+
 logExtensionPresence();
 repositionNameTagIcons();
 overrideShowTradeOffer();
@@ -723,7 +759,7 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
       const offerID = getOfferIDFromElement(offerElement);
       offerElement.querySelector('.tradeoffer_footer_actions').insertAdjacentHTML(
         'afterbegin',
-        `<span id="load_prices_${offerID}" class="whiteLink">Load Prices</span> | `,
+        DOMPurify.sanitize(`<span id="load_prices_${offerID}" class="whiteLink">Load Prices</span> | `),
       );
 
       const loadPricesButton = document.getElementById(`load_prices_${offerID}`);
@@ -750,6 +786,8 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
           });
 
           if (!priceQueue.active) workOnPriceQueue();
+
+          periodicallyUpdateRealTimeTotals(offerElement);
         });
       });
     }
