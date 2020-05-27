@@ -149,7 +149,7 @@ const getMidPrice = (appID, marketHashName) => {
           console.log(err);
           reject(err);
         });
-      }
+      } else reject('highest_order_undef_or_null');
     }).catch((err) => {
       console.log(err);
       reject(err);
@@ -170,7 +170,7 @@ const priceQueueFailure = (error, job) => {
   console.log(error, job);
   priceQueue.lastJobSuccessful = false;
 
-  if (error !== 'empty_listings_array') {
+  if (error !== 'empty_listings_array' && error !== 'highest_order_undef_or_null') {
     priceQueue.jobs.push({ ...job, retries: job.retries + 1 });
 
     setTimeout(() => {
