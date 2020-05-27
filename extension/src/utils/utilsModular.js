@@ -338,8 +338,12 @@ const getAssetIDFromInspectLink = (inspectLink) => ((inspectLink !== null && ins
 const getActivePage = (type, getActiveInventory) => {
   let activePage = null;
   if (type === 'inventory') {
-    document.querySelectorAll('.inventory_page').forEach((page) => {
-      if (page.style.display !== 'none') activePage = page;
+    document.querySelectorAll('.inventory_ctn').forEach((inventory) => {
+      if (inventory.style.display !== 'none') {
+        inventory.querySelectorAll('.inventory_page').forEach((page) => {
+          if (page.style.display !== 'none') activePage = page;
+        });
+      }
     });
   } else if (type === 'offer') {
     const activeInventory = getActiveInventory();
