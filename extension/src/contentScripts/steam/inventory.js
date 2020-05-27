@@ -1639,7 +1639,22 @@ chrome.storage.local.get('hideOtherExtensionPrices', (result) => {
   if (result.hideOtherExtensionPrices) hideOtherExtensionPrices();
 });
 
-if (getActiveInventoryAppID() === steamApps.CSGO.appID) requestInventory();
+const activeInventoryAppID = getActiveInventoryAppID();
+if (activeInventoryAppID === steamApps.CSGO.appID) requestInventory();
+else {
+  const contextID = activeInventoryAppID === steamApps.STEAM.appID ? '6' : '2';
+  let inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
+  if (inventory.length !== 0) {
+    items = items.concat(inventory);
+    addRealTimePricesToQueue();
+  } else {
+    setTimeout(() => {
+      inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
+      items = items.concat(inventory);
+      addRealTimePricesToQueue();
+    }, 5000);
+  }
+}
 
 // to refresh the trade lock remaining indicators
 setInterval(() => {
