@@ -1514,16 +1514,20 @@ if (inventoriesMenu !== null) {
       // 2 is the default context for standard games
       // 6 is the community context for steam
       const contextID = appID === steamApps.STEAM.appID ? '6' : '2';
-      let inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
-      if (inventory.length !== 0) {
-        items = items.concat(inventory);
-        addRealTimePricesToQueue();
+      if (appID === steamApps.CSGO.appID) {
+        requestInventory();
       } else {
-        setTimeout(() => {
-          inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
+        let inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
+        if (inventory.length !== 0) {
           items = items.concat(inventory);
           addRealTimePricesToQueue();
-        }, 5000);
+        } else {
+          setTimeout(() => {
+            inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
+            items = items.concat(inventory);
+            addRealTimePricesToQueue();
+          }, 5000);
+        }
       }
     });
   });
@@ -1635,7 +1639,7 @@ chrome.storage.local.get('hideOtherExtensionPrices', (result) => {
   if (result.hideOtherExtensionPrices) hideOtherExtensionPrices();
 });
 
-requestInventory();
+if (getActiveInventoryAppID() === steamApps.CSGO.appID) requestInventory();
 
 // to refresh the trade lock remaining indicators
 setInterval(() => {
