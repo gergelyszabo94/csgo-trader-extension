@@ -23,6 +23,35 @@ const changelog = (props) => {
                 This means that the latest version might not have rolled out to your platform yet when you are reading this.
             </Container>
             <Container className='buildingBlock'>
+                <h2>Version 2.4 - 2020-05-28</h2>
+                Check out the <Link to='/release-notes/#2.4'> Release Notes </Link> for more info on the new features.
+                <ul>
+                    <li>
+                        RealTime price loading was added to offers/inventories.
+                        <GithubIssueLink issueNumber={119}/>
+                    </li>
+                    <li>
+                        Added support for mass listing to other games and Steam items as well.
+                        <GithubIssueLink issueNumber={249}/>
+                    </li>
+                    <li>
+                        Skinbay was renamed everywhere in the extension to Skincay to reflect the company/domain name change
+                    </li>
+                    <li>
+                        Fixed a bug that removed tags from non-csgo items as well in inventories.
+                    </li>
+                    <li>
+                        Fixed quicksell price not getting selected automatically when it is higher than the extension price during mass listing
+                    </li>
+                    <li>
+                        Fixed unselected items not getting removed from he mass listing table
+                    </li>
+                    <li>
+                        Fixed a bug that broke the item actions menu for some rare games
+                    </li>
+                </ul>
+            </Container>
+            <Container className='buildingBlock'>
                 <h2>Version 2.3 - 2020-05-15</h2>
                 Check out the <Link to='/release-notes/#2.3'> Release Notes </Link> for more info on the new features.
                 <ul>
