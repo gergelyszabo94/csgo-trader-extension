@@ -22,7 +22,7 @@ import {
   priceQueue, workOnPriceQueue, getSteamWalletCurrency, initPriceQueue,
 }
   from 'utils/pricing';
-import { getItemByIDs, getIDsFromElement } from 'utils/itemsToElementsToItems';
+import { getItemByIDs, getIDsFromElement, findElementByIDs } from 'utils/itemsToElementsToItems';
 import { listItem } from 'utils/market';
 import { sortingModes } from 'utils/static/sortingModes';
 import doTheSorting from 'utils/sorting';
@@ -293,27 +293,30 @@ const dealWithNewFloatData = (job, floatInfo, activeFloatQueue) => {
 const sellNext = () => {
   if (document.getElementById('stopSale').getAttribute('data-stopped') === 'false') {
     for (const listingRow of document.getElementById('listingTable').querySelector('.rowGroup').querySelectorAll('.row')) {
-      const assetIDs = listingRow.getAttribute('data-assetids').split(',');
+      const IDs = listingRow.getAttribute('data-ids').split(',');
       const soldIDs = listingRow.getAttribute('data-sold-ids').split(',');
+      const name = listingRow.getAttribute('data-item-name');
 
-      for (const assetID of assetIDs) {
-        if (!soldIDs.includes(assetID)) {
-          const name = listingRow.getAttribute('data-item-name');
+      for (const ID of IDs) {
+        if (!soldIDs.includes(ID)) {
+          const appID = ID.split('_')[0];
+          const contextID = ID.split('_')[1];
+          const assetID = ID.split('_')[2];
           listItem(
-            '730',
-            '2',
+            appID,
+            contextID,
             '1',
             assetID,
             listingRow.querySelector('.cstSelected').getAttribute('data-listing-price'),
           ).then(() => {
             const soldFromRow = document.getElementById('listingTable')
               .querySelector('.rowGroup').querySelector(`[data-item-name="${name}"]`);
-            const rowAssetIDs = soldFromRow.getAttribute('data-assetids').split(',');
+            const rowIDs = soldFromRow.getAttribute('data-ids').split(',');
             let rowSoldIDs = soldFromRow.getAttribute('data-sold-ids').split(',');
             rowSoldIDs = rowSoldIDs[0] === '' ? [] : rowSoldIDs;
 
-            rowSoldIDs.push(assetID);
-            if (rowAssetIDs.toString() === rowSoldIDs.toString()) soldFromRow.classList.add('strikethrough');
+            rowSoldIDs.push(`${appID}_${contextID}_${assetID}`);
+            if (rowIDs.toString() === rowSoldIDs.toString()) soldFromRow.classList.add('strikethrough');
             const quantityCell = soldFromRow.querySelector('.itemAmount');
             const quantityElement = quantityCell.querySelector('input');
             quantityElement.value = (parseInt(quantityElement.value) - 1).toString();
@@ -327,7 +330,7 @@ const sellNext = () => {
             }, 200);
 
             soldFromRow.setAttribute('data-sold-ids', rowSoldIDs.toString());
-            const itemElement = document.getElementById(`730_2_${assetID}`);
+            const itemElement = findElementByIDs(appID, contextID, assetID, 'inventory');
             itemElement.classList.add('sold');
             itemElement.classList.remove('cstSelected');
 
@@ -337,12 +340,12 @@ const sellNext = () => {
 
             let alreadySold = 0;
             for (const row of document.getElementById('listingTable').querySelector('.rowGroup').querySelectorAll('.row')) {
-              const IDs = row.getAttribute('data-sold-ids').split(',');
-              alreadySold += IDs.length === 1
-                ? IDs[0] === ''
+              const alreadySoldIDs = row.getAttribute('data-sold-ids').split(',');
+              alreadySold += alreadySoldIDs.length === 1
+                ? alreadySoldIDs[0] === ''
                   ? 0
                   : 1
-                : IDs.length;
+                : alreadySoldIDs.length;
             }
             document.getElementById('remainingItems').innerText = (totalItems - alreadySold).toString();
 
@@ -824,18 +827,21 @@ const updateMassSaleTotal = () => {
   document.getElementById('saleTotalAfterFees').innerText = centsToSteamFormattedPrice(totalAfterFees);
 };
 
-const getListingRow = (name) => {
-  return document.getElementById('listingTable').querySelector(`.row[data-item-name="${name}"]`);
+const getListingRow = (appID, contextID, name) => {
+  return document.getElementById('listingTable').querySelector(`.row[data-item-name="${appID}_${contextID}_${name}"]`);
 };
 
 const removeUnselectedItemsFromTable = () => {
   document.getElementById('listingTable').querySelector('.rowGroup')
     .querySelectorAll('.row').forEach((listingRow) => {
-      const assetIDs = listingRow.getAttribute('data-assetids').split(',');
-      const remainingIDs = assetIDs.filter((assetID) => findElementByAssetID(assetID).classList.contains('cstSelected'));
+      const IDs = listingRow.getAttribute('data-ids').split(',');
+      const remainingIDs = IDs.filter((ID) => {
+        const IDSplit = ID.split('_');
+        return findElementByIDs(IDSplit[0], IDSplit[1], IDSplit[2], 'inventory').classList.contains('cstSelected');
+      });
       if (remainingIDs.length === 0) listingRow.remove();
       else {
-        listingRow.setAttribute('data-assetids', remainingIDs.toString());
+        listingRow.setAttribute('data-ids', remainingIDs.toString());
         listingRow.querySelector('.itemAmount').querySelector('input').value = remainingIDs.length.toString();
       }
     });
@@ -843,7 +849,7 @@ const removeUnselectedItemsFromTable = () => {
 
 const addListingRow = (item) => {
   const row = `
-          <div class="row" data-assetids="${item.assetid}" data-sold-ids="" data-item-name="${item.market_hash_name}">
+          <div class="row" data-ids="${item.appid}_${item.contextid}_${item.assetid}" data-sold-ids="" data-item-name="${item.appid}_${item.contextid}_${item.market_hash_name}">
               <div class="cell itemName">
                   <a href="https://steamcommunity.com/market/listings/${item.appid}/${item.market_hash_name}" target="_blank">
                       ${item.market_hash_name}
@@ -868,15 +874,17 @@ const addListingRow = (item) => {
 
   document.getElementById('listingTable').querySelector('.rowGroup')
     .insertAdjacentHTML('beforeend', DOMPurify.sanitize(row));
-  const listingRow = getListingRow(item.market_hash_name);
+  const listingRow = getListingRow(item.appid, item.contextid, item.market_hash_name);
 
   listingRow.querySelector('.itemAmount').querySelector('input[type=number]')
     .addEventListener('change', (event) => {
       const quantity = parseInt(event.target.value);
       let selected = 0;
       document.getElementById('tabcontent_inventory').querySelectorAll('.item').forEach((itemElement) => {
-        const itemInfo = getItemByAssetID(items, getAssetIDOfElement(itemElement));
-        if (itemInfo !== undefined && itemInfo.market_hash_name === item.market_hash_name) {
+        const IDs = getIDsFromElement(itemElement, 'inventory');
+        const itemInfo = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
+        if (itemInfo !== undefined && itemInfo.market_hash_name === item.market_hash_name
+        && itemInfo.appid === item.appid) {
           if (selected < quantity) {
             if (!itemElement.classList.contains('cstSelected')) itemElement.classList.add('cstSelected');
             selected += 1;
@@ -886,7 +894,7 @@ const addListingRow = (item) => {
 
       if (quantity === 0) listingRow.remove();
 
-      listingRow.setAttribute('data-assetids', '');
+      listingRow.setAttribute('data-ids', '');
       // they use each other, one of them has to be declared first
       // eslint-disable-next-line no-use-before-define
       updateSelectedItemsSummary();
@@ -916,8 +924,14 @@ const addListingRow = (item) => {
     });
 };
 
-const addStartingAtAndQuickSellPrice = (marketHashName, priceInCents) => {
-  const listingRow = getListingRow(marketHashName);
+const addStartingAtAndQuickSellPrice = (
+  marketHashName,
+  priceInCents,
+  appID,
+  assetID,
+  contextID,
+) => {
+  const listingRow = getListingRow(appID, contextID, marketHashName);
 
   // the user might have unselected the item while it as in the queue
   // and now there is nowhere to add the price to
@@ -942,8 +956,8 @@ const addStartingAtAndQuickSellPrice = (marketHashName, priceInCents) => {
   }
 };
 
-const addInstantSellPrice = (marketHashName, highestOrder) => {
-  const listingRow = getListingRow(marketHashName);
+const addInstantSellPrice = (marketHashName, highestOrder, appID, assetID, contextID) => {
+  const listingRow = getListingRow(appID, contextID, marketHashName);
 
   // the user might have unselected the item while it as in the queue
   // and now there is nowhere to add the price to
@@ -968,8 +982,8 @@ const addInstantSellPrice = (marketHashName, highestOrder) => {
   }
 };
 
-const addMidPrice = (marketHashName, midPrice) => {
-  const listingRow = getListingRow(marketHashName);
+const addMidPrice = (marketHashName, midPrice, appID, assetID, contextID) => {
+  const listingRow = getListingRow(appID, contextID, marketHashName);
 
   // the user might have unselected the item while it as in the queue
   // and now there is nowhere to add the price to
@@ -995,7 +1009,7 @@ const addMidPrice = (marketHashName, midPrice) => {
 };
 
 const addToPriceQueueIfNeeded = (item) => {
-  const listingRow = getListingRow(item.market_hash_name);
+  const listingRow = getListingRow(item.appid, item.contextid, item.market_hash_name);
   const startingAtElement = listingRow.querySelector('.itemStartingAt');
   const instantElement = listingRow.querySelector('.itemInstantSell');
   const midPriceElement = listingRow.querySelector('.itemMidPrice');
@@ -1007,7 +1021,9 @@ const addToPriceQueueIfNeeded = (item) => {
 
     priceQueue.jobs.push({
       type: 'inventory_mass_sell_starting_at',
-      appID: '730',
+      appID: item.appid,
+      contextID: item.contextid,
+      assetID: item.assetid,
       market_hash_name: item.market_hash_name,
       retries: 0,
       callBackFunction: addStartingAtAndQuickSellPrice,
@@ -1022,7 +1038,9 @@ const addToPriceQueueIfNeeded = (item) => {
 
     priceQueue.jobs.push({
       type: 'inventory_mass_sell_instant_sell',
-      appID: '730',
+      appID: item.appid,
+      contextID: item.contextid,
+      assetID: item.assetid,
       market_hash_name: item.market_hash_name,
       retries: 0,
       callBackFunction: addInstantSellPrice,
@@ -1037,7 +1055,9 @@ const addToPriceQueueIfNeeded = (item) => {
 
     priceQueue.jobs.push({
       type: 'inventory_mass_sell_mid_price',
-      appID: '730',
+      appID: item.appid,
+      contextID: item.contextid,
+      assetID: item.assetid,
       market_hash_name: item.market_hash_name,
       retries: 0,
       callBackFunction: addMidPrice,
@@ -1059,15 +1079,19 @@ const updateSelectedItemsSummary = () => {
     if (item) {
       if (item.price) selectedTotal += parseFloat(item.price.price);
       if (item.marketable === 1) {
-        const listingRow = getListingRow(item.market_hash_name);
+        const listingRow = getListingRow(item.appid, item.contextid, item.market_hash_name);
 
         if (listingRow === null) {
           addListingRow(item);
           addToPriceQueueIfNeeded(item);
         } else {
-          const previIDs = listingRow.getAttribute('data-assetids');
-          if (!previIDs.includes(item.assetid)) {
-            listingRow.setAttribute('data-assetids', `${previIDs},${item.assetid}`);
+          const previIDs = listingRow.getAttribute('data-ids');
+          if (!previIDs.includes(`${item.appid}_${item.contextid}_${item.assetid}`)) {
+            const dataIDs = previIDs.length === 0
+              ? `${item.appid}_${item.contextid}_${item.assetid}`
+              : `${previIDs},${item.appid}_${item.contextid}_${item.assetid}`;
+
+            listingRow.setAttribute('data-ids', dataIDs);
             listingRow.querySelector('.itemAmount')
               .querySelector('input').value = (previIDs.split(',').length + 1).toString();
           }
