@@ -845,7 +845,7 @@ const addListingRow = (item) => {
   const row = `
           <div class="row" data-assetids="${item.assetid}" data-sold-ids="" data-item-name="${item.market_hash_name}">
               <div class="cell itemName">
-                  <a href="https://steamcommunity.com/market/listings/730/${item.market_hash_name}" target="_blank">
+                  <a href="https://steamcommunity.com/market/listings/${item.appid}/${item.market_hash_name}" target="_blank">
                       ${item.market_hash_name}
                   </a>
               </div>
@@ -854,10 +854,10 @@ const addListingRow = (item) => {
               </div>
               <div
                   class="cell itemExtensionPrice cstSelected clickable"
-                  data-price-in-cents="${userPriceToProperPrice(item.price.price).toString()}"
-                  data-listing-price="${getPriceAfterFees(userPriceToProperPrice(item.price.price)).toString()}"
+                  data-price-in-cents="${item.price ? userPriceToProperPrice(item.price.price).toString() : '0'}"
+                  data-listing-price="${item.price ? getPriceAfterFees(userPriceToProperPrice(item.price.price)).toString() : '0'}"
                   >
-                  ${item.price.display}
+                  ${item.price ? item.price.display : '0'}
               </div>
               <div class="cell itemStartingAt clickable">Loading...</div>
               <div class="cell itemQuickSell clickable">Loading...</div>
@@ -1047,7 +1047,7 @@ const addToPriceQueueIfNeeded = (item) => {
 };
 
 const updateSelectedItemsSummary = () => {
-  const selectedItems = document.querySelectorAll('.item.app730.context2.cstSelected');
+  const selectedItems = document.getElementById('inventories').querySelectorAll('.item.cstSelected');
   const numberOfSelectedItems = selectedItems.length;
   let selectedTotal = 0;
 
@@ -1056,20 +1056,21 @@ const updateSelectedItemsSummary = () => {
   selectedItems.forEach((itemElement) => {
     const IDs = getIDsFromElement(itemElement, 'inventory');
     const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
-    selectedTotal += parseFloat(item.price.price);
+    if (item) {
+      if (item.price) selectedTotal += parseFloat(item.price.price);
+      if (item.marketable === 1) {
+        const listingRow = getListingRow(item.market_hash_name);
 
-    if (item.marketable === 1) {
-      const listingRow = getListingRow(item.market_hash_name);
-
-      if (listingRow === null) {
-        addListingRow(item);
-        addToPriceQueueIfNeeded(item);
-      } else {
-        const previIDs = listingRow.getAttribute('data-assetids');
-        if (!previIDs.includes(item.assetid)) {
-          listingRow.setAttribute('data-assetids', `${previIDs},${item.assetid}`);
-          listingRow.querySelector('.itemAmount')
-            .querySelector('input').value = (previIDs.split(',').length + 1).toString();
+        if (listingRow === null) {
+          addListingRow(item);
+          addToPriceQueueIfNeeded(item);
+        } else {
+          const previIDs = listingRow.getAttribute('data-assetids');
+          if (!previIDs.includes(item.assetid)) {
+            listingRow.setAttribute('data-assetids', `${previIDs},${item.assetid}`);
+            listingRow.querySelector('.itemAmount')
+              .querySelector('input').value = (previIDs.split(',').length + 1).toString();
+          }
         }
       }
     }
@@ -1454,7 +1455,7 @@ const loadFullInventory = () => {
 const requestInventory = () => {
   chrome.runtime.sendMessage({ inventory: getInventoryOwnerID() }, (response) => {
     if (response !== 'error') {
-      items = response.items;
+      items = items.concat(response.items);
       inventoryTotal = response.total;
       addRightSideElements();
       addPerItemInfo();
