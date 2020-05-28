@@ -1305,6 +1305,8 @@ const addFunctionBar = () => {
                       <h2>Market Mass Listing</h2>
                       <div class="hidden not_tradable" id="currency_mismatch_warning">
                       Warning: Your Steam Wallet currency and CSGO Trader currency are not the same.
+                      This is an untested scenario that is not recommended. 
+                      Make sure you double check the listing prices when confirming the sales on your phone if you use it like this.
                       <span class="underline clickable" id="changeCurrency">Click here to fix this</span></div>
                           <div id="listingTable" class="table">
                               <div class="header">
