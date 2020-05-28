@@ -10,7 +10,9 @@ import { prettyTimeAgo } from 'utils/dateTime';
 import { genericMarketLink } from 'utils/static/simpleStrings';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import itemTypes from 'utils/static/itemTypes';
-import { prettyPrintPrice } from 'utils/pricing';
+import {
+  addRealTimePriceToPage, prettyPrintPrice, priceQueue, workOnPriceQueue,
+} from 'utils/pricing';
 import { overrideShowTradeOffer } from 'utils/steamOverriding';
 import { trackEvent } from 'utils/analytics';
 import { offersSortingModes } from 'utils/static/sortingModes';
@@ -20,6 +22,8 @@ import { inOtherOfferIndicator } from 'utils/static/miscElements';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
 import { acceptOffer, declineOffer } from 'utils/tradeOffers';
 import DOMPurify from 'dompurify';
+import steamApps from 'utils/static/steamApps';
+import { getIDsFromElement } from 'utils/itemsToElementsToItems';
 
 const userID = getUserSteamID();
 let activePage = 'incoming_offers';
@@ -52,7 +56,10 @@ const matchItemsWithDescriptions = (items) => {
     // some items don't have descriptions for some reason - will have to be investigated later
     if (item.market_hash_name !== undefined) {
       itemsToReturn.push({
+        appid: item.appid.toString(),
+        contextid: item.contextid.toString(),
         name: item.name,
+        marketable: item.marketable,
         market_hash_name: item.market_hash_name,
         name_color: item.name_color,
         marketlink: genericMarketLink + item.market_hash_name,
@@ -84,13 +91,10 @@ const matchItemsWithDescriptions = (items) => {
   return itemsToReturn;
 };
 
-const isCSGOItemElement = (element) => {
-  return element.getAttribute('data-economy-item').includes('classinfo/730/');
-};
-
-const getIDsFromElement = (element) => {
+const getLimitedIDsFromElement = (element) => {
   const splitString = element.getAttribute('data-economy-item').split('/');
   return {
+    appid: splitString[1] === undefined ? null : splitString[1],
     classid: splitString[2] === undefined ? null : splitString[2],
     instanceid: splitString[3] === undefined ? null : splitString[3],
   };
@@ -155,13 +159,14 @@ const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
   }
 };
 
-// class and instance IDs are the only IDs that can be extracted from the page
+// app, class and instance IDs are the only IDs that can be extracted from the page
 // they are not enough to match every item exactly all the time
 // side of the offer and position must be used to to uniquely match items
 const findItem = (items, IDs, side, position) => {
   if (IDs.instanceid !== null) {
     return items.filter((item) => {
-      return item.classid === IDs.classid && item.instanceid === IDs.instanceid
+      return item.appid === IDs.appid && item.classid === IDs.classid
+        && item.instanceid === IDs.instanceid
         && item.position === position && item.side === side;
     })[0];
   }
@@ -229,29 +234,37 @@ const addItemInfo = (items) => {
       colorfulItems, showStickerPrice, autoFloatOffer, activeOffers, itemInOtherOffers,
     }) => {
       activeItemElements.forEach(({ itemElement, side, position }) => {
-        if ((itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') && isCSGOItemElement(itemElement)) {
-          const item = findItem(items, getIDsFromElement(itemElement), side, position);
+        if ((itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false')) {
+          const item = findItem(items, getLimitedIDsFromElement(itemElement), side, position);
+          if (item) {
+            if (item.appid === steamApps.CSGO.appID) {
+              addDopplerPhase(itemElement, item.dopplerInfo);
+              makeItemColorful(itemElement, item, colorfulItems);
+              addSSTandExtIndicators(itemElement, item, showStickerPrice);
+              addPriceIndicator(itemElement, item.price);
+              if (itemInOtherOffers) {
+                addInOtherTradeIndicator(itemElement, item, activeOffers.items);
+              }
 
-          if (item !== undefined) {
-            addDopplerPhase(itemElement, item.dopplerInfo);
-            makeItemColorful(itemElement, item, colorfulItems);
-            addSSTandExtIndicators(itemElement, item, showStickerPrice);
-            addPriceIndicator(itemElement, item.price);
-            if (itemInOtherOffers) addInOtherTradeIndicator(itemElement, item, activeOffers.items);
-
-            if (autoFloatOffer && item.inspectLink !== null) {
-              if (item.floatInfo === null && itemTypes[item.type.key].float) {
-                floatQueue.jobs.push({
-                  type: 'offersPage',
-                  assetID: item.assetid,
-                  classid: item.classid,
-                  instanceid: item.instanceid,
-                  inspectLink: item.inspectLink,
-                  callBackFunction: addFloatDataToPage,
-                });
-                if (!floatQueue.active) workOnFloatQueue();
-              } else addFloatIndicator(itemElement, item.floatInfo);
+              if (autoFloatOffer && item.inspectLink !== null) {
+                if (item.floatInfo === null && itemTypes[item.type.key].float) {
+                  floatQueue.jobs.push({
+                    type: 'offersPage',
+                    assetID: item.assetid,
+                    classid: item.classid,
+                    instanceid: item.instanceid,
+                    inspectLink: item.inspectLink,
+                    callBackFunction: addFloatDataToPage,
+                  });
+                  if (!floatQueue.active) workOnFloatQueue();
+                } else addFloatIndicator(itemElement, item.floatInfo);
+              }
             }
+            // it gives the element an id and adds the name
+            // so the real time prices can be loaded
+            itemElement.id = `item${item.appid}_${item.contextid}_${item.assetid}`;
+            itemElement.setAttribute('data-market-hash-name', item.market_hash_name);
+            itemElement.setAttribute('data-marketable', item.marketable);
           }
 
           // marks the item "processed" to avoid additional unnecessary work later
@@ -554,6 +567,42 @@ const updateActiveOffers = (offers, items) => {
   }, () => {});
 };
 
+const periodicallyUpdateRealTimeTotals = (offerEl) => {
+  setInterval(() => {
+    chrome.storage.local.get(['currency'], ({ currency }) => {
+      const offerPrimarySide = offerEl.querySelector('.tradeoffer_items.primary');
+      const offerSecondarySide = offerEl.querySelector('.tradeoffer_items.secondary');
+      let primaryTotal = 0;
+      let secondaryTotal = 0;
+
+      offerPrimarySide.querySelectorAll('.trade_item').forEach((itemEl) => {
+        const realTimePrice = itemEl.getAttribute('data-realtime-price');
+        if (realTimePrice !== null) primaryTotal += parseInt(realTimePrice);
+      });
+      const primaryTotalEl = offerPrimarySide.querySelector('.offerRealTimeTotal');
+      const primaryTotalFormatted = prettyPrintPrice(currency, (primaryTotal / 100).toFixed(2));
+      if (primaryTotalEl !== null) primaryTotalEl.innerText = primaryTotalFormatted; else {
+        offerPrimarySide.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
+          `<div class="offerRealTimeTotal">${primaryTotalFormatted}</div>`,
+        ));
+      }
+
+      const secondaryTotalEl = offerSecondarySide.querySelector('.offerRealTimeTotal');
+      offerSecondarySide.querySelectorAll('.trade_item').forEach((itemEl) => {
+        const realTimePrice = itemEl.getAttribute('data-realtime-price');
+        if (realTimePrice !== null) secondaryTotal += parseInt(realTimePrice);
+      });
+      const secondaryTotalFormatted = prettyPrintPrice(currency, (secondaryTotal / 100).toFixed(2));
+      if (secondaryTotalEl !== null) secondaryTotalEl.innerText = secondaryTotalFormatted;
+      else {
+        offerSecondarySide.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
+          `<div class="offerRealTimeTotal">${secondaryTotalFormatted}</div>`,
+        ));
+      }
+    });
+  }, 3000);
+};
+
 logExtensionPresence();
 repositionNameTagIcons();
 overrideShowTradeOffer();
@@ -704,6 +753,46 @@ if (activePage === 'incoming_offers') {
 }
 
 if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
+  // adds the "load realtime price" action to offers
+  document.querySelectorAll('.tradeoffer').forEach((offerElement) => {
+    if (isOfferActive(offerElement)) {
+      const offerID = getOfferIDFromElement(offerElement);
+      offerElement.querySelector('.tradeoffer_footer_actions').insertAdjacentHTML(
+        'afterbegin',
+        DOMPurify.sanitize(`<span id="load_prices_${offerID}" class="whiteLink">Load Prices</span> | `),
+      );
+
+      const loadPricesButton = document.getElementById(`load_prices_${offerID}`);
+
+      loadPricesButton.addEventListener('click', () => {
+        chrome.storage.local.get(['realTimePricesMode'], ({ realTimePricesMode }) => {
+          offerElement.querySelectorAll('.trade_item').forEach((itemEl) => {
+            const marketable = itemEl.getAttribute('data-marketable');
+            if (marketable === 'true' || marketable === '1') {
+              const IDs = getIDsFromElement(itemEl, 'offer');
+              const marketName = itemEl.getAttribute('data-market-hash-name');
+              itemEl.setAttribute('data-realtime-price', '0');
+
+              priceQueue.jobs.push({
+                type: `offers_${realTimePricesMode}`,
+                assetID: IDs.assetID,
+                appID: IDs.appID,
+                contextID: IDs.contextID,
+                market_hash_name: marketName,
+                retries: 0,
+                callBackFunction: addRealTimePriceToPage,
+              });
+            }
+          });
+
+          if (!priceQueue.active) workOnPriceQueue();
+
+          periodicallyUpdateRealTimeTotals(offerElement);
+        });
+      });
+    }
+  });
+
   chrome.storage.local.get('itemInOtherOffers', ({ itemInOtherOffers }) => {
     if (itemInOtherOffers) {
       // adds listeners to cancel/decline buttons

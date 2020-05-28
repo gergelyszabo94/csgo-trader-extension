@@ -28,6 +28,12 @@ const inventory = () => {
         options={transformSortingModes()}
       />
       <Row
+        name="Load RealTime prices"
+        id="realTimePricesAutoLoadInventory"
+        type="flipSwitchStorage"
+        description="When on, the extension adds RealTime prices to items automatically"
+      />
+      <Row
         name="Get float values automatically"
         id="autoFloatInventory"
         type="flipSwitchStorage"

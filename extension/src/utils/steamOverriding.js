@@ -69,9 +69,11 @@ const overrideHandleTradeActionMenu = () => {
             {
                 var elItemActions = $J('#trade_action_popup_itemactions');
                 elItemActions.empty();
-                item.actions=item.actions.filter(element => element.id!=="inbrowser");
-                let inspectLink = item.actions[0].link;
-                item.actions.push({name: "Inspect in Browser...", link: "http://csgo.gallery/"+inspectLink, id: "inbrowser"});
+                if (item.actions !== '') {
+                  item.actions=item.actions.filter(element => element.id!=="inbrowser");
+                  let inspectLink = item.actions[0].link;
+                  item.actions.push({name: "Inspect in Browser...", link: "http://csgo.gallery/"+inspectLink, id: "inbrowser"});
+                }
                 for ( var action = 0; action < item.actions.length; action++ )
                 {
                     var rgAction = item.actions[action];

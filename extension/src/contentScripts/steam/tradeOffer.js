@@ -4,14 +4,18 @@ import {
   getItemByAssetID, getAssetIDOfElement, addDopplerPhase,
   makeItemColorful, addSSTandExtIndicators, addPriceIndicator,
   addFloatIndicator, getExteriorFromTags, getQuality,
-  getType, isCSGOInventoryActive, getInspectLink, repositionNameTagIcons,
+  getType, getInspectLink, repositionNameTagIcons,
   getDopplerInfo, getActivePage, reloadPageOnExtensionReload, logExtensionPresence,
   updateLoggedInUserInfo, warnOfScammer, addPageControlEventListeners,
   addSearchListener, findElementByAssetID, getPattern, getNameTag,
   removeOfferFromActiveOffers, changePageTitle,
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
-import { prettyPrintPrice } from 'utils/pricing';
+import {
+  priceQueue, workOnPriceQueue, prettyPrintPrice, initPriceQueue,
+  addRealTimePriceToPage,
+} from 'utils/pricing';
+import { getItemByIDs, getIDsFromElement } from 'utils/itemsToElementsToItems';
 import doTheSorting from 'utils/sorting';
 import { sortingModes } from 'utils/static/sortingModes';
 import { trackEvent } from 'utils/analytics';
@@ -23,10 +27,11 @@ import { injectScript, injectStyle } from 'utils/injection';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
 import { declineOffer } from 'utils/tradeOffers';
+import steamApps from 'utils/static/steamApps';
 
 let yourInventory = null;
 let theirInventory = null;
-let combinedInventories = [];
+const combinedInventories = [];
 
 const getOfferIDScript = "document.querySelector('body').setAttribute('offerID', g_strTradePartnerInventoryLoadURL.split('tradeoffer/')[1].split('/partner')[0])";
 const offerID = injectScript(getOfferIDScript, true, 'getOfferID', 'offerID');
@@ -68,41 +73,106 @@ const addInOtherOffersInfoBlock = (item, otherOfferItems) => {
   }
 };
 
+const getActiveInventory = () => {
+  let activeInventory = null;
+  document.querySelectorAll('.inventory_ctn').forEach((inventory) => {
+    if (inventory.style.display !== 'none' && inventory.id !== 'trade_inventory_unavailable') activeInventory = inventory;
+  });
+  return activeInventory;
+};
+
+const getActiveInventoryIDs = () => {
+  const activeInv = getActiveInventory();
+  return activeInv === null
+    ? null
+    : {
+      appID: activeInv.id.split('_')[2].split('_')[0],
+      contextID: activeInv.id.split('_')[3].split('_')[0],
+    };
+};
+
 const getItemInfoFromPage = (who) => {
-  const getItemsScript = `
-            inventory = User${DOMPurify.sanitize(who)}.getInventory(730,2);
+  const getAppInfoScript = `
+    appIDs = {};
+    appIDsArray = Object.keys(User${who}.rgAppInfo);
+    appIDsArray.forEach((appID) => {
+      appIDs[appID] = appID;
+    });
+    
+    document.querySelector('body').setAttribute('userAppInfo', JSON.stringify(appIDs));
+  `;
+  const appInfo = JSON.parse(injectScript(getAppInfoScript, true, 'getAppInfo', 'userAppInfo'));
+
+  // gathers the app and contexts ids from the active inventory
+  // and the items inside the offer
+  let sideAppAndContextIDs = [];
+  const activeInventoryIDs = getActiveInventoryIDs();
+  if (activeInventoryIDs !== null && appInfo[activeInventoryIDs.appID] !== undefined) {
+    sideAppAndContextIDs.push(activeInventoryIDs);
+  }
+  const whose = who === 'You' ? 'your' : 'their';
+  const side = document.getElementById(`trade_${whose}s`);
+
+  side.querySelectorAll('.item').forEach((itemEl) => {
+    const itemIDs = getIDsFromElement(itemEl, 'offer');
+    if (itemIDs !== null && itemIDs.appID !== 'anonymous' && appInfo[itemIDs.appID] !== undefined) {
+      sideAppAndContextIDs = sideAppAndContextIDs.filter((IDs) => {
+        return !(IDs.appID === itemIDs.appID && IDs.contextID === itemIDs.contextID);
+      });
+
+      sideAppAndContextIDs.push({
+        appID: itemIDs.appID,
+        contextID: itemIDs.contextID,
+      });
+    }
+  });
+
+  const inventoryInfos = {};
+
+  for (const IDs of sideAppAndContextIDs) {
+    const getItemsScript = `
+            inventory = User${DOMPurify.sanitize(who)}.getInventory(${IDs.appID},${IDs.contextID});
             assets = inventory.rgInventory;
             steamID = inventory.owner.strSteamId;
             trimmedAssets = [];
 
-            if(assets !== null){
-                assetKeys = Object.keys(assets);
-
-                for(let assetKey of assetKeys){
+            if (assets !== null) {
+                for (const asset of Object.values(assets)){
                     trimmedAssets.push({
-                        amount: assets[assetKey].amount,
-                        assetid: assets[assetKey].id,
-                        actions: assets[assetKey].actions,
-                        classid: assets[assetKey].classid,
-                        icon: assets[assetKey].icon_url,
-                        instanceid: assets[assetKey].instanceid,
-                        contextid: assets[assetKey].contextid,
-                        descriptions: assets[assetKey].descriptions,
-                        market_actions: assets[assetKey].market_actions,
-                        market_hash_name: assets[assetKey].market_hash_name,
-                        name: assets[assetKey].name,
-                        name_color: assets[assetKey].name_color,
-                        position: assets[assetKey].pos,
-                        type: assets[assetKey].type,
+                        amount: asset.amount,
+                        appid:  asset.appid.toString(),
+                        assetid: asset.id.toString(),
+                        actions: asset.actions,
+                        classid: asset.classid,
+                        icon: asset.icon_url,
+                        instanceid: asset.instanceid.toString(),
+                        contextid: asset.contextid.toString(),
+                        descriptions: asset.descriptions,
+                        market_actions: asset.market_actions,
+                        market_hash_name: asset.market_hash_name,
+                        marketable: asset.marketable,
+                        name: asset.name,
+                        name_color: asset.name_color,
+                        position: asset.pos,
+                        type: asset.type,
                         owner: steamID,
-                        fraudwarnings: assets[assetKey].fraudwarnings,
-                        tags: assets[assetKey].tags
+                        fraudwarnings: asset.fraudwarnings,
+                        tags: asset.tags
                     });
                 }
              }
              else trimmedAssets = null;
         document.querySelector('body').setAttribute('offerInventoryInfo', JSON.stringify(trimmedAssets));`;
-  return JSON.parse(injectScript(getItemsScript, true, 'getOfferItemInfo', 'offerInventoryInfo'));
+
+    const items = JSON.parse(injectScript(getItemsScript, true, 'getOfferItemInfo', 'offerInventoryInfo'));
+    if (items === null) return null;
+
+    inventoryInfos[IDs.appID] = {
+      contextID: IDs.contextID,
+      items,
+    };
+  }
+  return Object.keys(inventoryInfos).length !== 0 ? inventoryInfos : null;
 };
 
 const removeSIHStuff = () => {
@@ -137,6 +207,9 @@ const buildInventoryStructure = (inventory) => {
       classid: item.classid,
       instanceid: item.instanceid,
       assetid: item.assetid,
+      appid: item.appid.toString(),
+      contextid: item.contextid,
+      marketable: item.marketable,
       position: item.position,
       dopplerInfo: (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon) : null,
       exterior: getExteriorFromTags(item.tags),
@@ -189,7 +262,6 @@ const addItemInfo = () => {
               }, 1000);
               return false;
             }
-
             const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
             addDopplerPhase(itemElement, item.dopplerInfo);
             makeItemColorful(itemElement, item, colorfulItems);
@@ -237,11 +309,16 @@ const addInTradeTotals = (whose) => {
   chrome.storage.local.get('currency', ({ currency }) => {
     const itemsInTrade = document.getElementById(`${whose}_slots`).querySelectorAll('.item');
     let inTradeTotal = 0;
+    let inTradeRealTimeTotal = 0;
     let numberOfItemsInTrade = 0;
     const inTradeItemsSummary = {};
 
     itemsInTrade.forEach((inTradeItem) => {
-      const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(inTradeItem));
+      const realTimePrice = inTradeItem.getAttribute('data-realtime-price');
+      if (realTimePrice !== null) inTradeRealTimeTotal += parseFloat(realTimePrice);
+      
+      const IDs = getIDsFromElement(inTradeItem, 'offer');
+      const item = getItemByIDs(combinedInventories, IDs.appID, IDs.contextID, IDs.assetID);
       if (item !== undefined) {
         if (item.price !== undefined) inTradeTotal += parseFloat(item.price.price);
         if (inTradeItemsSummary[item.type.key] !== undefined) {
@@ -268,17 +345,38 @@ const addInTradeTotals = (whose) => {
       itemList.appendChild(listItem);
     }
 
-    if (document.getElementById(`${whose}InTradeTotal`) === null) {
+    const totalEl = document.getElementById(`${whose}InTradeTotal`);
+    if (totalEl === null) {
       let itemsTextDiv;
       if (whose === 'your') itemsTextDiv = document.getElementById('trade_yours').querySelector('h2.ellipsis');
       else itemsTextDiv = document.getElementById('trade_theirs').querySelector('.offerheader').querySelector('h2');
       itemsTextDiv.innerHTML = DOMPurify.sanitize(
-        `${itemsTextDiv.innerText.split(':')[0]} (<span id="${whose}InTradeTotal" data-total="${inTradeTotal}">${prettyPrintPrice(currency, inTradeTotal)}</span>):`,
+        `${itemsTextDiv.innerText.split(':')[0]} (<span id="${whose}InTradeTotal" data-total="${inTradeTotal}" title="In-trade total">${prettyPrintPrice(currency, inTradeTotal)}</span>):`,
       );
     } else {
-      const totalEl = document.getElementById(`${whose}InTradeTotal`);
       totalEl.innerText = prettyPrintPrice(currency, inTradeTotal);
       totalEl.setAttribute('data-total', inTradeTotal);
+    }
+
+    if (inTradeRealTimeTotal !== 0) {
+      const realTimeTotalEl = document.getElementById(`${whose}InTradeRealTimeTotal`);
+      if (realTimeTotalEl === null) {
+        const itemBox = document.getElementById(`trade_${whose}s`).querySelector('.trade_item_box');
+        itemBox.style['margin-bottom'] = '20px';
+        itemBox.insertAdjacentHTML(
+          'beforeend',
+          DOMPurify.sanitize(
+            `<div id="${whose}InTradeRealTimeTotal" class="realTimePriceTradeTotal" title="RealTime price total">
+                    ${prettyPrintPrice(currency, (inTradeRealTimeTotal / 100).toFixed(2))}
+                </div>`,
+          ),
+        );
+      } else {
+        realTimeTotalEl.innerText = prettyPrintPrice(
+          currency,
+          (inTradeRealTimeTotal / 100).toFixed(2),
+        );
+      }
     }
   });
 };
@@ -320,19 +418,10 @@ const loadAllItemsProperly = () => {
   injectScript(loadAllItemsProperlyScript, true, 'loadAllItemsProperly', null);
 };
 
-const getActiveInventory = () => {
-  let activeInventory = null;
-  document.querySelectorAll('.inventory_ctn').forEach((inventory) => {
-    if (inventory.style.display !== 'none') activeInventory = inventory;
-  });
-  return activeInventory;
-};
-
 const sortItems = (method, type) => {
-  if (isCSGOInventoryActive('offer')) {
+  if (getActiveInventoryIDs().appID === steamApps.CSGO.appID) {
     if (type === 'offer') {
       const activeInventory = getActiveInventory();
-
       const items = activeInventory.querySelectorAll('.item.app730.context2');
       const offerPages = activeInventory.querySelectorAll('.inventory_page');
       doTheSorting(combinedInventories, Array.from(items), method, offerPages, type);
@@ -357,8 +446,8 @@ const addFloatDataToPage = (job, floatInfo) => {
 };
 
 const addFloatIndicatorsToPage = (type) => {
-  chrome.storage.local.get('autoFloatOffer', (result) => {
-    if (result.autoFloatOffer && isCSGOInventoryActive('offer')) {
+  chrome.storage.local.get('autoFloatOffer', ({ autoFloatOffer }) => {
+    if (autoFloatOffer && getActiveInventoryIDs().appID === steamApps.CSGO.appID) {
       let itemElements;
       if (type === 'page') {
         const page = getActivePage('offer', getActiveInventory);
@@ -379,7 +468,7 @@ const addFloatIndicatorsToPage = (type) => {
       }
       itemElements.forEach((itemElement) => {
         const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
-        if (item.inspectLink !== null) {
+        if (item && item.inspectLink !== null) {
           if (item.floatInfo === null && itemTypes[item.type.key].float) {
             floatQueue.jobs.push({
               type: 'offer',
@@ -393,6 +482,54 @@ const addFloatIndicatorsToPage = (type) => {
       if (!floatQueue.active) workOnFloatQueue();
     }
   });
+};
+
+const addRealTimePricesToQueue = (type) => {
+  chrome.storage.local.get(
+    ['realTimePricesAutoLoadOffer', 'realTimePricesMode'],
+    ({ realTimePricesAutoLoadOffer, realTimePricesMode }) => {
+      if (realTimePricesAutoLoadOffer) {
+        const itemElements = [];
+        let page = null;
+        if (type === 'page') page = getActivePage('offer', getActiveInventory);
+        else page = document.getElementById(`trade_${type}s`);
+
+        if (page !== null) {
+          page.querySelectorAll('.item').forEach((item) => {
+            if (!item.classList.contains('unknownItem')) itemElements.push(item);
+          });
+        } else {
+          setTimeout(() => {
+            addRealTimePricesToQueue(type);
+          }, 1000);
+        }
+
+        if (itemElements) {
+          itemElements.forEach((itemElement) => {
+            if (itemElement.getAttribute('data-realtime-price') === null) {
+              const IDs = getIDsFromElement(itemElement, 'offer');
+              const item = getItemByIDs(combinedInventories, IDs.appID, IDs.contextID, IDs.assetID);
+
+              itemElement.setAttribute('data-realtime-price', '0');
+              if (item && item.marketable === 1) {
+                priceQueue.jobs.push({
+                  type: `offer_${realTimePricesMode}`,
+                  assetID: item.assetid,
+                  appID: item.appid,
+                  contextID: item.contextid,
+                  market_hash_name: item.market_hash_name,
+                  retries: 0,
+                  callBackFunction: addRealTimePriceToPage,
+                });
+              }
+            }
+          });
+
+          if (!priceQueue.active) workOnPriceQueue();
+        }
+      }
+    },
+  );
 };
 
 // removes buggy slots that remain behind and break the ui
@@ -458,57 +595,118 @@ const singleClickControlClick = () => {
   });
 };
 
-const doInitSorting = () => {
-  chrome.storage.local.get(['offerSortingMode', 'switchToOtherInventory'], (result) => {
-    if (result.switchToOtherInventory) {
+const doInitSorting = (initial) => {
+  chrome.storage.local.get(['offerSortingMode', 'switchToOtherInventory'], ({ offerSortingMode, switchToOtherInventory }) => {
+    if (switchToOtherInventory && initial) {
       const inventoryTab = document.getElementById('inventory_select_their_inventory');
       inventoryTab.click();
-      sortItems(result.offerSortingMode, 'their');
+      sortItems(offerSortingMode, 'their');
       inventoryTab.classList.add('sorted');
     } else {
       const inventoryTab = document.getElementById('inventory_select_your_inventory');
-      sortItems(result.offerSortingMode, 'your');
+      sortItems(offerSortingMode, 'your');
       inventoryTab.classList.add('sorted');
     }
-    sortItems(result.offerSortingMode, 'offer');
+    sortItems(offerSortingMode, 'offer');
 
     addFloatIndicatorsToPage('their');
-    addFloatIndicatorsToPage('page');
     addFloatIndicatorsToPage('your');
+    addFloatIndicatorsToPage('page');
+    addRealTimePricesToQueue('their');
+    addRealTimePricesToQueue('your');
+    addRealTimePricesToQueue('page');
 
-    document.querySelector(`#offer_sorting_mode [value="${result.offerSortingMode}"]`).selected = true;
-    document.querySelector(`#offer_your_sorting_mode [value="${result.offerSortingMode}"]`).selected = true;
-    document.querySelector(`#offer_their_sorting_mode [value="${result.offerSortingMode}"]`).selected = true;
+    document.querySelector(`#offer_sorting_mode [value="${offerSortingMode}"]`).selected = true;
+    document.querySelector(`#offer_your_sorting_mode [value="${offerSortingMode}"]`).selected = true;
+    document.querySelector(`#offer_their_sorting_mode [value="${offerSortingMode}"]`).selected = true;
 
     singleClickControlClick();
   });
 };
 
-const getInventories = () => {
+const getInventories = (initial) => {
   yourInventory = getItemInfoFromPage('You');
   theirInventory = getItemInfoFromPage('Them');
 
   if (yourInventory !== null && theirInventory !== null) {
-    const yourBuiltInventory = buildInventoryStructure(yourInventory);
-    const theirBuiltInventory = buildInventoryStructure(theirInventory);
+    const yourBuiltInventory = {
+      ...yourInventory,
+      [steamApps.CSGO.appID]: (
+        yourInventory[steamApps.CSGO.appID] !== undefined
+        && yourInventory[steamApps.CSGO.appID] !== null
+      )
+        ? {
+          contextID: yourInventory[steamApps.CSGO.appID].contextID,
+          items: buildInventoryStructure(yourInventory[steamApps.CSGO.appID].items),
+        }
+        : {
+          contextID: '2',
+          items: [],
+        },
+    };
+    const theirBuiltInventory = {
+      ...theirInventory,
+      [steamApps.CSGO.appID]: (
+        theirInventory[steamApps.CSGO.appID] !== undefined
+        && theirInventory[steamApps.CSGO.appID] !== null
+      )
+        ? {
+          contextID: theirInventory[steamApps.CSGO.appID].contextID,
+          items: buildInventoryStructure(theirInventory[steamApps.CSGO.appID].items),
+        }
+        : {
+          contextID: '2',
+          items: [],
+        },
+    };
 
-    addPricesAndFloatsToInventory(yourBuiltInventory).then(({ items, total }) => {
-      const yourInventoryWithPrices = items;
-      addPricesAndFloatsToInventory(theirBuiltInventory).then((theirInventoryRes) => {
-        const theirInventoryWithPrices = theirInventoryRes.items;
-        combinedInventories = yourInventoryWithPrices.concat(theirInventoryWithPrices);
+    addPricesAndFloatsToInventory(
+      yourBuiltInventory[steamApps.CSGO.appID].items,
+    ).then(({ items, total }) => {
+      const yourInventoryWithPrices = {
+        ...yourBuiltInventory,
+        [steamApps.CSGO.appID]: {
+          contextID: yourBuiltInventory[steamApps.CSGO.appID].contextID,
+          items,
+        },
+      };
+      addPricesAndFloatsToInventory(
+        theirBuiltInventory[steamApps.CSGO.appID].items,
+      ).then((theirInventoryRes) => {
+        const theirInventoryWithPrices = {
+          ...theirBuiltInventory,
+          [steamApps.CSGO.appID]: {
+            contextID: theirBuiltInventory[steamApps.CSGO.appID].contextID,
+            items: theirInventoryRes.items,
+          },
+        };
+
+        for (const app of Object.values(yourInventoryWithPrices)) {
+          app.items.forEach((item) => {
+            combinedInventories.push(item);
+          });
+        }
+
+        for (const app of Object.values(theirInventoryWithPrices)) {
+          app.items.forEach((item) => {
+            combinedInventories.push(item);
+          });
+        }
+
         addItemInfo();
-        addInventoryTotals(total, theirInventoryRes.total);
-        addInTradeTotals('your');
-        addInTradeTotals('their');
-        addPLInfo();
-        periodicallyUpdateTotals();
-        doInitSorting();
+        doInitSorting(initial);
+        if (initial) {
+          addInventoryTotals(total, theirInventoryRes.total);
+          addInTradeTotals('your');
+          addInTradeTotals('their');
+          addPLInfo();
+          periodicallyUpdateTotals();
+        }
       });
     });
   } else if (document.getElementById('error_msg') === null) {
     setTimeout(() => {
-      getInventories();
+      getInventories(initial);
     }, 500);
   }
 };
@@ -699,6 +897,7 @@ const addFunctionBars = () => {
 
         sortItems(sortingSelect.options[sortingSelect.selectedIndex].value, 'offer');
         addFloatIndicatorsToPage('page');
+        addRealTimePricesToQueue('page');
       });
       yourSortingSelect.addEventListener('change', () => {
         // analytics
@@ -709,6 +908,7 @@ const addFunctionBars = () => {
 
         sortItems(yourSortingSelect.options[yourSortingSelect.selectedIndex].value, 'your');
         addFloatIndicatorsToPage('your');
+        addRealTimePricesToQueue('your');
       });
       theirSortingSelect.addEventListener('change', () => {
         // analytics
@@ -719,6 +919,7 @@ const addFunctionBars = () => {
 
         sortItems(theirSortingSelect.options[theirSortingSelect.selectedIndex].value, 'their');
         addFloatIndicatorsToPage('their');
+        addRealTimePricesToQueue('their');
       });
     }
   } else {
@@ -813,12 +1014,11 @@ const addFriendRequestInfo = () => {
 
 logExtensionPresence();
 
+initPriceQueue();
+
 // initiates all logic that needs access to item info
-getInventories();
-
-// adds "get float value" action item
+getInventories(true);
 overrideHandleTradeActionMenu();
-
 repositionNameTagIcons();
 
 injectStyle(`
@@ -861,7 +1061,7 @@ const inventorySelector = document.getElementById('appselect');
 if (inventorySelector !== null) {
   document.getElementById('appselect').addEventListener('click', () => {
     setTimeout(() => {
-      if (isCSGOInventoryActive('offer')) addItemInfo();
+      if (getActiveInventoryIDs().appID === steamApps.CSGO.appID) addItemInfo();
     }, 2000);
   });
 }
@@ -902,17 +1102,36 @@ chrome.storage.local.get('tradeOfferHeaderToLeft', (result) => {
   }
 });
 
-addPageControlEventListeners('offer', addFloatIndicatorsToPage);
-addSearchListener('offer', addFloatIndicatorsToPage);
+addPageControlEventListeners('offer', () => {
+  addFloatIndicatorsToPage('page');
+  addRealTimePricesToQueue('page');
+});
+addSearchListener('offer', () => {
+  addFloatIndicatorsToPage('page');
+  addRealTimePricesToQueue('page');
+});
 
-const theirInventoryTab = document.getElementById('inventory_select_their_inventory');
-if (theirInventoryTab !== null) {
-  // if the offer is "active"
-  document.getElementById('inventory_select_their_inventory').addEventListener('click', () => {
-    singleClickControlClick();
-    setTimeout(() => { addFloatIndicatorsToPage('page'); }, 500);
+// when the user switches between inventory tabs (your/their inventory)
+document.querySelectorAll('#inventory_select_their_inventory, #inventory_select_your_inventory')
+  .forEach((inventoryLink) => {
+    inventoryLink.addEventListener('click', () => {
+      singleClickControlClick();
+      setTimeout(() => {
+        addFloatIndicatorsToPage('page');
+        addRealTimePricesToQueue('page');
+      }, 500);
+    });
   });
-}
+
+// app selection
+document.querySelectorAll('.appselect_options').forEach((appSelect) => {
+  appSelect.addEventListener('click', () => {
+    getInventories(false);
+    setTimeout(() => {
+      getInventories(false);
+    }, 2000);
+  });
+});
 
 // if it's an existing trade offer with an id and not a new one to be created
 if (offerID !== 'new') {

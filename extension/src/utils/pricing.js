@@ -1,10 +1,16 @@
-import { pricingProviders, currencies } from 'utils/static/pricing';
+import {
+  pricingProviders, currencies, realTimePricingModes, steamCurrencyCodes,
+} from 'utils/static/pricing';
 import { injectScript } from 'utils/injection';
 import DOMPurify from 'dompurify';
+import { storageKeys } from 'utils/static/storageKeys';
+import { findElementByIDs } from 'utils/itemsToElementsToItems';
 
 const priceQueue = {
   active: false,
   jobs: [],
+  delaySuccess: storageKeys.realTimePricesFreqSuccess,
+  delayFailure: storageKeys.realTimePricesFreqFailure,
   lastJobSuccessful: true,
   localCache: {},
   cleanupFunction: () => {}, // optional function that is executed when all jobs are done
@@ -17,6 +23,17 @@ const getSteamWalletInfo = () => {
   return JSON.parse(injectScript(getWalletInfoScript, true, 'steamWalletScript', 'steamWallet'));
 };
 
+const initPriceQueue = (cleanupFunction) => {
+  chrome.storage.local.get(
+    ['realTimePricesFreqSuccess', 'realTimePricesFreqFailure'],
+    ({ realTimePricesFreqSuccess, realTimePricesFreqFailure }) => {
+      priceQueue.delaySuccess = realTimePricesFreqSuccess;
+      priceQueue.delayFailure = realTimePricesFreqFailure;
+      priceQueue.cleanupFunction = cleanupFunction !== undefined ? cleanupFunction : () => {};
+    },
+  );
+};
+
 const getSteamWalletCurrency = () => {
   const getCurrencyScript = `
   document.querySelector('body').setAttribute('steamWalletCurrency', GetCurrencyCode(${DOMPurify.sanitize(getSteamWalletInfo().wallet_currency)}));
@@ -26,13 +43,22 @@ const getSteamWalletCurrency = () => {
 
 const getHighestBuyOrder = (appID, marketHashName) => {
   return new Promise((resolve, reject) => {
-    const currencyID = getSteamWalletInfo().wallet_currency;
-    chrome.runtime.sendMessage(
-      { getBuyOrderInfo: { appID, currencyID, marketHashName } }, (response) => {
-        if (response !== 'error') resolve(response.getBuyOrderInfo.highest_buy_order);
-        else reject('error');
-      },
-    );
+    chrome.storage.local.get(['currency'], ({ currency }) => {
+      const steamWalletInfo = getSteamWalletInfo();
+      let currencyID = 1;
+      if (steamWalletInfo !== null) currencyID = steamWalletInfo.wallet_currency;
+      else {
+        for (const [code, short] of Object.entries(steamCurrencyCodes)) {
+          if (short === currency) currencyID = code;
+        }
+      }
+      chrome.runtime.sendMessage(
+        { getBuyOrderInfo: { appID, currencyID, marketHashName } }, (response) => {
+          if (response !== 'error') resolve(response.getBuyOrderInfo.highest_buy_order);
+          else reject('error');
+        },
+      );
+    });
   });
 };
 
@@ -58,77 +84,266 @@ const getPriceOverview = (appID, marketHashName) => {
   });
 };
 
+const getLowestListingPrice = (appID, marketHashName) => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(['currency'], ({ currency }) => {
+      const steamWalletInfo = getSteamWalletInfo();
+      let currencyID = 1;
+      if (steamWalletInfo !== null) currencyID = steamWalletInfo.wallet_currency;
+      else {
+        for (const [code, short] of Object.entries(steamCurrencyCodes)) {
+          if (short === currency) currencyID = code;
+        }
+      }
+      const request = new Request(
+        `https://steamcommunity.com/market/listings/${appID}/${marketHashName}/render/?query=&start=0&count=3&country=US&language=english&currency=${currencyID}`,
+      );
+
+      fetch(request).then((response) => {
+        if (!response.ok) {
+          console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+          reject({ status: response.status, statusText: response.statusText });
+        }
+        return response.json();
+      }).then((listingsJSONData) => {
+        if (listingsJSONData === null) reject('success:false');
+        else if (listingsJSONData.success === true) {
+          if (listingsJSONData.listinginfo) {
+            const listingInfo = Object.values(listingsJSONData.listinginfo);
+            if (listingInfo.length !== 0) {
+              for (const listing of listingInfo) {
+                if (listing.converted_price !== undefined && listing.converted_fee !== undefined) {
+                  resolve(listing.converted_price + listing.converted_fee);
+                  return;
+                }
+              }
+              reject('no_prices_on_listings');
+            } else reject('empty_listings_array'); // no listings at all on the market
+          } else reject('no listing data');
+          resolve(listingsJSONData);
+        } else reject('success:false');
+      }).catch((err) => {
+        console.log(err);
+        reject(err);
+      });
+    });
+  });
+};
+
+const getMidPrice = (appID, marketHashName) => {
+  return new Promise((resolve, reject) => {
+    getHighestBuyOrder(appID, marketHashName).then((highestBuyOrder) => {
+      if (highestBuyOrder !== undefined && highestBuyOrder !== null) {
+        let highestOrderPrice = 0;
+        try {
+          highestOrderPrice = parseFloat(highestBuyOrder);
+        } catch (e) {
+          // most likely there aren't any orders
+          console.log(e);
+        }
+        getLowestListingPrice(appID, marketHashName).then((lowestListing) => {
+          if (lowestListing !== undefined) {
+            resolve((highestOrderPrice + lowestListing) / 2);
+          }
+        }).catch((err) => {
+          console.log(err);
+          reject(err);
+        });
+      } else reject('highest_order_undef_or_null');
+    }).catch((err) => {
+      console.log(err);
+      reject(err);
+    });
+  });
+};
+
+const priceQueueSuccess = () => {
+  priceQueue.lastJobSuccessful = true;
+  setTimeout(() => {
+    priceQueue.active = false;
+    // eslint-disable-next-line no-use-before-define
+    workOnPriceQueue();
+  }, priceQueue.delaySuccess);
+};
+
 const priceQueueFailure = (error, job) => {
   console.log(error, job);
   priceQueue.lastJobSuccessful = false;
-  priceQueue.jobs.push({ ...job, retries: job.retries + 1 });
+
+  if (error !== 'empty_listings_array' && error !== 'highest_order_undef_or_null') {
+    priceQueue.jobs.push({ ...job, retries: job.retries + 1 });
+
+    setTimeout(() => {
+      priceQueue.active = false;
+      // eslint-disable-next-line no-use-before-define
+      workOnPriceQueue();
+    }, priceQueue.delayFailure);
+  } else priceQueueSuccess();
+};
+
+const priceQueueCacheHit = () => {
+  priceQueue.active = false;
+  // eslint-disable-next-line no-use-before-define
+  workOnPriceQueue();
 };
 
 const workOnPriceQueue = () => {
   if (priceQueue.jobs.length !== 0) { // if there are no jobs then there is no recursion
-    const delay = priceQueue.lastJobSuccessful ? 3000 : 15000;
-
     if (!priceQueue.active) { // only start the work if the queue is inactive at the moment
       priceQueue.active = true; // marks the queue active
+      chrome.storage.local.get(['priceQueueActivity'], ({ priceQueueActivity }) => {
+        const job = priceQueue.jobs.shift();
+        const secondsFromLastUse = ((Date.now()
+          - new Date(priceQueueActivity.lastUsed)) / 1000);
 
-      setTimeout(() => { // marks the queue inactive (ready for work) and starts the work again
-        priceQueue.active = false;
-        workOnPriceQueue();
-      }, delay);
-
-      const job = priceQueue.jobs.shift();
-
-      if (job.retries < 5) { // limits the number of retries to avoid infinite loop
-        if (job.type === 'my_listing') {
-          // non-active listing pages are not kept in the DOM
-          // so if you switch back pages the starting at prices have to be re-added
-          // to avoid making additional requests
-          // lowest prices are stored on a local only (exclusive to the current page) cache
-          if (priceQueue.localCache[job.listingID] !== undefined) {
-            job.callBackFunction(job.listingID, priceQueue.localCache[job.listingID]);
-            priceQueue.active = false;
-            workOnPriceQueue();
-          } else {
-            getPriceOverview(job.appID, job.market_hash_name).then(
-              (priceOverview) => {
-                priceQueue.lastJobSuccessful = true;
-                if (priceOverview.lowest_price !== undefined) {
-                  job.callBackFunction(job.listingID, priceOverview.lowest_price);
-                  priceQueue.localCache[job.listingID] = priceOverview.lowest_price;
+        // tries to avoid having multiple price queues running concurrently on different pages
+        if (secondsFromLastUse > 10 || priceQueueActivity.usedAt === window.location.pathname) {
+          if (job.retries < 5) { // limits the number of retries to avoid infinite loop
+            if (job.type === 'my_buy_order' || job.type === 'inventory_mass_sell_instant_sell'
+              || job.type === `offer_${realTimePricingModes.bid_price.key}`
+              || job.type === `offers_${realTimePricingModes.bid_price.key}`
+              || job.type === `inventory_${realTimePricingModes.bid_price.key}`) {
+              if (priceQueue.localCache[
+                job.appID + job.market_hash_name + job.type
+              ] !== undefined) {
+                if (job.type === 'my_buy_order') job.callBackFunction(job, priceQueue.localCache[job.appID + job.market_hash_name + job.type]);
+                else if (job.type === 'inventory_mass_sell_instant_sell'
+                  || job.type === `offer_${realTimePricingModes.highest_order.key}`) {
+                  job.callBackFunction(
+                    job.market_hash_name,
+                    priceQueue.localCache[job.appID + job.market_hash_name + job.type],
+                    job.appID,
+                    job.assetID,
+                    job.contextID,
+                  );
                 }
-              }, (error) => {
-                priceQueueFailure(error, job);
+                priceQueueCacheHit();
+              } else {
+                getHighestBuyOrder(job.appID, job.market_hash_name).then(
+                  (highestBuyOrder) => {
+                    if (highestBuyOrder !== undefined) {
+                      if (job.type === 'my_buy_order') job.callBackFunction(job, highestBuyOrder);
+                      else if (job.type === 'inventory_mass_sell_instant_sell'
+                        || job.type === `offer_${realTimePricingModes.bid_price.key}`) {
+                        job.callBackFunction(
+                          job.market_hash_name,
+                          highestBuyOrder,
+                          job.appID,
+                          job.assetID,
+                          job.contextID,
+                        );
+                      }
+                      priceQueue.localCache[
+                        job.appID + job.market_hash_name + job.type
+                      ] = highestBuyOrder;
+                      priceQueueSuccess();
+                    } else priceQueueFailure('highestBuyOrder is undefined', job);
+                  }, (error) => {
+                    priceQueueFailure(error, job);
+                  },
+                );
+              }
+            } else if (job.type === 'inventory_mass_sell_starting_at'
+              || job.type === `offer_${realTimePricingModes.ask_price.key}`
+              || job.type === `offers_${realTimePricingModes.ask_price.key}`
+              || job.type === `inventory_${realTimePricingModes.ask_price.key}`
+              || job.type === 'my_listing') {
+              if (priceQueue.localCache[
+                job.appID + job.market_hash_name + job.type
+              ] !== undefined) {
+                if (job.type === 'my_listing') {
+                  job.callBackFunction(
+                    job.listingID,
+                    priceQueue.localCache[job.appID + job.market_hash_name + job.type],
+                  );
+                } else {
+                  job.callBackFunction(
+                    job.market_hash_name,
+                    priceQueue.localCache[job.appID + job.market_hash_name + job.type],
+                    job.appID,
+                    job.assetID,
+                    job.contextID,
+                  );
+                }
+                priceQueueCacheHit();
+              } else {
+                getLowestListingPrice(job.appID, job.market_hash_name).then(
+                  (lowestListingPrice) => {
+                    if (lowestListingPrice !== undefined) {
+                      if (job.type === 'my_listing') {
+                        job.callBackFunction(
+                          job.listingID,
+                          lowestListingPrice,
+                        );
+                      } else {
+                        job.callBackFunction(
+                          job.market_hash_name,
+                          lowestListingPrice,
+                          job.appID,
+                          job.assetID,
+                          job.contextID,
+                          job.type,
+                        );
+                      }
+                      priceQueue
+                        .localCache[
+                          job.appID + job.market_hash_name + job.type
+                        ] = lowestListingPrice;
+                      priceQueueSuccess();
+                    } else priceQueueFailure('lowest_price is undefined', job);
+                  }, (error) => {
+                    priceQueueFailure(error, job);
+                  },
+                );
+              }
+            } else if (job.type === `offer_${realTimePricingModes.mid_price.key}`
+              || job.type === `offers_${realTimePricingModes.mid_price.key}`
+              || job.type === `inventory_${realTimePricingModes.mid_price.key}`
+              || job.type === 'inventory_mass_sell_mid_price') {
+              if (priceQueue.localCache[
+                job.appID + job.market_hash_name + job.type
+              ] !== undefined) {
+                job.callBackFunction(
+                  job.market_hash_name,
+                  priceQueue.localCache[job.appID + job.market_hash_name + job.type],
+                  job.appID,
+                  job.assetID,
+                  job.contextID,
+                  job.type,
+                );
+                priceQueueCacheHit();
+              } else {
+                getMidPrice(job.appID, job.market_hash_name).then((midPrice) => {
+                  job.callBackFunction(
+                    job.market_hash_name,
+                    midPrice,
+                    job.appID,
+                    job.assetID,
+                    job.contextID,
+                    job.type,
+                  );
+                  priceQueue.localCache[
+                    job.appID + job.market_hash_name + job.type
+                  ] = midPrice;
+                  priceQueueSuccess();
+                }, (error) => {
+                  priceQueueFailure(error, job);
+                });
+              }
+            }
+            // updates storage to signal that the price queue is being used
+            chrome.storage.local.set({
+              priceQueueActivity: {
+                lastUsed: Date.now(),
+                usedAt: window.location.pathname,
               },
-            );
-          }
-        } else if (job.type === 'my_buy_order' || job.type === 'inventory_mass_sell_instant_sell') {
-          getHighestBuyOrder(job.appID, job.market_hash_name).then(
-            (highestBuyOrder) => {
-              if (highestBuyOrder !== undefined) {
-                priceQueue.lastJobSuccessful = true;
-                if (job.type === 'my_buy_order') job.callBackFunction(job, highestBuyOrder);
-                else if (job.type === 'inventory_mass_sell_instant_sell') job.callBackFunction(job.market_hash_name, highestBuyOrder);
-              } else priceQueueFailure('highestBuyOrder is undefined', job);
-            }, (error) => {
-              priceQueueFailure(error, job);
-            },
-          );
-        } else if (job.type === 'inventory_mass_sell_starting_at') {
-          getPriceOverview(job.appID, job.market_hash_name).then(
-            (priceOverview) => {
-              priceQueue.lastJobSuccessful = true;
-              job.callBackFunction(job.market_hash_name, priceOverview.lowest_price);
-            }, (error) => {
-              priceQueueFailure(error, job);
-            },
-          );
-        }
-      }
-    } else { // when there are jobs in the queue but work is already being done at the moment
-      setTimeout(() => { workOnPriceQueue(); }, delay); // in this case is retries with a delay
+            });
+          } else workOnPriceQueue();
+        } else priceQueueFailure('other_active_pricequeue', job);
+      });
     }
   } else {
-    if (priceQueue.active) priceQueue.cleanupFunction();
+    priceQueue.cleanupFunction();
     priceQueue.active = false;
   }
 };
@@ -293,50 +508,6 @@ const steamFormattedPriceToCents = (formattedPrice) => {
 };
 
 const getUserCurrencyBestGuess = () => new Promise((resolve) => {
-  // Steam stores this data in the g_rgCurrencyData var in global.js
-  const steamCurrencyCodes = {
-    1: 'USD',
-    2: 'GBP',
-    3: 'EUR',
-    4: 'CHF',
-    5: 'RUB',
-    6: 'PLN',
-    7: 'BRL',
-    9: 'NOK',
-    10: 'IDR',
-    11: 'MYR',
-    12: 'PHP',
-    13: 'SGD',
-    14: 'THB',
-    15: 'VND',
-    16: 'KRW',
-    17: 'TRY',
-    18: 'UAH',
-    19: 'MXN',
-    20: 'CAD',
-    21: 'AUD',
-    22: 'NZD',
-    23: 'CNY',
-    24: 'INR',
-    25: 'CLP',
-    26: 'PEN',
-    27: 'COP',
-    28: 'ZAR',
-    29: 'HKD',
-    30: 'TWD',
-    31: 'SAR',
-    32: 'AED',
-    34: 'ARS',
-    35: 'ILS',
-    36: 'BYN',
-    37: 'KZT',
-    38: 'KWD',
-    39: 'QAR',
-    40: 'CRC',
-    41: 'UYU',
-    9000: 'RMB',
-  };
-
   const getRequest = new Request('https://steamcommunity.com/market/');
 
   fetch(getRequest).then((response) => {
@@ -362,10 +533,43 @@ const getUserCurrencyBestGuess = () => new Promise((resolve) => {
   });
 });
 
+const addRealTimePriceIndicator = (itemElement, price) => {
+  itemElement.insertAdjacentHTML(
+    'beforeend',
+    DOMPurify.sanitize(`<div class="realTimePriceIndicator">${price}</div>`),
+  );
+};
+
+const addRealTimePriceToPage = (marketHashName, price, appID, assetID, contextID, type) => {
+  const itemElement = findElementByIDs(appID, contextID, assetID, type);
+
+  // the steam wallet global var is not defined in the trade offer page
+  // this is a workaround to that
+  if (type.includes('offers')) {
+    chrome.storage.local.get(['currency'], ({ currency }) => {
+      addRealTimePriceIndicator(
+        itemElement,
+        price !== null ? prettyPrintPrice(currency, (price / 100).toFixed(2)) : 'No Data',
+      );
+    });
+  } else {
+    addRealTimePriceIndicator(
+      itemElement,
+      price !== null ? centsToSteamFormattedPrice(price) : 'No Data',
+    );
+  }
+  itemElement.setAttribute(
+    'data-realtime-price',
+    price !== null ? price.toString() : '0',
+  );
+};
+
 export {
   updatePrices, updateExchangeRates, getPrice, getUserCurrencyBestGuess,
-  getStickerPriceTotal, prettyPrintPrice, getPriceOverview,
+  getStickerPriceTotal, prettyPrintPrice, getPriceOverview, getMidPrice,
   getPriceAfterFees, userPriceToProperPrice, centsToSteamFormattedPrice,
   steamFormattedPriceToCents, priceQueue, workOnPriceQueue,
   getHighestBuyOrder, getSteamWalletCurrency, getSteamWalletInfo,
+  addRealTimePriceIndicator, initPriceQueue, getLowestListingPrice,
+  addRealTimePriceToPage,
 };

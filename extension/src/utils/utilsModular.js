@@ -9,6 +9,7 @@ import collectionsWithSouvenirs from 'utils/static/collectionsWithSouvenirs';
 import { injectScript, injectStyle } from 'utils/injection';
 import { getUserSteamID } from 'utils/steamID';
 import DOMPurify from 'dompurify';
+import { getIDsFromElement } from 'utils/itemsToElementsToItems';
 
 const toFixedNoRounding = (number, n) => {
   const reg = new RegExp(`^-?\\d+(?:\\.\\d{0,${n}})?`, 'g');
@@ -310,7 +311,7 @@ const goToInternalPage = (targetURL) => {
 
 const uuidv4 = () => {
   return (
-  // eslint-disable-next-line no-bitwise
+    // eslint-disable-next-line no-bitwise
     [1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) => (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> c / 4))).toString(16));
 };
 
@@ -337,13 +338,21 @@ const getAssetIDFromInspectLink = (inspectLink) => ((inspectLink !== null && ins
 const getActivePage = (type, getActiveInventory) => {
   let activePage = null;
   if (type === 'inventory') {
-    document.querySelectorAll('.inventory_page').forEach((page) => {
-      if (page.style.display !== 'none') activePage = page;
+    document.querySelectorAll('.inventory_ctn').forEach((inventory) => {
+      if (inventory.style.display !== 'none') {
+        inventory.querySelectorAll('.inventory_page').forEach((page) => {
+          if (page.style.display !== 'none') activePage = page;
+        });
+      }
     });
   } else if (type === 'offer') {
-    getActiveInventory().querySelectorAll('.inventory_page').forEach((page) => {
-      if (page.style.display !== 'none') activePage = page;
-    });
+    const activeInventory = getActiveInventory();
+    if (activeInventory !== null) {
+      activeInventory.querySelectorAll('.inventory_page')
+        .forEach((page) => {
+          if (page.style.display !== 'none') activePage = page;
+        });
+    }
   }
   return activePage;
 };
@@ -367,9 +376,8 @@ const getItemByAssetID = (items, assetIDToFind) => {
 };
 
 const getAssetIDOfElement = (element) => {
-  if (element === null) return null;
-  const assetID = element.id.split('730_2_')[1];
-  return assetID === undefined ? null : assetID;
+  const IDs = getIDsFromElement(element);
+  return IDs === null ? null : IDs.assetID;
 };
 
 const addDopplerPhase = (item, dopplerInfo) => {
@@ -419,7 +427,7 @@ const addSSTandExtIndicators = (itemElement, item, showStickerPrice) => {
 
 const addFloatIndicator = (itemElement, floatInfo) => {
   if (floatInfo !== null && itemElement !== null
-      && itemElement.querySelector('div.floatIndicator') === null) {
+    && itemElement.querySelector('div.floatIndicator') === null) {
     itemElement.insertAdjacentHTML(
       'beforeend',
       DOMPurify.sanitize(`<div class="floatIndicator">${toFixedNoRounding(floatInfo.floatvalue, 4)}</div>`),
@@ -474,12 +482,6 @@ const getFloatBarSkeleton = (type) => {
      <div class="showTechnical clickable" title="Show Float Technical Information">Show Technical</div>
      <div class="floatTechnical hidden"></div>
     </div>`;
-};
-
-// if CS:GO is selected - active
-const isCSGOInventoryActive = (where) => {
-  if (where === 'offer') return document.getElementById('appselect_activeapp').querySelector('img').src.includes('/730/');
-  if (where === 'inventory') return document.querySelector('.games_list_tab.active').getAttribute('href') === '#730';
 };
 
 const reloadPageOnExtensionReload = () => {
@@ -697,7 +699,7 @@ export {
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists, findElementByAssetID,
-  getFloatBarSkeleton, isCSGOInventoryActive, getInspectLink,
+  getFloatBarSkeleton, getInspectLink,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo,

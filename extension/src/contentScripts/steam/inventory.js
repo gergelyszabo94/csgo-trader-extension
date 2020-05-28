@@ -6,7 +6,7 @@ import {
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists, copyToClipboard,
   findElementByAssetID, getFloatBarSkeleton, addUpdatedRibbon,
-  logExtensionPresence, isCSGOInventoryActive, repositionNameTagIcons,
+  logExtensionPresence, repositionNameTagIcons,
   updateLoggedInUserInfo, reloadPageOnExtensionReload, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, toFixedNoRounding,
 }
@@ -18,10 +18,11 @@ import {
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import {
   getPriceOverview, getPriceAfterFees, userPriceToProperPrice,
-  centsToSteamFormattedPrice, prettyPrintPrice, steamFormattedPriceToCents,
-  priceQueue, workOnPriceQueue, getSteamWalletCurrency,
+  centsToSteamFormattedPrice, prettyPrintPrice, addRealTimePriceToPage,
+  priceQueue, workOnPriceQueue, getSteamWalletCurrency, initPriceQueue,
 }
   from 'utils/pricing';
+import { getItemByIDs, getIDsFromElement } from 'utils/itemsToElementsToItems';
 import { listItem } from 'utils/market';
 import { sortingModes } from 'utils/static/sortingModes';
 import doTheSorting from 'utils/sorting';
@@ -32,6 +33,7 @@ import exteriors from 'utils/static/exteriors';
 import { injectScript } from 'utils/injection';
 import { getUserSteamID } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
+import steamApps from 'utils/static/steamApps';
 
 let items = [];
 let inventoryTotal = 0.0;
@@ -72,6 +74,10 @@ const getAssetIDofActive = () => {
 // works in inventory and profile pages
 const isOwnInventory = () => {
   return getUserSteamID() === getInventoryOwnerID();
+};
+
+const getActiveInventoryAppID = () => {
+  return document.querySelector('.games_list_tab.active').getAttribute('href').split('#')[1];
 };
 
 const cleanUpElements = (nonCSGOInventory) => {
@@ -158,23 +164,27 @@ const countDown = (dateToCountDownTo) => {
   }
 };
 
-const getItemInfoFromPage = () => {
-  const getItemsSccript = `
-        inventory = UserYou.getInventory(730,2);
-        assets = inventory.m_rgAssets;
-        assetKeys= Object.keys(assets);
+const getItemInfoFromPage = (appID, contextID) => {
+  const getItemsScript = `
+        inventory = UserYou.getInventory(${appID},${contextID});
         trimmedAssets = [];
                 
-        for(let assetKey of assetKeys){
-            trimmedAssets.push({
-                amount: assets[assetKey].amount,
-                assetid: assets[assetKey].assetid,
-                contextid: assets[assetKey].contextid,
-                description: assets[assetKey].description
-            });
+        for (const asset of Object.values(inventory.m_rgAssets)) {
+            if (asset.hasOwnProperty('appid')) {
+              trimmedAssets.push({
+                  amount: asset.amount,
+                  assetid: asset.assetid,
+                  classid: asset.classid,
+                  contextid: asset.contextid,
+                  instanceid: asset.instanceid,
+                  description: asset.description,
+                  ...asset.description,
+                  appid: asset.appid.toString(),
+              });
+            }
         }
         document.querySelector('body').setAttribute('inventoryInfo', JSON.stringify(trimmedAssets));`;
-  return JSON.parse(injectScript(getItemsSccript, true, 'getInventory', 'inventoryInfo'));
+  return JSON.parse(injectScript(getItemsScript, true, 'getInventory', 'inventoryInfo'));
 };
 
 // it hides the original item name element and replaces it with one
@@ -370,10 +380,9 @@ const startMassSelling = () => {
 };
 
 const onListingPricesLoaded = () => {
-  if (document.getElementById('startListingOnPriceLoad').checked) startMassSelling();
+  const onLoadBox = document.getElementById('startListingOnPriceLoad');
+  if (onLoadBox && onLoadBox.checked) startMassSelling();
 };
-
-priceQueue.cleanupFunction = onListingPricesLoaded;
 
 // adds market info in other inventories
 const addStartingAtPrice = (marketHashName) => {
@@ -409,7 +418,7 @@ const addStartingAtPrice = (marketHashName) => {
 
 const addRightSideElements = () => {
   // only add elements if the CS:GO inventory is the active one
-  if (isCSGOInventoryActive('inventory')) {
+  if (getActiveInventoryAppID() === steamApps.CSGO.appID) {
     const activeID = getAssetIDofActive();
     if (activeID !== null) {
       const item = getItemByAssetID(items, activeID);
@@ -564,7 +573,7 @@ const addRightSideElements = () => {
 
 
         // adds doppler phase  to the name and makes it a link to the market listings page
-        const name = getItemByAssetID(getItemInfoFromPage(), activeID).description.name;
+        const name = getItemByAssetID(getItemInfoFromPage(steamApps.CSGO.appID, '2'), activeID).description.name;
         changeName(name, item.name_color, item.marketlink, item.dopplerInfo);
 
         // removes sih "Get Float" button
@@ -652,26 +661,75 @@ const addRightSideElements = () => {
   }
 };
 
-const addFloatIndicatorsToPage = (page) => {
-  chrome.storage.local.get('autoFloatInventory', (result) => {
-    if (result.autoFloatInventory) {
-      page.querySelectorAll('.item.app730.context2').forEach((itemElement) => {
-        const assetID = getAssetIDOfElement(itemElement);
-        const item = getItemByAssetID(items, assetID);
-        if (item.inspectLink !== null && itemTypes[item.type.key].float) {
-          if (item.floatInfo === null) {
-            floatQueue.jobs.push({
-              type: 'inventory',
-              assetID,
-              inspectLink: item.inspectLink,
-              callBackFunction: dealWithNewFloatData,
-            });
-          } else addFloatIndicator(itemElement, item.floatInfo);
-        }
-      });
-      if (!floatQueue.active) workOnFloatQueue();
+const addFloatIndicatorsToPage = () => {
+  chrome.storage.local.get('autoFloatInventory', (autoFloatInventory) => {
+    if (autoFloatInventory) {
+      const page = getActivePage('inventory');
+      if (page !== null) {
+        page.querySelectorAll('.item.app730.context2').forEach((itemElement) => {
+          const assetID = getAssetIDOfElement(itemElement);
+          const item = getItemByAssetID(items, assetID);
+          if (item.inspectLink !== null && itemTypes[item.type.key].float) {
+            if (item.floatInfo === null) {
+              floatQueue.jobs.push({
+                type: 'inventory',
+                assetID,
+                inspectLink: item.inspectLink,
+                callBackFunction: dealWithNewFloatData,
+              });
+            } else addFloatIndicator(itemElement, item.floatInfo);
+          }
+        });
+        if (!floatQueue.active) workOnFloatQueue();
+      }
     }
   });
+};
+
+const addRealTimePricesToQueue = () => {
+  chrome.storage.local.get(
+    ['realTimePricesAutoLoadInventory', 'realTimePricesMode'],
+    ({ realTimePricesAutoLoadInventory, realTimePricesMode }) => {
+      if (realTimePricesAutoLoadInventory) {
+        const itemElements = [];
+        const page = getActivePage('inventory');
+
+        if (page !== null) {
+          page.querySelectorAll('.item').forEach((item) => {
+            if (!item.classList.contains('unknownItem')) itemElements.push(item);
+          });
+        } else {
+          setTimeout(() => {
+            addRealTimePricesToQueue();
+          }, 1000);
+        }
+
+        if (itemElements) {
+          itemElements.forEach((itemElement) => {
+            if (itemElement.getAttribute('data-realtime-price') === null) {
+              const IDs = getIDsFromElement(itemElement, 'inventory');
+              const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
+
+              itemElement.setAttribute('data-realtime-price', '0');
+              if (item && item.marketable === 1) {
+                priceQueue.jobs.push({
+                  type: `inventory_${realTimePricesMode}`,
+                  assetID: item.assetid,
+                  appID: item.appid,
+                  contextID: item.contextid,
+                  market_hash_name: item.market_hash_name,
+                  retries: 0,
+                  callBackFunction: addRealTimePriceToPage,
+                });
+              }
+            }
+          });
+
+          if (!priceQueue.active) workOnPriceQueue();
+        }
+      }
+    },
+  );
 };
 
 const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
@@ -701,8 +759,8 @@ const addPerItemInfo = () => {
               }, 1000);
               return false;
             }
-
-            const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+            const IDs = getIDsFromElement(itemElement, 'inventory');
+            const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
             // adds tradability indicator
             if (item.tradability === 'Tradable') {
               itemElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize('<div class="perItemDate tradable">T</div>'));
@@ -803,6 +861,7 @@ const addListingRow = (item) => {
               </div>
               <div class="cell itemStartingAt clickable">Loading...</div>
               <div class="cell itemQuickSell clickable">Loading...</div>
+              <div class="cell itemMidPrice clickable">Loading...</div>
               <div class="cell itemInstantSell clickable">Loading...</div>
               <div class="cell itemUserPrice"><input type="text" class="userPriceInput"></div>
           </div>`;
@@ -840,12 +899,12 @@ const addListingRow = (item) => {
       event.target.parentElement.setAttribute('data-listing-price', getPriceAfterFees(priceInt));
       event.target.value = centsToSteamFormattedPrice(priceInt);
       event.target.parentElement.classList.add('cstSelected');
-      event.target.parentElement.parentElement.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell')
+      event.target.parentElement.parentElement.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell,.itemMidPrice')
         .forEach((priceType) => priceType.classList.remove('cstSelected'));
       updateMassSaleTotal();
     });
 
-  listingRow.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell')
+  listingRow.querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell,.itemMidPrice')
     .forEach((priceType) => {
       priceType.addEventListener('click', (event) => {
         event.target.classList.add('cstSelected');
@@ -857,7 +916,7 @@ const addListingRow = (item) => {
     });
 };
 
-const addStartingAtAndQuickSellPrice = (marketHashName, startingAtPrice) => {
+const addStartingAtAndQuickSellPrice = (marketHashName, priceInCents) => {
   const listingRow = getListingRow(marketHashName);
 
   // the user might have unselected the item while it as in the queue
@@ -865,25 +924,21 @@ const addStartingAtAndQuickSellPrice = (marketHashName, startingAtPrice) => {
   if (listingRow !== null) {
     const startingAtElement = listingRow.querySelector('.itemStartingAt');
     const quickSell = listingRow.querySelector('.itemQuickSell');
+    const quickSellPrice = priceInCents - 1;
 
-    if (startingAtPrice !== undefined) {
-      const priceInCents = steamFormattedPriceToCents(startingAtPrice);
-      const quickSellPrice = steamFormattedPriceToCents(startingAtPrice) - 1;
+    startingAtElement.innerText = centsToSteamFormattedPrice(priceInCents);
+    startingAtElement.setAttribute('data-price-set', true.toString());
+    startingAtElement.setAttribute('data-price-in-cents', priceInCents);
+    startingAtElement.setAttribute('data-listing-price', getPriceAfterFees(priceInCents).toString());
+    quickSell.setAttribute('data-price-in-cents', quickSellPrice.toString());
+    quickSell.setAttribute('data-listing-price', getPriceAfterFees(quickSellPrice).toString());
+    quickSell.innerText = centsToSteamFormattedPrice(quickSellPrice);
 
-      startingAtElement.innerText = startingAtPrice;
-      startingAtElement.setAttribute('data-price-set', true.toString());
-      startingAtElement.setAttribute('data-price-in-cents', priceInCents);
-      startingAtElement.setAttribute('data-listing-price', getPriceAfterFees(priceInCents).toString());
-      quickSell.setAttribute('data-price-in-cents', quickSellPrice.toString());
-      quickSell.setAttribute('data-listing-price', getPriceAfterFees(quickSellPrice).toString());
-      quickSell.innerText = centsToSteamFormattedPrice(quickSellPrice);
-
-      // if the quicksell price is higher than the extension price
-      // then select that one as default instead
-      const extensionPrice = parseInt(listingRow.querySelector('.itemExtensionPrice')
-        .getAttribute('data-price-in-cents'));
-      if (extensionPrice < quickSellPrice) quickSell.click();
-    } else startingAtElement.setAttribute('data-price-set', false.toString());
+    // if the quicksell price is higher than the extension price
+    // then select that one as default instead
+    const extensionPrice = parseInt(listingRow.querySelector('.itemExtensionPrice')
+      .getAttribute('data-price-in-cents'));
+    if (extensionPrice < quickSellPrice) quickSell.click();
   }
 };
 
@@ -896,13 +951,46 @@ const addInstantSellPrice = (marketHashName, highestOrder) => {
     const instantElement = listingRow.querySelector('.itemInstantSell');
 
     if (highestOrder !== undefined) {
-      instantElement.innerText = centsToSteamFormattedPrice(highestOrder);
-      instantElement.setAttribute('data-price-set', true.toString());
-      instantElement.setAttribute('data-price-in-cents', highestOrder);
-      instantElement.setAttribute('data-listing-price', getPriceAfterFees(highestOrder).toString());
+      if (highestOrder === null) { // when there aren'y any buy orders for the item
+        instantElement.innerText = 'No Orders';
+        instantElement.setAttribute('data-price-set', true.toString());
+        instantElement.setAttribute('data-price-in-cents', '0');
+        instantElement.setAttribute('data-listing-price', '0');
+      } else {
+        instantElement.innerText = centsToSteamFormattedPrice(highestOrder);
+        instantElement.setAttribute('data-price-set', true.toString());
+        instantElement.setAttribute('data-price-in-cents', highestOrder);
+        instantElement.setAttribute('data-listing-price', getPriceAfterFees(highestOrder).toString());
+      }
     } else instantElement.setAttribute('data-price-set', false.toString());
 
     instantElement.setAttribute('data-price-in-progress', false.toString());
+  }
+};
+
+const addMidPrice = (marketHashName, midPrice) => {
+  const listingRow = getListingRow(marketHashName);
+
+  // the user might have unselected the item while it as in the queue
+  // and now there is nowhere to add the price to
+  if (listingRow !== null) {
+    const midPriceElement = listingRow.querySelector('.itemMidPrice');
+
+    if (midPrice !== undefined) {
+      if (midPrice === null) { // when there aren't nay buy orders or listings
+        midPriceElement.innerText = 'No price';
+        midPriceElement.setAttribute('data-price-set', true.toString());
+        midPriceElement.setAttribute('data-price-in-cents', '0');
+        midPriceElement.setAttribute('data-listing-price', '0');
+      } else {
+        midPriceElement.innerText = centsToSteamFormattedPrice(midPrice);
+        midPriceElement.setAttribute('data-price-set', true.toString());
+        midPriceElement.setAttribute('data-price-in-cents', parseInt(midPrice).toString());
+        midPriceElement.setAttribute('data-listing-price', getPriceAfterFees(midPrice).toString());
+      }
+    } else midPriceElement.setAttribute('data-price-set', false.toString());
+
+    midPriceElement.setAttribute('data-price-in-progress', false.toString());
   }
 };
 
@@ -910,6 +998,7 @@ const addToPriceQueueIfNeeded = (item) => {
   const listingRow = getListingRow(item.market_hash_name);
   const startingAtElement = listingRow.querySelector('.itemStartingAt');
   const instantElement = listingRow.querySelector('.itemInstantSell');
+  const midPriceElement = listingRow.querySelector('.itemMidPrice');
 
   // check if price is already set or in progress
   if (startingAtElement.getAttribute('data-price-set') !== true
@@ -940,6 +1029,21 @@ const addToPriceQueueIfNeeded = (item) => {
     });
     workOnPriceQueue();
   }
+
+  // check if price is already set or in progress
+  if (midPriceElement.getAttribute('data-price-set') !== true
+    && midPriceElement.getAttribute('data-price-in-progress') !== true) {
+    midPriceElement.setAttribute('data-price-in-progress', true.toString());
+
+    priceQueue.jobs.push({
+      type: 'inventory_mass_sell_mid_price',
+      appID: '730',
+      market_hash_name: item.market_hash_name,
+      retries: 0,
+      callBackFunction: addMidPrice,
+    });
+    workOnPriceQueue();
+  }
 };
 
 const updateSelectedItemsSummary = () => {
@@ -950,7 +1054,8 @@ const updateSelectedItemsSummary = () => {
   document.getElementById('numberOfItemsToSell').innerText = numberOfSelectedItems.toString();
 
   selectedItems.forEach((itemElement) => {
-    const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+    const IDs = getIDsFromElement(itemElement, 'inventory');
+    const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
     selectedTotal += parseFloat(item.price.price);
 
     if (item.marketable === 1) {
@@ -999,9 +1104,9 @@ const listenSelectClicks = (event) => {
 };
 
 const sortItems = (inventoryItems, method) => {
-  if (isCSGOInventoryActive('inventory')) {
+  if (getActiveInventoryAppID() === steamApps.CSGO.appID) {
     const itemElements = document.querySelectorAll('.item.app730.context2');
-    const inventoryPages = document.getElementById('inventories').querySelectorAll('.inventory_page');
+    const inventoryPages = document.getElementById(`inventory_${getInventoryOwnerID()}_730_2`).querySelectorAll('.inventory_page');
     doTheSorting(inventoryItems, Array.from(itemElements), method, Array.from(inventoryPages), 'inventory');
     addPerItemInfo();
   }
@@ -1012,7 +1117,8 @@ const doInitSorting = () => {
     sortItems(items, result.inventorySortingMode);
     document.querySelector(`#sortingMethod [value="${result.inventorySortingMode}"]`).selected = true;
     document.querySelector(`#generate_sort [value="${result.inventorySortingMode}"]`).selected = true;
-    addFloatIndicatorsToPage(getActivePage('inventory'));
+    addFloatIndicatorsToPage();
+    addRealTimePricesToQueue();
   });
 };
 
@@ -1053,7 +1159,8 @@ const generateItemsList = () => {
   csvContent += headers;
 
   sortedItems.forEach((itemElement) => {
-    const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+    const IDs = getIDsFromElement(itemElement, 'inventory');
+    const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
     const price = (showPrice && item.price !== null) ? ` ${delimiter} ${item.price.display}` : '';
     const priceCSV = (showPrice && item.price !== null) ? `,${item.price.display}` : '';
     const exterior = (item.exterior !== undefined && item.exterior !== null) ? item.exterior[exteriorType] : '';
@@ -1172,9 +1279,10 @@ const addFunctionBar = () => {
                               <div class="header">
                                 <div class="cell" title="The name of the item">Name</div>
                                 <div class="cell" title="How many of these type of items are set to be sold">Quantity</div>
-                                <div class="cell" title="The price provided by the pricing provider you have selected in the options">Extension price</div>
+                                <div class="cell" title="The price provided by the pricing provider you have selected in the options">Ext. price</div>
                                 <div class="cell" title="The price of the current lowest listing for this item on Steam Community Market">Starting at</div>
                                 <div class="cell" title="Just below the starting at price, using it will make your listing the cheapest">Quick sell</div>
+                                <div class="cell" title="The average price of the ask and bid prices">Mid price</div>
                                 <div class="cell" title="The price of the current highest buy order, your item should sell right after you list it">Instant Sell</div>
                                 <div class="cell" title="Price specified by you">Your price</div>
                               </div>
@@ -1215,7 +1323,8 @@ const addFunctionBar = () => {
     document.getElementById('selectAllUnder').addEventListener('click', () => {
       const underThisPrice = parseFloat(document.getElementById('selectUnder').value);
       document.getElementById('tabcontent_inventory').querySelectorAll('.item').forEach((itemElement) => {
-        const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+        const IDs = getIDsFromElement(itemElement, 'inventory');
+        const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
         if (item !== undefined && parseFloat(item.price.price) < underThisPrice
           && !itemElement.classList.contains('cstSelected') && item.marketable === 1) {
           itemElement.classList.add('cstSelected');
@@ -1304,7 +1413,8 @@ const addFunctionBar = () => {
       });
 
       sortItems(items, sortingSelect.options[sortingSelect.selectedIndex].value);
-      addFloatIndicatorsToPage(getActivePage('inventory'));
+      addFloatIndicatorsToPage();
+      addRealTimePricesToQueue();
     });
 
     document.getElementById('generate_list').addEventListener('click', () => { document.getElementById('functionBarGenerateMenu').classList.toggle('hidden'); });
@@ -1345,7 +1455,10 @@ const requestInventory = () => {
       setInventoryTotal();
       addFunctionBar();
       loadFullInventory();
-      addPageControlEventListeners('inventory', addFloatIndicatorsToPage);
+      addPageControlEventListeners('inventory', () => {
+        addFloatIndicatorsToPage();
+        addRealTimePricesToQueue();
+      });
     }
   });
 };
@@ -1354,7 +1467,8 @@ const updateTradabilityIndicators = () => {
   const itemElements = document.querySelectorAll('.item.app730.context2');
   if (itemElements.length !== 0) {
     itemElements.forEach((itemElement) => {
-      const item = getItemByAssetID(items, getAssetIDOfElement(itemElement));
+      const IDs = getIDsFromElement(itemElement, 'inventory');
+      const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
       const itemDateElement = itemElement.querySelector('.perItemDate');
 
       if (itemDateElement !== null) {
@@ -1390,11 +1504,40 @@ const hideOtherExtensionPrices = () => {
 };
 
 logExtensionPresence();
+initPriceQueue(onListingPricesLoaded);
+
+// listens to manual inventory tab/game changes
+const inventoriesMenu = document.querySelector('.games_list_tabs');
+if (inventoriesMenu !== null) {
+  inventoriesMenu.querySelectorAll('.games_list_tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const appID = getActiveInventoryAppID();
+      // 2 is the default context for standard games
+      // 6 is the community context for steam
+      const contextID = appID === steamApps.STEAM.appID ? '6' : '2';
+      if (appID === steamApps.CSGO.appID) {
+        requestInventory();
+      } else {
+        let inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
+        if (inventory.length !== 0) {
+          items = items.concat(inventory);
+          addRealTimePricesToQueue();
+        } else {
+          setTimeout(() => {
+            inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
+            items = items.concat(inventory);
+            addRealTimePricesToQueue();
+          }, 5000);
+        }
+      }
+    });
+  });
+}
 
 // mutation observer observes changes on the right side of the inventory interface
 // this is a workaround for waiting for ajax calls to finish when the page changes
 const observer = new MutationObserver(() => {
-  if (isCSGOInventoryActive('inventory')) {
+  if (getActiveInventoryAppID() === steamApps.CSGO.appID) {
     addRightSideElements();
     addFunctionBar();
   } else {
@@ -1427,7 +1570,10 @@ if (document.getElementById('no_inventories') === null
 }
 
 repositionNameTagIcons();
-addSearchListener('inventory', addFloatIndicatorsToPage);
+addSearchListener('inventory', () => {
+  addFloatIndicatorsToPage();
+  addRealTimePricesToQueue();
+});
 overridePopulateActions();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
@@ -1494,7 +1640,22 @@ chrome.storage.local.get('hideOtherExtensionPrices', (result) => {
   if (result.hideOtherExtensionPrices) hideOtherExtensionPrices();
 });
 
-requestInventory();
+const activeInventoryAppID = getActiveInventoryAppID();
+if (activeInventoryAppID === steamApps.CSGO.appID) requestInventory();
+else {
+  const contextID = activeInventoryAppID === steamApps.STEAM.appID ? '6' : '2';
+  let inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
+  if (inventory.length !== 0) {
+    items = items.concat(inventory);
+    addRealTimePricesToQueue();
+  } else {
+    setTimeout(() => {
+      inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
+      items = items.concat(inventory);
+      addRealTimePricesToQueue();
+    }, 5000);
+  }
+}
 
 // to refresh the trade lock remaining indicators
 setInterval(() => {
