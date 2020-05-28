@@ -1087,15 +1087,21 @@ const listenSelectClicks = (event) => {
   if (event.target.parentElement.classList.contains('item')
     && event.target.parentElement.parentElement.classList.contains('itemHolder')) {
     if (event.ctrlKey) {
-      const marketHashNameToLookFor = getItemByAssetID(items,
-        getAssetIDOfElement(event.target.parentNode)).market_hash_name;
-      document.querySelectorAll('.item.app730.context2')
-        .forEach((item) => {
-          if (getItemByAssetID(
-            items,
-            getAssetIDOfElement(item),
-          ).market_hash_name === marketHashNameToLookFor) {
-            item.classList.toggle('cstSelected');
+      const IDs = getIDsFromElement(event.target.parentNode, 'inventory');
+      const marketHashNameToLookFor = getItemByIDs(
+        items,
+        IDs.appID,
+        IDs.contextID,
+        IDs.assetID,
+      ).market_hash_name;
+
+      document.getElementById('inventories').querySelectorAll('.item')
+        .forEach((itemEl) => {
+          const itemIDs = getIDsFromElement(itemEl, 'inventory');
+          const item = getItemByIDs(items, itemIDs.appID, itemIDs.contextID, itemIDs.assetID);
+          if (item && item.market_hash_name === marketHashNameToLookFor
+          && IDs.appID === itemIDs.appID) {
+            itemEl.classList.toggle('cstSelected');
           }
         });
     } else event.target.parentElement.classList.toggle('cstSelected');
