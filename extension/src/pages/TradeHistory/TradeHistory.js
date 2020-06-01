@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { trackEvent } from 'utils/analytics';
+import { getTradeHistory } from 'utils/IEconService';
 
 const TradeHistory = () => {
   trackEvent({
@@ -10,6 +11,11 @@ const TradeHistory = () => {
 
   useEffect(() => {
     document.title = 'Trade History';
+    getTradeHistory(10, 0).then((res) => {
+      console.log(res);
+    }).catch((err) => {
+      console.log(err);
+    });
   }, []);
 
   return (
