@@ -12,6 +12,12 @@ const links = [
     isExternal: false,
   },
   {
+    title: 'Trade History',
+    id: 'tradehistory',
+    path: '/trade-history/',
+    isExternal: false,
+  },
+  {
     title: 'Changelog',
     id: 'changelog',
     path: 'https://csgotrader.app/changelog/',

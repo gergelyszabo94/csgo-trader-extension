@@ -14,6 +14,7 @@ import Navigation from './components/Navigation/Navigation';
 const Bookmarks = lazy(() => import('./pages/Bookmarks/Bookmarks'));
 const Popup = lazy(() => import('./pages/Popup/Popup'));
 const Options = lazy(() => import('./pages/Options/Options'));
+const TradeHistory = lazy(() => import('./pages/TradeHistory/TradeHistory'));
 
 function App() {
   if (window.location.search === '?page=popup') {
@@ -31,6 +32,7 @@ function App() {
           <Switch>
             <Route path="/options/" component={Options} />
             <Route path="/bookmarks/" component={Bookmarks} />
+            <Route path="/trade-history/" component={TradeHistory} />
             <Route>
               <Redirect to="/options/general/" />
             </Route>
@@ -40,6 +42,11 @@ function App() {
       {window.location.search === '?page=bookmarks' ? (
         <Route>
           <Redirect to="/bookmarks/" />
+        </Route>
+      ) : null}
+      {window.location.search === '?page=trade-history' ? (
+        <Route>
+          <Redirect to="/trade-history/" />
         </Route>
       ) : null}
     </Router>
