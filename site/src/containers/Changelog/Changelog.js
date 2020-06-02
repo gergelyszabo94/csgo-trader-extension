@@ -23,6 +23,17 @@ const changelog = (props) => {
                 This means that the latest version might not have rolled out to your platform yet when you are reading this.
             </Container>
             <Container className='buildingBlock'>
+                <h2>Version 2.4.1 - 2020-06-02 (Firefox only)</h2>
+                <ul>
+                    <li>
+                        Fixed mass selling not working and keep retrying to list items
+                    </li>
+                    <li>
+                        Fixed not being able to cancel market listings and buy orders en-masse.
+                    </li>
+                </ul>
+            </Container>
+            <Container className='buildingBlock'>
                 <h2>Version 2.4 - 2020-05-28</h2>
                 Check out the <Link to='/release-notes/#2.4'> Release Notes </Link> for more info on the new features.
                 <ul>
