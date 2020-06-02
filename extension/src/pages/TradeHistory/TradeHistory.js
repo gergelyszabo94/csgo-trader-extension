@@ -46,7 +46,7 @@ const TradeHistory = () => {
                     <div className="assets__items">
                       {trade.assets_given_desc.map((asset) => {
                         return (
-                          <div className="assets__item">
+                          <div className="assets__item" key={asset.appid + asset.contextid + asset.assetid}>
                             <h3>
                               <NewTabLink
                                 to={itemUrlToString(
@@ -75,7 +75,7 @@ const TradeHistory = () => {
                     <div className="assets__items">
                       {trade.assets_received_desc.map((asset) => {
                         return (
-                          <div className="assets__item">
+                          <div className="assets__item" key={asset.appid + asset.contextid + asset.assetid}>
                             <h3>
                               <NewTabLink
                                 to={itemUrlToString(
