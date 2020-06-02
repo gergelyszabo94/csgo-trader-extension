@@ -1,9 +1,10 @@
 import { getPrice } from 'utils/pricing';
+import { getDopplerInfo } from 'utils/utilsModular';
 
 const getTradeHistory = (maxTrades, startTime = 0) => new Promise((resolve, reject) => {
-  chrome.storage.local.get(['apiKeyValid', 'steamAPIKey', 'prices', 'provider', 'currency', 'exchangeRate'],
+  chrome.storage.local.get(['apiKeyValid', 'steamAPIKey', 'prices', 'pricingProvider', 'currency', 'exchangeRate'],
     ({
-      apiKeyValid, steamAPIKey, prices, provider, currency, exchangeRate,
+      apiKeyValid, steamAPIKey, prices, pricingProvider, currency, exchangeRate,
     }) => {
       if (apiKeyValid) {
         const getRequest = new Request(
@@ -34,11 +35,14 @@ const getTradeHistory = (maxTrades, startTime = 0) => new Promise((resolve, reje
                       return desc.appid === received.appid && desc.classid === received.classid
                         && desc.instanceid === received.instanceid;
                     });
+                    const dopplerInfo = (description[0].market_hash_name.includes('Doppler') || description[0].market_hash_name.includes('doppler'))
+                      ? getDopplerInfo(description[0].icon_url)
+                      : null;
                     const price = getPrice(
                       description[0].market_hash_name,
-                      null,
+                      dopplerInfo,
                       prices,
-                      provider,
+                      pricingProvider,
                       exchangeRate,
                       currency,
                     );
@@ -46,6 +50,7 @@ const getTradeHistory = (maxTrades, startTime = 0) => new Promise((resolve, reje
                     tradeWithDesc.assets_received_desc.push({
                       ...received,
                       ...description[0],
+                      dopplerInfo,
                       price,
                     });
                   });
@@ -57,11 +62,14 @@ const getTradeHistory = (maxTrades, startTime = 0) => new Promise((resolve, reje
                       return desc.appid === given.appid && desc.classid === given.classid
                         && desc.instanceid === given.instanceid;
                     });
+                    const dopplerInfo = (description[0].market_hash_name.includes('Doppler') || description[0].market_hash_name.includes('doppler'))
+                      ? getDopplerInfo(description[0].icon_url)
+                      : null;
                     const price = getPrice(
                       description[0].market_hash_name,
-                      null,
+                      dopplerInfo,
                       prices,
-                      provider,
+                      pricingProvider,
                       exchangeRate,
                       currency,
                     );
@@ -69,6 +77,7 @@ const getTradeHistory = (maxTrades, startTime = 0) => new Promise((resolve, reje
                     tradeWithDesc.assets_given_desc.push({
                       ...given,
                       ...description[0],
+                      dopplerInfo,
                       price,
                     });
                   });
