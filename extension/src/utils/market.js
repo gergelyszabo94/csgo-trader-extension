@@ -12,7 +12,9 @@ const removeListing = (listingID) => {
         body: `sessionid=${getSessionID()}`,
       });
 
-    fetch(request).then((response) => {
+    const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
+
+    fetchFunction(request).then((response) => {
       if (!response.ok) {
         console.log(`Error code: ${response.status} Status: ${response.statusText}`);
         reject({ status: response.status, statusText: response.statusText });
@@ -36,7 +38,9 @@ const cancelOrder = (orderID) => {
         body: `sessionid=${getSessionID()}&buy_orderid=${orderID}`,
       });
 
-    fetch(request).then((response) => {
+    const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
+
+    fetchFunction(request).then((response) => {
       if (!response.ok) {
         console.log(`Error code: ${response.status} Status: ${response.statusText}`);
         reject({ status: response.status, statusText: response.statusText });
@@ -60,7 +64,20 @@ const listItem = (appID, contextID, amount, assetID, price) => {
         body: `sessionid=${getSessionID()}&appid=${appID}&contextid=${contextID}&amount=${amount}&assetid=${assetID}&price=${price}`,
       });
 
-    fetch(request).then((response) => {
+    // works around the different behavior when fetching from chromium or ff
+    // This is accomplished by exposing more privileged XHR and
+    // fetch instances in the content script,
+    // which has the side-effect of not setting the Origin and
+    // Referer headers like a request from the page itself would;
+    // this is often preferable to prevent the request from revealing its cross-orign nature.
+    // In Firefox, extensions that need to perform requests that behave as if they were
+    // sent by the content itself can use  content.XMLHttpRequest and content.fetch() instead.
+    // For cross-browser extensions, the presence of these methods must be feature-detected.
+    // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Content_scripts#XHR_and_Fetch
+    const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
+
+    fetchFunction(request).then((response) => {
+      console.log(response);
       if (!response.ok) {
         console.log(`Error code: ${response.status} Status: ${response.statusText}`);
         reject({ status: response.status, statusText: response.statusText });
@@ -88,7 +105,9 @@ const getMarketHistory = (start, count) => {
         body: `sessionid=${getSessionID()}`,
       });
 
-    fetch(request).then((response) => {
+    const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
+
+    fetchFunction(request).then((response) => {
       if (!response.ok) {
         console.log(`Error code: ${response.status} Status: ${response.statusText}`);
         reject({ status: response.status, statusText: response.statusText });
