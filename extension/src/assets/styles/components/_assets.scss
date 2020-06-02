@@ -1,7 +1,7 @@
 .assets {
   &__item {
     padding: 10px 0px;
-    border-bottom: 1px solid white;
+    margin: 0;
   }
   &__image {
     width: 100%;
@@ -16,6 +16,13 @@
       top: 50%;
       transform: translateY(-50%);
     }
+  }
+
+  &__items {
+    background: #1c2125;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.4rem;
+    height: 100%;
   }
 
   &__price {

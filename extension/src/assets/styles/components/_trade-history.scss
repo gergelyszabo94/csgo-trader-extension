@@ -1,6 +1,63 @@
 .trade-history {
-  &__item {
-    border-bottom: 3px solid orange;
+  &__list-item {
+    border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 30px;
     margin-bottom: 30px;
+  }
+
+  &__icon {
+    font-size: 2.5rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    width: 100%;
+
+    &--profit {
+      color: #82c91e;
+    }
+
+    &--loss {
+      color: #c91e36;
+    }
+  }
+
+  &__headline {
+    margin: 1rem 0;
+  }
+
+  &__exchange {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    width: 100%;
+    text-align: center;
+  }
+
+  &__third {
+    width: 33%;
+    display: inline-block;
+    position: relative;
+  }
+
+  &__profit {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 1.1rem;
+
+    &--profit {
+      color: #82c91e;
+    }
+
+    &--loss {
+      color: red;
+    }
+  }
+
+  &__title {
+    margin-bottom: 15px;
   }
 }

@@ -11,15 +11,17 @@ const TradeOffer = (props) => {
     return `https://steamcommunity.com/market/listings/${appid}/${marketHashName}`;
   };
 
-  const { title, assets } = props;
+  const { assets } = props;
 
   return assets !== undefined ? (
-    <div className="assets col-md-6">
-      <h3>{title}</h3>
+    <div className="assets col-md-5">
       <div className="assets__items">
         {assets.map((asset) => {
           return (
-            <div className="row assets__item ">
+            <div
+              className="row assets__item "
+              key={asset.assetid + asset.appid + asset.contextid}
+            >
               <div className="col-md-2">
                 <img
                   className="assets__image"
@@ -37,7 +39,7 @@ const TradeOffer = (props) => {
                 </NewTabLink>
               </h3>
               <div className="col-md-2">
-                <span className="assets__price">price</span>
+                <span className="assets__price">{asset.price.display}</span>
               </div>
             </div>
           );
