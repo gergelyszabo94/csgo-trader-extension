@@ -16,7 +16,7 @@ const TradeHistory = () => {
     action: 'ExtensionTradeHistoryView',
   });
 
-  const [trades, setTrades] = useState();
+  const [trades, setTrades] = useState(null);
 
   const profilIdToUrl = (userId) => {
     return `https://steamcommunity.com/profiles/${userId}`;
@@ -39,10 +39,10 @@ const TradeHistory = () => {
       <div className="trade-history">
         <h1 className="trade-history__headline">
           Trade History
-          {trades !== undefined ? TradeSummary(trades) : null}
+          {trades !== null ? <TradeSummary trades={trades} /> : null}
         </h1>
 
-        {trades !== undefined ? (
+        {trades !== null ? (
           trades.map((trade) => {
             return (
               <div className="row trade-history__list-item" key={trade.tradeid}>

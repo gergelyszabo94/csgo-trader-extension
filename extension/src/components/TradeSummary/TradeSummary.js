@@ -1,19 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { prettyPrintPrice } from 'utils/pricing';
 
-const TradeSummary = (trades) => {
-  let sum = 0;
-  const numbersOfTrade = trades.length;
+const TradeSummary = ({ trades }) => {
+  const [PL, setPL] = useState(0);
 
-  trades.forEach((trade) => {
-    sum += Number(trade.profitLoss);
-  });
+  useEffect(() => {
+    chrome.storage.local.get(['currency'], ({ currency }) => {
+      let sum = 0;
+      trades.forEach((trade) => {
+        sum += Number(trade.profitLoss);
+      });
+      setPL(prettyPrintPrice(currency, sum.toFixed(2)));
+    });
+  }, []);
 
   return (
     <div className="trade-history__summary">
       P/L:&nbsp;
-      {sum.toFixed(2)}
+      {PL}
       &nbsp;in&nbsp;
-      {numbersOfTrade}
+      {trades.length}
       &nbsp;trades
     </div>
   );
