@@ -1,4 +1,4 @@
-import { getPrice } from 'utils/pricing';
+import { getPrice, prettyPrintPrice } from 'utils/pricing';
 import { getDopplerInfo } from 'utils/utilsModular';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 
@@ -92,6 +92,18 @@ const getTradeHistory = (maxTrades, startTime = 0) => new Promise((resolve, reje
                   }
 
                   tradeWithDesc.profitLoss = tradeWithDesc.receivedTotal - tradeWithDesc.givenTotal;
+                  tradeWithDesc.receivedTotalFormatted = prettyPrintPrice(
+                    currency,
+                    tradeWithDesc.receivedTotal.toFixed(2),
+                  );
+                  tradeWithDesc.givenTotalFormatted = prettyPrintPrice(
+                    currency,
+                    tradeWithDesc.givenTotal.toFixed(2),
+                  );
+                  tradeWithDesc.profitLossFormatted = prettyPrintPrice(
+                    currency,
+                    tradeWithDesc.profitLoss.toFixed(2),
+                  );
 
                   trades.push(tradeWithDesc);
                 });

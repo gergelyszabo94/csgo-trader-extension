@@ -59,43 +59,32 @@ const TradeHistory = () => {
                 })}
                 <div className="col-md-2 ">
                   <div className="trade-history__exchange">
-                    <span className="trade-history__third">
-                      {Math.round((trade.givenTotal + Number.EPSILON) * 100)
-                          / 100}
+                    <span className="trade-history__third" title="Given Total">
+                      {trade.givenTotalFormatted}
                     </span>
                     <span className="trade-history__third">
                         &nbsp;
                       <FontAwesomeIcon
                         className={`trade-history__icon trade-history__icon--${
-                          Math.round(
-                            (trade.profitLoss + Number.EPSILON) * 100,
-                          )
-                              / 100
-                            >= 0
+                          trade.profitLoss >= 0
                             ? 'profit'
                             : 'loss'
                         }`}
                         icon={faExchangeAlt}
                       />
                     </span>
-                    <span className="trade-history__third">
-                      {Math.round(
-                        (trade.receivedTotal + Number.EPSILON) * 100,
-                      ) / 100}
+                    <span className="trade-history__third" title="Received Total">
+                      {trade.receivedTotalFormatted}
                     </span>
                     <span
                       className={`trade-history__profit trade-history__profit--${
-                        Math.round(
-                          (trade.profitLoss + Number.EPSILON) * 100,
-                        )
-                            / 100
-                          >= 0
+                        trade.profitLoss >= 0
                           ? 'profit'
                           : 'loss'
                       }`}
+                      title="Profit/Loss made"
                     >
-                      {Math.round((trade.profitLoss + Number.EPSILON) * 100)
-                          / 100}
+                      {trade.profitLossFormatted}
                     </span>
                   </div>
                 </div>
