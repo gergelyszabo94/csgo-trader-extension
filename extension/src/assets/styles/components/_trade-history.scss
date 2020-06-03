@@ -58,6 +58,13 @@
   }
 
   &__title {
-    margin-bottom: 15px;
+    margin-bottom: 5px;
+  }
+
+  &__date-of-trade {
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 20px;
+    display: block;
   }
 }

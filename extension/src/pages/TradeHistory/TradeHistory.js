@@ -6,6 +6,7 @@ import TradeOffer from 'components/TradeOffer/TradeOffer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons';
 import NewTabLink from 'components/NewTabLink/NewTabLink';
+import { prettyTimeAgo, dateToISODisplay } from 'utils/dateTime';
 
 const TradeHistory = () => {
   trackEvent({
@@ -49,38 +50,46 @@ const TradeHistory = () => {
                       to={profilIdToUrl(trade.steamid_other)}
                       className="trade-history__partner"
                     >
-                      --partner--
+                      {trade.partnerSummary.personaname}
                     </NewTabLink>
                     .
                   </h4>
+                  <span
+                    className="trade-history__date-of-trade"
+                    title={dateToISODisplay(trade.time_init)}
+                  >
+                    {prettyTimeAgo(trade.time_init)}
+                  </span>
                 </div>
                 {TradeOffer({
                   assets: trade.assets_given_desc,
                 })}
                 <div className="col-md-2 ">
                   <div className="trade-history__exchange">
-                    <span className="trade-history__third" title="Given Total">
+                    <span
+                      className="trade-history__third"
+                      title="Given Total"
+                    >
                       {trade.givenTotalFormatted}
                     </span>
                     <span className="trade-history__third">
                         &nbsp;
                       <FontAwesomeIcon
                         className={`trade-history__icon trade-history__icon--${
-                          trade.profitLoss >= 0
-                            ? 'profit'
-                            : 'loss'
+                          trade.profitLoss >= 0 ? 'profit' : 'loss'
                         }`}
                         icon={faExchangeAlt}
                       />
                     </span>
-                    <span className="trade-history__third" title="Received Total">
+                    <span
+                      className="trade-history__third"
+                      title="Received Total"
+                    >
                       {trade.receivedTotalFormatted}
                     </span>
                     <span
                       className={`trade-history__profit trade-history__profit--${
-                        trade.profitLoss >= 0
-                          ? 'profit'
-                          : 'loss'
+                        trade.profitLoss >= 0 ? 'profit' : 'loss'
                       }`}
                       title="Profit/Loss made"
                     >
