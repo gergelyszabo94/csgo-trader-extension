@@ -429,7 +429,7 @@ const sortItems = (method, type) => {
       const items = document.getElementById(`trade_${type}s`).querySelectorAll('.item.app730.context2');
       doTheSorting(combinedInventories, Array.from(items), method, document.getElementById(`${type}_slots`), type);
       const inventoryTab = document.querySelector(`[href="#${type}_inventory"]`);
-      if (inventoryTab !== null) inventoryTab.classList.add('sorted');
+      if (inventoryTab !== null && inventoryTab.classList.contains('active')) inventoryTab.classList.add('sorted');
     }
 
     loadAllItemsProperly();
@@ -602,11 +602,7 @@ const doInitSorting = (initial) => {
       inventoryTab.click();
       sortItems(offerSortingMode, 'their');
       inventoryTab.classList.add('sorted');
-    } else {
-      const inventoryTab = document.getElementById('inventory_select_your_inventory');
-      sortItems(offerSortingMode, 'your');
-      inventoryTab.classList.add('sorted');
-    }
+    } else sortItems(offerSortingMode, 'your');
     sortItems(offerSortingMode, 'offer');
 
     addFloatIndicatorsToPage('their');
