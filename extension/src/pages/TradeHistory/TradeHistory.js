@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons';
 import NewTabLink from 'components/NewTabLink/NewTabLink';
 import { prettyTimeAgo, dateToISODisplay } from 'utils/dateTime';
+import TradeSummary from 'components/TradeSummary/TradeSummary';
 
 const TradeHistory = () => {
   trackEvent({
@@ -36,6 +37,7 @@ const TradeHistory = () => {
     <div className="container">
       <div className="trade-history">
         <h1 className="trade-history__headline">Trade History</h1>
+        {trades !== undefined ? TradeSummary(trades) : null}
         {trades !== undefined
           ? trades.map((trade) => {
             return (
