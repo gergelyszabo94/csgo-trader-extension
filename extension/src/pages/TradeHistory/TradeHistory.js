@@ -21,8 +21,9 @@ const TradeHistory = () => {
 
   useEffect(() => {
     document.title = 'Trade History';
-    getTradeHistory(10, 0)
+    getTradeHistory(50, 0)
       .then((tradesResponse) => {
+        console.log(tradesResponse);
         setTrades(tradesResponse);
       })
       .catch((err) => {
