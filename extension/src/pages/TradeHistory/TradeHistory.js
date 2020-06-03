@@ -8,6 +8,7 @@ import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons';
 import NewTabLink from 'components/NewTabLink/NewTabLink';
 import { prettyTimeAgo, dateToISODisplay } from 'utils/dateTime';
 import TradeSummary from 'components/TradeSummary/TradeSummary';
+import Spinner from 'components/Spinner/Spinner';
 
 const TradeHistory = () => {
   trackEvent({
@@ -36,15 +37,15 @@ const TradeHistory = () => {
   return (
     <div className="container">
       <div className="trade-history">
-        <h1 className="trade-history__headline">Trade History</h1>
-        {trades !== undefined ? TradeSummary(trades) : null}
-        {trades !== undefined
-          ? trades.map((trade) => {
+        <h1 className="trade-history__headline">
+          Trade History
+          {trades !== undefined ? TradeSummary(trades) : null}
+        </h1>
+
+        {trades !== undefined ? (
+          trades.map((trade) => {
             return (
-              <div
-                className="row trade-history__list-item"
-                key={trade.tradeid}
-              >
+              <div className="row trade-history__list-item" key={trade.tradeid}>
                 <div className="col-md-12">
                   <h4 className="trade-history__title">
                     You have traded with&nbsp;
@@ -68,14 +69,11 @@ const TradeHistory = () => {
                 })}
                 <div className="col-md-2 ">
                   <div className="trade-history__exchange">
-                    <span
-                      className="trade-history__third"
-                      title="Given Total"
-                    >
+                    <span className="trade-history__third" title="Given Total">
                       {trade.givenTotalFormatted}
                     </span>
                     <span className="trade-history__third">
-                        &nbsp;
+                      &nbsp;
                       <FontAwesomeIcon
                         className={`trade-history__icon trade-history__icon--${
                           trade.profitLoss >= 0 ? 'profit' : 'loss'
@@ -105,7 +103,9 @@ const TradeHistory = () => {
               </div>
             );
           })
-          : null}
+        ) : (
+          <Spinner />
+        )}
       </div>
     </div>
   );
