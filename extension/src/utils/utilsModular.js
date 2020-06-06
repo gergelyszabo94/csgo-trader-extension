@@ -463,8 +463,6 @@ const souvenirExists = (itemInfo) => {
   return collectionsWithSouvenirsToCheck.test(itemInfo);
 };
 
-const findElementByAssetID = (assetID) => document.getElementById(`730_2_${assetID}`);
-
 const getFloatBarSkeleton = (type) => {
   const typeClass = type === 'market' ? 'Market' : '';
   return `<div class="floatBar${typeClass}">
@@ -706,7 +704,7 @@ export {
   listenToLocationChange, addPageControlEventListeners, getItemByAssetID,
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
-  getDataFilledFloatTechnical, souvenirExists, findElementByAssetID,
+  getDataFilledFloatTechnical, souvenirExists,
   getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,

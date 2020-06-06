@@ -5,7 +5,7 @@ import {
   getAssetIDOfElement, makeItemColorful, addDopplerPhase,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists, copyToClipboard,
-  findElementByAssetID, getFloatBarSkeleton, addUpdatedRibbon,
+  getFloatBarSkeleton, addUpdatedRibbon,
   logExtensionPresence, repositionNameTagIcons, csgoFloatExtPresent,
   updateLoggedInUserInfo, reloadPageOnExtensionReload, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, toFixedNoRounding,
@@ -264,7 +264,7 @@ const hideFloatBars = () => {
 };
 
 const addFloatDataToPage = (job, activeFloatQueue, floatInfo) => {
-  addFloatIndicator(findElementByAssetID(job.assetID), floatInfo);
+  addFloatIndicator(findElementByIDs(steamApps.CSGO.appID, '2', job.assetID, 'inventory'), floatInfo);
 
   // add float and pattern info to page variable
   const item = getItemByAssetID(items, job.assetID);
@@ -599,7 +599,7 @@ const addRightSideElements = () => {
           } else hideFloatBars();
         } else {
           updateFloatAndPatternElements(item);
-          addFloatIndicator(findElementByAssetID(item.assetid), item.floatInfo);
+          addFloatIndicator(findElementByIDs(steamApps.CSGO.appID, '2', item.assetid, 'inventory'), item.floatInfo);
         }
 
         // it takes the visible descriptors and checks if the collection includes souvenirs
