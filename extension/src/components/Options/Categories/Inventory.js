@@ -37,7 +37,7 @@ const inventory = () => {
         name="Get float values automatically"
         id="autoFloatInventory"
         type="flipSwitchStorage"
-        description="Loads float values to each item when on"
+        description="Loads float values to each item when on. It does not load float values if the csgofloat extension is present to avoid interference."
       />
       <Row
         name="Show partner history"

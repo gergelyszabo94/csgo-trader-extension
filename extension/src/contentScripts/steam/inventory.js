@@ -6,7 +6,7 @@ import {
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists, copyToClipboard,
   findElementByAssetID, getFloatBarSkeleton, addUpdatedRibbon,
-  logExtensionPresence, repositionNameTagIcons,
+  logExtensionPresence, repositionNameTagIcons, csgoFloatExtPresent,
   updateLoggedInUserInfo, reloadPageOnExtensionReload, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, toFixedNoRounding,
 }
@@ -666,7 +666,7 @@ const addRightSideElements = () => {
 
 const addFloatIndicatorsToPage = () => {
   chrome.storage.local.get('autoFloatInventory', (autoFloatInventory) => {
-    if (autoFloatInventory) {
+    if (autoFloatInventory && !csgoFloatExtPresent()) {
       const page = getActivePage('inventory');
       if (page !== null) {
         page.querySelectorAll('.item.app730.context2').forEach((itemElement) => {
@@ -1529,11 +1529,6 @@ const hideOtherExtensionPrices = () => {
   setTimeout(() => {
     hideOtherExtensionPrices();
   }, 2000);
-
-  // csgofloat
-  document.querySelectorAll('.csgofloat-itemfloat, .csgofloat-itemseed').forEach((csFElement) => {
-    csFElement.style.display = 'none';
-  });
 };
 
 logExtensionPresence();

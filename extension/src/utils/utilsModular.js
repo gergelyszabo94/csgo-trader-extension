@@ -677,6 +677,14 @@ const changePageTitle = (type, text) => {
   });
 };
 
+const csgoFloatExtPresent = () => {
+  const csgoFloatCheckScript = `
+    document.querySelector('body').setAttribute('csgoFloat', window.csgofloat);
+  `;
+  const fromPage = injectScript(csgoFloatCheckScript, true, 'csgoFloatCheckScript', 'csgoFloat');
+  return fromPage === 'true';
+};
+
 //  unused atm
 // const generateRandomString = (length) => {
 //   let text = '';
@@ -699,7 +707,7 @@ export {
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists, findElementByAssetID,
-  getFloatBarSkeleton, getInspectLink,
+  getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo,
