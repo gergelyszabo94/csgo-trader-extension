@@ -11,7 +11,7 @@ import {
   reloadPageOnExtensionReload,
   souvenirExists,
   updateLoggedInUserInfo,
-  toFixedNoRounding,
+  toFixedNoRounding, csgoFloatExtPresent,
   addUpdatedRibbon, changePageTitle,
 } from 'utils/utilsModular';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
@@ -306,8 +306,8 @@ const dealWithNewFloatData = (job, floatInfo) => {
 };
 
 const addListingsToFloatQueue = () => {
-  chrome.storage.local.get('autoFloatMarket', (result) => {
-    if (result.autoFloatMarket) {
+  chrome.storage.local.get('autoFloatMarket', (autoFloatMarket) => {
+    if (autoFloatMarket && !csgoFloatExtPresent()) {
       if (itemWithInspectLink) {
         const listings = getListings();
         for (const listing of Object.values(listings)) {
@@ -328,8 +328,8 @@ const addListingsToFloatQueue = () => {
 };
 
 const addFloatBarSkeletons = () => {
-  chrome.storage.local.get('autoFloatMarket', (result) => {
-    if (result.autoFloatMarket) {
+  chrome.storage.local.get('autoFloatMarket', (autoFloatMarket) => {
+    if (autoFloatMarket && !csgoFloatExtPresent()) {
       const listingsSection = document.getElementById('searchResultsRows');
 
       // so it does not throw any errors when it can't find it on commodity items
@@ -478,6 +478,8 @@ const addPricesInOtherCurrencies = () => {
     }
   });
 };
+
+console.log(csgoFloatExtPresent());
 
 logExtensionPresence();
 updateLoggedInUserInfo();

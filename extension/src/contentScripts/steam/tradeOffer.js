@@ -7,7 +7,7 @@ import {
   getType, getInspectLink, repositionNameTagIcons,
   getDopplerInfo, getActivePage, reloadPageOnExtensionReload, logExtensionPresence,
   updateLoggedInUserInfo, warnOfScammer, addPageControlEventListeners,
-  addSearchListener, findElementByAssetID, getPattern, getNameTag,
+  addSearchListener, getPattern, getNameTag,
   removeOfferFromActiveOffers, changePageTitle,
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
@@ -15,7 +15,7 @@ import {
   priceQueue, workOnPriceQueue, prettyPrintPrice, initPriceQueue,
   addRealTimePriceToPage,
 } from 'utils/pricing';
-import { getItemByIDs, getIDsFromElement } from 'utils/itemsToElementsToItems';
+import { getItemByIDs, getIDsFromElement, findElementByIDs } from 'utils/itemsToElementsToItems';
 import doTheSorting from 'utils/sorting';
 import { sortingModes } from 'utils/static/sortingModes';
 import { trackEvent } from 'utils/analytics';
@@ -437,10 +437,10 @@ const sortItems = (method, type) => {
 };
 
 const addFloatDataToPage = (job, floatInfo) => {
-  addFloatIndicator(findElementByAssetID(job.assetID), floatInfo);
+  addFloatIndicator(findElementByIDs(steamApps.CSGO.appID, '2', job.assetID, 'offer'), floatInfo);
 
   // add float and pattern info to page variable
-  const item = getItemByAssetID(combinedInventories, job.assetID);
+  const item = getItemByIDs(combinedInventories, steamApps.CSGO.appID, '2', job.assetID);
   item.floatInfo = floatInfo;
   item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
 };
