@@ -43,12 +43,14 @@ const TradeHistory = () => {
         </h1>
 
         {trades !== null ? (
-          trades.map((trade) => {
+          trades.map((trade, index) => {
             return (
               <div className="row trade-history__list-item" key={trade.tradeid}>
                 <div className="col-12">
                   <h4 className="trade-history__title">
-                    You have traded with&nbsp;
+                    #
+                    {Number(index) + 1}
+                    &nbsp;You have traded with&nbsp;
                     <NewTabLink
                       to={profilIdToUrl(trade.steamid_other)}
                       className="trade-history__partner"
@@ -67,7 +69,10 @@ const TradeHistory = () => {
                 {TradeOffer({
                   assets: trade.assets_given_desc,
                 })}
-                <div className="col-lg-2 ">
+                {TradeOffer({
+                  assets: trade.assets_received_desc,
+                })}
+                <div className="col-12 ">
                   <div className="trade-history__exchange">
                     <span className="trade-history__third" title="Given Total">
                       {trade.givenTotalFormatted}
@@ -97,9 +102,6 @@ const TradeHistory = () => {
                     </span>
                   </div>
                 </div>
-                {TradeOffer({
-                  assets: trade.assets_received_desc,
-                })}
               </div>
             );
           })

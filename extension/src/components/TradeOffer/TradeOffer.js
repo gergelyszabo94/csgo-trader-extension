@@ -14,7 +14,7 @@ const TradeOffer = (props) => {
   const { assets } = props;
 
   return assets !== undefined ? (
-    <div className="assets col-lg-5">
+    <div className="assets col-md-6">
       <div className="assets__items">
         {assets.map((asset) => {
           return (
@@ -22,7 +22,7 @@ const TradeOffer = (props) => {
               className="row assets__item "
               key={asset.assetid + asset.appid + asset.contextid}
             >
-              <div className="col-4">
+              <div className="col-3">
                 <img
                   className="assets__image"
                   key={asset.assetid}
@@ -30,7 +30,7 @@ const TradeOffer = (props) => {
                   alt={asset.market_hash_name}
                 />
               </div>
-              <div className="col-8">
+              <div className="col-9">
                 <h3 className="assets__name">
                   <NewTabLink
                     to={itemUrlToString(asset.appid, asset.market_hash_name)}

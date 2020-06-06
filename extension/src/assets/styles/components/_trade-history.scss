@@ -31,18 +31,9 @@
   }
 
   &__exchange {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate3d(-50%, -50%, 0);
     width: 100%;
     text-align: center;
-
-    @media screen and (max-width: 992px) {
-      position: initial;
-      transform: none;
-      padding: 20px 0;
-    }
+    padding: 20px 0;
   }
 
   &__third {
