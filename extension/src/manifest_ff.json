@@ -15,8 +15,7 @@
     "*://api.steampowered.com/*",
     "*://api.csgotrader.app/*",
     "*://prices.csgotrader.app/*",
-    "*://steamrep.com/api/*",
-    "*://api.csgofloat.com/*"],
+    "*://steamrep.com/api/*"],
   "optional_permissions": [
     "tabs",
     "*://csgolounge.com/*",
