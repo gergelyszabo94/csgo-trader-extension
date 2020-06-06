@@ -564,6 +564,13 @@ const addRealTimePriceToPage = (marketHashName, price, appID, assetID, contextID
   );
 };
 
+const updateWalletCurrency = () => {
+  const walletCurrency = getSteamWalletCurrency();
+  chrome.storage.local.set({
+    userSteamWalletCurrency: walletCurrency !== 'Unknown' ? walletCurrency : currencies.EUR.short,
+  });
+};
+
 export {
   updatePrices, updateExchangeRates, getPrice, getUserCurrencyBestGuess,
   getStickerPriceTotal, prettyPrintPrice, getPriceOverview, getMidPrice,
@@ -571,5 +578,5 @@ export {
   steamFormattedPriceToCents, priceQueue, workOnPriceQueue,
   getHighestBuyOrder, getSteamWalletCurrency, getSteamWalletInfo,
   addRealTimePriceIndicator, initPriceQueue, getLowestListingPrice,
-  addRealTimePriceToPage,
+  addRealTimePriceToPage, updateWalletCurrency,
 };

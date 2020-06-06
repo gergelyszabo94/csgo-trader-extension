@@ -16,7 +16,7 @@ import {
 } from 'utils/utilsModular';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import exteriors from 'utils/static/exteriors';
-import { getPrice, getStickerPriceTotal } from 'utils/pricing';
+import { getPrice, getStickerPriceTotal, updateWalletCurrency } from 'utils/pricing';
 import { trackEvent } from 'utils/analytics';
 import {
   genericMarketLink, souvenir, starChar, stattrak, stattrakPretty,
@@ -482,6 +482,7 @@ const addPricesInOtherCurrencies = () => {
 console.log(csgoFloatExtPresent());
 
 logExtensionPresence();
+updateWalletCurrency();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
 trackEvent({

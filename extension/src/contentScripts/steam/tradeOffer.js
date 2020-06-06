@@ -13,7 +13,7 @@ import {
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
   priceQueue, workOnPriceQueue, prettyPrintPrice, initPriceQueue,
-  addRealTimePriceToPage,
+  addRealTimePriceToPage, updateWalletCurrency,
 } from 'utils/pricing';
 import { getItemByIDs, getIDsFromElement, findElementByIDs } from 'utils/itemsToElementsToItems';
 import doTheSorting from 'utils/sorting';
@@ -1009,7 +1009,7 @@ const addFriendRequestInfo = () => {
 };
 
 logExtensionPresence();
-
+updateWalletCurrency();
 initPriceQueue();
 
 // initiates all logic that needs access to item info
