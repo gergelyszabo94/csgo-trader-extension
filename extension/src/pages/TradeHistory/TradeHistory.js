@@ -37,7 +37,7 @@ const TradeHistory = () => {
   return (
     <div className="container">
       <div className="trade-history">
-        <h1 className="trade-history__headline">
+        <h1 className="trade-history__headline clearfix">
           Trade History
           {trades !== null ? <TradeSummary trades={trades} /> : null}
         </h1>
@@ -46,7 +46,7 @@ const TradeHistory = () => {
           trades.map((trade) => {
             return (
               <div className="row trade-history__list-item" key={trade.tradeid}>
-                <div className="col-md-12">
+                <div className="col-12">
                   <h4 className="trade-history__title">
                     You have traded with&nbsp;
                     <NewTabLink
@@ -67,12 +67,12 @@ const TradeHistory = () => {
                 {TradeOffer({
                   assets: trade.assets_given_desc,
                 })}
-                <div className="col-md-2 ">
+                <div className="col-lg-2 ">
                   <div className="trade-history__exchange">
                     <span className="trade-history__third" title="Given Total">
                       {trade.givenTotalFormatted}
                     </span>
-                    <span className="trade-history__third">
+                    <span className="trade-history__third trade-history__third--narrower">
                       &nbsp;
                       <FontAwesomeIcon
                         className={`trade-history__icon trade-history__icon--${

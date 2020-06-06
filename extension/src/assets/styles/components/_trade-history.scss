@@ -10,7 +10,7 @@
   }
 
   &__icon {
-    font-size: 2.5rem;
+    font-size: 2rem;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -37,12 +37,22 @@
     transform: translate3d(-50%, -50%, 0);
     width: 100%;
     text-align: center;
+
+    @media screen and (max-width: 992px) {
+      position: initial;
+      transform: none;
+      padding: 20px 0;
+    }
   }
 
   &__third {
-    width: 33%;
+    width: 40%;
     display: inline-block;
     position: relative;
+
+    &--narrower {
+      width: 20%;
+    }
   }
 
   &__profit {

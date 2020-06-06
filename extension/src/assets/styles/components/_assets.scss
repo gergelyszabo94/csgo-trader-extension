@@ -9,13 +9,6 @@
 
   &__name {
     font-size: 1rem;
-
-    a {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-    }
   }
 
   &__items {
@@ -25,10 +18,7 @@
     height: 100%;
   }
 
-  &__price {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
+  @media screen and (max-width: 768px) {
+    min-height: 50px;
   }
 }
