@@ -546,10 +546,10 @@ const addRealTimePriceToPage = (marketHashName, price, appID, assetID, contextID
   // the steam wallet global var is not defined in the trade offer page
   // this is a workaround to that
   if (type.includes('offers')) {
-    chrome.storage.local.get(['currency'], ({ currency }) => {
+    chrome.storage.local.get(['userSteamWalletCurrency'], ({ userSteamWalletCurrency }) => {
       addRealTimePriceIndicator(
         itemElement,
-        price !== null ? prettyPrintPrice(currency, (price / 100).toFixed(2)) : 'No Data',
+        price !== null ? prettyPrintPrice(userSteamWalletCurrency, (price / 100).toFixed(2)) : 'No Data',
       );
     });
   } else {
@@ -564,6 +564,13 @@ const addRealTimePriceToPage = (marketHashName, price, appID, assetID, contextID
   );
 };
 
+const updateWalletCurrency = () => {
+  const walletCurrency = getSteamWalletCurrency();
+  chrome.storage.local.set({
+    userSteamWalletCurrency: (walletCurrency !== 'Unknown' && walletCurrency !== undefined) ? walletCurrency : currencies.USD.short,
+  });
+};
+
 export {
   updatePrices, updateExchangeRates, getPrice, getUserCurrencyBestGuess,
   getStickerPriceTotal, prettyPrintPrice, getPriceOverview, getMidPrice,
@@ -571,5 +578,5 @@ export {
   steamFormattedPriceToCents, priceQueue, workOnPriceQueue,
   getHighestBuyOrder, getSteamWalletCurrency, getSteamWalletInfo,
   addRealTimePriceIndicator, initPriceQueue, getLowestListingPrice,
-  addRealTimePriceToPage,
+  addRealTimePriceToPage, updateWalletCurrency,
 };

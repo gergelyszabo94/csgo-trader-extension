@@ -148,11 +148,12 @@ const storageKeys = {
     lastUsed: Date.now(),
     usedAt: '',
   },
+  userSteamWalletCurrency: currencies.USD.short,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
   'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID', 'groupInvites',
   'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules', 'floatQueueActivity', 'discussionsToAutoBump',
-  'priceQueueActivity'];
+  'priceQueueActivity', 'userSteamWalletCurrency'];
 
 export { storageKeys, nonSettingStorageKeys };

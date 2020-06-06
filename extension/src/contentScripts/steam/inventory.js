@@ -20,6 +20,7 @@ import {
   getPriceOverview, getPriceAfterFees, userPriceToProperPrice,
   centsToSteamFormattedPrice, prettyPrintPrice, addRealTimePriceToPage,
   priceQueue, workOnPriceQueue, getSteamWalletCurrency, initPriceQueue,
+  updateWalletCurrency,
 }
   from 'utils/pricing';
 import { getItemByIDs, getIDsFromElement, findElementByIDs } from 'utils/itemsToElementsToItems';
@@ -1532,6 +1533,7 @@ const hideOtherExtensionPrices = () => {
 };
 
 logExtensionPresence();
+updateWalletCurrency();
 initPriceQueue(onListingPricesLoaded);
 
 // listens to manual inventory tab/game changes

@@ -8,7 +8,7 @@ import { removeListing, getMarketHistory, cancelOrder } from 'utils/market';
 import { trackEvent } from 'utils/analytics';
 import {
   steamFormattedPriceToCents, centsToSteamFormattedPrice, priceQueue,
-  workOnPriceQueue, initPriceQueue,
+  workOnPriceQueue, initPriceQueue, updateWalletCurrency,
 } from 'utils/pricing';
 import { injectStyle } from 'utils/injection';
 
@@ -247,6 +247,7 @@ const addHighestBuyOrderPrice = (job, highestBuyOrder) => {
 };
 
 logExtensionPresence();
+updateWalletCurrency();
 initPriceQueue();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
