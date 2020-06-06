@@ -569,7 +569,8 @@ const updateActiveOffers = (offers, items) => {
 
 const periodicallyUpdateRealTimeTotals = (offerEl) => {
   setInterval(() => {
-    chrome.storage.local.get(['currency'], ({ currency }) => {
+    chrome.storage.local.get(['userSteamWalletCurrency'], ({ userSteamWalletCurrency }) => {
+      console.log(userSteamWalletCurrency);
       const offerPrimarySide = offerEl.querySelector('.tradeoffer_items.primary');
       const offerSecondarySide = offerEl.querySelector('.tradeoffer_items.secondary');
       let primaryTotal = 0;
@@ -580,7 +581,10 @@ const periodicallyUpdateRealTimeTotals = (offerEl) => {
         if (realTimePrice !== null) primaryTotal += parseInt(realTimePrice);
       });
       const primaryTotalEl = offerPrimarySide.querySelector('.offerRealTimeTotal');
-      const primaryTotalFormatted = prettyPrintPrice(currency, (primaryTotal / 100).toFixed(2));
+      const primaryTotalFormatted = prettyPrintPrice(
+        userSteamWalletCurrency,
+        (primaryTotal / 100).toFixed(2),
+      );
       if (primaryTotalEl !== null) primaryTotalEl.innerText = primaryTotalFormatted; else {
         offerPrimarySide.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
           `<div class="offerRealTimeTotal">${primaryTotalFormatted}</div>`,
@@ -592,7 +596,10 @@ const periodicallyUpdateRealTimeTotals = (offerEl) => {
         const realTimePrice = itemEl.getAttribute('data-realtime-price');
         if (realTimePrice !== null) secondaryTotal += parseInt(realTimePrice);
       });
-      const secondaryTotalFormatted = prettyPrintPrice(currency, (secondaryTotal / 100).toFixed(2));
+      const secondaryTotalFormatted = prettyPrintPrice(
+        userSteamWalletCurrency,
+        (secondaryTotal / 100).toFixed(2),
+      );
       if (secondaryTotalEl !== null) secondaryTotalEl.innerText = secondaryTotalFormatted;
       else {
         offerSecondarySide.insertAdjacentHTML('beforeend', DOMPurify.sanitize(

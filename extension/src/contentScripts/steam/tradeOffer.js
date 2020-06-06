@@ -306,7 +306,7 @@ const addInventoryTotals = (yourInventoryTotal, theirInventoryTotal) => {
 
 // also generates the offer summary
 const addInTradeTotals = (whose) => {
-  chrome.storage.local.get('currency', ({ currency }) => {
+  chrome.storage.local.get('userSteamWalletCurrency', ({ userSteamWalletCurrency }) => {
     const itemsInTrade = document.getElementById(`${whose}_slots`).querySelectorAll('.item');
     let inTradeTotal = 0;
     let inTradeRealTimeTotal = 0;
@@ -336,7 +336,7 @@ const addInTradeTotals = (whose) => {
     const numberOfItems = summaryEl.querySelector('.numberOfItems');
     numberOfItems.innerText = numberOfItemsInTrade;
     const inTradeTotalValue = summaryEl.querySelector('.total');
-    inTradeTotalValue.innerText = prettyPrintPrice(currency, inTradeTotal);
+    inTradeTotalValue.innerText = prettyPrintPrice(userSteamWalletCurrency, inTradeTotal);
 
     for (const [name, value] of Object.entries(inTradeItemsSummary)) {
       const listItem = document.createElement('li');
@@ -351,10 +351,10 @@ const addInTradeTotals = (whose) => {
       if (whose === 'your') itemsTextDiv = document.getElementById('trade_yours').querySelector('h2.ellipsis');
       else itemsTextDiv = document.getElementById('trade_theirs').querySelector('.offerheader').querySelector('h2');
       itemsTextDiv.innerHTML = DOMPurify.sanitize(
-        `${itemsTextDiv.innerText.split(':')[0]} (<span id="${whose}InTradeTotal" data-total="${inTradeTotal}" title="In-trade total">${prettyPrintPrice(currency, inTradeTotal)}</span>):`,
+        `${itemsTextDiv.innerText.split(':')[0]} (<span id="${whose}InTradeTotal" data-total="${inTradeTotal}" title="In-trade total">${prettyPrintPrice(userSteamWalletCurrency, inTradeTotal)}</span>):`,
       );
     } else {
-      totalEl.innerText = prettyPrintPrice(currency, inTradeTotal);
+      totalEl.innerText = prettyPrintPrice(userSteamWalletCurrency, inTradeTotal);
       totalEl.setAttribute('data-total', inTradeTotal);
     }
 
@@ -367,13 +367,13 @@ const addInTradeTotals = (whose) => {
           'beforeend',
           DOMPurify.sanitize(
             `<div id="${whose}InTradeRealTimeTotal" class="realTimePriceTradeTotal" title="RealTime price total">
-                    ${prettyPrintPrice(currency, (inTradeRealTimeTotal / 100).toFixed(2))}
+                    ${prettyPrintPrice(userSteamWalletCurrency, (inTradeRealTimeTotal / 100).toFixed(2))}
                 </div>`,
           ),
         );
       } else {
         realTimeTotalEl.innerText = prettyPrintPrice(
-          currency,
+          userSteamWalletCurrency,
           (inTradeRealTimeTotal / 100).toFixed(2),
         );
       }
