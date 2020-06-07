@@ -131,6 +131,15 @@
     },
     {
       "matches": [
+        "*://steamcommunity.com/id/*/inventoryhistory*",
+        "*://steamcommunity.com/id/*/tradehistory*"
+      ],
+      "run_at" : "document_idle",
+      "js": ["js/contentScripts/steam/tradeHistory.bundle.js"],
+      "css": ["/css/generalCSTStyle.css"]
+    },
+    {
+      "matches": [
         "*://csgolounge.com/mytrades/*",
         "*://old.csgolounge.com/mytrades/*"
       ],

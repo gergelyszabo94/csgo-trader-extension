@@ -1,0 +1,24 @@
+.assets {
+  &__item {
+    padding: 10px 0px;
+    margin: 0;
+  }
+  &__image {
+    width: 100%;
+  }
+
+  &__name {
+    font-size: 1rem;
+  }
+
+  &__items {
+    background: #1c2125;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.4rem;
+    height: 100%;
+  }
+
+  @media screen and (max-width: 768px) {
+    min-height: 50px;
+  }
+}

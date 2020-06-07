@@ -428,6 +428,10 @@ progress {
     color: #f9f96d;
 }
 
+.tradeHistoryRibbon {
+  margin-left: 50px;
+}
+
 .exteriorIndicator{
     color: var(--steam-note-blue);
 }

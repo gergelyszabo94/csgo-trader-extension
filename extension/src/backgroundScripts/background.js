@@ -97,6 +97,26 @@ chrome.runtime.onInstalled.addListener((details) => {
       }
     });
 
+    // the trade history menu was added, this logic
+    // adds the new link to the extension popup links
+    chrome.storage.local.get('popupLinks', ({ popupLinks }) => {
+      const newPopupLinks = [];
+      popupLinks.forEach((link) => {
+        if (link.id !== 'tradehistory') {
+          newPopupLinks.push(link);
+        }
+      });
+      newPopupLinks.push({
+        active: true,
+        id: 'tradehistory',
+        name: 'Trade History',
+        url: 'index.html?page=trade-history',
+      });
+      chrome.storage.local.set({
+        popupLinks: newPopupLinks,
+      });
+    });
+
     trackEvent({
       type: 'event',
       action: 'ExtensionUpdate',
