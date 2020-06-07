@@ -9,12 +9,15 @@ import NewTabLink from 'components/NewTabLink/NewTabLink';
 import { prettyTimeAgo, dateToISODisplay } from 'utils/dateTime';
 import TradeSummary from 'components/TradeSummary/TradeSummary';
 import Spinner from 'components/Spinner/Spinner';
+import TradeHistoryControls from 'components/TradeHistoryControls/TradeHistoryControls';
 
 const TradeHistory = () => {
   trackEvent({
     type: 'pageview',
     action: 'ExtensionTradeHistoryView',
   });
+
+  const [historySize, setHistorySize] = useState(10);
 
   const [trades, setTrades] = useState(null);
 
@@ -24,7 +27,8 @@ const TradeHistory = () => {
 
   useEffect(() => {
     document.title = 'Trade History';
-    getTradeHistory(50, 0)
+    setTrades(null);
+    getTradeHistory(historySize, 0)
       .then((tradesResponse) => {
         console.log(tradesResponse);
         setTrades(tradesResponse);
@@ -32,7 +36,7 @@ const TradeHistory = () => {
       .catch((err) => {
         console.log(err);
       });
-  }, []);
+  }, [historySize]);
 
   return (
     <div className="container">
@@ -41,6 +45,7 @@ const TradeHistory = () => {
           Trade History
           {trades !== null ? <TradeSummary trades={trades} /> : null}
         </h1>
+        <TradeHistoryControls setHistorySize={setHistorySize} />
 
         {trades !== null ? (
           trades.map((trade, index) => {
