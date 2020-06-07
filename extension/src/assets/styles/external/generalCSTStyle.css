@@ -219,6 +219,15 @@ progress {
     font-size: 1.1rem;
 }
 
+.apiKeyAdded {
+    color:green;
+    margin-top: 10px;
+}
+
+.apiKeyMessage {
+    padding: 0 60px 30px 60px;
+}
+
 .trade_offers_module{
     padding-top: 24px;
     padding-left: 48px;

@@ -42,7 +42,7 @@ const general = () => {
             &nbsp;(you can put anything in as domain name).
             <br />
             <NewTabLink to="https://csgotrader.app/faq/#steamapikey">
-              Why does it need Steam API key explained in more detail.
+              Why does it need Steam API key? Explained in more detail.
             </NewTabLink>
           </>
         )}
