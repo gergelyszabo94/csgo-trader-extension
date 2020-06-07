@@ -1380,7 +1380,7 @@ const addFunctionBar = () => {
       });
 
     // shows currency mismatch warning and option to change currency
-    chrome.storage.local.get('currency', (currency) => {
+    chrome.storage.local.get('currency', ({ currency }) => {
       const walletCurrency = getSteamWalletCurrency();
       if (walletCurrency !== currency) {
         document.getElementById('currency_mismatch_warning').classList.remove('hidden');
