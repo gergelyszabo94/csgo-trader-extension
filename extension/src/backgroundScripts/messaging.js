@@ -5,6 +5,7 @@ import {
 } from 'utils/utilsModular';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import getUserCSGOInventory from 'utils/getUserCSGOInventory';
+import { updateExchangeRates } from 'utils/pricing';
 
 // content scripts can't make cross domain requests because of security
 // most of the messaging required is to work around this limitation
@@ -149,6 +150,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
 
     return true; // async return to signal that it will return later
+  } else if (request.updateExchangeRates !== undefined) {
+    updateExchangeRates();
+    sendResponse('exchange rates updated');
   }
 });
 

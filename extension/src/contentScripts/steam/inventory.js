@@ -1380,13 +1380,17 @@ const addFunctionBar = () => {
       });
 
     // shows currency mismatch warning and option to change currency
-    chrome.storage.local.get('currency', (result) => {
+    chrome.storage.local.get('currency', (currency) => {
       const walletCurrency = getSteamWalletCurrency();
-      if (walletCurrency !== result.currency) {
+      if (walletCurrency !== currency) {
         document.getElementById('currency_mismatch_warning').classList.remove('hidden');
         document.getElementById('changeCurrency').addEventListener('click', () => {
           chrome.storage.local.set({ currency: walletCurrency }, () => {
-            window.location.reload();
+            chrome.runtime.sendMessage({ updateExchangeRates: 'updateExchangeRates' }, (() => {
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
+            }));
           });
         });
       }

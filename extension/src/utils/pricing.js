@@ -420,8 +420,8 @@ const updateExchangeRates = () => {
     return response.json();
   }).then((exchangeRatesJSON) => {
     chrome.storage.local.set({ exchangeRates: exchangeRatesJSON }, () => {});
-    chrome.storage.local.get('currency', (result) => {
-      chrome.storage.local.set({ exchangeRate: exchangeRatesJSON[result.currency] }, () => {});
+    chrome.storage.local.get('currency', ({ currency }) => {
+      chrome.storage.local.set({ exchangeRate: exchangeRatesJSON[currency] }, () => {});
     });
   }).catch((err) => { console.log(err); });
 };
