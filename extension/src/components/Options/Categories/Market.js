@@ -51,10 +51,10 @@ const market = () => {
         description="Reloads listings pages 5 seconds after they load if they don't load properly (load with an error message instead of the listings)."
       />
       <Row
-        name="Show Skincay link on listings"
+        name="Show Real money/other market links on listings"
         id="showRealMoneySiteLinks"
         type="flipSwitchStorage"
-        description="Puts a link to the Skincay marketplace to market listings pages"
+        description="Puts links to the Real Money marketplaces to market listings pages"
       />
     </Category>
   );

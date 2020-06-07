@@ -88,12 +88,12 @@ chrome.runtime.onInstalled.addListener((details) => {
       }
     });
 
-    // skinbay was renamed to skincay
+    // skinbay was renamed to skincay then to skinport
     // this snipped changes the pricing provider's name accordingly
     // remove in a few months
     chrome.storage.local.get('pricingProvider', ({ pricingProvider }) => {
-      if (pricingProvider === 'skinbay') {
-        chrome.storage.local.set({ pricingProvider: pricingProviders.skincay.name }, () => {});
+      if (pricingProvider === 'skinbay' || pricingProvider === 'skincay') {
+        chrome.storage.local.set({ pricingProvider: pricingProviders.skinport.name }, () => {});
       }
     });
 

@@ -609,18 +609,18 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
         'beforebegin',
         DOMPurify.sanitize(
           `<div class="realMoneySite">
-                <a href="https://skincay.com/market/730?search=${fullName}&r=gery" target="_blank" id="skincayLink" class="skincayLink">
-                    You can buy this item 20-30% cheaper on Skincay
+                <a href="https://skinport.com/market/730?search=${fullName}&r=gery" target="_blank" id="skinportLink" class="skinportLink">
+                    You can buy this item 20-30% cheaper on Skinport
                 </a>
                 <span id="realMoneyExpand" class="clickable" title="Click to learn more about what this is">What is this?</span>
                 <div id="realMoneyMoreInfo" class="hidden">
                     <div style="margin: 10px 0 10px 0">
-                      <a href="https://skincay.com/market/730?r=gery" target="_blank" class="skincayLink">Skincay</a>
+                      <a href="https://skinport.com/market/730?r=gery" target="_blank" class="skinportLink">Skinport</a>
                       is a real money marketplace where you can buy and sell skins. <br>
                       They have a very simple to use interface, good prices and great support. <br>
                       You can save money by buying items there instead of the market. <br>
-                      <a href="https://skincay.com/market/730?search=${fullName}&r=gery" target="_blank" class="skincayLink">
-                          Follow this link to check listings for his item on Skincay.com
+                      <a href="https://skinport.com/market/730?search=${fullName}&r=gery" target="_blank" class="skinportLink">
+                          Follow this link to check listings for his item on Skinport.com
                       </a>
                     </div>
                     <div>
@@ -633,11 +633,11 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
         ),
       );
 
-      document.querySelectorAll('.skincayLink').forEach((link) => {
+      document.querySelectorAll('.skinportLink').forEach((link) => {
         link.addEventListener('click', () => {
           trackEvent({
             type: 'event',
-            action: 'marketSkincayLinkClicked',
+            action: 'marketSkinportLinkClicked',
           });
         });
       });

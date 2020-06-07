@@ -375,7 +375,7 @@ const updatePrices = () => {
 
         if (provider === pricingProviders.steam.name
           || provider === pricingProviders.bitskins.name
-          || provider === pricingProviders.skincay.name) {
+          || provider === pricingProviders.skinport.name) {
           let pricingMode = mode;
           if (mode === pricingProviders.bitskins.pricing_modes.bitskins.name) pricingMode = 'price';
           else if (mode === pricingProviders.bitskins.pricing_modes.instant_sale.name) {

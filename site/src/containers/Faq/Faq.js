@@ -145,7 +145,7 @@ const faq = (props) => {
                         instead of using a trade bot site.
                     </p>
                     <p>
-                        Also consider <NewTabLink to='https://skincay.com/?r=gery'>Skincay.com</NewTabLink> when you are buying CS:GO items for cash.
+                        Also consider <NewTabLink to='https://skinport.com/?r=gery'>Skinport.com</NewTabLink> when you are buying CS:GO items for cash.
                         Using the above link will support the development of the extension.
                     </p>
                     <p>
@@ -158,7 +158,7 @@ const faq = (props) => {
                 </Question>
                 <Question title='What are the supported pricing providers?'>
                     <p>
-                        CSGO Trader, Steam, CS.MONEY, BITSKINS.COM, LOOT.FARM, CSGO.TM, <NewTabLink to='https://skincay.com/?r=gery'>Skincay.com</NewTabLink>
+                        CSGO Trader, Steam, CS.MONEY, BITSKINS.COM, LOOT.FARM, CSGO.TM, <NewTabLink to='https://skinport.com/?r=gery'>Skinport.com</NewTabLink>
                     </p>
                 </Question>
                 <Question title='How are CSGO Trader prices calculated?'>
