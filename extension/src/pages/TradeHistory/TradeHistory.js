@@ -21,6 +21,8 @@ const TradeHistory = () => {
 
   const [trades, setTrades] = useState(null);
 
+  const [steamId, setSteamId] = useState(null);
+
   const profilIdToUrl = (userId) => {
     return `https://steamcommunity.com/profiles/${userId}`;
   };
@@ -28,6 +30,10 @@ const TradeHistory = () => {
   useEffect(() => {
     document.title = 'Trade History';
     setTrades(null);
+    chrome.storage.local.get(['steamIDOfUser'], ({ steamIDOfUser }) => {
+      console.log(steamIDOfUser);
+      setSteamId(steamIDOfUser);
+    });
     getTradeHistory(historySize, 0)
       .then((tradesResponse) => {
         console.log(tradesResponse);
@@ -73,9 +79,11 @@ const TradeHistory = () => {
                 </div>
                 {TradeOffer({
                   assets: trade.assets_given_desc,
+                  profileid: trade.steamid_other,
                 })}
                 {TradeOffer({
                   assets: trade.assets_received_desc,
+                  profileid: steamId,
                 })}
                 <div className="col-12 ">
                   <div className="trade-history__exchange">

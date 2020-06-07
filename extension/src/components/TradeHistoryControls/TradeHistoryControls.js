@@ -9,13 +9,12 @@ const TradeHistoryControls = (props) => {
   const changeHandler = (e) => {
     const value = e.target.value;
     setSelectState(value);
-    console.log(props);
     setHistorySize(value);
   };
 
   return (
     <div className="trade-history__controls">
-      <span>Size: </span>
+      <span>Show: </span>
       <select
         className="select-theme"
         onChange={changeHandler}

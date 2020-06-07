@@ -11,7 +11,11 @@ const TradeOffer = (props) => {
     return `https://steamcommunity.com/market/listings/${appid}/${marketHashName}`;
   };
 
-  const { assets } = props;
+  const linkToItem = (profileid, appid, contextid, assetid) => {
+    return `https://steamcommunity.com/profiles/${profileid}/inventory/#${appid}_${contextid}_${assetid}`;
+  };
+
+  const { assets, profileid } = props;
 
   return assets !== undefined ? (
     <div className="assets col-md-6">
@@ -23,12 +27,21 @@ const TradeOffer = (props) => {
               key={asset.assetid + asset.appid + asset.contextid}
             >
               <div className="col-3">
-                <img
-                  className="assets__image"
-                  key={asset.assetid}
-                  src={urlIconToString(asset.icon_url)}
-                  alt={asset.market_hash_name}
-                />
+                <NewTabLink
+                  to={linkToItem(
+                    profileid,
+                    asset.appid,
+                    asset.contextid,
+                    asset.new_assetid,
+                  )}
+                >
+                  <img
+                    className="assets__image"
+                    key={asset.assetid}
+                    src={urlIconToString(asset.icon_url)}
+                    alt={asset.market_hash_name}
+                  />
+                </NewTabLink>
               </div>
               <div className="col-9">
                 <h3 className="assets__name">
