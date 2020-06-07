@@ -149,6 +149,7 @@ const storageKeys = {
     usedAt: '',
   },
   userSteamWalletCurrency: currencies.USD.short,
+  linkFilterOff: false,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

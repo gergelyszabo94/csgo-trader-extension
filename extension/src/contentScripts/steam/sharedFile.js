@@ -1,5 +1,5 @@
 import { goldenCommenters } from 'utils/goldening';
-import { logExtensionPresence, updateLoggedInUserInfo } from 'utils/utilsModular';
+import { logExtensionPresence, updateLoggedInUserInfo, removeLinkFilterFromLinks } from 'utils/utilsModular';
 import { reportComments, addReplyToCommentsFunctionality, addCommentsMutationObserver } from 'utils/comments';
 import { trackEvent } from 'utils/analytics';
 import { getSharedFileIDAndOwner } from 'utils/steamID';
@@ -10,6 +10,7 @@ addCommentsMutationObserver();
 reportComments('shared_file', getSharedFileIDAndOwner());
 goldenCommenters();
 updateLoggedInUserInfo();
+removeLinkFilterFromLinks();
 trackEvent({
   type: 'pageview',
   action: 'SharedFileView',

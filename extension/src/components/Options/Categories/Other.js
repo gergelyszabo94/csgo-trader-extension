@@ -59,6 +59,12 @@ const other = () => {
         type="flipSwitchStorage"
         description="Hides elements from other extensions that overlap with CSGO Trader's"
       />
+      <Row
+        name="Turn off Steam link filter"
+        id="linkFilterOff"
+        type="flipSwitchStorage"
+        description="Turns off Steam's link filter that takes you to a page before you can proceed to external sites."
+      />
     </Category>
   );
 };

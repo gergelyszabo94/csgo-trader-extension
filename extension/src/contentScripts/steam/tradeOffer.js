@@ -7,7 +7,7 @@ import {
   getType, getInspectLink, repositionNameTagIcons,
   getDopplerInfo, getActivePage, reloadPageOnExtensionReload, logExtensionPresence,
   updateLoggedInUserInfo, warnOfScammer, addPageControlEventListeners,
-  addSearchListener, getPattern, getNameTag,
+  addSearchListener, getPattern, getNameTag, removeLinkFilterFromLinks,
   removeOfferFromActiveOffers, changePageTitle,
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
@@ -1009,6 +1009,7 @@ const addFriendRequestInfo = () => {
 };
 
 logExtensionPresence();
+removeLinkFilterFromLinks();
 updateWalletCurrency();
 initPriceQueue();
 

@@ -683,6 +683,22 @@ const csgoFloatExtPresent = () => {
   return fromPage === 'true';
 };
 
+const removeLinkFilterFromLinks = () => {
+  chrome.storage.local.get('linkFilterOff', ({ linkFilterOff }) => {
+    if (linkFilterOff) {
+      document.querySelectorAll('a').forEach((anchor) => {
+        const oldHref = anchor.getAttribute('href');
+        if (oldHref !== null && oldHref.includes('https://steamcommunity.com/linkfilter/?url=')) {
+          anchor.setAttribute(
+            'href',
+            oldHref.split('https://steamcommunity.com/linkfilter/?url=')[1],
+          );
+        }
+      });
+    }
+  });
+};
+
 //  unused atm
 // const generateRandomString = (length) => {
 //   let text = '';
@@ -704,7 +720,7 @@ export {
   listenToLocationChange, addPageControlEventListeners, getItemByAssetID,
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
-  getDataFilledFloatTechnical, souvenirExists,
+  getDataFilledFloatTechnical, souvenirExists, removeLinkFilterFromLinks,
   getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,

@@ -1,7 +1,7 @@
 import { goldenMemberNames, goldenCommenters } from 'utils/goldening';
 import {
   logExtensionPresence, updateLoggedInUserInfo,
-  listenToLocationChange, addUpdatedRibbon,
+  listenToLocationChange, addUpdatedRibbon, removeLinkFilterFromLinks,
 } from 'utils/utilsModular';
 import { reportComments, addReplyToCommentsFunctionality, addCommentsMutationObserver } from 'utils/comments';
 import { trackEvent } from 'utils/analytics';
@@ -15,6 +15,7 @@ if (!window.location.href.includes('/discussions')) {
   goldenCommenters();
   updateLoggedInUserInfo();
   addUpdatedRibbon();
+  removeLinkFilterFromLinks();
   listenToLocationChange(goldenMemberNames);
   trackEvent({
     type: 'pageview',

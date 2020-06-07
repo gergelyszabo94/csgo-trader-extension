@@ -5,6 +5,7 @@ import {
   getItemByAssetID, getInspectLink, removeOfferFromActiveOffers,
   logExtensionPresence, updateLoggedInUserInfo, reloadPageOnExtensionReload,
   getNameTag, repositionNameTagIcons, jumpToAnchor, changePageTitle,
+  removeLinkFilterFromLinks,
 } from 'utils/utilsModular';
 import { prettyTimeAgo } from 'utils/dateTime';
 import { genericMarketLink } from 'utils/static/simpleStrings';
@@ -615,6 +616,7 @@ repositionNameTagIcons();
 overrideShowTradeOffer();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
+removeLinkFilterFromLinks();
 trackEvent({
   type: 'pageview',
   action: 'TradeOffersPageView',

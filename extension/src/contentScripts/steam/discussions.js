@@ -1,10 +1,14 @@
-import { addUpdatedRibbon, logExtensionPresence, updateLoggedInUserInfo } from 'utils/utilsModular';
+import {
+  addUpdatedRibbon, logExtensionPresence, updateLoggedInUserInfo,
+  removeLinkFilterFromLinks,
+} from 'utils/utilsModular';
 import { trackEvent } from 'utils/analytics';
 import DOMPurify from 'dompurify';
 
 logExtensionPresence();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
+removeLinkFilterFromLinks();
 trackEvent({
   type: 'pageview',
   action: 'DiscussionsView',

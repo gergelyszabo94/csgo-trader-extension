@@ -1,6 +1,6 @@
 import {
   logExtensionPresence, updateLoggedInUserInfo,
-  warnOfScammer, reloadPageOnExtensionReload,
+  warnOfScammer, reloadPageOnExtensionReload, removeLinkFilterFromLinks,
   addUpdatedRibbon, copyToClipboard, changePageTitle,
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
@@ -19,6 +19,7 @@ if (document.querySelector('body').classList.contains('profile_page')) {
   logExtensionPresence();
   updateLoggedInUserInfo();
   addUpdatedRibbon();
+  removeLinkFilterFromLinks();
   trackEvent({
     type: 'pageview',
     action: 'ProfileView',
