@@ -25,6 +25,7 @@ knives = ["Bayonet", "Bowie Knife", "Butterfly Knife", "Falchion Knife", "Flip K
 
 gloves = ["Gloves", "Hand Wraps"]
 
+
 def lambda_handler(event, context):
     arn_split = context.invoked_function_arn.split(':')
     stage_candidate = arn_split[len(arn_split) - 1]
@@ -76,9 +77,49 @@ def lambda_handler(event, context):
         print("Pricing information extracted")
         push_to_s3(steam_prices_only, 'steam', stage)
 
+    print("Requesting prices from csgobackpack.net")
+    try:
+        response = requests.get("http://csgobackpack.net/api/GetItemsList/v2/")
+    except Exception as e:
+        print(e)
+        error = "Error during csgobackpack request"
+        alert_via_sns(f'{error}: {e}')
+        return {
+            'statusCode': 500,
+            'body': error
+        }
+
+    print("Received response from csgobackpack.net")
+
+    if response.status_code == 200 and response.json()['success']:
+        print("Valid response from csgobackpack.net")
+        items = response.json()['items_list']
+        csgobackpack_prices = {}
+        print("Extracting pricing information")
+        for key, value in items.items():
+            name = items.get(key).get('name').replace("&#39", "'")
+            price = items.get(key).get('price')
+
+            if price:
+                csgobackpack_prices[name] = price
+            else:
+                csgobackpack_prices[name] = "null"
+
+        print("Pricing information extracted")
+
+    else:
+        error = "Could not get items from csgobackpack.net"
+        alert_via_sns(error)
+        print(error, " status code: ", response.status_code)
+        return {
+            'statusCode': response.status_code,
+            'body': json.dumps(error)
+        }
+
     print('Requesting bitskins prices')
     try:
-        response = requests.get("https://bitskins.com/api/v1/get_all_item_prices/?api_key=" + bitskins_api_key + "&code=" + bitskins_token.now() + "&app_id=730")
+        response = requests.get(
+            "https://bitskins.com/api/v1/get_all_item_prices/?api_key=" + bitskins_api_key + "&code=" + bitskins_token.now() + "&app_id=730")
     except Exception as e:
         print(e)
         error = "Error during bitskins request"
@@ -289,7 +330,6 @@ def lambda_handler(event, context):
             'body': json.dumps(error)
         }
 
-
     print("Creates own pricing")
     print("Calculate market trends")
 
@@ -322,7 +362,8 @@ def lambda_handler(event, context):
     for item in master_list:
         if item in steam_prices and "safe_ts" in steam_prices[item] and "last_7d" in steam_prices[item]["safe_ts"] \
                 and item in bitskins_prices and "price" in bitskins_prices[item] \
-                and item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "" and csmoney_prices[item]["price"] != "null":
+                and item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item][
+            "price"] != "" and csmoney_prices[item]["price"] != "null":
             st_weekly = float(steam_prices[item]["safe_ts"]["last_7d"])
             bit = float(bitskins_prices[item]["price"])
             csm = float(csmoney_prices[item]["price"])
@@ -346,11 +387,13 @@ def lambda_handler(event, context):
         case = steam_aggregate["case"]  # only used to debug pricing in dev mode
         price = "null"
 
-        if steam_aggregate["price"] != "null" and steam_aggregate["price"] != 0.0\
+        if steam_aggregate["price"] != "null" and steam_aggregate["price"] != 0.0 \
                 and not is_mispriced_knife(item, steam_aggregate["price"]) \
-                and not is_mispriced_glove(item, steam_aggregate["price"]):
+                and not is_mispriced_glove(item, steam_aggregate["price"]) \
+                and not is_mispriced_compared_to_csb(item, steam_aggregate["price"], csgobackpack_prices):
             price = float("{0:.2f}".format(steam_aggregate["price"]))
-        elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and csmoney_prices[item]["price"] != 0:
+        elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and \
+                csmoney_prices[item]["price"] != 0:
             price = float("{0:.2f}".format(float(csmoney_prices[item]["price"]) * st_csm * week_to_day))
             case = "F"
         elif item in bitskins_prices and "price" in bitskins_prices[item] and bitskins_prices[item]["price"] != "null":
@@ -388,8 +431,9 @@ def lambda_handler(event, context):
         is_st = True if "StatTrak\u2122" in item else False
         if is_st:
             none_st_name = get_non_st_name(item)
-            if none_st_name in csgotrader_prices and csgotrader_prices[none_st_name]["price"] != "null"\
-                    and csgotrader_prices[item]["price"] != "null" and float(csgotrader_prices[none_st_name]["price"]) > float(csgotrader_prices[item]["price"]):
+            if none_st_name in csgotrader_prices and csgotrader_prices[none_st_name]["price"] != "null" \
+                    and csgotrader_prices[item]["price"] != "null" and float(
+                csgotrader_prices[none_st_name]["price"]) > float(csgotrader_prices[item]["price"]):
                 # if the st version is cheaper then the non-st's price is used
                 if stage == "dev":
                     csgotrader_prices[item] = {
@@ -495,8 +539,10 @@ def alert_via_sns(error):
 def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
     if item in steam_prices and "safe" in steam_prices[item] and steam_prices[item]["safe"] is not None:
         if "safe_ts" in steam_prices[item] and "sold" in steam_prices[item]:
-            if float(steam_prices[item]["sold"]["last_24h"]) >= 5.0 and float(steam_prices[item]["safe_ts"]["last_7d"]) != 0.0:
-                if abs(1 - float(steam_prices[item]["safe_ts"]["last_24h"]) / float(steam_prices[item]["safe_ts"]["last_7d"])) <= 0.1:
+            if float(steam_prices[item]["sold"]["last_24h"]) >= 5.0 and float(
+                    steam_prices[item]["safe_ts"]["last_7d"]) != 0.0:
+                if abs(1 - float(steam_prices[item]["safe_ts"]["last_24h"]) / float(
+                        steam_prices[item]["safe_ts"]["last_7d"])) <= 0.1:
                     return {
                         "price": steam_prices[item]["safe_ts"]["last_24h"],
                         "case": "A"
@@ -506,8 +552,10 @@ def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
                         "price": float(steam_prices[item]["safe_ts"]["last_7d"]) * daily_trend,
                         "case": "B"
                     }
-            elif float(steam_prices[item]["safe_ts"]["last_7d"]) != 0.0 and float(steam_prices[item]["safe_ts"]["last_30d"]) != 0.0:
-                if abs(1 - float(steam_prices[item]["safe_ts"]["last_7d"]) / float(steam_prices[item]["safe_ts"]["last_30d"])) <= 0.1 \
+            elif float(steam_prices[item]["safe_ts"]["last_7d"]) != 0.0 and float(
+                    steam_prices[item]["safe_ts"]["last_30d"]) != 0.0:
+                if abs(1 - float(steam_prices[item]["safe_ts"]["last_7d"]) / float(
+                        steam_prices[item]["safe_ts"]["last_30d"])) <= 0.1 \
                         and float(steam_prices[item]["sold"]["last_7d"]) >= 5.0:
                     return {
                         "price": float(steam_prices[item]["safe_ts"]["last_7d"]) * daily_trend,
@@ -568,3 +616,17 @@ def get_non_st_name(name):
         return name.split("StatTrak\u2122 ")[1]
     else:
         return "".join(name.split("StatTrak\u2122 "))
+
+
+def is_mispriced_compared_to_csb(item, price, csb_prices):
+    if price in csb_prices and "7_days" in csb_prices[item] \
+            and "median" in csb_prices[item]["7_days"] \
+            and csb_prices[item]["7_days"]["median"] != "null" \
+            and csb_prices[item]["7_days"]["median"] != 0:
+        ratio = csb_prices[item]["7_days"]["median"] / price
+        if ratio < 0.8 or ratio > 1.2:
+            return True
+        else:
+            return False
+    else:
+        return False
