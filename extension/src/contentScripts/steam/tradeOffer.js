@@ -113,19 +113,21 @@ const getItemInfoFromPage = (who) => {
   const whose = who === 'You' ? 'your' : 'their';
   const side = document.getElementById(`trade_${whose}s`);
 
-  side.querySelectorAll('.item').forEach((itemEl) => {
-    const itemIDs = getIDsFromElement(itemEl, 'offer');
-    if (itemIDs !== null && itemIDs.appID !== 'anonymous' && appInfo[itemIDs.appID] !== undefined) {
-      sideAppAndContextIDs = sideAppAndContextIDs.filter((IDs) => {
-        return !(IDs.appID === itemIDs.appID && IDs.contextID === itemIDs.contextID);
-      });
+  if (side !== null) {
+    side.querySelectorAll('.item').forEach((itemEl) => {
+      const itemIDs = getIDsFromElement(itemEl, 'offer');
+      if (itemIDs !== null && itemIDs.appID !== 'anonymous' && appInfo[itemIDs.appID] !== undefined) {
+        sideAppAndContextIDs = sideAppAndContextIDs.filter((IDs) => {
+          return !(IDs.appID === itemIDs.appID && IDs.contextID === itemIDs.contextID);
+        });
 
-      sideAppAndContextIDs.push({
-        appID: itemIDs.appID,
-        contextID: itemIDs.contextID,
-      });
-    }
-  });
+        sideAppAndContextIDs.push({
+          appID: itemIDs.appID,
+          contextID: itemIDs.contextID,
+        });
+      }
+    });
+  }
 
   const inventoryInfos = {};
 
@@ -1010,13 +1012,16 @@ const addFriendRequestInfo = () => {
 
 logExtensionPresence();
 removeLinkFilterFromLinks();
-updateWalletCurrency();
 initPriceQueue();
 
 // initiates all logic that needs access to item info
 getInventories(true);
 overrideHandleTradeActionMenu();
 repositionNameTagIcons();
+
+if (document.getElementById('error_msg') === null) {
+  updateWalletCurrency();
+}
 
 injectStyle(`
     a.inventory_item_link {
