@@ -51,7 +51,7 @@ const TradeHistory = () => {
           Trade History
           {trades !== null ? <TradeSummary trades={trades} /> : null}
         </h1>
-        <TradeHistoryControls setHistorySize={setHistorySize} />
+        <TradeHistoryControls setHistorySize={setHistorySize} historySize={historySize} />
 
         {trades !== null ? (
           trades.map((trade, index) => {

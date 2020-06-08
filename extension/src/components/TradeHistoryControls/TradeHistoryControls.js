@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 
-const TradeHistoryControls = (props) => {
-  const { setHistorySize } = props;
-  const [selectState, setSelectState] = useState(10);
+const TradeHistoryControls = ({ historySize, setHistorySize }) => {
+  const [selectState, setSelectState] = useState(historySize);
 
   const selectValues = [10, 25, 50, 100];
 
