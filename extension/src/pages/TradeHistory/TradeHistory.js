@@ -17,7 +17,7 @@ const TradeHistory = () => {
     action: 'ExtensionTradeHistoryView',
   });
 
-  const [historySize, setHistorySize] = useState(10);
+  const [historySize, setHistorySize] = useState(50);
 
   const [trades, setTrades] = useState(null);
 
