@@ -1623,7 +1623,8 @@ if (isOwnInventory()) {
       chrome.runtime.sendMessage({ hasTabsAccess: 'hasTabsAccess' }, ((response) => {
         if (response) {
           const dropDownMenu = document.getElementById('inventory_more_dropdown');
-          if (dropDownMenu !== null) {
+          const viewTradeHistory = document.getElementById('viewTradeHistory');
+          if (dropDownMenu !== null && viewTradeHistory === null) {
             dropDownMenu.querySelector('.popup_body.popup_menu').insertAdjacentHTML(
               'afterbegin',
               DOMPurify.sanitize(
