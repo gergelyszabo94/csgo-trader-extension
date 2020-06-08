@@ -1617,6 +1617,27 @@ trackEvent({
 });
 
 if (isOwnInventory()) {
+  const moreLink = document.getElementById('inventory_more_link');
+  if (moreLink !== null) {
+    moreLink.addEventListener('click', () => {
+      chrome.runtime.sendMessage({ hasTabsAccess: 'hasTabsAccess' }, ((response) => {
+        if (response) {
+          const dropDownMenu = document.getElementById('inventory_more_dropdown');
+          if (dropDownMenu !== null) {
+            dropDownMenu.querySelector('.popup_body.popup_menu').insertAdjacentHTML(
+              'afterbegin',
+              DOMPurify.sanitize(
+                '<a class="popup_menu_item" id="viewTradeHistory">Trade History (CSGO Trader)</a>',
+              ),
+            );
+            document.getElementById('viewTradeHistory').addEventListener('click', () => {
+              chrome.runtime.sendMessage({ openInternalPage: 'index.html?page=trade-history' }, () => {});
+            });
+          }
+        }
+      }));
+    });
+  }
   changePageTitle('own_inventory');
   // injects selling script if own inventory
 } else {

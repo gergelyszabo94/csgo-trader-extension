@@ -153,6 +153,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   } else if (request.updateExchangeRates !== undefined) {
     updateExchangeRates();
     sendResponse('exchange rates updated');
+  } else if (request.hasTabsAccess !== undefined) {
+    chrome.permissions.contains(
+      { permissions: ['tabs'] },
+      (result) => {
+        sendResponse(result);
+      },
+    );
+    return true; // async return to signal that it will return later
   }
 });
 
