@@ -12,37 +12,47 @@ import Spinner from 'components/Spinner/Spinner';
 import TradeHistoryControls from 'components/TradeHistoryControls/TradeHistoryControls';
 
 const TradeHistory = () => {
+  document.title = 'Trade History';
   trackEvent({
     type: 'pageview',
     action: 'ExtensionTradeHistoryView',
   });
 
-  const [historySize, setHistorySize] = useState(50);
-
   const [trades, setTrades] = useState(null);
-
+  const [historySize, setHistorySize] = useState(50);
+  const [startTime, setStartTime] = useState(0);
+  const [excludeEmpty, setExcludeEmpty] = useState(false);
   const [steamId, setSteamId] = useState(null);
 
-  const profilIdToUrl = (userId) => {
+  const profileIDToURL = (userId) => {
     return `https://steamcommunity.com/profiles/${userId}`;
   };
 
-  useEffect(() => {
-    document.title = 'Trade History';
-    setTrades(null);
-    chrome.storage.local.get(['steamIDOfUser'], ({ steamIDOfUser }) => {
-      console.log(steamIDOfUser);
-      setSteamId(steamIDOfUser);
-    });
-    getTradeHistory(historySize, 0)
+  const updateTrades = () => {
+    getTradeHistory(historySize, startTime)
       .then((tradesResponse) => {
-        console.log(tradesResponse);
-        setTrades(tradesResponse);
+        const noEmptyTrades = [];
+        tradesResponse.forEach((trade) => {
+          if (trade.assets_given_desc.length !== 0 && trade.assets_received_desc.length !== 0) {
+            noEmptyTrades.push(trade);
+          }
+        });
+        setTrades(excludeEmpty ? noEmptyTrades : tradesResponse);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [historySize]);
+  };
+
+  useEffect(() => {
+    chrome.storage.local.get(['steamIDOfUser'], ({ steamIDOfUser }) => {
+      setSteamId(steamIDOfUser);
+    });
+  }, []);
+
+  useEffect(() => {
+    updateTrades();
+  }, [historySize, startTime, excludeEmpty]);
 
   return (
     <div className="container">
@@ -51,7 +61,11 @@ const TradeHistory = () => {
           Trade History
           {trades !== null ? <TradeSummary trades={trades} /> : null}
         </h1>
-        <TradeHistoryControls setHistorySize={setHistorySize} historySize={historySize} />
+        <TradeHistoryControls
+          setHistorySize={setHistorySize}
+          historySize={historySize}
+          setExcludeEmpty={setExcludeEmpty}
+        />
 
         {trades !== null ? (
           trades.map((trade, index) => {
@@ -63,7 +77,7 @@ const TradeHistory = () => {
                     {Number(index) + 1}
                     &nbsp;You have traded with&nbsp;
                     <NewTabLink
-                      to={profilIdToUrl(trade.steamid_other)}
+                      to={profileIDToURL(trade.steamid_other)}
                       className="trade-history__partner"
                     >
                       {trade.partnerSummary.personaname}

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 
-const TradeHistoryControls = ({ historySize, setHistorySize }) => {
+const TradeHistoryControls = ({ historySize, setHistorySize, setExcludeEmpty }) => {
   const [selectState, setSelectState] = useState(historySize);
+  const [exclude, setExclude] = useState(false);
 
   const selectValues = [10, 25, 50, 100];
 
@@ -9,6 +10,12 @@ const TradeHistoryControls = ({ historySize, setHistorySize }) => {
     const value = e.target.value;
     setSelectState(value);
     setHistorySize(value);
+  };
+
+  const onExcludeChange = (event) => {
+    const value = event.target.checked;
+    setExclude(value);
+    setExcludeEmpty(value);
   };
 
   return (
@@ -27,6 +34,15 @@ const TradeHistoryControls = ({ historySize, setHistorySize }) => {
           );
         })}
       </select>
+      <span className="trade-history__control">
+        Exclude empty offers:&nbsp;
+        <input
+          type="checkbox"
+          onChange={onExcludeChange}
+          checked={exclude}
+          title="Hide trades that are empty in one side"
+        />
+      </span>
     </div>
   );
 };

@@ -12,7 +12,7 @@ const TradeSummary = ({ trades }) => {
       });
       setPL(prettyPrintPrice(currency, sum.toFixed(2)));
     });
-  }, []);
+  }, [trades]);
 
   return (
     <div className="trade-history__summary">
