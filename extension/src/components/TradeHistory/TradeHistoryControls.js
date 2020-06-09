@@ -8,6 +8,7 @@ const TradeHistoryControls = ({
 }) => {
   const [selectState, setSelectState] = useState(historySize);
   const [exclude, setExclude] = useState(false);
+  const [date, setDate] = useState(Date.now());
 
   const selectValues = [10, 25, 50, 100];
 
@@ -23,8 +24,9 @@ const TradeHistoryControls = ({
     setExcludeEmpty(value);
   };
 
-  const onDateChange = (date) => {
-    const unixTimeStamp = date.getTime() / 1000;
+  const onDateChange = (dateObject) => {
+    const unixTimeStamp = dateObject.getTime() / 1000;
+    setDate(dateObject);
     setStartTime(unixTimeStamp);
   };
 
@@ -45,7 +47,7 @@ const TradeHistoryControls = ({
         })}
       </select>
       <DatePicker
-        selected={0}
+        selected={date}
         onChange={onDateChange}
       />
       <span className="trade-history__control">

@@ -9,7 +9,7 @@ const getTradeHistory = (maxTrades, startTime = 0) => new Promise((resolve, reje
     }) => {
       if (apiKeyValid) {
         const getRequest = new Request(
-          `https://api.steampowered.com/IEconService/GetTradeHistory/v1/?max_trades=${maxTrades}&start_after_time=${startTime}&get_descriptions=1&language=english&key=${steamAPIKey}`,
+          `https://api.steampowered.com/IEconService/GetTradeHistory/v1/?max_trades=${maxTrades}&start_after_time=${startTime}&get_descriptions=1&include_total=1language=english&key=${steamAPIKey}`,
         );
 
         fetch(getRequest).then((response) => {
@@ -107,7 +107,10 @@ const getTradeHistory = (maxTrades, startTime = 0) => new Promise((resolve, reje
 
                   trades.push(tradeWithDesc);
                 });
-                resolve(trades);
+                resolve({
+                  totalTrades: body.response.total_trades,
+                  trades,
+                });
               });
             } else reject('trades undefined');
           } catch (e) {
