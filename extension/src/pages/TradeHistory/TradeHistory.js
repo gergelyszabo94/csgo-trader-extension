@@ -6,6 +6,7 @@ import TradeOffers from 'components/TradeHistory/TradeOffers';
 import TradeSummary from 'components/TradeHistory/TradeSummary';
 import Spinner from 'components/Spinner/Spinner';
 import TradeHistoryControls from 'components/TradeHistory/TradeHistoryControls';
+import CSVExport from 'components/TradeHistory/CSVExport';
 
 const TradeHistory = () => {
   document.title = 'Trade History';
@@ -53,7 +54,7 @@ const TradeHistory = () => {
           historySize={historySize}
           setExcludeEmpty={setExcludeEmpty}
         />
-
+        <CSVExport trades={trades} />
         {
           error === null
             ? <TradeOffersContent trades={trades} />
