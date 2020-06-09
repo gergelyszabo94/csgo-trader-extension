@@ -2,7 +2,7 @@ import React from 'react';
 
 import NewTabLink from 'components/NewTabLink/NewTabLink';
 
-const TradeOffer = (props) => {
+const TradeOfferSide = (props) => {
   const urlIconToString = (iconURL) => {
     return `https://steamcommunity.com/economy/image/${iconURL}/256x256`;
   };
@@ -61,4 +61,4 @@ const TradeOffer = (props) => {
   ) : null;
 };
 
-export default TradeOffer;
+export default TradeOfferSide;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import TradeOffer from 'components/TradeHistory/TradeOffer';
+import TradeOfferSide from 'components/TradeHistory/TradeOfferSide';
 import NewTabLink from 'components/NewTabLink/NewTabLink';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -41,11 +41,11 @@ const TradeOffers = ({ trades }) => {
             {prettyTimeAgo(trade.time_init)}
           </span>
         </div>
-        {TradeOffer({
+        {TradeOfferSide({
           assets: trade.assets_given_desc,
           profileid: trade.steamid_other,
         })}
-        {TradeOffer({
+        {TradeOfferSide({
           assets: trade.assets_received_desc,
           profileid: steamID,
         })}
