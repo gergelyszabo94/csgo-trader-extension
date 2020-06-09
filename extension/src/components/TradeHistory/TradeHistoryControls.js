@@ -46,10 +46,13 @@ const TradeHistoryControls = ({
           );
         })}
       </select>
-      <DatePicker
-        selected={date}
-        onChange={onDateChange}
-      />
+      <span className="trade-history__control">
+        Show before:&nbsp;
+        <DatePicker
+          selected={date}
+          onChange={onDateChange}
+        />
+      </span>
       <span className="trade-history__control">
         Exclude empty offers:&nbsp;
         <input
