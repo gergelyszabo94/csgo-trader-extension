@@ -2,14 +2,16 @@ import { getPrice, prettyPrintPrice } from 'utils/pricing';
 import { getDopplerInfo } from 'utils/utilsModular';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 
-const getTradeHistory = (maxTrades, startTime = 0) => new Promise((resolve, reject) => {
+const getTradeHistory = (
+  maxTrades, startTime = 0, afterTrade = 0,
+) => new Promise((resolve, reject) => {
   chrome.storage.local.get(['apiKeyValid', 'steamAPIKey', 'prices', 'pricingProvider', 'currency', 'exchangeRate'],
     ({
       apiKeyValid, steamAPIKey, prices, pricingProvider, currency, exchangeRate,
     }) => {
       if (apiKeyValid) {
         const getRequest = new Request(
-          `https://api.steampowered.com/IEconService/GetTradeHistory/v1/?max_trades=${maxTrades}&start_after_time=${startTime}&get_descriptions=1&include_total=1language=english&key=${steamAPIKey}`,
+          `https://api.steampowered.com/IEconService/GetTradeHistory/v1/?max_trades=${maxTrades}&start_after_time=${startTime}&start_after_tradeid=${afterTrade}&get_descriptions=1&include_total=1language=english&key=${steamAPIKey}`,
         );
 
         fetch(getRequest).then((response) => {
@@ -110,6 +112,8 @@ const getTradeHistory = (maxTrades, startTime = 0) => new Promise((resolve, reje
                 resolve({
                   totalTrades: body.response.total_trades,
                   trades,
+                  lastTradeID: trades[trades.length - 1].tradeid,
+                  lastTradeTime: trades[trades.length - 1].time_init,
                 });
               });
             } else reject('trades undefined');

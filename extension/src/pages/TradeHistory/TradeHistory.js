@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react';
 
 import { trackEvent } from 'utils/analytics';
 import { getTradeHistory } from 'utils/IEconService';
-import TradeOffers from 'components/TradeHistory/TradeOffers';
+import TradeOfferContent from 'components/TradeHistory/TradeOfferContent';
 import TradeSummary from 'components/TradeHistory/TradeSummary';
-import Spinner from 'components/Spinner/Spinner';
 import TradeHistoryControls from 'components/TradeHistory/TradeHistoryControls';
 import CSVExport from 'components/TradeHistory/CSVExport';
 
@@ -17,14 +16,16 @@ const TradeHistory = () => {
 
   const [trades, setTrades] = useState(null);
   const [totalTrades, setTotalTrades] = useState(0);
+  const [lastTradeID, setLastTradeID] = useState(0);
+  const [lastTradeTime, setLastTradeTime] = useState(0);
   const [historySize, setHistorySize] = useState(50);
   const [startTime, setStartTime] = useState(0);
   const [excludeEmpty, setExcludeEmpty] = useState(false);
   const [error, setError] = useState(null);
 
-  const updateTrades = () => {
+  const updateTrades = (next) => {
     setTrades(null);
-    getTradeHistory(historySize, startTime)
+    getTradeHistory(historySize, next ? lastTradeTime : startTime, next ? lastTradeID : 0)
       .then((tradesResponse) => {
         const noEmptyTrades = [];
         tradesResponse.trades.forEach((trade) => {
@@ -34,11 +35,17 @@ const TradeHistory = () => {
         });
         setTrades(excludeEmpty ? noEmptyTrades : tradesResponse.trades);
         setTotalTrades(tradesResponse.totalTrades);
+        setLastTradeID(tradesResponse.lastTradeID);
+        setLastTradeTime(tradesResponse.lastTradeTime);
       })
       .catch((err) => {
         console.log(err);
         setError('Could not load your offer history, Steam might be done or you don\'t have your API key set.');
       });
+  };
+
+  const loadNextBatch = () => {
+    updateTrades(true);
   };
 
   useEffect(() => {
@@ -63,18 +70,12 @@ const TradeHistory = () => {
         <CSVExport trades={trades} />
         {
           error === null
-            ? <TradeOffersContent trades={trades} />
+            ? <TradeOfferContent trades={trades} loadNextBatch={loadNextBatch} />
             : <div className="warning">{error}</div>
         }
       </div>
     </div>
   );
-};
-
-const TradeOffersContent = ({ trades }) => {
-  return trades !== null
-    ? (<TradeOffers trades={trades} />)
-    : (<Spinner />);
 };
 
 export default TradeHistory;
