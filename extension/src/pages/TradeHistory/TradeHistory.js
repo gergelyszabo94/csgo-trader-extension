@@ -22,6 +22,7 @@ const TradeHistory = () => {
   const [error, setError] = useState(null);
 
   const updateTrades = () => {
+    setTrades(null);
     getTradeHistory(historySize, startTime)
       .then((tradesResponse) => {
         const noEmptyTrades = [];
@@ -53,6 +54,7 @@ const TradeHistory = () => {
           setHistorySize={setHistorySize}
           historySize={historySize}
           setExcludeEmpty={setExcludeEmpty}
+          setStartTime={setStartTime}
         />
         <CSVExport trades={trades} />
         {

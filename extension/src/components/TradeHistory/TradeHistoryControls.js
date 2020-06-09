@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
+import DatePicker from 'react-datepicker';
 
-const TradeHistoryControls = ({ historySize, setHistorySize, setExcludeEmpty }) => {
+import 'react-datepicker/dist/react-datepicker.css';
+
+const TradeHistoryControls = ({
+  historySize, setHistorySize, setExcludeEmpty, setStartTime,
+}) => {
   const [selectState, setSelectState] = useState(historySize);
   const [exclude, setExclude] = useState(false);
 
@@ -16,6 +21,11 @@ const TradeHistoryControls = ({ historySize, setHistorySize, setExcludeEmpty }) 
     const value = event.target.checked;
     setExclude(value);
     setExcludeEmpty(value);
+  };
+
+  const onDateChange = (date) => {
+    const unixTimeStamp = date.getTime() / 1000;
+    setStartTime(unixTimeStamp);
   };
 
   return (
@@ -34,6 +44,10 @@ const TradeHistoryControls = ({ historySize, setHistorySize, setExcludeEmpty }) 
           );
         })}
       </select>
+      <DatePicker
+        selected={0}
+        onChange={onDateChange}
+      />
       <span className="trade-history__control">
         Exclude empty offers:&nbsp;
         <input
