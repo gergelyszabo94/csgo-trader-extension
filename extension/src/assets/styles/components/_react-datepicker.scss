@@ -11,12 +11,12 @@
     color: $color-datepicker !important;
   }
 
-  &__month-container {
+  &__month-container, &__time-container {
     background-color: $background-primary;
     color: $color-datepicker !important;
     border-radius: 0.3rem !important;
 
-    .react-datepicker__header {
+    .react-datepicker__header, .react-datepicker-time__header {
       background-color: $background-primary;
       color: $color-datepicker !important;
       border-radius: 0.3rem !important;
@@ -27,7 +27,7 @@
     color: $color-datepicker !important;
   }
 
-  &__day {
+  &__day, &__time-list-item  {
     color: $color-datepicker !important;
 
     &:hover {
@@ -40,7 +40,7 @@
     }
   }
 
-  &__month {
+  &__month, &__time-list {
     background-color: $background-primary;
     color: $color-datepicker !important;
   }

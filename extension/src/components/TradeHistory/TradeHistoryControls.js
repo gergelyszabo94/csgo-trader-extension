@@ -64,6 +64,7 @@ const TradeHistoryControls = ({
             selected={date}
             onChange={onDateChange}
             className="input"
+            showTimeSelect
           />
         </span>
       </div>
