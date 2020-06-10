@@ -45,7 +45,7 @@ const CSVExport = () => {
             || (exclude
               && trade.assets_given_desc !== 0
               && trade.assets_received_desc.length !== 0))
-          && exportEndTimeUnix >= trade.time_init
+          && exportEndTimeUnix <= trade.time_init
         ) {
           let givenItems = '';
           trade.assets_given_desc.forEach((item) => {
@@ -110,21 +110,23 @@ const CSVExport = () => {
         </div>
         <div className="row">
           <span className="trade-history__control">
-            After:&nbsp;
+            From:&nbsp;
             <DatePicker
-              selected={exportStartTime}
-              onChange={onStartTimeChange}
+              selected={exportEndTime}
+              onChange={onEndTimeChange}
               className="input"
+              showTimeSelect
             />
           </span>
         </div>
         <div className="row">
           <span className="trade-history__control">
-            Before:&nbsp;
+            To:&nbsp;
             <DatePicker
-              selected={exportEndTime}
-              onChange={onEndTimeChange}
+              selected={exportStartTime}
+              onChange={onStartTimeChange}
               className="input"
+              showTimeSelect
             />
           </span>
         </div>
