@@ -23,6 +23,42 @@ const changelog = (props) => {
                 This means that the latest version might not have rolled out to your platform yet when you are reading this.
             </Container>
             <Container className='buildingBlock'>
+                <h2>Version 2.5 - 2020-06-10</h2>
+                <ul>
+                    <li>
+                        Added new Trade History and Trade History Export features. <GithubIssueLink issueNumber={104} />
+                        Check out the <Link to='/release-notes/#2.5'> Release Notes </Link> for more info on this.
+                    </li>
+                    <li>
+                        Added option to bypass Steam's link filtering. <GithubIssueLink issueNumber={265} />
+                    </li>
+                    <li>
+                        Added explanation and warning to the Steam Web API page <GithubIssueLink issueNumber={276} />
+                    </li>
+                    <li>
+                        Auto Float loading is now disabled in market and inventories pages when the CSGOFloat extension is present to avoid unnecessary requests.
+                    </li>
+                    <li>
+                        Skincay was renamed to Skinport across the extension. <GithubIssueLink issueNumber={278} />
+                    </li>
+                    <li>
+                        Improved pricing algorithm to avoid underpricing items when a really low sale happens.
+                    </li>
+                    <li>
+                        Fixed exchange rates not updating when the user changes extension currency from their inventory. <GithubIssueLink issueNumber={266} />
+                    </li>
+                    <li>
+                        Fixed Realtime prices showing up in the wrong currency <GithubIssueLink issueNumber={279} />
+                    </li>
+                    <li>
+                        Fixed items on own side of the trade not getting sorted if when the user switched to the other inventory during loading.
+                    </li>
+                    <li>
+                        Added new team recruitment scam messages to the patterns to report automatically.
+                    </li>
+                </ul>
+            </Container>
+            <Container className='buildingBlock'>
                 <h2>Version 2.4.1 - 2020-06-02 (Firefox only)</h2>
                 <ul>
                     <li>

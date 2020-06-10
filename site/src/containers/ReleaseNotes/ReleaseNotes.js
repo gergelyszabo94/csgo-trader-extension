@@ -23,6 +23,39 @@ const releaseNotes = (props) => {
               The platforms (Chrome Web Store, Mozzila Addons) review submissions before they are available for download.
               This means that the latest version might not have rolled out to your platform yet when you are reading this.
           </Container>
+          <Container className='buildingBlock' id='2.5'>
+              <h2>2.5 - Trade history and export</h2>
+              <p>
+                  If you prefer the video format where I go into even more detail I have you covered:
+              </p>
+              <div className='video-container'>
+                  <iframe
+                    width='560'
+                    height='315'
+                    src='https://www.youtube.com/embed/pc5HmASSfbE'
+                    frameBorder='0'
+                    allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'
+                    title='CSGO Trader Updated 2.5 Release Notes'
+                    allowFullScreen>
+                  </iframe>
+              </div>
+              < br />
+              <p>
+                  This version includes countless bug fixes and smaller improvements, but what I want to show you is the trade history and export feature.
+                  In the extension menu you will find a new Trade history submenu with two new pages.
+              </p>
+              <ShowcaseImage src='/img/release-notes/trade_history_header.png' title='Trade history header'/>
+              <p>
+                 In the Trade History menu you can navigate through your trade history at a breeze.
+                  See prices, links to items and profit/loss as well as a P/L summary.
+              </p>
+              <ShowcaseImage src='/img/release-notes/trade_history_export.png' title='Trade History Export'/>
+              <p>
+                  Under Trade History Export you can select a date range and export your trade history in a .CSV format.
+                  You can analyze it once you loaded it into Excel or your choice of software.
+              </p>
+              <ShowcaseImage src='/img/release-notes/trade_history_export_excel.png' title='Trade History Export Excel'/>
+          </Container>
           <Container className='buildingBlock' id='2.4'>
               <h2>2.4 - RealTime pricing, mass listing support for other games</h2>
               <p>
