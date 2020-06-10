@@ -1631,7 +1631,7 @@ if (isOwnInventory()) {
                 '<a class="popup_menu_item" id="viewTradeHistory">Trade History (CSGO Trader)</a>',
               ),
             );
-            document.getElementById('viewTradeHistory').addEventListener('click', () => {
+            document.getElementById('viewTradeHistory').addEventListener('mouseup', () => {
               chrome.runtime.sendMessage({ openInternalPage: 'index.html?page=trade-history' }, () => {});
             });
           }
