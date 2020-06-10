@@ -211,12 +211,25 @@ progress {
     background-color: rgba(255,0,0 ,0.3) !important;
 }
 
-.realMoneySite {
+.realMoneySites {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 10px;
 }
 
-#skinportLink {
+.realMoneySite {
+    text-align: center;
+    margin: 0 20px 0 20px;
+}
+
+.realMoneySiteLink {
     font-size: 1.1rem;
+}
+
+.realMoneyMarketTitle {
+    font-size: 1.25em;
+    color: #cde46f;
 }
 
 .apiKeyAdded {

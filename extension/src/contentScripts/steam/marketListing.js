@@ -479,8 +479,6 @@ const addPricesInOtherCurrencies = () => {
   });
 };
 
-console.log(csgoFloatExtPresent());
-
 logExtensionPresence();
 updateWalletCurrency();
 updateLoggedInUserInfo();
@@ -601,26 +599,45 @@ if (searchResultsRows !== null) {
 chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }) => {
   if (showRealMoneySiteLinks) {
     const elementToInsertTo = isCommodityItem
-      ? document.getElementById('market_commodity_order_spread')
-      : document.getElementById('market_buyorder_info');
+      ? document.querySelector('.market_commodity_order_block')
+      : document.getElementById('largeiteminfo_warning');
 
     if (elementToInsertTo !== null) {
       elementToInsertTo.insertAdjacentHTML(
         'beforebegin',
-        DOMPurify.sanitize(
-          `<div class="realMoneySite">
-                <a href="https://skinport.com/market/730?search=${fullName}&r=gery" target="_blank" id="skinportLink" class="skinportLink">
-                    You can buy this item 20-30% cheaper on Skinport
-                </a>
-                <span id="realMoneyExpand" class="clickable" title="Click to learn more about what this is">What is this?</span>
+        `<div>
+                <span class="realMoneyMarketTitle">You can save money (20-30%) by buying this item on one of these trusted markets for "real money":</span>
+                <div class="realMoneySites">
+                  <div class="realMoneySite">
+                    <a href="https://skinport.com/market/730?search=${fullName}&r=gery" target="_blank" class="realMoneySiteLink skinportLink">
+                    <img alt="Skinport logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinport.png')}">
+                      <br>
+                      Skinport.com
+                    </a>
+                  </div>
+                  <div class="realMoneySite">
+                    <a href="https://csgofloat.com?ref=gerytrading" target="_blank" class="realMoneySiteLink csgofloatLink">
+                        <img alt="CSGOFloat logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csgofloat.png')}">
+                        <br>
+                        CSGOFloat Market
+                    </a>
+                  </div>
+                </div>
+                <div id="realMoneyExpand" class="clickable" title="Click to learn more about what this is">What is this?</div>
                 <div id="realMoneyMoreInfo" class="hidden">
                     <div style="margin: 10px 0 10px 0">
-                      <a href="https://skinport.com/market/730?r=gery" target="_blank" class="skinportLink">Skinport</a>
-                      is a real money marketplace where you can buy and sell skins. <br>
-                      They have a very simple to use interface, good prices and great support. <br>
+                      <a href="https://skinport.com/market/730?r=gery" target="_blank" class="skinportLink">Skinport</a> and 
+                      <a href="https://csgofloat.com?ref=gerytrading" target="_blank" class="csgofloatLink">
+                      CSGOFloat
+                      </a>
+                      are real money marketplaces where you can buy and sell skins. <br>
                       You can save money by buying items there instead of the market. <br>
                       <a href="https://skinport.com/market/730?search=${fullName}&r=gery" target="_blank" class="skinportLink">
                           Follow this link to check listings for his item on Skinport.com
+                      </a>
+                      or
+                      <a href="https://csgofloat.com?ref=gerytrading" target="_blank" class="csgofloatLink">
+                      this one and find your desired items on CSGOFloat's peer to peer market
                       </a>
                     </div>
                     <div>
@@ -629,8 +646,6 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                     </div>
                 </div>
             </div>`,
-          { ADD_ATTR: ['target'] },
-        ),
       );
 
       document.querySelectorAll('.skinportLink').forEach((link) => {
