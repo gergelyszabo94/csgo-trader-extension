@@ -4,7 +4,10 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const TradeHistoryControls = ({
-  historySize, setHistorySize, setExcludeEmpty, setStartTime,
+  historySize,
+  setHistorySize,
+  setExcludeEmpty,
+  setStartTime,
 }) => {
   const [selectState, setSelectState] = useState(historySize);
   const [exclude, setExclude] = useState(false);
@@ -32,36 +35,54 @@ const TradeHistoryControls = ({
 
   return (
     <div className="trade-history__controls">
-      <span>Show: </span>
-      <select
-        className="select-theme"
-        onChange={changeHandler}
-        value={selectState}
-      >
-        {selectValues.map((selectValue) => {
-          return (
-            <option key={selectValue} value={selectValue} title={selectValue}>
-              {selectValue}
-            </option>
-          );
-        })}
-      </select>
-      <span className="trade-history__control">
-        Show before:&nbsp;
-        <DatePicker
-          selected={date}
-          onChange={onDateChange}
-        />
-      </span>
-      <span className="trade-history__control">
-        Exclude empty offers:&nbsp;
-        <input
-          type="checkbox"
-          onChange={onExcludeChange}
-          checked={exclude}
-          title="Hide trades that are empty in one side"
-        />
-      </span>
+      <div className="row">
+        <span className="trade-history__control">
+          Show:&nbsp;
+          <select
+            className="select-theme"
+            onChange={changeHandler}
+            value={selectState}
+          >
+            {selectValues.map((selectValue) => {
+              return (
+                <option
+                  key={selectValue}
+                  value={selectValue}
+                  title={selectValue}
+                >
+                  {selectValue}
+                </option>
+              );
+            })}
+          </select>
+        </span>
+      </div>
+      <div className="row">
+        <span className="trade-history__control">
+          Show before:&nbsp;
+          <DatePicker
+            selected={date}
+            onChange={onDateChange}
+            className="input"
+            showTimeSelect
+          />
+        </span>
+      </div>
+      <div className="row">
+        <span className="trade-history__control">
+          <label className="checkmark">
+            Exclude empty offers:&nbsp;
+            <input
+              type="checkbox"
+              onChange={onExcludeChange}
+              checked={exclude}
+              title="Hide trades that are empty in one side"
+              className="checkmark__checkbox"
+            />
+            <span className="checkmark__designed" />
+          </label>
+        </span>
+      </div>
     </div>
   );
 };

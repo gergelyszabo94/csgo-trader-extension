@@ -46,7 +46,7 @@ function App() {
       ) : null}
       {window.location.search === '?page=trade-history' ? (
         <Route>
-          <Redirect to="/trade-history/" />
+          <Redirect to="/trade-history/history" />
         </Route>
       ) : null}
     </Router>
