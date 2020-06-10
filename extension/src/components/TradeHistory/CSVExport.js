@@ -8,6 +8,7 @@ import { getTradeHistory } from 'utils/IEconService';
 
 const CSVExport = () => {
   let csvContent = 'Partner SteamID,Partner Name,Time,P/L,Given Total,Received Total,Items Given,Items Taken\n';
+  let requestCount = 0;
 
   const [downloadURI, setDownloadURI] = useState('');
   const [showDownload, setShowDownload] = useState(false);
@@ -21,7 +22,6 @@ const CSVExport = () => {
   const [exportEndTimeUnix, setExportEndTimeUnix] = useState(
     parseInt(new Date().getTime() / 1000),
   );
-  const [requestCount, setRequestCount] = useState(0);
 
   const finishExport = () => {
     const encodedURI = `data:text/csv;charset=utf-8,${encodeURIComponent(
@@ -35,10 +35,14 @@ const CSVExport = () => {
   };
 
   const loadNextChunk = (startTime, lastTradeID) => {
-    setRequestCount(requestCount + 1);
-    setStatusMessage(`Request ${requestCount} received`);
     getTradeHistory(100, startTime, lastTradeID).then((tradesResponse) => {
+      requestCount += 1;
+      setStatusMessage(`Request ${requestCount} received`);
+
       let lines = '';
+      let lastProcessedTradeTime;
+      let lastProcessedTradeID;
+
       tradesResponse.trades.forEach((trade) => {
         if (
           (!exclude
@@ -61,13 +65,19 @@ const CSVExport = () => {
             trade.givenTotal
           },${trade.receivedTotal},"${givenItems}","${receivedItems}"\n`;
         }
+        lastProcessedTradeTime = trade.time_init;
+        lastProcessedTradeID = trade.tradeid;
       });
+
       csvContent += lines;
-      finishExport();
+      if (tradesResponse.trades.length === 0 || exportEndTimeUnix <= lastProcessedTradeTime) {
+        loadNextChunk(lastProcessedTradeTime, lastProcessedTradeID);
+      } else finishExport();
     });
   };
 
   const startExport = () => {
+    requestCount = 0;
     setStatusMessage('Exporting in progress');
     loadNextChunk(exportStartTimeUnix);
   };
