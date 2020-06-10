@@ -14,7 +14,7 @@ const links = [
   {
     title: 'Trade History',
     id: 'tradehistory',
-    path: '/trade-history/',
+    path: '/trade-history/history',
     isExternal: false,
   },
   {

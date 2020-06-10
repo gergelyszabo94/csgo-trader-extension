@@ -100,8 +100,8 @@ const CSVExport = () => {
   };
 
   return (
-    <div className="trade-history__controls">
-      <h3>Export to .CSV</h3>
+    <div className="container">
+      <h1>Export to .CSV</h1>
       <div>
         <div className="row">
           <span className="trade-history__control">
