@@ -47,7 +47,7 @@ const CSVExport = () => {
         if (
           (!exclude
             || (exclude
-              && trade.assets_given_desc !== 0
+              && trade.assets_given_desc.length !== 0
               && trade.assets_received_desc.length !== 0))
           && exportEndTimeUnix <= trade.time_init
         ) {
