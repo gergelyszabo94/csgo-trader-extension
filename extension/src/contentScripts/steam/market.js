@@ -356,8 +356,10 @@ if (orders) {
         const orderID = getMyOrderIDFromElement(orderRow);
 
         const orderPrice = orderRow.querySelector('.market_listing_price').innerText;
+        const orderQuantity = orderRow.querySelector('.market_listing_buyorder_qty').innerText;
 
-        totalOrderAmount += parseInt(steamFormattedPriceToCents(orderPrice));
+        totalOrderAmount += parseInt(steamFormattedPriceToCents(orderPrice))
+          * parseInt(orderQuantity);
 
         priceQueue.jobs.push({
           type: 'my_buy_order',
