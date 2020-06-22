@@ -56,6 +56,12 @@ const market = () => {
         type="flipSwitchStorage"
         description="Puts links to the Real Money marketplaces to market listings pages"
       />
+      <Row
+        name="Show instant buy button on market listings"
+        id="marketListingsInstantBuy"
+        type="flipSwitchStorage"
+        description="Adds an instant buy button to each listing that allows you to skip the purchase dialog"
+      />
     </Category>
   );
 };

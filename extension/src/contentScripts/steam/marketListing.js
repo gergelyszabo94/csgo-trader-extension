@@ -14,6 +14,7 @@ import {
   toFixedNoRounding, csgoFloatExtPresent,
   addUpdatedRibbon, changePageTitle,
 } from 'utils/utilsModular';
+import { buyListing } from 'utils/market';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import exteriors from 'utils/static/exteriors';
 import { getPrice, getStickerPriceTotal, updateWalletCurrency } from 'utils/pricing';
@@ -423,8 +424,8 @@ const sortListings = (sortingMode) => {
 };
 
 const addPricesInOtherCurrencies = () => {
-  chrome.storage.local.get('marketOriginalPrice', (result) => {
-    if (result.marketOriginalPrice) {
+  chrome.storage.local.get('marketOriginalPrice', (marketOriginalPrice) => {
+    if (marketOriginalPrice) {
       const listings = getListings();
       const listingsSection = document.getElementById('searchResultsRows');
 
@@ -475,6 +476,60 @@ const addPricesInOtherCurrencies = () => {
 
         injectScript(currencyConverterScript, true, 'currencyConverter', false);
       }
+    }
+  });
+};
+
+const addInstantBuyButtons = () => {
+  chrome.storage.local.get('marketListingsInstantBuy', (marketListingsInstantBuy) => {
+    if (marketListingsInstantBuy && !isCommodityItem) {
+      const listings = getListings();
+      const listingsSection = document.getElementById('searchResultsRows');
+      listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
+        (listingRow) => {
+          if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows'
+            && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
+            const listingID = getListingIDFromElement(listingRow);
+
+            if (listingRow.querySelector('.instantBuy') === null) { // if not added before
+              listingRow.querySelector('.market_listing_buy_button').insertAdjacentHTML(
+                'afterend',
+                DOMPurify.sanitize(
+                  `<div class="instantBuy">
+                          <a class="item_market_action_button btn_green_white_innerfade btn_small">
+                            <span title="Buy this item with one click (no purchase dialog)">
+                              Instant Buy
+                           </span>
+                          </a>
+                        </div>`,
+                ),
+              );
+
+              const instaBuyEl = listingRow.querySelector('.instantBuy');
+              instaBuyEl.addEventListener('click', () => {
+                const stateEl = document.getElementById('billing_state_buynow');
+
+                buyListing(listings[listingID], {
+                  first_name: encodeURIComponent(document.getElementById('first_name_buynow').value),
+                  last_name: encodeURIComponent(document.getElementById('last_name_buynow').value),
+                  billing_address: encodeURIComponent(document.getElementById('billing_address_buynow').value),
+                  billing_address_two: encodeURIComponent(document.getElementById('billing_address_two_buynow').value),
+                  billing_country: encodeURIComponent(document.getElementById('billing_country_buynow').value),
+                  billing_city: encodeURIComponent(document.getElementById('billing_city_buynow').value),
+                  billing_state: stateEl !== null ? encodeURIComponent(stateEl.value) : '',
+                  billing_postal_code: encodeURIComponent(document.getElementById('billing_postal_code_buynow').value),
+                }).then(() => {
+                  listingRow.querySelector('.market_listing_action_buttons').innerText = 'Purchased';
+                }).catch((err) => {
+                  console.log(err);
+                  instaBuyEl.innerText = 'Error purchasing!';
+                  instaBuyEl.style.color = 'red';
+                });
+              });
+            }
+          }
+        },
+      );
     }
   });
 };
@@ -574,6 +629,7 @@ addFloatBarSkeletons();
 addPhasesIndicator();
 addStickers();
 addPricesInOtherCurrencies();
+addInstantBuyButtons();
 
 const observer = new MutationObserver((mutations) => {
   for (const mutation of mutations) {
@@ -583,6 +639,7 @@ const observer = new MutationObserver((mutations) => {
       addStickers();
       addListingsToFloatQueue();
       addPricesInOtherCurrencies();
+      addInstantBuyButtons();
     }
   }
 });

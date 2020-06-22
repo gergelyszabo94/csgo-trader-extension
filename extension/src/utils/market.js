@@ -1,5 +1,34 @@
 import { getSessionID } from 'utils/utilsModular';
 
+const buyListing = (listing, buyerKYC) => {
+  console.log(listing);
+  return new Promise((resolve, reject) => {
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+
+    const currencyID = listing.converted_currencyid - 2000;
+    const request = new Request(`https://steamcommunity.com/market/buylisting/${listing.listingid}`,
+      {
+        method: 'POST',
+        headers: myHeaders,
+        body: `sessionid=${getSessionID()}&currency=${currencyID}&fee=${listing.converted_fee}&subtotal=${listing.converted_price}&total=${listing.converted_fee + listing.converted_price}&quantity=1&first_name=${buyerKYC.first_name}&last_name=${buyerKYC.last_name}&billing_address=${buyerKYC.billing_address}&billing_address_two=${buyerKYC.billing_address_two}&billing_country=${buyerKYC.billing_country}&billing_city=${buyerKYC.billing_city}&billing_state=${buyerKYC.billing_state}&billing_postal_code=${buyerKYC.billing_postal_code}&save_my_address=1`,
+        credentials: 'include',
+      });
+
+    const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
+
+    fetchFunction(request).then((response) => {
+      if (!response.ok) {
+        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+        reject({ status: response.status, statusText: response.statusText });
+      } else resolve('success');
+    }).catch((err) => {
+      console.log(err);
+      reject(err);
+    });
+  });
+};
+
 const removeListing = (listingID) => {
   return new Promise((resolve, reject) => {
     const myHeaders = new Headers();
@@ -125,5 +154,5 @@ const getMarketHistory = (start, count) => {
 };
 
 export {
-  removeListing, cancelOrder, getMarketHistory, listItem,
+  removeListing, cancelOrder, getMarketHistory, listItem, buyListing,
 };
