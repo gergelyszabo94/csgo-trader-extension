@@ -63,6 +63,12 @@ const inventory = () => {
           </>
         )}
       />
+      <Row
+        name="Show Instant and Quick sell buttons"
+        id="inventoryInstantQuickButtons"
+        type="flipSwitchStorage"
+        description="Adds Instant Sell and Quick Sell buttons by the normal Sell button for the active inventory item"
+      />
     </Category>
   );
 };

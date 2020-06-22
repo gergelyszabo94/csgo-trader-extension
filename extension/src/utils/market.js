@@ -1,7 +1,6 @@
 import { getSessionID } from 'utils/utilsModular';
 
 const buyListing = (listing, buyerKYC) => {
-  console.log(listing);
   return new Promise((resolve, reject) => {
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');

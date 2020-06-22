@@ -20,7 +20,7 @@ import {
   getPriceOverview, getPriceAfterFees, userPriceToProperPrice,
   centsToSteamFormattedPrice, prettyPrintPrice, addRealTimePriceToPage,
   priceQueue, workOnPriceQueue, getSteamWalletCurrency, initPriceQueue,
-  updateWalletCurrency,
+  updateWalletCurrency, getHighestBuyOrder, getLowestListingPrice,
 }
   from 'utils/pricing';
 import { getItemByIDs, getIDsFromElement, findElementByIDs } from 'utils/itemsToElementsToItems';
@@ -82,7 +82,9 @@ const getActiveInventoryAppID = () => {
 };
 
 const cleanUpElements = (nonCSGOInventory) => {
-  document.querySelectorAll('.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name, .startingAtVolume').forEach((element) => {
+  document.querySelectorAll(
+    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name, .startingAtVolume, .marketActionInstantSell, .marketActionQuickSell, .listingError',
+  ).forEach((element) => {
     element.remove();
   });
 
@@ -437,7 +439,7 @@ const addRightSideElements = () => {
       cleanUpElements(false);
 
       // removes previously added listeners
-      document.querySelectorAll('.showTechnical, .lowerModule').forEach((element) => {
+      document.querySelectorAll('.showTechnical, .lowerModule, .marketActionInstantSell, .marketActionQuickSell').forEach((element) => {
         element.removeEventListener('click');
       });
 
@@ -656,6 +658,87 @@ const addRightSideElements = () => {
 
         // adds "starting at" and sales volume to everyone's inventory
         if (!isOwnInventory()) addStartingAtPrice(item.market_hash_name);
+        else if (item.marketable) { // adds quick and instant sell buttons
+          chrome.storage.local.get(['inventoryInstantQuickButtons'], ({ inventoryInstantQuickButtons }) => {
+            if (inventoryInstantQuickButtons) {
+              document.querySelectorAll('.item_market_actions').forEach((marketActions) => {
+                marketActions.insertAdjacentHTML(
+                  'beforeend',
+                  DOMPurify.sanitize(
+                    `<a class="marketActionInstantSell item_market_action_button item_market_action_button_green">
+                           <span class="item_market_action_button_edge item_market_action_button_left"></span>
+                           <span class="item_market_action_button_contents" title="List the item on the market to be bought by the highest buy order">Instant Sell</span>
+                           <span class="item_market_action_button_edge item_market_action_button_right"></span>
+                      </a>
+                      <a class="marketActionQuickSell item_market_action_button item_market_action_button_green">
+                           <span class="item_market_action_button_edge item_market_action_button_left"></span>
+                           <span class="item_market_action_button_contents" title="List the item to be the cheapest on the market">Quick Sell</span>
+                           <span class="item_market_action_button_edge item_market_action_button_right"></span>
+                      </a>`,
+                  ),
+                );
+
+                marketActions.querySelectorAll('.marketActionInstantSell').forEach((instantSellButton) => {
+                  instantSellButton.addEventListener('click', () => {
+                    getHighestBuyOrder(
+                      item.appid,
+                      item.market_hash_name,
+                    ).then((highestOrderPrice) => {
+                      listItem(
+                        item.appid,
+                        item.contextid,
+                        1,
+                        item.assetid,
+                        getPriceAfterFees(highestOrderPrice),
+                      ).then(() => {
+                        instantSellButton.querySelector('.item_market_action_button_contents').innerText = 'Listing created!';
+                      }).catch((err) => {
+                        console.log(err);
+                        document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
+                          marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`<div class="listingError">${err.message}</div>`));
+                        });
+                      });
+                    }).catch((err) => {
+                      console.log(err);
+                      document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
+                        marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`<div class="listingError">${err}</div>`));
+                      });
+                    });
+                  });
+                });
+
+                marketActions.querySelectorAll('.marketActionQuickSell').forEach((quickSellButton) => {
+                  quickSellButton.addEventListener('click', () => {
+                    getLowestListingPrice(
+                      item.appid,
+                      item.market_hash_name,
+                    ).then((lowestListingPrice) => {
+                      listItem(
+                        item.appid,
+                        item.contextid,
+                        1,
+                        item.assetid,
+                        getPriceAfterFees(lowestListingPrice) - 1,
+                      ).then(() => {
+                        quickSellButton.querySelector('.item_market_action_button_contents').innerText = 'Listing created!';
+                      }).catch((err) => {
+                        console.log(err);
+                        document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
+                          marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`<div class="listingError">${err.message}</div>`));
+                        });
+                      });
+                    }).catch((err) => {
+                      console.log(err);
+                      document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
+                        marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`<div class="listingError">${err}</div>`));
+                      });
+                    });
+                  });
+                });
+              });
+            }
+          });
+        }
       }
     } else console.log('Could not get assetID of active item');
   } else {

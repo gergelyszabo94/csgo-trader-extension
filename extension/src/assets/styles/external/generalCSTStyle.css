@@ -407,6 +407,19 @@ progress {
     height: 18px !important;
 }
 
+.marketActionQuickSell {
+    margin-left: 1px;
+}
+
+.marketActionInstantSell {
+    margin-left: 5px;
+}
+
+.listingError {
+    color: red;
+    margin: 0 0 10px 10px;
+}
+
 .exteriorSTInfo{
     position: absolute;
     top: 5px;
