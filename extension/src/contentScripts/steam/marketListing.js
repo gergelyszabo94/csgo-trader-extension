@@ -18,7 +18,8 @@ import { buyListing, createOrder } from 'utils/market';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import exteriors from 'utils/static/exteriors';
 import {
-  getHighestBuyOrder, getPrice, getStickerPriceTotal, updateWalletCurrency,
+  getHighestBuyOrder, getPrice, getStickerPriceTotal,
+  steamFormattedPriceToCents, updateWalletCurrency,
 } from 'utils/pricing';
 import { trackEvent } from 'utils/analytics';
 import {
@@ -620,15 +621,25 @@ if (searchBar !== null) {
 const buyOrderInfoEl = document.getElementById('market_buyorder_info');
 if (buyOrderInfoEl !== null) {
   buyOrderInfoEl.firstElementChild.insertAdjacentHTML(
-    'afterbegin',
+    'beforeend',
     DOMPurify.sanitize(`
-        <div style="float: right; padding-right: 10px">
-            <a id="place_highest_order" class="btn_green_white_innerfade btn_medium market_noncommodity_buyorder_button" >
+        <div style="float: right; padding-right: 10px; color: white">
+            <a id="place_highest_order" class="btn_green_white_innerfade btn_medium market_noncommodity_buyorder_button" style="margin-right: 5px">
             <span>Place highest order</span>
             </a>
+            <a id="quick_place_order" class="btn_green_white_innerfade btn_medium market_noncommodity_buyorder_button" style="margin-right: 5px">
+            <span>Quick-place order</span>
+            </a>
+            Price:
+            <input type="text" id="quick_order_price" style="width: 30px; margin-right: 5px"/>
+            Quantity:
+            <input type="number" value="1" id="quick_order_qt" style="width: 30px; margin-right: 5px"/>
         </div>
     `),
   );
+
+  // repositions expandable details so it does not overlap with the custom buttons
+  document.getElementById('market_buyorder_info_details').style['margin-top'] = '45px';
 
   document.getElementById('place_highest_order').addEventListener('click', () => {
     getHighestBuyOrder(steamApps.CSGO.appID, fullName).then((highestOrder) => {
@@ -647,6 +658,27 @@ if (buyOrderInfoEl !== null) {
           `<div class="marketListingBuyOrderError">${err}</div>`,
         );
       });
+    });
+  });
+
+  document.getElementById('quick_place_order').addEventListener('click', () => {
+    const quantity = parseInt(document.getElementById('quick_order_qt').value);
+    const pricePerItem = parseInt(steamFormattedPriceToCents(document.getElementById('quick_order_price').value));
+
+    createOrder(
+      steamApps.CSGO.appID,
+      fullName,
+      pricePerItem * quantity,
+      quantity,
+      getBuyerKYCFromPage(),
+    ).then(() => {
+      window.location.reload();
+    }).catch((err) => {
+      console.log(err);
+      buyOrderInfoEl.insertAdjacentHTML(
+        'beforeend',
+        `<div class="marketListingBuyOrderError">${err}</div>`,
+      );
     });
   });
 }
