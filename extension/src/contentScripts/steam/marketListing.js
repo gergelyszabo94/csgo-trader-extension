@@ -14,15 +14,18 @@ import {
   toFixedNoRounding, csgoFloatExtPresent,
   addUpdatedRibbon, changePageTitle,
 } from 'utils/utilsModular';
-import { buyListing } from 'utils/market';
+import { buyListing, createOrder } from 'utils/market';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import exteriors from 'utils/static/exteriors';
-import { getPrice, getStickerPriceTotal, updateWalletCurrency } from 'utils/pricing';
+import {
+  getHighestBuyOrder, getPrice, getStickerPriceTotal, updateWalletCurrency,
+} from 'utils/pricing';
 import { trackEvent } from 'utils/analytics';
 import {
   genericMarketLink, souvenir, starChar, stattrak, stattrakPretty,
 } from 'utils/static/simpleStrings';
 import { injectScript, injectStyle } from 'utils/injection';
+import steamApps from 'utils/static/steamApps';
 
 const inBrowserInspectButtonPopupLink = `
     <a class="popup_menu_item" id="inbrowser_inspect" href="http://csgo.gallery/" target="_blank">
@@ -68,7 +71,7 @@ const thereSouvenirForThisItem = souvenirExists(textOfDescriptors);
 const isCommodityItem = document.getElementById('searchResultsRows') === null;
 
 let weaponName = '';
-const fullName = decodeURIComponent(window.location.href).split('listings/730/')[1];
+const fullName = decodeURIComponent(window.location.pathname).split('listings/730/')[1];
 let star = '';
 const isStattrak = /StatTrak™/.test(fullName);
 const isSouvenir = /Souvenir/.test(fullName);
@@ -480,6 +483,21 @@ const addPricesInOtherCurrencies = () => {
   });
 };
 
+const getBuyerKYCFromPage = () => {
+  const stateEl = document.getElementById('billing_state_buynow');
+
+  return {
+    first_name: encodeURIComponent(document.getElementById('first_name_buynow').value),
+    last_name: encodeURIComponent(document.getElementById('last_name_buynow').value),
+    billing_address: encodeURIComponent(document.getElementById('billing_address_buynow').value),
+    billing_address_two: encodeURIComponent(document.getElementById('billing_address_two_buynow').value),
+    billing_country: encodeURIComponent(document.getElementById('billing_country_buynow').value),
+    billing_city: encodeURIComponent(document.getElementById('billing_city_buynow').value),
+    billing_state: stateEl !== null ? encodeURIComponent(stateEl.value) : '',
+    billing_postal_code: encodeURIComponent(document.getElementById('billing_postal_code_buynow').value),
+  };
+};
+
 const addInstantBuyButtons = () => {
   chrome.storage.local.get('marketListingsInstantBuy', (marketListingsInstantBuy) => {
     if (marketListingsInstantBuy && !isCommodityItem) {
@@ -498,7 +516,7 @@ const addInstantBuyButtons = () => {
                   `<div class="instantBuy">
                           <a class="item_market_action_button btn_green_white_innerfade btn_small">
                             <span title="Buy this item with one click (no purchase dialog)">
-                              Instant Buy
+                              Ins\tant Buy
                            </span>
                           </a>
                         </div>`,
@@ -507,18 +525,7 @@ const addInstantBuyButtons = () => {
 
               const instaBuyEl = listingRow.querySelector('.instantBuy');
               instaBuyEl.addEventListener('click', () => {
-                const stateEl = document.getElementById('billing_state_buynow');
-
-                buyListing(listings[listingID], {
-                  first_name: encodeURIComponent(document.getElementById('first_name_buynow').value),
-                  last_name: encodeURIComponent(document.getElementById('last_name_buynow').value),
-                  billing_address: encodeURIComponent(document.getElementById('billing_address_buynow').value),
-                  billing_address_two: encodeURIComponent(document.getElementById('billing_address_two_buynow').value),
-                  billing_country: encodeURIComponent(document.getElementById('billing_country_buynow').value),
-                  billing_city: encodeURIComponent(document.getElementById('billing_city_buynow').value),
-                  billing_state: stateEl !== null ? encodeURIComponent(stateEl.value) : '',
-                  billing_postal_code: encodeURIComponent(document.getElementById('billing_postal_code_buynow').value),
-                }).then(() => {
+                buyListing(listings[listingID], getBuyerKYCFromPage()).then(() => {
                   listingRow.querySelector('.market_listing_action_buttons').innerText = 'Purchased';
                 }).catch((err) => {
                   console.log(err);
@@ -607,6 +614,41 @@ if (searchBar !== null) {
       sortListings(event.target.options[event.target.selectedIndex].value);
     },
   );
+}
+
+// adds custom buy order buttons/inputs
+const buyOrderInfoEl = document.getElementById('market_buyorder_info');
+if (buyOrderInfoEl !== null) {
+  buyOrderInfoEl.firstElementChild.insertAdjacentHTML(
+    'afterbegin',
+    DOMPurify.sanitize(`
+        <div style="float: right; padding-right: 10px">
+            <a id="place_highest_order" class="btn_green_white_innerfade btn_medium market_noncommodity_buyorder_button" >
+            <span>Place highest order</span>
+            </a>
+        </div>
+    `),
+  );
+
+  document.getElementById('place_highest_order').addEventListener('click', () => {
+    getHighestBuyOrder(steamApps.CSGO.appID, fullName).then((highestOrder) => {
+      createOrder(
+        steamApps.CSGO.appID,
+        fullName,
+        parseInt(highestOrder) + 1,
+        1,
+        getBuyerKYCFromPage(),
+      ).then(() => {
+        window.location.reload();
+      }).catch((err) => {
+        console.log(err);
+        buyOrderInfoEl.insertAdjacentHTML(
+          'beforeend',
+          `<div class="marketListingBuyOrderError">${err}</div>`,
+        );
+      });
+    });
+  });
 }
 
 // reload page on failure

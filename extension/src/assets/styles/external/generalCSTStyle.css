@@ -420,6 +420,12 @@ progress {
     margin: 0 0 10px 10px;
 }
 
+.marketListingBuyOrderError {
+    color: red;
+    width: 900px;
+    white-space: pre-wrap; /* not sure what this is but it works to not let the text overflow */
+}
+
 .exteriorSTInfo{
     position: absolute;
     top: 5px;
