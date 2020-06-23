@@ -577,7 +577,6 @@ const addRightSideElements = () => {
           }
         });
 
-
         // adds doppler phase  to the name and makes it a link to the market listings page
         const name = getItemByAssetID(getItemInfoFromPage(steamApps.CSGO.appID, '2'), activeID).description.name;
         changeName(name, item.name_color, item.marketlink, item.dopplerInfo);

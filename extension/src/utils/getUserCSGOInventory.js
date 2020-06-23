@@ -33,7 +33,6 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
           const duplicates = {};
           const floatCacheAssetIDs = [];
 
-
           // counts duplicates
           for (const asset of Object.values(ids)) {
             const assetID = asset.id;
@@ -154,6 +153,5 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
     },
   );
 });
-
 
 export default getUserCSGOInventory;

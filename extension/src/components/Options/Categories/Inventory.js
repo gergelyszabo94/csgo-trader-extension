@@ -5,7 +5,6 @@ import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
 import { sortingModes } from 'utils/static/sortingModes';
 import Category from '../Category/Category';
 
-
 const inventory = () => {
   const transformSortingModes = () => {
     const transformed = [];

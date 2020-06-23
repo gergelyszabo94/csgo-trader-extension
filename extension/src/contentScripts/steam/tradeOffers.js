@@ -714,7 +714,6 @@ if (activePage === 'incoming_offers') {
     }
   });
 
-
   // overrides steam's trade offer declining logic to skip the confirmation
   // (when set to do so in the options)
   chrome.storage.local.get(['quickDeclineOffer'], ({ quickDeclineOffer }) => {
@@ -821,7 +820,6 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
       });
     }
   });
-
 
   const tradeOffersList = document.querySelector('.profile_leftcol');
   if (tradeOffersList !== null && document.querySelector('.profile_fatalerror') === null) {
