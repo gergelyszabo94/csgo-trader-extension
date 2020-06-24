@@ -11,6 +11,7 @@ import {
   workOnPriceQueue, initPriceQueue, updateWalletCurrency,
 } from 'utils/pricing';
 import { injectStyle } from 'utils/injection';
+import { overrideLoadMarketHistory } from 'utils/steamOverriding';
 
 const marketHistoryExport = {
   history: [],
@@ -247,6 +248,7 @@ const addHighestBuyOrderPrice = (job, highestBuyOrder) => {
 };
 
 logExtensionPresence();
+overrideLoadMarketHistory();
 updateWalletCurrency();
 initPriceQueue();
 updateLoggedInUserInfo();

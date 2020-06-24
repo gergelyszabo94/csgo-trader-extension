@@ -177,6 +177,58 @@ const overridePopulateActions = () => {
   injectScript(overRidePopulateActionsMenuScript, false, 'overRidePopulateActionsMenu', null);
 };
 
+// loads more market history items
+const overrideLoadMarketHistory = () => {
+  chrome.storage.local.get('marketHistoryEventsToShow', ({ marketHistoryEventsToShow }) => {
+    const overrideMarketHistoryScript = `
+    function LoadMarketHistory()
+    {
+        if ( g_bBusyLoadingMarketHistory )
+        {
+          return;
+        }
+
+        g_bBusyLoadingMarketHistory = true;
+        var elMyHistoryContents = $('tabContentsMyMarketHistory');
+        new Ajax.Request( 'https://steamcommunity.com/market/myhistory', {
+          method: 'get',
+          parameters: {
+            count: ${marketHistoryEventsToShow},
+          },
+        onSuccess: function( transport ) {
+          if ( transport.responseJSON )
+          {
+            var response = transport.responseJSON;
+
+            elMyHistoryContents.innerHTML = response.results_html;
+
+            MergeWithAssetArray( response.assets );
+            eval( response.hovers );
+
+            g_oMyHistory = new CAjaxPagingControls(
+            {
+              query: '',
+              total_count: response.total_count,
+              pagesize: response.pagesize,
+              prefix: 'tabContentsMyMarketHistory',
+              class_prefix: 'market'
+            }, 'https://steamcommunity.com/market/myhistory/'
+           );
+
+           g_oMyHistory.SetResponseHandler( function( response ) {
+           MergeWithAssetArray( response.assets );
+           eval( response.hovers );
+            });
+          }
+        },
+      onComplete: function() { g_bBusyLoadingMarketHistory = false; }
+   });
+}`;
+    injectScript(overrideMarketHistoryScript, false, 'overRidePopulateActionsMenu', null);
+  });
+};
+
 export {
-  overrideShowTradeOffer, overridePopulateActions, overrideHandleTradeActionMenu,
+  overrideShowTradeOffer, overridePopulateActions,
+  overrideHandleTradeActionMenu, overrideLoadMarketHistory,
 };

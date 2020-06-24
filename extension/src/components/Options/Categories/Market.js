@@ -62,6 +62,28 @@ const market = () => {
         type="flipSwitchStorage"
         description="Adds an instant buy button to each listing that allows you to skip the purchase dialog"
       />
+      <Row
+        name="Market history events to show"
+        id="marketHistoryEventsToShow"
+        type="select"
+        description="The number of market history events you want to see when you open your market history"
+        options={
+          [
+            {
+              key: 10,
+              text: 10,
+            },
+            {
+              key: 20,
+              text: 20,
+            },
+            {
+              key: 50,
+              text: 50,
+            },
+          ]
+        }
+      />
     </Category>
   );
 };
