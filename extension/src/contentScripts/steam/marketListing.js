@@ -220,10 +220,15 @@ const populateFloatInfo = (listingID, floatInfo) => {
   if (listingElement !== null) {
     const floatTechnical = listingElement.querySelector('.floatTechnical');
     if (floatTechnical !== null) {
-      floatTechnical.innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo), { ADD_ATTR: ['target'] });
-      const position = ((toFixedNoRounding(floatInfo.floatvalue, 2) * 100) - 2);
-      listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
-      listingElement.querySelector('.floatDropTarget').innerText = toFixedNoRounding(floatInfo.floatvalue, 4);
+      if (floatInfo === undefined || floatInfo.floatvalue === 0) {
+        // agents don't have float values yet they sometimes return float info, weird
+        listingElement.querySelector('.floatBarMarket').remove();
+      } else {
+        floatTechnical.innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo), { ADD_ATTR: ['target'] });
+        const position = ((toFixedNoRounding(floatInfo.floatvalue, 2) * 100) - 2);
+        listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
+        listingElement.querySelector('.floatDropTarget').innerText = toFixedNoRounding(floatInfo.floatvalue, 4);
+      }
     }
   }
 };
@@ -293,8 +298,10 @@ const addPatterns = (listingID, floatInfo) => {
 
 const addFloatDataToPage = (job, floatInfo) => {
   populateFloatInfo(job.listingID, floatInfo);
-  setStickerInfo(job.listingID, floatInfo.stickers);
-  addPatterns(job.listingID, floatInfo);
+  if (floatInfo !== undefined) {
+    setStickerInfo(job.listingID, floatInfo.stickers);
+    addPatterns(job.listingID, floatInfo);
+  }
 };
 
 const hideFloatBar = (listingID) => {
@@ -511,13 +518,15 @@ const addInstantBuyButtons = () => {
             const listingID = getListingIDFromElement(listingRow);
 
             if (listingRow.querySelector('.instantBuy') === null) { // if not added before
-              listingRow.querySelector('.market_listing_buy_button').insertAdjacentHTML(
+              const buyButton = listingRow.querySelector('.market_listing_buy_button');
+              buyButton.parentElement.style['line-height'] = '30px';
+              buyButton.insertAdjacentHTML(
                 'afterend',
                 DOMPurify.sanitize(
                   `<div class="instantBuy">
                           <a class="item_market_action_button btn_green_white_innerfade btn_small">
                             <span title="Buy this item with one click (no purchase dialog)">
-                              Ins\tant Buy
+                              Instant Buy
                            </span>
                           </a>
                         </div>`,
