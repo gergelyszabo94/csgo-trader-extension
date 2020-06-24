@@ -737,7 +737,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
       elementToInsertTo.insertAdjacentHTML(
         'beforebegin',
         `<div>
-                <span class="realMoneyMarketTitle">You can save money (20-30%) by buying this item on one of these trusted markets for "real money":</span>
+                <span class="realMoneyMarketTitle">You can save money (20-40%) by buying this item on one of these trusted markets for "real money":</span>
                 <div class="realMoneySites">
                   <div class="realMoneySite">
                     <a href="https://skinport.com/market/730?search=${fullName}&r=gery" target="_blank" class="realMoneySiteLink skinportLink">
@@ -753,11 +753,19 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                         CSGOFloat Market
                     </a>
                   </div>
+                  <div class="realMoneySite">
+                    <a href="https://skinbaron.com/partner/gery" target="_blank" class="realMoneySiteLink skinbaronLink">
+                        <img alt="Skinbaron logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinbaron.png')}">
+                        <br>
+                        Skinbaron.com
+                    </a>
+                  </div>
                 </div>
                 <div id="realMoneyExpand" class="clickable" title="Click to learn more about what this is">What is this?</div>
                 <div id="realMoneyMoreInfo" class="hidden">
                     <div style="margin: 10px 0 10px 0">
-                      <a href="https://skinport.com/market/730?r=gery" target="_blank" class="skinportLink">Skinport</a> and 
+                      <a href="https://skinport.com/market/730?r=gery" target="_blank" class="skinportLink">Skinport</a>,
+                      <a href="https://skinbaron.com/partner/gery" target="_blank" class="skinbaronLink">Skinbaron</a> and 
                       <a href="https://csgofloat.com?ref=gerytrading" target="_blank" class="csgofloatLink">
                       CSGOFloat
                       </a>
@@ -765,11 +773,12 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       You can save money by buying items there instead of the market. <br>
                       <a href="https://skinport.com/market/730?search=${fullName}&r=gery" target="_blank" class="skinportLink">
                           Follow this link to check listings for his item on Skinport.com
-                      </a>
-                      or
+                      </a>,
                       <a href="https://csgofloat.com?ref=gerytrading" target="_blank" class="csgofloatLink">
                       this one and find your desired items on CSGOFloat's peer to peer market
                       </a>
+                      or
+                      <a href="https://skinbaron.com/partner/gery" target="_blank" class="skinbaronLink">this one for Skinbaron</a>
                     </div>
                     <div>
                       This message was added by the CSGO Trader extension. using the above link to purchase something helps the development of the extension.
@@ -784,6 +793,24 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
           trackEvent({
             type: 'event',
             action: 'marketSkinportLinkClicked',
+          });
+        });
+      });
+
+      document.querySelectorAll('.csgofloatLink').forEach((link) => {
+        link.addEventListener('click', () => {
+          trackEvent({
+            type: 'event',
+            action: 'csgofloatLinkClicked',
+          });
+        });
+      });
+
+      document.querySelectorAll('.skinbaronLink').forEach((link) => {
+        link.addEventListener('click', () => {
+          trackEvent({
+            type: 'event',
+            action: 'skinbaronLinkClicked',
           });
         });
       });

@@ -165,7 +165,8 @@
     "images/table-solid.svg",
     "images/list-solid.svg",
     "images/external_logos/csgofloat.png",
-    "images/external_logos/skinport.png"
+    "images/external_logos/skinport.png",
+    "images/external_logos/skinbaron.png"
   ],
   "browser_action": {
     "default_popup": "index.html?page=popup",
