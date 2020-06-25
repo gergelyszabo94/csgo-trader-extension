@@ -96,7 +96,16 @@ const listItem = (appID, contextID, amount, assetID, price) => {
   });
 };
 
-const createOrder = (appID, marketHashName, price, quantity, buyerKYC) => {
+const createOrder = (appID, marketHashName, price, quantity, buyerKYC = {
+  billing_address: '',
+  billing_address_two: '',
+  billing_city: '',
+  billing_country: '',
+  billing_postal_code: '',
+  billing_state: '',
+  first_name: '',
+  last_name: '',
+}) => {
   return new Promise((resolve, reject) => {
     const currency = getSteamWalletInfo().wallet_currency;
     const myHeaders = new Headers();
@@ -119,7 +128,7 @@ const createOrder = (appID, marketHashName, price, quantity, buyerKYC) => {
       return response.json();
     }).then((responseJSON) => {
       if (responseJSON === null) reject('Error placing buy order!');
-      else if (responseJSON.success) resolve(responseJSON);
+      else if (responseJSON.success === 1) resolve(responseJSON);
       else reject(responseJSON.message);
     }).catch((err) => {
       console.log(err);

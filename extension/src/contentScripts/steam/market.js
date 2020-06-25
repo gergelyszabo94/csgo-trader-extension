@@ -4,11 +4,13 @@ import {
   reloadPageOnExtensionReload, logExtensionPresence,
   updateLoggedInUserInfo, addUpdatedRibbon,
 } from 'utils/utilsModular';
-import { removeListing, getMarketHistory, cancelOrder } from 'utils/market';
+import {
+  removeListing, getMarketHistory, cancelOrder, createOrder,
+} from 'utils/market';
 import { trackEvent } from 'utils/analytics';
 import {
   steamFormattedPriceToCents, centsToSteamFormattedPrice, priceQueue,
-  workOnPriceQueue, initPriceQueue, updateWalletCurrency,
+  workOnPriceQueue, initPriceQueue, updateWalletCurrency, getHighestBuyOrder,
 } from 'utils/pricing';
 import { injectStyle } from 'utils/injection';
 import { overrideLoadMarketHistory } from 'utils/steamOverriding';
@@ -256,7 +258,7 @@ const addHighestBuyOrderPrice = (job, highestBuyOrder) => {
       priceElement.insertAdjacentHTML(
         'beforeend',
         DOMPurify.sanitize(
-          `<div class="${highest}" title="This is the price of the highest buy order right now.">
+          `<div class="highestOrderPrice ${highest}" title="This is the price of the highest buy order right now.">
                 ${priceOfHighestOrder}
              </div>`,
         ),
@@ -363,9 +365,47 @@ if (orders) {
       const priceElement = orderRow.querySelector('.market_listing_right_cell.market_listing_my_price');
       if (priceElement !== null) {
         priceElement.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(`
-            <div class="market_listing_right_cell market_listing_edit_buttons">
-                <input type="checkbox">
+            <div class="market_listing_right_cell market_listing_edit_buttons" style="line-height: 20px">
+                <div>
+                    <input type="checkbox" />
+                </div>
+                <div>
+                    <button type="submit" class="outbid btn_green_white_innerfade btn_small" title="Cancel the current order and place the highest buy order">
+                        Outbid
+                    </button>
+                </div>
             </div>`));
+
+        const outbidButton = orderRow.querySelector('.outbid');
+        outbidButton.addEventListener('click', (event) => {
+          const orderID = getMyOrderIDFromElement(orderRow);
+          cancelOrder(orderID).then(
+            () => {
+              const marketLink = orderRow.querySelector('.market_listing_item_name_link').getAttribute('href');
+              const appID = marketLink.split('market/listings/')[1].split('/')[0];
+              const marketName = marketLink.split('market/listings/')[1].split('/')[1];
+              getHighestBuyOrder(appID, marketName).then((highestOrder) => {
+                const newOrderPrice = parseInt(highestOrder) + 1;
+                createOrder(appID, marketName, newOrderPrice, 1).then(() => {
+                  const priceEl = orderRow.querySelector('.highestOrderPrice');
+                  priceEl.innerText = centsToSteamFormattedPrice(newOrderPrice);
+                  priceEl.classList.add('highest');
+                  priceEl.classList.remove('not_highest');
+                  outbidButton.innerText = 'Order placed';
+                }).catch((err) => {
+                  document.querySelector('.ordersTotal').insertAdjacentHTML(
+                    'afterend',
+                    DOMPurify.sanitize(
+                      `<div class="listingError">
+                                ${err}
+                            </div>`,
+                    ),
+                  );
+                });
+              });
+            },
+          );
+        });
       }
 
       const nameElement = orderRow.querySelector('.market_listing_item_name_link');
@@ -397,7 +437,7 @@ if (orders) {
     orders.insertAdjacentHTML(
       'afterend',
       DOMPurify.sanitize(
-        `<div style="margin: -15px 0 15px;">
+        `<div class="ordersTotal">
                    Orders placed total value: ${centsToSteamFormattedPrice(totalOrderAmount)}
                </div>`,
       ),

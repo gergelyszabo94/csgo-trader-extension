@@ -199,6 +199,10 @@ progress {
     color: var(--steam-nametag-red);
 }
 
+.ordersTotal {
+    margin: -15px 0 15px;
+}
+
 .golden {
     color: var(--steam-sale-golden) !important;
 }
