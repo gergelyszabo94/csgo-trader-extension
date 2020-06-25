@@ -361,6 +361,9 @@ if (orders) {
 
     // add starting at prices and total
     orderRows.forEach((orderRow) => {
+      // makes the row higher to make space for the order buttons
+      orderRow.style['padding-bottom'] = '15px';
+
       // adds selection checkboxes
       const priceElement = orderRow.querySelector('.market_listing_right_cell.market_listing_my_price');
       if (priceElement !== null) {
@@ -372,6 +375,11 @@ if (orders) {
                 <div>
                     <button type="submit" class="outbid btn_green_white_innerfade btn_small" title="Cancel the current order and place the highest buy order">
                         Outbid
+                    </button>
+                </div>
+                <div>
+                    <button type="submit" class="outbidOnePercent btn_green_white_innerfade btn_small" title="Cancel the current order and place a higher order by 1$ than the current highest">
+                        Outbid by 1%
                     </button>
                 </div>
             </div>`));
@@ -392,6 +400,40 @@ if (orders) {
                   priceEl.classList.add('highest');
                   priceEl.classList.remove('not_highest');
                   outbidButton.innerText = 'Order placed';
+                }).catch((err) => {
+                  document.querySelector('.ordersTotal').insertAdjacentHTML(
+                    'afterend',
+                    DOMPurify.sanitize(
+                      `<div class="listingError">
+                                ${err}
+                            </div>`,
+                    ),
+                  );
+                });
+              });
+            },
+          );
+        });
+
+        const outbidByOneButton = orderRow.querySelector('.outbidOnePercent');
+        outbidByOneButton.addEventListener('click', () => {
+          const orderID = getMyOrderIDFromElement(orderRow);
+          cancelOrder(orderID).then(
+            () => {
+              const marketLink = orderRow.querySelector('.market_listing_item_name_link').getAttribute('href');
+              const appID = marketLink.split('market/listings/')[1].split('/')[0];
+              const marketName = marketLink.split('market/listings/')[1].split('/')[1];
+              getHighestBuyOrder(appID, marketName).then((highestOrder) => {
+                const highestInt = parseInt(highestOrder);
+                const newOrderPrice = highestInt >= 100
+                  ? parseInt(highestInt * 1.01)
+                  : highestInt + 1;
+                createOrder(appID, marketName, newOrderPrice, 1).then(() => {
+                  const priceEl = orderRow.querySelector('.highestOrderPrice');
+                  priceEl.innerText = centsToSteamFormattedPrice(newOrderPrice);
+                  priceEl.classList.add('highest');
+                  priceEl.classList.remove('not_highest');
+                  outbidByOneButton.innerText = 'Order placed';
                 }).catch((err) => {
                   document.querySelector('.ordersTotal').insertAdjacentHTML(
                     'afterend',
