@@ -377,7 +377,7 @@ if (orders) {
             </div>`));
 
         const outbidButton = orderRow.querySelector('.outbid');
-        outbidButton.addEventListener('click', (event) => {
+        outbidButton.addEventListener('click', () => {
           const orderID = getMyOrderIDFromElement(orderRow);
           cancelOrder(orderID).then(
             () => {
