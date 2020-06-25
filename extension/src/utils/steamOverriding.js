@@ -181,6 +181,24 @@ const overridePopulateActions = () => {
 const overrideLoadMarketHistory = () => {
   chrome.storage.local.get('marketHistoryEventsToShow', ({ marketHistoryEventsToShow }) => {
     const overrideMarketHistoryScript = `
+    function addItemInfoToElement(assets, hovers) {
+      var hoversArray = hovers.split('CreateItemHoverFromContainer');
+            hoversArray.forEach((hover) => {
+              if (hover.includes('_name')) {
+                const rowID = hover.split("'")[1].split('_name')[0];
+                const appID = hover.split("_name', ")[1].split(',')[0];
+                const tempSplit = hover.split("',");
+                const contextID = tempSplit[tempSplit.length - 3].split("'")[1];
+                const assetID = tempSplit[tempSplit.length - 2].split("'")[1];
+                const historyRow = document.getElementById(rowID);
+                const asset = assets[appID][contextID][assetID];
+                
+                historyRow.setAttribute('data-appid', appID);
+                historyRow.setAttribute('data-name', asset.market_hash_name);      
+              }
+            });
+    }
+    
     function LoadMarketHistory()
     {
         if ( g_bBusyLoadingMarketHistory )
@@ -204,6 +222,7 @@ const overrideLoadMarketHistory = () => {
 
             MergeWithAssetArray( response.assets );
             eval( response.hovers );
+            addItemInfoToElement(response.assets, response.hovers);
 
             g_oMyHistory = new CAjaxPagingControls(
             {
@@ -218,6 +237,7 @@ const overrideLoadMarketHistory = () => {
            g_oMyHistory.SetResponseHandler( function( response ) {
            MergeWithAssetArray( response.assets );
            eval( response.hovers );
+           addItemInfoToElement(response.assets, response.hovers);
             });
           }
         },

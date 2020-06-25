@@ -84,6 +84,24 @@ const addStartingAtPriceInfoToPage = (listingID, lowestPrice) => {
   }
 };
 
+const addHistoryStartingAtPriceInfoToPage = (rowID, lowestPrice) => {
+  const historyRow = document.getElementById(rowID);
+
+  // the history might not be there for example if the page was switched
+  if (historyRow !== null) {
+    const startingAt = historyRow.querySelector('.startingAtPrice');
+    // also avoid adding the same element multiple times by checking if it exist already
+    if (startingAt === null) {
+      const priceElement = historyRow.querySelector('.market_listing_price');
+      const formattedPrice = centsToSteamFormattedPrice(lowestPrice);
+      priceElement.insertAdjacentHTML('beforeend',
+        DOMPurify.sanitize(`<div class="startingAtPrice" title="This is the price of the lowest listing right now.">
+                ${formattedPrice}
+             </div>`));
+    }
+  }
+};
+
 const addListingStartingAtPricesAndTotal = (sellListings) => {
   let totalPrice = 0;
   let totalYouReceivePrice = 0;
@@ -442,9 +460,33 @@ if (marketHistoryTab !== null) {
         || mutationRecord[0].target.id === 'tabContentsMyMarketHistoryRows') {
         marketHistoryTab.querySelectorAll('.market_listing_row.market_recent_listing_row')
           .forEach((historyRow) => {
+            const itemName = historyRow.getAttribute('data-name');
+            if (itemName !== null) {
+              const appID = historyRow.getAttribute('data-appid');
+              const nameElement = historyRow.querySelector('.market_listing_item_name');
+              const name = nameElement.innerText;
+
+              nameElement.innerHTML = DOMPurify.sanitize(
+                `<a href="https://steamcommunity.com/market/listings/${appID}/${itemName}" target="_blank">
+                          ${name}
+                      </a>`,
+                { ADD_ATTR: ['target'] },
+              );
+
+              priceQueue.jobs.push({
+                type: 'history_row',
+                rowID: historyRow.id,
+                appID,
+                market_hash_name: itemName,
+                retries: 0,
+                callBackFunction: addHistoryStartingAtPriceInfoToPage,
+              });
+            }
             const historyType = getHistoryType(historyRow);
             historyRow.classList.add(historyType);
           });
+
+        if (!priceQueue.active) workOnPriceQueue();
       }
     }
   });

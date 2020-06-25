@@ -247,13 +247,19 @@ const workOnPriceQueue = () => {
               || job.type === `offer_${realTimePricingModes.ask_price.key}`
               || job.type === `offers_${realTimePricingModes.ask_price.key}`
               || job.type === `inventory_${realTimePricingModes.ask_price.key}`
-              || job.type === 'my_listing') {
+              || job.type === 'my_listing'
+              || job.type === 'history_row') {
               if (priceQueue.localCache[
                 job.appID + job.market_hash_name + job.type
               ] !== undefined) {
                 if (job.type === 'my_listing') {
                   job.callBackFunction(
                     job.listingID,
+                    priceQueue.localCache[job.appID + job.market_hash_name + job.type],
+                  );
+                } else if (job.type === 'history_row') {
+                  job.callBackFunction(
+                    job.rowID,
                     priceQueue.localCache[job.appID + job.market_hash_name + job.type],
                   );
                 } else {
@@ -273,6 +279,11 @@ const workOnPriceQueue = () => {
                       if (job.type === 'my_listing') {
                         job.callBackFunction(
                           job.listingID,
+                          lowestListingPrice,
+                        );
+                      } else if (job.type === 'history_row') {
+                        job.callBackFunction(
+                          job.rowID,
                           lowestListingPrice,
                         );
                       } else {
