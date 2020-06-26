@@ -712,12 +712,13 @@ const addRightSideElements = () => {
                       item.appid,
                       item.market_hash_name,
                     ).then((lowestListingPrice) => {
+                      const newPrice = lowestListingPrice > 3 ? lowestListingPrice - 1 : 3;
                       listItem(
                         item.appid,
                         item.contextid,
                         1,
                         item.assetid,
-                        getPriceAfterFees(lowestListingPrice) - 1,
+                        getPriceAfterFees(newPrice),
                       ).then(() => {
                         quickSellButton.querySelector('.item_market_action_button_contents').innerText = 'Listing created!';
                       }).catch((err) => {
@@ -729,7 +730,7 @@ const addRightSideElements = () => {
                     }).catch((err) => {
                       console.log(err);
                       document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
-                        marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`<div class="listingError">${err}</div>`));
+                        marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize('<div class="listingError">Could not get lowest listing price</div>'));
                       });
                     });
                   });
