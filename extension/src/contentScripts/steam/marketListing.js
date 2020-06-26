@@ -341,9 +341,9 @@ const addListingsToFloatQueue = () => {
       if (itemWithInspectLink) {
         const listings = getListings();
         for (const listing of Object.values(listings)) {
-          const lisitngRow = getElementByListingID(listing.listingid);
-
-          if (lisitngRow.getAttribute('data-float') === null) {
+          const listingRow = getElementByListingID(listing.listingid);
+          if (listingRow.getAttribute('data-float') === null) {
+            listingRow.setAttribute('data-float', '1.0');
             const assetID = listing.asset.id;
 
             // csgofloat collects listing prices that are in USD
@@ -359,11 +359,11 @@ const addListingsToFloatQueue = () => {
               inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
               listingID: listing.listingid,
               price,
-              callBackFunction: addFloatDataToPage,
+              callBackFunction: dealWithNewFloatData,
             });
           }
         }
-        if (!floatQueue.active) workOnFloatQueue(dealWithNewFloatData);
+        if (!floatQueue.active) workOnFloatQueue();
       }
     }
   });
@@ -581,6 +581,10 @@ const addInstantBuyButtons = () => {
   });
 };
 
+floatQueue.cleanupFunction = () => {
+  sortListings(document.getElementById('sortSelect').value);
+};
+
 logExtensionPresence();
 updateWalletCurrency();
 updateLoggedInUserInfo();
@@ -651,12 +655,16 @@ if (searchBar !== null) {
     sortingSelect.insertAdjacentElement('beforeend', option);
   }
 
-  sortingSelect.addEventListener(
-    'change',
-    (event) => {
-      sortListings(event.target.options[event.target.selectedIndex].value);
-    },
-  );
+  chrome.storage.local.get('marketListingsDefaultSorting', ({ marketListingsDefaultSorting }) => {
+    sortingSelect.value = marketListingsDefaultSorting;
+    sortListings(marketListingsDefaultSorting);
+    sortingSelect.addEventListener(
+      'change',
+      () => {
+        sortListings(sortingSelect.value);
+      },
+    );
+  });
 }
 
 // adds custom buy order buttons/inputs

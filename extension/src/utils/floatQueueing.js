@@ -3,6 +3,7 @@ import { getFloatInfoFromCache } from 'utils/floatCaching';
 const floatQueue = {
   active: false,
   jobs: [],
+  cleanupFunction: () => {}, // optional function that is executed when all jobs are done
 };
 
 const workOnFloatQueue = () => {
@@ -53,7 +54,10 @@ const workOnFloatQueue = () => {
         }
       },
     );
-  } else floatQueue.active = false;
+  } else {
+    floatQueue.cleanupFunction();
+    floatQueue.active = false;
+  }
 };
 
 export { workOnFloatQueue };

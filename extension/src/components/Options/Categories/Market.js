@@ -1,9 +1,21 @@
 import React from 'react';
 
 import Row from 'components/Options/Row';
+import { listingsSortingModes } from 'utils/static/sortingModes';
 import Category from '../Category/Category';
 
 const market = () => {
+  const transformSortingModes = () => {
+    const transformed = [];
+    for (const mode of Object.values(listingsSortingModes)) {
+      transformed.push({
+        key: mode.key,
+        text: mode.name,
+      });
+    }
+    return transformed;
+  };
+
   return (
     <Category title="Market">
       <Row
@@ -43,6 +55,13 @@ const market = () => {
         id="marketShowFloatValuesOnly"
         type="flipSwitchStorage"
         description="Don't show the float bar and technical details, only a simple float value on listings"
+      />
+      <Row
+        name="Market listings default order"
+        id="marketListingsDefaultSorting"
+        type="select"
+        description="The order you want market listings to appear. Note: Floats will only be ordered once all values are loaded."
+        options={transformSortingModes()}
       />
       <Row
         name="Original price"

@@ -1,5 +1,5 @@
 import { pricingProviders, currencies, realTimePricingModes } from 'utils/static/pricing';
-import { sortingModes, offersSortingModes } from 'utils/static/sortingModes';
+import { sortingModes, offersSortingModes, listingsSortingModes } from 'utils/static/sortingModes';
 import defaultPopupLinks from 'utils/static/defaultPopupLinks';
 import { actions, conditions } from 'utils/static/friendRequests';
 
@@ -154,6 +154,7 @@ const storageKeys = {
   inventoryInstantQuickButtons: true,
   marketHistoryEventsToShow: 50,
   marketShowFloatValuesOnly: false,
+  marketListingsDefaultSorting: listingsSortingModes.price_asc,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
