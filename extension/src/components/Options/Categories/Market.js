@@ -39,6 +39,12 @@ const market = () => {
         description="Loads float values to each item when on. It does not load float values if the csgofloat extension is present to avoid interference."
       />
       <Row
+        name="Show float values only"
+        id="marketShowFloatValuesOnly"
+        type="flipSwitchStorage"
+        description="Don't show the float bar and technical details, only a simple float value on listings"
+      />
+      <Row
         name="Original price"
         id="marketOriginalPrice"
         type="flipSwitchStorage"

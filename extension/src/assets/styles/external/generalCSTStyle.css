@@ -383,16 +383,16 @@ progress {
     width: 100px;
 }
 
-.floatTechnical{
+.floatTechnical {
     margin-top: 0.5rem;
 }
 
-.showTechnical{
+.showTechnical {
     font-size: 0.5rem;
     text-align: center;
 }
 
-.floatIndicator{
+.floatIndicator {
     color: #b3cae8;
     font-size: 0.6rem;
     position: absolute;
@@ -401,12 +401,19 @@ progress {
     margin-left: 5px;
 }
 
-.note{
+.marketFloatOnly {
+    position: relative;
+    left: -65px;
+    top: 51px;
+    color: white;
+}
+
+.note {
     color: var(--steam-note-blue);
     margin-bottom: 1rem;
 }
 
-.gemIcon{
+.gemIcon {
     width: 18px !important;
     height: 18px !important;
 }

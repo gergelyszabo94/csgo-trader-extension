@@ -218,18 +218,35 @@ const populateFloatInfo = (listingID, floatInfo) => {
 
   // if for example the user has changed page and the listing is not there anymore
   if (listingElement !== null) {
-    const floatTechnical = listingElement.querySelector('.floatTechnical');
-    if (floatTechnical !== null) {
-      if (floatInfo === undefined || floatInfo.floatvalue === 0) {
-        // agents don't have float values yet they sometimes return float info, weird
-        listingElement.querySelector('.floatBarMarket').remove();
+    chrome.storage.local.get(['marketShowFloatValuesOnly'], ({ marketShowFloatValuesOnly }) => {
+      if (!marketShowFloatValuesOnly) {
+        const floatTechnical = listingElement.querySelector('.floatTechnical');
+        if (floatTechnical !== null) {
+          if (floatInfo === undefined || floatInfo.floatvalue === 0) {
+            // agents don't have float values yet they sometimes return float info, weird
+            listingElement.querySelector('.floatBarMarket').remove();
+          } else {
+            floatTechnical.innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo), { ADD_ATTR: ['target'] });
+            const position = ((toFixedNoRounding(floatInfo.floatvalue, 2) * 100) - 2);
+            listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
+            listingElement.querySelector('.floatDropTarget').innerText = toFixedNoRounding(floatInfo.floatvalue, 4);
+          }
+        }
       } else {
-        floatTechnical.innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo), { ADD_ATTR: ['target'] });
-        const position = ((toFixedNoRounding(floatInfo.floatvalue, 2) * 100) - 2);
-        listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
-        listingElement.querySelector('.floatDropTarget').innerText = toFixedNoRounding(floatInfo.floatvalue, 4);
+        const itemImageDiv = listingElement.querySelector('.market_listing_item_img_container');
+        if (itemImageDiv !== null) {
+          itemImageDiv.querySelector('img').insertAdjacentHTML(
+            'afterend',
+            DOMPurify.sanitize(
+              `<span class="marketFloatOnly">
+                        ${toFixedNoRounding(floatInfo.floatvalue, 6)}
+                   </span>`,
+            ),
+          );
+        }
       }
-    }
+      listingElement.setAttribute('data-float', floatInfo.floatvalue);
+    });
   }
 };
 
@@ -318,28 +335,32 @@ const dealWithNewFloatData = (job, floatInfo) => {
 };
 
 const addListingsToFloatQueue = () => {
-  chrome.storage.local.get('autoFloatMarket', (autoFloatMarket) => {
+  chrome.storage.local.get(['autoFloatMarket'], ({ autoFloatMarket }) => {
     if (autoFloatMarket && !csgoFloatExtPresent()) {
       if (itemWithInspectLink) {
         const listings = getListings();
         for (const listing of Object.values(listings)) {
-          const assetID = listing.asset.id;
+          const lisitngRow = getElementByListingID(listing.listingid);
 
-          // csgofloat collects listing prices that are in USD
-          const price = listing.currencyid === 2001
-            ? listing.price + listing.fee
-            : listing.converted_currencyid === 2001
-              ? listing.converted_price + listing.converted_fee
-              : undefined;
+          if (lisitngRow.getAttribute('data-float') === null) {
+            const assetID = listing.asset.id;
 
-          floatQueue.jobs.push({
-            type: 'market',
-            assetID,
-            inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
-            listingID: listing.listingid,
-            price,
-            callBackFunction: addFloatDataToPage,
-          });
+            // csgofloat collects listing prices that are in USD
+            const price = listing.currencyid === 2001
+              ? listing.price + listing.fee
+              : listing.converted_currencyid === 2001
+                ? listing.converted_price + listing.converted_fee
+                : undefined;
+
+            floatQueue.jobs.push({
+              type: 'market',
+              assetID,
+              inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
+              listingID: listing.listingid,
+              price,
+              callBackFunction: addFloatDataToPage,
+            });
+          }
         }
         if (!floatQueue.active) workOnFloatQueue(dealWithNewFloatData);
       }
@@ -348,8 +369,8 @@ const addListingsToFloatQueue = () => {
 };
 
 const addFloatBarSkeletons = () => {
-  chrome.storage.local.get('autoFloatMarket', (autoFloatMarket) => {
-    if (autoFloatMarket && !csgoFloatExtPresent()) {
+  chrome.storage.local.get(['autoFloatMarket', 'marketShowFloatValuesOnly'], ({ autoFloatMarket, marketShowFloatValuesOnly }) => {
+    if (autoFloatMarket && !csgoFloatExtPresent() && !marketShowFloatValuesOnly) {
       const listingsSection = document.getElementById('searchResultsRows');
 
       // so it does not throw any errors when it can't find it on commodity items
@@ -401,14 +422,14 @@ const sortListings = (sortingMode) => {
     });
   } else if (sortingMode === 'float_asc') {
     sortedElements = listingElements.sort((a, b) => {
-      const floatOfA = parseFloat(a.querySelector('.floatDropTarget').innerText);
-      const floatOfB = parseFloat(b.querySelector('.floatDropTarget').innerText);
+      const floatOfA = parseFloat(a.getAttribute('data-float'));
+      const floatOfB = parseFloat(b.getAttribute('data-float'));
       return floatOfA - floatOfB;
     });
   } else if (sortingMode === 'float_desc') {
     sortedElements = listingElements.sort((a, b) => {
-      const floatOfA = parseFloat(a.querySelector('.floatDropTarget').innerText);
-      const floatOfB = parseFloat(b.querySelector('.floatDropTarget').innerText);
+      const floatOfA = parseFloat(a.getAttribute('data-float'));
+      const floatOfB = parseFloat(b.getAttribute('data-float'));
       return floatOfB - floatOfA;
     });
   } else if (sortingMode === 'sticker_price_asc') {

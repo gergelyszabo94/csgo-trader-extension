@@ -153,6 +153,7 @@ const storageKeys = {
   marketListingsInstantBuy: true,
   inventoryInstantQuickButtons: true,
   marketHistoryEventsToShow: 50,
+  marketShowFloatValuesOnly: false,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
