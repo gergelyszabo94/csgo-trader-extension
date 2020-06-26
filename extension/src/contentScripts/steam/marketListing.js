@@ -14,6 +14,7 @@ import {
   toFixedNoRounding, csgoFloatExtPresent,
   addUpdatedRibbon, changePageTitle,
 } from 'utils/utilsModular';
+import { listingsSortingModes } from 'utils/static/sortingModes';
 import { buyListing, createOrder } from 'utils/market';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import exteriors from 'utils/static/exteriors';
@@ -637,17 +638,20 @@ if (searchBar !== null) {
       `<div class="market_sorting">
              <span class="market_listing_filter_searchhint">Sort on page by:</span>
              <select id="sortSelect">
-               <option value="price_asc">Cheapest to most expensive</option>
-               <option value="price_desc">Most expensive to cheapest</option>
-               <option value="float_asc">Float lowest to highest</option>
-               <option value="float_desc">Float highest to lowest</option>
-               <option value="sticker_price_asc">Sticker price cheapest to most expensive</option>
-               <option value="sticker_price_desc">Sticker price most expensive to cheapest</option>
+              
              </select>
            </div>`,
     ));
 
-  document.getElementById('sortSelect').addEventListener(
+  const sortingSelect = document.getElementById('sortSelect');
+  for (const mode of Object.values(listingsSortingModes)) {
+    const option = document.createElement('option');
+    option.value = mode.key;
+    option.innerText = mode.name;
+    sortingSelect.insertAdjacentElement('beforeend', option);
+  }
+
+  sortingSelect.addEventListener(
     'change',
     (event) => {
       sortListings(event.target.options[event.target.selectedIndex].value);
