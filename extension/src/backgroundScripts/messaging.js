@@ -60,10 +60,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
     return true; // async return to signal that it will return later
   } else if (request.fetchFloatInfo !== undefined) {
-    const inspectLink = request.fetchFloatInfo;
+    const inspectLink = request.fetchFloatInfo.inspectLink;
     if (inspectLink !== null) {
+      const price = (request.fetchFloatInfo.price !== undefined
+        && request.fetchFloatInfo.price !== null)
+        ? `&price=${request.fetchFloatInfo.price}`
+        : '';
       const assetID = getAssetIDFromInspectLink(inspectLink);
-      const getRequest = new Request(`https://api.csgofloat.com/?url=${inspectLink}`);
+      const getRequest = new Request(`https://api.csgofloat.com/?url=${inspectLink}${price}`);
 
       fetch(getRequest).then((response) => {
         if (!response.ok) {

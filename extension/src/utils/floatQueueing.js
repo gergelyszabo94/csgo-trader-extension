@@ -16,7 +16,12 @@ const workOnFloatQueue = () => {
           job.callBackFunction(job, floatInfo[job.assetID], floatQueue);
           workOnFloatQueue();
         } else {
-          chrome.runtime.sendMessage({ fetchFloatInfo: job.inspectLink }, (response) => {
+          chrome.runtime.sendMessage({
+            fetchFloatInfo: {
+              inspectLink: job.inspectLink,
+              price: job.price,
+            },
+          }, (response) => {
             if (response !== 'error' && response !== 500) {
               job.callBackFunction(job, response.floatInfo, floatQueue);
             }

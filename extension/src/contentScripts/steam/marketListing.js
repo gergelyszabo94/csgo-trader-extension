@@ -325,11 +325,19 @@ const addListingsToFloatQueue = () => {
         for (const listing of Object.values(listings)) {
           const assetID = listing.asset.id;
 
+          // csgofloat collects listing prices that are in USD
+          const price = listing.currencyid === 2001
+            ? listing.price + listing.fee
+            : listing.converted_currencyid === 2001
+              ? listing.converted_price + listing.converted_fee
+              : undefined;
+
           floatQueue.jobs.push({
             type: 'market',
             assetID,
             inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
             listingID: listing.listingid,
+            price,
             callBackFunction: addFloatDataToPage,
           });
         }
