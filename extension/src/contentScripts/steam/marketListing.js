@@ -755,15 +755,21 @@ addStickers();
 addPricesInOtherCurrencies();
 addInstantBuyButtons();
 
+let observerLastTriggered = Date.now() - 1001;
 const observer = new MutationObserver((mutations) => {
   for (const mutation of mutations) {
     if (mutation.target.id === 'searchResultsRows') {
-      addPhasesIndicator();
-      addFloatBarSkeletons();
-      addStickers();
-      addListingsToFloatQueue();
-      addPricesInOtherCurrencies();
-      addInstantBuyButtons();
+      // to avoid executing this lots of times
+      // at least a second has to pass since the last one
+      if (Date.now() > observerLastTriggered + 1000) {
+        addPhasesIndicator();
+        addFloatBarSkeletons();
+        addStickers();
+        addListingsToFloatQueue();
+        addPricesInOtherCurrencies();
+        addInstantBuyButtons();
+      }
+      observerLastTriggered = Date.now();
     }
   }
 });
