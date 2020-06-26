@@ -81,8 +81,8 @@ const listingsSortingModes = {
   price_desc: sortingModes.price_desc,
   float_asc: sortingModes.float_asc,
   float_desc: sortingModes.float_desc,
-  sticker_price_asc: sortingModes.float_asc,
-  sticker_price_desc: sortingModes.float_desc,
+  sticker_price_asc: sortingModes.sticker_price_asc,
+  sticker_price_desc: sortingModes.sticker_price_desc,
 };
 
 export { sortingModes, offersSortingModes, listingsSortingModes };
