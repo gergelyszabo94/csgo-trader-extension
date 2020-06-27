@@ -91,18 +91,12 @@ const getActiveInventoryAppID = () => {
   return document.querySelector('.games_list_tab.active').getAttribute('href').split('#')[1];
 };
 
-const cleanUpElements = (nonCSGOInventory) => {
+const cleanUpElements = () => {
   document.querySelectorAll(
     '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name, .startingAtVolume, .marketActionInstantSell, .marketActionQuickSell, .listingError',
   ).forEach((element) => {
     element.remove();
   });
-
-  if (nonCSGOInventory) {
-    document.querySelectorAll('.hover_item_name').forEach((name) => {
-      name.classList.remove('hidden');
-    });
-  }
 };
 
 const addBookmark = (module) => {
@@ -202,12 +196,13 @@ const getItemInfoFromPage = (appID, contextID) => {
 
 // it hides the original item name element and replaces it with one
 // that is a link to it's market page and adds the doppler phase to the name
-const changeName = (name, color, link, dopplerInfo) => {
-  const newNameElement = dopplerInfo !== null
-    ? `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name} (${dopplerInfo.name})</a>`
-    : `<a class="hover_item_name custom_name" style="color: #${color}" href="${link}" target="_blank">${name}</a>`;
+const changeName = (name, color, appID, marketHashName, dopplerInfo) => {
+  const marketLink = `https://steamcommunity.com/market/listings/${appID}/${marketHashName}`;
+  const newNameElement = (dopplerInfo !== null && dopplerInfo !== undefined)
+    ? `<a class="hover_item_name custom_name" style="color: #${color}" href="${marketLink}" target="_blank">${name} (${dopplerInfo.name})</a>`
+    : `<a class="hover_item_name custom_name" style="color: #${color}" href="${marketLink}" target="_blank">${name}</a>`;
 
-  document.querySelectorAll('.hover_item_name').forEach((nameElement) => {
+  document.querySelector('.inventory_page_right').querySelectorAll('.hover_item_name').forEach((nameElement) => {
     nameElement.insertAdjacentHTML('afterend', DOMPurify.sanitize(newNameElement, { ADD_ATTR: ['target'] }));
     nameElement.classList.add('hidden');
   });
@@ -435,17 +430,15 @@ const addStartingAtPrice = (appID, marketHashName) => {
 const addRightSideElements = () => {
   const activeIDs = getIDsOfActiveItem();
   if (activeIDs !== null) {
+    // cleans up previously added elements
+    cleanUpElements();
     const item = getItemByIDs(items, activeIDs.appID, activeIDs.contextID, activeIDs.assetID);
-    // only add elements if the CS:GO inventory is the active one
     if (getActiveInventoryAppID() === steamApps.CSGO.appID) {
       // hides "tags" and "tradable after" in one's own inventory
       document.querySelectorAll('#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors')
         .forEach((tagsElement) => {
           if (!tagsElement.classList.contains('hidden')) tagsElement.classList.add('hidden');
         });
-
-      // cleans up previously added elements
-      cleanUpElements(false);
 
       // removes previously added listeners
       document.querySelectorAll('.showTechnical, .lowerModule, .marketActionInstantSell, .marketActionQuickSell').forEach((element) => {
@@ -503,7 +496,7 @@ const addRightSideElements = () => {
         });
 
         // repositions stickers
-        if (item.stickers.length !== 0) {
+        if (item.stickers !== undefined && item.stickers.length !== 0) {
           // removes the original stickers elements
           const originalStickers = document.getElementById('sticker_info');
           if (originalStickers !== null) originalStickers.outerHTML = '';
@@ -527,11 +520,13 @@ const addRightSideElements = () => {
           });
         }
 
-        // adds duplicates counts
-        document.querySelectorAll('.duplicate').forEach((duplicate) => {
-          duplicate.style.display = 'block';
-          duplicate.innerText = `x${item.duplicates.num}`;
-        });
+        if (item.duplicates !== undefined) {
+          // adds duplicates counts
+          document.querySelectorAll('.duplicate').forEach((duplicate) => {
+            duplicate.style.display = 'block';
+            duplicate.innerText = `x${item.duplicates.num}`;
+          });
+        }
 
         // sets the tradability info
         document.querySelectorAll('.tradabilityDiv').forEach((tradabilityDiv) => {
@@ -591,19 +586,6 @@ const addRightSideElements = () => {
             }
           }
         });
-
-        // adds doppler phase  to the name and makes it a link to the market listings page
-        // the name is retrieved from the page variables to keep the right local
-        const name = getItemByIDs(
-          getItemInfoFromPage(
-            activeIDs.appID,
-            activeIDs.contextID,
-          ),
-          activeIDs.appID,
-          activeIDs.contextID,
-          activeIDs.assetID,
-        ).description.name;
-        changeName(name, item.name_color, item.marketlink, item.dopplerInfo);
 
         // removes sih "Get Float" button
         // does not really work since it's loaded after this script..
@@ -679,6 +661,20 @@ const addRightSideElements = () => {
             });
         }
       }
+
+      // adds doppler phase  to the name and makes it a link to the market listings page
+      // the name is retrieved from the page variables to keep the right local
+      const name = getItemByIDs(
+        getItemInfoFromPage(
+          item.appid,
+          item.contextid,
+        ),
+        item.appid,
+        item.contextid,
+        item.assetid,
+      ).description.name;
+
+      changeName(name, item.name_color, item.appid, item.market_hash_name, item.dopplerInfo);
 
       // adds "starting at" and sales volume to everyone's inventory
       if (!isOwnInventory()) addStartingAtPrice(item.appid, item.market_hash_name);
@@ -764,6 +760,12 @@ const addRightSideElements = () => {
           }
         });
       }
+    } else {
+      // show the original names if the name can't be changed
+      // because it can't be retrieved from the page
+      document.querySelectorAll('.hover_item_name').forEach((name) => {
+        name.classList.remove('hidden');
+      });
     }
   } else console.log('Could not get IDs of active item');
 };
@@ -1675,7 +1677,6 @@ const observer = new MutationObserver(() => {
   addRightSideElements();
   addFunctionBar();
   if (getActiveInventoryAppID() !== steamApps.CSGO.appID) {
-    cleanUpElements(true);
     // unhides "tags" in non-csgo inventories
     document.querySelectorAll('#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors')
       .forEach((tagsElement) => {
