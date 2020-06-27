@@ -15,6 +15,14 @@ const steamApps = {
     appID: '753',
     name: 'Steam',
   },
+  RUST: {
+    appID: '252490',
+    name: 'Rust',
+  },
+  Z1: {
+    appID: '433850',
+    name: 'Z1 Battle Royale',
+  },
 };
 
 export default steamApps;

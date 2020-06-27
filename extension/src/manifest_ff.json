@@ -49,7 +49,7 @@
       "css": ["/css/generalCSTStyle.css"]
     },
     {
-      "matches": ["*://steamcommunity.com/market/listings/730/*"],
+      "matches": ["*://steamcommunity.com/market/listings/*"],
       "run_at" : "document_idle",
       "js": ["js/contentScripts/steam/marketListing.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]

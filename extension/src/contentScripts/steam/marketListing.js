@@ -35,12 +35,33 @@ const inBrowserInspectButtonPopupLink = `
     </a>`;
 const dopplerPhase = '<div class="dopplerPhaseMarket"><span></span></div>';
 
+// it takes the visible descriptors and checks if the collection includes souvenirs
+let textOfDescriptors = '';
+document.querySelectorAll('.descriptor').forEach((descriptor) => { textOfDescriptors += descriptor.innerText; });
+const thereSouvenirForThisItem = souvenirExists(textOfDescriptors);
+const isCommodityItem = document.getElementById('searchResultsRows') === null;
+
+let weaponName = '';
+const appID = decodeURIComponent(window.location.pathname).split('/listings/')[1].split('/')[0];
+const fullName = decodeURIComponent(window.location.pathname).split('/listings/')[1].split('/')[1];
+let star = '';
+const isStattrak = /StatTrak™/.test(fullName);
+const isSouvenir = /Souvenir/.test(fullName);
+
+if (fullName.includes('★')) star = starChar;
+if (isStattrak) weaponName = fullName.split('StatTrak™ ')[1].split('(')[0];
+else if (isSouvenir) weaponName = fullName.split('Souvenir ')[1].split('(')[0];
+else {
+  weaponName = fullName.split('(')[0].split('★ ')[1];
+  if (weaponName === undefined) weaponName = fullName.split('(')[0];
+}
+
 let itemWithInspectLink = false;
 // adds the in-browser inspect button to the top of the page
 const actions = document.getElementById('largeiteminfo_item_actions');
 // sometimes the page does not load correctly, for example when Steam shows:
 // "There was an error getting listings for this item. Please try again later."
-if (actions !== null) {
+if (actions !== null && appID === steamApps.CSGO.appID) {
   const originalInspectButton = actions.querySelector('.btn_small.btn_grey_white_innerfade');
   // some items don't have inspect buttons (like cases)
   if (originalInspectButton !== null) {
@@ -64,26 +85,6 @@ if (actions !== null) {
       });
     });
   }
-}
-
-// it takes the visible descriptors and checks if the collection includes souvenirs
-let textOfDescriptors = '';
-document.querySelectorAll('.descriptor').forEach((descriptor) => { textOfDescriptors += descriptor.innerText; });
-const thereSouvenirForThisItem = souvenirExists(textOfDescriptors);
-const isCommodityItem = document.getElementById('searchResultsRows') === null;
-
-let weaponName = '';
-const fullName = decodeURIComponent(window.location.pathname).split('listings/730/')[1];
-let star = '';
-const isStattrak = /StatTrak™/.test(fullName);
-const isSouvenir = /Souvenir/.test(fullName);
-
-if (fullName.includes('★')) star = starChar;
-if (isStattrak) weaponName = fullName.split('StatTrak™ ')[1].split('(')[0];
-else if (isSouvenir) weaponName = fullName.split('Souvenir ')[1].split('(')[0];
-else {
-  weaponName = fullName.split('(')[0].split('★ ')[1];
-  if (weaponName === undefined) weaponName = fullName.split('(')[0];
 }
 
 let stOrSv = stattrakPretty;
@@ -137,11 +138,11 @@ const getListings = () => {
   const getListingsScript = `
     document.querySelector('body').setAttribute('listingsInfo', JSON.stringify({
         listings: typeof g_rgListingInfo !== 'undefined' ? g_rgListingInfo : {},
-        assets: typeof g_rgAssets !== 'undefined' ? g_rgAssets : {730:{2:{}}}
+        assets: typeof g_rgAssets !== 'undefined' ? g_rgAssets : {${appID}:{2:{}}}
     }));`;
 
   const listingsInfo = JSON.parse(injectScript(getListingsScript, true, 'getListings', 'listingsInfo'));
-  const assets = listingsInfo.assets[730][2];
+  const assets = listingsInfo.assets[appID][2];
   const listings = listingsInfo.listings;
 
   for (const listing of Object.values(listings)) {
@@ -161,13 +162,14 @@ const getListings = () => {
 };
 
 const addStickers = () => {
-  // removes sih sticker info
-  document.querySelectorAll('.sih-images').forEach((image) => {
-    image.remove();
-  });
+  if (appID === steamApps.CSGO.appID) {
+    // removes sih sticker info
+    document.querySelectorAll('.sih-images').forEach((image) => {
+      image.remove();
+    });
 
-  // inject style to modify the listing row
-  injectStyle(`
+    // inject style to modify the listing row
+    injectStyle(`
   .extension__row {
     overflow: initial;
     float: left;
@@ -175,42 +177,43 @@ const addStickers = () => {
    }
   `, 'listingRowOverRide');
 
-  const listings = getListings();
+    const listings = getListings();
 
-  if (!isCommodityItem) {
-    document.getElementById('searchResultsRows').querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
-      (listingRow) => {
-        if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
-          const listingID = getListingIDFromElement(listingRow);
+    if (!isCommodityItem) {
+      document.getElementById('searchResultsRows').querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
+        (listingRow) => {
+          if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
+            const listingID = getListingIDFromElement(listingRow);
 
-          if (listingRow.querySelector('.stickerHolderMarket') === null) { // if stickers elements not added already
-            const nameBlock = listingRow.querySelector('.market_listing_item_name_block');
-            nameBlock.classList.add('extension__row');
-            nameBlock.insertAdjacentHTML(
-              'beforeend',
-              DOMPurify.sanitize(`<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`),
-            );
-            const stickers = listings[listingID].asset.stickers;
-
-            stickers.forEach((stickerInfo) => {
-              listingRow.querySelector('.stickerHolderMarket').insertAdjacentHTML(
+            if (listingRow.querySelector('.stickerHolderMarket') === null) { // if stickers elements not added already
+              const nameBlock = listingRow.querySelector('.market_listing_item_name_block');
+              nameBlock.classList.add('extension__row');
+              nameBlock.insertAdjacentHTML(
                 'beforeend',
-                DOMPurify.sanitize(
-                  `<span class="stickerSlotMarket" data-tooltip-market="${stickerInfo.name}">
+                DOMPurify.sanitize(`<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`),
+              );
+              const stickers = listings[listingID].asset.stickers;
+
+              stickers.forEach((stickerInfo) => {
+                listingRow.querySelector('.stickerHolderMarket').insertAdjacentHTML(
+                  'beforeend',
+                  DOMPurify.sanitize(
+                    `<span class="stickerSlotMarket" data-tooltip-market="${stickerInfo.name}">
                         <a href="${stickerInfo.marketURL}" target="_blank">
                             <img src="${stickerInfo.iconURL}" class="stickerIcon">
                         </a>
                      </span>`,
-                  { ADD_ATTR: ['target'] },
-                ),
-              );
-            });
-            listingRow.querySelector('.stickerHolderMarket').insertAdjacentHTML('afterend',
-              DOMPurify.sanitize('<div class="stickersTotal" data-tooltip-market="Total Price of Stickers on this item"></div>'));
+                    { ADD_ATTR: ['target'] },
+                  ),
+                );
+              });
+              listingRow.querySelector('.stickerHolderMarket').insertAdjacentHTML('afterend',
+                DOMPurify.sanitize('<div class="stickersTotal" data-tooltip-market="Total Price of Stickers on this item"></div>'));
+            }
           }
-        }
-      },
-    );
+        },
+      );
+    }
   }
 };
 
@@ -336,71 +339,75 @@ const dealWithNewFloatData = (job, floatInfo) => {
 };
 
 const addListingsToFloatQueue = () => {
-  chrome.storage.local.get(['autoFloatMarket'], ({ autoFloatMarket }) => {
-    if (autoFloatMarket && !csgoFloatExtPresent()) {
-      if (itemWithInspectLink) {
-        const listings = getListings();
-        for (const listing of Object.values(listings)) {
-          const listingRow = getElementByListingID(listing.listingid);
-          if (listingRow.getAttribute('data-float') === null) {
-            listingRow.setAttribute('data-float', '1.0');
-            const assetID = listing.asset.id;
+  if (appID === steamApps.CSGO.appID) {
+    chrome.storage.local.get(['autoFloatMarket'], ({ autoFloatMarket }) => {
+      if (autoFloatMarket && !csgoFloatExtPresent()) {
+        if (itemWithInspectLink) {
+          const listings = getListings();
+          for (const listing of Object.values(listings)) {
+            const listingRow = getElementByListingID(listing.listingid);
+            if (listingRow.getAttribute('data-float') === null) {
+              listingRow.setAttribute('data-float', '1.0');
+              const assetID = listing.asset.id;
 
-            // csgofloat collects listing prices that are in USD
-            const price = listing.currencyid === 2001
-              ? listing.price + listing.fee
-              : listing.converted_currencyid === 2001
-                ? listing.converted_price + listing.converted_fee
-                : undefined;
+              // csgofloat collects listing prices that are in USD
+              const price = listing.currencyid === 2001
+                ? listing.price + listing.fee
+                : listing.converted_currencyid === 2001
+                  ? listing.converted_price + listing.converted_fee
+                  : undefined;
 
-            floatQueue.jobs.push({
-              type: 'market',
-              assetID,
-              inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
-              listingID: listing.listingid,
-              price,
-              callBackFunction: dealWithNewFloatData,
-            });
+              floatQueue.jobs.push({
+                type: 'market',
+                assetID,
+                inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
+                listingID: listing.listingid,
+                price,
+                callBackFunction: dealWithNewFloatData,
+              });
+            }
           }
+          if (!floatQueue.active) workOnFloatQueue();
         }
-        if (!floatQueue.active) workOnFloatQueue();
       }
-    }
-  });
+    });
+  }
 };
 
 const addFloatBarSkeletons = () => {
-  chrome.storage.local.get(['autoFloatMarket', 'marketShowFloatValuesOnly'], ({ autoFloatMarket, marketShowFloatValuesOnly }) => {
-    if (autoFloatMarket && !csgoFloatExtPresent() && !marketShowFloatValuesOnly) {
-      const listingsSection = document.getElementById('searchResultsRows');
+  if (appID === steamApps.CSGO.appID) {
+    chrome.storage.local.get(['autoFloatMarket', 'marketShowFloatValuesOnly'], ({ autoFloatMarket, marketShowFloatValuesOnly }) => {
+      if (autoFloatMarket && !csgoFloatExtPresent() && !marketShowFloatValuesOnly) {
+        const listingsSection = document.getElementById('searchResultsRows');
 
-      // so it does not throw any errors when it can't find it on commodity items
-      if (listingsSection !== null) {
-        const listingNameBlocks = listingsSection.querySelectorAll('.market_listing_item_name_block');
-        if (listingNameBlocks !== null && itemWithInspectLink) {
-          listingNameBlocks.forEach((listingNameBlock) => {
-            if (listingNameBlock.getAttribute('data-floatBar-added') === null
-              || listingNameBlock.getAttribute('data-floatBar-added') === false) {
-              listingNameBlock.insertAdjacentHTML('beforeend', DOMPurify.sanitize(getFloatBarSkeleton('market')));
-              listingNameBlock.setAttribute('data-floatBar-added', 'true');
+        // so it does not throw any errors when it can't find it on commodity items
+        if (listingsSection !== null) {
+          const listingNameBlocks = listingsSection.querySelectorAll('.market_listing_item_name_block');
+          if (listingNameBlocks !== null && itemWithInspectLink) {
+            listingNameBlocks.forEach((listingNameBlock) => {
+              if (listingNameBlock.getAttribute('data-floatBar-added') === null
+                || listingNameBlock.getAttribute('data-floatBar-added') === false) {
+                listingNameBlock.insertAdjacentHTML('beforeend', DOMPurify.sanitize(getFloatBarSkeleton('market')));
+                listingNameBlock.setAttribute('data-floatBar-added', 'true');
 
-              // adds "show technical" hide and show logic
-              listingNameBlock.querySelector('.showTechnical').addEventListener(
-                'click',
-                (event) => {
-                  event.target.parentNode.querySelector('.floatTechnical').classList.toggle('hidden');
-                },
-              );
-            }
-          });
-        } else {
-          setTimeout(() => {
-            addFloatBarSkeletons();
-          }, 2000);
+                // adds "show technical" hide and show logic
+                listingNameBlock.querySelector('.showTechnical').addEventListener(
+                  'click',
+                  (event) => {
+                    event.target.parentNode.querySelector('.floatTechnical').classList.toggle('hidden');
+                  },
+                );
+              }
+            });
+          } else {
+            setTimeout(() => {
+              addFloatBarSkeletons();
+            }, 2000);
+          }
         }
       }
-    }
-  });
+    });
+  }
 };
 
 const sortListings = (sortingMode) => {
@@ -465,39 +472,40 @@ const sortListings = (sortingMode) => {
 };
 
 const addPricesInOtherCurrencies = () => {
-  chrome.storage.local.get('marketOriginalPrice', (marketOriginalPrice) => {
-    if (marketOriginalPrice) {
-      const listings = getListings();
-      const listingsSection = document.getElementById('searchResultsRows');
+  if (!isCommodityItem) {
+    chrome.storage.local.get('marketOriginalPrice', (marketOriginalPrice) => {
+      if (marketOriginalPrice) {
+        const listings = getListings();
+        const listingsSection = document.getElementById('searchResultsRows');
 
-      // so it does not throw any errors when it can't find it on commodity items
-      if (listingsSection !== null) {
-        listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
-          (listingRow) => {
-            if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows'
-              && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
-              const listingID = getListingIDFromElement(listingRow);
+        // so it does not throw any errors when it can't find it on commodity items
+        if (listingsSection !== null) {
+          listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
+            (listingRow) => {
+              if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows'
+                && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
+                const listingID = getListingIDFromElement(listingRow);
 
-              if (listingRow.querySelector('.originalPrice') === null) { // if not added before
-                const price = parseInt(listings[listingID].price);
-                const priceWithFees = price + parseInt(listings[listingID].fee);
-                const currencyID = parseInt(listings[listingID].currencyid) - 2000;
+                if (listingRow.querySelector('.originalPrice') === null) { // if not added before
+                  const price = parseInt(listings[listingID].price);
+                  const priceWithFees = price + parseInt(listings[listingID].fee);
+                  const currencyID = parseInt(listings[listingID].currencyid) - 2000;
 
-                listingRow.querySelector('.market_table_value').insertAdjacentHTML(
-                  'beforeend',
-                  DOMPurify.sanitize(
-                    `<div class="originalPrice" data-currency-id="${currencyID}" data-converted="false">
+                  listingRow.querySelector('.market_table_value').insertAdjacentHTML(
+                    'beforeend',
+                    DOMPurify.sanitize(
+                      `<div class="originalPrice" data-currency-id="${currencyID}" data-converted="false">
                            <div class="market_listing_price_original_after_fees" title="Price including market fees in the seller's currency">${priceWithFees}</div>
                            <div class="market_listing_price_original_before_fees" title="The amount the seller receives after fees in their own currency">${price}</div>
                          </div>`,
-                  ),
-                );
+                    ),
+                  );
+                }
               }
-            }
-          },
-        );
+            },
+          );
 
-        const currencyConverterScript = `
+          const currencyConverterScript = `
                     document.getElementById('searchResultsRows').querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listing_row => {
                         const originalPriceElement = listing_row.querySelector('.originalPrice');
                         
@@ -515,10 +523,11 @@ const addPricesInOtherCurrencies = () => {
                         }
                     });`;
 
-        injectScript(currencyConverterScript, true, 'currencyConverter', false);
+          injectScript(currencyConverterScript, true, 'currencyConverter', false);
+        }
       }
-    }
-  });
+    });
+  }
 };
 
 const getBuyerKYCFromPage = () => {
@@ -595,7 +604,8 @@ trackEvent({
 });
 changePageTitle('market_listing', fullName);
 
-const otherExteriors = `
+if (appID === steamApps.CSGO.appID) {
+  const otherExteriors = `
             <div class="descriptor otherExteriors">
                 <span>${chrome.i18n.getMessage('links_to_other_exteriors')}:</span>
                 <ul>
@@ -609,30 +619,31 @@ const otherExteriors = `
             </div>
             `;
 
-const descriptor = document.getElementById('largeiteminfo_item_descriptors');
-if (fullName.split('(')[1] !== undefined && descriptor !== null) {
-  descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(otherExteriors, { ADD_ATTR: ['target'] }));
-}
+  const descriptor = document.getElementById('largeiteminfo_item_descriptors');
+  if (fullName.split('(')[1] !== undefined && descriptor !== null) {
+    descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(otherExteriors, { ADD_ATTR: ['target'] }));
+  }
 
-// adds the in-browser inspect button to the context menu
-document.getElementById('market_action_popup_itemactions')
-  .insertAdjacentHTML('afterend', DOMPurify.sanitize(inBrowserInspectButtonPopupLink, { ADD_ATTR: ['target'] }));
+  // adds the in-browser inspect button to the context menu
+  document.getElementById('market_action_popup_itemactions')
+    .insertAdjacentHTML('afterend', DOMPurify.sanitize(inBrowserInspectButtonPopupLink, { ADD_ATTR: ['target'] }));
 
-// adds the proper link to the context menu before it gets clicked
-// needed because the context menu resets when clicked
-document.getElementById('inbrowser_inspect').addEventListener('mouseenter', (event) => {
-  const inspectLink = document.getElementById('market_action_popup_itemactions')
-    .querySelector('a.popup_menu_item').getAttribute('href');
-  event.target.setAttribute('href', `http://csgo.gallery/${inspectLink}`);
-});
-
-document.getElementById('inbrowser_inspect').addEventListener('click', () => {
-  // analytics
-  trackEvent({
-    type: 'event',
-    action: 'MarketInspection',
+  // adds the proper link to the context menu before it gets clicked
+  // needed because the context menu resets when clicked
+  document.getElementById('inbrowser_inspect').addEventListener('mouseenter', (event) => {
+    const inspectLink = document.getElementById('market_action_popup_itemactions')
+      .querySelector('a.popup_menu_item').getAttribute('href');
+    event.target.setAttribute('href', `http://csgo.gallery/${inspectLink}`);
   });
-});
+
+  document.getElementById('inbrowser_inspect').addEventListener('click', () => {
+    // analytics
+    trackEvent({
+      type: 'event',
+      action: 'MarketInspection',
+    });
+  });
+}
 
 // adds sorting menu to market pages with individual listings
 const searchBar = document.querySelector('.market_listing_filter_contents');
@@ -694,7 +705,7 @@ if (buyOrderInfoEl !== null) {
   document.getElementById('place_highest_order').addEventListener('click', () => {
     getHighestBuyOrder(steamApps.CSGO.appID, fullName).then((highestOrder) => {
       createOrder(
-        steamApps.CSGO.appID,
+        appID,
         fullName,
         parseInt(highestOrder) + 1,
         1,
@@ -716,7 +727,7 @@ if (buyOrderInfoEl !== null) {
     const pricePerItem = parseInt(steamFormattedPriceToCents(document.getElementById('quick_order_price').value));
 
     createOrder(
-      steamApps.CSGO.appID,
+      appID,
       fullName,
       pricePerItem * quantity,
       quantity,
@@ -784,7 +795,10 @@ if (searchResultsRows !== null) {
 }
 
 chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }) => {
-  if (showRealMoneySiteLinks) {
+  if (showRealMoneySiteLinks
+    && (appID === steamApps.CSGO.appID || appID === steamApps.DOTA2.appID
+      || appID === steamApps.TF2.appID || appID === steamApps.RUST.appID
+      || appID === steamApps.Z1.appID)) {
     const elementToInsertTo = isCommodityItem
       ? document.querySelector('.market_commodity_order_block')
       : document.getElementById('largeiteminfo_warning');
@@ -796,7 +810,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                 <span class="realMoneyMarketTitle">You can save money (20-40%) by buying this item on one of these trusted markets for "real money":</span>
                 <div class="realMoneySites">
                   <div class="realMoneySite">
-                    <a href="https://skinport.com/market/730?search=${fullName}&r=gery" target="_blank" class="realMoneySiteLink skinportLink">
+                    <a href="https://skinport.com/market/${appID}?search=${fullName}&r=gery" target="_blank" class="realMoneySiteLink skinportLink">
                     <img alt="Skinport logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinport.png')}">
                       <br>
                       Skinport.com
