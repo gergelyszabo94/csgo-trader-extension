@@ -24,6 +24,10 @@ const marketHistoryExport = {
   lastRequestSuccessful: true,
 };
 
+const getWalletAmount = () => {
+  return steamFormattedPriceToCents(document.getElementById('header_wallet_balance').innerText);
+};
+
 const getMyListingIDFromElement = (listingElement) => {
   return listingElement.id.split('mylisting_')[1];
 };
@@ -358,6 +362,7 @@ if (orders) {
   // if there are actually any orders
   if (orderRows.length !== 0) {
     let totalOrderAmount = 0;
+    const totalAllowedByWallet = getWalletAmount() * 10;
 
     // add starting at prices and total
     orderRows.forEach((orderRow) => {
@@ -476,11 +481,23 @@ if (orders) {
       }
     });
 
+    const remainingAmountForOrders = totalOrderAmount > totalAllowedByWallet
+      ? ''
+      : `You can set more orders totaling: ${centsToSteamFormattedPrice(totalAllowedByWallet - totalOrderAmount)}`;
     orders.insertAdjacentHTML(
       'afterend',
       DOMPurify.sanitize(
         `<div class="ordersTotal">
                    Orders placed total value: ${centsToSteamFormattedPrice(totalOrderAmount)}
+                   Max allowed by current balance: 
+                   <span
+                    class="${totalOrderAmount > totalAllowedByWallet ? 'loss' : 'profit'}"
+                    title="${totalOrderAmount > totalAllowedByWallet ? 'You can\'t place new orders right now!' : 'You can place new orders up to this amount!'}">
+                        ${centsToSteamFormattedPrice(totalAllowedByWallet)}
+                   </span>
+                   <span>
+                        ${remainingAmountForOrders} 
+                   </span>
                </div>`,
       ),
     );
