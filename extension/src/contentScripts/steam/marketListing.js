@@ -531,17 +531,18 @@ const addPricesInOtherCurrencies = () => {
 };
 
 const getBuyerKYCFromPage = () => {
-  const stateEl = document.getElementById('billing_state_buynow');
+  const type = isCommodityItem ? '' : '_buynow';
+  const stateEl = document.getElementById(`billing_state${type}`);
 
   return {
-    first_name: encodeURIComponent(document.getElementById('first_name_buynow').value),
-    last_name: encodeURIComponent(document.getElementById('last_name_buynow').value),
-    billing_address: encodeURIComponent(document.getElementById('billing_address_buynow').value),
-    billing_address_two: encodeURIComponent(document.getElementById('billing_address_two_buynow').value),
-    billing_country: encodeURIComponent(document.getElementById('billing_country_buynow').value),
-    billing_city: encodeURIComponent(document.getElementById('billing_city_buynow').value),
+    first_name: encodeURIComponent(document.getElementById(`first_name${type}`).value),
+    last_name: encodeURIComponent(document.getElementById(`last_name${type}`).value),
+    billing_address: encodeURIComponent(document.getElementById(`billing_address${type}`).value),
+    billing_address_two: encodeURIComponent(document.getElementById(`billing_address_two${type}`).value),
+    billing_country: encodeURIComponent(document.getElementById(`billing_country${type}`).value),
+    billing_city: encodeURIComponent(document.getElementById(`billing_city${type}`).value),
     billing_state: stateEl !== null ? encodeURIComponent(stateEl.value) : '',
-    billing_postal_code: encodeURIComponent(document.getElementById('billing_postal_code_buynow').value),
+    billing_postal_code: encodeURIComponent(document.getElementById(`billing_postal_code${type}`).value),
   };
 };
 
@@ -679,7 +680,10 @@ if (searchBar !== null) {
 }
 
 // adds custom buy order buttons/inputs
-const buyOrderInfoEl = document.getElementById('market_buyorder_info');
+const buyOrderInfoEl = isCommodityItem === true
+  ? document.getElementById('market_activity_section')
+  : document.getElementById('market_buyorder_info');
+
 if (buyOrderInfoEl !== null) {
   buyOrderInfoEl.firstElementChild.insertAdjacentHTML(
     'beforeend',
@@ -700,7 +704,9 @@ if (buyOrderInfoEl !== null) {
   );
 
   // repositions expandable details so it does not overlap with the custom buttons
-  document.getElementById('market_buyorder_info_details').style['margin-top'] = '45px';
+  if (!isCommodityItem) {
+    document.getElementById('market_buyorder_info_details').style['margin-top'] = '45px';
+  }
 
   document.getElementById('place_highest_order').addEventListener('click', () => {
     getHighestBuyOrder(steamApps.CSGO.appID, fullName).then((highestOrder) => {
