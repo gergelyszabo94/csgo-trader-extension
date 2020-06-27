@@ -96,7 +96,7 @@ const getLowestListingPrice = (appID, marketHashName) => {
         }
       }
       const request = new Request(
-        `https://steamcommunity.com/market/listings/${appID}/${marketHashName}/render/?query=&start=0&count=3&country=US&language=english&currency=${currencyID}`,
+        `https://steamcommunity.com/market/listings/${appID}/${marketHashName}/render/?query=&start=0&count=10&country=US&language=english&currency=${currencyID}`,
       );
 
       fetch(request).then((response) => {

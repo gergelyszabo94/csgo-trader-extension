@@ -9,7 +9,7 @@ const findElementByIDs = (appID, contextID, assetID, type) => {
 // find the item in the items array (containing all items)
 // by the supplied ids
 const getItemByIDs = (items, appID, contextID, assetID) => {
-  if (items === undefined || items.length === 0) return null;
+  if (items === undefined || items === null || items.length === 0) return null;
   return items.filter((item) => {
     return (item.assetid === assetID && item.appid === appID && item.contextid === contextID);
   })[0];

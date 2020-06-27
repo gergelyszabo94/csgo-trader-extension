@@ -72,6 +72,16 @@ const getAssetIDofActive = () => {
   return getAssetIDOfElement(document.querySelector('.activeInfo'));
 };
 
+const getIDsOfActiveItem = () => {
+  return getIDsFromElement(document.querySelector('.activeInfo'), 'inventory');
+};
+
+const getDefaultContextID = (appID) => {
+  // 2 is the default context for standard games
+  // 6 is the community context for steam
+  return appID === steamApps.STEAM.appID ? '6' : '2';
+};
+
 // works in inventory and profile pages
 const isOwnInventory = () => {
   return getUserSteamID() === getInventoryOwnerID();
@@ -391,8 +401,8 @@ const onListingPricesLoaded = () => {
 };
 
 // adds market info in other inventories
-const addStartingAtPrice = (marketHashName) => {
-  getPriceOverview('730', marketHashName).then(
+const addStartingAtPrice = (appID, marketHashName) => {
+  getPriceOverview(appID, marketHashName).then(
     (priceOverview) => {
       // removes previous leftover elements
       document.querySelectorAll('.startingAtVolume')
@@ -423,12 +433,11 @@ const addStartingAtPrice = (marketHashName) => {
 };
 
 const addRightSideElements = () => {
-  // only add elements if the CS:GO inventory is the active one
-  if (getActiveInventoryAppID() === steamApps.CSGO.appID) {
-    const activeID = getAssetIDofActive();
-    if (activeID !== null) {
-      const item = getItemByAssetID(items, activeID);
-
+  const activeIDs = getIDsOfActiveItem();
+  if (activeIDs !== null) {
+    const item = getItemByIDs(items, activeIDs.appID, activeIDs.contextID, activeIDs.assetID);
+    // only add elements if the CS:GO inventory is the active one
+    if (getActiveInventoryAppID() === steamApps.CSGO.appID) {
       // hides "tags" and "tradable after" in one's own inventory
       document.querySelectorAll('#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors')
         .forEach((tagsElement) => {
@@ -475,8 +484,14 @@ const addRightSideElements = () => {
           addBookmark(event.target);
         });
       });
+    } else {
+      document.querySelectorAll('.countdown').forEach((countdown) => {
+        countdown.style.display = 'none';
+      });
+    }
 
-      if (item) {
+    if (item) {
+      if (getActiveInventoryAppID() === steamApps.CSGO.appID) {
         // adds the nametag text to nametags
         document.querySelectorAll('.nametag').forEach((nametag) => {
           if (item.nametag !== undefined) {
@@ -578,7 +593,16 @@ const addRightSideElements = () => {
         });
 
         // adds doppler phase  to the name and makes it a link to the market listings page
-        const name = getItemByAssetID(getItemInfoFromPage(steamApps.CSGO.appID, '2'), activeID).description.name;
+        // the name is retrieved from the page variables to keep the right local
+        const name = getItemByIDs(
+          getItemInfoFromPage(
+            activeIDs.appID,
+            activeIDs.contextID,
+          ),
+          activeIDs.appID,
+          activeIDs.contextID,
+          activeIDs.assetID,
+        ).description.name;
         changeName(name, item.name_color, item.marketlink, item.dopplerInfo);
 
         // removes sih "Get Float" button
@@ -654,17 +678,18 @@ const addRightSideElements = () => {
               descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(otherExteriors, { ADD_ATTR: ['target'] }));
             });
         }
+      }
 
-        // adds "starting at" and sales volume to everyone's inventory
-        if (!isOwnInventory()) addStartingAtPrice(item.market_hash_name);
-        else if (item.marketable) { // adds quick and instant sell buttons
-          chrome.storage.local.get(['inventoryInstantQuickButtons'], ({ inventoryInstantQuickButtons }) => {
-            if (inventoryInstantQuickButtons) {
-              document.querySelectorAll('.item_market_actions').forEach((marketActions) => {
-                marketActions.insertAdjacentHTML(
-                  'beforeend',
-                  DOMPurify.sanitize(
-                    `<a class="marketActionInstantSell item_market_action_button item_market_action_button_green">
+      // adds "starting at" and sales volume to everyone's inventory
+      if (!isOwnInventory()) addStartingAtPrice(item.appid, item.market_hash_name);
+      else if (item.marketable) { // adds quick and instant sell buttons
+        chrome.storage.local.get(['inventoryInstantQuickButtons'], ({ inventoryInstantQuickButtons }) => {
+          if (inventoryInstantQuickButtons) {
+            document.querySelectorAll('.item_market_actions').forEach((marketActions) => {
+              marketActions.insertAdjacentHTML(
+                'beforeend',
+                DOMPurify.sanitize(
+                  `<a class="marketActionInstantSell item_market_action_button item_market_action_button_green">
                            <span class="item_market_action_button_edge item_market_action_button_left"></span>
                            <span class="item_market_action_button_contents" title="List the item on the market to be bought by the highest buy order">Instant Sell</span>
                            <span class="item_market_action_button_edge item_market_action_button_right"></span>
@@ -674,78 +699,73 @@ const addRightSideElements = () => {
                            <span class="item_market_action_button_contents" title="List the item to be the cheapest on the market">Quick Sell</span>
                            <span class="item_market_action_button_edge item_market_action_button_right"></span>
                       </a>`,
-                  ),
-                );
+                ),
+              );
 
-                marketActions.querySelectorAll('.marketActionInstantSell').forEach((instantSellButton) => {
-                  instantSellButton.addEventListener('click', () => {
-                    getHighestBuyOrder(
+              marketActions.querySelectorAll('.marketActionInstantSell').forEach((instantSellButton) => {
+                instantSellButton.addEventListener('click', () => {
+                  getHighestBuyOrder(
+                    item.appid,
+                    item.market_hash_name,
+                  ).then((highestOrderPrice) => {
+                    listItem(
                       item.appid,
-                      item.market_hash_name,
-                    ).then((highestOrderPrice) => {
-                      listItem(
-                        item.appid,
-                        item.contextid,
-                        1,
-                        item.assetid,
-                        getPriceAfterFees(highestOrderPrice),
-                      ).then(() => {
-                        instantSellButton.querySelector('.item_market_action_button_contents').innerText = 'Listing created!';
-                      }).catch((err) => {
-                        console.log(err);
-                        document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
-                          marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`<div class="listingError">${err.message}</div>`));
-                        });
-                      });
+                      item.contextid,
+                      1,
+                      item.assetid,
+                      getPriceAfterFees(highestOrderPrice),
+                    ).then(() => {
+                      instantSellButton.querySelector('.item_market_action_button_contents').innerText = 'Listing created!';
                     }).catch((err) => {
                       console.log(err);
                       document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
-                        marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`<div class="listingError">${err}</div>`));
+                        marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`<div class="listingError">${err.message}</div>`));
                       });
                     });
-                  });
-                });
-
-                marketActions.querySelectorAll('.marketActionQuickSell').forEach((quickSellButton) => {
-                  quickSellButton.addEventListener('click', () => {
-                    getLowestListingPrice(
-                      item.appid,
-                      item.market_hash_name,
-                    ).then((lowestListingPrice) => {
-                      const newPrice = lowestListingPrice > 3 ? lowestListingPrice - 1 : 3;
-                      listItem(
-                        item.appid,
-                        item.contextid,
-                        1,
-                        item.assetid,
-                        getPriceAfterFees(newPrice),
-                      ).then(() => {
-                        quickSellButton.querySelector('.item_market_action_button_contents').innerText = 'Listing created!';
-                      }).catch((err) => {
-                        console.log(err);
-                        document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
-                          marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`<div class="listingError">${err.message}</div>`));
-                        });
-                      });
-                    }).catch((err) => {
-                      console.log(err);
-                      document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
-                        marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize('<div class="listingError">Could not get lowest listing price</div>'));
-                      });
+                  }).catch((err) => {
+                    console.log(err);
+                    document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
+                      marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`<div class="listingError">${err}</div>`));
                     });
                   });
                 });
               });
-            }
-          });
-        }
+
+              marketActions.querySelectorAll('.marketActionQuickSell').forEach((quickSellButton) => {
+                quickSellButton.addEventListener('click', () => {
+                  getLowestListingPrice(
+                    item.appid,
+                    item.market_hash_name,
+                  ).then((lowestListingPrice) => {
+                    const newPrice = lowestListingPrice > 3 ? lowestListingPrice - 1 : 3;
+                    listItem(
+                      item.appid,
+                      item.contextid,
+                      1,
+                      item.assetid,
+                      getPriceAfterFees(newPrice),
+                    ).then(() => {
+                      quickSellButton.querySelector('.item_market_action_button_contents').innerText = 'Listing created!';
+                    }).catch((err) => {
+                      console.log(err);
+                      document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
+                        marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`<div class="listingError">${err.message}</div>`));
+                      });
+                    });
+                  }).catch((err) => {
+                    console.log(err);
+                    document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
+                      marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize('<div class="listingError">Could not get lowest listing price</div>'));
+                    });
+                  });
+                });
+              });
+            });
+          }
+        });
       }
-    } else console.log('Could not get assetID of active item');
-  } else {
-    document.querySelectorAll('.countdown').forEach((countdown) => {
-      countdown.style.display = 'none';
-    });
-  }
+    }
+  } else console.log('Could not get IDs of active item');
 };
 
 const addFloatIndicatorsToPage = () => {
@@ -968,7 +988,7 @@ const addListingRow = (item) => {
         const IDs = getIDsFromElement(itemElement, 'inventory');
         const itemInfo = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
         if (itemInfo !== undefined && itemInfo.market_hash_name === item.market_hash_name
-        && itemInfo.appid === item.appid) {
+          && itemInfo.appid === item.appid) {
           if (selected < quantity) {
             if (!itemElement.classList.contains('cstSelected')) itemElement.classList.add('cstSelected');
             selected += 1;
@@ -1209,7 +1229,7 @@ const listenSelectClicks = (event) => {
           const itemIDs = getIDsFromElement(itemEl, 'inventory');
           const item = getItemByIDs(items, itemIDs.appID, itemIDs.contextID, itemIDs.assetID);
           if (item && item.market_hash_name === marketHashNameToLookFor
-          && IDs.appID === itemIDs.appID) {
+            && IDs.appID === itemIDs.appID) {
             itemEl.classList.toggle('cstSelected');
           }
         });
@@ -1629,9 +1649,7 @@ if (inventoriesMenu !== null) {
   inventoriesMenu.querySelectorAll('.games_list_tab').forEach((tab) => {
     tab.addEventListener('click', () => {
       const appID = getActiveInventoryAppID();
-      // 2 is the default context for standard games
-      // 6 is the community context for steam
-      const contextID = appID === steamApps.STEAM.appID ? '6' : '2';
+      const contextID = getDefaultContextID(appID);
       if (appID === steamApps.CSGO.appID) {
         requestInventory();
       } else {
@@ -1654,10 +1672,9 @@ if (inventoriesMenu !== null) {
 // mutation observer observes changes on the right side of the inventory interface
 // this is a workaround for waiting for ajax calls to finish when the page changes
 const observer = new MutationObserver(() => {
-  if (getActiveInventoryAppID() === steamApps.CSGO.appID) {
-    addRightSideElements();
-    addFunctionBar();
-  } else {
+  addRightSideElements();
+  addFunctionBar();
+  if (getActiveInventoryAppID() !== steamApps.CSGO.appID) {
     cleanUpElements(true);
     // unhides "tags" in non-csgo inventories
     document.querySelectorAll('#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors')
