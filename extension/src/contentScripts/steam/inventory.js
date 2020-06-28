@@ -1673,20 +1673,32 @@ if (inventoriesMenu !== null) {
 
 // mutation observer observes changes on the right side of the inventory interface
 // this is a workaround for waiting for ajax calls to finish when the page changes
+let observer1LastTriggered = Date.now() - 501;
+// the mutation observer is only allowed to trigger the logic twice a second
+// this is to save on cpu cycles
 const observer = new MutationObserver(() => {
-  addRightSideElements();
-  addFunctionBar();
-  if (getActiveInventoryAppID() !== steamApps.CSGO.appID) {
-    // unhides "tags" in non-csgo inventories
-    document.querySelectorAll('#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors')
-      .forEach((tagsElement) => {
-        tagsElement.classList.remove('hidden');
-      });
+  if (Date.now() > observer1LastTriggered + 500) {
+    addRightSideElements();
+    addFunctionBar();
+    if (getActiveInventoryAppID() !== steamApps.CSGO.appID) {
+      // unhides "tags" in non-csgo inventories
+      document.querySelectorAll('#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors')
+        .forEach((tagsElement) => {
+          tagsElement.classList.remove('hidden');
+        });
+    }
   }
+  observer1LastTriggered = Date.now();
 });
 
+let observer2LastTriggered = Date.now() - 501;
+// the mutation observer is only allowed to trigger the logic twice a second
+// this is to save on cpu cycles
 const observer2 = new MutationObserver(() => {
-  addPerItemInfo();
+  if (Date.now() > observer2LastTriggered + 500) {
+    addPerItemInfo();
+  }
+  observer2LastTriggered = Date.now();
 });
 
 // does not execute if inventory is private or failed to load the page
