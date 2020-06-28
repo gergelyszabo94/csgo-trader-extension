@@ -4,7 +4,7 @@ import {
   getAssetIDFromInspectLink, getSteamRepInfo,
 } from 'utils/utilsModular';
 import { getPlayerSummaries } from 'utils/ISteamUser';
-import getUserCSGOInventory from 'utils/getUserCSGOInventory';
+import { getUserCSGOInventory, getUserDOTAInventory } from 'utils/getUserInventory';
 import { updateExchangeRates } from 'utils/pricing';
 
 // content scripts can't make cross domain requests because of security
@@ -164,6 +164,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse(result);
       },
     );
+    return true; // async return to signal that it will return later
+  } else if (request.getDotaInventory !== undefined) {
+    getUserDOTAInventory(request.getDotaInventory).then(({ items }) => {
+      sendResponse({ items });
+    }).catch(() => {
+      sendResponse('error');
+    });
     return true; // async return to signal that it will return later
   }
 });

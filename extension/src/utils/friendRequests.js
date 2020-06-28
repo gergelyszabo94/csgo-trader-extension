@@ -1,7 +1,7 @@
 import { getPlayerBans, getPlayerSummaries } from 'utils/ISteamUser';
 import { actions, conditions, eventTypes } from 'utils/static/friendRequests';
 import { getSteamRepInfo } from 'utils/utilsModular';
-import getUserCSGOInventory from 'utils/getUserCSGOInventory';
+import { getUserCSGOInventory } from 'utils/getUserInventory';
 import DOMPurify from 'dompurify';
 
 const getFriendRequests = () => new Promise((resolve, reject) => {

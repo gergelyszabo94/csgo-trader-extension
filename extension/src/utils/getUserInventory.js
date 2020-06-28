@@ -10,6 +10,7 @@ import {
   getType,
   parseStickerInfo,
 } from 'utils/utilsModular';
+import steamApps from 'utils/static/steamApps';
 
 const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
   chrome.storage.local.get(
@@ -17,7 +18,7 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
     ({
       itemPricing, prices, currency, exchangeRate, pricingProvider,
     }) => {
-      const getRequest = new Request(`https://steamcommunity.com/profiles/${steamID}/inventory/json/730/2/?l=english`);
+      const getRequest = new Request(`https://steamcommunity.com/profiles/${steamID}/inventory/json/${steamApps.CSGO.appID}/2/?l=english`);
       fetch(getRequest).then((response) => {
         if (!response.ok) {
           reject(response.statusText);
@@ -154,4 +155,97 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
   );
 });
 
-export default getUserCSGOInventory;
+const getUserDOTAInventory = (steamID) => new Promise((resolve, reject) => {
+  const getRequest = new Request(`https://steamcommunity.com/profiles/${steamID}/inventory/json/${steamApps.DOTA2.appID}/2/?l=english`);
+  fetch(getRequest).then((response) => {
+    if (!response.ok) {
+      reject(response.statusText);
+      console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+    } else return response.json();
+  }).then((body) => {
+    if (body.success) {
+      const items = body.rgDescriptions;
+      const ids = body.rgInventory;
+
+      const itemsPropertiesToReturn = [];
+      const duplicates = {};
+
+      // counts duplicates
+      for (const asset of Object.values(ids)) {
+        const assetID = asset.id;
+        for (const item of Object.values(items)) {
+          if (asset.classid === item.classid
+            && asset.instanceid === item.instanceid) {
+            const marketHashName = item.market_hash_name;
+            if (duplicates[marketHashName] === undefined) {
+              const instances = [assetID];
+              duplicates[marketHashName] = {
+                num: 1,
+                instances,
+              };
+            } else {
+              duplicates[marketHashName].num += 1;
+              duplicates[marketHashName].instances.push(assetID);
+            }
+          }
+        }
+      }
+      for (const asset of Object.values(ids)) {
+        const assetID = asset.id;
+        const position = asset.pos;
+
+        for (const item of Object.values(items)) {
+          if (asset.classid === item.classid && asset.instanceid === item.instanceid) {
+            const name = item.name;
+            const marketHashName = item.market_hash_name;
+            let tradability = 'Tradable';
+            let tradabilityShort = 'T';
+            const icon = item.icon_url;
+            const owner = steamID;
+
+            if (item.tradable === 0) {
+              tradability = item.cache_expiration;
+              tradabilityShort = getShortDate(tradability);
+            }
+            if (item.marketable === 0) {
+              tradability = 'Not Tradable';
+              tradabilityShort = '';
+            }
+
+            itemsPropertiesToReturn.push({
+              name,
+              market_hash_name: marketHashName,
+              name_color: item.name_color,
+              marketlink: `https://steamcommunity.com/market/listings/${steamApps.DOTA2.appID}/${marketHashName}`,
+              appid: item.appid,
+              contextid: '2',
+              classid: item.classid,
+              instanceid: item.instanceid,
+              assetid: assetID,
+              position,
+              tradability,
+              tradabilityShort,
+              marketable: item.marketable,
+              iconURL: icon,
+              duplicates: duplicates[marketHashName],
+              owner,
+            });
+          }
+        }
+      }
+      const inventoryItems = itemsPropertiesToReturn.sort((a, b) => {
+        return a.position - b.position;
+      });
+      resolve({ items: inventoryItems });
+    } else if (body.Error === 'This profile is private.') {
+      reject('inventory_private');
+    } else {
+      reject(body.Error);
+    }
+  }).catch((err) => {
+    console.log(err);
+    reject(err);
+  });
+});
+
+export { getUserCSGOInventory, getUserDOTAInventory };

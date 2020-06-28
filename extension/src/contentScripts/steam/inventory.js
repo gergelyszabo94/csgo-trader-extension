@@ -851,8 +851,8 @@ const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
 };
 
 // adds everything that is per item, like trade lock, exterior, doppler phases, border colors
-const addPerItemInfo = () => {
-  const itemElements = document.querySelectorAll('.item.app730.context2');
+const addPerItemInfo = (appID) => {
+  const itemElements = document.querySelectorAll(`.item.app${appID}.context2`);
   if (itemElements.length !== 0) {
     chrome.storage.local.get(['colorfulItems', 'autoFloatInventory', 'showStickerPrice', 'activeOffers', 'itemInOffersInventory'],
       ({
@@ -864,7 +864,7 @@ const addPerItemInfo = () => {
             // in case the inventory is not loaded yet it retries in a second
             if (itemElement.id === undefined) {
               setTimeout(() => {
-                addPerItemInfo();
+                addPerItemInfo(appID);
               }, 1000);
               return false;
             }
@@ -880,14 +880,16 @@ const addPerItemInfo = () => {
               );
             }
 
-            addDopplerPhase(itemElement, item.dopplerInfo);
-            makeItemColorful(itemElement, item, colorfulItems);
-            addSSTandExtIndicators(itemElement, item, showStickerPrice);
-            addPriceIndicator(itemElement, item.price);
-            if (itemInOffersInventory) {
-              addInOtherTradeIndicator(itemElement, item, activeOffers.items);
+            if (appID === steamApps.CSGO.appID) {
+              addDopplerPhase(itemElement, item.dopplerInfo);
+              makeItemColorful(itemElement, item, colorfulItems);
+              addSSTandExtIndicators(itemElement, item, showStickerPrice);
+              addPriceIndicator(itemElement, item.price);
+              if (itemInOffersInventory) {
+                addInOtherTradeIndicator(itemElement, item, activeOffers.items);
+              }
+              if (autoFloatInventory) addFloatIndicator(itemElement, item.floatInfo);
             }
-            if (autoFloatInventory) addFloatIndicator(itemElement, item.floatInfo);
 
             // marks the item "processed" to avoid additional unnecessary work later
             itemElement.setAttribute('data-processed', 'true');
@@ -896,7 +898,7 @@ const addPerItemInfo = () => {
       });
   } else { // in case the inventory is not loaded yet
     setTimeout(() => {
-      addPerItemInfo();
+      addPerItemInfo(appID);
     }, 1000);
   }
 };
@@ -1241,11 +1243,12 @@ const listenSelectClicks = (event) => {
 };
 
 const sortItems = (inventoryItems, method) => {
-  if (getActiveInventoryAppID() === steamApps.CSGO.appID) {
+  const activeAppID = getActiveInventoryAppID();
+  if (activeAppID === steamApps.CSGO.appID) {
     const itemElements = document.querySelectorAll('.item.app730.context2');
     const inventoryPages = document.getElementById(`inventory_${getInventoryOwnerID()}_730_2`).querySelectorAll('.inventory_page');
     doTheSorting(inventoryItems, Array.from(itemElements), method, Array.from(inventoryPages), 'inventory');
-    addPerItemInfo();
+    addPerItemInfo(activeAppID);
   }
 };
 
@@ -1588,22 +1591,39 @@ const loadFullInventory = () => {
 };
 
 // sends a message to the "back end" to request inventory contents
-const requestInventory = () => {
-  chrome.runtime.sendMessage({ inventory: getInventoryOwnerID() }, (response) => {
-    if (response !== 'error') {
-      items = items.concat(response.items);
-      inventoryTotal = response.total;
-      addRightSideElements();
-      addPerItemInfo();
-      setInventoryTotal();
-      addFunctionBar();
-      loadFullInventory();
-      addPageControlEventListeners('inventory', () => {
-        addFloatIndicatorsToPage();
-        addRealTimePricesToQueue();
-      });
-    }
-  });
+const requestInventory = (appID) => {
+  const inventoryOwnerID = getInventoryOwnerID();
+  if (appID === steamApps.CSGO.appID) {
+    chrome.runtime.sendMessage({ inventory: inventoryOwnerID }, (response) => {
+      if (response !== 'error') {
+        items = items.concat(response.items);
+        inventoryTotal = response.total;
+        addRightSideElements();
+        addPerItemInfo(appID);
+        setInventoryTotal();
+        addFunctionBar();
+        loadFullInventory();
+        addPageControlEventListeners('inventory', () => {
+          addFloatIndicatorsToPage();
+          addRealTimePricesToQueue();
+        });
+      }
+    });
+  } else if (appID === steamApps.DOTA2.appID) {
+    chrome.runtime.sendMessage({ getDotaInventory: inventoryOwnerID }, (response) => {
+      if (response !== 'error') {
+        items = items.concat(response.items);
+        addRightSideElements();
+        addPerItemInfo(appID);
+        addFunctionBar();
+        loadFullInventory();
+        addPageControlEventListeners('inventory', () => {
+          addFloatIndicatorsToPage();
+          addRealTimePricesToQueue();
+        });
+      }
+    });
+  }
 };
 
 const updateTradabilityIndicators = () => {
@@ -1652,8 +1672,8 @@ if (inventoriesMenu !== null) {
     tab.addEventListener('click', () => {
       const appID = getActiveInventoryAppID();
       const contextID = getDefaultContextID(appID);
-      if (appID === steamApps.CSGO.appID) {
-        requestInventory();
+      if (appID === steamApps.CSGO.appID || appID === steamApps.DOTA2.appID) {
+        requestInventory(appID);
       } else {
         let inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
         if (inventory.length !== 0) {
@@ -1696,7 +1716,7 @@ let observer2LastTriggered = Date.now() - 501;
 // this is to save on cpu cycles
 const observer2 = new MutationObserver(() => {
   if (Date.now() > observer2LastTriggered + 500) {
-    addPerItemInfo();
+    addPerItemInfo(getActiveInventoryAppID());
   }
   observer2LastTriggered = Date.now();
 });
@@ -1810,8 +1830,10 @@ chrome.storage.local.get('hideOtherExtensionPrices', (result) => {
 });
 
 const activeInventoryAppID = getActiveInventoryAppID();
-if (activeInventoryAppID === steamApps.CSGO.appID) requestInventory();
-else {
+if (activeInventoryAppID === steamApps.CSGO.appID
+  || activeInventoryAppID === steamApps.DOTA2.appID) {
+  requestInventory(activeInventoryAppID);
+} else {
   const contextID = activeInventoryAppID === steamApps.STEAM.appID ? '6' : '2';
   let inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
   if (inventory.length !== 0) {
