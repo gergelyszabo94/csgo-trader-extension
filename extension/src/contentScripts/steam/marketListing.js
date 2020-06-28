@@ -39,7 +39,7 @@ const dopplerPhase = '<div class="dopplerPhaseMarket"><span></span></div>';
 let textOfDescriptors = '';
 document.querySelectorAll('.descriptor').forEach((descriptor) => { textOfDescriptors += descriptor.innerText; });
 const thereSouvenirForThisItem = souvenirExists(textOfDescriptors);
-const isCommodityItem = document.getElementById('searchResultsRows') === null;
+const isCommodityItem = document.querySelector('.market_commodity_order_block') !== null;
 
 let weaponName = '';
 const appID = decodeURIComponent(window.location.pathname).split('/listings/')[1].split('/')[0];
@@ -178,8 +178,9 @@ const addStickers = () => {
   `, 'listingRowOverRide');
 
     const listings = getListings();
-
-    if (!isCommodityItem) {
+    // if there are no listings the listings variable is an empty array
+    // if there are listings it's an object
+    if (!isCommodityItem && listings.length === undefined) {
       document.getElementById('searchResultsRows').querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
         (listingRow) => {
           if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
@@ -550,43 +551,46 @@ const addInstantBuyButtons = () => {
   chrome.storage.local.get('marketListingsInstantBuy', (marketListingsInstantBuy) => {
     if (marketListingsInstantBuy && !isCommodityItem) {
       const listings = getListings();
-      const listingsSection = document.getElementById('searchResultsRows');
-      listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
-        (listingRow) => {
-          if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows'
-            && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
-            const listingID = getListingIDFromElement(listingRow);
+      // if it's not an empty array but an object
+      if (listings.length === undefined) {
+        const listingsSection = document.getElementById('searchResultsRows');
+        listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
+          (listingRow) => {
+            if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows'
+              && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
+              const listingID = getListingIDFromElement(listingRow);
 
-            if (listingRow.querySelector('.instantBuy') === null) { // if not added before
-              const buyButton = listingRow.querySelector('.market_listing_buy_button');
-              buyButton.parentElement.style['line-height'] = '30px';
-              buyButton.insertAdjacentHTML(
-                'afterend',
-                DOMPurify.sanitize(
-                  `<div class="instantBuy">
+              if (listingRow.querySelector('.instantBuy') === null) { // if not added before
+                const buyButton = listingRow.querySelector('.market_listing_buy_button');
+                buyButton.parentElement.style['line-height'] = '30px';
+                buyButton.insertAdjacentHTML(
+                  'afterend',
+                  DOMPurify.sanitize(
+                    `<div class="instantBuy">
                           <a class="item_market_action_button btn_green_white_innerfade btn_small">
                             <span title="Buy this item with one click (no purchase dialog)">
                               Instant Buy
                            </span>
                           </a>
                         </div>`,
-                ),
-              );
+                  ),
+                );
 
-              const instaBuyEl = listingRow.querySelector('.instantBuy');
-              instaBuyEl.addEventListener('click', () => {
-                buyListing(listings[listingID], getBuyerKYCFromPage()).then(() => {
-                  listingRow.querySelector('.market_listing_action_buttons').innerText = 'Purchased';
-                }).catch((err) => {
-                  console.log(err);
-                  instaBuyEl.innerText = 'Error purchasing!';
-                  instaBuyEl.style.color = 'red';
+                const instaBuyEl = listingRow.querySelector('.instantBuy');
+                instaBuyEl.addEventListener('click', () => {
+                  buyListing(listings[listingID], getBuyerKYCFromPage()).then(() => {
+                    listingRow.querySelector('.market_listing_action_buttons').innerText = 'Purchased';
+                  }).catch((err) => {
+                    console.log(err);
+                    instaBuyEl.innerText = 'Error purchasing!';
+                    instaBuyEl.style.color = 'red';
+                  });
                 });
-              });
+              }
             }
-          }
-        },
-      );
+          },
+        );
+      }
     }
   });
 };
