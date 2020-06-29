@@ -434,37 +434,12 @@ const addRightSideElements = () => {
     // cleans up previously added elements
     cleanUpElements();
     const item = getItemByIDs(items, activeIDs.appID, activeIDs.contextID, activeIDs.assetID);
-    if (getActiveInventoryAppID() === steamApps.CSGO.appID) {
-      // hides "tags" and "tradable after" in one's own inventory
-      document.querySelectorAll('#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors')
-        .forEach((tagsElement) => {
-          if (!tagsElement.classList.contains('hidden')) tagsElement.classList.add('hidden');
-        });
-
+    const activeInventoryAppID = getActiveInventoryAppID();
+    if (activeInventoryAppID === steamApps.CSGO.appID
+      || activeInventoryAppID === steamApps.DOTA2.appID) {
       // removes previously added listeners
       document.querySelectorAll('.showTechnical, .lowerModule, .marketActionInstantSell, .marketActionQuickSell').forEach((element) => {
         element.removeEventListener('click');
-      });
-
-      // adds float bar, sticker info, nametag
-      document.querySelectorAll('.item_desc_icon').forEach((icon) => {
-        icon.insertAdjacentHTML('afterend', DOMPurify.sanitize(upperModule));
-      });
-
-      // listens to click on "show technical"
-      document.querySelectorAll('.showTechnical').forEach((showTechnical) => {
-        showTechnical.addEventListener('click', () => {
-          document.querySelectorAll('.floatTechnical').forEach((floatTechnical) => {
-            floatTechnical.classList.toggle('hidden');
-          });
-        });
-      });
-
-      // allows the float pointer's text to go outside the boundaries of the item
-      // they would not be visible otherwise on high-float items
-      // also removes background from the right side of the page
-      document.querySelectorAll('.item_desc_content').forEach((itemDescContent) => {
-        itemDescContent.setAttribute('style', 'overflow: visible; background-image: url()');
       });
 
       // adds the lower module that includes tradability, countdown  and bookmarking
@@ -478,6 +453,35 @@ const addRightSideElements = () => {
           addBookmark(event.target);
         });
       });
+
+      if (activeInventoryAppID === steamApps.CSGO.appID) {
+        // hides "tags" and "tradable after" in one's own inventory
+        document.querySelectorAll('#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors')
+          .forEach((tagsElement) => {
+            if (!tagsElement.classList.contains('hidden')) tagsElement.classList.add('hidden');
+          });
+
+        // adds float bar, sticker info, nametag
+        document.querySelectorAll('.item_desc_icon').forEach((icon) => {
+          icon.insertAdjacentHTML('afterend', DOMPurify.sanitize(upperModule));
+        });
+
+        // listens to click on "show technical"
+        document.querySelectorAll('.showTechnical').forEach((showTechnical) => {
+          showTechnical.addEventListener('click', () => {
+            document.querySelectorAll('.floatTechnical').forEach((floatTechnical) => {
+              floatTechnical.classList.toggle('hidden');
+            });
+          });
+        });
+
+        // allows the float pointer's text to go outside the boundaries of the item
+        // they would not be visible otherwise on high-float items
+        // also removes background from the right side of the page
+        document.querySelectorAll('.item_desc_content').forEach((itemDescContent) => {
+          itemDescContent.setAttribute('style', 'overflow: visible; background-image: url()');
+        });
+      }
     } else {
       document.querySelectorAll('.countdown').forEach((countdown) => {
         countdown.style.display = 'none';
@@ -485,48 +489,154 @@ const addRightSideElements = () => {
     }
 
     if (item) {
-      if (getActiveInventoryAppID() === steamApps.CSGO.appID) {
-        // adds the nametag text to nametags
-        document.querySelectorAll('.nametag').forEach((nametag) => {
-          if (item.nametag !== undefined) {
-            nametag.innerText = item.nametag;
-            document.querySelectorAll('.fraud_warning').forEach((fraudWarning) => {
-              fraudWarning.outerHTML = '';
-            });
-          } else nametag.style.display = 'none';
-        });
+      if (activeInventoryAppID === steamApps.CSGO.appID
+        || activeInventoryAppID === steamApps.DOTA2.appID) {
+        if (activeInventoryAppID === steamApps.CSGO.appID) {
+          // adds the nametag text to nametags
+          document.querySelectorAll('.nametag').forEach((nametag) => {
+            if (item.nametag !== undefined) {
+              nametag.innerText = item.nametag;
+              document.querySelectorAll('.fraud_warning').forEach((fraudWarning) => {
+                fraudWarning.outerHTML = '';
+              });
+            } else nametag.style.display = 'none';
+          });
 
-        // repositions stickers
-        if (item.stickers !== undefined && item.stickers.length !== 0) {
-          // removes the original stickers elements
-          const originalStickers = document.getElementById('sticker_info');
-          if (originalStickers !== null) originalStickers.outerHTML = '';
+          // repositions stickers
+          if (item.stickers !== undefined && item.stickers.length !== 0) {
+            // removes the original stickers elements
+            const originalStickers = document.getElementById('sticker_info');
+            if (originalStickers !== null) originalStickers.outerHTML = '';
 
-          // sometimes it is added slowly so it does not get removed the first time..
-          setTimeout(() => {
-            if (originalStickers !== null && originalStickers.parentNode !== null) originalStickers.outerHTML = '';
-          }, 1000);
+            // sometimes it is added slowly so it does not get removed the first time..
+            setTimeout(() => {
+              if (originalStickers !== null && originalStickers.parentNode !== null) originalStickers.outerHTML = '';
+            }, 1000);
 
-          // adds own sticker elements
-          item.stickers.forEach((stickerInfo) => {
-            document.querySelectorAll('.customStickers').forEach((customStickers) => {
-              customStickers.innerHTML += DOMPurify.sanitize(`
+            // adds own sticker elements
+            item.stickers.forEach((stickerInfo) => {
+              document.querySelectorAll('.customStickers').forEach((customStickers) => {
+                customStickers.innerHTML += DOMPurify.sanitize(`
                                     <div class="stickerSlot" data-tooltip="${stickerInfo.name} (${stickerInfo.price.display})">
                                         <a href="${stickerInfo.marketURL}" target="_blank">
                                             <img src="${stickerInfo.iconURL}" class="stickerIcon">
                                         </a>
                                     </div>
                                     `, { ADD_ATTR: ['target'] });
+              });
             });
-          });
-        }
+          }
 
-        if (item.duplicates !== undefined) {
-          // adds duplicates counts
-          document.querySelectorAll('.duplicate').forEach((duplicate) => {
-            duplicate.style.display = 'block';
-            duplicate.innerText = `x${item.duplicates.num}`;
+          // adds the in-offer module
+          chrome.storage.local.get(['activeOffers', 'itemInOffersInventory'], ({ activeOffers, itemInOffersInventory }) => {
+            if (itemInOffersInventory) {
+              const inOffers = activeOffers.items.filter((offerItem) => {
+                return offerItem.assetid === item.assetid;
+              });
+
+              if (inOffers.length !== 0) {
+                const offerLinks = inOffers.map((offerItem, index) => {
+                  const offerLink = offerItem.offerOrigin === 'sent'
+                    ? `https://steamcommunity.com/profiles/${offerItem.owner}/tradeoffers/sent#tradeofferid_${offerItem.inOffer}`
+                    : `https://steamcommunity.com/tradeoffer/${offerItem.inOffer}/`;
+
+                  const afterLinkChars = index === inOffers.length - 1
+                    ? '' // if it's the last one
+                    : ', ';
+
+                  return `<a href="${offerLink}" target="_blank">
+                        ${offerItem.inOffer}${afterLinkChars}
+                      </a>`;
+                });
+
+                const listString = `<div>${offerLinks.join('')}</div>`;
+                const inTradesInfoModule = `
+                <div class="descriptor inTradesInfoModule">
+                    In offer${inOffers.length > 1 ? 's' : ''}:
+                    ${listString}
+                </div>`;
+
+                document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
+                  .forEach((descriptor) => {
+                    descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(inTradesInfoModule, { ADD_ATTR: ['target'] }));
+                  });
+              }
+            }
           });
+
+          // removes sih "Get Float" button
+          // does not really work since it's loaded after this script..
+          if (isSIHActive()) {
+            document.querySelectorAll('.float_block').forEach((e) => e.remove());
+            setTimeout(() => {
+              document.querySelectorAll('.float_block').forEach((e) => e.remove());
+            }, 1000);
+          }
+          if (item.floatInfo === null) {
+            if (item.inspectLink !== null && itemTypes[item.type.key].float) {
+              floatQueue.jobs.push({
+                type: 'inventory_floatbar',
+                assetID: item.assetid,
+                inspectLink: item.inspectLink,
+                callBackFunction: dealWithNewFloatData,
+              });
+              if (!floatQueue.active) workOnFloatQueue();
+            } else hideFloatBars();
+          } else {
+            updateFloatAndPatternElements(item);
+            addFloatIndicator(findElementByIDs(steamApps.CSGO.appID, '2', item.assetid, 'inventory'), item.floatInfo);
+          }
+
+          // it takes the visible descriptors and checks if the collection includes souvenirs
+          let textOfDescriptors = '';
+          document.querySelectorAll('.descriptor').forEach((descriptor) => {
+            if (descriptor.parentNode.classList.contains('item_desc_descriptors')
+              && descriptor.parentNode.parentNode.parentNode.parentNode.style.display !== 'none') {
+              textOfDescriptors += descriptor.innerText;
+            }
+          });
+
+          const thereSouvenirForThisItem = souvenirExists(textOfDescriptors);
+
+          let weaponName = '';
+          const star = item.starInName ? starChar : '';
+
+          if (item.isStatrack) weaponName = item.market_hash_name.split(`${stattrakPretty} `)[1].split('(')[0];
+          else if (item.isSouvenir) weaponName = item.market_hash_name.split('Souvenir ')[1].split('(')[0];
+          else {
+            weaponName = item.market_hash_name.split('(')[0].split('★ ')[1];
+            if (weaponName === undefined) weaponName = item.market_hash_name.split('(')[0];
+          }
+
+          let stOrSv = stattrakPretty;
+          let stOrSvClass = 'stattrakOrange';
+          let linkMidPart = star + stattrak;
+          if (item.isSouvenir || thereSouvenirForThisItem) {
+            stOrSvClass = 'souvenirYellow';
+            stOrSv = souvenir;
+            linkMidPart = souvenir;
+          }
+
+          const otherExteriors = `
+                    <div class="descriptor otherExteriors">
+                        <span>${chrome.i18n.getMessage('links_to_other_exteriors')}:</span>
+                        <ul>
+                            <li><a href="${`${genericMarketLink + star + weaponName}%28Factory%20New%29`}" target="_blank">${exteriors.factory_new.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Factory%20New%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.factory_new.localized_name}</span></a></li>
+                            <li><a href="${`${genericMarketLink + star + weaponName}%28Minimal%20Wear%29`}"" target="_blank">${exteriors.minimal_wear.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Minimal%20Wear%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.minimal_wear.localized_name}</span></a></li>
+                            <li><a href="${`${genericMarketLink + star + weaponName}%28Field-Tested%29`}"" target="_blank">${exteriors.field_tested.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Field-Tested%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.field_tested.localized_name}</span></a></li>
+                            <li><a href="${`${genericMarketLink + star + weaponName}%28Well-Worn%29`}"" target="_blank">${exteriors.well_worn.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Well-Worn%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.well_worn.localized_name}</span></a></li>
+                            <li><a href="${`${genericMarketLink + star + weaponName}%28Battle-Scarred%29`}"" target="_blank">${exteriors.battle_scarred.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Battle-Scarred%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.battle_scarred.localized_name}</span></a></li>
+                        </ul>
+                        <span>${chrome.i18n.getMessage('not_every_available')}</span>
+                    </div>
+                    `;
+
+          if (item.exterior !== undefined) {
+            document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
+              .forEach((descriptor) => {
+                descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(otherExteriors, { ADD_ATTR: ['target'] }));
+              });
+          }
         }
 
         // sets the tradability info
@@ -550,117 +660,14 @@ const addRightSideElements = () => {
             });
           }
         });
+      }
 
-        // adds the in-offer module
-        chrome.storage.local.get(['activeOffers', 'itemInOffersInventory'], ({ activeOffers, itemInOffersInventory }) => {
-          if (itemInOffersInventory) {
-            const inOffers = activeOffers.items.filter((offerItem) => {
-              return offerItem.assetid === item.assetid;
-            });
-
-            if (inOffers.length !== 0) {
-              const offerLinks = inOffers.map((offerItem, index) => {
-                const offerLink = offerItem.offerOrigin === 'sent'
-                  ? `https://steamcommunity.com/profiles/${offerItem.owner}/tradeoffers/sent#tradeofferid_${offerItem.inOffer}`
-                  : `https://steamcommunity.com/tradeoffer/${offerItem.inOffer}/`;
-
-                const afterLinkChars = index === inOffers.length - 1
-                  ? '' // if it's the last one
-                  : ', ';
-
-                return `<a href="${offerLink}" target="_blank">
-                        ${offerItem.inOffer}${afterLinkChars}
-                      </a>`;
-              });
-
-              const listString = `<div>${offerLinks.join('')}</div>`;
-              const inTradesInfoModule = `
-                <div class="descriptor inTradesInfoModule">
-                    In offer${inOffers.length > 1 ? 's' : ''}:
-                    ${listString}
-                </div>`;
-
-              document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
-                .forEach((descriptor) => {
-                  descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(inTradesInfoModule, { ADD_ATTR: ['target'] }));
-                });
-            }
-          }
+      if (item.duplicates !== undefined) {
+        // adds duplicates counts
+        document.querySelectorAll('.duplicate').forEach((duplicate) => {
+          duplicate.style.display = 'block';
+          duplicate.innerText = `x${item.duplicates.num}`;
         });
-
-        // removes sih "Get Float" button
-        // does not really work since it's loaded after this script..
-        if (isSIHActive()) {
-          document.querySelectorAll('.float_block').forEach((e) => e.remove());
-          setTimeout(() => {
-            document.querySelectorAll('.float_block').forEach((e) => e.remove());
-          }, 1000);
-        }
-        if (item.floatInfo === null) {
-          if (item.inspectLink !== null && itemTypes[item.type.key].float) {
-            floatQueue.jobs.push({
-              type: 'inventory_floatbar',
-              assetID: item.assetid,
-              inspectLink: item.inspectLink,
-              callBackFunction: dealWithNewFloatData,
-            });
-            if (!floatQueue.active) workOnFloatQueue();
-          } else hideFloatBars();
-        } else {
-          updateFloatAndPatternElements(item);
-          addFloatIndicator(findElementByIDs(steamApps.CSGO.appID, '2', item.assetid, 'inventory'), item.floatInfo);
-        }
-
-        // it takes the visible descriptors and checks if the collection includes souvenirs
-        let textOfDescriptors = '';
-        document.querySelectorAll('.descriptor').forEach((descriptor) => {
-          if (descriptor.parentNode.classList.contains('item_desc_descriptors')
-            && descriptor.parentNode.parentNode.parentNode.parentNode.style.display !== 'none') {
-            textOfDescriptors += descriptor.innerText;
-          }
-        });
-
-        const thereSouvenirForThisItem = souvenirExists(textOfDescriptors);
-
-        let weaponName = '';
-        const star = item.starInName ? starChar : '';
-
-        if (item.isStatrack) weaponName = item.market_hash_name.split(`${stattrakPretty} `)[1].split('(')[0];
-        else if (item.isSouvenir) weaponName = item.market_hash_name.split('Souvenir ')[1].split('(')[0];
-        else {
-          weaponName = item.market_hash_name.split('(')[0].split('★ ')[1];
-          if (weaponName === undefined) weaponName = item.market_hash_name.split('(')[0];
-        }
-
-        let stOrSv = stattrakPretty;
-        let stOrSvClass = 'stattrakOrange';
-        let linkMidPart = star + stattrak;
-        if (item.isSouvenir || thereSouvenirForThisItem) {
-          stOrSvClass = 'souvenirYellow';
-          stOrSv = souvenir;
-          linkMidPart = souvenir;
-        }
-
-        const otherExteriors = `
-                    <div class="descriptor otherExteriors">
-                        <span>${chrome.i18n.getMessage('links_to_other_exteriors')}:</span>
-                        <ul>
-                            <li><a href="${`${genericMarketLink + star + weaponName}%28Factory%20New%29`}" target="_blank">${exteriors.factory_new.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Factory%20New%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.factory_new.localized_name}</span></a></li>
-                            <li><a href="${`${genericMarketLink + star + weaponName}%28Minimal%20Wear%29`}"" target="_blank">${exteriors.minimal_wear.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Minimal%20Wear%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.minimal_wear.localized_name}</span></a></li>
-                            <li><a href="${`${genericMarketLink + star + weaponName}%28Field-Tested%29`}"" target="_blank">${exteriors.field_tested.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Field-Tested%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.field_tested.localized_name}</span></a></li>
-                            <li><a href="${`${genericMarketLink + star + weaponName}%28Well-Worn%29`}"" target="_blank">${exteriors.well_worn.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Well-Worn%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.well_worn.localized_name}</span></a></li>
-                            <li><a href="${`${genericMarketLink + star + weaponName}%28Battle-Scarred%29`}"" target="_blank">${exteriors.battle_scarred.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Battle-Scarred%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.battle_scarred.localized_name}</span></a></li>
-                        </ul>
-                        <span>${chrome.i18n.getMessage('not_every_available')}</span>
-                    </div>
-                    `;
-
-        if (item.exterior !== undefined) {
-          document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
-            .forEach((descriptor) => {
-              descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(otherExteriors, { ADD_ATTR: ['target'] }));
-            });
-        }
       }
 
       // adds doppler phase  to the name and makes it a link to the market listings page
