@@ -5,6 +5,7 @@ import { injectScript } from 'utils/injection';
 import DOMPurify from 'dompurify';
 import { storageKeys } from 'utils/static/storageKeys';
 import { findElementByIDs } from 'utils/itemsToElementsToItems';
+import { getItemMarketLink } from 'utils/simpleUtils';
 
 const priceQueue = {
   active: false,
@@ -96,7 +97,7 @@ const getLowestListingPrice = (appID, marketHashName) => {
         }
       }
       const request = new Request(
-        `https://steamcommunity.com/market/listings/${appID}/${marketHashName}/render/?query=&start=0&count=10&country=US&language=english&currency=${currencyID}`,
+        `${getItemMarketLink(appID, marketHashName)}/render/?query=&start=0&count=10&country=US&language=english&currency=${currencyID}`,
       );
 
       fetch(request).then((response) => {

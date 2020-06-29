@@ -3,6 +3,7 @@ import {
   goToInternalPage, validateSteamAPIKey,
   getAssetIDFromInspectLink, getSteamRepInfo,
 } from 'utils/utilsModular';
+import { getItemMarketLink } from 'utils/simpleUtils';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import { getUserCSGOInventory, getUserDOTAInventory } from 'utils/getUserInventory';
 import { updateExchangeRates } from 'utils/pricing';
@@ -122,7 +123,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
     return true; // async return to signal that it will return later
   } else if (request.getBuyOrderInfo !== undefined) {
-    const getRequest = new Request(`https://steamcommunity.com/market/listings/${request.getBuyOrderInfo.appID}/${request.getBuyOrderInfo.marketHashName}`);
+    const getRequest = new Request(
+      getItemMarketLink(request.getBuyOrderInfo.appID, request.getBuyOrderInfo.marketHashName),
+    );
 
     fetch(getRequest).then((response) => {
       if (!response.ok) {

@@ -11,6 +11,7 @@ import {
   addSearchListener, getPattern, removeFromArray, toFixedNoRounding,
 }
   from 'utils/utilsModular';
+import { getItemMarketLink } from 'utils/simpleUtils';
 import { getShortDate, dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
   stattrak, starChar, souvenir, stattrakPretty, genericMarketLink,
@@ -197,7 +198,7 @@ const getItemInfoFromPage = (appID, contextID) => {
 // it hides the original item name element and replaces it with one
 // that is a link to it's market page and adds the doppler phase to the name
 const changeName = (name, color, appID, marketHashName, dopplerInfo) => {
-  const marketLink = `https://steamcommunity.com/market/listings/${appID}/${marketHashName}`;
+  const marketLink = getItemMarketLink(appID, marketHashName);
   const newNameElement = (dopplerInfo !== null && dopplerInfo !== undefined)
     ? `<a class="hover_item_name custom_name" style="color: #${color}" href="${marketLink}" target="_blank">${name} (${dopplerInfo.name})</a>`
     : `<a class="hover_item_name custom_name" style="color: #${color}" href="${marketLink}" target="_blank">${name}</a>`;
@@ -413,7 +414,7 @@ const addStartingAtPrice = (appID, marketHashName) => {
           marketActions.insertAdjacentHTML('afterbegin',
             DOMPurify.sanitize(`<div class="startingAtVolume">
                      <div style="height: 24px;">
-                        <a href="https://steamcommunity.com/market/listings/730/${marketHashName}">
+                        <a href="${getItemMarketLink(appID, marketHashName)}">
                             View in Community Market
                         </a>
                      </div>
@@ -959,7 +960,7 @@ const addListingRow = (item) => {
   const row = `
           <div class="row" data-ids="${item.appid}_${item.contextid}_${item.assetid}" data-sold-ids="" data-item-name="${item.appid}_${item.contextid}_${item.market_hash_name}">
               <div class="cell itemName">
-                  <a href="https://steamcommunity.com/market/listings/${item.appid}/${item.market_hash_name}" target="_blank">
+                  <a href="${getItemMarketLink(item.appid, item.market_hash_name)}" target="_blank">
                       ${item.market_hash_name}
                   </a>
               </div>

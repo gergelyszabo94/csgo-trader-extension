@@ -4,6 +4,7 @@ import {
   reloadPageOnExtensionReload, logExtensionPresence,
   updateLoggedInUserInfo, addUpdatedRibbon,
 } from 'utils/utilsModular';
+import { getItemMarketLink } from 'utils/simpleUtils';
 import {
   removeListing, getMarketHistory, cancelOrder, createOrder,
 } from 'utils/market';
@@ -566,7 +567,7 @@ if (marketHistoryTab !== null) {
               const name = nameElement.innerText;
 
               nameElement.innerHTML = DOMPurify.sanitize(
-                `<a href="https://steamcommunity.com/market/listings/${appID}/${itemName}" target="_blank">
+                `<a href="${getItemMarketLink(appID, itemName)}" target="_blank">
                           ${name}
                       </a>`,
                 { ADD_ATTR: ['target'] },

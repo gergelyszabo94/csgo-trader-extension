@@ -11,6 +11,7 @@ import {
   parseStickerInfo,
 } from 'utils/utilsModular';
 import steamApps from 'utils/static/steamApps';
+import { getItemMarketLink } from 'utils/simpleUtils';
 
 const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
   chrome.storage.local.get(
@@ -102,7 +103,7 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
                       name,
                       market_hash_name: marketHashName,
                       name_color: item.name_color,
-                      marketlink: `https://steamcommunity.com/market/listings/730/${marketHashName}`,
+                      marketlink: getItemMarketLink(steamApps.CSGO.appID, marketHashName),
                       appid: item.appid,
                       contextid: '2',
                       classid: item.classid,
@@ -216,7 +217,7 @@ const getUserDOTAInventory = (steamID) => new Promise((resolve, reject) => {
               name,
               market_hash_name: marketHashName,
               name_color: item.name_color,
-              marketlink: `https://steamcommunity.com/market/listings/${steamApps.DOTA2.appID}/${marketHashName}`,
+              marketlink: getItemMarketLink(steamApps.DOTA2.appID, marketHashName),
               appid: item.appid,
               contextid: '2',
               classid: item.classid,

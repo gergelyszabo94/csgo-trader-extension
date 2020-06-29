@@ -10,6 +10,7 @@ import {
   addSearchListener, getPattern, getNameTag, removeLinkFilterFromLinks,
   removeOfferFromActiveOffers, changePageTitle,
 } from 'utils/utilsModular';
+import { getItemMarketLink } from 'utils/simpleUtils';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
   priceQueue, workOnPriceQueue, prettyPrintPrice, initPriceQueue,
@@ -20,7 +21,6 @@ import doTheSorting from 'utils/sorting';
 import { sortingModes } from 'utils/static/sortingModes';
 import { trackEvent } from 'utils/analytics';
 import itemTypes from 'utils/static/itemTypes';
-import { genericMarketLink } from 'utils/static/simpleStrings';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import { overrideHandleTradeActionMenu } from 'utils/steamOverriding';
 import { injectScript, injectStyle } from 'utils/injection';
@@ -205,7 +205,7 @@ const buildInventoryStructure = (inventory) => {
       name: item.name,
       market_hash_name: item.market_hash_name,
       name_color: item.name_color,
-      marketlink: genericMarketLink + item.market_hash_name,
+      marketlink: getItemMarketLink(item.appid.toString(), item.market_hash_name),
       classid: item.classid,
       instanceid: item.instanceid,
       assetid: item.assetid,

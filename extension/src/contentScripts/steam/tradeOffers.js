@@ -7,8 +7,8 @@ import {
   getNameTag, repositionNameTagIcons, jumpToAnchor, changePageTitle,
   removeLinkFilterFromLinks,
 } from 'utils/utilsModular';
+import { getItemMarketLink } from 'utils/simpleUtils';
 import { prettyTimeAgo } from 'utils/dateTime';
-import { genericMarketLink } from 'utils/static/simpleStrings';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import itemTypes from 'utils/static/itemTypes';
 import {
@@ -63,7 +63,7 @@ const matchItemsWithDescriptions = (items) => {
         marketable: item.marketable,
         market_hash_name: item.market_hash_name,
         name_color: item.name_color,
-        marketlink: genericMarketLink + item.market_hash_name,
+        marketlink: getItemMarketLink(item.appid.toString(), item.market_hash_name),
         classid: item.classid,
         instanceid: item.instanceid,
         assetid: item.assetid,
