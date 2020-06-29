@@ -797,49 +797,51 @@ const addFloatIndicatorsToPage = () => {
 };
 
 const addRealTimePricesToQueue = () => {
-  chrome.storage.local.get(
-    ['realTimePricesAutoLoadInventory', 'realTimePricesMode'],
-    ({ realTimePricesAutoLoadInventory, realTimePricesMode }) => {
-      if (realTimePricesAutoLoadInventory) {
-        const itemElements = [];
-        const page = getActivePage('inventory');
+  if (!document.getElementById('selectButton').classList.contains('selectionActive')) {
+    chrome.storage.local.get(
+      ['realTimePricesAutoLoadInventory', 'realTimePricesMode'],
+      ({ realTimePricesAutoLoadInventory, realTimePricesMode }) => {
+        if (realTimePricesAutoLoadInventory) {
+          const itemElements = [];
+          const page = getActivePage('inventory');
 
-        if (page !== null) {
-          page.querySelectorAll('.item').forEach((item) => {
-            if (!item.classList.contains('unknownItem')) itemElements.push(item);
-          });
-        } else {
-          setTimeout(() => {
-            addRealTimePricesToQueue();
-          }, 1000);
-        }
+          if (page !== null) {
+            page.querySelectorAll('.item').forEach((item) => {
+              if (!item.classList.contains('unknownItem')) itemElements.push(item);
+            });
+          } else {
+            setTimeout(() => {
+              addRealTimePricesToQueue();
+            }, 1000);
+          }
 
-        if (itemElements) {
-          itemElements.forEach((itemElement) => {
-            if (itemElement.getAttribute('data-realtime-price') === null) {
-              const IDs = getIDsFromElement(itemElement, 'inventory');
-              const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
+          if (itemElements) {
+            itemElements.forEach((itemElement) => {
+              if (itemElement.getAttribute('data-realtime-price') === null) {
+                const IDs = getIDsFromElement(itemElement, 'inventory');
+                const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
 
-              itemElement.setAttribute('data-realtime-price', '0');
-              if (item && item.marketable === 1) {
-                priceQueue.jobs.push({
-                  type: `inventory_${realTimePricesMode}`,
-                  assetID: item.assetid,
-                  appID: item.appid,
-                  contextID: item.contextid,
-                  market_hash_name: item.market_hash_name,
-                  retries: 0,
-                  callBackFunction: addRealTimePriceToPage,
-                });
+                itemElement.setAttribute('data-realtime-price', '0');
+                if (item && item.marketable === 1) {
+                  priceQueue.jobs.push({
+                    type: `inventory_${realTimePricesMode}`,
+                    assetID: item.assetid,
+                    appID: item.appid,
+                    contextID: item.contextid,
+                    market_hash_name: item.market_hash_name,
+                    retries: 0,
+                    callBackFunction: addRealTimePriceToPage,
+                  });
+                }
               }
-            }
-          });
+            });
 
-          if (!priceQueue.active) workOnPriceQueue();
+            if (!priceQueue.active) workOnPriceQueue();
+          }
         }
-      }
-    },
-  );
+      },
+    );
+  }
 };
 
 const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
@@ -1527,7 +1529,6 @@ const addFunctionBar = () => {
             type: 'event',
             action: 'SelectionStopped',
           });
-
           unselectAllItems();
           updateSelectedItemsSummary();
           event.target.classList.remove('selectionActive');
@@ -1544,6 +1545,11 @@ const addFunctionBar = () => {
             type: 'event',
             action: 'SelectionInitiated',
           });
+
+          // clears the price queue so the user does not have to wait for
+          // real time prices to load before the listings prices do
+          priceQueue.jobs = [];
+          priceQueue.active = false;
 
           document.body.addEventListener('click', listenSelectClicks, false);
           event.target.classList.add('selectionActive');
