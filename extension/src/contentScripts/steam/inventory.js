@@ -576,7 +576,7 @@ const addRightSideElements = () => {
               document.querySelectorAll('.float_block').forEach((e) => e.remove());
             }, 1000);
           }
-          if (item.floatInfo === null) {
+          if (item.floatInfo === null || item.floatInfo === undefined) {
             if (item.inspectLink !== null && itemTypes[item.type.key].float) {
               floatQueue.jobs.push({
                 type: 'inventory_floatbar',
