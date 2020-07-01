@@ -254,6 +254,8 @@ const populateFloatInfo = (listingID, floatInfo) => {
           }
         }
         listingElement.setAttribute('data-float', floatInfo.floatvalue);
+        listingElement.setAttribute('data-paintindex', floatInfo.paintindex);
+        listingElement.setAttribute('data-paintseed', floatInfo.paintseed);
       });
   }
 };
@@ -444,6 +446,30 @@ const sortListings = (sortingMode) => {
       const floatOfB = parseFloat(b.getAttribute('data-float'));
       return floatOfB - floatOfA;
     });
+  } else if (sortingMode === 'paint_index_asc') {
+    sortedElements = listingElements.sort((a, b) => {
+      const paintIndexOfA = parseInt(a.getAttribute('data-paintindex'));
+      const paintIndexOfB = parseInt(b.getAttribute('data-paintindex'));
+      return paintIndexOfA - paintIndexOfB;
+    });
+  } else if (sortingMode === 'paint_index_desc') {
+    sortedElements = listingElements.sort((a, b) => {
+      const paintIndexOfA = parseInt(a.getAttribute('data-paintindex'));
+      const paintIndexOfB = parseInt(b.getAttribute('data-paintindex'));
+      return paintIndexOfB - paintIndexOfA;
+    });
+  } else if (sortingMode === 'paint_seed_asc') {
+    sortedElements = listingElements.sort((a, b) => {
+      const paintSeedOfA = parseInt(a.getAttribute('data-paintseed'));
+      const paintSeedOfB = parseInt(b.getAttribute('data-paintseed'));
+      return paintSeedOfA - paintSeedOfB;
+    });
+  } else if (sortingMode === 'paint_seed_desc') {
+    sortedElements = listingElements.sort((a, b) => {
+      const paintSeedOfA = parseInt(a.getAttribute('data-paintseed'));
+      const paintSeedOfB = parseInt(b.getAttribute('data-paintseed'));
+      return paintSeedOfB - paintSeedOfA;
+    });
   } else if (sortingMode === 'sticker_price_asc') {
     sortedElements = listingElements.sort((a, b) => {
       const stickerPriceOfA = a.getAttribute('data-sticker-price') !== 'null' && a.getAttribute('data-sticker-price') !== undefined
@@ -565,30 +591,33 @@ const addInstantBuyButtons = () => {
 
               if (listingRow.querySelector('.instantBuy') === null) { // if not added before
                 const buyButton = listingRow.querySelector('.market_listing_buy_button');
-                buyButton.parentElement.style['line-height'] = '30px';
-                buyButton.insertAdjacentHTML(
-                  'afterend',
-                  DOMPurify.sanitize(
-                    `<div class="instantBuy">
+                // for example it's our listing, then there is no buy button but a remove button
+                if (buyButton !== null) {
+                  buyButton.parentElement.style['line-height'] = '30px';
+                  buyButton.insertAdjacentHTML(
+                    'afterend',
+                    DOMPurify.sanitize(
+                      `<div class="instantBuy">
                           <a class="item_market_action_button btn_green_white_innerfade btn_small">
                             <span title="Buy this item with one click (no purchase dialog)">
                               Instant Buy
                            </span>
                           </a>
                         </div>`,
-                  ),
-                );
+                    ),
+                  );
 
-                const instaBuyEl = listingRow.querySelector('.instantBuy');
-                instaBuyEl.addEventListener('click', () => {
-                  buyListing(listings[listingID], getBuyerKYCFromPage()).then(() => {
-                    listingRow.querySelector('.market_listing_action_buttons').innerText = 'Purchased';
-                  }).catch((err) => {
-                    console.log(err);
-                    instaBuyEl.innerText = 'Error purchasing!';
-                    instaBuyEl.style.color = 'red';
+                  const instaBuyEl = listingRow.querySelector('.instantBuy');
+                  instaBuyEl.addEventListener('click', () => {
+                    buyListing(listings[listingID], getBuyerKYCFromPage()).then(() => {
+                      listingRow.querySelector('.market_listing_action_buttons').innerText = 'Purchased';
+                    }).catch((err) => {
+                      console.log(err);
+                      instaBuyEl.innerText = 'Error purchasing!';
+                      instaBuyEl.style.color = 'red';
+                    });
                   });
-                });
+                }
               }
             }
           },

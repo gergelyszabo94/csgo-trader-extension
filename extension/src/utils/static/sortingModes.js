@@ -83,6 +83,22 @@ const listingsSortingModes = {
   float_desc: sortingModes.float_desc,
   sticker_price_asc: sortingModes.sticker_price_asc,
   sticker_price_desc: sortingModes.sticker_price_desc,
+  paint_index_asc: {
+    key: 'paint_index_asc',
+    name: 'Paint index (low to high)',
+  },
+  paint_index_desc: {
+    key: 'paint_index_desc',
+    name: 'Paint index (high to low)',
+  },
+  paint_seed_asc: {
+    key: 'paint_seed_asc',
+    name: 'Paint seed (low to high)',
+  },
+  paint_seed_desc: {
+    key: 'paint_seed_desc',
+    name: 'Paint seed (high to low)',
+  },
 };
 
 export { sortingModes, offersSortingModes, listingsSortingModes };
