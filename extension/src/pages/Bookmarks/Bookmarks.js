@@ -25,9 +25,10 @@ const Bookmarks = () => {
     });
   };
 
-  const removeBookmark = (assetID, added) => {
+  const removeBookmark = (appID, contextID, assetID, added) => {
     const bookmarksToKeep = bookmarks.filter((bookmark) => {
-      return (bookmark.itemInfo.assetid !== assetID || bookmark.added !== added);
+      return (bookmark.itemInfo.appid !== appID || bookmark.itemInfo.contextid !== contextID
+        || bookmark.itemInfo.assetid !== assetID || bookmark.added !== added);
     });
 
     saveBookmarks(bookmarksToKeep);
@@ -35,7 +36,10 @@ const Bookmarks = () => {
 
   const editBookmark = (bookmarkData) => {
     const newBookmarks = bookmarks.map((bookmark) => (
-      bookmark.itemInfo.assetid === bookmarkData.itemInfo.assetid ? bookmarkData : bookmark
+      (bookmark.itemInfo.assetid === bookmarkData.itemInfo.assetid
+      && bookmark.itemInfo.appid === bookmarkData.itemInfo.appid
+      && bookmark.itemInfo.contextid === bookmarkData.itemInfo.contextid
+      && bookmark.added === bookmarkData.added) ? bookmarkData : bookmark
     ));
     saveBookmarks(newBookmarks);
   };
@@ -63,7 +67,7 @@ const BookmarkContent = (props) => {
 
   return props.bookmarks.map((bookmark) => (
     <Bookmark
-      key={bookmark.itemInfo.assetid + bookmark.added}
+      key={`${bookmark.itemInfo.appid}_${bookmark.itemInfo.contextid}_${bookmark.itemInfo.assetid}_${bookmark.added}`}
       bookmarkData={bookmark}
       removeBookmark={props.remove}
       editBookmark={props.edit}

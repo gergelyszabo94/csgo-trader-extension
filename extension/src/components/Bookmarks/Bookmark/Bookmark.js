@@ -13,6 +13,8 @@ import Action from 'components/Bookmarks/Bookmark/Action';
 import Tradability from 'components/Bookmarks/Bookmark/Tradability';
 import STS from 'components/Bookmarks/Bookmark/STS';
 
+import { getItemInventoryLink } from 'utils/simpleUtils';
+
 const Bookmark = ({
   bookmarkData, editBookmark, removeBookmark,
 }) => {
@@ -64,7 +66,7 @@ const Bookmark = ({
     if (doNotify) {
       chrome.runtime.sendMessage({
         setAlarm: {
-          name: itemInfo.assetid,
+          name: `${itemInfo.appid}_${itemInfo.contextid}_${itemInfo.assetid}_${added}`,
           when: newNotifTime,
         },
       }, () => {
@@ -72,7 +74,7 @@ const Bookmark = ({
       });
     } else {
       chrome.alarms.clear(
-        itemInfo.assetid, () => {
+        `${itemInfo.appid}_${itemInfo.contextid}_${itemInfo.assetid}_${added}`, () => {
           closeModal();
         },
       );
@@ -80,11 +82,15 @@ const Bookmark = ({
   };
 
   const removeBookmarkFunction = () => {
-    removeBookmark(itemInfo.assetid, added);
+    removeBookmark(itemInfo.appid, itemInfo.contextid, itemInfo.assetid, added);
   };
 
+  const qualityClass = (itemInfo.quality !== undefined && itemInfo.quality !== null)
+    ? `bookmark__${itemInfo.quality.name}`
+    : '';
+
   return (
-    <div className={`bookmark bookmark__${itemInfo.quality.name}`}>
+    <div className={`bookmark ${qualityClass}`}>
       <h5 className="itemName" title={itemInfo.name}>{displayName}</h5>
       <div className="exterior">{exterior}</div>
       <div className="bookmark__image-container">
@@ -162,7 +168,9 @@ const Bookmark = ({
           </NewTabLink>
         </Action>
         <Action title={'View the item in the owner\'s inventory'}>
-          <NewTabLink to={`https://steamcommunity.com/profiles/${owner}/inventory/#730_2_${itemInfo.assetid}`}>
+          <NewTabLink
+            to={getItemInventoryLink(owner, itemInfo.appid, itemInfo.contextid, itemInfo.assetid)}
+          >
             <FontAwesomeIcon icon={faLink} />
           </NewTabLink>
         </Action>

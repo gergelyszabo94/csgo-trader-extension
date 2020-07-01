@@ -107,7 +107,8 @@ const addBookmark = (module) => {
     action: 'AddBookmark',
   });
 
-  const item = getItemByAssetID(items, getAssetIDofActive());
+  const IDs = getIDsOfActiveItem();
+  const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
   const bookmark = {
     added: Date.now(),
     itemInfo: item,
@@ -123,7 +124,7 @@ const addBookmark = (module) => {
       if (bookmark.itemInfo.tradability !== 'Tradable') {
         chrome.runtime.sendMessage({
           setAlarm: {
-            name: bookmark.itemInfo.assetid,
+            name: `${bookmark.itemInfo.appid}_${bookmark.itemInfo.contextid}_${bookmark.itemInfo.assetid}_${bookmark.added}`,
             when: bookmark.itemInfo.tradability,
           },
         }, () => {});

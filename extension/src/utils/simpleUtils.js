@@ -1,8 +1,11 @@
-// this utils modul should never have any non-static dependencies
+// this utils module should never have any non-static dependencies
 
 const getItemMarketLink = (appID, marketHashName) => {
   return `https://steamcommunity.com/market/listings/${appID}/${marketHashName}`;
 };
 
-// eslint-disable-next-line import/prefer-default-export
-export { getItemMarketLink };
+const getItemInventoryLink = (steamID, appID, contextID, assetID) => {
+  return `https://steamcommunity.com/profiles/${steamID}/inventory/#${appID}_${contextID}_${assetID}`;
+};
+
+export { getItemMarketLink, getItemInventoryLink };
