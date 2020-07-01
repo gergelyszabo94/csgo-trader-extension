@@ -156,8 +156,8 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
   );
 });
 
-const getUserDOTAInventory = (steamID) => new Promise((resolve, reject) => {
-  const getRequest = new Request(`https://steamcommunity.com/profiles/${steamID}/inventory/json/${steamApps.DOTA2.appID}/2/?l=english`);
+const getOtherInventory = (appID, steamID) => new Promise((resolve, reject) => {
+  const getRequest = new Request(`https://steamcommunity.com/profiles/${steamID}/inventory/json/${appID}/2/?l=english`);
   fetch(getRequest).then((response) => {
     if (!response.ok) {
       reject(response.statusText);
@@ -217,7 +217,7 @@ const getUserDOTAInventory = (steamID) => new Promise((resolve, reject) => {
               name,
               market_hash_name: marketHashName,
               name_color: item.name_color,
-              marketlink: getItemMarketLink(steamApps.DOTA2.appID, marketHashName),
+              marketlink: getItemMarketLink(appID, marketHashName),
               appid: item.appid,
               contextid: '2',
               classid: item.classid,
@@ -249,4 +249,4 @@ const getUserDOTAInventory = (steamID) => new Promise((resolve, reject) => {
   });
 });
 
-export { getUserCSGOInventory, getUserDOTAInventory };
+export { getUserCSGOInventory, getOtherInventory };

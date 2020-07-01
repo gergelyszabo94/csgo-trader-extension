@@ -437,7 +437,9 @@ const addRightSideElements = () => {
     const item = getItemByIDs(items, activeIDs.appID, activeIDs.contextID, activeIDs.assetID);
     const activeInventoryAppID = getActiveInventoryAppID();
     if (activeInventoryAppID === steamApps.CSGO.appID
-      || activeInventoryAppID === steamApps.DOTA2.appID) {
+      || activeInventoryAppID === steamApps.DOTA2.appID
+      || activeInventoryAppID === steamApps.TF2.appID
+    ) {
       // removes previously added listeners
       document.querySelectorAll('.showTechnical, .lowerModule, .marketActionInstantSell, .marketActionQuickSell').forEach((element) => {
         element.removeEventListener('click');
@@ -491,7 +493,8 @@ const addRightSideElements = () => {
 
     if (item) {
       if (activeInventoryAppID === steamApps.CSGO.appID
-        || activeInventoryAppID === steamApps.DOTA2.appID) {
+        || activeInventoryAppID === steamApps.DOTA2.appID
+        || activeInventoryAppID === steamApps.TF2.appID) {
         if (activeInventoryAppID === steamApps.CSGO.appID) {
           // adds the nametag text to nametags
           document.querySelectorAll('.nametag').forEach((nametag) => {
@@ -1624,8 +1627,13 @@ const requestInventory = (appID) => {
         });
       }
     });
-  } else if (appID === steamApps.DOTA2.appID) {
-    chrome.runtime.sendMessage({ getDotaInventory: inventoryOwnerID }, (response) => {
+  } else if (appID === steamApps.DOTA2.appID || appID === steamApps.TF2.appID) {
+    chrome.runtime.sendMessage({
+      getOtherInventory: {
+        appID,
+        steamID: inventoryOwnerID,
+      },
+    }, (response) => {
       if (response !== 'error') {
         items = items.concat(response.items);
         addRightSideElements();
@@ -1687,7 +1695,8 @@ if (inventoriesMenu !== null) {
     tab.addEventListener('click', () => {
       const appID = getActiveInventoryAppID();
       const contextID = getDefaultContextID(appID);
-      if (appID === steamApps.CSGO.appID || appID === steamApps.DOTA2.appID) {
+      if (appID === steamApps.CSGO.appID || appID === steamApps.DOTA2.appID
+        || steamApps.TF2.appID) {
         requestInventory(appID);
       } else {
         let inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
@@ -1846,7 +1855,8 @@ chrome.storage.local.get('hideOtherExtensionPrices', (result) => {
 
 const activeInventoryAppID = getActiveInventoryAppID();
 if (activeInventoryAppID === steamApps.CSGO.appID
-  || activeInventoryAppID === steamApps.DOTA2.appID) {
+  || activeInventoryAppID === steamApps.DOTA2.appID
+  || activeInventoryAppID === steamApps.TF2.appID) {
   requestInventory(activeInventoryAppID);
 } else {
   const contextID = activeInventoryAppID === steamApps.STEAM.appID ? '6' : '2';
