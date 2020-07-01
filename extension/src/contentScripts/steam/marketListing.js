@@ -223,35 +223,38 @@ const populateFloatInfo = (listingID, floatInfo) => {
 
   // if for example the user has changed page and the listing is not there anymore
   if (listingElement !== null) {
-    chrome.storage.local.get(['marketShowFloatValuesOnly'], ({ marketShowFloatValuesOnly }) => {
-      if (!marketShowFloatValuesOnly) {
-        const floatTechnical = listingElement.querySelector('.floatTechnical');
-        if (floatTechnical !== null) {
-          if (floatInfo === undefined || floatInfo.floatvalue === 0) {
+    chrome.storage.local.get(['marketShowFloatValuesOnly', 'marketAlwaysShowFloatTechnical'],
+      ({ marketShowFloatValuesOnly, marketAlwaysShowFloatTechnical }) => {
+        if (!marketShowFloatValuesOnly) {
+          const floatTechnical = listingElement.querySelector('.floatTechnical');
+          if (floatTechnical !== null) {
+            if (floatInfo === undefined || floatInfo.floatvalue === 0) {
             // agents don't have float values yet they sometimes return float info, weird
-            listingElement.querySelector('.floatBarMarket').remove();
-          } else {
-            floatTechnical.innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo), { ADD_ATTR: ['target'] });
-            const position = ((toFixedNoRounding(floatInfo.floatvalue, 2) * 100) - 2);
-            listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
-            listingElement.querySelector('.floatDropTarget').innerText = toFixedNoRounding(floatInfo.floatvalue, 4);
+              listingElement.querySelector('.floatBarMarket').remove();
+            } else {
+              floatTechnical.innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo), { ADD_ATTR: ['target'] });
+              const position = ((toFixedNoRounding(floatInfo.floatvalue, 2) * 100) - 2);
+              listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
+              listingElement.querySelector('.floatDropTarget').innerText = toFixedNoRounding(floatInfo.floatvalue, 4);
+
+              if (marketAlwaysShowFloatTechnical) floatTechnical.classList.remove('hidden');
+            }
           }
-        }
-      } else {
-        const itemImageDiv = listingElement.querySelector('.market_listing_item_img_container');
-        if (itemImageDiv !== null) {
-          itemImageDiv.querySelector('img').insertAdjacentHTML(
-            'afterend',
-            DOMPurify.sanitize(
-              `<span class="marketFloatOnly">
+        } else {
+          const itemImageDiv = listingElement.querySelector('.market_listing_item_img_container');
+          if (itemImageDiv !== null) {
+            itemImageDiv.querySelector('img').insertAdjacentHTML(
+              'afterend',
+              DOMPurify.sanitize(
+                `<span class="marketFloatOnly">
                         ${toFixedNoRounding(floatInfo.floatvalue, 6)}
                    </span>`,
-            ),
-          );
+              ),
+            );
+          }
         }
-      }
-      listingElement.setAttribute('data-float', floatInfo.floatvalue);
-    });
+        listingElement.setAttribute('data-float', floatInfo.floatvalue);
+      });
   }
 };
 

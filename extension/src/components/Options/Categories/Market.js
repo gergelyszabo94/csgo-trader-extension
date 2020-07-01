@@ -51,6 +51,12 @@ const market = () => {
         description="Loads float values to each item when on. It does not load float values if the csgofloat extension is present to avoid interference."
       />
       <Row
+        name="Always expand float technical data"
+        id="marketAlwaysShowFloatTechnical"
+        type="flipSwitchStorage"
+        description="Always expands the float technical area on the float bar, making it easier to find exactly what you are looking for"
+      />
+      <Row
         name="Show float values only"
         id="marketShowFloatValuesOnly"
         type="flipSwitchStorage"
