@@ -1684,6 +1684,21 @@ const hideOtherExtensionPrices = () => {
   }, 2000);
 };
 
+// keeps trying to load the items from the page
+// for apps that don't require a separate inventory request
+const loadInventoryItems = (appID, contextID) => {
+  const inventory = getItemInfoFromPage(appID, contextID);
+  if (inventory.length !== 0) {
+    items = items.concat(inventory);
+    addRealTimePricesToQueue();
+  } else {
+    setTimeout(() => {
+      loadInventoryItems(appID, contextID);
+    }, 1000);
+  }
+  console.log(items);
+};
+
 logExtensionPresence();
 updateWalletCurrency();
 initPriceQueue(onListingPricesLoaded);
@@ -1696,20 +1711,10 @@ if (inventoriesMenu !== null) {
       const appID = getActiveInventoryAppID();
       const contextID = getDefaultContextID(appID);
       if (appID === steamApps.CSGO.appID || appID === steamApps.DOTA2.appID
-        || steamApps.TF2.appID) {
+        || appID === steamApps.TF2.appID) {
         requestInventory(appID);
       } else {
-        let inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
-        if (inventory.length !== 0) {
-          items = items.concat(inventory);
-          addRealTimePricesToQueue();
-        } else {
-          setTimeout(() => {
-            inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
-            items = items.concat(inventory);
-            addRealTimePricesToQueue();
-          }, 5000);
-        }
+        loadInventoryItems(appID, contextID);
       }
     });
   });
@@ -1858,20 +1863,7 @@ if (activeInventoryAppID === steamApps.CSGO.appID
   || activeInventoryAppID === steamApps.DOTA2.appID
   || activeInventoryAppID === steamApps.TF2.appID) {
   requestInventory(activeInventoryAppID);
-} else {
-  const contextID = activeInventoryAppID === steamApps.STEAM.appID ? '6' : '2';
-  let inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
-  if (inventory.length !== 0) {
-    items = items.concat(inventory);
-    addRealTimePricesToQueue();
-  } else {
-    setTimeout(() => {
-      inventory = getItemInfoFromPage(getActiveInventoryAppID(), contextID);
-      items = items.concat(inventory);
-      addRealTimePricesToQueue();
-    }, 5000);
-  }
-}
+} else loadInventoryItems(activeInventoryAppID, getDefaultContextID(activeInventoryAppID));
 
 // to refresh the trade lock remaining indicators
 setInterval(() => {
