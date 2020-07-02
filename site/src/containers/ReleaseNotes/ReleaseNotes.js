@@ -2,6 +2,7 @@ import React, {Fragment} from 'react';
 import {Container} from 'react-bootstrap';
 
 import Head from '../../components/Head/Head';
+import TwoDotSix from '../../components/ReleaseNotes/Content/TwoDotSix';
 import TwoDotFive from '../../components/ReleaseNotes/Content/TwoDotFive';
 import TwoDotFour from '../../components/ReleaseNotes/Content/TwoDotFour';
 import TwoDotThree from '../../components/ReleaseNotes/Content/TwoDotThree';
@@ -34,6 +35,7 @@ const releaseNotes = (props) => {
               This means that the latest version might not have rolled out to your platform yet when you are reading this.
           </Container>
 
+          <TwoDotSix />
           <TwoDotFive />
           <TwoDotFour />
           <TwoDotThree />

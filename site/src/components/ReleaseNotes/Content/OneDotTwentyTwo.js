@@ -2,7 +2,6 @@ import React from 'react';
 import ReleaseNote from '../ReleaseNote'
 import ShowcaseImage from '../../ShowcaseImage/ShowcaseImage';
 import NewTabLink from '../../NewTabLink/NewTabLink';
-import {Container} from 'react-bootstrap';
 
 const OneDotTwentyTwo = () => {
   return  (
