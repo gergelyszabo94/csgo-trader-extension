@@ -13,6 +13,18 @@ import TwoDotOneDotTwo from '../../components/Changelog/Content/TwoDotOneDotTwo.
 import TwoDotOneDotOne from '../../components/Changelog/Content/TwoDotOneDotOne.js';
 import TwoDotOne from '../../components/Changelog/Content/TwoDotOne.js';
 import Two from '../../components/Changelog/Content/Two.js';
+import OneDotTwentySixDotOne from '../../components/Changelog/Content/OneDotTwentySixDotOne.js';
+import OneDotTwentySix from '../../components/Changelog/Content/OneDotTwentySix.js';
+import OneDotTwentyFiveDotOne from '../../components/Changelog/Content/OneDotTwentyFiveDotOne.js';
+import OneDotTwentyFive from '../../components/Changelog/Content/OneDotTwentyFive.js';
+import OneDotTwentyFour from '../../components/Changelog/Content/OneDotTwentyFour.js';
+import OneDotTwentyThreeDotOne from '../../components/Changelog/Content/OneDotTwentyThreeDotOne';
+import OneDotTwentyThree from '../../components/Changelog/Content/OneDotTwentyThree';
+import OneDotTwentyTwo from '../../components/Changelog/Content/OneDotTwentyTwo';
+import OneDotTwentyOneDotOne from '../../components/Changelog/Content/OneDotTwentyOneDotOne';
+import OneDotTwentyOne from '../../components/Changelog/Content/OneDotTwentyOne';
+import OneDotTwentyDotOne from '../../components/Changelog/Content/OneDotTwentyDotOne';
+import OneDotTwenty from '../../components/Changelog/Content/OneDotTwenty';
 
 const changelog = (props) => {
     props.gAnalytic.pageview(window.location.pathname + window.location.search);
@@ -40,195 +52,19 @@ const changelog = (props) => {
             <TwoDotOneDotOne />
             <TwoDotOne />
             <Two />
+            <OneDotTwentySixDotOne />
+            <OneDotTwentySix />
+            <OneDotTwentyFiveDotOne />
+            <OneDotTwentyFive />
+            <OneDotTwentyFour />
+            <OneDotTwentyThreeDotOne />
+            <OneDotTwentyThree />
+            <OneDotTwentyTwo />
+            <OneDotTwentyOneDotOne />
+            <OneDotTwentyOne />
+            <OneDotTwentyDotOne />
+            <OneDotTwenty />
 
-            <Container className='buildingBlock'>
-                <h2>Version 1.26.1 - 2020-02-10</h2>
-                <ul>
-                    <li>Fixed some very rare items showing no price when pricing is set to CSGOTRADER</li>
-                    <li>Fixed a bug that made bookmarked items not to show</li>
-                    <li>Fixed a bug that created an infinite loop during float info fetching  <GithubIssueLink issueNumber={120}/></li>
-                    <li>Fixed functionalities breaking on the incoming trade offers page when the steam api returned incomplete data</li>
-                </ul>
-            </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 1.26 - 2020-02-03</h2>
-                <ul>
-                    <li>
-                        Added sticker prices to inventories, offers and market listings.
-                        Check out the <Link to='/release-notes/#1.26'> Release Notes </Link> for more info.
-                        <GithubIssueLink issueNumber={116}/>
-                    </li>
-                    <li>Added listing canceled even type to Market History Export</li>
-                    <li>The progress is properly reset after the Market History Export process finishes</li>
-                    <li>
-                        Simplified data export/import options, now the only options are backup and restore.
-                        <GithubIssueLink issueNumber={114}/>
-                    </li>
-                    <li>Mass selling starting at and instant sell price fetching now uses a queue to delay requests</li>
-                    <li>
-                        Removed the About page and added link the the <Link to='/faq/'> FAQ </Link> page
-                        <GithubIssueLink issueNumber={115}/>
-                    </li>
-                    <li>Fixed a bug that made the original listing prices show up as zero or NaN after sorting</li>
-                </ul>
-            </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 1.25.1 - 2020-01-27</h2>
-                <ul>
-                    <li>
-                        Made old.csgolounge.com permission that was prompting during update optional.
-                    </li>
-                </ul>
-            </Container>
-
-            <Container className='buildingBlock'>
-                <h2>Version 1.25 - 2020-01-27</h2>
-                <ul>
-                    <li>Added price highlighting for sell listings and buy orders, remove/cancel all or selected, as well as totals, history type highlighting and market history export on the Community Market page.
-                        Check out the <Link to='/release-notes/#1.25'> Release Notes </Link> for more info.
-                        Thanks to <NewTabLink to='https://steamcommunity.com/profiles/76561198085748819'> Wiesenmeister </NewTabLink> and
-                        <NewTabLink to='https://www.reddit.com/user/timgotpaper'> /u/timgotpaper </NewTabLink>
-                        for the ideas.
-                        <GithubIssueLink issueNumber={88}/>
-                    </li>
-                    <li>Added <Link to='/faq/'> Frequently Asked Questions (FAQ) page</Link></li>
-                    <li>Removed unused activeTab permission</li>
-                    <li>Updated the <Link to='/privacy/'> Privacy page </Link> with more detailed information</li>
-                    <li>NSFW mode now removes "holiday cheer" as well</li>
-                    <li>CSGOLounge bumping now works on old.csgolounge.com/mytrades as well</li>
-                </ul>
-            </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 1.24 - 2020-01-09</h2>
-                <ul>
-                    <li>Profiles with csgotrader.app in their name are highlighted with gold color Check out the
-                        <Link to='/release-notes/#1.24'> Release Notes </Link> for more info </li>
-                    <li>Added option (on by default) to move trade offer headers to the left on wide screens. Check out the
-                        <Link to='/release-notes/#1.24'> Release Notes </Link> for more info
-                        <GithubIssueLink issueNumber={108}/>
-                    </li>
-                    <li>Fixed a bug where Gamma Doppler phases were not showing in offers if the user used a language where the knives' names are capitalized differently.</li>
-                    <li>Fixed a bug that prevented PLN from being able to selected as a pricing currency</li>
-                    <li>Fixed item list generation</li>
-                    <li>Fixed a bug that made all bookmarks disappear if one of the bookmarked items was a vanilla item</li>
-                    <li>Fixed offer totals showing switched on the sent offer page
-                        <Credit to='https://steamcommunity.com/profiles/76561198275942728'>¡kFzo彡</Credit>
-                    </li>
-                    <li>Fixed a bug that caused items in trade offers to disappear (visually) sometimes completely when they should have gone back to the inventory
-                        <Credit to='https://steamcommunity.com/profiles/76561198275942728'>¡kFzo彡</Credit>
-                    </li>
-                    <li>Misc performance and usability improvements</li>
-                </ul>
-            </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 1.23.1 - 2019-12-23</h2>
-                <ul>
-                    <li>Changes to the <Link to='/prices/'>pricing algorithm</Link>.</li>
-                    <li>User experience improvements by making clickable elements more apparent and added explanatory titles</li>
-                    <li>Steam API key is set automatically when the user installs the extension (if the user has one generated)</li>
-                    <li>Added the highest buy order price as "instant sale price" pricing option for Mass Listing and made item names in the table a link to market.
-                        <GithubIssueLink issueNumber={106}/>
-                    </li>
-                </ul>
-            </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 1.23 - 2019-12-17</h2>
-                <ul>
-                    <li>Added feature to show received and sent offer history summary per user on the incoming trade offers page, in trade offers, profiles and inventories. Check out the
-                        <Link to='/release-notes#1.23'> Release Notes </Link> for more info <GithubIssueLink issueNumber={99}/>
-                    </li>
-
-                    <li>Fade percentages and Marble Fade patterns are shown on market listing pages <GithubIssueLink issueNumber={94}/></li>
-                    <li>Added feature to automatically log you in on CSGOTRADERS.NET a separate one to complete all Open ID logins automatically (when logging in to a site with Steam)
-                        <GithubIssueLink issueNumber={93}/>
-                    </li>
-                    <li>Added Georgian Lari as currency <GithubIssueLink issueNumber={105}/></li>
-                    <li>Mass Market Listing is out of BETA with some improvements, like selecting the starting at price if that is the highest and retry logic for loading prices</li>
-                    <li>Float values are automatically loaded on the incoming offers page. <GithubIssueLink issueNumber={100}/></li>
-                </ul>
-            </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 1.22 - 2019-12-01</h2>
-                <ul>
-                    <li>Added Mass Listing feature that is now in Beta. Check out the <Link to='/release-notes/#1.22'> Release Notes </Link> for more info
-                        <GithubIssueLink issueNumber={69}/>
-                    </li>
-                    <li>
-                        Added support for all Steam currencies <GithubIssueLink issueNumber={101}/>
-                        The newly added currencies are:
-                        <ul>
-                            <li>United Arab Emirates Dirham</li>
-                            <li>Argentine Peso"</li>
-                            <li>Chilean Peso</li>
-                            <li>Colombian Peso</li>
-                            <li>Costa Rican Colón</li>
-                            <li>Kuwaiti Dinar</li>
-                            <li>Kazakhstani Tenge</li>
-                            <li>Peruvian Nuevo Sol</li>
-                            <li>Qatari Riyal</li>
-                            <li>Saudi Riyal</li>
-                            <li>New Taiwan Dollar</li>
-                            <li>Ukrainian Hryvnia</li>
-                            <li>Uruguayan Peso</li>
-                            <li>Vietnamese Dong</li>
-                        </ul>
-                    </li>
-                    <li>Added a feature that allows you to select a specified number of copies of the select item.
-                        You can select an item by holding down the control key and right clicking on them.
-                        <GithubIssueLink issueNumber={98}/>
-                        <Credit to='https://github.com/Jason-Tam4'>Jason Tam</Credit>
-                    </li>
-                </ul>
-            </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 1.21.1 - 2019-11-21</h2>
-                <ul>
-                    <li>Fixed a bug where undefined would appear instead of the actual currency sign when Australian Dollars was the selected currency</li>
-                    <li>Fixed a bug where the extension would not function if the inventory contained an Agent skin (new item type)</li>
-                </ul>
-            </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 1.21 - 2019-11-17</h2>
-                <ul>
-                    <li>Added CSGOTrader prices to some items that had no price before <GithubIssueLink issueNumber={86}/></li>
-                    <li>Fixed Talon Black Pearl showing up as unknown phase.</li>
-                    <li>Added ability to sort listings based on float values and price on market pages <GithubIssueLink issueNumber={90}/>
-                        <Credit to='https://steamcommunity.com/profiles/76561198217161837'>Skjerve</Credit>
-                    </li>
-                    <li>Fixed a bug that made the "number of listings to show on market pages" option not save user input</li>
-                    <li>Added option to show the original currency and price of what an item was listed on as well as the amount the seller will receive <GithubIssueLink issueNumber={92}/></li>
-                    <li>All duplicate items can be selected in inventories by holding down the control key when the selection is active</li>
-                    <li>Added the same "starting at" and the number of items sold as well as link to the item's market page for items in not-own inventories</li>
-                    <li>Added option to set the Steam API key automatically when opening the apikey page</li>
-                    <li>Added option to remove the Steam API key in the options</li>
-                </ul>
-            </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 1.20.1 - 2019-11-12</h2>
-                <ul>
-                    <li>Fixed Ursus Sapphire showing up as unknown phase.</li>
-                    <li>Added the same functionality to the Sent Offers page that the last update added to the Incoming Offers page</li>
-                    <li>Fixed a bug that made all the incoming offers disappear on the Incoming offers page if there wasn't at least one inactive offer.
-                        <Credit to='https://steamcommunity.com/profiles/76561198103971634'>Dᴊᴇɴᴛ</Credit>
-                    </li>
-                </ul>
-            </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 1.20 - 2019-11-10</h2>
-                <ul>
-                    <li>Made float caching more efficient</li>
-                    <li>Added prices, exteriors, etc to items on the incoming offers page <GithubIssueLink issueNumber={77}/>
-                        More info about this in the <Link to='/release-notes/#1.20'> Release Notes </Link></li>
-                    <li>Clicking user avatars on the incoming offers page makes profiles open on new tab</li>
-                    <li>Added an "accept trade" button to trade offers on the incoming offers page</li>
-                    <li>Fixed a bug that made float values round up <GithubIssueLink issueNumber={82}/>
-                        <Credit to='https://steamcommunity.com/profiles/76561198879461125'>Seba.</Credit>
-                    </li>
-                    <li>Hides csgofloat extension elements in inventories when the "Hide other extensions" feature is enabled <GithubIssueLink issueNumber={84}/></li>
-                    <li>Adds float rank to technical float info <GithubIssueLink issueNumber={87}/></li>
-                    <li>Added currency converter and percentage calculator to popup <GithubIssueLink issueNumber={38}/></li>
-                </ul>
-            </Container>
             <Container className='buildingBlock'>
                 <h2>Version 1.19.2 - 2019-10-21</h2>
                 <ul>
