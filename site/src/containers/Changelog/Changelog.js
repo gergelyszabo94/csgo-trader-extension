@@ -4,6 +4,15 @@ import { Link } from 'react-router-dom';
 
 import Head from '../../components/Head/Head';
 import NewTabLink from "../../components/NewTabLink/NewTabLink";
+import TwoDotFive from '../../components/Changelog/Content/TwoDotFive.js';
+import TwoDotFourDotOne from '../../components/Changelog/Content/TwoDotFourDotOne';
+import TwoDotFour from '../../components/Changelog/Content/TwoDotFour.js';
+import TwoDotThree from '../../components/Changelog/Content/TwoDotThree.js';
+import TwoDotTwo from '../../components/Changelog/Content/TwoDotTwo.js';
+import TwoDotOneDotTwo from '../../components/Changelog/Content/TwoDotOneDotTwo.js';
+import TwoDotOneDotOne from '../../components/Changelog/Content/TwoDotOneDotOne.js';
+import TwoDotOne from '../../components/Changelog/Content/TwoDotOne.js';
+import Two from '../../components/Changelog/Content/Two.js';
 
 const changelog = (props) => {
     props.gAnalytic.pageview(window.location.pathname + window.location.search);
@@ -19,247 +28,19 @@ const changelog = (props) => {
             <h1>Changelog</h1>
             <Container className='buildingBlock'>
                 Changelogs are published when a new version of the extension is submitted the distribution platforms.
-                The platforms (Chrome Web Store, Mozzila Addons) review submissions before they are available for download.
+                The platforms (Chrome Web Store, Mozilla Addons, Edge Add-ons) review submissions before they are available for download.
                 This means that the latest version might not have rolled out to your platform yet when you are reading this.
             </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 2.5 - 2020-06-10</h2>
-                <ul>
-                    <li>
-                        Added new Trade History and Trade History Export features. <GithubIssueLink issueNumber={104} />
-                        Check out the <Link to='/release-notes/#2.5'> Release Notes </Link> for more info on this.
-                    </li>
-                    <li>
-                        Added option to bypass Steam's link filtering. <GithubIssueLink issueNumber={265} />
-                    </li>
-                    <li>
-                        Added explanation and warning to the Steam Web API page <GithubIssueLink issueNumber={276} />
-                    </li>
-                    <li>
-                        Auto Float loading is now disabled in market and inventories pages when the CSGOFloat extension is present to avoid unnecessary requests.
-                    </li>
-                    <li>
-                        Skincay was renamed to Skinport across the extension. <GithubIssueLink issueNumber={278} />
-                    </li>
-                    <li>
-                        Improved pricing algorithm to avoid underpricing items when a really low sale happens.
-                    </li>
-                    <li>
-                        Fixed exchange rates not updating when the user changes extension currency from their inventory. <GithubIssueLink issueNumber={266} />
-                    </li>
-                    <li>
-                        Fixed Realtime prices showing up in the wrong currency <GithubIssueLink issueNumber={279} />
-                    </li>
-                    <li>
-                        Fixed items on own side of the trade not getting sorted if when the user switched to the other inventory during loading.
-                    </li>
-                    <li>
-                        Added new team recruitment scam messages to the patterns to report automatically.
-                    </li>
-                </ul>
-            </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 2.4.1 - 2020-06-02 (Firefox only)</h2>
-                <ul>
-                    <li>
-                        Fixed mass selling not working and keep retrying to list items
-                    </li>
-                    <li>
-                        Fixed not being able to cancel market listings and buy orders en-masse.
-                    </li>
-                </ul>
-            </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 2.4 - 2020-05-28</h2>
-                Check out the <Link to='/release-notes/#2.4'> Release Notes </Link> for more info on the new features.
-                <ul>
-                    <li>
-                        RealTime price loading was added to offers/inventories.
-                        <GithubIssueLink issueNumber={119}/>
-                    </li>
-                    <li>
-                        Added support for mass listing to other games and Steam items as well.
-                        <GithubIssueLink issueNumber={249}/>
-                    </li>
-                    <li>
-                        Skinbay was renamed everywhere in the extension to Skincay to reflect the company/domain name change
-                    </li>
-                    <li>
-                        Fixed a bug that removed tags from non-csgo items as well in inventories.
-                    </li>
-                    <li>
-                        Fixed quicksell price not getting selected automatically when it is higher than the extension price during mass listing
-                    </li>
-                    <li>
-                        Fixed unselected items not getting removed from he mass listing table
-                    </li>
-                    <li>
-                        Fixed a bug that broke the item actions menu for some rare games
-                    </li>
-                </ul>
-            </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 2.3 - 2020-05-15</h2>
-                Check out the <Link to='/release-notes/#2.3'> Release Notes </Link> for more info on the new features.
-                <ul>
-                    <li>
-                        Added
-                        <NewTabLink to='https://skincay.com/?r=gery'> Skincay.com </NewTabLink>
-                        as a pricing provider
-                    </li>
-                    <li>
-                        Added links to
-                        <NewTabLink to='https://skincay.com/?r=gery'> Skincay.com </NewTabLink>
-                        to market listing pages (can be turned off)
-                    </li>
-                    <li>
-                        Fixed an issue where after currency change the exchange rates did not update in the background immediately
-                    </li>
-                    <li>
-                        For new users (new installations) the extension currency will be set to match their Steam Wallet currency.
-                        <GithubIssueLink issueNumber={161}/>
-                    </li>
-                    <li>Added a disclaimer to the discussion auto-bumping feature</li>
-                    <li>
-                        Made numerous improvements to the Steam Market Mass Listing feature
-                        <GithubIssueLink issueNumber={201}/>
-                    </li>
-                    <li>Added new scam/spam comment patterns to report (mostly "join our team" like ones)</li>
-                    <li>
-                        Made numerous improvements to the the incoming trade offers page and to trade offers
-                        <GithubIssueLink issueNumber={215}/>
-                    </li>
-                    <li>Improvements to the friend request evaluation feature, including new conditions, request summary, other niceties
-                        <GithubIssueLink issueNumber={195}/>
-                    </li>
-                    <li>Even users with capitalized "CSGOTRADER.APP" in their name will be highlighted in gold colors</li>
-                </ul>
-            </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 2.2 - 2020-04-19</h2>
-                <div className="text-danger">
-                    It was brought to my attention that bumping discussions is against Steam's
-                    <NewTabLink to="https://support.steampowered.com/kb_article.php?ref=4045-USHJ-3810&l=english"> Rules and Guidelines For Steam: Discussions, Reviews, and User Generated Content </NewTabLink>
-                    so use it at your own risk!
-                </div>
-                <ul>
-                    <li>
-                        Discussion posts (group, trading, forum) can now be set to be automatically bumped by the extension.
-                        <GithubIssueLink issueNumber={187}/>
-                        Check out the <Link to='/release-notes/#2.2'> Release Notes </Link> for more info.
-                    </li>
-                    <li>Added an option to remove the header in Steam Web Chat</li>
-                    <li>Tweaked the appearance the the warning message that gets added to scammers' profiles</li>
-                    <li>Security improvements that fix issues flagged by Mozilla</li>
-                    <li>Added usage data collection consent prompt for new Firefox users</li>
-                    <li>Fixed a bug that broke float value loading on market listings when a non-default number of listings were set to load per page</li>
-                </ul>
-            </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 2.1.2 - 2020-04-14</h2>
-                <ul>
-                    <li>Fixed the same issue as 2.1.1 but for all users (including users updating from 2.1 and 2.1.1</li>
-                </ul>
-            </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 2.1.1 - 2020-04-14</h2>
-                <ul>
-                    <li>Fixed a bug that made most of the features break when the user has not loaded the incoming offers page after installing or updating.</li>
-                </ul>
-            </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 2.1- 2020-04-13</h2>
-                <div className="text-danger">
-                    There was a bug identified in this update that causes features to break.
-                    If you are facing issues and are still on this version you can work around it:
-                    Make sure you have your Steam API key set in the options the  go to your inventory, click "Trade offers".
-                    This opens the incoming trade offers page and the extension updates the active offer information, fixing the problem.
-                </div>
-                <ul>
-                    <li>
-                        Items that are present in multiple offers are highlighted and on click reveal in which ones.
-                        <GithubIssueLink issueNumber={78}/>
-                        Check out the <Link to='/release-notes/#2.1'> Release Notes </Link> for more info.
-                    </li>
-                    <li>
-                        Added feature to make the extension act on incoming friend requests by user set rules.
-                        <GithubIssueLink issueNumber={134}/>
-                        Check out the <Link to='/release-notes/#2.1'> Release Notes </Link> for more info.
-                    </li>
-                    <li>
-                        CSGOTraders.net autobumping now navigates away from error page.
-                    </li>
-                    <li>
-                       Fixed a bug that made opening a link to a sent offer not showing the correct offer on the page after sorting.
-                    </li>
-                    <li>
-                        Added more spam comment patterns.
-                    </li>
-                    <li>
-                        A ribbon is added to Steam pages after the a new version of the extension was installed.
-                        It can be dismissed until the next update.
-                    </li>
-                    <li>
-                        Added an option to auto-ignore Steam group invites.
-                    </li>
-                    <li>
-                        Changed how partner trade offer history information is shown on profiles to be consistent with offers and inventories.
-                    </li>
-                    <li>
-                        Fixed a small bug that made "Favorite" buttons on artworks have a visible border.
-                    </li>
-                    <li>
-                        Fixed a select element styling and calculator layout in Firefox.
-                        <GithubIssueLink issueNumber={132}/>
-                    </li>
-                    <li>
-                        Fixed a bug that sometimes showed a buy order as not the highest if the highest's price was lower.
-                        <GithubIssueLink issueNumber={174}/>
-                        <Credit to='https://steamcommunity.com/profiles/76561198104585268'>caluo</Credit>
-                    </li>
-                    <li>
-                        Fixed a bug that made items in an offer disappear when the user tried to remove them.
-                        <GithubIssueLink issueNumber={168}/>
-                        <Credit to='https://steamcommunity.com/profiles/76561198103971634'>⸸ Dᴊᴇɴᴛ ⸸</Credit>
-                    </li>
-                </ul>
-            </Container>
-            <Container className='buildingBlock'>
-                <h2>Version 2.0 - 2020-03-18</h2>
-                <ul>
-                    <li>
-                        The extension popup, the options and the bookmarks pages received a new look
-                        <GithubIssueLink issueNumber={122}/>
-                        Check out the <Link to='/release-notes/#2.0'> Release Notes </Link> for more info.
-                    </li>
-                    <li>
-                        Fixed a bug that made the Market History Export not appear for users who did not have market listings and buy orders.
-                        <GithubIssueLink issueNumber={123}/>
-                        <Credit to='https://steamcommunity.com/profiles/76561198024029179'>hellgaet</Credit>
-                    </li>
-                    <li>
-                        Price loading now retried when failed for Market mass selling
-                        <GithubIssueLink issueNumber={128}/>
-                    </li>
-                    <li>
-                        Fixed a bug that made the same kind of item on both sides show the same float value on the incoming offers page.
-                        <GithubIssueLink issueNumber={129}/>
-                    </li>
-                    <li>
-                        Spam/scam comments are now reported silently (no page jerk) and an explanation is added to reported comments
-                        <GithubIssueLink issueNumber={125}/>
-                    </li>
-                    <li>
-                        Added an option to only include selected items when exporting list of inventory items.
-                        <GithubIssueLink issueNumber={118}/>
-                    </li>
-                    <li>
-                        Market listing sticker tooltips now always shown in their full length
-                        <GithubIssueLink issueNumber={127}/>
-                        <Credit to='https://steamcommunity.com/profiles/76561198285371555'>UwU danto OwO</Credit>
-                    </li>
-                </ul>
-            </Container>
+            <TwoDotFive />
+            <TwoDotFourDotOne />
+            <TwoDotFour />
+            <TwoDotThree />
+            <TwoDotTwo />
+            <TwoDotOneDotTwo />
+            <TwoDotOneDotOne />
+            <TwoDotOne />
+            <Two />
+
             <Container className='buildingBlock'>
                 <h2>Version 1.26.1 - 2020-02-10</h2>
                 <ul>
