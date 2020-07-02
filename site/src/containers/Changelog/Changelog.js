@@ -1,9 +1,8 @@
 import React, {Fragment} from "react";
 import { Container } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
 
 import Head from '../../components/Head/Head';
-import NewTabLink from "../../components/NewTabLink/NewTabLink";
+
 import TwoDotFive from '../../components/Changelog/Content/TwoDotFive.js';
 import TwoDotFourDotOne from '../../components/Changelog/Content/TwoDotFourDotOne';
 import TwoDotFour from '../../components/Changelog/Content/TwoDotFour.js';
