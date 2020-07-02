@@ -1425,7 +1425,7 @@ const addFunctionBar = () => {
                             </div>
                     </div>
                     <div id="massListing" class="hidden">
-                      <h2>Market Mass Listing</h2>
+                      <h2 id="massListingTitle" class="hidden">Market Mass Listing</h2>
                       <div class="hidden not_tradable" id="currency_mismatch_warning">
                       Warning: Your Steam Wallet currency and CSGO Trader currency are not the same.
                       This is an untested scenario that is not recommended. 
@@ -1445,14 +1445,16 @@ const addFunctionBar = () => {
                               <div class="rowGroup"></div>
                           </div>
                           <span class="beforeStart">
-                              <span style="font-weight: bold">Total:</span> To list <span id="numberOfItemsToSell">0</span> item(s) worth <span id="saleTotal">0</span>
-                              and receive <span id="saleTotalAfterFees">0</span> after fees
-                              <span id="sellButton" class="clickable" title="Start the mass listing of the selected items">List Items</span>
-                              <span id="startOnLoad">
-                                <span title="Start listing the items automatically when all the pricing info has been loaded">
-                                    Start on price load
+                              <span style="font-weight: bold">Total:</span><span id="numberOfItemsToSell">0</span> item(s) selected worth <span id="saleTotal">0</span>
+                               that is <span id="saleTotalAfterFees">0</span> after market fees
+                              <span id="startListMenu" class="hidden">
+                                <span id="sellButton" class="clickable" title="Start the mass listing of the selected items">List Items</span>
+                                <span id="startOnLoad">
+                                  <span title="Start listing the items automatically when all the pricing info has been loaded">
+                                      Start on price load
+                                  </span>
+                                  <input type="checkbox" id="startListingOnPriceLoad">
                                 </span>
-                                <input type="checkbox" id="startListingOnPriceLoad">
                               </span>
                           </span>
                           <span class="inProgress hidden">
@@ -1544,9 +1546,11 @@ const addFunctionBar = () => {
           updateSelectedItemsSummary();
           event.target.classList.remove('selectionActive');
           selectMenu.classList.add('hidden');
+          document.getElementById('massListing').classList.add('hidden');
 
           if (isOwnInventory()) {
-            document.getElementById('massListing').classList.add('hidden');
+            document.getElementById('massListingTitle').classList.add('hidden');
+            document.getElementById('startListMenu').classList.add('hidden');
             document.getElementById('listingTable').querySelector('.rowGroup').innerHTML = '';
           }
           document.body.removeEventListener('click', listenSelectClicks, false);
@@ -1562,10 +1566,14 @@ const addFunctionBar = () => {
           priceQueue.jobs = [];
           priceQueue.active = false;
 
+          document.getElementById('massListing').classList.remove('hidden');
           document.body.addEventListener('click', listenSelectClicks, false);
           event.target.classList.add('selectionActive');
           selectMenu.classList.remove('hidden');
-          if (isOwnInventory()) document.getElementById('massListing').classList.remove('hidden');
+          if (isOwnInventory()) {
+            document.getElementById('massListingTitle').classList.remove('hidden');
+            document.getElementById('startListMenu').classList.remove('hidden');
+          }
         }
       });
 
