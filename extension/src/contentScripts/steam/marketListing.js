@@ -2,6 +2,9 @@ import DOMPurify from 'dompurify';
 
 import { dopplerPhases } from 'utils/static/dopplerPhases';
 import {
+  addUpdatedRibbon,
+  changePageTitle,
+  csgoFloatExtPresent,
   getDataFilledFloatTechnical,
   getDopplerInfo,
   getFloatBarSkeleton,
@@ -10,17 +13,19 @@ import {
   parseStickerInfo,
   reloadPageOnExtensionReload,
   souvenirExists,
+  toFixedNoRounding,
   updateLoggedInUserInfo,
-  toFixedNoRounding, csgoFloatExtPresent,
-  addUpdatedRibbon, changePageTitle,
 } from 'utils/utilsModular';
 import { listingsSortingModes } from 'utils/static/sortingModes';
 import { buyListing, createOrder } from 'utils/market';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import exteriors from 'utils/static/exteriors';
 import {
-  getHighestBuyOrder, getPrice, getStickerPriceTotal,
-  steamFormattedPriceToCents, updateWalletCurrency,
+  getHighestBuyOrder,
+  getPrice,
+  getStickerPriceTotal,
+  steamFormattedPriceToCents,
+  updateWalletCurrency,
 } from 'utils/pricing';
 import { trackEvent } from 'utils/analytics';
 import {
@@ -229,7 +234,7 @@ const populateFloatInfo = (listingID, floatInfo) => {
           const floatTechnical = listingElement.querySelector('.floatTechnical');
           if (floatTechnical !== null) {
             if (floatInfo === undefined || floatInfo.floatvalue === 0) {
-            // agents don't have float values yet they sometimes return float info, weird
+              // agents don't have float values yet they sometimes return float info, weird
               listingElement.querySelector('.floatBarMarket').remove();
             } else {
               floatTechnical.innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo), { ADD_ATTR: ['target'] });
@@ -802,40 +807,6 @@ chrome.storage.local.get(['reloadListingOnError'], ({ reloadListingOnError }) =>
   }
 });
 
-addFloatBarSkeletons();
-addPhasesIndicator();
-addStickers();
-addPricesInOtherCurrencies();
-addInstantBuyButtons();
-
-let observerLastTriggered = Date.now() - 1001;
-const observer = new MutationObserver((mutations) => {
-  for (const mutation of mutations) {
-    if (mutation.target.id === 'searchResultsRows') {
-      // to avoid executing this lots of times
-      // at least a second has to pass since the last one
-      if (Date.now() > observerLastTriggered + 1000) {
-        addPhasesIndicator();
-        addFloatBarSkeletons();
-        addStickers();
-        addListingsToFloatQueue();
-        addPricesInOtherCurrencies();
-        addInstantBuyButtons();
-      }
-      observerLastTriggered = Date.now();
-    }
-  }
-});
-
-const searchResultsRows = document.getElementById('searchResultsRows');
-if (searchResultsRows !== null) {
-  observer.observe(searchResultsRows, {
-    subtree: true,
-    attributes: false,
-    childList: true,
-  });
-}
-
 chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }) => {
   if (showRealMoneySiteLinks
     && (appID === steamApps.CSGO.appID || appID === steamApps.DOTA2.appID
@@ -940,7 +911,40 @@ chrome.storage.local.get('numberOfListings', ({ numberOfListings }) => {
   if (!isNaN(numberOfListingsInt) && numberOfListingsInt !== 10) {
     const loadMoreMarketAssets = `g_oSearchResults.m_cPageSize = ${numberOfListingsInt}; g_oSearchResults.GoToPage(0, true);`;
     injectScript(loadMoreMarketAssets, true, 'loadMoreMarketAssets', null);
-  } else addListingsToFloatQueue();
+  } else {
+    addPhasesIndicator();
+    addFloatBarSkeletons();
+    addStickers();
+    addListingsToFloatQueue();
+    addPricesInOtherCurrencies();
+    addInstantBuyButtons();
+  }
+  let observerLastTriggered = Date.now() - 1001;
+  const observer = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (mutation.target.id === 'searchResultsRows') {
+        // to avoid executing this lots of times
+        // at least a second has to pass since the last one
+        if (Date.now() > observerLastTriggered + 1000) {
+          addPhasesIndicator();
+          addFloatBarSkeletons();
+          addStickers();
+          addListingsToFloatQueue();
+          addPricesInOtherCurrencies();
+          addInstantBuyButtons();
+        }
+        observerLastTriggered = Date.now();
+      }
+    }
+  });
+  const searchResultsRows = document.getElementById('searchResultsRows');
+  if (searchResultsRows !== null) {
+    observer.observe(searchResultsRows, {
+      subtree: true,
+      attributes: false,
+      childList: true,
+    });
+  }
 });
 
 reloadPageOnExtensionReload();
