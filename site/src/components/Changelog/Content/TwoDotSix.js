@@ -4,8 +4,12 @@ import GithubIssueLink from '../GithubIssueLink';
 import NewTabLink from '../../NewTabLink/NewTabLink';
 
 const TwoDotSix = () => {
+  const problem = `There was a problem identified with this update that made market listings disappear.
+                  A fix of was issued, if the update applying the fix is not there for you yet you can work around it by going to the options
+                  and under market you change the default sorting mode to something other than the default and change it back. This completely fixes the issue.`;
+
   return (
-    <ChangelogInstance version="2.6" date="2020-07-02" releaseNotes={true}>
+    <ChangelogInstance version="2.6" date="2020-07-02" releaseNotes={true} disclaimer={problem}>
       <li>
         Added option to customize the number of community market history items to show per page <GithubIssueLink issueNumber={249} />
       </li>

@@ -64,6 +64,10 @@ chrome.runtime.onInstalled.addListener((details) => {
       chrome.storage.local.set({ telemetryConsent: true });
     }
 
+    if (details.previousVersion === '2.6') {
+      chrome.storage.local.set({ marketListingsDefaultSorting: 'price_asc' }, () => {});
+    }
+
     // sets defaults options for new options that haven't been set yet
     // (for features introduced since the last version)
     // runs when the extension updates or gets reloaded in developer mode

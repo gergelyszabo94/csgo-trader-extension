@@ -154,7 +154,7 @@ const storageKeys = {
   inventoryInstantQuickButtons: true,
   marketHistoryEventsToShow: 50,
   marketShowFloatValuesOnly: false,
-  marketListingsDefaultSorting: listingsSortingModes.price_asc,
+  marketListingsDefaultSorting: listingsSortingModes.price_asc.key,
   marketAlwaysShowFloatTechnical: false,
 };
 
