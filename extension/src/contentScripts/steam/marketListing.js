@@ -589,7 +589,7 @@ const getBuyerKYCFromPage = () => {
 };
 
 const addInstantBuyButtons = () => {
-  chrome.storage.local.get('marketListingsInstantBuy', (marketListingsInstantBuy) => {
+  chrome.storage.local.get('marketListingsInstantBuy', ({ marketListingsInstantBuy }) => {
     if (marketListingsInstantBuy && !isCommodityItem) {
       const listings = getListings();
       // if it's not an empty array but an object
