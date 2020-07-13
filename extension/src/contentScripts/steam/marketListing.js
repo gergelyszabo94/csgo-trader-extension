@@ -568,16 +568,23 @@ const addPricesInOtherCurrencies = () => {
 const getBuyerKYCFromPage = () => {
   const type = isCommodityItem ? '' : '_buynow';
   const stateEl = document.getElementById(`billing_state${type}`);
+  const firstNameEl = document.getElementById(`first_name${type}`);
+  const lastNameEl = document.getElementById(`last_name${type}`);
+  const billingAddressEl = document.getElementById(`billing_address${type}`);
+  const billingAddress2El = document.getElementById(`billing_address_two${type}`);
+  const countryEl = document.getElementById(`billing_country${type}`);
+  const cityEl = document.getElementById(`billing_city${type}`);
+  const postalEl = document.getElementById(`billing_postal_code${type}`);
 
   return {
-    first_name: encodeURIComponent(document.getElementById(`first_name${type}`).value),
-    last_name: encodeURIComponent(document.getElementById(`last_name${type}`).value),
-    billing_address: encodeURIComponent(document.getElementById(`billing_address${type}`).value),
-    billing_address_two: encodeURIComponent(document.getElementById(`billing_address_two${type}`).value),
-    billing_country: encodeURIComponent(document.getElementById(`billing_country${type}`).value),
-    billing_city: encodeURIComponent(document.getElementById(`billing_city${type}`).value),
+    first_name: firstNameEl !== null ? encodeURIComponent(firstNameEl.value) : '',
+    last_name: lastNameEl !== null ? encodeURIComponent(lastNameEl.value) : '',
+    billing_address: billingAddressEl !== null ? encodeURIComponent(billingAddressEl.value) : '',
+    billing_address_two: billingAddress2El !== null ? encodeURIComponent(billingAddress2El.value) : '',
+    billing_country: countryEl !== null ? encodeURIComponent(countryEl.value) : '',
+    billing_city: cityEl !== null ? encodeURIComponent(cityEl.value) : '',
     billing_state: stateEl !== null ? encodeURIComponent(stateEl.value) : '',
-    billing_postal_code: encodeURIComponent(document.getElementById(`billing_postal_code${type}`).value),
+    billing_postal_code: postalEl !== null ? encodeURIComponent(postalEl.value) : '',
   };
 };
 
