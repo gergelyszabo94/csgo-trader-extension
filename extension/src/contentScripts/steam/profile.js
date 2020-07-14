@@ -243,16 +243,16 @@ if (document.querySelector('body').classList.contains('profile_page')) {
     changePageTitle('profile');
   }
 
-  chrome.storage.local.get('nsfwFilter', (result) => {
-    if (result.nsfwFilter) {
+  chrome.storage.local.get('nsfwFilter', ({ nsfwFilter }) => {
+    if (nsfwFilter) {
       // makes the profile background the same as the default one
       document.querySelector('.no_header.profile_page').setAttribute('style', 'background-image: url(https://steamcommunity-a.akamaihd.net/public/images/profile/profile_bg.jpg); background-repeat: repeat-x; background-color: #262627;');
       document.querySelectorAll('.profile_content, body, .no_header.profile_page').forEach((element) => {
         element.classList.remove('has_profile_background');
       });
 
-      // removes artwork and screenshot showcases
-      document.querySelectorAll('.profile_background_holder_content, .screenshot_showcase').forEach((element) => {
+      // removes artwork, screenshot showcases and animated backgrounds
+      document.querySelectorAll('.profile_background_holder_content, .screenshot_showcase, .profile_animated_background').forEach((element) => {
         element.remove();
       });
 
