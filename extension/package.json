@@ -47,8 +47,8 @@
     "write-file-webpack-plugin": "4.5.1"
   },
   "scripts": {
-    "build": "webpack --progress --colors --env.NODE_ENV=production",
-    "start": "webpack --watch & webpack-dev-server --inline --progress --colors --env.NODE_ENV=development"
+    "build": "webpack --progress --colors --env.mode='production'",
+    "start": "webpack --env.mode='development' --watch & webpack-dev-server --inline --progress --colors"
   },
   "browserslist": [
     "last 2 chrome version",
