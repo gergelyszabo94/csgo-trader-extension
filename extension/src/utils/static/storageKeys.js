@@ -156,6 +156,7 @@ const storageKeys = {
   marketShowFloatValuesOnly: false,
   marketListingsDefaultSorting: listingsSortingModes.price_asc.key,
   marketAlwaysShowFloatTechnical: false,
+  showSelectedItemsTable: true,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

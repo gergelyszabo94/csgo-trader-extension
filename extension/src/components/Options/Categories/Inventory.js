@@ -68,6 +68,12 @@ const inventory = () => {
         type="flipSwitchStorage"
         description="Adds Instant Sell and Quick Sell buttons by the normal Sell button for the active inventory item"
       />
+      <Row
+        name="Show Selected items table"
+        id="showSelectedItemsTable"
+        type="flipSwitchStorage"
+        description="Shows the selected items table in other people's inventory"
+      />
     </Category>
   );
 };

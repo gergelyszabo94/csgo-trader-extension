@@ -1541,46 +1541,51 @@ const addFunctionBar = () => {
 
     document.getElementById('selectButton').addEventListener('click',
       (event) => {
-        const selectMenu = document.getElementById('functionBarSelectionMenu');
-        if (event.target.classList.contains('selectionActive')) {
-          // analytics
-          trackEvent({
-            type: 'event',
-            action: 'SelectionStopped',
-          });
-          unselectAllItems();
-          updateSelectedItemsSummary();
-          event.target.classList.remove('selectionActive');
-          selectMenu.classList.add('hidden');
-          document.getElementById('massListing').classList.add('hidden');
+        chrome.storage.local.get('showSelectedItemsTable', ({ showSelectedItemsTable }) => {
+          const selectMenu = document.getElementById('functionBarSelectionMenu');
+          if (event.target.classList.contains('selectionActive')) {
+            // analytics
+            trackEvent({
+              type: 'event',
+              action: 'SelectionStopped',
+            });
+            unselectAllItems();
+            updateSelectedItemsSummary();
+            event.target.classList.remove('selectionActive');
+            selectMenu.classList.add('hidden');
+            document.getElementById('massListing').classList.add('hidden');
 
-          if (isOwnInventory()) {
-            document.getElementById('massListingTitle').classList.add('hidden');
-            document.getElementById('startListMenu').classList.add('hidden');
-            document.getElementById('listingTable').querySelector('.rowGroup').innerHTML = '';
+            if (isOwnInventory()) {
+              document.getElementById('massListingTitle').classList.add('hidden');
+              document.getElementById('startListMenu').classList.add('hidden');
+              document.getElementById('listingTable').querySelector('.rowGroup').innerHTML = '';
+            }
+            document.body.removeEventListener('click', listenSelectClicks, false);
+          } else {
+            // analytics
+            trackEvent({
+              type: 'event',
+              action: 'SelectionInitiated',
+            });
+
+            // clears the price queue so the user does not have to wait for
+            // real time prices to load before the listings prices do
+            priceQueue.jobs = [];
+            priceQueue.active = false;
+
+            document.body.addEventListener('click', listenSelectClicks, false);
+            event.target.classList.add('selectionActive');
+
+            if (isOwnInventory() || showSelectedItemsTable) {
+              document.getElementById('massListing').classList.remove('hidden');
+              selectMenu.classList.remove('hidden');
+            }
+            if (isOwnInventory()) {
+              document.getElementById('massListingTitle').classList.remove('hidden');
+              document.getElementById('startListMenu').classList.remove('hidden');
+            }
           }
-          document.body.removeEventListener('click', listenSelectClicks, false);
-        } else {
-          // analytics
-          trackEvent({
-            type: 'event',
-            action: 'SelectionInitiated',
-          });
-
-          // clears the price queue so the user does not have to wait for
-          // real time prices to load before the listings prices do
-          priceQueue.jobs = [];
-          priceQueue.active = false;
-
-          document.getElementById('massListing').classList.remove('hidden');
-          document.body.addEventListener('click', listenSelectClicks, false);
-          event.target.classList.add('selectionActive');
-          selectMenu.classList.remove('hidden');
-          if (isOwnInventory()) {
-            document.getElementById('massListingTitle').classList.remove('hidden');
-            document.getElementById('startListMenu').classList.remove('hidden');
-          }
-        }
+        });
       });
 
     sortingSelect.addEventListener('change', () => {
