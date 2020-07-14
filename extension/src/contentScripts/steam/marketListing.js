@@ -754,6 +754,12 @@ if (buyOrderInfoEl !== null) {
   // repositions expandable details so it does not overlap with the custom buttons
   if (!isCommodityItem) {
     document.getElementById('market_buyorder_info_details').style['margin-top'] = '45px';
+  } else {
+    const recentActivityEl = document.getElementById('market_activity_block');
+    if (recentActivityEl !== null) {
+      recentActivityEl.style.overflow = 'visible';
+      recentActivityEl.style['margin-top'] = '20px';
+    }
   }
 
   document.getElementById('place_highest_order').addEventListener('click', () => {
