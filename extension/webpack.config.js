@@ -10,6 +10,25 @@ const fileExtensions = ['jpg', 'jpeg', 'png', 'gif', 'eot', 'otf', 'svg', 'ttf',
 
 const mode = process.env.NODE_ENV || 'development'; // use 'development' unless process.env.NODE_ENV is defined
 
+// requited for the chrome manifest.json so the development version gets the same id as the prod
+const chromeExtKey = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAycJXpmt94FIYH7+OVQswE8ZLWTqmNt3VePgk3IkOVP9QtEvXAcSNvtldqWCH3kFikAJzyeXdUM/puDOwZ4yM0KMgDbhfragLcB9j14VP2i3f3F98utOrRrl0eUAHFJ2fP2yCFbPqOiRZA9JK2jotpHhHib+lO2hLEtAbpnvMhD+TdIuPr33QEJcLkAfqCLZKrFGzqsOV+5NCkLQYfptA9v1KersX8FfFSDRmuzWipfo8EEwJDTcImau4v0YB+lZulHodxv5INt4Xp0Iq/lOgdm/6xUVdhZ3ISyjSvjLWVwstd1UMlLNxyBA9ibpc5UpkXDuPmkd77S2qVyMgsGtEPQIDAQAB';
+
+// adds extra fields to the chrome and edge versions of the manifest
+const modifyManifest = (buffer) => {
+  // copy-webpack-plugin passes a buffer
+  const manifest = JSON.parse(buffer.toString());
+
+  manifest.options_page = 'index.html';
+  manifest.background.persistent = false;
+
+  if (mode === 'development') {
+    manifest.key = chromeExtKey;
+  }
+
+  // pretty print to JSON with two spaces
+  return JSON.stringify(manifest, null, 2);
+};
+
 const pluginsToAlwaysUse = [
   new webpack.EnvironmentPlugin({
     NODE_ENV: mode,
@@ -20,7 +39,14 @@ const pluginsToAlwaysUse = [
     patterns: [
       {
         from: 'src/manifest.json',
+        to: 'manifest_ff.json',
+      },
+      {
+        from: 'src/manifest.json',
         to: 'manifest.json',
+        transform(content) {
+          return modifyManifest(content);
+        },
       },
       {
         from: 'src/assets/styles/external/generalCSTStyle.css',
