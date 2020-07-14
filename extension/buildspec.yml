@@ -16,7 +16,7 @@ phases:
       - npm run build
       - cd build
       - zip -r ../publish/chrome.zip .
-      - cp ../src/manifest_ff.json manifest.json # only the manifest file is different on firefox
+      - cp manifest_ff.json manifest.json # only the manifest file is different on firefox
       - zip -r ../publish/firefox.zip .
       - cd ..
   post_build:
