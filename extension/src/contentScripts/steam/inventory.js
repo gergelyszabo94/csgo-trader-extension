@@ -716,20 +716,26 @@ const addRightSideElements = () => {
                     item.appid,
                     item.market_hash_name,
                   ).then((highestOrderPrice) => {
-                    listItem(
-                      item.appid,
-                      item.contextid,
-                      1,
-                      item.assetid,
-                      getPriceAfterFees(highestOrderPrice),
-                    ).then(() => {
-                      instantSellButton.querySelector('.item_market_action_button_contents').innerText = 'Listing created!';
-                    }).catch((err) => {
-                      console.log(err);
-                      document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
-                        marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`<div class="listingError">${err.message}</div>`));
+                    if (highestOrderPrice !== null) {
+                      listItem(
+                        item.appid,
+                        item.contextid,
+                        1,
+                        item.assetid,
+                        getPriceAfterFees(highestOrderPrice),
+                      ).then(() => {
+                        instantSellButton.querySelector('.item_market_action_button_contents').innerText = 'Listing created!';
+                      }).catch((err) => {
+                        console.log(err);
+                        document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
+                          marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`<div class="listingError">${err.message}</div>`));
+                        });
                       });
-                    });
+                    } else {
+                      document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
+                        marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize('<div class="listingError">No buy orders to sell to.</div>'));
+                      });
+                    }
                   }).catch((err) => {
                     console.log(err);
                     document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
@@ -1060,7 +1066,7 @@ const addStartingAtAndQuickSellPrice = (
   if (listingRow !== null) {
     const startingAtElement = listingRow.querySelector('.itemStartingAt');
     const quickSell = listingRow.querySelector('.itemQuickSell');
-    const quickSellPrice = priceInCents - 1;
+    const quickSellPrice = priceInCents > 3 ? priceInCents - 1 : priceInCents;
 
     startingAtElement.innerText = centsToSteamFormattedPrice(priceInCents);
     startingAtElement.setAttribute('data-price-set', true.toString());
