@@ -1699,12 +1699,18 @@ const loadInventoryItems = (appID, contextID) => {
   if (inventory.length !== 0) {
     items = items.concat(inventory);
     addRealTimePricesToQueue();
+
+    if (inventory.length === 75) {
+      loadFullInventory();
+      setTimeout(() => {
+        loadInventoryItems(appID, contextID);
+      }, 2000);
+    }
   } else {
     setTimeout(() => {
       loadInventoryItems(appID, contextID);
     }, 1000);
   }
-  console.log(items);
 };
 
 logExtensionPresence();
