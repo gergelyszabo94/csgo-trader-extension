@@ -1,7 +1,7 @@
 import React from 'react'
 import ChangelogInstance from '../ChangelogInstance';
 
-const TwoDotFixDotTwo = () => {
+const TwoDotSixDotTwo = () => {
   return (
     <ChangelogInstance version="2.6.2" date="2020-07-04">
       <li>
@@ -12,4 +12,4 @@ const TwoDotFixDotTwo = () => {
   );
 }
 
-export default TwoDotFixDotTwo;
+export default TwoDotSixDotTwo;
