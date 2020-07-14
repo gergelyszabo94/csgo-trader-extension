@@ -56,7 +56,7 @@ chrome.runtime.onInstalled.addListener((details) => {
       type: 'basic',
       iconUrl: '/images/cstlogo128.png',
       title: 'Extension installed!',
-      message: 'Go to the options to set your Steam API key and customize your experience!',
+      message: 'Go to the options through the extension popup and customize your experience!',
     }, () => {});
   } else if (details.reason === 'update') {
     const path = chrome.extension.getURL('/index.html');
@@ -164,7 +164,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 });
 
 // redirects to feedback survey on uninstall
-chrome.runtime.setUninstallURL('https://docs.google.com/forms/d/e/1FAIpQLSeOpZilYGr3JAPd7_GSh-tCJShVWHpNFoW8joxStzZf1PFq5A/viewform?usp=sf_link', () => {});
+chrome.runtime.setUninstallURL('https://docs.google.com/forms/d/e/1FAIpQLSdGzY8TrSjfZZtfoerFdAna1E79Y13afxNKG1yytjZkypKTpg/viewform?usp=sf_link', () => {});
 
 // handles what happens when one of the extension's notification gets clicked
 chrome.notifications.onClicked.addListener((notificationID) => {
