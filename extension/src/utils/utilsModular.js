@@ -257,6 +257,12 @@ const handleStickerNamesWithCommas = (names) => {
   return namesModified;
 };
 
+const getStickerOrPatchLink = (linkType, name, type) => {
+  return linkType === 'search'
+    ? `https://steamcommunity.com/market/search?q=${name}&appid=730&category_730_Type[]=tag_CSGO_Tool_${type}`
+    : `https://steamcommunity.com/market/listings/730/${type}%20%7C%20${name}`;
+};
+
 const parseStickerInfo = (
   descriptions,
   linkType,
@@ -267,12 +273,10 @@ const parseStickerInfo = (
 ) => {
   if (descriptions !== undefined && linkType !== undefined) {
     let stickers = [];
-    const link = linkType === 'search'
-      ? 'https://steamcommunity.com/market/search?q='
-      : 'https://steamcommunity.com/market/listings/730/Sticker%20%7C%20';
 
     descriptions.forEach((description) => {
       if (description.value.includes('sticker_info')) {
+        const type = description.value.includes('title="Sticker"') ? 'Sticker' : 'Patch';
         let names = description.value.split('><br>')[1].split(': ')[1].split('</center>')[0].split(', ');
         names = handleStickerNamesWithCommas(names);
         const iconURLs = description.value.split('src="');
@@ -284,9 +288,9 @@ const parseStickerInfo = (
 
         stickers = names.map((name, index) => ({
           name,
-          price: linkType === 'search' ? null : getPrice(`Sticker | ${name}`, null, prices, pricingProvider, exchangeRate, currency),
+          price: linkType === 'search' ? null : getPrice(`${type} | ${name}`, null, prices, pricingProvider, exchangeRate, currency),
           iconURL: iconURLs[index],
-          marketURL: link + name,
+          marketURL: getStickerOrPatchLink(linkType, name, type),
         }));
       }
     });
