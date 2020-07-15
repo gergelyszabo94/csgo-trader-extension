@@ -10,7 +10,7 @@ const FlipSwitchPermission = ({
     if (origins) {
       chrome.storage.local.get([id], (storageResult) => {
         chrome.permissions.contains(
-          { permissions: ['tabs'], origins },
+          { origins },
           (permissionResult) => {
             setState(storageResult[id] && permissionResult);
           },
@@ -30,7 +30,7 @@ const FlipSwitchPermission = ({
     if (!state) {
       if (origins) {
         chrome.permissions.request(
-          { permissions: ['tabs'], origins },
+          { origins },
           (granted) => {
             chrome.storage.local.set({ [id]: granted }, () => {
               setState(granted);
