@@ -67,19 +67,6 @@ const general = () => {
         permission="tabs"
       />
       <Row
-        name="Flag scam comments"
-        id="flagScamComments"
-        type="flipSwitchStorage"
-        description='Reports obvious scam and spam comments like "I will give my knife for all of your csgo graffitties" and others. Helps to keep steamcommunity cleaner and safer.'
-      />
-      <Row
-        name="Your strings to report"
-        id="customCommentsToReport"
-        type="modalCustomComments"
-        description="Make the extension report comments that includes one of the the strings you add here. These are additional to the built-in ones."
-        modalTitle="Add or remove your strings to report"
-      />
-      <Row
         name="Colorful items"
         id="colorfulItems"
         type="flipSwitchStorage"

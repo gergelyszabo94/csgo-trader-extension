@@ -53,12 +53,6 @@ const profile = () => {
           </>
         )}
       />
-      <Row
-        name="Mark scammers"
-        id="markScammers"
-        type="flipSwitchStorage"
-        description={'Changes background and adds warning ribbon to steamrep.com banned scammers\' profile and trade offers they send.'}
-      />
     </Category>
   );
 };

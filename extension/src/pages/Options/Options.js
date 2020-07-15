@@ -19,6 +19,7 @@ import Profile from 'components/Options/Categories/Profile';
 import TradeOffer from 'components/Options/Categories/TradeOffer';
 import Friends from 'components/Options/Categories/Friends/Friends';
 import WebChat from 'components/Options/Categories/WebChat';
+import Safety from 'components/Options/Categories/Safety';
 import { trackEvent } from 'utils/analytics';
 
 const routes = [
@@ -66,6 +67,11 @@ const routes = [
     to: 'notifications/',
     name: 'Notifications',
     component: Notifications,
+  },
+  {
+    to: 'safety/',
+    name: 'Safety',
+    component: Safety,
   },
   {
     to: 'webchat/',

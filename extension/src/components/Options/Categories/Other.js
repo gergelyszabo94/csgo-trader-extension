@@ -59,18 +59,6 @@ const other = () => {
         type="flipSwitchStorage"
         description="Hides elements from other extensions that overlap with CSGO Trader's"
       />
-      <Row
-        name="Turn off Steam link filter"
-        id="linkFilterOff"
-        type="flipSwitchStorage"
-        description="Turns off Steam's link filter that takes you to a page before you can proceed to external sites."
-      />
-      <Row
-        name="Mark moderation messages as read"
-        id="markModerationMessagesAsRead"
-        type="flipSwitchStorage"
-        description="If you use the report spam comments feature or report comments yourself then you often receive these messages from Steam. If you turn this on you won't."
-      />
     </Category>
   );
 };
