@@ -18,7 +18,8 @@ const Backup = ({
       };
 
       for (const storageKey in result) {
-        if (!storageKeysToExclude.includes(storageKey) && storageKey.substring(0, 11) !== 'floatCache_') {
+        if (!storageKeysToExclude.includes(storageKey) && storageKey.substring(0, 11) !== 'floatCache_'
+        && storageKey.substring(0, 14) !== 'seen_listings_') {
           backupJSON.storage[storageKey] = result[storageKey];
         }
       }

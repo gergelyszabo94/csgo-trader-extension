@@ -115,6 +115,12 @@ const market = () => {
           ]
         }
       />
+      <Row
+        name="Highlight seen listings"
+        id="highlightSeenListings"
+        type="flipSwitchStorage"
+        description="Highlights listings that you have already seen. Eliminates unnecessary work when looking for something."
+      />
     </Category>
   );
 };

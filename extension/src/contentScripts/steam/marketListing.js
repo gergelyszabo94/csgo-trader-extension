@@ -639,6 +639,42 @@ const addInstantBuyButtons = () => {
   });
 };
 
+const highlightSeen = () => {
+  const seenStorageKey = `seen_listings_${appID}_${fullName}`;
+  chrome.storage.local.get(['highlightSeenListings', seenStorageKey], (result) => {
+    if (result.highlightSeenListings && !isCommodityItem) {
+      const highlighted = result[seenStorageKey] !== undefined ? result[seenStorageKey] : {};
+      const listings = getListings();
+      const firstTimeSeenListings = [];
+      // if it's not an empty array but an object
+      if (listings.length === undefined) {
+        const listingsSection = document.getElementById('searchResultsRows');
+        listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
+          (listingRow) => {
+            if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows'
+              && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
+              if (listingRow.getAttribute('data-highlightseen') === null) { // if not processed yet
+                const listingID = getListingIDFromElement(listingRow);
+                if (highlighted[listingID] !== undefined) {
+                  if (Date.now() > highlighted[listingID] + 60000) {
+                    listingRow.style['background-color'] = '#4e1d4e';
+                  }
+                } else firstTimeSeenListings.push(listingID);
+              }
+            }
+          },
+        );
+
+        firstTimeSeenListings.forEach((listingID) => {
+          highlighted[listingID] = Date.now();
+        });
+
+        chrome.storage.local.set({ [seenStorageKey]: highlighted }, () => {});
+      }
+    }
+  });
+};
+
 floatQueue.cleanupFunction = () => {
   sortListings(document.getElementById('sortSelect').value);
 };
@@ -931,6 +967,7 @@ chrome.storage.local.get('numberOfListings', ({ numberOfListings }) => {
     addListingsToFloatQueue();
     addPricesInOtherCurrencies();
     addInstantBuyButtons();
+    highlightSeen();
   }
   let observerLastTriggered = Date.now() - 1001;
   const observer = new MutationObserver((mutations) => {
@@ -945,6 +982,7 @@ chrome.storage.local.get('numberOfListings', ({ numberOfListings }) => {
           addListingsToFloatQueue();
           addPricesInOtherCurrencies();
           addInstantBuyButtons();
+          highlightSeen();
         }
         observerLastTriggered = Date.now();
       }
