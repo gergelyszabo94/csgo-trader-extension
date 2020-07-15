@@ -699,6 +699,37 @@ const removeLinkFilterFromLinks = () => {
   });
 };
 
+// finds unread moderation messages and loads the page to mark them as read
+const markModMessagesAsRead = () => {
+  chrome.storage.local.get('steamIDOfUser', ({ steamIDOfUser }) => {
+    const getRequest = new Request(`https://steamcommunity.com/profiles/${steamIDOfUser}/moderatormessages`);
+    fetch(getRequest).then((response) => {
+      if (!response.ok) {
+        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+        return null;
+      }
+      return response.text();
+    }).then((body) => {
+      if (body !== null) {
+        const html = document.createElement('html');
+        html.innerHTML = DOMPurify.sanitize(body);
+
+        const unreadMessageLinks = [];
+        const unreadMessagesElements = html.querySelectorAll('div.commentnotification.moderatormessage.unread');
+        unreadMessagesElements.forEach((unread) => {
+          unreadMessageLinks.push(unread.querySelector('a').getAttribute('href'));
+        });
+
+        unreadMessageLinks.forEach((link) => {
+          fetch(new Request(link)).then(() => {});
+        });
+      }
+    }).catch((err) => {
+      console.log(err);
+    });
+  });
+};
+
 //  unused atm
 // const generateRandomString = (length) => {
 //   let text = '';
@@ -721,7 +752,7 @@ export {
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists, removeLinkFilterFromLinks,
-  getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent,
+  getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent, markModMessagesAsRead,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo,

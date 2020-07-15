@@ -2,7 +2,7 @@ import { storageKeys } from 'utils/static/storageKeys';
 import { trackEvent, sendTelemetry } from 'utils/analytics';
 import { updatePrices, updateExchangeRates, getUserCurrencyBestGuess } from 'utils/pricing';
 import {
-  scrapeSteamAPIkey, goToInternalPage, uuidv4,
+  scrapeSteamAPIkey, goToInternalPage, uuidv4, markModMessagesAsRead,
 } from 'utils/utilsModular';
 import {
   getGroupInvites, updateFriendRequest,
@@ -190,11 +190,14 @@ chrome.alarms.onAlarm.addListener((alarm) => {
       else chrome.alarms.clear('retryUpdatePricesAndExchangeRates', () => {});
     });
   } else if (alarm.name === 'getSteamNotificationCount') {
-    getSteamNotificationCount().then(({ invites }) => {
-      chrome.storage.local.get(['friendRequests', 'groupInvites', 'ignoreGroupInvites', 'monitorFriendRequests'],
+    getSteamNotificationCount().then(({ invites, moderatorMessages }) => {
+      chrome.storage.local.get(
+        ['friendRequests', 'groupInvites', 'ignoreGroupInvites', 'monitorFriendRequests', 'markModerationMessagesAsRead'],
         ({
           friendRequests, groupInvites, ignoreGroupInvites, monitorFriendRequests,
+          markModerationMessagesAsRead,
         }) => {
+          // friend request monitoring
           const minutesFromLastCheck = ((Date.now()
             - new Date(friendRequests.lastUpdated)) / 1000) / 60;
           const friendAndGroupInviteCount = friendRequests.inviters.length
@@ -210,7 +213,11 @@ chrome.alarms.onAlarm.addListener((alarm) => {
               }
             });
           }
-        });
+
+          // moderation messages
+          if (markModerationMessagesAsRead && moderatorMessages > 0) markModMessagesAsRead();
+        },
+      );
     }, (error) => {
       console.log(error);
       if (error === 401 || error === 403) {
