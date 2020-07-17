@@ -17,7 +17,7 @@ import {
   updateLoggedInUserInfo,
 } from 'utils/utilsModular';
 import { listingsSortingModes } from 'utils/static/sortingModes';
-import { buyListing, createOrder } from 'utils/market';
+import { buyListing, createOrder, loadItemOrderHistogram } from 'utils/market';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import exteriors from 'utils/static/exteriors';
 import {
@@ -675,6 +675,48 @@ const highlightSeen = () => {
   });
 };
 
+const getNameID = () => {
+  return document.querySelector('body').innerHTML.split('Market_LoadOrderSpread( ')[1].split(' ')[0];
+};
+
+const showAllOrders = (type) => {
+  loadItemOrderHistogram(getNameID()).then((histogramResponse) => {
+    const graphData = histogramResponse[`${type}_order_graph`];
+
+    for (let i = 0; i < graphData.length; i += 1) {
+      let sum = 0;
+
+      for (let x = 0; x < i; x += 1) {
+        sum += graphData[x][1];
+      }
+      graphData[i][1] -= sum;
+    }
+
+    let tableRows = '<tr><th align="right">Price</th><th align="right">Quantity</th></tr>';
+
+    graphData.forEach((row) => {
+      tableRows += `<tr>
+            <td align="right">
+                ${histogramResponse.price_prefix}${row[0]}${histogramResponse.price_suffix}
+            </td>
+            <td align="right">
+                ${row[1]}
+            </td>
+        </tr>`;
+    });
+
+    document.getElementById(`show_more_${type}`).insertAdjacentHTML(
+      'afterend',
+      DOMPurify.sanitize(
+        `
+               <table class="market_commodity_orders_table">
+                    ${tableRows}
+               </table>`,
+      ),
+    );
+  });
+};
+
 floatQueue.cleanupFunction = () => {
   sortListings(document.getElementById('sortSelect').value);
 };
@@ -837,6 +879,28 @@ if (buyOrderInfoEl !== null) {
         `<div class="marketListingBuyOrderError">${err}</div>`,
       );
     });
+  });
+}
+
+// show all orders
+const buyOrdersDiv = document.getElementById('market_commodity_buyreqeusts_table');
+
+const buyOrderShowAll = isCommodityItem
+  ? '<div id="show_more_buy" class="btn_grey_black btn_medium"><span>Show All</span></div>'
+  : '<div style="text-align: center;"><div id="show_more_buy" class="btn_grey_black btn_medium"><span>Show All</span></div></div>';
+buyOrdersDiv.insertAdjacentHTML('afterend', buyOrderShowAll);
+
+document.getElementById('show_more_buy').addEventListener('click', () => {
+  showAllOrders('buy');
+});
+
+// only commodity items have sell orders
+if (isCommodityItem) {
+  const sellOrdersDiv = document.getElementById('market_commodity_forsale_table');
+  sellOrdersDiv.insertAdjacentHTML('afterend', '<div id="show_more_sell" class="btn_grey_black btn_medium"><span>Show All</span></div>');
+
+  document.getElementById('show_more_sell').addEventListener('click', () => {
+    showAllOrders('sell');
   });
 }
 

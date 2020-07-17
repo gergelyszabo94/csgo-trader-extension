@@ -194,6 +194,40 @@ const getMarketHistory = (start, count) => {
   });
 };
 
+const loadItemOrderHistogram = (nameID) => {
+  return new Promise((resolve, reject) => {
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+
+    const steamWalletInfo = getSteamWalletInfo();
+    const currencyCode = steamWalletInfo !== null ? steamWalletInfo.wallet_currency : 1;
+
+    const request = new Request(`https://steamcommunity.com/market/itemordershistogram?country=US&language=english&two_factor=0&currency=${currencyCode}&item_nameid=${nameID}`,
+      {
+        method: 'GET',
+        headers: myHeaders,
+      });
+
+    const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
+
+    fetchFunction(request).then((response) => {
+      if (!response.ok) {
+        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+        reject({ status: response.status, statusText: response.statusText });
+      }
+      return response.json();
+    }).then((historyJSON) => {
+      if (historyJSON === null) reject('success:false');
+      else if (historyJSON.success === 1) resolve(historyJSON);
+      else reject('success:false');
+    }).catch((err) => {
+      console.log(err);
+      reject(err);
+    });
+  });
+};
+
 export {
-  removeListing, cancelOrder, getMarketHistory, listItem, buyListing, createOrder,
+  removeListing, cancelOrder, getMarketHistory, listItem,
+  buyListing, createOrder, loadItemOrderHistogram,
 };
