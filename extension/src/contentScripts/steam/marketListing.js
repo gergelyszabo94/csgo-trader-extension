@@ -841,7 +841,7 @@ if (buyOrderInfoEl !== null) {
   }
 
   document.getElementById('place_highest_order').addEventListener('click', () => {
-    getHighestBuyOrder(steamApps.CSGO.appID, fullName).then((highestOrder) => {
+    getHighestBuyOrder(appID, fullName).then((highestOrder) => {
       createOrder(
         appID,
         fullName,
