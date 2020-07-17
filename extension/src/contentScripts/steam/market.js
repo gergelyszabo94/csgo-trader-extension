@@ -356,7 +356,11 @@ if (sellListings !== null) {
 }
 
 // buy order related functionality, highest buy order price, cancel selected, cancel all
-const orders = document.querySelectorAll('.my_listing_section.market_content_block.market_home_listing_table')[1];
+// it's hard to tell apart buy orders and listings awaiting confirmation
+const listingSections = document.querySelectorAll('.my_listing_section.market_content_block.market_home_listing_table');
+const orders = listingSections.length === 2
+  ? listingSections[1]
+  : listingSections[2];
 if (orders) {
   const orderRows = orders.querySelectorAll('.market_listing_row.market_recent_listing_row');
 
