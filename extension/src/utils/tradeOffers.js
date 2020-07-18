@@ -75,12 +75,27 @@ const declineOffer = (offerID) => {
 // so we can check if an item is present in another offer
 // also to know when offer loading is necessary when monitoring offers
 const updateActiveOffers = (offers, items) => {
+  // even though active offers are requested
+  // not all of them has the active state (2)
+  // we need the actual number of active offers to compare with the notification count
+  let receivedActiveCount = 0;
+  offers.trade_offers_received.forEach((offer) => {
+    if (offer.trade_offer_state === 2) receivedActiveCount += 1;
+  });
+
+  let sentActiveCount = 0;
+  offers.trade_offers_sent.forEach((offer) => {
+    if (offer.trade_offer_state === 2) sentActiveCount += 1;
+  });
+
   chrome.storage.local.set({
     activeOffers: {
       lastFullUpdate: Math.floor(Date.now() / 1000),
       items,
       sent: offers.trade_offers_sent,
+      sentActiveCount,
       received: offers.trade_offers_received,
+      receivedActiveCount,
       descriptions: offers.descriptions,
     },
   }, () => {});

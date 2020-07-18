@@ -228,7 +228,8 @@ chrome.alarms.onAlarm.addListener((alarm) => {
             - (new Date(activeOffers.lastFullUpdate) * 1000)) / 1000) / 60;
           console.log(minutesFromLastOfferCheck);
           if (monitorIncomingOffers
-            && (tradeOffers !== activeOffers.received.length || minutesFromLastOfferCheck >= 30)) {
+            && (tradeOffers !== activeOffers.receivedActiveCount
+              || minutesFromLastOfferCheck >= 30)) {
             console.log('change or 30 min past');
             getTradeOffers('active').then((offers) => {
               console.log(offers);
