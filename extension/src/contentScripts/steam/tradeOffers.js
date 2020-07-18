@@ -1,13 +1,11 @@
 import {
-  getExteriorFromTags, getQuality, getDopplerInfo,
-  getType, addDopplerPhase, makeItemColorful, addUpdatedRibbon,
+  addDopplerPhase, makeItemColorful, addUpdatedRibbon,
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
-  getItemByAssetID, getInspectLink, removeOfferFromActiveOffers,
+  getItemByAssetID, removeOfferFromActiveOffers,
   logExtensionPresence, updateLoggedInUserInfo, reloadPageOnExtensionReload,
-  getNameTag, repositionNameTagIcons, jumpToAnchor, changePageTitle,
+  repositionNameTagIcons, jumpToAnchor, changePageTitle,
   removeLinkFilterFromLinks,
 } from 'utils/utilsModular';
-import { getItemMarketLink } from 'utils/simpleUtils';
 import { prettyTimeAgo } from 'utils/dateTime';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import itemTypes from 'utils/static/itemTypes';
@@ -20,8 +18,9 @@ import { offersSortingModes } from 'utils/static/sortingModes';
 import { injectStyle } from 'utils/injection';
 import { getProperStyleSteamIDFromOfferStyle, getUserSteamID } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
-import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
-import { acceptOffer, declineOffer } from 'utils/tradeOffers';
+import {
+  acceptOffer, declineOffer, updateActiveOffers, matchItemsAndAddDetails,
+} from 'utils/tradeOffers';
 import DOMPurify from 'dompurify';
 import steamApps from 'utils/static/steamApps';
 import { getIDsFromElement } from 'utils/itemsToElementsToItems';
@@ -49,47 +48,6 @@ const selectItemElementByIDs = (classid, instanceid) => {
 
 const addFloatDataToPage = (job, floatInfo) => {
   addFloatIndicator(selectItemElementByIDs(job.classid, job.instanceid), floatInfo);
-};
-
-const matchItemsWithDescriptions = (items) => {
-  const itemsToReturn = [];
-  items.forEach((item) => {
-    // some items don't have descriptions for some reason - will have to be investigated later
-    if (item.market_hash_name !== undefined) {
-      itemsToReturn.push({
-        appid: item.appid.toString(),
-        contextid: item.contextid.toString(),
-        name: item.name,
-        marketable: item.marketable,
-        market_hash_name: item.market_hash_name,
-        name_color: item.name_color,
-        marketlink: getItemMarketLink(item.appid.toString(), item.market_hash_name),
-        classid: item.classid,
-        instanceid: item.instanceid,
-        assetid: item.assetid,
-        position: item.position,
-        side: item.side,
-        dopplerInfo: (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon_url) : null,
-        exterior: getExteriorFromTags(item.tags),
-        iconURL: item.icon_url,
-        inspectLink: getInspectLink(item),
-        quality: getQuality(item.tags),
-        isStatrack: item.name.includes('StatTrak™'),
-        isSouvenir: item.name.includes('Souvenir'),
-        starInName: item.name.includes('★'),
-        nametag: getNameTag(item),
-        owner: item.owner,
-        type: getType(item.tags),
-        floatInfo: null,
-        patternInfo: null,
-        descriptions: item.descriptions,
-        inOffer: item.inOffer,
-        offerOrigin: item.offerOrigin,
-      });
-    }
-  });
-
-  return itemsToReturn;
 };
 
 const getLimitedIDsFromElement = (element) => {
@@ -172,40 +130,6 @@ const findItem = (items, IDs, side, position) => {
     })[0];
   }
   return items.filter((item) => item.classid === IDs.classid)[0];
-};
-
-const extractItemsFromOffers = (offers, sentOrReceived) => {
-  const itemsToReturn = [];
-  if (offers) {
-    offers.forEach((offer) => {
-      if (offer.items_to_give !== undefined) {
-        offer.items_to_give.forEach((item, index) => {
-          itemsToReturn.push({
-            ...item,
-            owner: userID,
-            position: index,
-            inOffer: offer.tradeofferid,
-            side: 'your',
-            offerOrigin: sentOrReceived,
-          });
-        });
-      }
-      if (offer.items_to_receive !== undefined) {
-        offer.items_to_receive.forEach((item, index) => {
-          itemsToReturn.push({
-            ...item,
-            owner: getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
-            position: index,
-            inOffer: offer.tradeofferid,
-            side: 'their',
-            offerOrigin: sentOrReceived,
-          });
-        });
-      }
-    });
-  }
-
-  return itemsToReturn;
 };
 
 const addItemInfo = (items) => {
@@ -554,20 +478,6 @@ const updateOfferHistoryData = () => {
   );
 };
 
-// info about the active offers is kept in storage
-// so we can check if an item is present in another offer
-const updateActiveOffers = (offers, items) => {
-  chrome.storage.local.set({
-    activeOffers: {
-      lastFullUpdate: Math.floor(Date.now() / 1000),
-      items,
-      sent: offers.trade_offers_sent,
-      received: offers.trade_offers_received,
-      descriptions: offers.descriptions,
-    },
-  }, () => {});
-};
-
 const periodicallyUpdateRealTimeTotals = (offerEl) => {
   setInterval(() => {
     chrome.storage.local.get(['userSteamWalletCurrency'], ({ userSteamWalletCurrency }) => {
@@ -858,25 +768,7 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
 
     getOffersFromAPI('active').then(
       (offers) => {
-        let allItemsInOffer = extractItemsFromOffers(offers.trade_offers_sent, 'sent');
-        allItemsInOffer = allItemsInOffer.concat(
-          extractItemsFromOffers(offers.trade_offers_received, 'received'),
-        );
-
-        const itemsWithMoreInfo = [];
-        if (allItemsInOffer) {
-          allItemsInOffer.forEach((item) => {
-            const itemDescription = offers.descriptions.find((description) => {
-              return description.classid === item.classid
-                && description.instanceid === item.instanceid;
-            });
-            itemsWithMoreInfo.push({ ...item, ...itemDescription });
-          });
-        }
-
-        const matchedItems = matchItemsWithDescriptions(itemsWithMoreInfo);
-
-        addPricesAndFloatsToInventory(matchedItems).then(({ items }) => {
+        matchItemsAndAddDetails(offers, userID).then((items) => {
           const itemsWithAllInfo = items;
           updateActiveOffers(offers, itemsWithAllInfo);
           addItemInfo(itemsWithAllInfo);

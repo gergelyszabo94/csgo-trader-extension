@@ -129,5 +129,30 @@ const getTradeHistory = (
     });
 });
 
-// eslint-disable-next-line import/prefer-default-export
-export { getTradeHistory };
+const getTradeOffers = (type) => new Promise((resolve, reject) => {
+  chrome.storage.local.get(['apiKeyValid', 'steamAPIKey'], ({ apiKeyValid, steamAPIKey }) => {
+    if (apiKeyValid) {
+      const activesOnly = type === 'historical' ? 0 : 1;
+      const descriptions = type === 'historical' ? 0 : 1;
+
+      const getRequest = new Request(`https://api.steampowered.com/IEconService/GetTradeOffers/v1/?get_received_offers=1&get_sent_offers=1&active_only=${activesOnly}&get_descriptions=${descriptions}&language=english&key=${steamAPIKey}`);
+
+      fetch(getRequest).then((response) => {
+        if (!response.ok) {
+          console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+          reject(response.statusText);
+        } else return response.json();
+      }).then((body) => {
+        try { resolve(body.response); } catch (e) {
+          console.log(e);
+          reject(e);
+        }
+      }).catch((err) => {
+        console.log(err);
+        reject(err);
+      });
+    } else reject('api_key_invalid');
+  });
+});
+
+export { getTradeHistory, getTradeOffers };

@@ -11,6 +11,8 @@ import {
 import { trimFloatCache } from 'utils/floatCaching';
 import { getSteamNotificationCount } from 'utils/notifications';
 import { pricingProviders } from 'utils/static/pricing';
+import { getTradeOffers } from 'utils/IEconService';
+import { matchItemsAndAddDetails, updateActiveOffers } from 'utils/tradeOffers';
 
 // handles install and update events
 chrome.runtime.onInstalled.addListener((details) => {
@@ -190,20 +192,21 @@ chrome.alarms.onAlarm.addListener((alarm) => {
       else chrome.alarms.clear('retryUpdatePricesAndExchangeRates', () => {});
     });
   } else if (alarm.name === 'getSteamNotificationCount') {
-    getSteamNotificationCount().then(({ invites, moderatorMessages }) => {
+    getSteamNotificationCount().then(({ invites, moderatorMessages, tradeOffers }) => {
       chrome.storage.local.get(
-        ['friendRequests', 'groupInvites', 'ignoreGroupInvites', 'monitorFriendRequests', 'markModerationMessagesAsRead'],
+        ['friendRequests', 'groupInvites', 'ignoreGroupInvites', 'monitorFriendRequests',
+          'markModerationMessagesAsRead', 'monitorIncomingOffers', 'activeOffers'],
         ({
           friendRequests, groupInvites, ignoreGroupInvites, monitorFriendRequests,
-          markModerationMessagesAsRead,
+          markModerationMessagesAsRead, monitorIncomingOffers, activeOffers,
         }) => {
           // friend request monitoring
-          const minutesFromLastCheck = ((Date.now()
+          const minutesFromLastFriendCheck = ((Date.now()
             - new Date(friendRequests.lastUpdated)) / 1000) / 60;
           const friendAndGroupInviteCount = friendRequests.inviters.length
             + groupInvites.invitedTo.length;
 
-          if (invites !== friendAndGroupInviteCount || minutesFromLastCheck >= 30) {
+          if (invites !== friendAndGroupInviteCount || minutesFromLastFriendCheck >= 30) {
             if (monitorFriendRequests) updateFriendRequest();
             getGroupInvites().then((inviters) => {
               if (ignoreGroupInvites) {
@@ -216,6 +219,27 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 
           // moderation messages
           if (markModerationMessagesAsRead && moderatorMessages > 0) markModMessagesAsRead();
+
+          // trade offers monitoring
+          console.log(tradeOffers);
+          console.log(activeOffers);
+
+          const minutesFromLastOfferCheck = ((Date.now()
+            - (new Date(activeOffers.lastFullUpdate) * 1000)) / 1000) / 60;
+          console.log(minutesFromLastOfferCheck);
+          if (monitorIncomingOffers
+            && (tradeOffers !== activeOffers.received.length || minutesFromLastOfferCheck >= 30)) {
+            console.log('change or 30 min past');
+            getTradeOffers('active').then((offers) => {
+              console.log(offers);
+              chrome.storage.local.get('steamIDOfUser', ({ steamIDOfUser }) => {
+                matchItemsAndAddDetails(offers, steamIDOfUser).then((items) => {
+                  console.log(items);
+                  updateActiveOffers(offers, items);
+                });
+              });
+            });
+          } else console.log('no change');
         },
       );
     }, (error) => {

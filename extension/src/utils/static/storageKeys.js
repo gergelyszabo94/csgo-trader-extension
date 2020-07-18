@@ -166,6 +166,7 @@ const storageKeys = {
   calculatorReverseValue: 2.7,
   calculatorIncDecPercentage: 27,
   calculatorIncDecResult: 1000,
+  monitorIncomingOffers: false,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
