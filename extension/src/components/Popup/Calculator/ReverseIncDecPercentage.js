@@ -26,6 +26,14 @@ const ReverseIncDecPercentage = () => {
     setResult(res.toFixed(2));
   }, [percentage, number, option]);
 
+  useEffect(() => {
+    chrome.storage.local.get(['calculatorIncDecPercentage', 'calculatorIncDecResult'],
+      ({ calculatorIncDecPercentage, calculatorIncDecResult }) => {
+        setPercentage(parseFloat(calculatorIncDecPercentage).toFixed(2));
+        setNumber(parseFloat(calculatorIncDecResult).toFixed(2));
+      });
+  }, []);
+
   return (
     <div className="calCategory">
       <div>

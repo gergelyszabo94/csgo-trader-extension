@@ -17,6 +17,14 @@ const ReversePercentage = () => {
     setResult((number / (percentage / 100)).toFixed(2));
   }, [percentage, number]);
 
+  useEffect(() => {
+    chrome.storage.local.get(['calculatorReversePercentage', 'calculatorReverseValue'],
+      ({ calculatorReverseValue, calculatorReversePercentage }) => {
+        setNumber(parseFloat(calculatorReverseValue).toFixed(2));
+        setPercentage(parseFloat(calculatorReversePercentage).toFixed(2));
+      });
+  }, []);
+
   return (
     <div className="calCategory">
       <span

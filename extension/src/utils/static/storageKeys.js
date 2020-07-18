@@ -159,6 +159,13 @@ const storageKeys = {
   showSelectedItemsTable: true,
   markModerationMessagesAsRead: false,
   highlightSeenListings: true,
+  calculatorConversionPlaceholder: 100,
+  calculatorPercentagePercentage: 3,
+  calculatorPercentageOf: 90,
+  calculatorReversePercentage: 30,
+  calculatorReverseValue: 2.7,
+  calculatorIncDecPercentage: 27,
+  calculatorIncDecResult: 1000,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

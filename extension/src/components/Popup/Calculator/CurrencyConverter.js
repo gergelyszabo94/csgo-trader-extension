@@ -19,10 +19,12 @@ const CurrencyConverter = () => {
 
   useEffect(() => {
     convert(inputNumber);
-  }, [currency1, currency2]);
+  }, [currency1, currency2, inputNumber]);
 
   useEffect(() => {
-    convert(inputNumber);
+    chrome.storage.local.get('calculatorConversionPlaceholder', ({ calculatorConversionPlaceholder }) => {
+      setInputNumber(parseFloat(calculatorConversionPlaceholder));
+    });
   }, []);
 
   const onInputChange = (change) => {

@@ -17,6 +17,14 @@ const SimplePercentage = () => {
     setResult((number * (percentage / 100)).toFixed(2));
   }, [percentage, number]);
 
+  useEffect(() => {
+    chrome.storage.local.get(['calculatorPercentageOf', 'calculatorPercentagePercentage'],
+      ({ calculatorPercentageOf, calculatorPercentagePercentage }) => {
+        setNumber(parseFloat(calculatorPercentageOf).toFixed(2));
+        setPercentage(parseFloat(calculatorPercentagePercentage).toFixed(2));
+      });
+  }, []);
+
   return (
     <div className="calCategory">
       <span

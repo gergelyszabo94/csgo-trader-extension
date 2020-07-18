@@ -31,6 +31,48 @@ const popup = () => {
         description="The currencies to be selected by default in the currency converter"
         options={transformCurrencies()}
       />
+      <Row
+        name="Default currency conversion value"
+        type="number"
+        id="calculatorConversionPlaceholder"
+        description="The default placeholder value that appears in the currency conversion input"
+      />
+      <Row
+        name="Default percentage in the percentage calculator"
+        type="number"
+        id="calculatorPercentagePercentage"
+        description="The default placeholder value that appears as the percentage in the percentage calculator"
+      />
+      <Row
+        name={'Default "percentage of" in the percentage calculator'}
+        type="number"
+        id="calculatorPercentageOf"
+        description={'The default placeholder value that appears as the "percentage of" in the percentage calculator'}
+      />
+      <Row
+        name="Default percentage in the reverse percentage calculator"
+        type="number"
+        id="calculatorReversePercentage"
+        description="The default placeholder value that appears as the percentage in the reverse percentage calculator"
+      />
+      <Row
+        name={'Default "percentage of" in the reverse percentage calculator'}
+        type="number"
+        id="calculatorReverseValue"
+        description={'The default placeholder value that appears as the "percentage of" in the reverse percentage calculator'}
+      />
+      <Row
+        name="Default percentage in the Increment/Decrement calculator"
+        type="number"
+        id="calculatorIncDecPercentage"
+        description="The default placeholder value that appears as the percentage in the Increment/Decrement calculator"
+      />
+      <Row
+        name={'Default "result" in the Increment/Decrement calculator'}
+        type="number"
+        id="calculatorIncDecResult"
+        description={'The default placeholder value that appears as the "result" in the Increment/Decrement calculator'}
+      />
     </Category>
   );
 };
