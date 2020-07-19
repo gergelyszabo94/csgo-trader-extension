@@ -10,6 +10,7 @@ import {
   getType,
 } from 'utils/utilsModular';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
+import steamApps from 'utils/static/steamApps';
 
 const acceptOffer = (offerID, partnerID) => {
   return new Promise((resolve, reject) => {
@@ -140,8 +141,9 @@ const matchItemsWithDescriptions = (items) => {
   items.forEach((item) => {
     // some items don't have descriptions for some reason - will have to be investigated later
     if (item.market_hash_name !== undefined) {
+      const appID = item.appid.toString();
       itemsToReturn.push({
-        appid: item.appid.toString(),
+        appid: appID,
         contextid: item.contextid.toString(),
         name: item.name,
         marketable: item.marketable,
@@ -163,7 +165,7 @@ const matchItemsWithDescriptions = (items) => {
         starInName: item.name.includes('★'),
         nametag: getNameTag(item),
         owner: item.owner,
-        type: getType(item.tags),
+        type: appID === steamApps.CSGO.appID ? getType(item.tags) : null,
         floatInfo: null,
         patternInfo: null,
         descriptions: item.descriptions,

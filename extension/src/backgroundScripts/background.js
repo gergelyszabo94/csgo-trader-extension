@@ -221,26 +221,21 @@ chrome.alarms.onAlarm.addListener((alarm) => {
           if (markModerationMessagesAsRead && moderatorMessages > 0) markModMessagesAsRead();
 
           // trade offers monitoring
-          console.log(tradeOffers);
-          console.log(activeOffers);
-
           const minutesFromLastOfferCheck = ((Date.now()
             - (new Date(activeOffers.lastFullUpdate) * 1000)) / 1000) / 60;
-          console.log(minutesFromLastOfferCheck);
+
           if (monitorIncomingOffers
             && (tradeOffers !== activeOffers.receivedActiveCount
               || minutesFromLastOfferCheck >= 30)) {
-            console.log('change or 30 min past');
             getTradeOffers('active').then((offers) => {
               console.log(offers);
               chrome.storage.local.get('steamIDOfUser', ({ steamIDOfUser }) => {
                 matchItemsAndAddDetails(offers, steamIDOfUser).then((items) => {
-                  console.log(items);
                   updateActiveOffers(offers, items);
                 });
               });
             });
-          } else console.log('no change');
+          }
         },
       );
     }, (error) => {
