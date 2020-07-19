@@ -211,28 +211,38 @@ const evaluateOffers = (newOffers) => {
   });
 };
 
+// loads active offers, updates active offers in storage
+// checks for new offers and starts evaluation
 const updateTrades = () => {
-  // active offers has the previously loaded active trade offer info
-  chrome.storage.local.get(['steamIDOfUser', 'activeOffers'], ({ steamIDOfUser, activeOffers }) => {
-    const prevProcessedOffersIDs = [];
-    activeOffers.received.forEach((offer) => {
-      prevProcessedOffersIDs.push(offer.tradeofferid);
-    });
-
-    // requesting the latest active offer info from Steam
-    getTradeOffers('active').then((offersData) => {
-      const offers = offersData.trade_offers_received;
-      const newOffers = [];
-
-      offers.forEach((offer) => {
-        if (!prevProcessedOffersIDs.includes(offer.tradeofferid)) {
-          newOffers.push(offer);
-        }
+  return new Promise((resolve, reject) => {
+    // active offers has the previously loaded active trade offer info
+    chrome.storage.local.get(['steamIDOfUser', 'activeOffers'], ({ steamIDOfUser, activeOffers }) => {
+      const prevProcessedOffersIDs = [];
+      activeOffers.received.forEach((offer) => {
+        prevProcessedOffersIDs.push(offer.tradeofferid);
       });
 
-      matchItemsAndAddDetails(offersData, steamIDOfUser).then((items) => {
-        updateActiveOffers(offersData, items);
-        evaluateOffers(newOffers);
+      // requesting the latest active offer info from Steam
+      getTradeOffers('active').then((offersData) => {
+        const newOffers = [];
+
+        offersData.trade_offers_received.forEach((offer) => {
+          if (!prevProcessedOffersIDs.includes(offer.tradeofferid)) {
+            newOffers.push(offer);
+          }
+        });
+
+        matchItemsAndAddDetails(offersData, steamIDOfUser).then((items) => {
+          updateActiveOffers(offersData, items);
+          evaluateOffers(newOffers);
+          resolve({
+            offersData,
+            items,
+          });
+        });
+      }).catch((err) => {
+        console.log(err);
+        reject(err);
       });
     });
   });

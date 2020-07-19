@@ -16,16 +16,13 @@ import { overrideShowTradeOffer } from 'utils/steamOverriding';
 import { trackEvent } from 'utils/analytics';
 import { offersSortingModes } from 'utils/static/sortingModes';
 import { injectStyle } from 'utils/injection';
-import { getProperStyleSteamIDFromOfferStyle, getUserSteamID } from 'utils/steamID';
+import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
-import {
-  acceptOffer, declineOffer, updateActiveOffers, matchItemsAndAddDetails,
-} from 'utils/tradeOffers';
+import { acceptOffer, declineOffer } from 'utils/tradeOffers';
 import DOMPurify from 'dompurify';
 import steamApps from 'utils/static/steamApps';
 import { getIDsFromElement } from 'utils/itemsToElementsToItems';
 
-const userID = getUserSteamID();
 let activePage = 'incoming_offers';
 if (window.location.href.includes('/tradeoffers/?history=1')) activePage = 'incoming_offers_history';
 else if (window.location.href.includes('/tradeoffers/sent/?history=1')) activePage = 'sent_offers_history';
@@ -204,8 +201,9 @@ const getOffersFromAPI = (type) => {
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage({ getTradeOffers: type }, (response) => {
       if (response.apiKeyValid === false) reject('apiKeyInvalid');
-      else if (!(response.offers === undefined || response === 'error')) resolve(response.offers);
-      else reject('steamError');
+      else if (!(response.offers === undefined || response === 'error')) {
+        resolve({ offers: response.offers, itemsWithAllInfo: response.items });
+      } else reject('steamError');
     });
   });
 };
@@ -401,7 +399,7 @@ const addPartnerOfferSummary = (offers) => {
 
 const updateOfferHistoryData = () => {
   getOffersFromAPI('historical').then(
-    (offers) => {
+    ({ offers }) => {
       chrome.storage.local.get('tradeHistoryLastUpdate', (firstResult) => {
         const allOffers = offers.trade_offers_received.concat(offers.trade_offers_sent);
         const offerHistoryToAdd = {};
@@ -767,28 +765,24 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
     });
 
     getOffersFromAPI('active').then(
-      (offers) => {
-        matchItemsAndAddDetails(offers, userID).then((items) => {
-          const itemsWithAllInfo = items;
-          updateActiveOffers(offers, itemsWithAllInfo);
-          addItemInfo(itemsWithAllInfo);
+      ({ offers, itemsWithAllInfo }) => {
+        addItemInfo(itemsWithAllInfo);
 
-          if (activePage === 'incoming_offers') {
-            addTotals(offers.trade_offers_received, itemsWithAllInfo);
-            addPartnerOfferSummary(offers.trade_offers_received);
-          } else if (activePage === 'sent_offers') {
-            addTotals(offers.trade_offers_sent, itemsWithAllInfo);
-            addPartnerOfferSummary(offers.trade_offers_sent);
-          }
+        if (activePage === 'incoming_offers') {
+          addTotals(offers.trade_offers_received, itemsWithAllInfo);
+          addPartnerOfferSummary(offers.trade_offers_received);
+        } else if (activePage === 'sent_offers') {
+          addTotals(offers.trade_offers_sent, itemsWithAllInfo);
+          addPartnerOfferSummary(offers.trade_offers_sent);
+        }
 
-          document.getElementById('tradeoffers_summary').innerHTML = DOMPurify.sanitize('<b>Trade offer summary:</b>');
+        document.getElementById('tradeoffers_summary').innerHTML = DOMPurify.sanitize('<b>Trade offer summary:</b>');
 
-          chrome.storage.local.get('tradeOffersSortingMode', ({ tradeOffersSortingMode }) => {
-            document.querySelector(`#offerSortingMethod [value="${tradeOffersSortingMode}"]`).selected = true;
-            sortOffers(tradeOffersSortingMode);
-            if (activePage === 'sent_offers') jumpToAnchor(window.location.hash);
-            document.getElementById('tradeOffersSortingMenu').classList.remove('hidden');
-          });
+        chrome.storage.local.get('tradeOffersSortingMode', ({ tradeOffersSortingMode }) => {
+          document.querySelector(`#offerSortingMethod [value="${tradeOffersSortingMode}"]`).selected = true;
+          sortOffers(tradeOffersSortingMode);
+          if (activePage === 'sent_offers') jumpToAnchor(window.location.hash);
+          document.getElementById('tradeOffersSortingMenu').classList.remove('hidden');
         });
       }, (error) => {
         if (error === 'apiKeyInvalid') {

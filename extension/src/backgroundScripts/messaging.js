@@ -8,6 +8,7 @@ import { getPlayerSummaries } from 'utils/ISteamUser';
 import { getUserCSGOInventory, getOtherInventory } from 'utils/getUserInventory';
 import { updateExchangeRates } from 'utils/pricing';
 import { getTradeOffers } from 'utils/IEconService';
+import { updateTrades } from 'utils/tradeOffers';
 
 // content scripts can't make cross domain requests because of security
 // most of the messaging required is to work around this limitation
@@ -98,13 +99,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
     return true; // async return to signal that it will return later
   } else if (request.getTradeOffers !== undefined) {
-    getTradeOffers(request.getTradeOffers).then((response) => {
-      sendResponse({ offers: response, apiKeyValid: true });
-    }).catch((e) => {
-      console.log(e);
-      if (e === 'api_key_invalid') sendResponse({ apiKeyValid: false });
-      else sendResponse('error');
-    });
+    if (request.getTradeOffers === 'historical') {
+      getTradeOffers(request.getTradeOffers).then((response) => {
+        sendResponse({ offers: response, apiKeyValid: true });
+      }).catch((e) => {
+        console.log(e);
+        if (e === 'api_key_invalid') sendResponse({ apiKeyValid: false });
+        else sendResponse('error');
+      });
+    } else {
+      updateTrades().then(({ offersData, items }) => {
+        sendResponse({ offers: offersData, items, apiKeyValid: true });
+      }).catch((e) => {
+        console.log(e);
+        if (e === 'api_key_invalid') sendResponse({ apiKeyValid: false });
+        else sendResponse('error');
+      });
+    }
     return true; // async return to signal that it will return later
   } else if (request.getBuyOrderInfo !== undefined) {
     const getRequest = new Request(
