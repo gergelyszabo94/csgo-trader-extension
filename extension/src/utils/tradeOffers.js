@@ -205,13 +205,34 @@ const matchItemsAndAddDetails = (offers, userID) => {
   });
 };
 
+const evaluateOffers = (newOffers) => {
+  newOffers.forEach((offer) => {
+    console.log(offer);
+  });
+};
+
 const updateTrades = () => {
+  // active offers has the previously loaded active trade offer info
   chrome.storage.local.get(['steamIDOfUser', 'activeOffers'], ({ steamIDOfUser, activeOffers }) => {
-    console.log(activeOffers);
-    getTradeOffers('active').then((offers) => {
-      console.log(offers);
-      matchItemsAndAddDetails(offers, steamIDOfUser).then((items) => {
-        updateActiveOffers(offers, items);
+    const prevProcessedOffersIDs = [];
+    activeOffers.received.forEach((offer) => {
+      prevProcessedOffersIDs.push(offer.tradeofferid);
+    });
+
+    // requesting the latest active offer info from Steam
+    getTradeOffers('active').then((offersData) => {
+      const offers = offersData.trade_offers_received;
+      const newOffers = [];
+
+      offers.forEach((offer) => {
+        if (!prevProcessedOffersIDs.includes(offer.tradeofferid)) {
+          newOffers.push(offer);
+        }
+      });
+
+      matchItemsAndAddDetails(offersData, steamIDOfUser).then((items) => {
+        updateActiveOffers(offersData, items);
+        evaluateOffers(newOffers);
       });
     });
   });
