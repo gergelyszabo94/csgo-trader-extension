@@ -167,11 +167,12 @@ const storageKeys = {
   calculatorIncDecPercentage: 27,
   calculatorIncDecResult: 1000,
   monitorIncomingOffers: false,
+  tradeOffersEventLogs: [],
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
   'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID', 'groupInvites',
   'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules', 'floatQueueActivity', 'discussionsToAutoBump',
-  'priceQueueActivity', 'userSteamWalletCurrency'];
+  'priceQueueActivity', 'userSteamWalletCurrency', 'tradeOffersEventLogs'];
 
 export { storageKeys, nonSettingStorageKeys };

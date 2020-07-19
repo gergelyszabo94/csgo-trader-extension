@@ -12,6 +12,7 @@ import {
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
 import steamApps from 'utils/static/steamApps';
 import { getTradeOffers } from 'utils/IEconService';
+import { eventTypes } from 'utils/static/offers';
 
 const acceptOffer = (offerID, partnerID) => {
   return new Promise((resolve, reject) => {
@@ -81,14 +82,18 @@ const updateActiveOffers = (offers, items) => {
   // not all of them has the active state (2)
   // we need the actual number of active offers to compare with the notification count
   let receivedActiveCount = 0;
-  offers.trade_offers_received.forEach((offer) => {
-    if (offer.trade_offer_state === 2) receivedActiveCount += 1;
-  });
+  if (offers.trade_offers_received) {
+    offers.trade_offers_received.forEach((offer) => {
+      if (offer.trade_offer_state === 2) receivedActiveCount += 1;
+    });
+  }
 
   let sentActiveCount = 0;
-  offers.trade_offers_sent.forEach((offer) => {
-    if (offer.trade_offer_state === 2) sentActiveCount += 1;
-  });
+  if (offers.trade_offers_sent) {
+    offers.trade_offers_sent.forEach((offer) => {
+      if (offer.trade_offer_state === 2) sentActiveCount += 1;
+    });
+  }
 
   chrome.storage.local.set({
     activeOffers: {
@@ -205,6 +210,24 @@ const matchItemsAndAddDetails = (offers, userID) => {
   });
 };
 
+const logTradeOfferEvents = (events) => {
+  chrome.storage.local.get(['tradeOffersEventLogs'], ({ tradeOffersEventLogs }) => {
+    chrome.storage.local.set({
+      tradeOffersEventLogs: [...tradeOffersEventLogs, ...events],
+    }, () => {});
+  });
+};
+
+const createTradeOfferEvent = (offer, type, appliedRule) => {
+  const eventType = eventTypes[type] !== undefined ? eventTypes[type].key : type;
+  return {
+    type: eventType,
+    rule: appliedRule,
+    steamID: getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
+    timestamp: Date.now(),
+  };
+};
+
 const evaluateOffers = (newOffers) => {
   newOffers.forEach((offer) => {
     console.log(offer);
@@ -218,19 +241,27 @@ const updateTrades = () => {
     // active offers has the previously loaded active trade offer info
     chrome.storage.local.get(['steamIDOfUser', 'activeOffers'], ({ steamIDOfUser, activeOffers }) => {
       const prevProcessedOffersIDs = [];
-      activeOffers.received.forEach((offer) => {
-        prevProcessedOffersIDs.push(offer.tradeofferid);
-      });
+      if (activeOffers.received) {
+        activeOffers.received.forEach((offer) => {
+          prevProcessedOffersIDs.push(offer.tradeofferid);
+        });
+      }
 
       // requesting the latest active offer info from Steam
       getTradeOffers('active').then((offersData) => {
         const newOffers = [];
+        const newOfferEvents = [];
 
-        offersData.trade_offers_received.forEach((offer) => {
-          if (!prevProcessedOffersIDs.includes(offer.tradeofferid)) {
-            newOffers.push(offer);
-          }
-        });
+        if (offersData.trade_offers_received) {
+          offersData.trade_offers_received.forEach((offer) => {
+            if (!prevProcessedOffersIDs.includes(offer.tradeofferid)) {
+              newOffers.push(offer);
+              newOfferEvents.push(createTradeOfferEvent(offer, eventTypes.new.key, 0));
+            }
+          });
+        }
+
+        logTradeOfferEvents(newOfferEvents);
 
         matchItemsAndAddDetails(offersData, steamIDOfUser).then((items) => {
           updateActiveOffers(offersData, items);
