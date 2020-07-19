@@ -11,6 +11,7 @@ import {
 } from 'utils/utilsModular';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
 import steamApps from 'utils/static/steamApps';
+import { getTradeOffers } from 'utils/IEconService';
 
 const acceptOffer = (offerID, partnerID) => {
   return new Promise((resolve, reject) => {
@@ -204,6 +205,19 @@ const matchItemsAndAddDetails = (offers, userID) => {
   });
 };
 
+const updateTrades = () => {
+  chrome.storage.local.get(['steamIDOfUser', 'activeOffers'], ({ steamIDOfUser, activeOffers }) => {
+    console.log(activeOffers);
+    getTradeOffers('active').then((offers) => {
+      console.log(offers);
+      matchItemsAndAddDetails(offers, steamIDOfUser).then((items) => {
+        updateActiveOffers(offers, items);
+      });
+    });
+  });
+};
+
 export {
-  acceptOffer, declineOffer, updateActiveOffers, extractItemsFromOffers, matchItemsAndAddDetails,
+  acceptOffer, declineOffer, updateActiveOffers, extractItemsFromOffers,
+  matchItemsAndAddDetails, updateTrades,
 };

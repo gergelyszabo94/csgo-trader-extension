@@ -11,8 +11,7 @@ import {
 import { trimFloatCache } from 'utils/floatCaching';
 import { getSteamNotificationCount } from 'utils/notifications';
 import { pricingProviders } from 'utils/static/pricing';
-import { getTradeOffers } from 'utils/IEconService';
-import { matchItemsAndAddDetails, updateActiveOffers } from 'utils/tradeOffers';
+import { updateTrades } from 'utils/tradeOffers';
 
 // handles install and update events
 chrome.runtime.onInstalled.addListener((details) => {
@@ -227,14 +226,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
           if (monitorIncomingOffers
             && (tradeOffers !== activeOffers.receivedActiveCount
               || minutesFromLastOfferCheck >= 30)) {
-            getTradeOffers('active').then((offers) => {
-              console.log(offers);
-              chrome.storage.local.get('steamIDOfUser', ({ steamIDOfUser }) => {
-                matchItemsAndAddDetails(offers, steamIDOfUser).then((items) => {
-                  updateActiveOffers(offers, items);
-                });
-              });
-            });
+            updateTrades();
           }
         },
       );
