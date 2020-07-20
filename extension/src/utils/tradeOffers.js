@@ -8,11 +8,13 @@ import {
   getNameTag,
   getQuality,
   getType,
+  getRemoteImageAsObjectURL,
 } from 'utils/utilsModular';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
 import steamApps from 'utils/static/steamApps';
 import { getTradeOffers } from 'utils/IEconService';
 import { eventTypes } from 'utils/static/offers';
+import { getPlayerSummaries } from 'utils/ISteamUser';
 
 const acceptOffer = (offerID, partnerID) => {
   return new Promise((resolve, reject) => {
@@ -70,6 +72,27 @@ const declineOffer = (offerID) => {
         console.log(err);
         reject(err);
       });
+    });
+  });
+};
+
+const notifyAboutOffer = (offer) => {
+  const steamIDOfPartner = getProperStyleSteamIDFromOfferStyle(offer.accountid_other);
+  getPlayerSummaries([steamIDOfPartner]).then((summary) => {
+    const userDetails = summary[steamIDOfPartner];
+
+    let icon = '/images/cstlogo128.png';
+    getRemoteImageAsObjectURL(userDetails.avatar).then((iconURL) => {
+      icon = iconURL;
+    }).catch((e) => {
+      console.log(e);
+    }).finally(() => {
+      chrome.notifications.create(`offer_received_${offer.tradeofferid}`, {
+        type: 'basic',
+        iconUrl: icon,
+        title: `New Trade Offer from ${userDetails.personaname}!`,
+        message: `You just received a new trade offer from ${userDetails.personaname}!`,
+      }, () => {});
     });
   });
 };
@@ -231,6 +254,7 @@ const createTradeOfferEvent = (offer, type, appliedRule) => {
 const evaluateOffers = (newOffers) => {
   newOffers.forEach((offer) => {
     console.log(offer);
+    notifyAboutOffer(offer);
   });
 };
 
