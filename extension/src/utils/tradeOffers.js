@@ -13,7 +13,7 @@ import {
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
 import steamApps from 'utils/static/steamApps';
 import { getTradeOffers } from 'utils/IEconService';
-import { eventTypes } from 'utils/static/offers';
+import { eventTypes, offerStates } from 'utils/static/offers';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 
 const acceptOffer = (offerID, partnerID) => {
@@ -107,14 +107,14 @@ const updateActiveOffers = (offers, items) => {
   let receivedActiveCount = 0;
   if (offers.trade_offers_received) {
     offers.trade_offers_received.forEach((offer) => {
-      if (offer.trade_offer_state === 2) receivedActiveCount += 1;
+      if (offer.trade_offer_state === offerStates['2'].key) receivedActiveCount += 1;
     });
   }
 
   let sentActiveCount = 0;
   if (offers.trade_offers_sent) {
     offers.trade_offers_sent.forEach((offer) => {
-      if (offer.trade_offer_state === 2) sentActiveCount += 1;
+      if (offer.trade_offer_state === offerStates['2'].key) sentActiveCount += 1;
     });
   }
 
@@ -278,7 +278,8 @@ const updateTrades = () => {
 
         if (offersData.trade_offers_received) {
           offersData.trade_offers_received.forEach((offer) => {
-            if (!prevProcessedOffersIDs.includes(offer.tradeofferid)) {
+            if (!prevProcessedOffersIDs.includes(offer.tradeofferid)
+              && offer.trade_offer_state === offerStates['2'].key) {
               newOffers.push(offer);
               newOfferEvents.push(createTradeOfferEvent(offer, eventTypes.new.key, 0));
             }
