@@ -19,7 +19,7 @@ import Profile from 'components/Options/Categories/Profile';
 import TradeOffer from 'components/Options/Categories/TradeOffer';
 import Friends from 'components/Options/Categories/Friends/Friends';
 import WebChat from 'components/Options/Categories/WebChat';
-import OfferAutomation from 'components/Options/Categories/OfferAutomation';
+import OfferAutomation from 'components/Options/Categories/OfferAutomation/OfferAutomation';
 import Safety from 'components/Options/Categories/Safety';
 import { trackEvent } from 'utils/analytics';
 

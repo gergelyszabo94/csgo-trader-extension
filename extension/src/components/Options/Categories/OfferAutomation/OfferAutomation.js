@@ -1,7 +1,8 @@
 import React from 'react';
 import Row from 'components/Options/Row';
 import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
-import Category from '../Category/Category';
+import Category from 'components/Options/Category/Category';
+import OfferHistory from './OfferHistory';
 
 const OfferAutomation = () => {
   return (
@@ -17,6 +18,9 @@ const OfferAutomation = () => {
           </>
         )}
       />
+      <div className="row">
+        <OfferHistory />
+      </div>
     </Category>
   );
 };

@@ -252,6 +252,7 @@ const createTradeOfferEvent = (offer, type, appliedRule) => {
     type: eventType,
     rule: appliedRule,
     steamID: getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
+    offerID: offer.tradeofferid,
     timestamp: Date.now(),
   };
 };
