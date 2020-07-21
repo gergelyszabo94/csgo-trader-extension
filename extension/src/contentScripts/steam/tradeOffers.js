@@ -1,10 +1,9 @@
 import {
   addDopplerPhase, makeItemColorful, addUpdatedRibbon,
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
-  getItemByAssetID, removeOfferFromActiveOffers,
+  removeOfferFromActiveOffers, removeLinkFilterFromLinks,
   logExtensionPresence, updateLoggedInUserInfo, reloadPageOnExtensionReload,
   repositionNameTagIcons, jumpToAnchor, changePageTitle,
-  removeLinkFilterFromLinks,
 } from 'utils/utilsModular';
 import { prettyTimeAgo } from 'utils/dateTime';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
@@ -208,39 +207,13 @@ const getOffersFromAPI = (type) => {
   });
 };
 
-const addTotals = (offers, items) => {
-  chrome.storage.local.get('currency', (result) => {
-    let totalProfit = 0.0;
+const addTotals = (offers) => {
+  chrome.storage.local.get('currency', ({ currency }) => {
     let activeOfferCount = 0;
+    let totalProfit = 0.0;
     let numberOfProfitableOffers = 0;
 
     offers.forEach((offer) => {
-      let yourItemsTotal = 0.0;
-      let theirItemsTotal = 0.0;
-      let yourIncludesItemWIthNoPrice = false;
-      let theirIncludesItemWIthNoPrice = false;
-
-      if (offer.items_to_give !== undefined) {
-        offer.items_to_give.forEach((item) => {
-          if (item.appid === 730) {
-            const itemWithAllInfo = getItemByAssetID(items, item.assetid);
-            if (itemWithAllInfo !== undefined && itemWithAllInfo.price !== undefined) {
-              yourItemsTotal += parseFloat(itemWithAllInfo.price.price);
-            } else yourIncludesItemWIthNoPrice = true;
-          }
-        });
-      }
-      if (offer.items_to_receive !== undefined) {
-        offer.items_to_receive.forEach((item) => {
-          if (item.appid === 730) {
-            const itemWithAllInfo = getItemByAssetID(items, item.assetid);
-            if (itemWithAllInfo !== undefined && itemWithAllInfo.price !== undefined) {
-              theirItemsTotal += parseFloat(itemWithAllInfo.price.price);
-            } else theirIncludesItemWIthNoPrice = true;
-          }
-        });
-      }
-
       const offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
       if (isOfferActive(offerElement)) {
         activeOfferCount += 1;
@@ -249,17 +222,14 @@ const addTotals = (offers, items) => {
         const theirHeader = activePage === 'incoming_offers' ? primaryHeader : secondaryHeader;
         const yourHeader = activePage === 'incoming_offers' ? secondaryHeader : primaryHeader;
 
-        theirHeader.innerText += ` ${prettyPrintPrice(result.currency, (theirItemsTotal).toFixed(2))}`;
-        theirHeader.innerText = theirIncludesItemWIthNoPrice ? theirHeader.innerText += ' - includes items with no price' : theirHeader.innerText;
-        yourHeader.innerText += ` ${prettyPrintPrice(result.currency, (yourItemsTotal).toFixed(2))}`;
-        yourHeader.innerText = yourIncludesItemWIthNoPrice ? yourHeader.innerText += ' - includes items with no price' : yourHeader.innerText;
-
-        const profitOrLoss = theirItemsTotal - yourItemsTotal;
-        const PLPercentage = theirItemsTotal / yourItemsTotal;
+        theirHeader.innerText += ` ${prettyPrintPrice(currency, (offer.theirItemsTotal).toFixed(2))}`;
+        theirHeader.innerText = offer.theirIncludesItemWIthNoPrice ? theirHeader.innerText += ' - includes items with no price' : theirHeader.innerText;
+        yourHeader.innerText += ` ${prettyPrintPrice(currency, (offer.yourItemsTotal).toFixed(2))}`;
+        yourHeader.innerText = offer.yourIncludesItemWIthNoPrice ? yourHeader.innerText += ' - includes items with no price' : yourHeader.innerText;
 
         let pLClass = 'loss';
-        if (profitOrLoss > 0.0) {
-          totalProfit += profitOrLoss;
+        if (offer.profitOrLoss > 0.0) {
+          totalProfit += offer.profitOrLoss;
           numberOfProfitableOffers += 1;
           pLClass = 'profit';
         }
@@ -268,11 +238,11 @@ const addTotals = (offers, items) => {
           DOMPurify.sanitize(
             `<span
                     class="profitOrLoss ${pLClass}"
-                    data-profit-or-loss="${profitOrLoss}"
-                    data-p-l-percentage="${PLPercentage}"
+                    data-profit-or-loss="${offer.profitOrLoss}"
+                    data-p-l-percentage="${offer.PLPercentage}"
                     data-updated="${offer.time_updated}"
                     title="Projected P/L">
-                    ${prettyPrintPrice(result.currency, (profitOrLoss).toFixed(2))}
+                    ${prettyPrintPrice(currency, (offer.profitOrLoss).toFixed(2))}
                 </span>`,
           ),
         );
@@ -282,7 +252,7 @@ const addTotals = (offers, items) => {
     document.getElementById('tradeoffers_summary').innerHTML = DOMPurify.sanitize(`
             <div id="active_offers_count"><b>Active Offers: </b>${activeOfferCount}</div>
             <div id="profitable_offers_count"><b>Profitable Offers: </b>${numberOfProfitableOffers}</div>
-            <div id="potential_profit"><b>Potential profit: </b>${prettyPrintPrice(result.currency, (totalProfit).toFixed(2))}</div>`);
+            <div id="potential_profit"><b>Potential profit: </b>${prettyPrintPrice(currency, (totalProfit).toFixed(2))}</div>`);
   });
 };
 
@@ -769,10 +739,10 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
         addItemInfo(itemsWithAllInfo);
 
         if (activePage === 'incoming_offers') {
-          addTotals(offers.trade_offers_received, itemsWithAllInfo);
+          addTotals(offers.trade_offers_received);
           addPartnerOfferSummary(offers.trade_offers_received);
         } else if (activePage === 'sent_offers') {
-          addTotals(offers.trade_offers_sent, itemsWithAllInfo);
+          addTotals(offers.trade_offers_sent);
           addPartnerOfferSummary(offers.trade_offers_sent);
         }
 
