@@ -32,6 +32,24 @@ const eventTypes = {
     pretty: 'New Trade Offer',
     description: 'New trade offer spotted by the extension',
   },
+  notify: {
+    key: 'notify',
+    pretty: 'Notified!',
+    description: 'You were notified about this trade offer!',
+  },
+};
+
+const conditions = {
+  profit_over: {
+    key: 'profit_over',
+    pretty: 'Profit over',
+    description: 'Projected profit equal or over the specified value',
+  },
+  profit_under: {
+    key: 'profit_under',
+    pretty: 'Profit under',
+    description: 'Projected profit is less than the specified value',
+  },
 };
 
 // from: https://developer.valvesoftware.com/wiki/Steam_Web_API/IEconService
@@ -104,4 +122,6 @@ const offerStates = {
   },
 };
 
-export { actions, eventTypes, offerStates };
+export {
+  actions, eventTypes, offerStates, conditions,
+};

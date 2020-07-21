@@ -2,6 +2,7 @@ import { pricingProviders, currencies, realTimePricingModes } from 'utils/static
 import { sortingModes, offersSortingModes, listingsSortingModes } from 'utils/static/sortingModes';
 import defaultPopupLinks from 'utils/static/defaultPopupLinks';
 import { actions, conditions } from 'utils/static/friendRequests';
+import { actions as offerActions, conditions as offerConditions } from 'utils/static/offers';
 
 const storageKeys = {
   quickDeclineOffer: true,
@@ -168,6 +169,16 @@ const storageKeys = {
   calculatorIncDecResult: 1000,
   monitorIncomingOffers: false,
   tradeOffersEventLogs: [],
+  offerEvalRules: [
+    {
+      active: false,
+      condition: {
+        type: offerConditions.profit_over,
+        value: 5,
+      },
+      action: offerActions.notify.key,
+    },
+  ],
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
