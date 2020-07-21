@@ -281,6 +281,66 @@ const evaluateOffers = (offers, rules) => {
   });
 };
 
+const addOfferTotals = (offers, items) => {
+  if (offers) {
+    offers.forEach((offer) => {
+      offer.theirItemsTotal = 0.0;
+      offer.theirIncludesItemWIthNoPrice = false;
+      offer.theirIncludesNonCSGO = false;
+
+      if (offer.items_to_receive) {
+        offer.items_to_receive.forEach((item) => {
+          const itemWithDescription = items.find((description) => {
+            return description.classid === item.classid
+              && description.instanceid === item.instanceid;
+          });
+
+          if (itemWithDescription) {
+            if (itemWithDescription.appid === steamApps.CSGO.appID) {
+              if (itemWithDescription.price && itemWithDescription.price.price) {
+                offer.theirItemsTotal += parseFloat(itemWithDescription.price.price);
+              } else offer.theirIncludesItemWIthNoPrice = true;
+            } else {
+              offer.theirIncludesItemWIthNoPrice = true;
+              offer.theirIncludesNonCSGO = true;
+            }
+          }
+        });
+      }
+
+      offer.yourIncludesItemWIthNoPrice = false;
+      offer.yourItemsTotal = 0.0;
+      offer.yourIncludesNonCSGO = false;
+
+      if (offer.items_to_give) {
+        offer.items_to_give.forEach((item) => {
+          const itemWithDescription = items.find((description) => {
+            return description.classid === item.classid
+              && description.instanceid === item.instanceid;
+          });
+
+          if (itemWithDescription) {
+            if (itemWithDescription.appid === steamApps.CSGO.appID) {
+              if (itemWithDescription.price && itemWithDescription.price.price) {
+                offer.yourItemsTotal += parseFloat(itemWithDescription.price.price);
+              } else offer.yourIncludesItemWIthNoPrice = true;
+            } else {
+              offer.yourIncludesItemWIthNoPrice = true;
+              offer.yourIncludesNonCSGO = true;
+            }
+          }
+        });
+      }
+
+      offer.profitOrLoss = offer.theirItemsTotal - offer.yourItemsTotal;
+      offer.PLPercentage = offer.theirItemsTotal / offer.yourItemsTotal;
+    });
+
+    return offers;
+  }
+  return undefined; // if there are no offers Steam does not include the property at all
+};
+
 // loads active offers, updates active offers in storage
 // checks for new offers and starts evaluation
 const updateTrades = () => {
@@ -312,60 +372,12 @@ const updateTrades = () => {
         logTradeOfferEvents(newOfferEvents);
 
         matchItemsAndAddDetails(offersData, steamIDOfUser).then((items) => {
-          if (offersData.trade_offers_received) {
-            offersData.trade_offers_received.forEach((offer) => {
-              offer.theirItemsTotal = 0.0;
-              offer.theirIncludesItemWIthNoPrice = false;
-              offer.theirIncludesNonCSGO = false;
-
-              if (offer.items_to_receive) {
-                offer.items_to_receive.forEach((item) => {
-                  const itemWithDescription = items.find((description) => {
-                    return description.classid === item.classid
-                      && description.instanceid === item.instanceid;
-                  });
-
-                  if (itemWithDescription) {
-                    if (itemWithDescription.appid === steamApps.CSGO.appID) {
-                      if (itemWithDescription.price && itemWithDescription.price.price) {
-                        offer.theirItemsTotal += parseFloat(itemWithDescription.price.price);
-                      } else offer.theirIncludesItemWIthNoPrice = true;
-                    } else {
-                      offer.theirIncludesItemWIthNoPrice = true;
-                      offer.theirIncludesNonCSGO = true;
-                    }
-                  }
-                });
-              }
-
-              offer.yourIncludesItemWIthNoPrice = false;
-              offer.yourItemsTotal = 0.0;
-              offer.yourIncludesNonCSGO = false;
-
-              if (offer.items_to_give) {
-                offer.items_to_give.forEach((item) => {
-                  const itemWithDescription = items.find((description) => {
-                    return description.classid === item.classid
-                      && description.instanceid === item.instanceid;
-                  });
-
-                  if (itemWithDescription) {
-                    if (itemWithDescription.appid === steamApps.CSGO.appID) {
-                      if (itemWithDescription.price && itemWithDescription.price.price) {
-                        offer.yourItemsTotal += parseFloat(itemWithDescription.price.price);
-                      } else offer.yourIncludesItemWIthNoPrice = true;
-                    } else {
-                      offer.yourIncludesItemWIthNoPrice = true;
-                      offer.yourIncludesNonCSGO = true;
-                    }
-                  }
-                });
-              }
-
-              offer.profitOrLoss = offer.theirItemsTotal - offer.yourItemsTotal;
-              offer.PLPercentage = offer.theirItemsTotal / offer.yourItemsTotal;
-            });
-          }
+          offersData.trade_offers_received = addOfferTotals(
+            offersData.trade_offers_received, items,
+          );
+          offersData.trade_offers_sent = addOfferTotals(
+            offersData.trade_offers_sent, items,
+          );
 
           updateActiveOffers(offersData, items);
           evaluateOffers(newOffers, offerEvalRules);
