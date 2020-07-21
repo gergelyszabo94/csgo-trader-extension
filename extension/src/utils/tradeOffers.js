@@ -395,7 +395,21 @@ const updateTrades = () => {
   });
 };
 
+const removeOldOfferEvents = () => {
+  chrome.storage.local.get(['tradeOffersEventLogs'], ({ tradeOffersEventLogs }) => {
+    const now = Date.now();
+    const recentEvents = tradeOffersEventLogs.filter((event) => {
+      const delta = (now - event.timestamp) / 1000;
+      return delta < 86400 * 7;
+    });
+
+    chrome.storage.local.set({
+      tradeOffersEventLogs: recentEvents,
+    }, () => {});
+  });
+};
+
 export {
   acceptOffer, declineOffer, updateActiveOffers, extractItemsFromOffers,
-  matchItemsAndAddDetails, updateTrades,
+  matchItemsAndAddDetails, updateTrades, removeOldOfferEvents,
 };

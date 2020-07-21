@@ -11,7 +11,7 @@ import {
 import { trimFloatCache } from 'utils/floatCaching';
 import { getSteamNotificationCount } from 'utils/notifications';
 import { pricingProviders } from 'utils/static/pricing';
-import { updateTrades } from 'utils/tradeOffers';
+import { updateTrades, removeOldOfferEvents } from 'utils/tradeOffers';
 
 // handles install and update events
 chrome.runtime.onInstalled.addListener((details) => {
@@ -258,6 +258,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     sendTelemetry(0);
     trimFloatCache();
     removeOldFriendRequestEvents();
+    removeOldOfferEvents();
     chrome.storage.local.get('itemPricing', ({ itemPricing }) => {
       if (itemPricing) updatePrices();
     });
