@@ -250,7 +250,7 @@ const createTradeOfferEvent = (offer, type, ruleIndex) => {
   const eventType = eventTypes[type] !== undefined ? eventTypes[type].key : type;
   return {
     type: eventType,
-    rule: ruleIndex + 1,
+    rule: ruleIndex !== 0 ? ruleIndex + 1 : ruleIndex,
     steamID: getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
     offerID: offer.tradeofferid,
     timestamp: Date.now(),
@@ -284,6 +284,21 @@ const evaluateOffers = (offers, rules) => {
           break;
         } else if (rule.condition.type === conditions.profit_percentage_under.key
           && offer.PLPercentage < (rule.condition.value / 100) + 1) {
+          executeVerdict(offer, index, rule.action);
+          break;
+        } else if (rule.condition.type === conditions.has_message.key && offer.message !== '') {
+          executeVerdict(offer, index, rule.action);
+          break;
+        } else if (rule.condition.type === conditions.no_message.key && offer.message === '') {
+          executeVerdict(offer, index, rule.action);
+          break;
+        } else if (rule.condition.type === conditions.message_includes.key
+          && offer.message.includes(rule.condition.value)) {
+          executeVerdict(offer, index, rule.action);
+          break;
+        } else if (rule.condition.type === conditions.message_doesnt_include.key
+          && offer.message !== ''
+          && !offer.message.includes(rule.condition.value)) {
           executeVerdict(offer, index, rule.action);
           break;
         }
