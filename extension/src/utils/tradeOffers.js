@@ -258,7 +258,7 @@ const createTradeOfferEvent = (offer, type, appliedRule) => {
 };
 
 const executeVerdict = (offer, ruleNumber, verdict) => {
-  createTradeOfferEvent(offer, verdict, ruleNumber);
+  logTradeOfferEvents(createTradeOfferEvent(offer, verdict, ruleNumber));
   switch (verdict) {
     case actions.notify.key: notifyAboutOffer(offer); break;
     default: break;
