@@ -173,8 +173,16 @@ const storageKeys = {
     {
       active: false,
       condition: {
-        type: offerConditions.profit_over,
+        type: offerConditions.profit_over.key,
         value: 5,
+      },
+      action: offerActions.notify.key,
+    },
+    {
+      active: false,
+      condition: {
+        type: offerConditions.profit_percentage_over.key,
+        value: 10,
       },
       action: offerActions.notify.key,
     },

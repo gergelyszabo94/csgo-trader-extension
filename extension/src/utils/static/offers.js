@@ -50,6 +50,16 @@ const conditions = {
     pretty: 'Profit under',
     description: 'Projected profit is less than the specified value',
   },
+  profit_percentage_over: {
+    key: 'profit_percentage_over',
+    pretty: 'Profit percentage over',
+    description: 'Projected profit percentage equal or over the specified value',
+  },
+  profit_percentage_under: {
+    key: 'profit_percentage_under',
+    pretty: 'Profit percentage under',
+    description: 'Projected profit percentage is less than the specified value',
+  },
 };
 
 // from: https://developer.valvesoftware.com/wiki/Steam_Web_API/IEconService

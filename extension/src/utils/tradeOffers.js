@@ -246,11 +246,11 @@ const logTradeOfferEvents = (events) => {
   });
 };
 
-const createTradeOfferEvent = (offer, type, appliedRule) => {
+const createTradeOfferEvent = (offer, type, ruleIndex) => {
   const eventType = eventTypes[type] !== undefined ? eventTypes[type].key : type;
   return {
     type: eventType,
-    rule: appliedRule,
+    rule: ruleIndex + 1,
     steamID: getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
     offerID: offer.tradeofferid,
     timestamp: Date.now(),
@@ -258,7 +258,7 @@ const createTradeOfferEvent = (offer, type, appliedRule) => {
 };
 
 const executeVerdict = (offer, ruleNumber, verdict) => {
-  logTradeOfferEvents(createTradeOfferEvent(offer, verdict, ruleNumber));
+  logTradeOfferEvents([createTradeOfferEvent(offer, verdict, ruleNumber)]);
   switch (verdict) {
     case actions.notify.key: notifyAboutOffer(offer); break;
     default: break;
@@ -270,12 +270,22 @@ const evaluateOffers = (offers, rules) => {
     console.log(offer);
     for (const [index, rule] of rules.entries()) {
       if (rule.active) {
-        if (rule.condition.type.key === conditions.profit_over.key
+        if (rule.condition.type === conditions.profit_over.key
           && offer.profitOrLoss >= rule.condition.value) {
           executeVerdict(offer, index, rule.action);
-        } else if (rule.condition.type.key === conditions.profit_under.key
+          break;
+        } else if (rule.condition.type === conditions.profit_under.key
           && offer.profitOrLoss < rule.condition.value) {
           executeVerdict(offer, index, rule.action);
+          break;
+        } else if (rule.condition.type === conditions.profit_percentage_over.key
+          && offer.PLPercentage >= (rule.condition.value / 100) + 1) {
+          executeVerdict(offer, index, rule.action);
+          break;
+        } else if (rule.condition.type === conditions.profit_percentage_under.key
+          && offer.PLPercentage < (rule.condition.value / 100) + 1) {
+          executeVerdict(offer, index, rule.action);
+          break;
         }
       }
     }
