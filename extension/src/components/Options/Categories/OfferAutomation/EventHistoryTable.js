@@ -5,7 +5,6 @@ import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
 import HistoryEvent from './HistoryEvent';
 
 const EventHistoryTable = ({ events }) => {
-  console.log(events);
   const [showAll, setShowAll] = useState(false);
 
   const onShowAll = () => {
@@ -25,7 +24,7 @@ const EventHistoryTable = ({ events }) => {
         {events.map((event, index) => {
           if (showAll || (!showAll && index < 15)) {
             return (
-              <tr key={event.steamID + event.type + event.timestamp}>
+              <tr key={event.steamID + event.type + event.timestamp + event.offerID}>
                 <td>
                   <NewTabLink to={`https://steamcommunity.com/profiles/${event.steamID}`}>
                     {event.steamID}
