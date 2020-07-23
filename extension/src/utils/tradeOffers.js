@@ -327,6 +327,22 @@ const evaluateOffers = (offers, rules) => {
             || (rule.condition.value <= 1 && offer.items_to_give === undefined))) {
           executeVerdict(offer, index, rule.action);
           break;
+        } else if (rule.condition.type === conditions.receiving_non_csgo_items.key
+          && offer.theirIncludesNonCSGO) {
+          executeVerdict(offer, index, rule.action);
+          break;
+        } else if (rule.condition.type === conditions.giving_non_csgo_items.key
+          && offer.yourIncludesNonCSGO) {
+          executeVerdict(offer, index, rule.action);
+          break;
+        } else if (rule.condition.type === conditions.receiving_no_price_items.key
+          && offer.theirIncludesItemWIthNoPrice) {
+          executeVerdict(offer, index, rule.action);
+          break;
+        } else if (rule.condition.type === conditions.giving_no_price_items.key
+          && offer.yourIncludesItemWIthNoPrice) {
+          executeVerdict(offer, index, rule.action);
+          break;
         }
       }
     }

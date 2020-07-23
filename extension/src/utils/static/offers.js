@@ -142,6 +142,30 @@ const conditions = {
     value_type: 'number',
     default_value: 1,
   },
+  receiving_non_csgo_items: {
+    key: 'receiving_non_csgo_items',
+    pretty: 'Receiving non-csgo items',
+    description: 'The list of items to receive includes one or more non-csgo items',
+    with_value: false,
+  },
+  giving_non_csgo_items: {
+    key: 'giving_non_csgo_items',
+    pretty: 'Giving non-csgo items',
+    description: 'The list of items to give includes one or more non-csgo items',
+    with_value: false,
+  },
+  receiving_no_price_items: {
+    key: 'receiving_no_price_items',
+    pretty: 'Receiving items with no price',
+    description: 'The list of items to receive includes one or more items that does not have extension price',
+    with_value: false,
+  },
+  giving_no_price_items: {
+    key: 'giving_no_price_items',
+    pretty: 'Giving items with no price',
+    description: 'The list of items to give includes one or more items that does not have extension price',
+    with_value: false,
+  },
 };
 
 // from: https://developer.valvesoftware.com/wiki/Steam_Web_API/IEconService
