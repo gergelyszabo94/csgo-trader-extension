@@ -37,6 +37,16 @@ const eventTypes = {
     pretty: 'Notified',
     description: 'You were notified about this trade offer!',
   },
+  decline: {
+    key: 'decline',
+    pretty: 'Declined',
+    description: 'The extension declined this trade offer!',
+  },
+  accept: {
+    key: 'accept',
+    pretty: 'Accepted',
+    description: 'The extension accepted this trade offer!',
+  },
 };
 
 const conditions = {
@@ -99,6 +109,38 @@ const conditions = {
     with_value: true,
     value_type: 'string',
     default_value: 'please',
+  },
+  receiving_items_over: {
+    key: 'receiving_items_over',
+    pretty: 'Receiving x or more items',
+    description: 'Receiving x or more items in the offer',
+    with_value: true,
+    value_type: 'number',
+    default_value: 50,
+  },
+  receiving_items_under: {
+    key: 'receiving_items_under',
+    pretty: 'Receiving fewer than x items',
+    description: 'Receiving fewer than x items in the offer',
+    with_value: true,
+    value_type: 'number',
+    default_value: 1,
+  },
+  giving_items_over: {
+    key: 'giving_items_over',
+    pretty: 'Giving x or more items',
+    description: 'Giving x or more items in the offer',
+    with_value: true,
+    value_type: 'number',
+    default_value: 50,
+  },
+  giving_items_under: {
+    key: 'giving_items_under',
+    pretty: 'Giving fewer than x items',
+    description: 'Giving fewer than x items in the offer',
+    with_value: true,
+    value_type: 'number',
+    default_value: 1,
   },
 };
 

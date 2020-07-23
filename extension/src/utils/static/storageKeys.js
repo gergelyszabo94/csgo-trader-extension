@@ -186,6 +186,22 @@ const storageKeys = {
       },
       action: offerActions.notify.key,
     },
+    {
+      active: false,
+      condition: {
+        type: offerConditions.receiving_items_under.key,
+        value: offerConditions.receiving_items_under.default_value,
+      },
+      action: offerActions.decline.key,
+    },
+    {
+      active: false,
+      condition: {
+        type: offerConditions.giving_items_under.key,
+        value: offerConditions.giving_items_under.default_value,
+      },
+      action: offerActions.accept.key,
+    },
   ],
 };
 

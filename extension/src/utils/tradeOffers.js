@@ -261,6 +261,8 @@ const executeVerdict = (offer, ruleNumber, verdict) => {
   logTradeOfferEvents([createTradeOfferEvent(offer, verdict, ruleNumber)]);
   switch (verdict) {
     case actions.notify.key: notifyAboutOffer(offer); break;
+    case actions.decline.key: declineOffer(offer.tradeofferid); break;
+    case actions.accept.key: acceptOffer(offer.tradeofferid); break;
     default: break;
   }
 };
@@ -299,6 +301,30 @@ const evaluateOffers = (offers, rules) => {
         } else if (rule.condition.type === conditions.message_doesnt_include.key
           && offer.message !== ''
           && !offer.message.includes(rule.condition.value)) {
+          executeVerdict(offer, index, rule.action);
+          break;
+        } else if (rule.condition.type === conditions.receiving_items_over.key
+          && ((offer.items_to_receive !== undefined
+          && offer.items_to_receive.length >= rule.condition.value)
+            || (rule.condition.value <= 0 && offer.items_to_receive === undefined))) {
+          executeVerdict(offer, index, rule.action);
+          break;
+        } else if (rule.condition.type === conditions.receiving_items_under.key
+          && ((offer.items_to_receive !== undefined
+            && offer.items_to_receive.length < rule.condition.value)
+            || (rule.condition.value <= 1 && offer.items_to_receive === undefined))) {
+          executeVerdict(offer, index, rule.action);
+          break;
+        } else if (rule.condition.type === conditions.giving_items_over.key
+          && ((offer.items_to_give !== undefined
+            && offer.items_to_give.length >= rule.condition.value)
+            || (rule.condition.value <= 0 && offer.items_to_give === undefined))) {
+          executeVerdict(offer, index, rule.action);
+          break;
+        } else if (rule.condition.type === conditions.giving_items_under.key
+          && ((offer.items_to_give !== undefined
+            && offer.items_to_give.length < rule.condition.value)
+            || (rule.condition.value <= 1 && offer.items_to_give === undefined))) {
           executeVerdict(offer, index, rule.action);
           break;
         }
