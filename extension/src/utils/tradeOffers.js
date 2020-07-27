@@ -8,7 +8,7 @@ import {
   getNameTag,
   getQuality,
   getType,
-  getRemoteImageAsObjectURL,
+  getRemoteImageAsObjectURL, goToInternalPage,
 } from 'utils/utilsModular';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
 import steamApps from 'utils/static/steamApps';
@@ -49,11 +49,48 @@ const acceptOffer = (offerID, partnerID) => {
   });
 };
 
-// trade offers can't be accepted from background scripts because of CORS
-// this function opens the offer in a new tab where it gets accepted
+// opens the offer in a new tab where it gets accepted
 const openAndAcceptOffer = (offerID, partnerID) => {
   chrome.tabs.create({
     url: `https://steamcommunity.com/tradeoffer/${offerID}/?csgotrader_accept=true&partner=${partnerID}`,
+  });
+};
+
+// this gets injected to the page page context from the background script
+const getAcceptScriptAsString = (offerID, partnerID) => {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }) => {
+      resolve(`const myHeaders = new Headers();
+      myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+
+      const request = new Request(\`https://steamcommunity.com/tradeoffer/${offerID}/accept\`,
+        {
+          method: 'POST',
+          headers: myHeaders,
+          referrer: \`https://steamcommunity.com/tradeoffer/${offerID}/\`,
+          body: \`sessionid=${steamSessionID}&serverid=1&tradeofferid=${offerID}&partner=${partnerID}&captcha=\`,
+        });
+
+      fetch(request).then(() => {});`);
+    });
+  });
+};
+
+// trade offers can't be accepted from background scripts because of CORS
+// this function looks for tab that has Steam open and injects the accept script
+const acceptTradeInBackground = (offerID, partnerID) => {
+  chrome.permissions.contains({ permissions: ['tabs'] }, (permission) => {
+    if (permission) {
+      chrome.tabs.query({ url: 'https://steamcommunity.com/*' }, (tabs) => {
+        if (tabs.length !== 0) {
+          getAcceptScriptAsString(offerID, partnerID).then((scriptString) => {
+            chrome.tabs.executeScript(tabs[0].id, {
+              code: scriptString,
+            }, () => {});
+          });
+        } else openAndAcceptOffer(offerID, partnerID);
+      });
+    }
   });
 };
 
@@ -271,7 +308,10 @@ const executeVerdict = (offer, ruleNumber, verdict) => {
   switch (verdict) {
     case actions.notify.key: notifyAboutOffer(offer); break;
     case actions.decline.key: declineOffer(offer.tradeofferid); break;
-    case actions.accept.key: openAndAcceptOffer(offer.tradeofferid); break;
+    case actions.accept.key: acceptTradeInBackground(
+      offer.tradeofferid,
+      getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
+    ); break;
     default: break;
   }
 };
@@ -487,5 +527,5 @@ const removeOldOfferEvents = () => {
 
 export {
   acceptOffer, declineOffer, updateActiveOffers, extractItemsFromOffers,
-  matchItemsAndAddDetails, updateTrades, removeOldOfferEvents,
+  matchItemsAndAddDetails, updateTrades, removeOldOfferEvents, acceptTradeInBackground,
 };
