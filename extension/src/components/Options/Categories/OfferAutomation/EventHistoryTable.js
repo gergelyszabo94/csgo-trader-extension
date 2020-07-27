@@ -31,7 +31,11 @@ const EventHistoryTable = ({ events }) => {
                   </NewTabLink>
                 </td>
                 <td>
-                  <HistoryEvent eventType={event.type} ruleApplied={event.rule} />
+                  <HistoryEvent
+                    eventType={event.type}
+                    ruleApplied={event.rule}
+                    offerID={event.offerID}
+                  />
                 </td>
                 <td title={dateToISODisplay(event.timestamp / 1000)}>
                   {prettyTimeAgo(event.timestamp / 1000)}

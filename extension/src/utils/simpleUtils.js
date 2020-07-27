@@ -8,4 +8,8 @@ const getItemInventoryLink = (steamID, appID, contextID, assetID) => {
   return `https://steamcommunity.com/profiles/${steamID}/inventory/#${appID}_${contextID}_${assetID}`;
 };
 
-export { getItemMarketLink, getItemInventoryLink };
+const getOfferLink = (offerID) => {
+  return `https://steamcommunity.com/tradeoffer/${offerID}`;
+};
+
+export { getItemMarketLink, getItemInventoryLink, getOfferLink };
