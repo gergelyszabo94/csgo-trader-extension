@@ -5,7 +5,7 @@ const HistoryEvent = ({ eventType, ruleApplied }) => {
   return (
     <span title={eventTypes[eventType].description}>
       {eventTypes[eventType].pretty}
-      {(ruleApplied !== undefined && ruleApplied !== 0) ? ` by rule ${ruleApplied}` : ''}
+      {eventType !== eventTypes.new.key ? ` by rule ${ruleApplied}` : ''}
     </span>
   );
 };

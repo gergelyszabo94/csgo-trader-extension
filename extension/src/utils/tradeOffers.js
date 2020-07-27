@@ -250,7 +250,7 @@ const createTradeOfferEvent = (offer, type, ruleIndex) => {
   const eventType = eventTypes[type] !== undefined ? eventTypes[type].key : type;
   return {
     type: eventType,
-    rule: ruleIndex !== 0 ? ruleIndex + 1 : ruleIndex,
+    rule: ruleIndex + 1,
     steamID: getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
     offerID: offer.tradeofferid,
     timestamp: Date.now(),
