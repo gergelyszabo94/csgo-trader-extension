@@ -181,7 +181,7 @@ chrome.notifications.onClicked.addListener((notificationID) => {
       } else if (notificationID.includes('offer_received_')) {
         const offerID = notificationID.split('offer_received_')[1];
         chrome.tabs.create({
-          url: `https://steamcommunity.com/tradeoffer/${offerID}`,
+          url: `https://steamcommunity.com/tradeoffer/${offerID}/`,
         });
       } else goToInternalPage('index.html?page=bookmarks');
     }

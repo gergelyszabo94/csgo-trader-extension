@@ -19,6 +19,7 @@ import {
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import { prettyPrintPrice } from 'utils/pricing';
 
+// only works in content scripts, not in background
 const acceptOffer = (offerID, partnerID) => {
   return new Promise((resolve, reject) => {
     chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }) => {
@@ -45,6 +46,14 @@ const acceptOffer = (offerID, partnerID) => {
         reject(err);
       });
     });
+  });
+};
+
+// trade offers can't be accepted from background scripts because of CORS
+// this function opens the offer in a new tab where it gets accepted
+const openAndAcceptOffer = (offerID, partnerID) => {
+  chrome.tabs.create({
+    url: `https://steamcommunity.com/tradeoffer/${offerID}/?csgotrader_accept=true&partner=${partnerID}`,
   });
 };
 
@@ -262,7 +271,7 @@ const executeVerdict = (offer, ruleNumber, verdict) => {
   switch (verdict) {
     case actions.notify.key: notifyAboutOffer(offer); break;
     case actions.decline.key: declineOffer(offer.tradeofferid); break;
-    case actions.accept.key: acceptOffer(offer.tradeofferid); break;
+    case actions.accept.key: openAndAcceptOffer(offer.tradeofferid); break;
     default: break;
   }
 };
