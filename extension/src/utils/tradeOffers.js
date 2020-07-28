@@ -8,13 +8,13 @@ import {
   getNameTag,
   getQuality,
   getType,
-  getRemoteImageAsObjectURL, goToInternalPage,
+  getRemoteImageAsObjectURL,
 } from 'utils/utilsModular';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
 import steamApps from 'utils/static/steamApps';
 import { getTradeOffers } from 'utils/IEconService';
 import {
-  conditions, eventTypes, offerStates, actions,
+  conditions, eventTypes, offerStates, actions, operators,
 } from 'utils/static/offers';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import { prettyPrintPrice } from 'utils/pricing';
@@ -316,80 +316,100 @@ const executeVerdict = (offer, ruleNumber, verdict) => {
   }
 };
 
+const evaluateCondition = (offer, condition) => {
+  if (condition.type === conditions.profit_over.key
+    && offer.profitOrLoss >= condition.value) {
+    return true;
+  }
+  if (condition.type === conditions.profit_under.key
+    && offer.profitOrLoss < condition.value) {
+    return true;
+  }
+  if (condition.type === conditions.profit_percentage_over.key
+    && offer.PLPercentage >= (condition.value / 100) + 1) {
+    return true;
+  }
+  if (condition.type === conditions.profit_percentage_under.key
+    && offer.PLPercentage < (condition.value / 100) + 1) {
+    return true;
+  }
+  if (condition.type === conditions.has_message.key && offer.message !== '') {
+    return true;
+  } if (condition.type === conditions.no_message.key && offer.message === '') {
+    return true;
+  }
+  if (condition.type === conditions.message_includes.key
+    && offer.message.includes(condition.value)) {
+    return true;
+  }
+  if (condition.type === conditions.message_doesnt_include.key
+    && offer.message !== ''
+    && !offer.message.includes(condition.value)) {
+    return true;
+  }
+  if (condition.type === conditions.receiving_items_over.key
+    && ((offer.items_to_receive !== undefined
+      && offer.items_to_receive.length >= condition.value)
+      || (condition.value <= 0 && offer.items_to_receive === undefined))) {
+    return true;
+  }
+  if (condition.type === conditions.receiving_items_under.key
+    && ((offer.items_to_receive !== undefined
+      && offer.items_to_receive.length < condition.value)
+      || (condition.value <= 1 && offer.items_to_receive === undefined))) {
+    return true;
+  }
+  if (condition.type === conditions.giving_items_over.key
+    && ((offer.items_to_give !== undefined
+      && offer.items_to_give.length >= condition.value)
+      || (condition.value <= 0 && offer.items_to_give === undefined))) {
+    return true;
+  }
+  if (condition.type === conditions.giving_items_under.key
+    && ((offer.items_to_give !== undefined
+      && offer.items_to_give.length < condition.value)
+      || (condition.value <= 1 && offer.items_to_give === undefined))) {
+    return true;
+  }
+  if (condition.type === conditions.receiving_non_csgo_items.key
+    && offer.theirIncludesNonCSGO) {
+    return true;
+  }
+  if (condition.type === conditions.giving_non_csgo_items.key
+    && offer.yourIncludesNonCSGO) {
+    return true;
+  }
+  if (condition.type === conditions.receiving_no_price_items.key
+    && offer.theirIncludesItemWIthNoPrice) {
+    return true;
+  }
+  if (condition.type === conditions.giving_no_price_items.key
+    && offer.yourIncludesItemWIthNoPrice) {
+    return true;
+  }
+  return false;
+};
+
+const evaluateRule = (offer, rule) => {
+  for (let i = 0; i < rule.conditions.length; i += 1) {
+    if (evaluateCondition(offer, rule.conditions[i])) {
+      if (rule.operators[i] === undefined || rule.operators[i] === operators.or.key) {
+        return true;
+      }
+    } else if (rule.operators[i] === undefined
+      || rule.operators[i] === operators.and.key) {
+      return false;
+    }
+  }
+  return false;
+};
+
 const evaluateOffers = (offers, rules) => {
   offers.forEach((offer) => {
     console.log(offer);
     for (const [index, rule] of rules.entries()) {
       if (rule.active) {
-        if (rule.condition.type === conditions.profit_over.key
-          && offer.profitOrLoss >= rule.condition.value) {
-          executeVerdict(offer, index, rule.action);
-          break;
-        } else if (rule.condition.type === conditions.profit_under.key
-          && offer.profitOrLoss < rule.condition.value) {
-          executeVerdict(offer, index, rule.action);
-          break;
-        } else if (rule.condition.type === conditions.profit_percentage_over.key
-          && offer.PLPercentage >= (rule.condition.value / 100) + 1) {
-          executeVerdict(offer, index, rule.action);
-          break;
-        } else if (rule.condition.type === conditions.profit_percentage_under.key
-          && offer.PLPercentage < (rule.condition.value / 100) + 1) {
-          executeVerdict(offer, index, rule.action);
-          break;
-        } else if (rule.condition.type === conditions.has_message.key && offer.message !== '') {
-          executeVerdict(offer, index, rule.action);
-          break;
-        } else if (rule.condition.type === conditions.no_message.key && offer.message === '') {
-          executeVerdict(offer, index, rule.action);
-          break;
-        } else if (rule.condition.type === conditions.message_includes.key
-          && offer.message.includes(rule.condition.value)) {
-          executeVerdict(offer, index, rule.action);
-          break;
-        } else if (rule.condition.type === conditions.message_doesnt_include.key
-          && offer.message !== ''
-          && !offer.message.includes(rule.condition.value)) {
-          executeVerdict(offer, index, rule.action);
-          break;
-        } else if (rule.condition.type === conditions.receiving_items_over.key
-          && ((offer.items_to_receive !== undefined
-          && offer.items_to_receive.length >= rule.condition.value)
-            || (rule.condition.value <= 0 && offer.items_to_receive === undefined))) {
-          executeVerdict(offer, index, rule.action);
-          break;
-        } else if (rule.condition.type === conditions.receiving_items_under.key
-          && ((offer.items_to_receive !== undefined
-            && offer.items_to_receive.length < rule.condition.value)
-            || (rule.condition.value <= 1 && offer.items_to_receive === undefined))) {
-          executeVerdict(offer, index, rule.action);
-          break;
-        } else if (rule.condition.type === conditions.giving_items_over.key
-          && ((offer.items_to_give !== undefined
-            && offer.items_to_give.length >= rule.condition.value)
-            || (rule.condition.value <= 0 && offer.items_to_give === undefined))) {
-          executeVerdict(offer, index, rule.action);
-          break;
-        } else if (rule.condition.type === conditions.giving_items_under.key
-          && ((offer.items_to_give !== undefined
-            && offer.items_to_give.length < rule.condition.value)
-            || (rule.condition.value <= 1 && offer.items_to_give === undefined))) {
-          executeVerdict(offer, index, rule.action);
-          break;
-        } else if (rule.condition.type === conditions.receiving_non_csgo_items.key
-          && offer.theirIncludesNonCSGO) {
-          executeVerdict(offer, index, rule.action);
-          break;
-        } else if (rule.condition.type === conditions.giving_non_csgo_items.key
-          && offer.yourIncludesNonCSGO) {
-          executeVerdict(offer, index, rule.action);
-          break;
-        } else if (rule.condition.type === conditions.receiving_no_price_items.key
-          && offer.theirIncludesItemWIthNoPrice) {
-          executeVerdict(offer, index, rule.action);
-          break;
-        } else if (rule.condition.type === conditions.giving_no_price_items.key
-          && offer.yourIncludesItemWIthNoPrice) {
+        if (evaluateRule(offer, rule)) {
           executeVerdict(offer, index, rule.action);
           break;
         }

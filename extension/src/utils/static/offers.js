@@ -238,6 +238,19 @@ const offerStates = {
   },
 };
 
+const operators = {
+  or: {
+    key: 'or',
+    pretty: 'OR',
+    description: 'OR operator',
+  },
+  and: {
+    key: 'and',
+    pretty: 'AND',
+    description: 'AND operator',
+  },
+};
+
 export {
-  actions, eventTypes, offerStates, conditions,
+  actions, eventTypes, offerStates, conditions, operators,
 };
