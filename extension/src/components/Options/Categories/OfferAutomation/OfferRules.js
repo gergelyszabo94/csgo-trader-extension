@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
 import OfferRule from 'components/Options/Categories/OfferAutomation/OfferRule';
+import AddOfferRule from 'components/Options/Categories/OfferAutomation/AddOfferRule';
 
 const OfferRules = () => {
   const [rules, setRules] = useState([]);
@@ -41,6 +42,10 @@ const OfferRules = () => {
       return rule;
     });
     saveRules(newRules);
+  };
+
+  const addNewRule = (rule) => {
+    saveRules([...rules, rule]);
   };
 
   useEffect(() => {
@@ -96,6 +101,7 @@ const OfferRules = () => {
           })}
         </tbody>
       </table>
+      <AddOfferRule add={addNewRule} />
     </div>
   );
 };

@@ -6,7 +6,7 @@ import OfferHistory from './OfferHistory';
 
 const OfferAutomation = () => {
   return (
-    <Category title="Trade Offer Automation">
+    <Category title="Trade Offer Automation (BETA)">
       <Row
         name="Monitor Incoming offers"
         id="monitorIncomingOffers"
