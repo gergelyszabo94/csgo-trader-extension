@@ -7,7 +7,9 @@ const Condition = ({ type, value }) => {
       title={conditions[type].description}
     >
       {conditions[type].pretty}
-      {value !== undefined ? ` ${value}` : ''}
+      <span className="offerConditionValue">
+        {value !== undefined ? ` ${value}` : ''}
+      </span>
     </span>
   );
 };
