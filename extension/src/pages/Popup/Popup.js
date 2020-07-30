@@ -36,7 +36,9 @@ const Popup = () => {
         const navLinks = popupLinks.map((link) => {
           if (link.active) {
             const URL = link.id === 'tradeoffers'
-              ? `https://steamcommunity.com/profiles/${steamIDOfUser}/tradeoffers`
+              ? steamIDOfUser !== ''
+                ? `https://steamcommunity.com/profiles/${steamIDOfUser}/tradeoffers`
+                : 'https://steamcommunity.com/app/730/tradingforum/'
               : link.url;
             return (
               <div key={link.id}>
