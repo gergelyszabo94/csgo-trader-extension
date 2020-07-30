@@ -14,11 +14,11 @@ const actions = {
     pretty: 'Notify',
     description: 'Send a browser notification',
   },
-  report: {
-    key: 'report',
-    pretty: 'Report',
-    description: 'Report the trade offer/user for attempted scam',
-  },
+  // report: {
+  //   key: 'report',
+  //   pretty: 'Report',
+  //   description: 'Report the trade offer/user for attempted scam',
+  // },
   no_action: {
     key: 'no_action',
     pretty: 'No action',
