@@ -1,8 +1,8 @@
-import { pricingProviders, currencies, realTimePricingModes } from 'utils/static/pricing';
-import { sortingModes, offersSortingModes, listingsSortingModes } from 'utils/static/sortingModes';
+import { currencies, pricingProviders, realTimePricingModes } from 'utils/static/pricing';
+import { listingsSortingModes, offersSortingModes, sortingModes } from 'utils/static/sortingModes';
 import defaultPopupLinks from 'utils/static/defaultPopupLinks';
 import { actions, conditions } from 'utils/static/friendRequests';
-import { actions as offerActions, conditions as offerConditions } from 'utils/static/offers';
+import { actions as offerActions, conditions as offerConditions, operators } from 'utils/static/offers';
 
 const storageKeys = {
   quickDeclineOffer: true,
@@ -172,34 +172,73 @@ const storageKeys = {
   offerEvalRules: [
     {
       active: false,
-      condition: {
-        type: offerConditions.profit_over.key,
-        value: offerConditions.profit_over.default_value,
-      },
+      conditions: [
+        {
+          type: offerConditions.giving_items_under.key,
+          value: 1,
+        },
+        {
+          type: offerConditions.no_message.key,
+        },
+      ],
+      operators: [
+        operators.and.key,
+      ],
       action: offerActions.notify.key,
     },
     {
       active: false,
-      condition: {
-        type: offerConditions.profit_percentage_over.key,
-        value: offerConditions.profit_percentage_over.default_value,
-      },
+      conditions: [
+        {
+          type: offerConditions.profit_over.key,
+          value: offerConditions.profit_over.default_value,
+        },
+      ],
+      operators: [],
       action: offerActions.notify.key,
     },
     {
       active: false,
-      condition: {
-        type: offerConditions.receiving_items_under.key,
-        value: offerConditions.receiving_items_under.default_value,
-      },
+      conditions: [
+        {
+          type: offerConditions.profit_percentage_over.key,
+          value: offerConditions.profit_percentage_over.default_value,
+        },
+      ],
+      operators: [],
+      action: offerActions.notify.key,
+    },
+    {
+      active: false,
+      conditions: [
+        {
+          type: offerConditions.receiving_items_under.key,
+          value: 1,
+        },
+        {
+          type: offerConditions.no_message.key,
+        },
+      ],
+      operators: [
+        operators.and.key,
+      ],
       action: offerActions.decline.key,
     },
     {
       active: false,
-      condition: {
-        type: offerConditions.giving_items_under.key,
-        value: offerConditions.giving_items_under.default_value,
-      },
+      conditions: [
+        {
+          type: offerConditions.receiving_items_under.key,
+          value: 1,
+        },
+        {
+          type: offerConditions.message_includes.key,
+          value: offerConditions.message_includes.default_value,
+        },
+      ],
+      operators: [
+        operators.and.key,
+      ],
       action: offerActions.accept.key,
     },
   ],
