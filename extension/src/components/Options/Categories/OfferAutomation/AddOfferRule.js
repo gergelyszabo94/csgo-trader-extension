@@ -21,18 +21,20 @@ const Actions = () => {
   );
 };
 
-const AddOfferRule = ({ add }) => {
-  const [rule, setRule] = useState({
-    conditions: [{
-      type: conditions.has_message.key,
-      value: null,
-      valueType: null,
-    }],
-    action: actions.notify.key,
-    operators: [],
+const initState = {
+  conditions: [{
+    type: conditions.has_message.key,
     value: null,
     valueType: null,
-  });
+  }],
+  action: actions.notify.key,
+  operators: [],
+  value: null,
+  valueType: null,
+};
+
+const AddOfferRule = ({ add }) => {
+  const [rule, setRule] = useState(initState);
 
   const onActionChange = ((event) => {
     setRule({ ...rule, action: event.target.value });
@@ -50,6 +52,7 @@ const AddOfferRule = ({ add }) => {
       operators: rule.operators,
     });
     closeModal();
+    setRule(initState);
   };
 
   return (
