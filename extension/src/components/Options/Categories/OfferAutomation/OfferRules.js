@@ -70,6 +70,9 @@ const OfferRules = () => {
           General
         </Link>
         <ApiKeyIndicator />
+        <span>
+          &nbsp; Be careful when setting these rules and use it at your own risk.
+        </span>
       </div>
       <table className="spacedTable">
         <thead>
