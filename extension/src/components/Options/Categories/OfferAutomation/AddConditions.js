@@ -39,20 +39,27 @@ const AddConditions = ({ ruleConditions, ruleOperators, modifyConditions }) => {
       {
         ruleConditions.map((condition, index) => {
           return (
-            <AddCondition
-              key={condition.type}
-              type={condition.type}
-              value={condition.value}
-              index={index}
-              onChange={onConditionChange}
-            />
-          );
-        })
-      }
-      {
-        ruleOperators.map((operator, index) => {
-          return (
-            <AddOperator index={index} type={operator} onChange={onOperatorChange} />
+            <>
+              <AddCondition
+                key={`condition_${condition.type}`}
+                type={condition.type}
+                value={condition.value}
+                index={index}
+                onChange={onConditionChange}
+              />
+              {
+                ruleOperators[index] !== undefined
+                  ? (
+                    <AddOperator
+                      index={index}
+                      type={ruleOperators[index]}
+                      onChange={onOperatorChange}
+                      key={`operator_${ruleOperators[index]}`}
+                    />
+                  )
+                  : null
+              }
+            </>
           );
         })
       }
