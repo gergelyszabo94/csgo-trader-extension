@@ -10,7 +10,6 @@ import {
 } from 'utils/friendRequests';
 import { trimFloatCache } from 'utils/floatCaching';
 import { getSteamNotificationCount } from 'utils/notifications';
-import { pricingProviders } from 'utils/static/pricing';
 import { updateTrades, removeOldOfferEvents } from 'utils/tradeOffers';
 
 // handles install and update events
@@ -65,10 +64,6 @@ chrome.runtime.onInstalled.addListener((details) => {
       chrome.storage.local.set({ telemetryConsent: true });
     }
 
-    if (details.previousVersion === '2.6') {
-      chrome.storage.local.set({ marketListingsDefaultSorting: 'price_asc' }, () => {});
-    }
-
     // sets defaults options for new options that haven't been set yet
     // (for features introduced since the last version)
     // runs when the extension updates or gets reloaded in developer mode
@@ -91,35 +86,6 @@ chrome.runtime.onInstalled.addListener((details) => {
           } else chrome.storage.local.set({ [storageKey]: storageValue }, () => {});
         }
       }
-    });
-
-    // skinbay was renamed to skincay then to skinport
-    // this snipped changes the pricing provider's name accordingly
-    // remove in a few months
-    chrome.storage.local.get('pricingProvider', ({ pricingProvider }) => {
-      if (pricingProvider === 'skinbay' || pricingProvider === 'skincay') {
-        chrome.storage.local.set({ pricingProvider: pricingProviders.skinport.name }, () => {});
-      }
-    });
-
-    // the trade history menu was added, this logic
-    // adds the new link to the extension popup links
-    chrome.storage.local.get('popupLinks', ({ popupLinks }) => {
-      const newPopupLinks = [];
-      popupLinks.forEach((link) => {
-        if (link.id !== 'tradehistory') {
-          newPopupLinks.push(link);
-        }
-      });
-      newPopupLinks.push({
-        active: true,
-        id: 'tradehistory',
-        name: 'Trade History',
-        url: 'index.html?page=trade-history',
-      });
-      chrome.storage.local.set({
-        popupLinks: newPopupLinks,
-      });
     });
 
     trackEvent({
