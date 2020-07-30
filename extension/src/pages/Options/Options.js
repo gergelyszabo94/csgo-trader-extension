@@ -19,6 +19,7 @@ import Profile from 'components/Options/Categories/Profile';
 import TradeOffer from 'components/Options/Categories/TradeOffer';
 import Friends from 'components/Options/Categories/Friends/Friends';
 import WebChat from 'components/Options/Categories/WebChat';
+import OfferAutomation from 'components/Options/Categories/OfferAutomation/OfferAutomation';
 import Safety from 'components/Options/Categories/Safety';
 import { trackEvent } from 'utils/analytics';
 
@@ -34,14 +35,14 @@ const routes = [
     component: Pricing,
   },
   {
-    to: 'popup/',
-    name: 'Popup',
-    component: Popup,
-  },
-  {
     to: 'trade-offer/',
     name: 'Trade Offer',
     component: TradeOffer,
+  },
+  {
+    to: 'offer-automation/',
+    name: 'Trade Offer Automation',
+    component: OfferAutomation,
   },
   {
     to: 'inventory/',
@@ -62,6 +63,11 @@ const routes = [
     to: 'friends-invites/',
     name: 'Friends, Groups and Invites',
     component: Friends,
+  },
+  {
+    to: 'popup/',
+    name: 'Popup',
+    component: Popup,
   },
   {
     to: 'notifications/',

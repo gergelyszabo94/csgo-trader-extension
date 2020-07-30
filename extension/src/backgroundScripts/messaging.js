@@ -7,6 +7,8 @@ import { getItemMarketLink } from 'utils/simpleUtils';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import { getUserCSGOInventory, getOtherInventory } from 'utils/getUserInventory';
 import { updateExchangeRates } from 'utils/pricing';
+import { getTradeOffers } from 'utils/IEconService';
+import { updateTrades } from 'utils/tradeOffers';
 
 // content scripts can't make cross domain requests because of security
 // most of the messaging required is to work around this limitation
@@ -97,30 +99,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
     return true; // async return to signal that it will return later
   } else if (request.getTradeOffers !== undefined) {
-    chrome.storage.local.get(['apiKeyValid', 'steamAPIKey'], (result) => {
-      if (result.apiKeyValid) {
-        const apiKey = result.steamAPIKey;
-        const activesOnly = request.getTradeOffers === 'historical' ? 0 : 1;
-        const descriptions = request.getTradeOffers === 'historical' ? 0 : 1;
-
-        const getRequest = new Request(`https://api.steampowered.com/IEconService/GetTradeOffers/v1/?get_received_offers=1&get_sent_offers=1&active_only=${activesOnly}&get_descriptions=${descriptions}&language=english&key=${apiKey}`);
-
-        fetch(getRequest).then((response) => {
-          if (!response.ok) {
-            sendResponse('error');
-            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-          } else return response.json();
-        }).then((body) => {
-          try { sendResponse({ offers: body.response, apiKeyValid: true }); } catch (e) {
-            console.log(e);
-            sendResponse('error');
-          }
-        }).catch((err) => {
-          console.log(err);
-          sendResponse('error');
-        });
-      } else sendResponse({ apiKeyValid: false });
-    });
+    if (request.getTradeOffers === 'historical') {
+      getTradeOffers(request.getTradeOffers).then((response) => {
+        sendResponse({ offers: response, apiKeyValid: true });
+      }).catch((e) => {
+        console.log(e);
+        if (e === 'api_key_invalid') sendResponse({ apiKeyValid: false });
+        else sendResponse('error');
+      });
+    } else {
+      updateTrades().then(({ offersData, items }) => {
+        sendResponse({ offers: offersData, items, apiKeyValid: true });
+      }).catch((e) => {
+        console.log(e);
+        if (e === 'api_key_invalid') sendResponse({ apiKeyValid: false });
+        else sendResponse('error');
+      });
+    }
     return true; // async return to signal that it will return later
   } else if (request.getBuyOrderInfo !== undefined) {
     const getRequest = new Request(

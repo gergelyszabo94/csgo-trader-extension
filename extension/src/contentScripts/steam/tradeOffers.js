@@ -1,13 +1,10 @@
 import {
-  getExteriorFromTags, getQuality, getDopplerInfo,
-  getType, addDopplerPhase, makeItemColorful, addUpdatedRibbon,
+  addDopplerPhase, makeItemColorful, addUpdatedRibbon,
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
-  getItemByAssetID, getInspectLink, removeOfferFromActiveOffers,
+  removeOfferFromActiveOffers, removeLinkFilterFromLinks,
   logExtensionPresence, updateLoggedInUserInfo, reloadPageOnExtensionReload,
-  getNameTag, repositionNameTagIcons, jumpToAnchor, changePageTitle,
-  removeLinkFilterFromLinks,
+  repositionNameTagIcons, jumpToAnchor, changePageTitle,
 } from 'utils/utilsModular';
-import { getItemMarketLink } from 'utils/simpleUtils';
 import { prettyTimeAgo } from 'utils/dateTime';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import itemTypes from 'utils/static/itemTypes';
@@ -18,15 +15,13 @@ import { overrideShowTradeOffer } from 'utils/steamOverriding';
 import { trackEvent } from 'utils/analytics';
 import { offersSortingModes } from 'utils/static/sortingModes';
 import { injectStyle } from 'utils/injection';
-import { getProperStyleSteamIDFromOfferStyle, getUserSteamID } from 'utils/steamID';
+import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
-import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
 import { acceptOffer, declineOffer } from 'utils/tradeOffers';
 import DOMPurify from 'dompurify';
 import steamApps from 'utils/static/steamApps';
 import { getIDsFromElement } from 'utils/itemsToElementsToItems';
 
-const userID = getUserSteamID();
 let activePage = 'incoming_offers';
 if (window.location.href.includes('/tradeoffers/?history=1')) activePage = 'incoming_offers_history';
 else if (window.location.href.includes('/tradeoffers/sent/?history=1')) activePage = 'sent_offers_history';
@@ -49,47 +44,6 @@ const selectItemElementByIDs = (classid, instanceid) => {
 
 const addFloatDataToPage = (job, floatInfo) => {
   addFloatIndicator(selectItemElementByIDs(job.classid, job.instanceid), floatInfo);
-};
-
-const matchItemsWithDescriptions = (items) => {
-  const itemsToReturn = [];
-  items.forEach((item) => {
-    // some items don't have descriptions for some reason - will have to be investigated later
-    if (item.market_hash_name !== undefined) {
-      itemsToReturn.push({
-        appid: item.appid.toString(),
-        contextid: item.contextid.toString(),
-        name: item.name,
-        marketable: item.marketable,
-        market_hash_name: item.market_hash_name,
-        name_color: item.name_color,
-        marketlink: getItemMarketLink(item.appid.toString(), item.market_hash_name),
-        classid: item.classid,
-        instanceid: item.instanceid,
-        assetid: item.assetid,
-        position: item.position,
-        side: item.side,
-        dopplerInfo: (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon_url) : null,
-        exterior: getExteriorFromTags(item.tags),
-        iconURL: item.icon_url,
-        inspectLink: getInspectLink(item),
-        quality: getQuality(item.tags),
-        isStatrack: item.name.includes('StatTrak™'),
-        isSouvenir: item.name.includes('Souvenir'),
-        starInName: item.name.includes('★'),
-        nametag: getNameTag(item),
-        owner: item.owner,
-        type: getType(item.tags),
-        floatInfo: null,
-        patternInfo: null,
-        descriptions: item.descriptions,
-        inOffer: item.inOffer,
-        offerOrigin: item.offerOrigin,
-      });
-    }
-  });
-
-  return itemsToReturn;
 };
 
 const getLimitedIDsFromElement = (element) => {
@@ -174,40 +128,6 @@ const findItem = (items, IDs, side, position) => {
   return items.filter((item) => item.classid === IDs.classid)[0];
 };
 
-const extractItemsFromOffers = (offers, sentOrReceived) => {
-  const itemsToReturn = [];
-  if (offers) {
-    offers.forEach((offer) => {
-      if (offer.items_to_give !== undefined) {
-        offer.items_to_give.forEach((item, index) => {
-          itemsToReturn.push({
-            ...item,
-            owner: userID,
-            position: index,
-            inOffer: offer.tradeofferid,
-            side: 'your',
-            offerOrigin: sentOrReceived,
-          });
-        });
-      }
-      if (offer.items_to_receive !== undefined) {
-        offer.items_to_receive.forEach((item, index) => {
-          itemsToReturn.push({
-            ...item,
-            owner: getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
-            position: index,
-            inOffer: offer.tradeofferid,
-            side: 'their',
-            offerOrigin: sentOrReceived,
-          });
-        });
-      }
-    });
-  }
-
-  return itemsToReturn;
-};
-
 const addItemInfo = (items) => {
   let activeItemElements = [];
   document.querySelectorAll('.tradeoffer').forEach((offerElement) => {
@@ -280,45 +200,20 @@ const getOffersFromAPI = (type) => {
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage({ getTradeOffers: type }, (response) => {
       if (response.apiKeyValid === false) reject('apiKeyInvalid');
-      else if (!(response.offers === undefined || response === 'error')) resolve(response.offers);
-      else reject('steamError');
+      else if (!(response.offers === undefined || response === 'error')) {
+        resolve({ offers: response.offers, itemsWithAllInfo: response.items });
+      } else reject('steamError');
     });
   });
 };
 
-const addTotals = (offers, items) => {
-  chrome.storage.local.get('currency', (result) => {
-    let totalProfit = 0.0;
+const addTotals = (offers) => {
+  chrome.storage.local.get('currency', ({ currency }) => {
     let activeOfferCount = 0;
+    let totalProfit = 0.0;
     let numberOfProfitableOffers = 0;
 
     offers.forEach((offer) => {
-      let yourItemsTotal = 0.0;
-      let theirItemsTotal = 0.0;
-      let yourIncludesItemWIthNoPrice = false;
-      let theirIncludesItemWIthNoPrice = false;
-
-      if (offer.items_to_give !== undefined) {
-        offer.items_to_give.forEach((item) => {
-          if (item.appid === 730) {
-            const itemWithAllInfo = getItemByAssetID(items, item.assetid);
-            if (itemWithAllInfo !== undefined && itemWithAllInfo.price !== undefined) {
-              yourItemsTotal += parseFloat(itemWithAllInfo.price.price);
-            } else yourIncludesItemWIthNoPrice = true;
-          }
-        });
-      }
-      if (offer.items_to_receive !== undefined) {
-        offer.items_to_receive.forEach((item) => {
-          if (item.appid === 730) {
-            const itemWithAllInfo = getItemByAssetID(items, item.assetid);
-            if (itemWithAllInfo !== undefined && itemWithAllInfo.price !== undefined) {
-              theirItemsTotal += parseFloat(itemWithAllInfo.price.price);
-            } else theirIncludesItemWIthNoPrice = true;
-          }
-        });
-      }
-
       const offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
       if (isOfferActive(offerElement)) {
         activeOfferCount += 1;
@@ -327,17 +222,14 @@ const addTotals = (offers, items) => {
         const theirHeader = activePage === 'incoming_offers' ? primaryHeader : secondaryHeader;
         const yourHeader = activePage === 'incoming_offers' ? secondaryHeader : primaryHeader;
 
-        theirHeader.innerText += ` ${prettyPrintPrice(result.currency, (theirItemsTotal).toFixed(2))}`;
-        theirHeader.innerText = theirIncludesItemWIthNoPrice ? theirHeader.innerText += ' - includes items with no price' : theirHeader.innerText;
-        yourHeader.innerText += ` ${prettyPrintPrice(result.currency, (yourItemsTotal).toFixed(2))}`;
-        yourHeader.innerText = yourIncludesItemWIthNoPrice ? yourHeader.innerText += ' - includes items with no price' : yourHeader.innerText;
-
-        const profitOrLoss = theirItemsTotal - yourItemsTotal;
-        const PLPercentage = theirItemsTotal / yourItemsTotal;
+        theirHeader.innerText += ` ${prettyPrintPrice(currency, (offer.theirItemsTotal).toFixed(2))}`;
+        theirHeader.innerText = offer.theirIncludesItemWIthNoPrice ? theirHeader.innerText += ' - includes items with no price' : theirHeader.innerText;
+        yourHeader.innerText += ` ${prettyPrintPrice(currency, (offer.yourItemsTotal).toFixed(2))}`;
+        yourHeader.innerText = offer.yourIncludesItemWIthNoPrice ? yourHeader.innerText += ' - includes items with no price' : yourHeader.innerText;
 
         let pLClass = 'loss';
-        if (profitOrLoss > 0.0) {
-          totalProfit += profitOrLoss;
+        if (offer.profitOrLoss > 0.0) {
+          totalProfit += offer.profitOrLoss;
           numberOfProfitableOffers += 1;
           pLClass = 'profit';
         }
@@ -346,11 +238,11 @@ const addTotals = (offers, items) => {
           DOMPurify.sanitize(
             `<span
                     class="profitOrLoss ${pLClass}"
-                    data-profit-or-loss="${profitOrLoss}"
-                    data-p-l-percentage="${PLPercentage}"
+                    data-profit-or-loss="${offer.profitOrLoss}"
+                    data-p-l-percentage="${offer.PLPercentage}"
                     data-updated="${offer.time_updated}"
                     title="Projected P/L">
-                    ${prettyPrintPrice(result.currency, (profitOrLoss).toFixed(2))}
+                    ${prettyPrintPrice(currency, (offer.profitOrLoss).toFixed(2))}
                 </span>`,
           ),
         );
@@ -360,7 +252,7 @@ const addTotals = (offers, items) => {
     document.getElementById('tradeoffers_summary').innerHTML = DOMPurify.sanitize(`
             <div id="active_offers_count"><b>Active Offers: </b>${activeOfferCount}</div>
             <div id="profitable_offers_count"><b>Profitable Offers: </b>${numberOfProfitableOffers}</div>
-            <div id="potential_profit"><b>Potential profit: </b>${prettyPrintPrice(result.currency, (totalProfit).toFixed(2))}</div>`);
+            <div id="potential_profit"><b>Potential profit: </b>${prettyPrintPrice(currency, (totalProfit).toFixed(2))}</div>`);
   });
 };
 
@@ -477,7 +369,7 @@ const addPartnerOfferSummary = (offers) => {
 
 const updateOfferHistoryData = () => {
   getOffersFromAPI('historical').then(
-    (offers) => {
+    ({ offers }) => {
       chrome.storage.local.get('tradeHistoryLastUpdate', (firstResult) => {
         const allOffers = offers.trade_offers_received.concat(offers.trade_offers_sent);
         const offerHistoryToAdd = {};
@@ -552,20 +444,6 @@ const updateOfferHistoryData = () => {
       }
     },
   );
-};
-
-// info about the active offers is kept in storage
-// so we can check if an item is present in another offer
-const updateActiveOffers = (offers, items) => {
-  chrome.storage.local.set({
-    activeOffers: {
-      lastFullUpdate: Math.floor(Date.now() / 1000),
-      items,
-      sent: offers.trade_offers_sent,
-      received: offers.trade_offers_received,
-      descriptions: offers.descriptions,
-    },
-  }, () => {});
 };
 
 const periodicallyUpdateRealTimeTotals = (offerEl) => {
@@ -857,46 +735,24 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
     });
 
     getOffersFromAPI('active').then(
-      (offers) => {
-        let allItemsInOffer = extractItemsFromOffers(offers.trade_offers_sent, 'sent');
-        allItemsInOffer = allItemsInOffer.concat(
-          extractItemsFromOffers(offers.trade_offers_received, 'received'),
-        );
+      ({ offers, itemsWithAllInfo }) => {
+        addItemInfo(itemsWithAllInfo);
 
-        const itemsWithMoreInfo = [];
-        if (allItemsInOffer) {
-          allItemsInOffer.forEach((item) => {
-            const itemDescription = offers.descriptions.find((description) => {
-              return description.classid === item.classid
-                && description.instanceid === item.instanceid;
-            });
-            itemsWithMoreInfo.push({ ...item, ...itemDescription });
-          });
+        if (activePage === 'incoming_offers') {
+          addTotals(offers.trade_offers_received);
+          addPartnerOfferSummary(offers.trade_offers_received);
+        } else if (activePage === 'sent_offers') {
+          addTotals(offers.trade_offers_sent);
+          addPartnerOfferSummary(offers.trade_offers_sent);
         }
 
-        const matchedItems = matchItemsWithDescriptions(itemsWithMoreInfo);
+        document.getElementById('tradeoffers_summary').innerHTML = DOMPurify.sanitize('<b>Trade offer summary:</b>');
 
-        addPricesAndFloatsToInventory(matchedItems).then(({ items }) => {
-          const itemsWithAllInfo = items;
-          updateActiveOffers(offers, itemsWithAllInfo);
-          addItemInfo(itemsWithAllInfo);
-
-          if (activePage === 'incoming_offers') {
-            addTotals(offers.trade_offers_received, itemsWithAllInfo);
-            addPartnerOfferSummary(offers.trade_offers_received);
-          } else if (activePage === 'sent_offers') {
-            addTotals(offers.trade_offers_sent, itemsWithAllInfo);
-            addPartnerOfferSummary(offers.trade_offers_sent);
-          }
-
-          document.getElementById('tradeoffers_summary').innerHTML = DOMPurify.sanitize('<b>Trade offer summary:</b>');
-
-          chrome.storage.local.get('tradeOffersSortingMode', ({ tradeOffersSortingMode }) => {
-            document.querySelector(`#offerSortingMethod [value="${tradeOffersSortingMode}"]`).selected = true;
-            sortOffers(tradeOffersSortingMode);
-            if (activePage === 'sent_offers') jumpToAnchor(window.location.hash);
-            document.getElementById('tradeOffersSortingMenu').classList.remove('hidden');
-          });
+        chrome.storage.local.get('tradeOffersSortingMode', ({ tradeOffersSortingMode }) => {
+          document.querySelector(`#offerSortingMethod [value="${tradeOffersSortingMode}"]`).selected = true;
+          sortOffers(tradeOffersSortingMode);
+          if (activePage === 'sent_offers') jumpToAnchor(window.location.hash);
+          document.getElementById('tradeOffersSortingMenu').classList.remove('hidden');
         });
       }, (error) => {
         if (error === 'apiKeyInvalid') {

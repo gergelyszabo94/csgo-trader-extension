@@ -734,6 +734,23 @@ const markModMessagesAsRead = () => {
   });
 };
 
+// chrome only allows notification icons locally
+// or from trusted (by manifest) urls
+// this is a workaround to that because Steam's CDN is not in the manifest
+const getRemoteImageAsObjectURL = (imageURL) => new Promise((resolve, reject) => {
+  fetch(new Request(imageURL)).then((response) => {
+    if (!response.ok) {
+      reject(response);
+      console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+    } else return response.blob();
+  }).then((body) => {
+    resolve(URL.createObjectURL(body));
+  }).catch((err) => {
+    console.log(err);
+    reject(err);
+  });
+});
+
 //  unused atm
 // const generateRandomString = (length) => {
 //   let text = '';
@@ -759,5 +776,5 @@ export {
   getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent, markModMessagesAsRead,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
-  removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo,
+  removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo, getRemoteImageAsObjectURL,
 };

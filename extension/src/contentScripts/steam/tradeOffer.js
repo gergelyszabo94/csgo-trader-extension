@@ -26,7 +26,7 @@ import { overrideHandleTradeActionMenu } from 'utils/steamOverriding';
 import { injectScript, injectStyle } from 'utils/injection';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
-import { declineOffer } from 'utils/tradeOffers';
+import { acceptOffer, declineOffer } from 'utils/tradeOffers';
 import steamApps from 'utils/static/steamApps';
 
 let yourInventory = null;
@@ -1190,6 +1190,14 @@ if (filterMenu !== null) {
           </div>`);
   document.getElementById('showSummary').addEventListener('click', () => {
     document.getElementById('summary').classList.remove('hidden');
+  });
+}
+
+// accept trade by if instructed by background script
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('csgotrader_accept') === 'true') {
+  acceptOffer(offerID, urlParams.get('partner')).then(() => {
+    window.close();
   });
 }
 

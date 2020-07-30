@@ -1,7 +1,8 @@
-import { pricingProviders, currencies, realTimePricingModes } from 'utils/static/pricing';
-import { sortingModes, offersSortingModes, listingsSortingModes } from 'utils/static/sortingModes';
+import { currencies, pricingProviders, realTimePricingModes } from 'utils/static/pricing';
+import { listingsSortingModes, offersSortingModes, sortingModes } from 'utils/static/sortingModes';
 import defaultPopupLinks from 'utils/static/defaultPopupLinks';
 import { actions, conditions } from 'utils/static/friendRequests';
+import { actions as offerActions, conditions as offerConditions, operators } from 'utils/static/offers';
 
 const storageKeys = {
   quickDeclineOffer: true,
@@ -166,11 +167,86 @@ const storageKeys = {
   calculatorReverseValue: 2.7,
   calculatorIncDecPercentage: 27,
   calculatorIncDecResult: 1000,
+  monitorIncomingOffers: false,
+  tradeOffersEventLogs: [],
+  offerEvalRules: [
+    {
+      active: false,
+      conditions: [
+        {
+          type: offerConditions.giving_items_under.key,
+          value: 1,
+        },
+        {
+          type: offerConditions.no_message.key,
+        },
+      ],
+      operators: [
+        operators.and.key,
+      ],
+      action: offerActions.notify.key,
+    },
+    {
+      active: false,
+      conditions: [
+        {
+          type: offerConditions.profit_over.key,
+          value: offerConditions.profit_over.default_value,
+        },
+      ],
+      operators: [],
+      action: offerActions.notify.key,
+    },
+    {
+      active: false,
+      conditions: [
+        {
+          type: offerConditions.profit_percentage_over.key,
+          value: offerConditions.profit_percentage_over.default_value,
+        },
+      ],
+      operators: [],
+      action: offerActions.notify.key,
+    },
+    {
+      active: false,
+      conditions: [
+        {
+          type: offerConditions.receiving_items_under.key,
+          value: 1,
+        },
+        {
+          type: offerConditions.no_message.key,
+        },
+      ],
+      operators: [
+        operators.and.key,
+      ],
+      action: offerActions.decline.key,
+    },
+    {
+      active: false,
+      conditions: [
+        {
+          type: offerConditions.receiving_items_under.key,
+          value: 1,
+        },
+        {
+          type: offerConditions.message_includes.key,
+          value: offerConditions.message_includes.default_value,
+        },
+      ],
+      operators: [
+        operators.and.key,
+      ],
+      action: offerActions.accept.key,
+    },
+  ],
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
   'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID', 'groupInvites',
   'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules', 'floatQueueActivity', 'discussionsToAutoBump',
-  'priceQueueActivity', 'userSteamWalletCurrency'];
+  'priceQueueActivity', 'userSteamWalletCurrency', 'tradeOffersEventLogs'];
 
 export { storageKeys, nonSettingStorageKeys };
