@@ -925,6 +925,18 @@ if (isCommodityItem) {
         }
       });
     }
+  } else if (fullName.includes('Sticker')) {
+    const descriptors = document.getElementById('largeiteminfo_item_descriptors');
+    if (descriptors !== null) {
+      descriptors.insertAdjacentHTML(
+        'beforeend',
+        DOMPurify.sanitize(
+          `<a href="https://steamcommunity.com/market/search?q=${fullName.split('Sticker | ')[1]}&appid=730">
+                    Look up similar stickers
+                </a>`,
+        ),
+      );
+    }
   }
 }
 
