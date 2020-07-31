@@ -1080,7 +1080,8 @@ const addStartingAtAndQuickSellPrice = (
     // then select that one as default instead
     const extensionPrice = parseInt(listingRow.querySelector('.itemExtensionPrice')
       .getAttribute('data-price-in-cents'));
-    if (extensionPrice < quickSellPrice) quickSell.click();
+    const userSetPrice = listingRow.querySelector('.userPriceInput').value;
+    if ((extensionPrice < quickSellPrice) && userSetPrice === '') quickSell.click();
   }
 };
 
