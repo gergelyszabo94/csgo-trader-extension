@@ -167,7 +167,7 @@ const getListings = () => {
 };
 
 const addStickers = () => {
-  if (appID === steamApps.CSGO.appID) {
+  if (appID === steamApps.CSGO.appID && !isCommodityItem) {
     // removes sih sticker info
     document.querySelectorAll('.sih-images').forEach((image) => {
       image.remove();
@@ -350,7 +350,7 @@ const dealWithNewFloatData = (job, floatInfo) => {
 };
 
 const addListingsToFloatQueue = () => {
-  if (appID === steamApps.CSGO.appID) {
+  if (appID === steamApps.CSGO.appID && !isCommodityItem) {
     chrome.storage.local.get(['autoFloatMarket'], ({ autoFloatMarket }) => {
       if (autoFloatMarket && !csgoFloatExtPresent()) {
         if (itemWithInspectLink) {
