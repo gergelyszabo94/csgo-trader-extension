@@ -902,6 +902,30 @@ if (isCommodityItem) {
   document.getElementById('show_more_sell').addEventListener('click', () => {
     showAllOrders('sell');
   });
+
+  // makes container items into market links
+  if (fullName.includes('Case') || fullName.includes('Capsule')) {
+    const descriptors = document.getElementById('largeiteminfo_item_descriptors');
+    if (descriptors !== null) {
+      const qualityRBGS = [
+        'rgb(75, 105, 255)',
+        'rgb(136, 71, 255)',
+        'rgb(211, 44, 230)',
+        'rgb(235, 75, 75)',
+      ];
+
+      descriptors.querySelectorAll('.descriptor').forEach((descriptor) => {
+        if (descriptor.style !== '' && qualityRBGS.includes(descriptor.style.color)) {
+          const itemName = descriptor.innerText;
+          descriptor.innerHTML = DOMPurify.sanitize(
+            `<a href="https://steamcommunity.com/market/search?q=${itemName}&appid=730" style="color: ${descriptor.style.color}">
+                    ${itemName}
+                  </a>`,
+          );
+        }
+      });
+    }
+  }
 }
 
 // reload page on failure
