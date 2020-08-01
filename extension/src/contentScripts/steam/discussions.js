@@ -4,7 +4,7 @@ import {
 } from 'utils/utilsModular';
 import { trackEvent } from 'utils/analytics';
 import DOMPurify from 'dompurify';
-import { deleteForumComment } from 'utils/comments';
+import { deleteForumComment, postForumComment } from 'utils/comments';
 import { injectScript } from 'utils/injection';
 
 logExtensionPresence();
@@ -31,15 +31,10 @@ const doTheAutoBumping = () => {
 
       const commentID = commentThread.id.split('comment_')[1];
       deleteForumComment(abuseID, gIDForum, gIDTopic, commentID, extendedData);
-      commentThread.remove();
+      postForumComment(abuseID, gIDForum, gIDTopic, 'Bump', extendedData);
+      commentTextElement.innerText = 'CSGO Trader replaced this Bump comment with a new one.';
     }
   });
-  const commentTextArea = document.querySelector('.forumtopic_reply_entry').querySelector('.forumtopic_reply_textarea');
-  commentTextArea.value = 'Bump';
-  commentTextArea.focus();
-  setTimeout(() => {
-    document.querySelector('.btn_green_white_innerfade.btn_small').click();
-  }, 1000);
 };
 
 const searchElement = document.getElementById('DiscussionSearchForm');
