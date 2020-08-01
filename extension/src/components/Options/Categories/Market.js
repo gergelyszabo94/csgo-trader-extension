@@ -121,6 +121,12 @@ const market = () => {
         type="flipSwitchStorage"
         description="Highlights listings that you have already seen. Eliminates unnecessary work when looking for something."
       />
+      <Row
+        name={'Show "Buy and Sell Orders (cumulative)"'}
+        id="marketShowBuySellNonCommodity"
+        type="flipSwitchStorage"
+        description={'Show "Buy and Sell Orders (cumulative)" chart for non-commodity items'}
+      />
     </Category>
   );
 };

@@ -938,6 +938,16 @@ if (isCommodityItem) {
       );
     }
   }
+} else {
+  // adds "buy and sell orders" chart to non-commodity items
+  chrome.storage.local.get('marketShowBuySellNonCommodity', ({ marketShowBuySellNonCommodity }) => {
+    const listingItemInfoEl = document.querySelector('.market_listing_iteminfo');
+    if (listingItemInfoEl !== null && marketShowBuySellNonCommodity) {
+      listingItemInfoEl.insertAdjacentHTML('beforeend', '<div id="orders_histogram" style="margin-top:20px"></div>');
+      const startTickerScript = `ItemActivityTicker.Start(${getNameID()});`;
+      injectScript(startTickerScript, false, 'startTicker', false);
+    }
+  });
 }
 
 // reload page on failure

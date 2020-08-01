@@ -242,6 +242,7 @@ const storageKeys = {
       action: offerActions.accept.key,
     },
   ],
+  marketShowBuySellNonCommodity: true,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
