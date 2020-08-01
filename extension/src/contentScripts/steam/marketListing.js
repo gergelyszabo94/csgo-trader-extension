@@ -940,14 +940,34 @@ if (isCommodityItem) {
   }
 } else {
   // adds "buy and sell orders" chart to non-commodity items
-  chrome.storage.local.get('marketShowBuySellNonCommodity', ({ marketShowBuySellNonCommodity }) => {
-    const listingItemInfoEl = document.querySelector('.market_listing_iteminfo');
-    if (listingItemInfoEl !== null && marketShowBuySellNonCommodity) {
-      listingItemInfoEl.insertAdjacentHTML('beforeend', '<div id="orders_histogram" style="margin-top:20px"></div>');
-      const startTickerScript = `ItemActivityTicker.Start(${getNameID()});`;
-      injectScript(startTickerScript, false, 'startTicker', false);
-    }
-  });
+  chrome.storage.local.get(
+    ['marketShowBuySellNonCommodity', 'marketShowRecentActivityNonCommodity'],
+    ({ marketShowBuySellNonCommodity, marketShowRecentActivityNonCommodity }) => {
+      const listingItemInfoEl = document.querySelector('.market_listing_iteminfo');
+      const myListingsEl = document.getElementById('myListings');
+      if (listingItemInfoEl !== null && myListingsEl !== null) {
+        if (marketShowBuySellNonCommodity) {
+          listingItemInfoEl.insertAdjacentHTML('beforeend', '<div id="orders_histogram" style="margin-top:20px"></div>');
+        }
+
+        if (marketShowRecentActivityNonCommodity) {
+          myListingsEl.insertAdjacentHTML(
+            'beforebegin',
+            `
+                <hr>
+                <div id="market_activity_section">
+                    <h3 class="market_activity_header">Recent activity</h3>
+                    <div id="market_activity_block">
+                        <div id="market_activity_waiting_text">Waiting for new activity...</div>
+                    </div>
+                </div>`,
+          );
+        }
+        const startTickerScript = `ItemActivityTicker.Start(${getNameID()});`;
+        injectScript(startTickerScript, false, 'startTicker', false);
+      }
+    },
+  );
 }
 
 // reload page on failure

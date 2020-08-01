@@ -243,6 +243,7 @@ const storageKeys = {
     },
   ],
   marketShowBuySellNonCommodity: true,
+  marketShowRecentActivityNonCommodity: true,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

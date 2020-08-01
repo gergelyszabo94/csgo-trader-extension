@@ -127,6 +127,12 @@ const market = () => {
         type="flipSwitchStorage"
         description={'Show "Buy and Sell Orders (cumulative)" chart for non-commodity items'}
       />
+      <Row
+        name="Recent activity on non-commmodity"
+        id="marketShowRecentActivityNonCommodity"
+        type="flipSwitchStorage"
+        description="Show Recent activity on non-commodity items"
+      />
     </Category>
   );
 };
