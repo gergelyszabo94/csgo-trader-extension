@@ -25,11 +25,16 @@ const gIDTopic = forumTopicEl.id.split('_')[4];
 
 let autoBumpInterval;
 const doTheAutoBumping = () => {
+  let bumpCommentFound = false;
+  const getExtendedDataScript = `document.querySelector('body').setAttribute('commentExtendedData', g_rgCommentThreads['${forumTopicEl.id.split('commentthread_')[1].split('_area')[0]}'].m_rgCommentData.extended_data)`;
+  const extendedData = injectScript(getExtendedDataScript, true, 'getExtendedData', 'commentExtendedData');
+
   document.querySelectorAll('.commentthread_comment').forEach((commentThread) => {
     const commentTextElement = commentThread.querySelector('.commentthread_comment_text');
-    if (commentTextElement !== null && commentTextElement.innerText.includes('Bump') && !commentThread.classList.contains('commentthread_deleted_comment') && !commentThread.classList.contains('commentthread_deleted_expanded')) {
-      const getExtendedDataScript = `document.querySelector('body').setAttribute('commentExtendedData', g_rgCommentThreads['${forumTopicEl.id.split('commentthread_')[1].split('_area')[0]}'].m_rgCommentData.extended_data)`;
-      const extendedData = injectScript(getExtendedDataScript, true, 'getExtendedData', 'commentExtendedData');
+    if (commentTextElement !== null && commentTextElement.innerText.includes('Bump')
+      && !commentThread.classList.contains('commentthread_deleted_comment')
+      && !commentThread.classList.contains('commentthread_deleted_expanded')) {
+      bumpCommentFound = true;
 
       const commentID = commentThread.id.split('comment_')[1];
       deleteForumComment(abuseID, gIDForum, gIDTopic, commentID, extendedData);
@@ -37,6 +42,13 @@ const doTheAutoBumping = () => {
       commentTextElement.innerText = `CSGO Trader replaced this Bump comment with a new one. The page will refresh and the next bump will happen in ${nextBump} minutes.`;
     }
   });
+
+  if (!bumpCommentFound) {
+    postForumComment(abuseID, gIDForum, gIDTopic, 'Bump', extendedData);
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  }
 };
 
 const searchElement = document.getElementById('DiscussionSearchForm');
