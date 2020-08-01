@@ -126,7 +126,31 @@ const reportComments = (type, pageID) => {
   });
 };
 
+const deleteForumComment = (abuseID, gIDForum, gIDTopic, commentID, extendedData) => {
+  const headers = new Headers();
+  headers.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+  headers.append('accept', 'text/javascript, text/html, application/xml, text/xml, */*');
+
+  const request = new Request(
+    `https://steamcommunity.com/comment/ForumTopic/delete/${abuseID}/${gIDForum}/`,
+    {
+      method: 'POST',
+      headers,
+      body: `sessionid=${getSessionID()}&gidcomment=${commentID}&start=0&count=50&feature2=${gIDTopic}&oldestfirst=true&include_raw=true&extended_data=${extendedData}`,
+    },
+  );
+
+  fetch(request).then((response) => {
+    if (!response.ok) {
+      console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+    }
+    return response.json();
+  }).then(() => {}).catch((err) => {
+    console.log(err);
+  });
+};
+
 export {
   addCommentsMutationObserver, handleReplyToCommentFunctionality,
-  addReplyToCommentsFunctionality, reportComments,
+  addReplyToCommentsFunctionality, reportComments, deleteForumComment,
 };

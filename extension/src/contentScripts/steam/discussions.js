@@ -4,6 +4,8 @@ import {
 } from 'utils/utilsModular';
 import { trackEvent } from 'utils/analytics';
 import DOMPurify from 'dompurify';
+import { deleteForumComment } from 'utils/comments';
+import { injectScript } from 'utils/injection';
 
 logExtensionPresence();
 updateLoggedInUserInfo();
@@ -14,20 +16,22 @@ trackEvent({
   action: 'DiscussionsView',
 });
 
+const forumTopicEl = document.querySelector('.commentthread_area.forumtopic_comments');
+const abuseID = forumTopicEl.id.split('commentthread_ForumTopic_')[1].split('_')[0];
+const gIDForum = forumTopicEl.id.split('_')[3];
+const gIDTopic = forumTopicEl.id.split('_')[4];
+
 let autoBumpInterval;
 const doTheAutoBumping = () => {
   document.querySelectorAll('.commentthread_comment').forEach((commentThread) => {
     const commentTextElement = commentThread.querySelector('.commentthread_comment_text');
-    if (commentTextElement !== null && commentTextElement.innerText.includes('Bump')) {
-      const deleteButton = commentThread.querySelector('.forum_comment_action.delete');
-      if (deleteButton !== null) deleteButton.click();
-      setTimeout(() => {
-        const deleteModal = document.querySelector('.newmodal');
-        if (deleteModal !== null) {
-          deleteModal.querySelector('.btn_green_white_innerfade.btn_medium').click();
-        }
-      }, 1000);
-      // sometimes users are prompted to confirm deletion
+    if (commentTextElement !== null && commentTextElement.innerText.includes('Bump') && !commentThread.classList.contains('commentthread_deleted_comment') && !commentThread.classList.contains('commentthread_deleted_expanded')) {
+      const getExtendedDataScript = `document.querySelector('body').setAttribute('commentExtendedData', g_rgCommentThreads['${forumTopicEl.id.split('commentthread_')[1].split('_area')[0]}'].m_rgCommentData.extended_data)`;
+      const extendedData = injectScript(getExtendedDataScript, true, 'getExtendedData', 'commentExtendedData');
+
+      const commentID = commentThread.id.split('comment_')[1];
+      deleteForumComment(abuseID, gIDForum, gIDTopic, commentID, extendedData);
+      commentThread.remove();
     }
   });
   const commentTextArea = document.querySelector('.forumtopic_reply_entry').querySelector('.forumtopic_reply_textarea');
