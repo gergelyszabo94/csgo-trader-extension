@@ -130,6 +130,12 @@
       "css": ["/css/generalCSTStyle.css"]
     },
     {
+      "matches": ["*://steamcommunity.com/market/search*"],
+      "run_at" : "document_idle",
+      "js": ["js/contentScripts/steam/marketSearch.bundle.js"],
+      "css": ["/css/generalCSTStyle.css"]
+    },
+    {
       "matches": [
         "*://steamcommunity.com/id/*/inventoryhistory*",
         "*://steamcommunity.com/id/*/tradehistory*"

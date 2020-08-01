@@ -107,6 +107,7 @@ module.exports = (env) => {
       'js/contentScripts/steam/profile': path.join(__dirname, 'src', 'contentScripts/steam', 'profile.js'),
       'js/contentScripts/steam/discussions': path.join(__dirname, 'src', 'contentScripts/steam', 'discussions.js'),
       'js/contentScripts/steam/tradeHistory': path.join(__dirname, 'src', 'contentScripts/steam', 'tradeHistory.js'),
+      'js/contentScripts/steam/marketSearch': path.join(__dirname, 'src', 'contentScripts/steam', 'marketSearch.js'),
     },
     output: {
       publicPath: '/',
