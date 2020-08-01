@@ -16,6 +16,8 @@ trackEvent({
   action: 'DiscussionsView',
 });
 
+const nextBump = Math.floor((Math.random() * 10) + 31);
+
 const forumTopicEl = document.querySelector('.commentthread_area.forumtopic_comments');
 const abuseID = forumTopicEl.id.split('commentthread_ForumTopic_')[1].split('_')[0];
 const gIDForum = forumTopicEl.id.split('_')[3];
@@ -32,7 +34,7 @@ const doTheAutoBumping = () => {
       const commentID = commentThread.id.split('comment_')[1];
       deleteForumComment(abuseID, gIDForum, gIDTopic, commentID, extendedData);
       postForumComment(abuseID, gIDForum, gIDTopic, 'Bump', extendedData);
-      commentTextElement.innerText = 'CSGO Trader replaced this Bump comment with a new one.';
+      commentTextElement.innerText = `CSGO Trader replaced this Bump comment with a new one. The page will refresh and the next bump will happen in ${nextBump} minutes.`;
     }
   });
 };
@@ -62,7 +64,7 @@ if (searchElement !== null) {
 
       autoBumpInterval = setInterval(() => {
         doTheAutoBumping();
-      }, (30 * 60 * 1000)); // 30 minutes
+      }, (nextBump * 60 * 1000)); // 30 minutes
     } else autoBumpCheckBox.checked = false;
   });
 
@@ -72,7 +74,7 @@ if (searchElement !== null) {
       if (event.target.checked) {
         autoBumpInterval = setInterval(() => {
           doTheAutoBumping();
-        }, (30 * 60 * 1000)); // 30 minutes
+        }, (nextBump * 60 * 1000)); // 30 minutes
 
         if (discussionsToAutoBump.includes(window.location.href)) {
           newDiscussionsToAutoBump = discussionsToAutoBump;
