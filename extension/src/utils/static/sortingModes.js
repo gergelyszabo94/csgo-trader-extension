@@ -77,6 +77,10 @@ const offersSortingModes = {
 };
 
 const listingsSortingModes = {
+  default: {
+    key: 'default',
+    name: 'Default Steam Order',
+  },
   price_asc: sortingModes.price_asc,
   price_desc: sortingModes.price_desc,
   float_asc: sortingModes.float_asc,

@@ -427,55 +427,55 @@ const sortListings = (sortingMode) => {
   const listingsData = getListings();
   let sortedElements = [];
 
-  if (sortingMode === 'price_asc') {
+  if (sortingMode === listingsSortingModes.price_asc.key) {
     sortedElements = listingElements.sort((a, b) => {
       const priceOfA = parseInt(listingsData[getListingIDFromElement(a)].converted_price);
       const priceOfB = parseInt(listingsData[getListingIDFromElement(b)].converted_price);
       return priceOfA - priceOfB;
     });
-  } else if (sortingMode === 'price_desc') {
+  } else if (sortingMode === listingsSortingModes.price_desc.key) {
     sortedElements = listingElements.sort((a, b) => {
       const priceOfA = parseInt(listingsData[getListingIDFromElement(a)].converted_price);
       const priceOfB = parseInt(listingsData[getListingIDFromElement(b)].converted_price);
       return priceOfB - priceOfA;
     });
-  } else if (sortingMode === 'float_asc') {
+  } else if (sortingMode === listingsSortingModes.float_asc.key) {
     sortedElements = listingElements.sort((a, b) => {
       const floatOfA = parseFloat(a.getAttribute('data-float'));
       const floatOfB = parseFloat(b.getAttribute('data-float'));
       return floatOfA - floatOfB;
     });
-  } else if (sortingMode === 'float_desc') {
+  } else if (sortingMode === listingsSortingModes.float_desc.key) {
     sortedElements = listingElements.sort((a, b) => {
       const floatOfA = parseFloat(a.getAttribute('data-float'));
       const floatOfB = parseFloat(b.getAttribute('data-float'));
       return floatOfB - floatOfA;
     });
-  } else if (sortingMode === 'paint_index_asc') {
+  } else if (sortingMode === listingsSortingModes.paint_index_asc.key) {
     sortedElements = listingElements.sort((a, b) => {
       const paintIndexOfA = parseInt(a.getAttribute('data-paintindex'));
       const paintIndexOfB = parseInt(b.getAttribute('data-paintindex'));
       return paintIndexOfA - paintIndexOfB;
     });
-  } else if (sortingMode === 'paint_index_desc') {
+  } else if (sortingMode === listingsSortingModes.paint_index_desc.key) {
     sortedElements = listingElements.sort((a, b) => {
       const paintIndexOfA = parseInt(a.getAttribute('data-paintindex'));
       const paintIndexOfB = parseInt(b.getAttribute('data-paintindex'));
       return paintIndexOfB - paintIndexOfA;
     });
-  } else if (sortingMode === 'paint_seed_asc') {
+  } else if (sortingMode === listingsSortingModes.paint_seed_asc.key) {
     sortedElements = listingElements.sort((a, b) => {
       const paintSeedOfA = parseInt(a.getAttribute('data-paintseed'));
       const paintSeedOfB = parseInt(b.getAttribute('data-paintseed'));
       return paintSeedOfA - paintSeedOfB;
     });
-  } else if (sortingMode === 'paint_seed_desc') {
+  } else if (sortingMode === listingsSortingModes.paint_seed_desc.key) {
     sortedElements = listingElements.sort((a, b) => {
       const paintSeedOfA = parseInt(a.getAttribute('data-paintseed'));
       const paintSeedOfB = parseInt(b.getAttribute('data-paintseed'));
       return paintSeedOfB - paintSeedOfA;
     });
-  } else if (sortingMode === 'sticker_price_asc') {
+  } else if (sortingMode === listingsSortingModes.sticker_price_asc.key) {
     sortedElements = listingElements.sort((a, b) => {
       const stickerPriceOfA = a.getAttribute('data-sticker-price') !== 'null' && a.getAttribute('data-sticker-price') !== undefined
         ? parseFloat(a.getAttribute('data-sticker-price'))
@@ -485,7 +485,7 @@ const sortListings = (sortingMode) => {
         : 0.0;
       return stickerPriceOfA - stickerPriceOfB;
     });
-  } else if (sortingMode === 'sticker_price_desc') {
+  } else if (sortingMode === listingsSortingModes.sticker_price_desc.key) {
     sortedElements = listingElements.sort((a, b) => {
       const stickerPriceOfA = a.getAttribute('data-sticker-price') !== 'null' && a.getAttribute('data-sticker-price') !== undefined
         ? parseFloat(a.getAttribute('data-sticker-price'))
@@ -494,6 +494,12 @@ const sortListings = (sortingMode) => {
         ? parseFloat(b.getAttribute('data-sticker-price'))
         : 0.0;
       return stickerPriceOfB - stickerPriceOfA;
+    });
+  } else if (sortingMode === listingsSortingModes.default.key) {
+    sortedElements = listingElements.sort((a, b) => {
+      const positionOfA = Object.keys(listingsData).indexOf(getListingIDFromElement(a));
+      const positionOfB = Object.keys(listingsData).indexOf(getListingIDFromElement(b));
+      return positionOfA - positionOfB;
     });
   }
 
