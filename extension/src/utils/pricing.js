@@ -387,7 +387,8 @@ const updatePrices = () => {
 
         if (provider === pricingProviders.steam.name
           || provider === pricingProviders.bitskins.name
-          || provider === pricingProviders.skinport.name) {
+          || provider === pricingProviders.skinport.name
+          || provider === pricingProviders.buff163.name) {
           let pricingMode = mode;
           if (mode === pricingProviders.bitskins.pricing_modes.bitskins.name) pricingMode = 'price';
           else if (mode === pricingProviders.bitskins.pricing_modes.instant_sale.name) {
@@ -403,7 +404,10 @@ const updatePrices = () => {
             }
           }
         } else if (provider === pricingProviders.lootfarm.name
-          || provider === pricingProviders.csgotm.name) {
+          || provider === pricingProviders.csgotm.name
+          || provider === pricingProviders.csgoempire.name
+          || provider === pricingProviders.swapgg.name
+          || provider === pricingProviders.csgoexo.name) {
           for (const key of keys) {
             prices[key] = { price: pricesJSON[key] };
           }

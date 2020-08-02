@@ -395,6 +395,67 @@ const pricingProviders = {
       },
     },
   },
+  csgoempire: {
+    name: 'csgoempire',
+    long: 'CSGOEmpire',
+    short: 'EM',
+    url: 'https://csgoempire.com/',
+    description: 'CSGOEmpire is a popular gambling site',
+    pricing_modes: {
+      csgoempire: {
+        description: 'CSGOEmpire price',
+        name: 'csgoempire',
+        long: 'CSGOEmpire price (by pricempire.com)',
+      },
+    },
+  },
+  swapgg: {
+    name: 'swapgg',
+    long: 'swap.gg',
+    short: 'SW',
+    url: 'https://swap.gg/',
+    description: 'swap.gg is an automated trade bot site',
+    pricing_modes: {
+      swapgg: {
+        description: 'swap.gg price',
+        name: 'swapgg',
+        long: 'swap.gg price (by pricempire.com)',
+      },
+    },
+  },
+  csgoexo: {
+    name: 'csgoexo',
+    long: 'CSGOEXO.COM',
+    short: 'EX',
+    url: 'https://csgoexo.com/',
+    description: 'CSGOEXO.COM is an automated trade bot site',
+    pricing_modes: {
+      csgoexo: {
+        description: 'CSGOEXO.COM.gg price',
+        name: 'csgoexo',
+        long: 'CSGOEXO.COM price (by pricempire.com)',
+      },
+    },
+  },
+  buff163: {
+    name: 'buff163',
+    long: 'BUFF163',
+    short: 'BF',
+    url: 'https://buff.163.com/',
+    description: 'BUFF is a Chinese peer to peer skin marketplace',
+    pricing_modes: {
+      starting_at: {
+        description: 'BUFF Starting at (lowest listing) price',
+        name: 'starting_at',
+        long: 'BUFF Starting at (by pricempire.com)',
+      },
+      highest_order: {
+        description: 'BUFF Highest order price',
+        name: 'highest_order',
+        long: 'BUFF Highest order (by pricempire.com)',
+      },
+    },
+  },
 };
 
 const realTimePricingModes = {
