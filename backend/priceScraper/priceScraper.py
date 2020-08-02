@@ -35,6 +35,21 @@ def lambda_handler(event, context):
     stage_candidate = arn_split[len(arn_split) - 1]
     stage = 'dev' if stage_candidate == 'priceScraper' else 'prod'  # if there is an alias it's prod
 
+    # buff prices are in rehminbi, they have to be converted
+    print("Getting exchange rates")
+    try:
+        response = requests.get("https://prices.csgotrader.app/latest/exchange_rates.json")
+    except Exception as e:
+        print(e)
+        error = "Error requesting exchange rates"
+        alert_via_sns(f'{error}: {e}')
+        return {
+            'statusCode': 500,
+            'body': error
+        }
+
+    exchange_rates = response.json()
+
     master_list = []
 
     dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
@@ -346,6 +361,8 @@ def lambda_handler(event, context):
         items = response.json()
         print("Extracting pricing information")
 
+        cny_rate = float(exchange_rates["CNY"])
+
         csgoempire_prices = {}
         swapgg_prices = {}
         csgoexo_prices = {}
@@ -356,9 +373,12 @@ def lambda_handler(event, context):
             csgoempire_price = item.get('csgoempire')
             swapgg_price = item.get('swapgg')
             csgoexo_price = item.get('csgoexo')
+
+            buff_starting_at = item.get('buff163')
+            buff_highest_order = item.get('buff163_quick')
             buff163_price = {
-                "starting_at": item.get('buff163'),
-                "highest_order": item.get('buff163_quick')
+                "starting_at": "null" if buff_starting_at is None else float(buff_starting_at) / cny_rate,
+                "highest_order": "null" if buff_highest_order is None else float(buff_highest_order) / cny_rate,
             }
 
             csgoempire_prices[name] = csgoempire_price
@@ -537,6 +557,25 @@ def lambda_handler(event, context):
             extract[item]["csgotrader"] = csgotrader_prices[item]
         else:
             extract[item]["csgotrader"] = "null"
+        if item in csgoempire_prices:
+            extract[item]["csgoempire"] = csgoempire_prices[item]
+        else:
+            extract[item]["csgoempire"] = "null"
+        if item in swapgg_prices:
+            extract[item]["swapgg"] = swapgg_prices[item]
+        else:
+            extract[item]["swapgg"] = "null"
+        if item in csgoexo_prices:
+            extract[item]["csgoexo"] = csgoexo_prices[item]
+        else:
+            extract[item]["csgoexo"] = "null"
+        if item in buff163_prices:
+            extract[item]["buff163"] = buff163_prices[item]
+        else:
+            extract[item]["buff163"] = {
+                "starting_at": "null",
+                "highest_order": "null",
+            }
 
     push_to_s3(extract, 'prices_v5', stage)
     return {
