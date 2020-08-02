@@ -16,6 +16,10 @@ own_prices_table = os.environ['OWN_PRICES_TABLE']
 steam_apis_key = os.environ['STEAM_APIS_COM_API_KEY']
 skinport_cliend_id = os.environ['SKINPORT_CLIENT_ID']
 skinport_cliend_secret = os.environ['SKINPORT_CLIENT_SECRET']
+pricempire_url = os.environ['PRICEMPIRE_URL']
+pricempire_token = os.environ['PRICEMPIRE_TOKEN']
+pricempire_header = os.environ['PRICEMPIRE_HEADER']
+pricempire_header_value = os.environ['PRICEMPIRE_HEADER_VALUE']
 
 special_phases = ["Ruby", "Sapphire", "Black Pearl", "Emerald"]
 knives = ["Bayonet", "Bowie Knife", "Butterfly Knife", "Falchion Knife", "Flip Knife",
@@ -323,6 +327,55 @@ def lambda_handler(event, context):
 
     else:
         error = "Could not get items from skinport.com"
+        alert_via_sns(error)
+        print(error, " status code: ", response.status_code)
+        return {
+            'statusCode': response.status_code,
+            'body': json.dumps(error)
+        }
+
+    print("Requesting prices from pricempire")
+    response = requests.get(
+        pricempire_url + pricempire_token,
+        headers={pricempire_header: pricempire_header_value, "Cookie": "token=" + pricempire_token},
+    )
+    print("Received response from pricempire")
+
+    if response.status_code == 200 and len(response.json()) != 0:
+        print("Valid response from pricempire")
+        items = response.json()
+        print("Extracting pricing information")
+
+        csgoempire_prices = {}
+        swapgg_prices = {}
+        csgoexo_prices = {}
+        buff163_prices = {}
+
+        for item in items:
+            name = item.get('market_hash_name')
+            csgoempire_price = item.get('csgoempire')
+            swapgg_price = item.get('swapgg')
+            csgoexo_price = item.get('csgoexo')
+            buff163_price = {
+                "starting_at": item.get('buff163'),
+                "highest_order": item.get('buff163_quick')
+            }
+
+            csgoempire_prices[name] = csgoempire_price
+            swapgg_prices[name] = swapgg_price
+            csgoexo_prices[name] = csgoexo_price
+            buff163_prices[name] = buff163_price
+
+            add_to_master_list(master_list, name, True)
+
+        print("Pricing information extracted")
+        push_to_s3(csgoempire_prices, 'csgoempire', stage)
+        push_to_s3(swapgg_prices, 'swapgg', stage)
+        push_to_s3(csgoexo_prices, 'csgoexo', stage)
+        push_to_s3(buff163_prices, 'buff163', stage)
+
+    else:
+        error = "Could not get items from pricempire"
         alert_via_sns(error)
         print(error, " status code: ", response.status_code)
         return {
