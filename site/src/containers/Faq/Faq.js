@@ -33,7 +33,7 @@ const faq = (props) => {
                         <NewTabLink to='https://microsoftedge.microsoft.com/addons/detail/emcdnkamomgiafjejbhdpcfgbeeimpdb'> Microsoft Edge Addons </NewTabLink>
                         and at
                         <NewTabLink to='https://addons.mozilla.org/en-US/firefox/addon/csgo-trader-steam-trading/'> AMO</NewTabLink>
-                        These release versions are usually updated every 1-2 weeks.
+                        These release versions are usually updated every 2-3 weeks.
                     </p>
                     <p>
                         To install it open the appropriate web store for your browser and install it.
@@ -158,7 +158,8 @@ const faq = (props) => {
                 </Question>
                 <Question title='What are the supported pricing providers?'>
                     <p>
-                        CSGO Trader, Steam, CS.MONEY, BITSKINS.COM, LOOT.FARM, CSGO.TM, <NewTabLink to='https://skinport.com/?r=gery'>Skinport.com</NewTabLink>
+                        CSGO Trader, Steam, CS.MONEY, BITSKINS.COM, LOOT.FARM, CSGO.TM, <NewTabLink to='https://skinport.com/?r=gery'>Skinport.com</NewTabLink>,
+                        BUFF163.com, CSGOEmpire, swap.gg, CSGOEXO.COM.
                     </p>
                 </Question>
                 <Question title='How are CSGO Trader prices calculated?'>
