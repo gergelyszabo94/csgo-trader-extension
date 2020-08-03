@@ -138,8 +138,8 @@ chrome.notifications.onClicked.addListener((notificationID) => {
   chrome.browserAction.setBadgeText({ text: '' });
   chrome.permissions.contains({
     permissions: ['tabs'],
-  }, (result) => {
-    if (result) {
+  }, (granted) => {
+    if (granted) {
       if (notificationID === 'updated') {
         chrome.tabs.create({
           url: 'https://csgotrader.app/changelog/',
@@ -148,6 +148,12 @@ chrome.notifications.onClicked.addListener((notificationID) => {
         const offerID = notificationID.split('offer_received_')[1];
         chrome.tabs.create({
           url: `https://steamcommunity.com/tradeoffer/${offerID}/`,
+        });
+      } else if (notificationID.includes('new_inventory_items_')) {
+        chrome.storage.local.get('steamIDOfUser', ({ steamIDOfUser }) => {
+          chrome.tabs.create({
+            url: `https://steamcommunity.com/profiles/${steamIDOfUser}/inventory/`,
+          });
         });
       } else goToInternalPage('index.html?page=bookmarks');
     }
@@ -162,13 +168,15 @@ chrome.alarms.onAlarm.addListener((alarm) => {
       else chrome.alarms.clear('retryUpdatePricesAndExchangeRates', () => {});
     });
   } else if (alarm.name === 'getSteamNotificationCount') {
-    getSteamNotificationCount().then(({ invites, moderatorMessages, tradeOffers }) => {
+    getSteamNotificationCount().then(({
+      invites, moderatorMessages, tradeOffers, items,
+    }) => {
       chrome.storage.local.get(
-        ['friendRequests', 'groupInvites', 'ignoreGroupInvites', 'monitorFriendRequests',
-          'markModerationMessagesAsRead', 'monitorIncomingOffers', 'activeOffers'],
+        ['friendRequests', 'groupInvites', 'ignoreGroupInvites', 'monitorFriendRequests', 'numberOfNewItems',
+          'markModerationMessagesAsRead', 'monitorIncomingOffers', 'activeOffers', 'notifyAboutNewItems'],
         ({
-          friendRequests, groupInvites, ignoreGroupInvites, monitorFriendRequests,
-          markModerationMessagesAsRead, monitorIncomingOffers, activeOffers,
+          friendRequests, groupInvites, ignoreGroupInvites, monitorFriendRequests, numberOfNewItems,
+          markModerationMessagesAsRead, monitorIncomingOffers, activeOffers, notifyAboutNewItems,
         }) => {
           // friend request monitoring
           const minutesFromLastFriendCheck = ((Date.now()
@@ -198,6 +206,31 @@ chrome.alarms.onAlarm.addListener((alarm) => {
             && (tradeOffers !== activeOffers.receivedActiveCount
               || minutesFromLastOfferCheck >= 30)) {
             updateTrades();
+          }
+
+          // new items notification
+          if (notifyAboutNewItems && items !== numberOfNewItems) {
+            const numberOfJustNoticedNewItems = items > numberOfNewItems
+              ? items - numberOfNewItems
+              : 0;
+            if (numberOfJustNoticedNewItems > 0) {
+              const title = numberOfJustNoticedNewItems === 1
+                ? `${numberOfJustNoticedNewItems} new item!`
+                : `${numberOfJustNoticedNewItems} new items!`;
+              const message = numberOfJustNoticedNewItems === 1
+                ? `You have ${numberOfJustNoticedNewItems} item in your inventory!`
+                : `You have ${numberOfJustNoticedNewItems} items in your inventory!`;
+
+              chrome.notifications.create(`new_inventory_items_${Date.now()}`, {
+                type: 'basic',
+                iconUrl: '/images/cstlogo128.png',
+                title,
+                message,
+              }, () => {});
+            }
+            chrome.storage.local.set({
+              numberOfNewItems: items,
+            });
           }
         },
       );
@@ -254,8 +287,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
               iconUrl: iconFullURL,
               title: `${item.itemInfo.name} is tradable!`,
               message,
-            }, () => {
-            });
+            }, () => {});
           });
         } else if (item.notifType === 'alert') {
           chrome.permissions.contains({ permissions: ['tabs'] }, (permission) => {

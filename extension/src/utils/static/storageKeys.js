@@ -244,11 +244,13 @@ const storageKeys = {
   ],
   marketShowBuySellNonCommodity: true,
   marketShowRecentActivityNonCommodity: true,
+  notifyAboutNewItems: true,
+  numberOfNewItems: 0,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
   'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID', 'groupInvites',
   'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules', 'floatQueueActivity', 'discussionsToAutoBump',
-  'priceQueueActivity', 'userSteamWalletCurrency', 'tradeOffersEventLogs'];
+  'priceQueueActivity', 'userSteamWalletCurrency', 'tradeOffersEventLogs', 'numberOfNewItems'];
 
 export { storageKeys, nonSettingStorageKeys };
