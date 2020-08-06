@@ -9,7 +9,7 @@ import {
   ignoreGroupRequest, removeOldFriendRequestEvents,
 } from 'utils/friendRequests';
 import { trimFloatCache } from 'utils/floatCaching';
-import { getSteamNotificationCount } from 'utils/notifications';
+import { getSteamNotificationCount, playNotificationSound } from 'utils/notifications';
 import { updateTrades, removeOldOfferEvents } from 'utils/tradeOffers';
 
 // handles install and update events
@@ -57,7 +57,9 @@ chrome.runtime.onInstalled.addListener((details) => {
       iconUrl: '/images/cstlogo128.png',
       title: 'Extension installed!',
       message: 'Go to the options through the extension popup and customize your experience!',
-    }, () => {});
+    }, () => {
+      playNotificationSound();
+    });
   } else if (details.reason === 'update') {
     const path = chrome.extension.getURL('/index.html');
     if (path.includes('chrome-extension')) {
@@ -112,7 +114,9 @@ chrome.runtime.onInstalled.addListener((details) => {
             iconUrl: '/images/cstlogo128.png',
             title: `Extension updated to ${version}!`,
             message,
-          }, () => {});
+          }, () => {
+            playNotificationSound();
+          });
         });
       }
     });
@@ -226,7 +230,9 @@ chrome.alarms.onAlarm.addListener((alarm) => {
                 iconUrl: '/images/cstlogo128.png',
                 title,
                 message,
-              }, () => {});
+              }, () => {
+                playNotificationSound();
+              });
             }
             chrome.storage.local.set({
               numberOfNewItems: items,
@@ -287,7 +293,9 @@ chrome.alarms.onAlarm.addListener((alarm) => {
               iconUrl: iconFullURL,
               title: `${item.itemInfo.name} is tradable!`,
               message,
-            }, () => {});
+            }, () => {
+              playNotificationSound();
+            });
           });
         } else if (item.notifType === 'alert') {
           chrome.permissions.contains({ permissions: ['tabs'] }, (permission) => {

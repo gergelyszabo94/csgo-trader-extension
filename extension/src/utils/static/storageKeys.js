@@ -3,6 +3,7 @@ import { listingsSortingModes, offersSortingModes, sortingModes } from 'utils/st
 import defaultPopupLinks from 'utils/static/defaultPopupLinks';
 import { actions, conditions } from 'utils/static/friendRequests';
 import { actions as offerActions, conditions as offerConditions, operators } from 'utils/static/offers';
+import { notificationSounds } from 'utils/static/notifications';
 
 const storageKeys = {
   quickDeclineOffer: true,
@@ -246,6 +247,8 @@ const storageKeys = {
   marketShowRecentActivityNonCommodity: true,
   notifyAboutNewItems: true,
   numberOfNewItems: 0,
+  notificationSoundOn: true,
+  notificationSoundToPlay: notificationSounds['done-for-you'].key,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

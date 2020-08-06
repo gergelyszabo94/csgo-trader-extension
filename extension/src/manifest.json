@@ -172,7 +172,13 @@
     "images/list-solid.svg",
     "images/external_logos/csgofloat.png",
     "images/external_logos/skinport.png",
-    "images/external_logos/skinbaron.png"
+    "images/external_logos/skinbaron.png",
+    "sound/notification/done-for-you.mp3",
+    "sound/notification/juntos.mp3",
+    "sound/notification/piece-of-cake.mp3",
+    "sound/notification/pristine.mp3",
+    "sound/notification/swifty.mp3",
+    "sound/notification/when.mp3"
   ],
   "browser_action": {
     "default_popup": "index.html?page=popup",

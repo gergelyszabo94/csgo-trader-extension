@@ -60,6 +60,10 @@ module.exports = (env) => {
           from: 'src/assets/images',
           to: 'images/',
         },
+        {
+          from: 'src/assets/sounds',
+          to: 'sounds/',
+        },
       ],
     }),
     new HtmlWebpackPlugin({

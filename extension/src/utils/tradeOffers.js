@@ -18,6 +18,7 @@ import {
 } from 'utils/static/offers';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import { prettyPrintPrice } from 'utils/pricing';
+import { playNotificationSound } from 'utils/notifications';
 
 // only works in content scripts, not in background
 const acceptOffer = (offerID, partnerID) => {
@@ -142,7 +143,9 @@ const notifyAboutOffer = (offer) => {
           iconUrl: icon,
           title: `Offer from ${userDetails.personaname} (${prettyPrintPrice(currency, offer.profitOrLoss.toFixed(2))})!`,
           message: `You just received a new trade offer from ${userDetails.personaname}!`,
-        }, () => {});
+        }, () => {
+          playNotificationSound();
+        });
       });
     });
   });

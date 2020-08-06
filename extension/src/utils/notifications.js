@@ -65,4 +65,18 @@ const getSteamNotificationCount = () => new Promise((resolve, reject) => {
   });
 });
 
-export { reverseWhenNotifDetails, determineNotificationDate, getSteamNotificationCount };
+const playNotificationSound = () => {
+  chrome.storage.local.get(
+    ['notificationSoundOn', 'notificationSoundToPlay'],
+    ({ notificationSoundOn, notificationSoundToPlay }) => {
+      if (notificationSoundOn) {
+        new Audio(chrome.runtime.getURL(`sounds/notification/${notificationSoundToPlay}.mp3`)).play();
+      }
+    },
+  );
+};
+
+export {
+  reverseWhenNotifDetails, determineNotificationDate,
+  getSteamNotificationCount, playNotificationSound,
+};
