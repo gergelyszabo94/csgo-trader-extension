@@ -60,10 +60,10 @@ const openAndAcceptOffer = (offerID, partnerID) => {
 const getAcceptScriptAsString = (offerID, partnerID) => {
   return new Promise((resolve) => {
     chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }) => {
-      resolve(`const myHeaders = new Headers();
+      resolve(`myHeaders = new Headers();
       myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 
-      const request = new Request(\`https://steamcommunity.com/tradeoffer/${offerID}/accept\`,
+      request = new Request(\`https://steamcommunity.com/tradeoffer/${offerID}/accept\`,
         {
           method: 'POST',
           headers: myHeaders,
