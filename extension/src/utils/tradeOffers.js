@@ -406,7 +406,6 @@ const evaluateRule = (offer, rule) => {
 
 const evaluateOffers = (offers, rules) => {
   offers.forEach((offer) => {
-    console.log(offer);
     for (const [index, rule] of rules.entries()) {
       if (rule.active) {
         if (evaluateRule(offer, rule)) {
