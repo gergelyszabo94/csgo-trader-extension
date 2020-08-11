@@ -65,6 +65,7 @@ const TradeHistoryContent = () => {
           historySize={historySize}
           setExcludeEmpty={setExcludeEmpty}
           setStartTime={setStartTime}
+          updateTrades={updateTrades}
         />
         {
           error === null

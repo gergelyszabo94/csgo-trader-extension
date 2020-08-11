@@ -2,12 +2,16 @@ import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 
 import 'react-datepicker/dist/react-datepicker.css';
+import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSync } from '@fortawesome/free-solid-svg-icons';
 
 const TradeHistoryControls = ({
   historySize,
   setHistorySize,
   setExcludeEmpty,
   setStartTime,
+  updateTrades,
 }) => {
   const [selectState, setSelectState] = useState(historySize);
   const [exclude, setExclude] = useState(false);
@@ -81,6 +85,13 @@ const TradeHistoryControls = ({
             />
             <span className="checkmark__designed" />
           </label>
+        </span>
+      </div>
+      <div className="row">
+        <span className="trade-history__control">
+          <CustomA11yButton action={() => { updateTrades(false); }} title="Refresh">
+            <FontAwesomeIcon icon={faSync} />
+          </CustomA11yButton>
         </span>
       </div>
     </div>
