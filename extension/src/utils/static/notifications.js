@@ -15,8 +15,8 @@ const notificationSounds = {
     key: 'pristine',
     name: 'Pristine',
   },
-  swifty: {
-    key: 'swifty',
+  swiftly: {
+    key: 'swiftly',
     name: 'Swifty',
   },
   when: {
