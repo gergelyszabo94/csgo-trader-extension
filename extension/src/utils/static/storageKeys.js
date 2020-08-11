@@ -249,6 +249,7 @@ const storageKeys = {
   numberOfNewItems: 0,
   notificationSoundOn: true,
   notificationSoundToPlay: notificationSounds['done-for-you'].key,
+  notificationVolume: 50,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

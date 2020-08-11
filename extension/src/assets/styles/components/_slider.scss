@@ -1,0 +1,15 @@
+.sliderThumb {
+  color: white;
+  background-color: white;
+  border-radius: 20px;
+  height: 17px;
+  width: 18px;
+  font-size: 0px;
+}
+
+.sliderTrack {
+  background: $color-secondary;
+  height: 18px;
+  border-radius: 20px;
+  border: solid $color-secondary 1px;
+}

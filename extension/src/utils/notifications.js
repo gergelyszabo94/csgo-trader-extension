@@ -67,10 +67,12 @@ const getSteamNotificationCount = () => new Promise((resolve, reject) => {
 
 const playNotificationSound = () => {
   chrome.storage.local.get(
-    ['notificationSoundOn', 'notificationSoundToPlay'],
-    ({ notificationSoundOn, notificationSoundToPlay }) => {
+    ['notificationSoundOn', 'notificationSoundToPlay', 'notificationVolume'],
+    ({ notificationSoundOn, notificationSoundToPlay, notificationVolume }) => {
       if (notificationSoundOn) {
-        new Audio(chrome.runtime.getURL(`sounds/notification/${notificationSoundToPlay}.mp3`)).play();
+        const audio = new Audio(chrome.runtime.getURL(`sounds/notification/${notificationSoundToPlay}.mp3`));
+        audio.volume = notificationVolume / 100;
+        audio.play();
       }
     },
   );

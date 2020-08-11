@@ -38,6 +38,12 @@ const Notifications = () => {
         description="The notification sound you want to play"
         options={transformSounds()}
       />
+      <Row
+        name="Notification volume"
+        type="volumeSlider"
+        id="notificationVolume"
+        description="The sound volume you want for the notification sound"
+      />
     </Category>
   );
 };
