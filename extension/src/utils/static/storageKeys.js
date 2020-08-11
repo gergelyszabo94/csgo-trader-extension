@@ -250,6 +250,7 @@ const storageKeys = {
   notificationSoundOn: true,
   notificationSoundToPlay: notificationSounds['done-for-you'].key,
   notificationVolume: 50,
+  customNotificationURL: 'https://csgotrader.app/extension/sound/notification/glitch-in-the-matrix.ogg',
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

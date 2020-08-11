@@ -23,6 +23,10 @@ const notificationSounds = {
     key: 'when',
     name: 'When',
   },
+  custom: {
+    key: 'custom',
+    name: 'Custom',
+  },
 };
 
 // eslint-disable-next-line import/prefer-default-export

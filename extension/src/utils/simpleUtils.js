@@ -12,8 +12,11 @@ const getOfferLink = (offerID) => {
   return `https://steamcommunity.com/tradeoffer/${offerID}`;
 };
 
-const playAudio = (source, volume) => {
-  const audio = new Audio(chrome.runtime.getURL(source));
+const playAudio = (source, sourceType, volume) => {
+  const sourceURL = sourceType === 'local'
+    ? chrome.runtime.getURL(source)
+    : source;
+  const audio = new Audio(sourceURL);
   audio.volume = volume;
   audio.play();
 };

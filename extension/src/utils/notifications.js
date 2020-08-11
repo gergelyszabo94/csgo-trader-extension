@@ -1,4 +1,5 @@
 import { playAudio } from 'utils/simpleUtils';
+import { notificationSounds } from 'utils/static/notifications';
 
 const determineNotificationDate = (
   tradableDate,
@@ -69,10 +70,17 @@ const getSteamNotificationCount = () => new Promise((resolve, reject) => {
 
 const playNotificationSound = () => {
   chrome.storage.local.get(
-    ['notificationSoundOn', 'notificationSoundToPlay', 'notificationVolume'],
-    ({ notificationSoundOn, notificationSoundToPlay, notificationVolume }) => {
+    ['notificationSoundOn', 'notificationSoundToPlay', 'notificationVolume', 'customNotificationURL'],
+    ({
+      notificationSoundOn, notificationSoundToPlay, notificationVolume, customNotificationURL,
+    }) => {
       if (notificationSoundOn) {
-        playAudio(`sounds/notification/${notificationSoundToPlay}.mp3`, notificationVolume / 100);
+        const volume = notificationVolume / 100;
+        if (notificationSoundToPlay === notificationSounds.custom.key) {
+          playAudio(customNotificationURL, 'remote', volume);
+        } else {
+          playAudio(`sounds/notification/${notificationSoundToPlay}.mp3`, 'local', volume);
+        }
       }
     },
   );
