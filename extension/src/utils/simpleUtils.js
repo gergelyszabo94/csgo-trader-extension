@@ -12,4 +12,12 @@ const getOfferLink = (offerID) => {
   return `https://steamcommunity.com/tradeoffer/${offerID}`;
 };
 
-export { getItemMarketLink, getItemInventoryLink, getOfferLink };
+const playAudio = (source, volume) => {
+  const audio = new Audio(chrome.runtime.getURL(source));
+  audio.volume = volume;
+  audio.play();
+};
+
+export {
+  getItemMarketLink, getItemInventoryLink, getOfferLink, playAudio,
+};

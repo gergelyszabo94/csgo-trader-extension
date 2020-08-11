@@ -1,22 +1,9 @@
 import React from 'react';
 
 import Row from 'components/Options/Row';
-import { notificationSounds } from 'utils/static/notifications';
 import Category from '../Category/Category';
 
 const Notifications = () => {
-  const transformSounds = () => {
-    const transformedSounds = [];
-    for (const sound of Object.values(notificationSounds)) {
-      transformedSounds.push({
-        key: sound.key,
-        text: sound.name,
-      });
-    }
-
-    return transformedSounds;
-  };
-
   return (
     <Category title="Notifications">
       <Row
@@ -33,10 +20,9 @@ const Notifications = () => {
       />
       <Row
         name="Notification sound"
-        type="select"
+        type="notifSound"
         id="notificationSoundToPlay"
         description="The notification sound you want to play"
-        options={transformSounds()}
       />
       <Row
         name="Notification volume"

@@ -1,3 +1,5 @@
+import { playAudio } from 'utils/simpleUtils';
+
 const determineNotificationDate = (
   tradableDate,
   minutesOrHours,
@@ -70,9 +72,7 @@ const playNotificationSound = () => {
     ['notificationSoundOn', 'notificationSoundToPlay', 'notificationVolume'],
     ({ notificationSoundOn, notificationSoundToPlay, notificationVolume }) => {
       if (notificationSoundOn) {
-        const audio = new Audio(chrome.runtime.getURL(`sounds/notification/${notificationSoundToPlay}.mp3`));
-        audio.volume = notificationVolume / 100;
-        audio.play();
+        playAudio(`sounds/notification/${notificationSoundToPlay}.mp3`, notificationVolume / 100);
       }
     },
   );

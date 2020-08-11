@@ -15,6 +15,7 @@ import Restore from './Inputs/Restore/Restore';
 import Number from './Inputs/Number/Number';
 import RealTimePricingMode from './Inputs/RealTimePricingMode/RealTimePricingMode';
 import VolumeSlider from './Inputs/VolumeSlider/VolumeSlider';
+import NotificationSound from './Inputs/NotificationSound/NotificationSound';
 
 import './Row.css';
 
@@ -56,6 +57,8 @@ const typeSwitch = (type, key, permission, origins, modalTitle, options) => {
       return <RealTimePricingMode id={key} options={options} />;
     case 'volumeSlider':
       return <VolumeSlider id={key} />;
+    case 'notifSound':
+      return <NotificationSound />;
     default:
       return null;
   }
