@@ -1,8 +1,9 @@
 import { getPlayerBans, getPlayerSummaries } from 'utils/ISteamUser';
 import { actions, conditions, eventTypes } from 'utils/static/friendRequests';
-import { getSteamRepInfo } from 'utils/utilsModular';
+import { getSteamRepInfo, getRemoteImageAsObjectURL } from 'utils/utilsModular';
 import { getUserCSGOInventory } from 'utils/getUserInventory';
 import DOMPurify from 'dompurify';
+import { playNotificationSound } from 'utils/notifications';
 
 const getFriendRequests = () => new Promise((resolve, reject) => {
   const getRequest = new Request('https://steamcommunity.com/my/friends/pending');
@@ -29,6 +30,7 @@ const getFriendRequests = () => new Promise((resolve, reject) => {
             name: inviteRow.querySelector('.invite_block_name').firstElementChild.innerText,
             level: inviteRow.querySelector('.friendPlayerLevelNum').innerText,
             evalTries: 0,
+            avatar: inviteRow.querySelector('.playerAvatar > a > img').getAttribute('src'),
           });
         });
         resolve(inviters);
@@ -636,79 +638,102 @@ const updateFriendRequest = () => {
     });
 
     // loading previous invite info from storage that could be stale
-    chrome.storage.local.get(['friendRequests', 'apiKeyValid'], ({ friendRequests, apiKeyValid }) => {
-      const minutesFromLastCheck = ((Date.now()
-        - new Date(friendRequests.lastUpdated)) / 1000) / 60;
-      // safeguarding against an edge case where the invites page loads
-      // but the invites themselves don't, which means
-      // that the extension would falsely update the incoming requests to 0
-      // when on the next update it checks and now correctly finds the invites
-      // it logs the invites as new ones, which is problematic
-      // because if the user uses the "received invite in the past week"
-      // as a condition in the rule, it would match to all invites at this point
-      // this can manifest in pretty ugly ways, for example ignoring all current friend requests
-      // the conditions below try minimize the risk of this happening
-      if (inviters.length > 0 || friendRequests.inviters.length === 0
-      || (friendRequests.inviters.length < 2 && minutesFromLastCheck < 31)
-      || minutesFromLastCheck > 61) {
-        const staleInviterIDs = friendRequests.inviters.map((inviter) => {
-          return inviter.steamID;
-        });
+    chrome.storage.local.get(
+      ['friendRequests', 'apiKeyValid', 'notifyOnFriendRequest'],
+      ({ friendRequests, apiKeyValid, notifyOnFriendRequest }) => {
+        const minutesFromLastCheck = ((Date.now()
+          - new Date(friendRequests.lastUpdated)) / 1000) / 60;
+        // safeguarding against an edge case where the invites page loads
+        // but the invites themselves don't, which means
+        // that the extension would falsely update the incoming requests to 0
+        // when on the next update it checks and now correctly finds the invites
+        // it logs the invites as new ones, which is problematic
+        // because if the user uses the "received invite in the past week"
+        // as a condition in the rule, it would match to all invites at this point
+        // this can manifest in pretty ugly ways, for example ignoring all current friend requests
+        // the conditions below try minimize the risk of this happening
+        if (inviters.length > 0 || friendRequests.inviters.length === 0
+          || (friendRequests.inviters.length < 2 && minutesFromLastCheck < 31)
+          || minutesFromLastCheck > 61) {
+          const staleInviterIDs = friendRequests.inviters.map((inviter) => {
+            return inviter.steamID;
+          });
 
-        // if the invite was canceled by the sender or
-        // accepted, ignored or blocked by the user since the last check
-        const disappearedInvites = friendRequests.inviters.filter((inviter) => {
-          return !upToDateInviterIDs.includes(inviter.steamID);
-        });
+          // if the invite was canceled by the sender or
+          // accepted, ignored or blocked by the user since the last check
+          const disappearedInvites = friendRequests.inviters.filter((inviter) => {
+            return !upToDateInviterIDs.includes(inviter.steamID);
+          });
 
-        const disappearedInviteEvents = disappearedInvites.map((invite) => {
-          return createFriendRequestEvent(invite, eventTypes.disappeared.key);
-        });
+          const disappearedInviteEvents = disappearedInvites.map((invite) => {
+            return createFriendRequestEvent(invite, eventTypes.disappeared.key);
+          });
 
-        const newInvites = inviters.filter((inviter) => {
-          return !staleInviterIDs.includes(inviter.steamID);
-        });
+          const newInvites = inviters.filter((inviter) => {
+            return !staleInviterIDs.includes(inviter.steamID);
+          });
 
-        const unChangedInvites = friendRequests.inviters.filter((inviter) => {
-          return upToDateInviterIDs.includes(inviter.steamID);
-        });
+          const unChangedInvites = friendRequests.inviters.filter((inviter) => {
+            return upToDateInviterIDs.includes(inviter.steamID);
+          });
 
-        chrome.storage.local.set({
-          friendRequests: {
-            inviters: [...unChangedInvites, ...newInvites],
-            lastUpdated: Date.now(),
-          },
-        }, () => {
-          if (apiKeyValid) {
-            addSummariesToInvites();
-            setTimeout(() => {
-              addBansToInvites();
-            }, 5000);
-            setTimeout(() => {
-              addSteamRepInfoToInvites();
-            }, 10000);
-            setTimeout(() => {
-              addInventoryValueInfo();
-            }, 15000);
-            setTimeout(() => {
-              addCommonFriendsInfo();
-            }, 20000);
-            setTimeout(() => {
-              addPastRequestsInfo();
-            }, 25000);
-            setTimeout(() => {
-              evaluateInvites();
-            }, 26000);
-          }
-        });
+          chrome.storage.local.set({
+            friendRequests: {
+              inviters: [...unChangedInvites, ...newInvites],
+              lastUpdated: Date.now(),
+            },
+          }, () => {
+            if (notifyOnFriendRequest) {
+              newInvites.forEach((invite) => {
+                let icon = '/images/cstlogo128.png';
+                getRemoteImageAsObjectURL(invite.avatar).then((iconURL) => {
+                  icon = iconURL;
+                }).catch((e) => {
+                  console.log(e);
+                }).finally(() => {
+                  chrome.notifications.create(`invite_${invite.steamID}`, {
+                    type: 'basic',
+                    iconUrl: icon,
+                    title: `Friend request from ${invite.name}`,
+                    message: `You have a new friend request from ${invite.name}!`,
+                  }, () => {
+                    playNotificationSound();
+                  });
+                });
+              });
+            }
 
-        const newInviteEvents = newInvites.map((invite) => {
-          return createFriendRequestEvent(invite, eventTypes.new.key);
-        });
+            if (apiKeyValid) {
+              addSummariesToInvites();
+              setTimeout(() => {
+                addBansToInvites();
+              }, 5000);
+              setTimeout(() => {
+                addSteamRepInfoToInvites();
+              }, 10000);
+              setTimeout(() => {
+                addInventoryValueInfo();
+              }, 15000);
+              setTimeout(() => {
+                addCommonFriendsInfo();
+              }, 20000);
+              setTimeout(() => {
+                addPastRequestsInfo();
+              }, 25000);
+              setTimeout(() => {
+                evaluateInvites();
+              }, 26000);
+            }
+          });
 
-        logFriendRequestEvents([...newInviteEvents, ...disappearedInviteEvents]);
-      }
-    });
+          const newInviteEvents = newInvites.map((invite) => {
+            return createFriendRequestEvent(invite, eventTypes.new.key);
+          });
+
+          logFriendRequestEvents([...newInviteEvents, ...disappearedInviteEvents]);
+        }
+      },
+    );
   });
 };
 

@@ -252,6 +252,7 @@ const storageKeys = {
   notificationVolume: 50,
   customNotificationURL: 'https://csgotrader.app/extension/sound/notification/glitch-in-the-matrix.ogg',
   showNumberOfOfferOnBadge: true,
+  notifyOnFriendRequest: true,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

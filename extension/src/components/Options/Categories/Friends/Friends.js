@@ -21,6 +21,12 @@ const Friends = () => {
         type="flipSwitchStorage"
         description="If you have the extension installed on multiple computers you might want to turn it off in some of them to save requests to Steam."
       />
+      <Row
+        name="Notify about friend requests"
+        id="notifyOnFriendRequest"
+        type="flipSwitchStorage"
+        description="You will receive browser notifications about new friend request, friend requests must be monitored for this to work"
+      />
       <div className="row">
         <InviteRules />
         <InviteHistory />
