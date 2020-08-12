@@ -165,6 +165,12 @@ const updateActiveOffers = (offers, items) => {
     });
   }
 
+  chrome.storage.local.get('showNumberOfOfferOnBadge', ({ showNumberOfOfferOnBadge }) => {
+    if (showNumberOfOfferOnBadge) {
+      chrome.browserAction.setBadgeText({ text: receivedActiveCount.toString() });
+    }
+  });
+
   let sentActiveCount = 0;
   if (offers.trade_offers_sent) {
     offers.trade_offers_sent.forEach((offer) => {

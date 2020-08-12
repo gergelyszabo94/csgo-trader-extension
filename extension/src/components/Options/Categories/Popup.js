@@ -25,6 +25,12 @@ const popup = () => {
         description="Choose which links you want to see in the popup. 'Options' will always be there so you can come back and see this page. Links to be shown are in gold, links to be hidden are in white. Click it to switch visibility. You can also delete those that you have created before."
       />
       <Row
+        name="Show offers on badge"
+        type="flipSwitchStorage"
+        id="showNumberOfOfferOnBadge"
+        description="Shows the number of incoming offers you have on the extension badge"
+      />
+      <Row
         name="Default converter currencies"
         type="doubleSelect"
         id={['defaultConverterCurrency1', 'defaultConverterCurrency2']}
