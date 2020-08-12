@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { currencies } from 'utils/static/pricing';
+import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
 import Category from '../Category/Category';
 import Row from '../Row';
 
@@ -28,7 +29,12 @@ const popup = () => {
         name="Show offers on badge"
         type="flipSwitchStorage"
         id="showNumberOfOfferOnBadge"
-        description="Shows the number of incoming offers you have on the extension badge"
+        description={(
+          <>
+            Shows the number of incoming offers you have on the extension badge
+            <ApiKeyIndicator />
+          </>
+        )}
       />
       <Row
         name="Default converter currencies"
