@@ -253,11 +253,13 @@ const storageKeys = {
   customNotificationURL: 'https://csgotrader.app/extension/sound/notification/glitch-in-the-matrix.ogg',
   showNumberOfOfferOnBadge: true,
   notifyOnFriendRequest: true,
+  notifyAboutComments: false,
+  numberOfComments: 0,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
   'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID', 'groupInvites',
   'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules', 'floatQueueActivity', 'discussionsToAutoBump',
-  'priceQueueActivity', 'userSteamWalletCurrency', 'tradeOffersEventLogs', 'numberOfNewItems'];
+  'priceQueueActivity', 'userSteamWalletCurrency', 'tradeOffersEventLogs', 'numberOfNewItems', 'numberOfComments'];
 
 export { storageKeys, nonSettingStorageKeys };

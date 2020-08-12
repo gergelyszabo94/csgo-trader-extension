@@ -154,10 +154,17 @@ chrome.notifications.onClicked.addListener((notificationID) => {
           url: `https://steamcommunity.com/tradeoffer/${offerID}/`,
         });
       } else if (notificationID.includes('new_inventory_items_')) {
-        chrome.storage.local.get('steamIDOfUser', ({ steamIDOfUser }) => {
-          chrome.tabs.create({
-            url: `https://steamcommunity.com/profiles/${steamIDOfUser}/inventory/`,
-          });
+        chrome.tabs.create({
+          url: 'https://steamcommunity.com/my/inventory/',
+        });
+      } else if (notificationID.includes('invite_')) {
+        const userSteamID = notificationID.split('invite_')[1];
+        chrome.tabs.create({
+          url: `https://steamcommunity.com/profiles/${userSteamID}/`,
+        });
+      } else if (notificationID === 'new_comment') {
+        chrome.tabs.create({
+          url: 'https://steamcommunity.com/my/commentnotifications/',
         });
       } else goToInternalPage('index.html?page=bookmarks');
     }
@@ -173,14 +180,16 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     });
   } else if (alarm.name === 'getSteamNotificationCount') {
     getSteamNotificationCount().then(({
-      invites, moderatorMessages, tradeOffers, items,
+      invites, moderatorMessages, tradeOffers, items, comments,
     }) => {
       chrome.storage.local.get(
         ['friendRequests', 'groupInvites', 'ignoreGroupInvites', 'monitorFriendRequests', 'numberOfNewItems',
-          'markModerationMessagesAsRead', 'monitorIncomingOffers', 'activeOffers', 'notifyAboutNewItems'],
+          'markModerationMessagesAsRead', 'monitorIncomingOffers', 'activeOffers', 'notifyAboutNewItems',
+          'numberOfComments', 'notifyAboutComments'],
         ({
           friendRequests, groupInvites, ignoreGroupInvites, monitorFriendRequests, numberOfNewItems,
           markModerationMessagesAsRead, monitorIncomingOffers, activeOffers, notifyAboutNewItems,
+          numberOfComments, notifyAboutComments,
         }) => {
           // friend request monitoring
           const minutesFromLastFriendCheck = ((Date.now()
@@ -236,6 +245,30 @@ chrome.alarms.onAlarm.addListener((alarm) => {
             }
             chrome.storage.local.set({
               numberOfNewItems: items,
+            });
+          }
+
+          // comment notification
+          if (notifyAboutComments) {
+            const newComments = comments - numberOfComments;
+            if (newComments > 0) {
+              const title = newComments === 1
+                ? `${newComments} new comment!`
+                : `${newComments} new comments!`;
+              const message = newComments === 1
+                ? `You have ${newComments} new comment!`
+                : `You have ${newComments} new comments!`;
+              chrome.notifications.create('new_comment', {
+                type: 'basic',
+                iconUrl: '/images/cstlogo128.png',
+                title,
+                message,
+              }, () => {
+                playNotificationSound();
+              });
+            }
+            chrome.storage.local.set({
+              numberOfComments: comments,
             });
           }
         },

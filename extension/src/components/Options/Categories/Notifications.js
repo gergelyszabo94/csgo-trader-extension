@@ -13,6 +13,12 @@ const Notifications = () => {
         description="Whether you want to receive notifications when the extension gets updated"
       />
       <Row
+        name="Notify on comments"
+        id="notifyAboutComments"
+        type="flipSwitchStorage"
+        description="Get browser notifications about new Steam comments"
+      />
+      <Row
         name="Audio notification"
         id="notificationSoundOn"
         type="flipSwitchStorage"
