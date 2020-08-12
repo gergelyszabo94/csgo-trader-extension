@@ -31,18 +31,13 @@ const Popup = () => {
   };
 
   useEffect(() => {
-    chrome.storage.local.get(['popupLinks', 'steamIDOfUser', 'telemetryConsentSubmitted'],
-      ({ popupLinks, steamIDOfUser, telemetryConsentSubmitted }) => {
+    chrome.storage.local.get(['popupLinks', 'telemetryConsentSubmitted'],
+      ({ popupLinks, telemetryConsentSubmitted }) => {
         const navLinks = popupLinks.map((link) => {
           if (link.active) {
-            const URL = link.id === 'tradeoffers'
-              ? steamIDOfUser !== ''
-                ? `https://steamcommunity.com/profiles/${steamIDOfUser}/tradeoffers`
-                : 'https://steamcommunity.com/app/730/tradingforum/'
-              : link.url;
             return (
               <div key={link.id}>
-                <NewTabLink to={URL}>{link.name}</NewTabLink>
+                <NewTabLink to={link.url}>{link.name}</NewTabLink>
               </div>
             );
           }
