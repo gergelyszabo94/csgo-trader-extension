@@ -208,7 +208,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 
           if (monitorIncomingOffers
             && (tradeOffers !== activeOffers.receivedActiveCount
-              || minutesFromLastOfferCheck >= 30)) {
+              || minutesFromLastOfferCheck >= 10)) {
             updateTrades();
           }
 
