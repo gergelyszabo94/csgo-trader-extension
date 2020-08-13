@@ -23,9 +23,7 @@ const abuseID = forumTopicEl.id.split('commentthread_ForumTopic_')[1].split('_')
 const gIDForum = forumTopicEl.id.split('_')[3];
 const gIDTopic = forumTopicEl.id.split('_')[4];
 
-let autoBumpInterval;
 const doTheAutoBumping = () => {
-  let bumpCommentFound = false;
   const getExtendedDataScript = `document.querySelector('body').setAttribute('commentExtendedData', g_rgCommentThreads['${forumTopicEl.id.split('commentthread_')[1].split('_area')[0]}'].m_rgCommentData.extended_data)`;
   const extendedData = injectScript(getExtendedDataScript, true, 'getExtendedData', 'commentExtendedData');
 
@@ -34,21 +32,13 @@ const doTheAutoBumping = () => {
     if (commentTextElement !== null && commentTextElement.innerText.includes('Bump')
       && !commentThread.classList.contains('commentthread_deleted_comment')
       && !commentThread.classList.contains('commentthread_deleted_expanded')) {
-      bumpCommentFound = true;
-
       const commentID = commentThread.id.split('comment_')[1];
       deleteForumComment(abuseID, gIDForum, gIDTopic, commentID, extendedData);
-      postForumComment(abuseID, gIDForum, gIDTopic, 'Bump', extendedData);
       commentTextElement.innerText = `CSGO Trader replaced this Bump comment with a new one. The page will refresh and the next bump will happen in ${nextBump} minutes.`;
     }
   });
 
-  if (!bumpCommentFound) {
-    postForumComment(abuseID, gIDForum, gIDTopic, 'Bump', extendedData);
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
-  }
+  postForumComment(abuseID, gIDForum, gIDTopic, 'Bump', extendedData);
 };
 
 const searchElement = document.getElementById('DiscussionSearchForm');
@@ -74,34 +64,26 @@ if (searchElement !== null) {
       autoBumpCheckBox.checked = true;
       doTheAutoBumping();
 
-      autoBumpInterval = setInterval(() => {
-        doTheAutoBumping();
-      }, (nextBump * 60 * 1000)); // 30 minutes
+      setTimeout(() => {
+        window.location.reload();
+      }, nextBump * 60 * 1000);
     } else autoBumpCheckBox.checked = false;
-  });
 
-  autoBumpCheckBox.addEventListener('change', (event) => {
-    chrome.storage.local.get(['discussionsToAutoBump'], ({ discussionsToAutoBump }) => {
+    autoBumpCheckBox.addEventListener('change', (event) => {
       let newDiscussionsToAutoBump = [];
       if (event.target.checked) {
-        autoBumpInterval = setInterval(() => {
-          doTheAutoBumping();
-        }, (nextBump * 60 * 1000)); // 30 minutes
-
         if (discussionsToAutoBump.includes(window.location.href)) {
           newDiscussionsToAutoBump = discussionsToAutoBump;
         } else newDiscussionsToAutoBump = [...discussionsToAutoBump, window.location.href];
-      } else {
-        clearInterval(autoBumpInterval);
+      } else if (discussionsToAutoBump.includes(window.location.href)) {
+        newDiscussionsToAutoBump = discussionsToAutoBump.filter((href) => {
+          return href !== window.location.href;
+        });
+      } else newDiscussionsToAutoBump = discussionsToAutoBump;
 
-        if (discussionsToAutoBump.includes(window.location.href)) {
-          newDiscussionsToAutoBump = discussionsToAutoBump.filter((href) => {
-            return href !== window.location.href;
-          });
-        } else newDiscussionsToAutoBump = discussionsToAutoBump;
-      }
-
-      chrome.storage.local.set({ discussionsToAutoBump: newDiscussionsToAutoBump });
+      chrome.storage.local.set({ discussionsToAutoBump: newDiscussionsToAutoBump }, () => {
+        window.location.reload();
+      });
     });
   });
 }
