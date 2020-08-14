@@ -148,24 +148,34 @@ def lambda_handler(event, context):
             'body': error
         }
 
-    if response.status_code == 200 and response.json()['status'] == "success":
-        bitskins_prices = {}
-        print("Extracting pricing info")
-        items = response.json()['prices']
-        for item in items:
-            name = item.get('market_hash_name').replace('\xe2\x98\x85', '\u2605').replace("/", '-')
-            add_to_master_list(master_list, name, True)
-            instant_sale_price = item.get('instant_sale_price')
+    if response.status_code == 200:
+        try:
+            if response.json()['status'] == "success":
+                bitskins_prices = {}
+                print("Extracting pricing info")
+                items = response.json()['prices']
+                for item in items:
+                    name = item.get('market_hash_name').replace('\xe2\x98\x85', '\u2605').replace("/", '-')
+                    add_to_master_list(master_list, name, True)
+                    instant_sale_price = item.get('instant_sale_price')
 
-            if instant_sale_price == "None":
-                instant_sale_price = "null"
+                    if instant_sale_price == "None":
+                        instant_sale_price = "null"
 
-            bitskins_prices[name] = {
-                "price": item["price"],
-                "instant_sale_price": item["instant_sale_price"]
+                    bitskins_prices[name] = {
+                        "price": item["price"],
+                        "instant_sale_price": item["instant_sale_price"]
+                    }
+                print("Pricing info extracted")
+                push_to_s3(bitskins_prices, 'bitskins', stage)
+        except Exception as e:
+            print(e)
+            error = "Bitskins maintenance?"
+            alert_via_sns(f'{error}: {e}')
+            return {
+                'statusCode': 500,
+                'body': json.dumps(error)
             }
-        print("Pricing info extracted")
-        push_to_s3(bitskins_prices, 'bitskins', stage)
     elif response.status_code == 401:
         error = "Could not get items from bitskins, it's most likely an authentication problem"
         alert_via_sns(error)
