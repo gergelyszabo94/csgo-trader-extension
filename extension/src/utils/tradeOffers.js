@@ -23,7 +23,7 @@ import { playNotificationSound } from 'utils/notifications';
 const createTradeOfferJSON = (itemsToGive, itemsToReceive) => {
   return {
     newversion: true,
-    version: 3,
+    version: 2,
     me: {
       assets: itemsToGive,
       currency: [],
@@ -149,16 +149,11 @@ const sendOffer = (partnerID, tradeOfferJSON, token) => {
       const myHeaders = new Headers();
       myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 
-      const referrer = token === undefined
-        ? `https://steamcommunity.com/tradeoffer/new/?partner=${partnerID}`
-        : `https://steamcommunity.com/tradeoffer/new/?partner=${partnerID}&token=${token}`;
-
       const request = new Request('https://steamcommunity.com/tradeoffer/new/send',
         {
           method: 'POST',
           headers: myHeaders,
-          referrer,
-          body: `sessionid=${steamSessionID}&serverid=1&partner=${getProperStyleSteamIDFromOfferStyle(partnerID)}&tradeoffermessage=&json_tradeoffer=${JSON.stringify(tradeOfferJSON)}&captcha=&trade_offer_create_params={}`,
+          body: `sessionid=${steamSessionID}&serverid=1&partner=${getProperStyleSteamIDFromOfferStyle(partnerID)}&tradeoffermessage=&json_tradeoffer=${JSON.stringify(tradeOfferJSON)}&captcha=&trade_offer_create_params=${JSON.stringify({ trade_offer_access_token: token })}`,
         });
 
       fetch(request).then((response) => {
