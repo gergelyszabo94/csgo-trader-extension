@@ -255,6 +255,7 @@ const storageKeys = {
   notifyOnFriendRequest: true,
   notifyAboutComments: false,
   numberOfComments: 0,
+  sendOfferBasedOnQueryParams: false,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

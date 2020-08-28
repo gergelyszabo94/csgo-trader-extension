@@ -1206,12 +1206,16 @@ if (urlParams.get('csgotrader_accept') === 'true') {
 // send trade offer with gift item based on query params (for P2P trading)
 const csgoTraderSendParams = urlParams.get('csgotrader_send');
 if (csgoTraderSendParams !== null) {
-  const IDs = csgoTraderSendParams.split('_');
-  const tradeOfferJSON = createTradeOfferJSON([{
-    appid: IDs[0], contextid: IDs[1], amount: 1, assetid: IDs[2],
-  }], []);
-  sendOffer(urlParams.get('partner'), tradeOfferJSON, urlParams.get('token')).then(() => {
-    window.close();
+  chrome.storage.local.get('sendOfferBasedOnQueryParams', ({ sendOfferBasedOnQueryParams }) => {
+    if (sendOfferBasedOnQueryParams) {
+      const IDs = csgoTraderSendParams.split('_');
+      const tradeOfferJSON = createTradeOfferJSON([{
+        appid: IDs[0], contextid: IDs[1], amount: 1, assetid: IDs[2],
+      }], []);
+      sendOffer(urlParams.get('partner'), tradeOfferJSON, urlParams.get('token')).then(() => {
+        window.close();
+      });
+    }
   });
 }
 
