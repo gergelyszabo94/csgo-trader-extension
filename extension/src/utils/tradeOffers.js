@@ -20,6 +20,23 @@ import { getPlayerSummaries } from 'utils/ISteamUser';
 import { prettyPrintPrice } from 'utils/pricing';
 import { playNotificationSound } from 'utils/notifications';
 
+const createTradeOfferJSON = (itemsToGive, itemsToReceive) => {
+  return {
+    newversion: true,
+    version: 3,
+    me: {
+      assets: itemsToGive,
+      currency: [],
+      ready: false,
+    },
+    them: {
+      assets: itemsToReceive,
+      currency: [],
+      ready: false,
+    },
+  };
+};
+
 // only works in content scripts, not in background
 const acceptOffer = (offerID, partnerID) => {
   return new Promise((resolve, reject) => {
@@ -118,6 +135,39 @@ const declineOffer = (offerID) => {
         if (body.tradeofferid === offerID) {
           resolve(body);
         } else reject(body);
+      }).catch((err) => {
+        console.log(err);
+        reject(err);
+      });
+    });
+  });
+};
+
+const sendOffer = (partnerID, tradeOfferJSON, token) => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }) => {
+      const myHeaders = new Headers();
+      myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+
+      const referrer = token === undefined
+        ? `https://steamcommunity.com/tradeoffer/new/?partner=${partnerID}`
+        : `https://steamcommunity.com/tradeoffer/new/?partner=${partnerID}&token=${token}`;
+
+      const request = new Request('https://steamcommunity.com/tradeoffer/new/send',
+        {
+          method: 'POST',
+          headers: myHeaders,
+          referrer,
+          body: `sessionid=${steamSessionID}&serverid=1&partner=${getProperStyleSteamIDFromOfferStyle(partnerID)}&tradeoffermessage=&json_tradeoffer=${JSON.stringify(tradeOfferJSON)}&captcha=&trade_offer_create_params={}`,
+        });
+
+      fetch(request).then((response) => {
+        if (!response.ok) {
+          console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+          reject({ status: response.status, statusText: response.statusText });
+        } else return response.json();
+      }).then((body) => {
+        resolve(body);
       }).catch((err) => {
         console.log(err);
         reject(err);
@@ -554,6 +604,7 @@ const removeOldOfferEvents = () => {
 };
 
 export {
-  acceptOffer, declineOffer, updateActiveOffers, extractItemsFromOffers,
+  acceptOffer, declineOffer, updateActiveOffers, extractItemsFromOffers, sendOffer,
   matchItemsAndAddDetails, updateTrades, removeOldOfferEvents, acceptTradeInBackground,
+  createTradeOfferJSON,
 };

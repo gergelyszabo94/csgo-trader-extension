@@ -26,7 +26,9 @@ import { overrideHandleTradeActionMenu } from 'utils/steamOverriding';
 import { injectScript, injectStyle } from 'utils/injection';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
-import { acceptOffer, declineOffer } from 'utils/tradeOffers';
+import {
+  acceptOffer, declineOffer, sendOffer, createTradeOfferJSON,
+} from 'utils/tradeOffers';
 import steamApps from 'utils/static/steamApps';
 
 let yourInventory = null;
@@ -1197,6 +1199,18 @@ if (filterMenu !== null) {
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('csgotrader_accept') === 'true') {
   acceptOffer(offerID, urlParams.get('partner')).then(() => {
+    window.close();
+  });
+}
+
+// send trade offer with gift item based on query params (for P2P trading)
+const csgoTraderSendParams = urlParams.get('csgotrader_send');
+if (csgoTraderSendParams !== null) {
+  const IDs = csgoTraderSendParams.split('_');
+  const tradeOfferJSON = createTradeOfferJSON([{
+    appid: IDs[0], contextid: IDs[1], amount: 1, assetid: IDs[2],
+  }], []);
+  sendOffer(urlParams.get('partner'), tradeOfferJSON, urlParams.get('token')).then(() => {
     window.close();
   });
 }
