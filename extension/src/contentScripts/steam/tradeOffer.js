@@ -1208,13 +1208,23 @@ const csgoTraderSendParams = urlParams.get('csgotrader_send');
 if (csgoTraderSendParams !== null) {
   chrome.storage.local.get('sendOfferBasedOnQueryParams', ({ sendOfferBasedOnQueryParams }) => {
     if (sendOfferBasedOnQueryParams) {
-      const IDs = csgoTraderSendParams.split('_');
-      const tradeOfferJSON = createTradeOfferJSON([{
-        appid: IDs[0], contextid: IDs[1], amount: 1, assetid: IDs[2],
-      }], []);
-      sendOffer(urlParams.get('partner'), tradeOfferJSON, urlParams.get('token')).then(() => {
-        window.close();
-      });
+      const args = csgoTraderSendParams.split('_');
+      const whose = args[0]; // your or their
+      const type = args[1]; // id or name
+      if (type === 'id') {
+        const toGive = [];
+        const toReceive = [];
+        const item = {
+          appid: args[2], contextid: args[3], amount: 1, assetid: args[4],
+        };
+        if (whose === 'your') toGive.push(item);
+        else toReceive.push(item);
+
+        const tradeOfferJSON = createTradeOfferJSON(toGive, toReceive);
+        sendOffer(urlParams.get('partner'), tradeOfferJSON, urlParams.get('token')).then(() => {
+          window.close();
+        });
+      }
     }
   });
 }
