@@ -10,7 +10,7 @@ import {
   addSearchListener, getPattern, getNameTag, removeLinkFilterFromLinks,
   removeOfferFromActiveOffers, changePageTitle,
 } from 'utils/utilsModular';
-import { getItemMarketLink } from 'utils/simpleUtils';
+import { getItemMarketLink, getItemByNameAndGame } from 'utils/simpleUtils';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
   priceQueue, workOnPriceQueue, prettyPrintPrice, initPriceQueue,
@@ -320,7 +320,7 @@ const addInTradeTotals = (whose) => {
     itemsInTrade.forEach((inTradeItem) => {
       const realTimePrice = inTradeItem.getAttribute('data-realtime-price');
       if (realTimePrice !== null) inTradeRealTimeTotal += parseFloat(realTimePrice);
-      
+
       const IDs = getIDsFromElement(inTradeItem, 'offer');
       const item = getItemByIDs(combinedInventories, IDs.appID, IDs.contextID, IDs.assetID);
       if (item !== undefined) {
@@ -1012,6 +1012,18 @@ const addFriendRequestInfo = () => {
   });
 };
 
+const sendQueryParamOffer = (urlParams, whose, item) => {
+  const toGive = [];
+  const toReceive = [];
+  if (whose === 'your') toGive.push(item);
+  else toReceive.push(item);
+
+  const tradeOfferJSON = createTradeOfferJSON(toGive, toReceive);
+  sendOffer(urlParams.get('partner'), tradeOfferJSON, urlParams.get('token')).then(() => {
+    window.close();
+  });
+};
+
 logExtensionPresence();
 removeLinkFilterFromLinks();
 initPriceQueue();
@@ -1211,19 +1223,32 @@ if (csgoTraderSendParams !== null) {
       const args = csgoTraderSendParams.split('_');
       const whose = args[0]; // your or their
       const type = args[1]; // id or name
+      const appID = args[2];
+      const contextID = args[3];
       if (type === 'id') {
-        const toGive = [];
-        const toReceive = [];
         const item = {
-          appid: args[2], contextid: args[3], amount: 1, assetid: args[4],
+          appid: appID, contextid: contextID, amount: 1, assetid: args[4],
         };
-        if (whose === 'your') toGive.push(item);
-        else toReceive.push(item);
 
-        const tradeOfferJSON = createTradeOfferJSON(toGive, toReceive);
-        sendOffer(urlParams.get('partner'), tradeOfferJSON, urlParams.get('token')).then(() => {
-          window.close();
-        });
+        sendQueryParamOffer(urlParams, whose, item);
+      } else if (type === 'name') { // the item has to be found the appropriate inventory
+        const name = args[4]; // we need the assetid to be able to construct the offer
+        setTimeout(() => {
+          const inventory = whose === 'your'
+            ? yourInventory
+            : theirInventory;
+
+          const itemWithAllDetails = getItemByNameAndGame(
+            inventory[appID].items, appID, contextID, name,
+          );
+          if (itemWithAllDetails !== null) {
+            const item = {
+              appid: appID, contextid: contextID, amount: 1, assetid: itemWithAllDetails.assetid,
+            };
+
+            sendQueryParamOffer(urlParams, whose, item);
+          }
+        }, 5000);
       }
     }
   });

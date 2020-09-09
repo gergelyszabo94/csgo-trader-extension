@@ -21,6 +21,13 @@ const playAudio = (source, sourceType, volume) => {
   audio.play();
 };
 
+const getItemByNameAndGame = (inventory, appID, contextID, itemName) => {
+  return inventory.find((item) => {
+    return (item.market_hash_name === itemName
+      && item.appid === appID && item.contextid === contextID);
+  });
+};
+
 export {
-  getItemMarketLink, getItemInventoryLink, getOfferLink, playAudio,
+  getItemMarketLink, getItemInventoryLink, getOfferLink, playAudio, getItemByNameAndGame,
 };
