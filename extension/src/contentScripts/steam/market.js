@@ -388,7 +388,7 @@ if (orders) {
                     </button>
                 </div>
                 <div>
-                    <button type="submit" class="outbidOnePercent btn_green_white_innerfade btn_small" title="Cancel the current order and place a higher order by 1$ than the current highest">
+                    <button type="submit" class="outbidOnePercent btn_green_white_innerfade btn_small" title="Cancel the current order and place a higher order by 1% than the current highest">
                         Outbid by 1%
                     </button>
                 </div>
