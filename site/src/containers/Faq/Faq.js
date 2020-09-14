@@ -277,8 +277,8 @@ const faq = (props) => {
                 </Question>
                 <Question title="The in-browser inspection page does not load? I can't see the generated screenshot?">
                     <p>
-                        The screenshot generation is done by csgo.gallery
-                        <NewTabLink to='https://cs.deals/screenshot'> (CS.DEALS).</NewTabLink>
+                        The screenshot generation is done by swap.gg
+                        <NewTabLink to='https://market.swap.gg/screenshot'> (swap.gg).</NewTabLink>
                         I have no control over it, please let them know if it is not working as intended.
                     </p>
                 </Question>
