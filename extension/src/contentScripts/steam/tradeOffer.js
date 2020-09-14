@@ -1241,7 +1241,7 @@ if (csgoTraderSendParams !== null) {
           const itemWithAllDetails = getItemByNameAndGame(
             inventory[appID].items, appID, contextID, name,
           );
-          if (itemWithAllDetails !== null) {
+          if (itemWithAllDetails !== null && itemWithAllDetails !== undefined) {
             const item = {
               appid: appID, contextid: contextID, amount: 1, assetid: itemWithAllDetails.assetid,
             };
