@@ -72,7 +72,7 @@ const overrideHandleTradeActionMenu = () => {
                 if (item.actions !== '') {
                   item.actions=item.actions.filter(element => element.id!=="inbrowser");
                   let inspectLink = item.actions[0].link;
-                  item.actions.push({name: "Inspect in Browser...", link: "http://csgo.gallery/"+inspectLink, id: "inbrowser"});
+                  item.actions.push({name: "Inspect in Browser...", link: "https://market.swap.gg/screenshot?inspectLink="+inspectLink, id: "inbrowser"});
                 }
                 for ( var action = 0; action < item.actions.length; action++ )
                 {
@@ -128,7 +128,7 @@ const overridePopulateActions = () => {
             rgActions=rgActions.filter(element => element.id!=="inbrowser");
                 let inspectLink = rgActions[0].link;
                 if(inspectLink.substring(0,20)==="steam://rungame/730/"){ //makes sure it's a csgo inspect button
-                    rgActions.push({name: "Inspect in Browser...", link: "http://csgo.gallery/"+inspectLink, id: "inbrowser"});
+                    rgActions.push({name: "Inspect in Browser...", link: "https://market.swap.gg/screenshot?inspectLink="+inspectLink, id: "inbrowser"});
                 }
             for ( var i = 0; i < rgActions.length; i++ )
             {
