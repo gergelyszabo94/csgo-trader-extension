@@ -60,6 +60,7 @@ const commentPatternsToReport = [
   'Added for team talk',
   'BIG SUMMER GIVEAWAY BY CSGO EMPIRE FOR',
   'randomly your steam id was chosen',
+  'We can be friends for team talk',
 ];
 
 export default commentPatternsToReport;
