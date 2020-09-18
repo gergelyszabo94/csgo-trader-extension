@@ -1020,7 +1020,12 @@ const sendQueryParamOffer = (urlParams, whose, item, message) => {
 
   const tradeOfferJSON = createTradeOfferJSON(toGive, toReceive);
   sendOffer(urlParams.get('partner'), tradeOfferJSON, urlParams.get('token'), message).then(() => {
-    window.close();
+    if (window.opener) window.close(); // only tabs opened by js can be closed by js
+    else {
+      chrome.runtime.sendMessage({
+        closeTab: window.location.href,
+      }, () => {});
+    }
   });
 };
 
@@ -1237,22 +1242,28 @@ if (csgoTraderSendParams !== null) {
       } else if (type === 'name') { // the item has to be found the appropriate inventory
         const name = args[4]; // we need the assetid to be able to construct the offer
         let itemFound = false;
+
         setInterval(() => {
           if (!itemFound) {
             const inventory = whose === 'your'
               ? yourInventory
               : theirInventory;
 
-            const itemWithAllDetails = getItemByNameAndGame(
-              inventory[appID].items, appID, contextID, name,
-            );
-            if (itemWithAllDetails !== null && itemWithAllDetails !== undefined) {
-              itemFound = true;
-              const item = {
-                appid: appID, contextid: contextID, amount: 1, assetid: itemWithAllDetails.assetid,
-              };
+            if (inventory !== null) {
+              const itemWithAllDetails = getItemByNameAndGame(
+                inventory[appID].items, appID, contextID, name,
+              );
+              if (itemWithAllDetails !== null && itemWithAllDetails !== undefined) {
+                itemFound = true;
+                const item = {
+                  appid: appID,
+                  contextid: contextID,
+                  amount: 1,
+                  assetid: itemWithAllDetails.assetid,
+                };
 
-              sendQueryParamOffer(urlParams, whose, item, message);
+                sendQueryParamOffer(urlParams, whose, item, message);
+              }
             }
           }
         }, 500);
