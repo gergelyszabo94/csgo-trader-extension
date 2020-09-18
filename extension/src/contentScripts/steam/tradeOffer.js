@@ -1236,22 +1236,26 @@ if (csgoTraderSendParams !== null) {
         sendQueryParamOffer(urlParams, whose, item, message);
       } else if (type === 'name') { // the item has to be found the appropriate inventory
         const name = args[4]; // we need the assetid to be able to construct the offer
-        setTimeout(() => {
-          const inventory = whose === 'your'
-            ? yourInventory
-            : theirInventory;
+        let itemFound = false;
+        setInterval(() => {
+          if (!itemFound) {
+            const inventory = whose === 'your'
+              ? yourInventory
+              : theirInventory;
 
-          const itemWithAllDetails = getItemByNameAndGame(
-            inventory[appID].items, appID, contextID, name,
-          );
-          if (itemWithAllDetails !== null && itemWithAllDetails !== undefined) {
-            const item = {
-              appid: appID, contextid: contextID, amount: 1, assetid: itemWithAllDetails.assetid,
-            };
+            const itemWithAllDetails = getItemByNameAndGame(
+              inventory[appID].items, appID, contextID, name,
+            );
+            if (itemWithAllDetails !== null && itemWithAllDetails !== undefined) {
+              itemFound = true;
+              const item = {
+                appid: appID, contextid: contextID, amount: 1, assetid: itemWithAllDetails.assetid,
+              };
 
-            sendQueryParamOffer(urlParams, whose, item, message);
+              sendQueryParamOffer(urlParams, whose, item, message);
+            }
           }
-        }, 5000);
+        }, 500);
       }
     }
   });
