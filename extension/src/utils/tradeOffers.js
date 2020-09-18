@@ -143,7 +143,7 @@ const declineOffer = (offerID) => {
   });
 };
 
-const sendOffer = (partnerID, tradeOfferJSON, token) => {
+const sendOffer = (partnerID, tradeOfferJSON, token, message) => {
   return new Promise((resolve, reject) => {
     chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }) => {
       const myHeaders = new Headers();
@@ -153,7 +153,7 @@ const sendOffer = (partnerID, tradeOfferJSON, token) => {
         {
           method: 'POST',
           headers: myHeaders,
-          body: `sessionid=${steamSessionID}&serverid=1&partner=${getProperStyleSteamIDFromOfferStyle(partnerID)}&tradeoffermessage=&json_tradeoffer=${JSON.stringify(tradeOfferJSON)}&captcha=&trade_offer_create_params=${JSON.stringify({ trade_offer_access_token: token })}`,
+          body: `sessionid=${steamSessionID}&serverid=1&partner=${getProperStyleSteamIDFromOfferStyle(partnerID)}&tradeoffermessage=${message}&json_tradeoffer=${JSON.stringify(tradeOfferJSON)}&captcha=&trade_offer_create_params=${JSON.stringify({ trade_offer_access_token: token })}`,
         });
 
       fetch(request).then((response) => {

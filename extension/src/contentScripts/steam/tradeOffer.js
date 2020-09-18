@@ -1012,14 +1012,14 @@ const addFriendRequestInfo = () => {
   });
 };
 
-const sendQueryParamOffer = (urlParams, whose, item) => {
+const sendQueryParamOffer = (urlParams, whose, item, message) => {
   const toGive = [];
   const toReceive = [];
   if (whose === 'your') toGive.push(item);
   else toReceive.push(item);
 
   const tradeOfferJSON = createTradeOfferJSON(toGive, toReceive);
-  sendOffer(urlParams.get('partner'), tradeOfferJSON, urlParams.get('token')).then(() => {
+  sendOffer(urlParams.get('partner'), tradeOfferJSON, urlParams.get('token'), message).then(() => {
     window.close();
   });
 };
@@ -1220,6 +1220,9 @@ const csgoTraderSendParams = urlParams.get('csgotrader_send');
 if (csgoTraderSendParams !== null) {
   chrome.storage.local.get('sendOfferBasedOnQueryParams', ({ sendOfferBasedOnQueryParams }) => {
     if (sendOfferBasedOnQueryParams) {
+      const message = urlParams.get('csgotrader_message') !== null
+        ? urlParams.get('csgotrader_message')
+        : '';
       const args = csgoTraderSendParams.split('_');
       const whose = args[0]; // your or their
       const type = args[1]; // id or name
@@ -1230,7 +1233,7 @@ if (csgoTraderSendParams !== null) {
           appid: appID, contextid: contextID, amount: 1, assetid: args[4],
         };
 
-        sendQueryParamOffer(urlParams, whose, item);
+        sendQueryParamOffer(urlParams, whose, item, message);
       } else if (type === 'name') { // the item has to be found the appropriate inventory
         const name = args[4]; // we need the assetid to be able to construct the offer
         setTimeout(() => {
@@ -1246,7 +1249,7 @@ if (csgoTraderSendParams !== null) {
               appid: appID, contextid: contextID, amount: 1, assetid: itemWithAllDetails.assetid,
             };
 
-            sendQueryParamOffer(urlParams, whose, item);
+            sendQueryParamOffer(urlParams, whose, item, message);
           }
         }, 5000);
       }
