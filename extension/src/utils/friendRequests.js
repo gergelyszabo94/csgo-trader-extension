@@ -301,7 +301,7 @@ const addInventoryValueInfo = () => {
             csgoInventoryValue: total,
           });
         }).catch((err) => {
-          if (err === 'inventory_private') {
+          if (err === 'inventory_private' || err === 'inventory_private') {
             nowWithInventoryValue.push({
               ...invite,
               csgoInventoryValue: 'inventory_private',
