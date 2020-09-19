@@ -1168,8 +1168,14 @@ if (offerID !== 'new') {
       declineButton.addEventListener('click', () => {
         declineOffer(offerID).then(() => {
           removeOfferFromActiveOffers(offerID);
-          if (window.opener !== null) window.close();
-          else window.location.reload();
+          if (window.opener) window.close(); // only tabs opened by js can be closed by js
+          else {
+            chrome.runtime.sendMessage({
+              closeTab: window.location.href,
+            }, () => {
+              window.location.reload();
+            });
+          }
         });
       });
     });
@@ -1216,7 +1222,12 @@ if (filterMenu !== null) {
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('csgotrader_accept') === 'true') {
   acceptOffer(offerID, urlParams.get('partner')).then(() => {
-    window.close();
+    if (window.opener) window.close(); // only tabs opened by js can be closed by js
+    else {
+      chrome.runtime.sendMessage({
+        closeTab: window.location.href,
+      }, () => {});
+    }
   });
 }
 
