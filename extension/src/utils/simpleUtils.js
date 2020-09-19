@@ -28,6 +28,19 @@ const getItemByNameAndGame = (inventory, appID, contextID, itemName) => {
   });
 };
 
+const closeTab = () => new Promise((resolve, reject) => {
+  if (window.opener) {
+    window.close(); // only tabs opened by js can be closed by js
+    resolve('closed');
+  } else {
+    chrome.runtime.sendMessage({
+      closeTab: window.location.href,
+    }, () => {
+      reject('couldnt_close');
+    });
+  }
+});
+
 export {
-  getItemMarketLink, getItemInventoryLink, getOfferLink, playAudio, getItemByNameAndGame,
+  getItemMarketLink, getItemInventoryLink, getOfferLink, playAudio, getItemByNameAndGame, closeTab,
 };

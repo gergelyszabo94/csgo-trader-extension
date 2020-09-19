@@ -10,7 +10,7 @@ import {
   addSearchListener, getPattern, getNameTag, removeLinkFilterFromLinks,
   removeOfferFromActiveOffers, changePageTitle,
 } from 'utils/utilsModular';
-import { getItemMarketLink, getItemByNameAndGame } from 'utils/simpleUtils';
+import { getItemMarketLink, getItemByNameAndGame, closeTab } from 'utils/simpleUtils';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
   priceQueue, workOnPriceQueue, prettyPrintPrice, initPriceQueue,
@@ -1020,12 +1020,7 @@ const sendQueryParamOffer = (urlParams, whose, item, message) => {
 
   const tradeOfferJSON = createTradeOfferJSON(toGive, toReceive);
   sendOffer(urlParams.get('partner'), tradeOfferJSON, urlParams.get('token'), message).then(() => {
-    if (window.opener) window.close(); // only tabs opened by js can be closed by js
-    else {
-      chrome.runtime.sendMessage({
-        closeTab: window.location.href,
-      }, () => {});
-    }
+    closeTab();
   });
 };
 
@@ -1168,14 +1163,7 @@ if (offerID !== 'new') {
       declineButton.addEventListener('click', () => {
         declineOffer(offerID).then(() => {
           removeOfferFromActiveOffers(offerID);
-          if (window.opener) window.close(); // only tabs opened by js can be closed by js
-          else {
-            chrome.runtime.sendMessage({
-              closeTab: window.location.href,
-            }, () => {
-              window.location.reload();
-            });
-          }
+          closeTab().then(() => {}).catch(() => { window.location.reload(); });
         });
       });
     });
@@ -1222,12 +1210,7 @@ if (filterMenu !== null) {
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('csgotrader_accept') === 'true') {
   acceptOffer(offerID, urlParams.get('partner')).then(() => {
-    if (window.opener) window.close(); // only tabs opened by js can be closed by js
-    else {
-      chrome.runtime.sendMessage({
-        closeTab: window.location.href,
-      }, () => {});
-    }
+    closeTab();
   });
 }
 
