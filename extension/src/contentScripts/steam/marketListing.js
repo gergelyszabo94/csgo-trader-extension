@@ -1005,7 +1005,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
       elementToInsertTo.insertAdjacentHTML(
         'beforebegin',
         `<div>
-                <span class="realMoneyMarketTitle">You can save money (20-40%) by buying this item on one of these trusted markets for "real money":</span>
+                <span class="realMoneyMarketTitle">You can save money (20-35%) by buying this item on one of these trusted markets for "real money":</span>
                 <div class="realMoneySites">
                   <div class="realMoneySite">
                     <a href="https://skinport.com/market/${appID}?search=${fullName}&r=gery" target="_blank" class="realMoneySiteLink skinportLink">
@@ -1028,19 +1028,30 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                         Skinbaron.com
                     </a>
                   </div>
+                  <div class="realMoneySite">
+                    <a href="https://bskn.co/?market_hash_name=${fullName}&appid=${appID}&sort_by=price&order=asc&ref_alias=xcW4c_phcUc" target="_blank" class="realMoneySiteLink bitskinsLink">
+                        <img alt="Bitskins logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/bitskins.png')}">
+                        <br>
+                        Bitskins.com
+                    </a>
+                  </div>
                 </div>
                 <div id="realMoneyExpand" class="clickable" title="Click to learn more about what this is">What is this?</div>
                 <div id="realMoneyMoreInfo" class="hidden">
                     <div style="margin: 10px 0 10px 0">
                       <a href="https://skinport.com/market/730?r=gery" target="_blank" class="skinportLink">Skinport</a>,
-                      <a href="https://skinbaron.com/partner/gery" target="_blank" class="skinbaronLink">Skinbaron</a> and 
+                      <a href="https://skinbaron.com/partner/gery" target="_blank" class="skinbaronLink">Skinbaron</a>,
+                       <a href="bskn.co/?ref_alias=xcW4c_phcUc" target="_blank" class="bitskinsLink">Bitskins</a> and 
                       <a href="https://csgofloat.com?ref=gerytrading" target="_blank" class="csgofloatLink">
                       CSGOFloat
                       </a>
                       are real money marketplaces where you can buy and sell skins. <br>
                       You can save money by buying items there instead of the market. <br>
-                      <a href="https://skinport.com/market/730?search=${fullName}&r=gery" target="_blank" class="skinportLink">
+                      <a href="https://skinport.com/market/${appID}?search=${fullName}&r=gery" target="_blank" class="skinportLink">
                           Follow this link to check listings for his item on Skinport.com
+                      </a>,
+                      <a href="https://bskn.co/?market_hash_name=${fullName}&appid=${appID}&sort_by=price&order=asc&ref_alias=xcW4c_phcUc" target="_blank" class="bitskinsLink">
+                          this one for Bitskins.com
                       </a>,
                       <a href="https://csgofloat.com?ref=gerytrading" target="_blank" class="csgofloatLink">
                       this one and find your desired items on CSGOFloat's peer to peer market
@@ -1079,6 +1090,15 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
           trackEvent({
             type: 'event',
             action: 'skinbaronLinkClicked',
+          });
+        });
+      });
+
+      document.querySelectorAll('.bitskinsLink').forEach((link) => {
+        link.addEventListener('click', () => {
+          trackEvent({
+            type: 'event',
+            action: 'bitskinsLinkClicked',
           });
         });
       });
