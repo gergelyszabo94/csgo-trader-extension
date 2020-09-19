@@ -1016,28 +1016,28 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                   </div>
                   <div class="realMoneySite">
                     <a href="https://csgofloat.com?ref=gerytrading" target="_blank" class="realMoneySiteLink referralLink" data-site="csgofloat">
-                        <img alt="CSGOFloat logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csgofloat.png')}">
+                        <img alt="CSGOFloat logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csgofloat.png')}" data-site="csgofloat">
                         <br>
                         CSGOFloat Market
                     </a>
                   </div>
                   <div class="realMoneySite">
                     <a href="https://skinbaron.com/partner/gery" target="_blank" class="realMoneySiteLink referralLink" data-site="csgofloat" data-site="skinbaron">
-                        <img alt="Skinbaron logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinbaron.png')}">
+                        <img alt="Skinbaron logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinbaron.png')}" data-site="skinbaron">
                         <br>
                         Skinbaron.com
                     </a>
                   </div>
                   <div class="realMoneySite">
                     <a href="https://bskn.co/?market_hash_name=${fullName}&appid=${appID}&sort_by=price&order=asc&ref_alias=xcW4c_phcUc" target="_blank" class="realMoneySiteLink referralLink" data-site="bitskins">
-                        <img alt="Bitskins logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/bitskins.png')}">
+                        <img alt="Bitskins logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/bitskins.png')}" data-site="bitskins">
                         <br>
                         Bitskins.com
                     </a>
                   </div>
                   <div class="realMoneySite">
                     <a href="https://cs.money/?utm_source=sponsorship&utm_medium=cstrade&utm_campaign=cstrd0920&utm_content=link#skin_name=${fullName}" target="_blank" class="realMoneySiteLink referralLink" data-site="csmoney">
-                        <img alt="Csmoney logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csmoney.png')}">
+                        <img alt="Csmoney logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csmoney.png')}" data-site="csmoney">
                         <br>
                         CS.MONEY
                     </a>
@@ -1080,7 +1080,6 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
       document.querySelectorAll('.referralLink').forEach((link) => {
         link.addEventListener('click', (event) => {
           const site = event.target.getAttribute('data-site');
-          console.log(`market${site}LinkClicked`);
           trackEvent({
             type: 'event',
             action: `market${site}LinkClicked`,
