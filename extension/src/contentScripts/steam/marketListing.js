@@ -1035,13 +1035,20 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                         Bitskins.com
                     </a>
                   </div>
+                  <div class="realMoneySite">
+                    <a href="https://cs.money/?utm_source=sponsorship&utm_medium=cstrade&utm_campaign=cstrd0920&utm_content=link#skin_name=${fullName}" target="_blank" class="realMoneySiteLink csmoneyLink">
+                        <img alt="Csmoney logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csmoney.png')}">
+                        <br>
+                        CS.MONEY
+                    </a>
+                  </div>
                 </div>
                 <div id="realMoneyExpand" class="clickable" title="Click to learn more about what this is">What is this?</div>
                 <div id="realMoneyMoreInfo" class="hidden">
                     <div style="margin: 10px 0 10px 0">
                       <a href="https://skinport.com/market/730?r=gery" target="_blank" class="skinportLink">Skinport</a>,
                       <a href="https://skinbaron.com/partner/gery" target="_blank" class="skinbaronLink">Skinbaron</a>,
-                       <a href="bskn.co/?ref_alias=xcW4c_phcUc" target="_blank" class="bitskinsLink">Bitskins</a> and 
+                      <a href="bskn.co/?ref_alias=xcW4c_phcUc" target="_blank" class="bitskinsLink">Bitskins</a> and 
                       <a href="https://csgofloat.com?ref=gerytrading" target="_blank" class="csgofloatLink">
                       CSGOFloat
                       </a>
@@ -1058,6 +1065,9 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       </a>
                       or
                       <a href="https://skinbaron.com/partner/gery" target="_blank" class="skinbaronLink">this one for Skinbaron</a>
+                      You can also buy items for real money on
+                      <a href="https://cs.money/?utm_source=sponsorship&utm_medium=cstrade&utm_campaign=cstrd0920&utm_content=link#skin_name=${fullName}" target="_blank" class="csmoneyLink">Csmoney</a>
+                      as well as trade for them with your items.
                     </div>
                     <div>
                       This message was added by the CSGO Trader extension. using the above link to purchase something helps the development of the extension.
@@ -1099,6 +1109,15 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
           trackEvent({
             type: 'event',
             action: 'bitskinsLinkClicked',
+          });
+        });
+      });
+
+      document.querySelectorAll('.csmoneyLink').forEach((link) => {
+        link.addEventListener('click', () => {
+          trackEvent({
+            type: 'event',
+            action: 'csmoneyLinkClicked',
           });
         });
       });
