@@ -22,7 +22,11 @@ const OfferAutomation = () => {
         name="Send offers based on query params"
         id="sendOfferBasedOnQueryParams"
         type="flipSwitchStorage"
-        description="Send trade offers based on query parameters. When turned on and you open a link with &csgotrader_send=appID_contextID_assetID in it the extension sends the offer automatically. Useful for P2P trading and automation."
+        description={
+          `Send trade offers based on query parameters. 
+          When turned on and you open a link with &csgotrader_send=side(your/their)_type(name/id)appID_contextID_(market name / asset ID)
+          in it the extension sends the offer automatically. Useful for P2P trading and automation.`
+        }
       />
       <div className="row">
         <OfferHistory />
