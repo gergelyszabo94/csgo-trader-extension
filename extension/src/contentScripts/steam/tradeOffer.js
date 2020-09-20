@@ -1238,20 +1238,18 @@ if (csgoTraderSendParams !== null) {
         sendQueryParamOffer(urlParams, whose, item, message);
       } else if (type === 'name') { // the item has to be found the appropriate inventory
         const name = args[4]; // we need the assetid to be able to construct the offer
-        let itemFound = false;
+        const itemFoundInterval = setInterval(() => {
+          const inventory = whose === 'your'
+            ? yourInventory
+            : theirInventory;
 
-        setInterval(() => {
-          if (!itemFound) {
-            const inventory = whose === 'your'
-              ? yourInventory
-              : theirInventory;
-
-            if (inventory !== null) {
+          if (inventory !== null) {
+            if (inventory[appID] !== undefined) {
               const itemWithAllDetails = getItemByNameAndGame(
                 inventory[appID].items, appID, contextID, name,
               );
               if (itemWithAllDetails !== null && itemWithAllDetails !== undefined) {
-                itemFound = true;
+                clearInterval(itemFoundInterval);
                 const item = {
                   appid: appID,
                   contextid: contextID,
@@ -1261,6 +1259,13 @@ if (csgoTraderSendParams !== null) {
 
                 sendQueryParamOffer(urlParams, whose, item, message);
               }
+            } else { // when steam defaults to a different game's inventory
+              // than what we should be sending the item from
+              // load the inventory we want the item from:
+              const side = whose === 'your'
+                ? 'You'
+                : 'Them';
+              injectScript(`TradePageSelectInventory( User${side}, ${appID}, "${contextID}" );`, true, 'selectInventory', false);
             }
           }
         }, 500);
