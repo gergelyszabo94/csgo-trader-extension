@@ -111,12 +111,6 @@ const tradeOffer = () => {
         type="flipSwitchStorage"
         description="Moves the trade offer header to the left on wide screens, saving you some scrolling"
       />
-      <Row
-        name="Monitor Incoming offers"
-        id="monitorIncomingOffers"
-        type="flipSwitchStorage"
-        description="Monitors incoming offers and evaluates the automation rules"
-      />
     </Category>
   );
 };
