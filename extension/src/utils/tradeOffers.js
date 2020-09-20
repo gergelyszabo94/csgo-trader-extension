@@ -78,18 +78,23 @@ const openAndAcceptOffer = (offerID, partnerID) => {
 const getAcceptScriptAsString = (offerID, partnerID) => {
   return new Promise((resolve) => {
     chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }) => {
-      resolve(`myHeaders = new Headers();
-      myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-
-      request = new Request(\`https://steamcommunity.com/tradeoffer/${offerID}/accept\`,
-        {
-          method: 'POST',
-          headers: myHeaders,
-          referrer: \`https://steamcommunity.com/tradeoffer/${offerID}/\`,
-          body: \`sessionid=${steamSessionID}&serverid=1&tradeofferid=${offerID}&partner=${partnerID}&captcha=\`,
-        });
-
-      fetch(request).then(() => {});`);
+      resolve(`
+      acceptInterval = setInterval(() => {
+         myHeaders = new Headers();
+         myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+  
+         request = new Request(\`https://steamcommunity.com/tradeoffer/${offerID}/accept\`,
+           {
+             method: 'POST',
+             headers: myHeaders,
+             referrer: \`https://steamcommunity.com/tradeoffer/${offerID}/\`,
+             body: \`sessionid=${steamSessionID}&serverid=1&tradeofferid=${offerID}&partner=${partnerID}&captcha=\`,
+           });
+    
+         fetch(request).then(() => {
+           clearInterval(acceptInterval);
+         }); 
+      }, 4000);`);
     });
   });
 };

@@ -1209,9 +1209,12 @@ if (filterMenu !== null) {
 // accept trade by if instructed by background script
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('csgotrader_accept') === 'true') {
-  acceptOffer(offerID, urlParams.get('partner')).then(() => {
-    closeTab();
-  });
+  const acceptInterval = setInterval(() => {
+    acceptOffer(offerID, urlParams.get('partner')).then(() => {
+      clearInterval(acceptInterval);
+      closeTab();
+    });
+  }, 2000);
 }
 
 // send trade offer with gift item based on query params (for P2P trading)
