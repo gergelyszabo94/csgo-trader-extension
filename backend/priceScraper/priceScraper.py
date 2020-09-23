@@ -156,7 +156,7 @@ def lambda_handler(event, context):
                 items = response.json()['prices']
                 for item in items:
                     name = item.get('market_hash_name').replace('\xe2\x98\x85', '\u2605').replace("/", '-')
-                    add_to_master_list(master_list, name, True)
+                    add_to_master_list(master_list, name, False)
                     instant_sale_price = item.get('instant_sale_price')
 
                     if instant_sale_price == "None":
@@ -224,10 +224,10 @@ def lambda_handler(event, context):
                 name = name.replace(phase + " ", "")
                 if phase not in special_phases:
                     lootfarm_prices[name] = price
-                    add_to_master_list(master_list, name, True)
+                    add_to_master_list(master_list, name, False)
             else:
                 lootfarm_prices[name] = price
-                add_to_master_list(master_list, name, True)
+                add_to_master_list(master_list, name, False)
 
         print("Pricing information extracted")
         push_to_s3(lootfarm_prices, 'lootfarm', stage)
@@ -256,7 +256,7 @@ def lambda_handler(event, context):
             price = item.get('price')
 
             csgotm_prices[name] = price
-            add_to_master_list(master_list, name, True)
+            add_to_master_list(master_list, name, False)
 
         print("Pricing information extracted")
         push_to_s3(csgotm_prices, 'csgotm', stage)
@@ -288,7 +288,7 @@ def lambda_handler(event, context):
             if "Doppler" in name:
                 phase = name.split("Doppler ")[1].split(" (")[0]
                 name = name.replace(phase + " ", "")
-                add_to_master_list(master_list, name, True)
+                add_to_master_list(master_list, name, False)
                 try:
                     csmoney_prices[name]['doppler'][phase] = price
                 except KeyError:
@@ -301,7 +301,7 @@ def lambda_handler(event, context):
                 if phase == "Phase 3":
                     csmoney_prices[name]['price'] = price
             else:
-                add_to_master_list(master_list, name, True)
+                add_to_master_list(master_list, name, False)
                 csmoney_prices[name] = {'price': price}
 
         print("Pricing information extracted")
@@ -318,7 +318,6 @@ def lambda_handler(event, context):
     # base64 encoding of auth header per docs:
     # https://docs.skinport.com/#authentication
     auth_string = (base64.b64encode((skinport_cliend_id + ":" + skinport_cliend_secret).encode('ascii'))).decode('ascii')
-    print(auth_string)
     print("Requesting prices from skinport.com")
     response = requests.get(
         "https://api.skinport.com/v1/items?app_id=730",
@@ -345,7 +344,7 @@ def lambda_handler(event, context):
                 "instant_price": instant_price,
                 "starting_at": starting_at,
             }
-            add_to_master_list(master_list, name, True)
+            add_to_master_list(master_list, name, False)
 
         print("Pricing information extracted")
         push_to_s3(skinport_prices, 'skinport', stage)
@@ -379,24 +378,21 @@ def lambda_handler(event, context):
         buff163_prices = {}
 
         for item in items:
-            name = item.get('market_hash_name')
-            csgoempire_price = item.get('csgoempire')
-            swapgg_price = item.get('swapgg')
-            csgoexo_price = item.get('csgoexo')
+            appid = item.get('appId')
+            if appid == 730:
+                name = item.get('market_hash_name')
+                last_rices = item.get('lastPrices')
 
-            buff_starting_at = item.get('buff163')
-            buff_highest_order = item.get('buff163_quick')
-            buff163_price = {
-                "starting_at": "null" if buff_starting_at is None else float(buff_starting_at) / cny_rate,
-                "highest_order": "null" if buff_highest_order is None else float(buff_highest_order) / cny_rate,
-            }
+                if last_rices is not None:
+                    csgoempire_prices[name] = "null" if last_rices.get('csgoempire') is None else last_rices.get('csgoempire').get('price')
+                    swapgg_prices[name] = "null" if last_rices.get('swapgg') is None else last_rices.get('swapgg').get('price')
+                    csgoexo_prices[name] = "null" if last_rices.get('csgoexo') is None else last_rices.get('csgoexo').get('price')
+                    buff163_prices[name] = {
+                        "starting_at": "null" if last_rices.get('buff163') is None else float(last_rices.get('buff163').get('price')) / cny_rate,
+                        "highest_order": "null" if last_rices.get('buff163_quick') is None else float(last_rices.get('buff163_quick').get('price')) / cny_rate,
+                    }
 
-            csgoempire_prices[name] = csgoempire_price
-            swapgg_prices[name] = swapgg_price
-            csgoexo_prices[name] = csgoexo_price
-            buff163_prices[name] = buff163_price
-
-            add_to_master_list(master_list, name, True)
+                    add_to_master_list(master_list, name, False)
 
         print("Pricing information extracted")
         push_to_s3(csgoempire_prices, 'csgoempire', stage)
@@ -466,48 +462,49 @@ def lambda_handler(event, context):
     csgotrader_prices = {}
 
     for item in master_list:
-        steam_aggregate = get_steam_price(item, steam_prices, week_to_day, month_to_week)
-        case = steam_aggregate["case"]  # only used to debug pricing in dev mode
-        price = "null"
+        if item is not None:
+            steam_aggregate = get_steam_price(item, steam_prices, week_to_day, month_to_week)
+            case = steam_aggregate["case"]  # only used to debug pricing in dev mode
+            price = "null"
 
-        if steam_aggregate["price"] != "null" and steam_aggregate["price"] != 0.0 \
-                and not is_mispriced_knife(item, steam_aggregate["price"]) \
-                and not is_mispriced_glove(item, steam_aggregate["price"]) \
-                and not is_mispriced_compared_to_csb(item, steam_aggregate["price"], csgobackpack_prices):
-            price = float("{0:.2f}".format(steam_aggregate["price"]))
-        elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and \
-                csmoney_prices[item]["price"] != 0:
-            price = float("{0:.2f}".format(float(csmoney_prices[item]["price"]) * st_csm * week_to_day))
-            case = "F"
-        elif item in bitskins_prices and "price" in bitskins_prices[item] and bitskins_prices[item]["price"] != "null":
-            price = float("{0:.2f}".format(float(bitskins_prices[item]["price"]) * st_bit * week_to_day))
-            case = "G"
-        elif item in own_prices:
-            price = own_prices[item]
-            case = "H"
+            if steam_aggregate["price"] != "null" and steam_aggregate["price"] != 0.0 \
+                    and not is_mispriced_knife(item, steam_aggregate["price"]) \
+                    and not is_mispriced_glove(item, steam_aggregate["price"]) \
+                    and not is_mispriced_compared_to_csb(item, steam_aggregate["price"], csgobackpack_prices):
+                price = float("{0:.2f}".format(steam_aggregate["price"]))
+            elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and \
+                    csmoney_prices[item]["price"] != 0:
+                price = float("{0:.2f}".format(float(csmoney_prices[item]["price"]) * st_csm * week_to_day))
+                case = "F"
+            elif item in bitskins_prices and "price" in bitskins_prices[item] and bitskins_prices[item]["price"] != "null":
+                price = float("{0:.2f}".format(float(bitskins_prices[item]["price"]) * st_bit * week_to_day))
+                case = "G"
+            elif item in own_prices:
+                price = own_prices[item]
+                case = "H"
 
-        if "Doppler" in item:
-            doppler = {}
-            for phase in csmoney_prices[item]["doppler"]:
-                doppler[phase] = float("{0:.2f}".format(float(csmoney_prices[item]["doppler"][phase]) * st_csm))
-            if stage == "dev":
+            if "Doppler" in item:
+                doppler = {}
+                for phase in csmoney_prices[item]["doppler"]:
+                    doppler[phase] = float("{0:.2f}".format(float(csmoney_prices[item]["doppler"][phase]) * st_csm))
+                if stage == "dev":
+                    csgotrader_prices[item] = {
+                        "price": price,
+                        "case": "J",
+                        "doppler": doppler
+                    }
+                else:
+                    csgotrader_prices[item] = {
+                        "price": price,
+                        "doppler": doppler
+                    }
+            elif stage == "dev":
                 csgotrader_prices[item] = {
                     "price": price,
-                    "case": "J",
-                    "doppler": doppler
+                    "case": case
                 }
             else:
-                csgotrader_prices[item] = {
-                    "price": price,
-                    "doppler": doppler
-                }
-        elif stage == "dev":
-            csgotrader_prices[item] = {
-                "price": price,
-                "case": case
-            }
-        else:
-            csgotrader_prices[item] = {"price": price}
+                csgotrader_prices[item] = {"price": price}
 
     print("Check if the non-st version is cheaper")
     for item in csgotrader_prices:
