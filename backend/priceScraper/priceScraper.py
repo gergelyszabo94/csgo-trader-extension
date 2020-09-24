@@ -380,16 +380,16 @@ def lambda_handler(event, context):
         for item in items:
             appid = item.get('appId')
             if appid == 730:
-                name = item.get('market_hash_name')
+                name = item.get('name')
                 last_rices = item.get('lastPrices')
 
                 if last_rices is not None:
-                    csgoempire_prices[name] = "null" if last_rices.get('csgoempire') is None else last_rices.get('csgoempire').get('price')
-                    swapgg_prices[name] = "null" if last_rices.get('swapgg') is None else last_rices.get('swapgg').get('price')
-                    csgoexo_prices[name] = "null" if last_rices.get('csgoexo') is None else last_rices.get('csgoexo').get('price')
+                    csgoempire_prices[name] = "null" if last_rices.get('csgoempire') is None else get_formated_float(last_rices.get('csgoempire').get('price') / 100)
+                    swapgg_prices[name] = "null" if last_rices.get('swapgg') is None else get_formated_float(last_rices.get('swapgg').get('price') / 100)
+                    csgoexo_prices[name] = "null" if last_rices.get('csgoexo') is None else get_formated_float(last_rices.get('csgoexo').get('price') / 100)
                     buff163_prices[name] = {
-                        "starting_at": "null" if last_rices.get('buff163') is None else float(last_rices.get('buff163').get('price')) / cny_rate,
-                        "highest_order": "null" if last_rices.get('buff163_quick') is None else float(last_rices.get('buff163_quick').get('price')) / cny_rate,
+                        "starting_at": "null" if last_rices.get('buff163') is None else get_formated_float((float(last_rices.get('buff163').get('price')) / cny_rate) / 100),
+                        "highest_order": "null" if last_rices.get('buff163_quick') is None else get_formated_float((float(last_rices.get('buff163_quick').get('price')) / cny_rate) / 100),
                     }
 
                     add_to_master_list(master_list, name, False)
@@ -471,13 +471,13 @@ def lambda_handler(event, context):
                     and not is_mispriced_knife(item, steam_aggregate["price"]) \
                     and not is_mispriced_glove(item, steam_aggregate["price"]) \
                     and not is_mispriced_compared_to_csb(item, steam_aggregate["price"], csgobackpack_prices):
-                price = float("{0:.2f}".format(steam_aggregate["price"]))
+                price = get_formated_float(steam_aggregate["price"])
             elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and \
                     csmoney_prices[item]["price"] != 0:
-                price = float("{0:.2f}".format(float(csmoney_prices[item]["price"]) * st_csm * week_to_day))
+                price = get_formated_float(float(csmoney_prices[item]["price"]) * st_csm * week_to_day)
                 case = "F"
             elif item in bitskins_prices and "price" in bitskins_prices[item] and bitskins_prices[item]["price"] != "null":
-                price = float("{0:.2f}".format(float(bitskins_prices[item]["price"]) * st_bit * week_to_day))
+                price = get_formated_float(float(bitskins_prices[item]["price"]) * st_bit * week_to_day)
                 case = "G"
             elif item in own_prices:
                 price = own_prices[item]
@@ -486,7 +486,7 @@ def lambda_handler(event, context):
             if "Doppler" in item:
                 doppler = {}
                 for phase in csmoney_prices[item]["doppler"]:
-                    doppler[phase] = float("{0:.2f}".format(float(csmoney_prices[item]["doppler"][phase]) * st_csm))
+                    doppler[phase] = get_formated_float(float(csmoney_prices[item]["doppler"][phase]) * st_csm)
                 if stage == "dev":
                     csgotrader_prices[item] = {
                         "price": price,
@@ -729,3 +729,6 @@ def is_mispriced_compared_to_csb(item, price, csb_prices):
             return False
     else:
         return False
+
+def get_formated_float(price):
+    return float("{0:.2f}".format(price))
