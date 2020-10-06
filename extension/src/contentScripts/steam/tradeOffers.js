@@ -449,7 +449,6 @@ const updateOfferHistoryData = () => {
 const periodicallyUpdateRealTimeTotals = (offerEl) => {
   setInterval(() => {
     chrome.storage.local.get(['userSteamWalletCurrency'], ({ userSteamWalletCurrency }) => {
-      console.log(userSteamWalletCurrency);
       const offerPrimarySide = offerEl.querySelector('.tradeoffer_items.primary');
       const offerSecondarySide = offerEl.querySelector('.tradeoffer_items.secondary');
       let primaryTotal = 0;
