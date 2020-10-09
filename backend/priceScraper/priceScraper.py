@@ -271,7 +271,7 @@ def lambda_handler(event, context):
         }
 
     print("Requesting prices from cs.money")
-    response = requests.get("https://cs.money/js/database-skins/library-en-730.js")
+    response = requests.get("https://old.cs.money/js/database-skins/library-en-730.js")
     print("Received response from cs.money")
 
     if response.status_code == 200:
