@@ -16,10 +16,7 @@ own_prices_table = os.environ['OWN_PRICES_TABLE']
 steam_apis_key = os.environ['STEAM_APIS_COM_API_KEY']
 skinport_cliend_id = os.environ['SKINPORT_CLIENT_ID']
 skinport_cliend_secret = os.environ['SKINPORT_CLIENT_SECRET']
-pricempire_url = os.environ['PRICEMPIRE_URL']
 pricempire_token = os.environ['PRICEMPIRE_TOKEN']
-pricempire_header = os.environ['PRICEMPIRE_HEADER']
-pricempire_header_value = os.environ['PRICEMPIRE_HEADER_VALUE']
 
 special_phases = ["Ruby", "Sapphire", "Black Pearl", "Emerald"]
 knives = ["Bayonet", "Bowie Knife", "Butterfly Knife", "Falchion Knife", "Flip Knife",
@@ -34,21 +31,6 @@ def lambda_handler(event, context):
     arn_split = context.invoked_function_arn.split(':')
     stage_candidate = arn_split[len(arn_split) - 1]
     stage = 'dev' if stage_candidate == 'priceScraper' else 'prod'  # if there is an alias it's prod
-
-    # buff prices are in rehminbi, they have to be converted
-    print("Getting exchange rates")
-    try:
-        response = requests.get("https://prices.csgotrader.app/latest/exchange_rates.json")
-    except Exception as e:
-        print(e)
-        error = "Error requesting exchange rates"
-        alert_via_sns(f'{error}: {e}')
-        return {
-            'statusCode': 500,
-            'body': error
-        }
-
-    exchange_rates = response.json()
 
     master_list = []
 
@@ -360,17 +342,15 @@ def lambda_handler(event, context):
 
     print("Requesting prices from pricempire")
     response = requests.get(
-        pricempire_url + pricempire_token,
-        headers={pricempire_header: pricempire_header_value, "Cookie": "token=" + pricempire_token},
+        "https://pricempire.com/api/v1/getAllItems?token=" + pricempire_token + "&currency=USD",
     )
     print("Received response from pricempire")
 
-    if response.status_code == 200 and len(response.json()) != 0:
+    response_json = response.json()
+    if response.status_code == 200 and len(response_json) != 0 and response_json.get("status") is True:
         print("Valid response from pricempire")
-        items = response.json()
+        items = response_json.get("items")
         print("Extracting pricing information")
-
-        cny_rate = float(exchange_rates["CNY"])
 
         csgoempire_prices = {}
         swapgg_prices = {}
@@ -378,21 +358,19 @@ def lambda_handler(event, context):
         buff163_prices = {}
 
         for item in items:
-            appid = item.get('appId')
-            if appid == 730:
-                name = item.get('name')
-                last_rices = item.get('lastPrices')
+            name = item.get('name')
+            pricempire_prices = item.get('prices')
 
-                if last_rices is not None:
-                    csgoempire_prices[name] = "null" if last_rices.get('csgoempire') is None else get_formated_float(last_rices.get('csgoempire').get('price') / 100)
-                    swapgg_prices[name] = "null" if last_rices.get('swapgg') is None else get_formated_float(last_rices.get('swapgg').get('price') / 100)
-                    csgoexo_prices[name] = "null" if last_rices.get('csgoexo') is None else get_formated_float(last_rices.get('csgoexo').get('price') / 100)
-                    buff163_prices[name] = {
-                        "starting_at": "null" if last_rices.get('buff163') is None else get_formated_float((float(last_rices.get('buff163').get('price')) / cny_rate) / 100),
-                        "highest_order": "null" if last_rices.get('buff163_quick') is None else get_formated_float((float(last_rices.get('buff163_quick').get('price')) / cny_rate) / 100),
-                    }
+            if pricempire_prices is not None:
+                csgoempire_prices[name] = "null" if pricempire_prices.get('csgoempire') is None or pricempire_prices.get('csgoempire').get('price') is None else get_formated_float(pricempire_prices.get('csgoempire').get('price') / 100)
+                swapgg_prices[name] = "null" if pricempire_prices.get('swapgg') is None or pricempire_prices.get('swapgg').get('price') is None else get_formated_float(pricempire_prices.get('swapgg').get('price') / 100)
+                csgoexo_prices[name] = "null" if pricempire_prices.get('csgoexo') is None or pricempire_prices.get('csgoexo').get('price') is None else get_formated_float(pricempire_prices.get('csgoexo').get('price') / 100)
+                buff163_prices[name] = {
+                    "starting_at": "null" if pricempire_prices.get('buff163') is None or pricempire_prices.get('buff163').get('price') is None else get_formated_float(pricempire_prices.get('buff163').get('price') / 100),
+                    "highest_order": "null" if pricempire_prices.get('buff163_quick') is None or pricempire_prices.get('buff163_quick').get('price') is None else get_formated_float(pricempire_prices.get('buff163_quick').get('price') / 100),
+                }
 
-                    add_to_master_list(master_list, name, False)
+                add_to_master_list(master_list, name, False)
 
         print("Pricing information extracted")
         push_to_s3(csgoempire_prices, 'csgoempire', stage)
