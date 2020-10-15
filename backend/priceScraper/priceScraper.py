@@ -399,8 +399,8 @@ def lambda_handler(event, context):
                     }
                 else:
                     buff163_prices[name] = {
-                        "starting_at": {"price": "null"} if pricempire_prices.get('buff163') is None or pricempire_prices.get('buff163').get('price') is None else get_formated_float(pricempire_prices.get('buff163').get('price') / 100),
-                        "highest_order": {"price": "null"} if pricempire_prices.get('buff163_quick') is None or pricempire_prices.get('buff163_quick').get('price') is None else get_formated_float(pricempire_prices.get('buff163_quick').get('price') / 100)
+                        "starting_at": {"price": "null"} if pricempire_prices.get('buff163') is None or pricempire_prices.get('buff163').get('price') is None else {"price": get_formated_float(pricempire_prices.get('buff163').get('price') / 100),},
+                        "highest_order": {"price": "null"} if pricempire_prices.get('buff163_quick') is None or pricempire_prices.get('buff163_quick').get('price') is None else {"price": get_formated_float(pricempire_prices.get('buff163_quick').get('price') / 100),},
                     }
 
                 add_to_master_list(master_list, name, False)
