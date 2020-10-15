@@ -365,10 +365,43 @@ def lambda_handler(event, context):
                 csgoempire_prices[name] = "null" if pricempire_prices.get('csgoempire') is None or pricempire_prices.get('csgoempire').get('price') is None else get_formated_float(pricempire_prices.get('csgoempire').get('price') / 100)
                 swapgg_prices[name] = "null" if pricempire_prices.get('swapgg') is None or pricempire_prices.get('swapgg').get('price') is None else get_formated_float(pricempire_prices.get('swapgg').get('price') / 100)
                 csgoexo_prices[name] = "null" if pricempire_prices.get('csgoexo') is None or pricempire_prices.get('csgoexo').get('price') is None else get_formated_float(pricempire_prices.get('csgoexo').get('price') / 100)
-                buff163_prices[name] = {
-                    "starting_at": "null" if pricempire_prices.get('buff163') is None or pricempire_prices.get('buff163').get('price') is None else get_formated_float(pricempire_prices.get('buff163').get('price') / 100),
-                    "highest_order": "null" if pricempire_prices.get('buff163_quick') is None or pricempire_prices.get('buff163_quick').get('price') is None else get_formated_float(pricempire_prices.get('buff163_quick').get('price') / 100),
-                }
+
+                if "Doppler" in name:
+                    buff163_prices[name] = {
+                        "starting_at": {"price": "null", "doppler": "null"} if pricempire_prices.get(
+                            'buff163') is None or pricempire_prices.get('buff163').get(
+                            'price') is None else {
+                                "price": get_formated_float(pricempire_prices.get("buff163").get("price") / 100),
+                                "doppler": {
+                                        "Sapphire": "null" if pricempire_prices.get("buff_sapphire") is None or pricempire_prices.get("buff_sapphire").get("price") is None else pricempire_prices.get("buff_sapphire").get("price") / 100,
+                                        "Ruby": "null" if pricempire_prices.get("buff_ruby") is None or pricempire_prices.get("buff_ruby").get("price") is None else pricempire_prices.get("buff_ruby").get("price") / 100,
+                                        "Phase 3": "null" if pricempire_prices.get("buff_p1") is None or pricempire_prices.get("buff_p1").get("price") is None else pricempire_prices.get("buff_p1").get("price") / 100,
+                                        "Phase 2": "null" if pricempire_prices.get("buff_p2") is None or pricempire_prices.get("buff_p2").get("price") is None else pricempire_prices.get("buff_p2").get("price") / 100,
+                                        "Phase 1": "null" if pricempire_prices.get("buff_p3") is None or pricempire_prices.get("buff_p3").get("price") is None else pricempire_prices.get("buff_p3").get("price") / 100,
+                                        "Phase 4": "null" if pricempire_prices.get("buff_p4") is None or pricempire_prices.get("buff_p4").get("price") is None else pricempire_prices.get("buff_p4").get("price") / 100,
+                                        "Black Pearl": "null" if pricempire_prices.get("buff_bp") is None or pricempire_prices.get("buff_bp").get("price") is None else pricempire_prices.get("buff_bp").get("price") / 100,
+                                    }
+                                },
+                        "highest_order": {"price": "null", "doppler": "null"} if pricempire_prices.get(
+                            'buff163_quick') is None or pricempire_prices.get('buff163_quick').get(
+                            'price') is None else {
+                                "price": get_formated_float(pricempire_prices.get("buff163").get("price") / 100),
+                                "doppler": {
+                                        "Sapphire": "null" if pricempire_prices.get("buff_sapphire_quick") is None or pricempire_prices.get("buff_sapphire_quick").get("price") is None else pricempire_prices.get("buff_sapphire_quick").get("price") / 100,
+                                        "Ruby": "null" if pricempire_prices.get("buff_ruby_quick") is None or pricempire_prices.get("buff_ruby_quick").get("price") is None else pricempire_prices.get("buff_ruby_quick").get("price") / 100,
+                                        "Phase 3": "null" if pricempire_prices.get("buff_p1_quick") is None or pricempire_prices.get("buff_p1_quick").get("price") is None else pricempire_prices.get("buff_p1_quick").get("price") / 100,
+                                        "Phase 2": "null" if pricempire_prices.get("buff_p2_quick") is None or pricempire_prices.get("buff_p2_quick").get("price") is None else pricempire_prices.get("buff_p2_quick").get("price") / 100,
+                                        "Phase 1": "null" if pricempire_prices.get("buff_p3_quick") is None or pricempire_prices.get("buff_p3_quick").get("price") is None else pricempire_prices.get("buff_p3_quick").get("price") / 100,
+                                        "Phase 4": "null" if pricempire_prices.get("buff_p4_quick") is None or pricempire_prices.get("buff_p4_quick").get("price") is None else pricempire_prices.get("buff_p4_quick").get("price") / 100,
+                                        "Black Pearl": "null" if pricempire_prices.get("buff_bp_quick") is None or pricempire_prices.get("buff_bp_quick").get("price") is None else pricempire_prices.get("buff_bp_quick").get("price") / 100,
+                                }
+                             }
+                    }
+                else:
+                    buff163_prices[name] = {
+                        "starting_at": {"price": "null"} if pricempire_prices.get('buff163') is None or pricempire_prices.get('buff163').get('price') is None else get_formated_float(pricempire_prices.get('buff163').get('price') / 100),
+                        "highest_order": {"price": "null"} if pricempire_prices.get('buff163_quick') is None or pricempire_prices.get('buff163_quick').get('price') is None else get_formated_float(pricempire_prices.get('buff163_quick').get('price') / 100)
+                    }
 
                 add_to_master_list(master_list, name, False)
 
@@ -562,7 +595,7 @@ def lambda_handler(event, context):
                 "highest_order": "null",
             }
 
-    push_to_s3(extract, 'prices_v5', stage)
+    push_to_s3(extract, 'prices_v6', stage)
     return {
         'statusCode': 200,
         'body': json.dumps('Success!')
