@@ -387,8 +387,7 @@ const updatePrices = () => {
 
         if (provider === pricingProviders.steam.name
           || provider === pricingProviders.bitskins.name
-          || provider === pricingProviders.skinport.name
-          || provider === pricingProviders.buff163.name) {
+          || provider === pricingProviders.skinport.name) {
           let pricingMode = mode;
           if (mode === pricingProviders.bitskins.pricing_modes.bitskins.name) pricingMode = 'price';
           else if (mode === pricingProviders.bitskins.pricing_modes.instant_sale.name) {
@@ -421,6 +420,20 @@ const updatePrices = () => {
               };
             } else prices[key] = { price: pricesJSON[key].price };
           }
+        } else if (provider === pricingProviders.buff163.name) {
+          for (const key of keys) {
+            if (pricesJSON[key][mode] !== undefined) {
+              if (pricesJSON[key][mode].doppler !== undefined) {
+                prices[key] = {
+                  price: pricesJSON[key][mode].price,
+                  doppler: pricesJSON[key][mode].doppler,
+                };
+              } else prices[key] = { price: pricesJSON[key][mode].price };
+            } else {
+              prices[key] = { price: 'null' };
+              console.log(key);
+            }
+          }
         }
         chrome.storage.local.set({ prices }, () => {});
       }
@@ -442,20 +455,23 @@ const updateExchangeRates = () => {
   }).catch((err) => { console.log(err); });
 };
 
-const getPrice = (marketHashName, dopplerInfo, prices, provider, exchangeRate, currency) => {
+const getPrice = (marketHashName, dopplerInfo, prices, provider, mode, exchangeRate, currency) => {
   let price = 0.0;
   if (prices[marketHashName] !== undefined && prices[marketHashName] !== 'null'
     && prices[marketHashName] !== null && prices[marketHashName].price !== undefined
     && prices[marketHashName].price !== 'null') {
-    // csgotrader and csmoney have doppler phase prices so they are handled differently
-    if ((provider === pricingProviders.csgotrader.name
-      || provider === pricingProviders.csmoney.name)) { // other providers have no doppler info
+    // csgotrader, csmoney and buff have doppler phase prices so they are handled differently
+    if ((provider === pricingProviders.csgotrader.name || provider === pricingProviders.csmoney.name
+    || provider === pricingProviders.buff163.name)) { // other providers have no doppler info
       if (dopplerInfo !== null) {
         // when there is price for the specific doppler phase take that
         if (prices[marketHashName].doppler !== undefined && prices[marketHashName].doppler
           !== 'null' && prices[marketHashName].doppler[dopplerInfo.name] !== 'null'
           && prices[marketHashName].doppler[dopplerInfo.name] !== undefined) {
           price = (prices[marketHashName].doppler[dopplerInfo.name] * exchangeRate).toFixed(2);
+        } else if (provider === pricingProviders.buff163.name
+            && mode === pricingProviders.buff163.pricing_modes.starting_at.name) {
+          price = 0.0;
         } else price = (prices[marketHashName].price * exchangeRate).toFixed(2);
       } else price = (prices[marketHashName].price * exchangeRate).toFixed(2);
     } else price = (prices[marketHashName].price * exchangeRate).toFixed(2);

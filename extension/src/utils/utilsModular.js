@@ -268,6 +268,7 @@ const parseStickerInfo = (
   linkType,
   prices,
   pricingProvider,
+  pricingMode,
   exchangeRate,
   currency,
 ) => {
@@ -288,7 +289,7 @@ const parseStickerInfo = (
 
         stickers = names.map((name, index) => ({
           name,
-          price: linkType === 'search' ? null : getPrice(`${type} | ${name}`, null, prices, pricingProvider, exchangeRate, currency),
+          price: linkType === 'search' ? null : getPrice(`${type} | ${name}`, null, prices, pricingProvider, pricingMode, exchangeRate, currency),
           iconURL: iconURLs[index],
           marketURL: getStickerOrPatchLink(linkType, name, type),
         }));

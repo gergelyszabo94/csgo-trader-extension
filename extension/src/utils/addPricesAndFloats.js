@@ -5,9 +5,9 @@ import { getPattern, parseStickerInfo } from 'utils/utilsModular';
 
 const addPricesAndFloatsToInventory = (inventory) => new Promise((resolve) => {
   chrome.storage.local.get(
-    ['prices', 'exchangeRate', 'currency', 'itemPricing', 'pricingProvider'],
+    ['prices', 'exchangeRate', 'currency', 'itemPricing', 'pricingProvider', 'pricingMode'],
     ({
-      prices, exchangeRate, currency, itemPricing, pricingProvider,
+      prices, exchangeRate, currency, itemPricing, pricingProvider, pricingMode,
     }) => {
       if (itemPricing) {
         let total = 0.0;
@@ -20,7 +20,7 @@ const addPricesAndFloatsToInventory = (inventory) => new Promise((resolve) => {
               if (prices[item.market_hash_name] !== undefined
                 && prices[item.market_hash_name] !== 'null') {
                 item.price = getPrice(item.market_hash_name, item.dopplerInfo, prices,
-                  pricingProvider, exchangeRate, currency);
+                  pricingProvider, pricingMode, exchangeRate, currency);
                 total += parseFloat(item.price.price);
               }
               if (floatCache[item.assetid] !== undefined && floatCache[item.assetid] !== null
@@ -29,7 +29,7 @@ const addPricesAndFloatsToInventory = (inventory) => new Promise((resolve) => {
                 item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintSeed);
               }
               const stickers = parseStickerInfo(item.descriptions, 'direct', prices,
-                pricingProvider, exchangeRate, currency);
+                pricingProvider, pricingMode, exchangeRate, currency);
               const stickerPrice = getStickerPriceTotal(stickers, currency);
               item.stickers = stickers;
               item.stickerPrice = stickerPrice;

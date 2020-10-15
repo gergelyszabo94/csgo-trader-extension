@@ -7,7 +7,7 @@ const getTradeHistory = (
 ) => new Promise((resolve, reject) => {
   chrome.storage.local.get(['apiKeyValid', 'steamAPIKey', 'prices', 'pricingProvider', 'currency', 'exchangeRate'],
     ({
-      apiKeyValid, steamAPIKey, prices, pricingProvider, currency, exchangeRate,
+      apiKeyValid, steamAPIKey, prices, pricingProvider, pricingMode, currency, exchangeRate,
     }) => {
       if (apiKeyValid) {
         const getRequest = new Request(
@@ -53,6 +53,7 @@ const getTradeHistory = (
                         dopplerInfo,
                         prices,
                         pricingProvider,
+                        pricingMode,
                         exchangeRate,
                         currency,
                       );
@@ -80,6 +81,7 @@ const getTradeHistory = (
                         dopplerInfo,
                         prices,
                         pricingProvider,
+                        pricingMode,
                         exchangeRate,
                         currency,
                       );

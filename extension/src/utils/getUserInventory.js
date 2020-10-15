@@ -15,9 +15,9 @@ import { getItemMarketLink } from 'utils/simpleUtils';
 
 const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
   chrome.storage.local.get(
-    ['itemPricing', 'prices', 'currency', 'exchangeRate', 'pricingProvider'],
+    ['itemPricing', 'prices', 'currency', 'exchangeRate', 'pricingProvider', 'pricingMode'],
     ({
-      itemPricing, prices, currency, exchangeRate, pricingProvider,
+      itemPricing, prices, currency, exchangeRate, pricingProvider, pricingMode,
     }) => {
       const getRequest = new Request(`https://steamcommunity.com/profiles/${steamID}/inventory/json/${steamApps.CSGO.appID}/2/?l=english`);
       fetch(getRequest).then((response) => {
@@ -71,7 +71,7 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
                     let tradabilityShort = 'T';
                     const icon = item.icon_url;
                     const dopplerInfo = (name.includes('Doppler') || name.includes('doppler')) ? getDopplerInfo(icon) : null;
-                    const stickers = parseStickerInfo(item.descriptions, 'direct', prices, pricingProvider, exchangeRate, currency);
+                    const stickers = parseStickerInfo(item.descriptions, 'direct', prices, pricingProvider, pricingMode, exchangeRate, currency);
                     const owner = steamID;
                     let price = null;
                     const type = getType(item.tags);
@@ -86,7 +86,7 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
 
                     if (itemPricing) {
                       price = getPrice(marketHashName, dopplerInfo, prices,
-                        pricingProvider, exchangeRate, currency);
+                        pricingProvider, pricingMode, exchangeRate, currency);
                       inventoryTotal += parseFloat(price.price);
                     } else price = { price: '', display: '' };
 
