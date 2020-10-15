@@ -375,11 +375,12 @@ def lambda_handler(event, context):
                                 "doppler": {
                                         "Sapphire": "null" if pricempire_prices.get("buff_sapphire") is None or pricempire_prices.get("buff_sapphire").get("price") is None else pricempire_prices.get("buff_sapphire").get("price") / 100,
                                         "Ruby": "null" if pricempire_prices.get("buff_ruby") is None or pricempire_prices.get("buff_ruby").get("price") is None else pricempire_prices.get("buff_ruby").get("price") / 100,
-                                        "Phase 3": "null" if pricempire_prices.get("buff_p1") is None or pricempire_prices.get("buff_p1").get("price") is None else pricempire_prices.get("buff_p1").get("price") / 100,
-                                        "Phase 2": "null" if pricempire_prices.get("buff_p2") is None or pricempire_prices.get("buff_p2").get("price") is None else pricempire_prices.get("buff_p2").get("price") / 100,
-                                        "Phase 1": "null" if pricempire_prices.get("buff_p3") is None or pricempire_prices.get("buff_p3").get("price") is None else pricempire_prices.get("buff_p3").get("price") / 100,
-                                        "Phase 4": "null" if pricempire_prices.get("buff_p4") is None or pricempire_prices.get("buff_p4").get("price") is None else pricempire_prices.get("buff_p4").get("price") / 100,
                                         "Black Pearl": "null" if pricempire_prices.get("buff_bp") is None or pricempire_prices.get("buff_bp").get("price") is None else pricempire_prices.get("buff_bp").get("price") / 100,
+                                        "Emerald": "null" if pricempire_prices.get("buff_emerald") is None or pricempire_prices.get("buff_emerald").get("price") is None else pricempire_prices.get("buff_emerald").get("price") / 100,
+                                        "Phase 1": "null" if pricempire_prices.get("buff_p1") is None or pricempire_prices.get("buff_p1").get("price") is None else pricempire_prices.get("buff_p1").get("price") / 100,
+                                        "Phase 2": "null" if pricempire_prices.get("buff_p2") is None or pricempire_prices.get("buff_p2").get("price") is None else pricempire_prices.get("buff_p2").get("price") / 100,
+                                        "Phase 3": "null" if pricempire_prices.get("buff_p3") is None or pricempire_prices.get("buff_p3").get("price") is None else pricempire_prices.get("buff_p3").get("price") / 100,
+                                        "Phase 4": "null" if pricempire_prices.get("buff_p4") is None or pricempire_prices.get("buff_p4").get("price") is None else pricempire_prices.get("buff_p4").get("price") / 100,
                                     }
                                 },
                         "highest_order": {"price": "null", "doppler": "null"} if pricempire_prices.get(
@@ -389,11 +390,12 @@ def lambda_handler(event, context):
                                 "doppler": {
                                         "Sapphire": "null" if pricempire_prices.get("buff_sapphire_quick") is None or pricempire_prices.get("buff_sapphire_quick").get("price") is None else pricempire_prices.get("buff_sapphire_quick").get("price") / 100,
                                         "Ruby": "null" if pricempire_prices.get("buff_ruby_quick") is None or pricempire_prices.get("buff_ruby_quick").get("price") is None else pricempire_prices.get("buff_ruby_quick").get("price") / 100,
-                                        "Phase 3": "null" if pricempire_prices.get("buff_p1_quick") is None or pricempire_prices.get("buff_p1_quick").get("price") is None else pricempire_prices.get("buff_p1_quick").get("price") / 100,
-                                        "Phase 2": "null" if pricempire_prices.get("buff_p2_quick") is None or pricempire_prices.get("buff_p2_quick").get("price") is None else pricempire_prices.get("buff_p2_quick").get("price") / 100,
-                                        "Phase 1": "null" if pricempire_prices.get("buff_p3_quick") is None or pricempire_prices.get("buff_p3_quick").get("price") is None else pricempire_prices.get("buff_p3_quick").get("price") / 100,
-                                        "Phase 4": "null" if pricempire_prices.get("buff_p4_quick") is None or pricempire_prices.get("buff_p4_quick").get("price") is None else pricempire_prices.get("buff_p4_quick").get("price") / 100,
                                         "Black Pearl": "null" if pricempire_prices.get("buff_bp_quick") is None or pricempire_prices.get("buff_bp_quick").get("price") is None else pricempire_prices.get("buff_bp_quick").get("price") / 100,
+                                        "Emerald": "null" if pricempire_prices.get("buff_emerald_quick") is None or pricempire_prices.get("buff_emerald_quick").get("price") is None else pricempire_prices.get("buff_emerald_quick").get("price") / 100,
+                                        "Phase 1": "null" if pricempire_prices.get("buff_p1_quick") is None or pricempire_prices.get("buff_p1_quick").get("price") is None else pricempire_prices.get("buff_p1_quick").get("price") / 100,
+                                        "Phase 2": "null" if pricempire_prices.get("buff_p2_quick") is None or pricempire_prices.get("buff_p2_quick").get("price") is None else pricempire_prices.get("buff_p2_quick").get("price") / 100,
+                                        "Phase 3": "null" if pricempire_prices.get("buff_p3_quick") is None or pricempire_prices.get("buff_p3_quick").get("price") is None else pricempire_prices.get("buff_p3_quick").get("price") / 100,
+                                        "Phase 4": "null" if pricempire_prices.get("buff_p4_quick") is None or pricempire_prices.get("buff_p4_quick").get("price") is None else pricempire_prices.get("buff_p4_quick").get("price") / 100,
                                 }
                              }
                     }
