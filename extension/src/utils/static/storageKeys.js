@@ -256,6 +256,7 @@ const storageKeys = {
   notifyAboutComments: false,
   numberOfComments: 0,
   sendOfferBasedOnQueryParams: false,
+  showPriceEmpireLinkInInventory: true,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

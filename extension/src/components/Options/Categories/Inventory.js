@@ -47,7 +47,7 @@ const inventory = () => {
             Show the number of offers received from a user and how many was sent to them
             <ApiKeyIndicator />
           </>
-         )}
+        )}
       />
       <Row
         name="Mark items in offer"
@@ -79,6 +79,12 @@ const inventory = () => {
         id="showSelectedItemsTable"
         type="flipSwitchStorage"
         description="Shows the selected items table in other people's inventory"
+      />
+      <Row
+        name="Show pricempire.com links in inventories"
+        id="showPriceEmpireLinkInInventory"
+        type="flipSwitchStorage"
+        description="Show pricempire.com links in inventories"
       />
     </Category>
   );

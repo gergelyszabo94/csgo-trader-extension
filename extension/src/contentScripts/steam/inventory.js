@@ -94,7 +94,7 @@ const getActiveInventoryAppID = () => {
 
 const cleanUpElements = () => {
   document.querySelectorAll(
-    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name, .startingAtVolume, .marketActionInstantSell, .marketActionQuickSell, .listingError',
+    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name, .startingAtVolume, .marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink',
   ).forEach((element) => {
     element.remove();
   });
@@ -532,7 +532,9 @@ const addRightSideElements = () => {
           }
 
           // adds the in-offer module
-          chrome.storage.local.get(['activeOffers', 'itemInOffersInventory'], ({ activeOffers, itemInOffersInventory }) => {
+          chrome.storage.local.get(['activeOffers', 'itemInOffersInventory', 'showPriceEmpireLinkInInventory'], ({
+            activeOffers, itemInOffersInventory, showPriceEmpireLinkInInventory,
+          }) => {
             if (itemInOffersInventory) {
               const inOffers = activeOffers.items.filter((offerItem) => {
                 return offerItem.assetid === item.assetid;
@@ -565,6 +567,21 @@ const addRightSideElements = () => {
                     descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(inTradesInfoModule, { ADD_ATTR: ['target'] }));
                   });
               }
+            }
+
+            if (showPriceEmpireLinkInInventory) {
+              const priceEmpireLink = `
+                <div class="descriptor pricEmpireLink">
+                    <a href="https://pricempire.com/item/${item.market_hash_name}" target="_blank" style="color: yellow;">
+                        Check prices on PRICEMPIRE.COM
+                      </a>
+                </div>
+              `;
+
+              document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
+                .forEach((descriptor) => {
+                  descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(priceEmpireLink, { ADD_ATTR: ['target'] }));
+                });
             }
           });
 
