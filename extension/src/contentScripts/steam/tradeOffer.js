@@ -10,7 +10,9 @@ import {
   addSearchListener, getPattern, getNameTag, removeLinkFilterFromLinks,
   removeOfferFromActiveOffers, changePageTitle,
 } from 'utils/utilsModular';
-import { getItemMarketLink, getItemByNameAndGame, closeTab } from 'utils/simpleUtils';
+import {
+  getItemMarketLink, getItemByNameAndGame, closeTab, isDopplerInName,
+} from 'utils/simpleUtils';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
   priceQueue, workOnPriceQueue, prettyPrintPrice, initPriceQueue,
@@ -215,7 +217,7 @@ const buildInventoryStructure = (inventory) => {
       contextid: item.contextid,
       marketable: item.marketable,
       position: item.position,
-      dopplerInfo: (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon) : null,
+      dopplerInfo: isDopplerInName(item.name) ? getDopplerInfo(item.icon) : null,
       exterior: getExteriorFromTags(item.tags),
       iconURL: item.icon,
       inspectLink: getInspectLink(item),

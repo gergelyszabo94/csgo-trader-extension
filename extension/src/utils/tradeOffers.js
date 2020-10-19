@@ -1,6 +1,6 @@
 // only works on steam pages
 import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
-import { getItemMarketLink } from 'utils/simpleUtils';
+import { getItemMarketLink, isDopplerInName } from 'utils/simpleUtils';
 import {
   getDopplerInfo,
   getExteriorFromTags,
@@ -294,7 +294,7 @@ const matchItemsWithDescriptions = (items) => {
         assetid: item.assetid,
         position: item.position,
         side: item.side,
-        dopplerInfo: (item.name.includes('Doppler') || item.name.includes('doppler')) ? getDopplerInfo(item.icon_url) : null,
+        dopplerInfo: isDopplerInName(item.name) ? getDopplerInfo(item.icon_url) : null,
         exterior: getExteriorFromTags(item.tags),
         iconURL: item.icon_url,
         inspectLink: getInspectLink(item),

@@ -1,6 +1,7 @@
 import { getPrice, prettyPrintPrice } from 'utils/pricing';
 import { getDopplerInfo } from 'utils/utilsModular';
 import { getPlayerSummaries } from 'utils/ISteamUser';
+import { isDopplerInName } from './simpleUtils';
 
 const getTradeHistory = (
   maxTrades, startTime = 0, afterTrade = 0,
@@ -45,7 +46,7 @@ const getTradeHistory = (
                         return desc.appid === received.appid && desc.classid === received.classid
                           && desc.instanceid === received.instanceid;
                       });
-                      const dopplerInfo = (description[0].market_hash_name.includes('Doppler') || description[0].market_hash_name.includes('doppler'))
+                      const dopplerInfo = isDopplerInName(description[0].market_hash_name)
                         ? getDopplerInfo(description[0].icon_url)
                         : null;
                       const price = getPrice(

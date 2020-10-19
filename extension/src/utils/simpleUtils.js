@@ -41,6 +41,15 @@ const closeTab = () => new Promise((resolve, reject) => {
   }
 });
 
+// for phase detection we have to know if th item is a doppler
+const isDopplerInName = (name) => {
+  // english and many other languages, polish iirc, simplified chinese, korean, bulgarian, russian
+  const patterns = ['Doppler', 'doppler', '多普勒', '도플러', 'Доплер', 'Волны'];
+  const dopplerCheckRegex = new RegExp(patterns.join('|'), 'i');
+  return dopplerCheckRegex.test(name);
+};
+
 export {
-  getItemMarketLink, getItemInventoryLink, getOfferLink, playAudio, getItemByNameAndGame, closeTab,
+  getItemMarketLink, getItemInventoryLink, getOfferLink, playAudio,
+  getItemByNameAndGame, closeTab, isDopplerInName,
 };
