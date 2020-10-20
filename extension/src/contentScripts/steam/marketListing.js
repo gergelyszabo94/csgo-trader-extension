@@ -33,6 +33,7 @@ import {
 } from 'utils/static/simpleStrings';
 import { injectScript, injectStyle } from 'utils/injection';
 import steamApps from 'utils/static/steamApps';
+import { isDopplerInName } from 'utils/simpleUtils';
 
 const inBrowserInspectButtonPopupLink = `
     <a class="popup_menu_item" id="inbrowser_inspect" href="https://market.swap.gg/screenshot" target="_blank">
@@ -110,7 +111,7 @@ const getListingIDFromElement = (listingElement) => {
 };
 
 const addPhasesIndicator = () => {
-  if (window.location.href.includes('Doppler')) {
+  if (isDopplerInName(fullName)) {
     const listingsTable = document.getElementById('searchResultsTable');
     if (listingsTable !== null) {
       listingsTable.querySelectorAll('.market_listing_item_img_container').forEach((container) => {
