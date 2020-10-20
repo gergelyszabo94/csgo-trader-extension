@@ -291,22 +291,28 @@ const addItemInfo = () => {
 const addInventoryTotals = (yourInventoryTotal, theirInventoryTotal) => {
   chrome.storage.local.get(['currency'], ({ currency }) => {
     const yourInventoryTitleDiv = document.getElementById('inventory_select_your_inventory').querySelector('div');
-    yourInventoryTitleDiv.style.fontSize = '16px';
     const yourPrettyPrice = prettyPrintPrice(
       currency,
       (yourInventoryTotal).toFixed(0),
     );
     yourInventoryTitleDiv.innerText = `${yourInventoryTitleDiv.innerText} (${yourPrettyPrice})`;
+    yourInventoryTitleDiv.style.fontSize = yourPrettyPrice.length <= 7
+      ? '16px'
+      : yourPrettyPrice.length <= 9
+        ? '14px'
+        : '13px';
 
     const theirInventoryTitleDiv = document.getElementById('inventory_select_their_inventory').querySelector('div');
-    theirInventoryTitleDiv.style.fontSize = '16px';
-
     const theirPrettyPrice = prettyPrintPrice(
       currency,
       (theirInventoryTotal).toFixed(0),
     );
-
     theirInventoryTitleDiv.innerText = `${theirInventoryTitleDiv.innerText} (${theirPrettyPrice})`;
+    theirInventoryTitleDiv.style.fontSize = theirInventoryTitleDiv.length <= 7
+      ? '16px'
+      : theirInventoryTitleDiv.length <= 9
+        ? '14px'
+        : '13px';
   });
 };
 
