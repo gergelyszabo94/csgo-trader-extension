@@ -308,7 +308,7 @@ const addInventoryTotals = (yourInventoryTotal, theirInventoryTotal) => {
       (theirInventoryTotal).toFixed(0),
     );
     theirInventoryTitleDiv.innerText = `${theirInventoryTitleDiv.innerText} (${theirPrettyPrice})`;
-    theirInventoryTitleDiv.style.fontSize = theirInventoryTitleDiv.length <= 7
+    theirInventoryTitleDiv.style.fontSize = theirPrettyPrice.length <= 7
       ? '16px'
       : theirInventoryTitleDiv.length <= 9
         ? '14px'
