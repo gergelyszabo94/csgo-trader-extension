@@ -1026,6 +1026,22 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                     </a>
                   </div>
                   <div class="realMoneySite">
+                    <a href="https://bskn.co/?market_hash_name=${fullName}&appid=${appID}&sort_by=price&order=asc&ref_alias=xcW4c_phcUc" target="_blank" class="realMoneySiteLink referralLink" data-site="bitskins">
+                        <img alt="Bitskins logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/bitskins.png')}" data-site="bitskins">
+                        <br>
+                        Bitskins.com
+                    </a>
+                  </div>
+                </div>
+                <div class="realMoneySites">
+                 <div class="realMoneySite">
+                    <a href="https://cs.money/csgo/trade/?utm_source=sponsorship&utm_medium=cstrade&utm_campaign=cstrd0920&utm_content=link#skin_name=${fullName}" target="_blank" class="realMoneySiteLink referralLink" data-site="csmoney">
+                        <img alt="Csmoney logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csmoney.png')}" data-site="csmoney">
+                        <br>
+                        CS.MONEY
+                    </a>
+                  </div>
+                  <div class="realMoneySite">
                     <a href="https://skinbaron.com/partner/gery" target="_blank" class="realMoneySiteLink referralLink" data-site="csgofloat" data-site="skinbaron">
                         <img alt="Skinbaron logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinbaron.png')}" data-site="skinbaron">
                         <br>
@@ -1033,20 +1049,14 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                     </a>
                   </div>
                   <div class="realMoneySite">
-                    <a href="https://bskn.co/?market_hash_name=${fullName}&appid=${appID}&sort_by=price&order=asc&ref_alias=xcW4c_phcUc" target="_blank" class="realMoneySiteLink referralLink" data-site="bitskins">
-                        <img alt="Bitskins logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/bitskins.png')}" data-site="bitskins">
+                    <a href="https://affiliate.swap.gg/223.html" target="_blank" class="realMoneySiteLink referralLink" data-site="swapgg">
+                        <img alt="Swapgg logo" src="${chrome.runtime.getURL('images/external_logos/swapgg.png')}" data-site="swapgg">
                         <br>
-                        Bitskins.com
-                    </a>
-                  </div>
-                  <div class="realMoneySite">
-                    <a href="https://cs.money/csgo/trade/?utm_source=sponsorship&utm_medium=cstrade&utm_campaign=cstrd0920&utm_content=link#skin_name=${fullName}" target="_blank" class="realMoneySiteLink referralLink" data-site="csmoney">
-                        <img alt="Csmoney logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csmoney.png')}" data-site="csmoney">
-                        <br>
-                        CS.MONEY
+                        SWAP.GG
                     </a>
                   </div>
                 </div>
+                
                 <div id="realMoneyExpand" class="clickable" title="Click to learn more about what this is">What is this?</div>
                 <div id="realMoneyMoreInfo" class="hidden">
                     <div style="margin: 10px 0 10px 0">
@@ -1071,6 +1081,8 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       <a href="https://skinbaron.com/partner/gery" target="_blank" class="referralLink" data-site="skinbaron">this one for Skinbaron</a>
                       You can also buy items for real money on
                       <a href="https://cs.money/?utm_source=sponsorship&utm_medium=cstrade&utm_campaign=cstrd0920&utm_content=link#skin_name=${fullName}" target="_blank" class="referralLink" data-site="csmoney">Csmoney</a>
+                      and
+                      <a href="https://affiliate.swap.gg/223.html" target="_blank" class="referralLink" data-site="swapgg">Swap.gg</a>
                       as well as trade for them with your items.
                     </div>
                     <div>
