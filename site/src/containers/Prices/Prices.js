@@ -108,12 +108,12 @@ const prices = (props) => {
                 </p>
                 <p>
                     The latest prices are always available at: <br/>
-                    <NewTabLink to='https://prices.csgotrader.app/latest/prices_v5.json'>prices.csgotrader.app/latest/prices_v5.json</NewTabLink>
+                    <NewTabLink to='https://prices.csgotrader.app/latest/prices_v6.json'>prices.csgotrader.app/latest/prices_v6.json</NewTabLink>
                     <br/>
                     and each days pricing is archived in a path like:<br/>
-                    prices.csgotrader.app/YYYY/MM/DD/prices_v5.json. <br/>
+                    prices.csgotrader.app/YYYY/MM/DD/prices_v6.json. <br/>
                     For example:
-                    <NewTabLink to='https://prices.csgotrader.app/2020/05/17/prices_v5.json'>prices.csgotrader.app/2020/05/17/prices_v5.json</NewTabLink>.
+                    <NewTabLink to='https://prices.csgotrader.app/2020/11/03/prices_v6.json'>prices.csgotrader.app/2020/05/17/prices_v6.json</NewTabLink>.
                     If you can't find it for your date then try, v4, 3, etc. instead.
                 </p>
             </Container>
