@@ -376,75 +376,80 @@ const executeVerdict = (offer, ruleNumber, verdict) => {
 };
 
 const evaluateCondition = (offer, condition) => {
-  if (condition.type === conditions.profit_over.key
-    && offer.profitOrLoss >= condition.value) {
-    return true;
-  }
-  if (condition.type === conditions.profit_under.key
-    && offer.profitOrLoss < condition.value) {
-    return true;
-  }
-  if (condition.type === conditions.profit_percentage_over.key
-    && offer.PLPercentage >= (condition.value / 100) + 1) {
-    return true;
-  }
-  if (condition.type === conditions.profit_percentage_under.key
-    && offer.PLPercentage < (condition.value / 100) + 1) {
-    return true;
-  }
-  if (condition.type === conditions.has_message.key && offer.message !== '') {
-    return true;
-  } if (condition.type === conditions.no_message.key && offer.message === '') {
-    return true;
-  }
-  if (condition.type === conditions.message_includes.key
-    && offer.message.includes(condition.value)) {
-    return true;
-  }
-  if (condition.type === conditions.message_doesnt_include.key
-    && offer.message !== ''
-    && !offer.message.includes(condition.value)) {
-    return true;
-  }
-  if (condition.type === conditions.receiving_items_over.key
-    && ((offer.items_to_receive !== undefined
-      && offer.items_to_receive.length >= condition.value)
-      || (condition.value <= 0 && offer.items_to_receive === undefined))) {
-    return true;
-  }
-  if (condition.type === conditions.receiving_items_under.key
-    && ((offer.items_to_receive !== undefined
-      && offer.items_to_receive.length < condition.value)
-      || (condition.value <= 1 && offer.items_to_receive === undefined))) {
-    return true;
-  }
-  if (condition.type === conditions.giving_items_over.key
-    && ((offer.items_to_give !== undefined
-      && offer.items_to_give.length >= condition.value)
-      || (condition.value <= 0 && offer.items_to_give === undefined))) {
-    return true;
-  }
-  if (condition.type === conditions.giving_items_under.key
-    && ((offer.items_to_give !== undefined
-      && offer.items_to_give.length < condition.value)
-      || (condition.value <= 1 && offer.items_to_give === undefined))) {
-    return true;
-  }
-  if (condition.type === conditions.receiving_non_csgo_items.key
-    && offer.theirIncludesNonCSGO) {
-    return true;
-  }
-  if (condition.type === conditions.giving_non_csgo_items.key
-    && offer.yourIncludesNonCSGO) {
-    return true;
-  }
-  if (condition.type === conditions.receiving_no_price_items.key
-    && offer.theirIncludesItemWIthNoPrice) {
-    return true;
-  }
-  if (condition.type === conditions.giving_no_price_items.key
-    && offer.yourIncludesItemWIthNoPrice) {
-    return true;
+  // safeguard against corrupted offer data
+  if (!((offer.items_to_receive === undefined || offer.items_to_receive.length === 0)
+    && (offer.items_to_give === undefined || offer.items_to_give.length === 0))) {
+    if (condition.type === conditions.profit_over.key
+      && offer.profitOrLoss >= condition.value) {
+      return true;
+    }
+    if (condition.type === conditions.profit_under.key
+      && offer.profitOrLoss < condition.value) {
+      return true;
+    }
+    if (condition.type === conditions.profit_percentage_over.key
+      && offer.PLPercentage >= (condition.value / 100) + 1) {
+      return true;
+    }
+    if (condition.type === conditions.profit_percentage_under.key
+      && offer.PLPercentage < (condition.value / 100) + 1) {
+      return true;
+    }
+    if (condition.type === conditions.has_message.key && offer.message !== '') {
+      return true;
+    } if (condition.type === conditions.no_message.key && offer.message === '') {
+      return true;
+    }
+    if (condition.type === conditions.message_includes.key
+      && offer.message.includes(condition.value)) {
+      return true;
+    }
+    if (condition.type === conditions.message_doesnt_include.key
+      && offer.message !== ''
+      && !offer.message.includes(condition.value)) {
+      return true;
+    }
+    if (condition.type === conditions.receiving_items_over.key
+      && ((offer.items_to_receive !== undefined
+        && offer.items_to_receive.length >= condition.value)
+        || (condition.value <= 0 && offer.items_to_receive === undefined))) {
+      return true;
+    }
+    if (condition.type === conditions.receiving_items_under.key
+      && ((offer.items_to_receive !== undefined
+        && offer.items_to_receive.length < condition.value)
+        || (condition.value <= 1 && offer.items_to_receive === undefined))) {
+      return true;
+    }
+    if (condition.type === conditions.giving_items_over.key
+      && ((offer.items_to_give !== undefined
+        && offer.items_to_give.length >= condition.value)
+        || (condition.value <= 0 && offer.items_to_give === undefined))) {
+      return true;
+    }
+    if (condition.type === conditions.giving_items_under.key
+      && ((offer.items_to_give !== undefined
+        && offer.items_to_give.length < condition.value)
+        || (condition.value <= 1 && offer.items_to_give === undefined))) {
+      return true;
+    }
+    if (condition.type === conditions.receiving_non_csgo_items.key
+      && offer.theirIncludesNonCSGO) {
+      return true;
+    }
+    if (condition.type === conditions.giving_non_csgo_items.key
+      && offer.yourIncludesNonCSGO) {
+      return true;
+    }
+    if (condition.type === conditions.receiving_no_price_items.key
+      && offer.theirIncludesItemWIthNoPrice) {
+      return true;
+    }
+    if (condition.type === conditions.giving_no_price_items.key
+      && offer.yourIncludesItemWIthNoPrice) {
+      return true;
+    }
+    return false;
   }
   return false;
 };
