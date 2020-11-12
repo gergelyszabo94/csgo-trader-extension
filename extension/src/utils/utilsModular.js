@@ -11,6 +11,21 @@ import { getUserSteamID } from 'utils/steamID';
 import DOMPurify from 'dompurify';
 import { getIDsFromElement } from 'utils/itemsToElementsToItems';
 
+// "Sticker" in different languages
+// english, simplified chinese, traditional chinese,
+// japanese, korean, bulgarian, thai, czech, danish,
+// german, spanish, latin spanish, greek, italian,
+// hungarian, norwegian, polish, portuguese, brazil,
+// romanian, russian, finnish, swedish, turkish,
+// vietnamese, ukrainian
+const stickerNames = [
+  'Sticker', '印花', '貼紙', 'ステッカー',
+  '스티커', 'Αυτοκόλλητο', 'สติกเกอร์', 'Samolepka', 'Klistermærke',
+  'Aufkleber', 'Pegatina', 'Calcomanía', 'Αυτοκόλλητο', 'Adesivo',
+  'Matrica', 'Klistremerke', 'Naklejka', 'Autocolante', 'Adesivo',
+  'Abțibild', 'Наклейка', 'Tarra', 'Klistermärke', 'Çıkartma',
+  'Hình dán', 'Наліпка'];
+
 const toFixedNoRounding = (number, n) => {
   const reg = new RegExp(`^-?\\d+(?:\\.\\d{0,${n}})?`, 'g');
   const a = number.toString().match(reg)[0];
@@ -263,6 +278,17 @@ const getStickerOrPatchLink = (linkType, name, type) => {
     : `https://steamcommunity.com/market/listings/730/${type}%20%7C%20${name}`;
 };
 
+// true sticker, false patch
+const isSticker = (description) => {
+  let matchFound = false;
+  stickerNames.forEach((name) => {
+    if (description.includes(`title="${name}"`)) {
+      matchFound = true;
+    }
+  });
+  return matchFound;
+};
+
 const parseStickerInfo = (
   descriptions,
   linkType,
@@ -277,7 +303,8 @@ const parseStickerInfo = (
 
     descriptions.forEach((description) => {
       if (description.value.includes('sticker_info')) {
-        const type = description.value.includes('title="Sticker"') ? 'Sticker' : 'Patch';
+        console.log(description.value);
+        const type = isSticker(description.value) ? 'Sticker' : 'Patch';
         let names = description.value.split('><br>')[1].split(': ')[1].split('</center>')[0].split(', ');
         names = handleStickerNamesWithCommas(names);
         const iconURLs = description.value.split('src="');
