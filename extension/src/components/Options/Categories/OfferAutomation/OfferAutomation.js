@@ -34,6 +34,16 @@ const OfferAutomation = () => {
           </>
         )}
       />
+      <Row
+        name="Select item based on query params"
+        id="selectItemsBasedOnQueryParams"
+        type="flipSwitchStorage"
+        description={(`Select items in trade offers automatically based on query parameters.
+          When turned on and you open a link with
+            &csgotrader_select=side(your/their)_type(name/id)appID_contextID_(market name / asset ID)
+            in it the extension will select the appropriate item and add it to the trade.
+            Useful for P2P trading and automation.`)}
+      />
       <div className="row">
         <OfferHistory />
       </div>

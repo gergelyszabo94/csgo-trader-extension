@@ -1226,55 +1226,103 @@ if (urlParams.get('csgotrader_accept') === 'true') {
 }
 
 // send trade offer with gift item based on query params (for P2P trading)
+// or simply select items
 const csgoTraderSendParams = urlParams.get('csgotrader_send');
-if (csgoTraderSendParams !== null) {
-  chrome.storage.local.get('sendOfferBasedOnQueryParams', ({ sendOfferBasedOnQueryParams }) => {
-    if (sendOfferBasedOnQueryParams) {
+const csgoTraderSelectParams = urlParams.get('csgotrader_select');
+if (csgoTraderSendParams !== null || csgoTraderSelectParams !== null) {
+  chrome.storage.local.get(['sendOfferBasedOnQueryParams', 'selectItemsBasedOnQueryParams'], ({
+    sendOfferBasedOnQueryParams, selectItemsBasedOnQueryParams,
+  }) => {
+    if (sendOfferBasedOnQueryParams || selectItemsBasedOnQueryParams) {
       const message = urlParams.get('csgotrader_message') !== null
         ? urlParams.get('csgotrader_message')
         : '';
-      const args = csgoTraderSendParams.split('_');
+      const args = csgoTraderSendParams !== null
+        ? csgoTraderSendParams.split('_')
+        : csgoTraderSelectParams.split('_');
       const whose = args[0]; // your or their
       const type = args[1]; // id or name
       const appID = args[2];
       const contextID = args[3];
-      if (type === 'id') {
-        const item = {
-          appid: appID, contextid: contextID, amount: 1, assetid: args[4],
-        };
 
-        sendQueryParamOffer(urlParams, whose, item, message);
-      } else if (type === 'name') { // the item has to be found the appropriate inventory
-        const name = args[4]; // we need the assetid to be able to construct the offer
-        const itemFoundInterval = setInterval(() => {
-          const inventory = whose === 'your'
-            ? yourInventory
-            : theirInventory;
+      // send logic
+      if (csgoTraderSendParams !== null) {
+        if (type === 'id') {
+          const item = {
+            appid: appID, contextid: contextID, amount: 1, assetid: args[4],
+          };
 
-          if (inventory !== null) {
-            if (inventory[appID] !== undefined) {
-              const itemWithAllDetails = getItemByNameAndGame(
-                inventory[appID].items, appID, contextID, name,
-              );
-              if (itemWithAllDetails !== null && itemWithAllDetails !== undefined) {
-                clearInterval(itemFoundInterval);
-                const item = {
-                  appid: appID,
-                  contextid: contextID,
-                  amount: 1,
-                  assetid: itemWithAllDetails.assetid,
-                };
+          sendQueryParamOffer(urlParams, whose, item, message);
+        } else if (type === 'name') { // the item has to be found the appropriate inventory
+          const name = args[4]; // we need the assetid to be able to construct the offer
+          const itemFoundInterval = setInterval(() => {
+            const inventory = whose === 'your'
+              ? yourInventory
+              : theirInventory;
 
-                sendQueryParamOffer(urlParams, whose, item, message);
+            if (inventory !== null) {
+              if (inventory[appID] !== undefined) {
+                const itemWithAllDetails = getItemByNameAndGame(
+                  inventory[appID].items, appID, contextID, name,
+                );
+                if (itemWithAllDetails !== null && itemWithAllDetails !== undefined) {
+                  clearInterval(itemFoundInterval);
+                  const item = {
+                    appid: appID,
+                    contextid: contextID,
+                    amount: 1,
+                    assetid: itemWithAllDetails.assetid,
+                  };
+
+                  sendQueryParamOffer(urlParams, whose, item, message);
+                }
+              } else { // when steam defaults to a different game's inventory
+                // than what we should be sending the item from
+                // load the inventory we want the item from:
+                const side = whose === 'your'
+                  ? 'You'
+                  : 'Them';
+                injectScript(`TradePageSelectInventory( User${side}, ${appID}, "${contextID}" );`, true, 'selectInventory', false);
               }
-            } else { // when steam defaults to a different game's inventory
-              // than what we should be sending the item from
-              // load the inventory we want the item from:
-              const side = whose === 'your'
-                ? 'You'
-                : 'Them';
-              injectScript(`TradePageSelectInventory( User${side}, ${appID}, "${contextID}" );`, true, 'selectInventory', false);
             }
+          }, 500);
+        }
+      } else { // select logic
+        const selectInterval = setInterval(() => {
+          const side = whose === 'your'
+            ? 'You'
+            : 'Them';
+          injectScript(`TradePageSelectInventory( User${side}, ${appID}, "${contextID}" );`, true, 'selectInventory', false);
+
+          if (type === 'id') {
+            const assetID = args[4];
+            const itemElement = findElementByIDs(appID, contextID, assetID, 'offer');
+            if (itemElement !== null) {
+              moveItem(itemElement);
+              clearInterval(selectInterval);
+            }
+          } else {
+            const inventory = whose === 'your'
+              ? yourInventory
+              : theirInventory;
+
+            if (inventory !== null) {
+              if (inventory[appID] !== undefined) {
+                const name = args[4];
+                const itemWithAllDetails = getItemByNameAndGame(
+                  inventory[appID].items, appID, contextID, name,
+                );
+                if (itemWithAllDetails !== null && itemWithAllDetails !== undefined) {
+                  clearInterval(selectInterval);
+                  const itemElement = findElementByIDs(appID, contextID, itemWithAllDetails.assetid, 'offer');
+                  moveItem(itemElement);
+                }
+              }
+            }
+          }
+
+          if (document.getElementById('trade_offer_note') !== null) {
+            document.getElementById('trade_offer_note').value = message;
           }
         }, 500);
       }
