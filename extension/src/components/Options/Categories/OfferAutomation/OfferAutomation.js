@@ -35,7 +35,7 @@ const OfferAutomation = () => {
         )}
       />
       <Row
-        name="Select item based on query params"
+        name="Select item based on query params (autofill)"
         id="selectItemsBasedOnQueryParams"
         type="flipSwitchStorage"
         description={(`Select items in trade offers automatically based on query parameters.
