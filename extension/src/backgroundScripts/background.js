@@ -76,16 +76,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     chrome.storage.local.get(keys, (result) => {
       for (const [storageKey, storageValue] of Object.entries(storageKeys)) {
         if (result[storageKey] === undefined) {
-          // id generated to identify the extension installation
-          // a user can use use multiple installations of the extension
-          if (storageKey === 'clientID') chrome.storage.local.set({ [storageKey]: uuidv4() }, () => {});
-          else if (storageKey === 'telemetryConsentSubmitted') {
-            // mozilla addons requires user consent to be given so it's off by default for firefox
-            // but it is on by default on chrome, edge, etc.
-            if (chrome.extension.getURL('/index.html').includes('chrome-extension')) {
-              chrome.storage.local.set({ [storageKey]: true });
-            } else chrome.storage.local.set({ [storageKey]: false });
-          } else chrome.storage.local.set({ [storageKey]: storageValue }, () => {});
+          chrome.storage.local.set({ [storageKey]: storageValue }, () => {});
         }
       }
     });
