@@ -303,7 +303,6 @@ const parseStickerInfo = (
 
     descriptions.forEach((description) => {
       if (description.value.includes('sticker_info')) {
-        console.log(description.value);
         const type = isSticker(description.value) ? 'Sticker' : 'Patch';
         let names = description.value.split('><br>')[1].split(': ')[1].split('</center>')[0].split(', ');
         names = handleStickerNamesWithCommas(names);
