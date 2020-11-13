@@ -1020,11 +1020,11 @@ const addFriendRequestInfo = () => {
   });
 };
 
-const sendQueryParamOffer = (urlParams, whose, item, message) => {
-  const toGive = [];
-  const toReceive = [];
-  if (whose === 'your') toGive.push(item);
-  else toReceive.push(item);
+const sendQueryParamOffer = (urlParams, whose, items, message) => {
+  let toGive = [];
+  let toReceive = [];
+  if (whose === 'your') toGive = items;
+  else toReceive = items;
 
   const tradeOfferJSON = createTradeOfferJSON(toGive, toReceive);
   sendOffer(urlParams.get('partner'), tradeOfferJSON, urlParams.get('token'), message).then(() => {
@@ -1248,11 +1248,14 @@ if (csgoTraderSendParams !== null || csgoTraderSelectParams !== null) {
       // send logic
       if (csgoTraderSendParams !== null) {
         if (type === 'id') {
-          const item = {
-            appid: appID, contextid: contextID, amount: 1, assetid: args[4],
-          };
-
-          sendQueryParamOffer(urlParams, whose, item, message);
+          const ids = args[4].split(',');
+          const items = [];
+          ids.forEach((id) => {
+            items.push({
+              appid: appID, contextid: contextID, amount: 1, assetid: id,
+            });
+          });
+          sendQueryParamOffer(urlParams, whose, items, message);
         } else if (type === 'name') { // the item has to be found the appropriate inventory
           const name = args[4]; // we need the assetid to be able to construct the offer
           const itemFoundInterval = setInterval(() => {
@@ -1267,14 +1270,14 @@ if (csgoTraderSendParams !== null || csgoTraderSelectParams !== null) {
                 );
                 if (itemWithAllDetails !== null && itemWithAllDetails !== undefined) {
                   clearInterval(itemFoundInterval);
-                  const item = {
+                  const items = [{
                     appid: appID,
                     contextid: contextID,
                     amount: 1,
                     assetid: itemWithAllDetails.assetid,
-                  };
+                  }];
 
-                  sendQueryParamOffer(urlParams, whose, item, message);
+                  sendQueryParamOffer(urlParams, whose, items, message);
                 }
               } else { // when steam defaults to a different game's inventory
                 // than what we should be sending the item from
@@ -1295,13 +1298,19 @@ if (csgoTraderSendParams !== null || csgoTraderSelectParams !== null) {
           injectScript(`TradePageSelectInventory( User${side}, ${appID}, "${contextID}" );`, true, 'selectInventory', false);
 
           if (type === 'id') {
-            const assetID = args[4];
-            const itemElement = findElementByIDs(appID, contextID, assetID, 'offer');
-            if (itemElement !== null) {
-              moveItem(itemElement);
+            const ids = args[4].split(',');
+            const items = [];
+            ids.forEach((id) => {
+              const itemElement = findElementByIDs(appID, contextID, id, 'offer');
+              if (itemElement !== null) items.push(itemElement);
+            });
+            if (items.length === ids.length) { // only move items if all are found
+              items.forEach((itemElement) => {
+                moveItem(itemElement);
+              });
               clearInterval(selectInterval);
             }
-          } else {
+          } else if (type === 'name') {
             const inventory = whose === 'your'
               ? yourInventory
               : theirInventory;
