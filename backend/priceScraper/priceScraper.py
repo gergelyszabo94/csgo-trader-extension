@@ -446,30 +446,31 @@ def lambda_handler(event, context):
     month_to_week = month_to_week / count
     print("Market trends: WtD: " + str(week_to_day) + " MtW: " + str(month_to_week))
 
-    print("Getting price difference ratio between steam:bitskins and steam:csmoney")
-    st_bit = 0
+    print("Getting price difference ratio between steam:buff and steam:csmoney")
+    st_buff = 0
     st_csm = 0
     count = 0
 
     for item in master_list:
         if item in steam_prices and "safe_ts" in steam_prices[item] and "last_7d" in steam_prices[item]["safe_ts"] \
-                and item in bitskins_prices and "price" in bitskins_prices[item] \
+                and item in buff163_prices and buff163_prices[item]["highest_order"]["price"] != "null" \
+                and buff163_prices[item]["starting_at"]["price"] != "null" \
                 and item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item][
             "price"] != "" and csmoney_prices[item]["price"] != "null":
             st_weekly = float(steam_prices[item]["safe_ts"]["last_7d"])
-            bit = float(bitskins_prices[item]["price"])
+            buff_mid_price = (float(buff163_prices[item]["highest_order"]["price"]) + float(buff163_prices[item]["starting_at"]["price"])) / 2
             csm = float(csmoney_prices[item]["price"])
-            if (st_weekly != 0 and bit != 0 and csm != 0) and (st_weekly > 0.1 and bit > 0.1 and csm > 0.1):
-                st_bit_ratio = st_weekly / bit
+            if (st_weekly != 0 and buff_mid_price != 0 and csm != 0) and (st_weekly > 0.1 and buff_mid_price > 0.1 and csm > 0.1):
+                st_buff_ratio = st_weekly / buff_mid_price
                 st_csm_ratio = st_weekly / csm
 
-                if 0 < st_bit_ratio < 2 and 0 < st_csm_ratio < 2:
-                    st_bit += st_bit_ratio
+                if 0 < st_buff_ratio < 2 and 0 < st_csm_ratio < 2:
+                    st_buff += st_buff_ratio
                     st_csm += st_csm_ratio
                     count += 1
-    st_bit = st_bit / count
+    st_buff = st_buff / count
     st_csm = st_csm / count
-    print("Steam:Bitskins: " + str(st_bit) + " Steam:Csmoney:  " + str(st_csm))
+    print("Steam:Buff: " + str(st_buff) + " Steam:Csmoney:  " + str(st_csm))
 
     print("Creating csgotrader prices")
     csgotrader_prices = {}
@@ -484,13 +485,16 @@ def lambda_handler(event, context):
                     and not is_mispriced_knife(item, steam_aggregate["price"]) \
                     and not is_mispriced_glove(item, steam_aggregate["price"]) \
                     and not is_mispriced_compared_to_csb(item, steam_aggregate["price"], csgobackpack_prices):
-                price = get_formated_float(steam_aggregate["price"])
+                if steam_aggregate["price"] >= 800:
+                    price = get_formated_float(float(buff163_prices[item]["starting_at"]["price"]) * st_buff * week_to_day)
+                    case = "H"
+                else: price = get_formated_float(steam_aggregate["price"])
             elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and \
                     csmoney_prices[item]["price"] != 0:
                 price = get_formated_float(float(csmoney_prices[item]["price"]) * st_csm * week_to_day)
                 case = "F"
-            elif item in bitskins_prices and "price" in bitskins_prices[item] and bitskins_prices[item]["price"] != "null":
-                price = get_formated_float(float(bitskins_prices[item]["price"]) * st_bit * week_to_day)
+            elif item in buff163_prices and buff163_prices[item]["starting_at"]["price"] != "null":
+                price = get_formated_float(float(buff163_prices[item]["starting_at"]["price"]) * st_buff * week_to_day)
                 case = "G"
             elif item in own_prices:
                 price = own_prices[item]
