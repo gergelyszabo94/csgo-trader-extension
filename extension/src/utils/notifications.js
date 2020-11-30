@@ -86,7 +86,28 @@ const playNotificationSound = () => {
   );
 };
 
+const notifyOnDiscord = (message) => {
+  chrome.storage.local.get(['allowDiscordNotification', 'discordNotificationHook'],
+    ({ allowDiscordNotification, discordNotificationHook }) => {
+      if (allowDiscordNotification && discordNotificationHook !== '') {
+        const request = new Request(discordNotificationHook, {
+          method: 'POST',
+          body: JSON.stringify({
+            content: message,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        fetch(request).then((response) => {
+          if (!response.ok) console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+        }).catch((err) => { console.log(err); });
+      }
+    });
+};
+
 export {
-  reverseWhenNotifDetails, determineNotificationDate,
+  reverseWhenNotifDetails, determineNotificationDate, notifyOnDiscord,
   getSteamNotificationCount, playNotificationSound,
 };

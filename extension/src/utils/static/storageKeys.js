@@ -258,6 +258,8 @@ const storageKeys = {
   sendOfferBasedOnQueryParams: false,
   showPriceEmpireLinkInInventory: true,
   selectItemsBasedOnQueryParams: true,
+  discordNotificationHook: '',
+  allowDiscordNotification: false,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Row from 'components/Options/Row';
+import NewTabLink from 'components/NewTabLink/NewTabLink';
 import Category from '../Category/Category';
 
 const Notifications = () => {
@@ -35,6 +36,29 @@ const Notifications = () => {
         type="volumeSlider"
         id="notificationVolume"
         description="The sound volume you want for the notification sound"
+      />
+      <Row
+        name="Allow Discord notifications"
+        type="flipSwitchPermission"
+        id="allowDiscordNotification"
+        description="Allow the extension to contact discord's server to send notifications."
+        permission="tabs"
+        origins={['*://discord.com/*']}
+      />
+      <Row
+        name="Discord webhook URL"
+        id="discordNotificationHook"
+        type="modalTextBox"
+        description={(
+          <>
+            Add the Webhook URL of channel you want to receive notifications to.
+            More info from Discord here:
+            <NewTabLink to="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks">
+              Intro to Webhooks
+            </NewTabLink>
+          </>
+        )}
+        modalTitle="Enter your Discord Webhook URL here"
       />
     </Category>
   );

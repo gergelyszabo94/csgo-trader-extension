@@ -20,7 +20,8 @@
     "tabs",
     "*://csgolounge.com/*",
     "*://old.csgolounge.com/*",
-    "*://csgotraders.net/*" ],
+    "*://csgotraders.net/*",
+    "*://discord.com/*"],
   "background": {
     "scripts": [
       "js/backgroundScripts/background.bundle.js",
