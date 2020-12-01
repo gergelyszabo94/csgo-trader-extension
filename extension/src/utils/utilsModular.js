@@ -583,7 +583,13 @@ const warnOfScammer = (steamID, page) => {
           );
 
           if (page === 'offer') document.querySelector('body').setAttribute('style', `background-image: url('${backgroundURL}')`);
-          else if (page === 'profile') document.querySelector('.no_header.profile_page').setAttribute('style', `background-image: url('${backgroundURL}')`);
+          else if (page === 'profile') {
+            document.querySelector('.no_header.profile_page').setAttribute('style', `background-image: url('${backgroundURL}')`);
+            const animatedBackground = document.querySelector(
+              '.no_header.profile_page.has_profile_background',
+            ).querySelector('video');
+            if (animatedBackground !== null) animatedBackground.remove();
+          }
         }
       } else console.log('Could not get SteamRep info');
     });
