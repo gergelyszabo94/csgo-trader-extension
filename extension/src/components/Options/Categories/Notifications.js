@@ -52,7 +52,7 @@ const Notifications = () => {
         description={(
           <>
             Add the Webhook URL of channel you want to receive notifications to.
-            More info from Discord here:
+            More info from Discord here:&nbsp;
             <NewTabLink to="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks">
               Intro to Webhooks
             </NewTabLink>

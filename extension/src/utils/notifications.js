@@ -94,6 +94,8 @@ const notifyOnDiscord = (message) => {
           method: 'POST',
           body: JSON.stringify({
             content: message,
+            username: 'CSGOTRADER.APP',
+            avatar_url: 'https://csgotrader.app/cstlogo48.png',
           }),
           headers: {
             'Content-Type': 'application/json',

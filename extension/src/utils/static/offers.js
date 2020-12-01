@@ -14,6 +14,11 @@ const actions = {
     pretty: 'Notify',
     description: 'Send a browser notification',
   },
+  notify_discord: {
+    key: 'notify_discord',
+    pretty: 'Notify on Discord',
+    description: 'Send a Discord message.',
+  },
   no_action: {
     key: 'no_action',
     pretty: 'No action',
@@ -31,6 +36,11 @@ const eventTypes = {
     key: 'notify',
     pretty: 'Notified',
     description: 'You were notified about this trade offer!',
+  },
+  notify_discord: {
+    key: 'notify_discord',
+    pretty: 'Notified on Discord',
+    description: 'A message was sent to you on Discord!',
   },
   decline: {
     key: 'decline',

@@ -18,7 +18,8 @@ import {
 } from 'utils/static/offers';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import { prettyPrintPrice } from 'utils/pricing';
-import { playNotificationSound } from 'utils/notifications';
+import { playNotificationSound, notifyOnDiscord } from 'utils/notifications';
+import { getItemByIDs } from './itemsToElementsToItems';
 
 const createTradeOfferJSON = (itemsToGive, itemsToReceive) => {
   return {
@@ -201,6 +202,39 @@ const notifyAboutOffer = (offer) => {
   });
 };
 
+const createDiscordSideSummary = (offerSideItems, itemsWithDetails) => {
+  let summary = '';
+  if (offerSideItems !== null) {
+    offerSideItems.forEach((itemToGive) => {
+      const item = getItemByIDs(
+        itemsWithDetails,
+        itemToGive.appid.toString(),
+        itemToGive.contextid,
+        itemToGive.assetid,
+      );
+      if (item) summary += `- ${item.market_hash_name} (${item.price.display})\n`;
+    });
+  }
+  return summary;
+};
+
+const notifyAboutOfferOnDiscord = (offer, items) => {
+  chrome.storage.local.get('currency', ({ currency }) => {
+    const steamIDOfPartner = getProperStyleSteamIDFromOfferStyle(offer.accountid_other);
+    getPlayerSummaries([steamIDOfPartner]).then((summary) => {
+      const userDetails = summary[steamIDOfPartner];
+      const title = `Offer from **${userDetails.personaname}** (${prettyPrintPrice(currency, offer.profitOrLoss.toFixed(2))})\n`;
+      let givingItems = `Giving (${prettyPrintPrice(currency, offer.yourItemsTotal.toFixed(2))}):\n`;
+      givingItems += createDiscordSideSummary(offer.items_to_give, items);
+
+      let receivingItems = `Receiving (${prettyPrintPrice(currency, offer.theirItemsTotal.toFixed(2))}):\n`;
+      receivingItems += createDiscordSideSummary(offer.items_to_receive, items);
+      const link = `Link: <https://steamcommunity.com/tradeoffer/${offer.tradeofferid}>`;
+      notifyOnDiscord(`${title}${givingItems}${receivingItems}${link}`);
+    });
+  });
+};
+
 // info about the active offers is kept in storage
 // so we can check if an item is present in another offer
 // also to know when offer loading is necessary when monitoring offers
@@ -362,10 +396,11 @@ const createTradeOfferEvent = (offer, type, ruleIndex) => {
   };
 };
 
-const executeVerdict = (offer, ruleNumber, verdict) => {
+const executeVerdict = (offer, ruleNumber, verdict, items) => {
   logTradeOfferEvents([createTradeOfferEvent(offer, verdict, ruleNumber)]);
   switch (verdict) {
     case actions.notify.key: notifyAboutOffer(offer); break;
+    case actions.notify_discord.key: notifyAboutOfferOnDiscord(offer, items); break;
     case actions.decline.key: declineOffer(offer.tradeofferid); break;
     case actions.accept.key: acceptTradeInBackground(
       offer.tradeofferid,
@@ -468,12 +503,12 @@ const evaluateRule = (offer, rule) => {
   return false;
 };
 
-const evaluateOffers = (offers, rules) => {
+const evaluateOffers = (offers, rules, items) => {
   offers.forEach((offer) => {
     for (const [index, rule] of rules.entries()) {
       if (rule.active) {
         if (evaluateRule(offer, rule)) {
-          executeVerdict(offer, index, rule.action);
+          executeVerdict(offer, index, rule.action, items);
           break;
         }
       }
@@ -580,7 +615,7 @@ const updateTrades = () => {
           );
 
           updateActiveOffers(offersData, items);
-          evaluateOffers(newOffers, offerEvalRules);
+          evaluateOffers(newOffers, offerEvalRules, items);
           resolve({
             offersData,
             items,
