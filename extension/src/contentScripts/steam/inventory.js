@@ -94,7 +94,7 @@ const getActiveInventoryAppID = () => {
 
 const cleanUpElements = () => {
   document.querySelectorAll(
-    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name, .startingAtVolume, .marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink',
+    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name,.startingAtVolume, .marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink',
   ).forEach((element) => {
     element.remove();
   });
@@ -532,8 +532,9 @@ const addRightSideElements = () => {
           }
 
           // adds the in-offer module
-          chrome.storage.local.get(['activeOffers', 'itemInOffersInventory', 'showPriceEmpireLinkInInventory'], ({
-            activeOffers, itemInOffersInventory, showPriceEmpireLinkInInventory,
+          chrome.storage.local.get(['activeOffers', 'itemInOffersInventory', 'showPriceEmpireLinkInInventory', 'showBuffLookupInInventory'], ({
+            activeOffers, itemInOffersInventory,
+            showPriceEmpireLinkInInventory, showBuffLookupInInventory,
           }) => {
             if (itemInOffersInventory) {
               const inOffers = activeOffers.items.filter((offerItem) => {
@@ -581,6 +582,21 @@ const addRightSideElements = () => {
               document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
                 .forEach((descriptor) => {
                   descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(priceEmpireLink, { ADD_ATTR: ['target'] }));
+                });
+            }
+
+            if (showBuffLookupInInventory) {
+              const buffLink = `
+                <div class="descriptor buffLink">
+                    <a href="https://buff.163.com/market/?game=csgo#tab=selling&page_num=1&search=${item.market_hash_name}" target="_blank" style="color: yellow;">
+                        Lookup item on Buff
+                      </a>
+                </div>
+              `;
+
+              document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
+                .forEach((descriptor) => {
+                  descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(buffLink, { ADD_ATTR: ['target'] }));
                 });
             }
           });

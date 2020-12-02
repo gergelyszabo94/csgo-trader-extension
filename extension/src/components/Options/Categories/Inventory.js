@@ -86,6 +86,12 @@ const inventory = () => {
         type="flipSwitchStorage"
         description="Show pricempire.com links in inventories"
       />
+      <Row
+        name="Show lookup on buff link"
+        id="showBuffLookupInInventory"
+        type="flipSwitchStorage"
+        description="Show lookup on buff link in inventories"
+      />
     </Category>
   );
 };

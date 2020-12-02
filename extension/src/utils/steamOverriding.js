@@ -70,9 +70,10 @@ const overrideHandleTradeActionMenu = () => {
                 var elItemActions = $J('#trade_action_popup_itemactions');
                 elItemActions.empty();
                 if (item.actions !== '') {
-                  item.actions=item.actions.filter(element => element.id!=="inbrowser");
+                  item.actions=item.actions.filter(element => element.id!=="inbrowser" && element.id!=="buffLookup");
                   let inspectLink = item.actions[0].link;
                   item.actions.push({name: "Inspect in Browser...", link: "https://market.swap.gg/screenshot?inspectLink="+inspectLink, id: "inbrowser"});
+                  item.actions.push({name: "Lookup on BUFF", link: "https://buff.163.com/market/?game=csgo#tab=selling&page_num=1&search="+item.market_hash_name, id: "buffLookup"});
                 }
                 for ( var action = 0; action < item.actions.length; action++ )
                 {

@@ -260,6 +260,7 @@ const storageKeys = {
   selectItemsBasedOnQueryParams: true,
   discordNotificationHook: '',
   allowDiscordNotification: false,
+  showBuffLookupInInventory: false,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
