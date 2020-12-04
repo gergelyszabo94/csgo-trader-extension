@@ -100,7 +100,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true; // async return to signal that it will return later
   } else if (request.getTradeOffers !== undefined) {
     if (request.getTradeOffers === 'historical') {
-      getTradeOffers(request.getTradeOffers).then((response) => {
+      getTradeOffers(0, 0, 1, 1).then((response) => {
         sendResponse({ offers: response, apiKeyValid: true });
       }).catch((e) => {
         console.log(e);
