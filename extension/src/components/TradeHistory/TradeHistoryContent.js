@@ -69,7 +69,7 @@ const TradeHistoryContent = () => {
         />
         {
           error === null
-            ? <TradeOfferContent trades={trades} loadNextBatch={loadNextBatch} />
+            ? <TradeOfferContent trades={trades} type="history" loadNextBatch={loadNextBatch} />
             : <div className="warning">{error}</div>
         }
       </div>

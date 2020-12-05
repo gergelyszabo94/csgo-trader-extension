@@ -74,7 +74,7 @@ const getTradeHistory = (
                         return desc.appid === given.appid && desc.classid === given.classid
                           && desc.instanceid === given.instanceid;
                       });
-                      const dopplerInfo = (description[0].market_hash_name.includes('Doppler') || description[0].market_hash_name.includes('doppler'))
+                      const dopplerInfo = isDopplerInName(description[0].market_hash_name)
                         ? getDopplerInfo(description[0].icon_url)
                         : null;
                       const price = getPrice(
@@ -118,6 +118,8 @@ const getTradeHistory = (
                   lastTradeID: trades[trades.length - 1].tradeid,
                   lastTradeTime: trades[trades.length - 1].time_init,
                 });
+              }).catch((err) => {
+                console.log(err);
               });
             } else reject('trades undefined');
           } catch (e) {

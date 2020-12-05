@@ -9,6 +9,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 
 import TradeHistoryContent from 'components/TradeHistory/TradeHistoryContent';
 import CSVExport from 'components/TradeHistory/CSVExport';
+import IncomingOfferHistory from 'components/TradeHistory/IncomingOfferHistory';
 
 import { trackEvent } from 'utils/analytics';
 
@@ -22,6 +23,16 @@ const routes = [
     to: 'history-export/',
     name: 'Trade History Export',
     component: CSVExport,
+  },
+  {
+    to: 'incoming-offer-history/',
+    name: 'Incoming Offer History',
+    component: IncomingOfferHistory,
+  },
+  {
+    to: 'sent-offer-history/',
+    name: 'Sent Offer History',
+    component: IncomingOfferHistory,
   },
 ];
 
