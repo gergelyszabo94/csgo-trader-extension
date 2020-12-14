@@ -52,115 +52,118 @@ const IncomingOfferHistory = () => {
   }, []);
 
   useEffect(() => {
-    const currentBatch = [...offers].splice(currentIndex, 50);
-    const partnerIDs = [];
+    if (offers.length > 0) {
+      const currentBatch = [...offers].splice(currentIndex, 50);
+      const partnerIDs = [];
 
-    currentBatch.forEach((offer) => {
-      if (offer.accountid_other) {
-        partnerIDs.push(getProperStyleSteamIDFromOfferStyle(offer.accountid_other));
-      }
-    });
-
-    const uniquePartnerIDs = [...new Set(partnerIDs)];
-
-    chrome.storage.local.get(['apiKeyValid', 'steamAPIKey', 'prices', 'pricingProvider', 'currency', 'exchangeRate'],
-      ({
-        prices, pricingProvider, pricingMode, currency, exchangeRate,
-      }) => {
-        getPlayerSummaries(uniquePartnerIDs).then((summaries) => {
-          const offersWithDetails = [];
-          currentBatch.forEach((offer) => {
-            const offerWithDesc = {
-              ...offer,
-              receivedTotal: 0.0,
-              givenTotal: 0.0,
-              partnerSummary: summaries[getProperStyleSteamIDFromOfferStyle(offer.accountid_other)],
-            };
-            offerWithDesc.assets_received_desc = [];
-            offerWithDesc.assets_given_desc = [];
-
-            if (offer.items_to_receive) {
-              offer.items_to_receive.forEach((received) => {
-                const description = descriptions.filter((desc) => {
-                  return desc.appid === received.appid && desc.classid === received.classid
-                    && desc.instanceid === received.instanceid;
-                });
-                if (description[0]) {
-                  const dopplerInfo = isDopplerInName(description[0].market_hash_name)
-                    ? getDopplerInfo(description[0].icon_url)
-                    : null;
-                  const price = getPrice(
-                    description[0].market_hash_name,
-                    dopplerInfo,
-                    prices,
-                    pricingProvider,
-                    pricingMode,
-                    exchangeRate,
-                    currency,
-                  );
-                  offerWithDesc.receivedTotal += parseFloat(price.price);
-                  offerWithDesc.assets_received_desc.push({
-                    ...received,
-                    ...description[0],
-                    dopplerInfo,
-                    price,
-                  });
-                }
-              });
-            }
-
-            if (offer.items_to_give) {
-              offer.items_to_give.forEach((given) => {
-                const description = descriptions.filter((desc) => {
-                  return desc.appid === given.appid && desc.classid === given.classid
-                    && desc.instanceid === given.instanceid;
-                });
-                if (description[0]) {
-                  const dopplerInfo = isDopplerInName(description[0].market_hash_name)
-                    ? getDopplerInfo(description[0].icon_url)
-                    : null;
-                  const price = getPrice(
-                    description[0].market_hash_name,
-                    dopplerInfo,
-                    prices,
-                    pricingProvider,
-                    pricingMode,
-                    exchangeRate,
-                    currency,
-                  );
-                  offerWithDesc.givenTotal += parseFloat(price.price);
-                  offerWithDesc.assets_given_desc.push({
-                    ...given,
-                    ...description[0],
-                    dopplerInfo,
-                    price,
-                  });
-                }
-              });
-            }
-
-            offerWithDesc.profitLoss = offerWithDesc.receivedTotal - offerWithDesc.givenTotal;
-            offerWithDesc.receivedTotalFormatted = prettyPrintPrice(
-              currency,
-              offerWithDesc.receivedTotal.toFixed(2),
-            );
-            offerWithDesc.givenTotalFormatted = prettyPrintPrice(
-              currency,
-              offerWithDesc.givenTotal.toFixed(2),
-            );
-            offerWithDesc.profitLossFormatted = prettyPrintPrice(
-              currency,
-              offerWithDesc.profitLoss.toFixed(2),
-            );
-
-            offersWithDetails.push(offerWithDesc);
-          });
-          console.log(offersWithDetails);
-          setCurrentPageOffers(offersWithDetails);
-        }).catch((err) => {
-          console.log(err);
-        });
+      currentBatch.forEach((offer) => {
+        if (offer.accountid_other) {
+          partnerIDs.push(getProperStyleSteamIDFromOfferStyle(offer.accountid_other));
+        }
       });
+
+      const uniquePartnerIDs = [...new Set(partnerIDs)];
+
+      chrome.storage.local.get(['apiKeyValid', 'steamAPIKey', 'prices', 'pricingProvider', 'currency', 'exchangeRate'],
+        ({
+          prices, pricingProvider, pricingMode, currency, exchangeRate,
+        }) => {
+          getPlayerSummaries(uniquePartnerIDs).then((summaries) => {
+            const offersWithDetails = [];
+            currentBatch.forEach((offer) => {
+              const offerWithDesc = {
+                ...offer,
+                receivedTotal: 0.0,
+                givenTotal: 0.0,
+                partnerSummary:
+                  summaries[getProperStyleSteamIDFromOfferStyle(offer.accountid_other)],
+              };
+              offerWithDesc.assets_received_desc = [];
+              offerWithDesc.assets_given_desc = [];
+
+              if (offer.items_to_receive) {
+                offer.items_to_receive.forEach((received) => {
+                  const description = descriptions.filter((desc) => {
+                    return desc.appid === received.appid && desc.classid === received.classid
+                      && desc.instanceid === received.instanceid;
+                  });
+                  if (description[0]) {
+                    const dopplerInfo = isDopplerInName(description[0].market_hash_name)
+                      ? getDopplerInfo(description[0].icon_url)
+                      : null;
+                    const price = getPrice(
+                      description[0].market_hash_name,
+                      dopplerInfo,
+                      prices,
+                      pricingProvider,
+                      pricingMode,
+                      exchangeRate,
+                      currency,
+                    );
+                    offerWithDesc.receivedTotal += parseFloat(price.price);
+                    offerWithDesc.assets_received_desc.push({
+                      ...received,
+                      ...description[0],
+                      dopplerInfo,
+                      price,
+                    });
+                  }
+                });
+              }
+
+              if (offer.items_to_give) {
+                offer.items_to_give.forEach((given) => {
+                  const description = descriptions.filter((desc) => {
+                    return desc.appid === given.appid && desc.classid === given.classid
+                      && desc.instanceid === given.instanceid;
+                  });
+                  if (description[0]) {
+                    const dopplerInfo = isDopplerInName(description[0].market_hash_name)
+                      ? getDopplerInfo(description[0].icon_url)
+                      : null;
+                    const price = getPrice(
+                      description[0].market_hash_name,
+                      dopplerInfo,
+                      prices,
+                      pricingProvider,
+                      pricingMode,
+                      exchangeRate,
+                      currency,
+                    );
+                    offerWithDesc.givenTotal += parseFloat(price.price);
+                    offerWithDesc.assets_given_desc.push({
+                      ...given,
+                      ...description[0],
+                      dopplerInfo,
+                      price,
+                    });
+                  }
+                });
+              }
+
+              offerWithDesc.profitLoss = offerWithDesc.receivedTotal - offerWithDesc.givenTotal;
+              offerWithDesc.receivedTotalFormatted = prettyPrintPrice(
+                currency,
+                offerWithDesc.receivedTotal.toFixed(2),
+              );
+              offerWithDesc.givenTotalFormatted = prettyPrintPrice(
+                currency,
+                offerWithDesc.givenTotal.toFixed(2),
+              );
+              offerWithDesc.profitLossFormatted = prettyPrintPrice(
+                currency,
+                offerWithDesc.profitLoss.toFixed(2),
+              );
+
+              offersWithDetails.push(offerWithDesc);
+            });
+            console.log(offersWithDetails);
+            setCurrentPageOffers(offersWithDetails);
+          }).catch((err) => {
+            console.log(err);
+          });
+        });
+    }
   }, [offers, currentIndex]);
 
   return (
