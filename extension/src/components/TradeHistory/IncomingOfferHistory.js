@@ -25,7 +25,7 @@ const IncomingOfferHistory = () => {
   const [currentPageOffers, setCurrentPageOffers] = useState(null);
 
   const loadOffers = () => {
-    getTradeOffers(0, 1, 0, 1)
+    getTradeOffers(0, 1, 1, 0, 1)
       .then((offersResponse) => {
         const nonActiveOffers = [];
         offersResponse.trade_offers_received.forEach((offer) => {

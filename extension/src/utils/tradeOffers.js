@@ -590,7 +590,7 @@ const updateTrades = () => {
       }
 
       // requesting the latest active offer info from Steam
-      getTradeOffers(1, 1, 1, 1).then((offersData) => {
+      getTradeOffers(1, 0, 1, 1, 1).then((offersData) => {
         const newOffers = [];
         const newOfferEvents = [];
 

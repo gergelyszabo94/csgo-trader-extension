@@ -135,11 +135,11 @@ const getTradeHistory = (
 });
 
 const getTradeOffers = (
-  activesOnly, includeDescriptions, sent, received,
+  activesOnly, historicalOnly, includeDescriptions, sent, received,
 ) => new Promise((resolve, reject) => {
   chrome.storage.local.get(['apiKeyValid', 'steamAPIKey'], ({ apiKeyValid, steamAPIKey }) => {
     if (apiKeyValid) {
-      const getRequest = new Request(`https://api.steampowered.com/IEconService/GetTradeOffers/v1/?get_received_offers=${received}&get_sent_offers=${sent}&active_only=${activesOnly}&get_descriptions=${includeDescriptions}&language=english&key=${steamAPIKey}`);
+      const getRequest = new Request(`https://api.steampowered.com/IEconService/GetTradeOffers/v1/?get_received_offers=${received}&get_sent_offers=${sent}&active_only=${activesOnly}&historical_only${historicalOnly}&get_descriptions=${includeDescriptions}&language=english&key=${steamAPIKey}`);
 
       fetch(getRequest).then((response) => {
         if (!response.ok) {
