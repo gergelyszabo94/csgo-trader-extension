@@ -82,6 +82,7 @@ const IncomingOfferHistory = () => {
               offerWithDesc.assets_given_desc = [];
 
               if (offer.items_to_receive) {
+                offerWithDesc.itemsToReceiveWithoutDescriptions = 0;
                 offer.items_to_receive.forEach((received) => {
                   const description = descriptions.filter((desc) => {
                     return desc.appid === received.appid && desc.classid === received.classid
@@ -107,11 +108,12 @@ const IncomingOfferHistory = () => {
                       dopplerInfo,
                       price,
                     });
-                  }
+                  } else offerWithDesc.itemsToReceiveWithoutDescriptions += 1;
                 });
               }
 
               if (offer.items_to_give) {
+                offerWithDesc.itemsGivenWithoutDescriptions = 0;
                 offer.items_to_give.forEach((given) => {
                   const description = descriptions.filter((desc) => {
                     return desc.appid === given.appid && desc.classid === given.classid
@@ -137,7 +139,7 @@ const IncomingOfferHistory = () => {
                       dopplerInfo,
                       price,
                     });
-                  }
+                  } else offerWithDesc.itemsGivenWithoutDescriptions += 1;
                 });
               }
 
@@ -170,10 +172,14 @@ const IncomingOfferHistory = () => {
     <div className="container">
       <div className="trade-history">
         <h1 className="trade-history__headline clearfix">
-          Incoming Offer History (
+          Incoming Offer History BETA (
           { totalOffers }
           )
         </h1>
+        <p>
+          Unfortunately the Steam API does not return the details (names, images) of some items.
+          I will try to address this in the future.
+        </p>
         {
           error === null
             ? <TradeOfferContent trades={currentPageOffers} type="offer" loadNextBatch={loadNextBatch} />

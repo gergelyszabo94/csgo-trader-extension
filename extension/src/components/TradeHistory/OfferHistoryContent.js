@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import TradeOfferSide from 'components/TradeHistory/TradeOfferSide';
+import React from 'react';
+import TradeOfferHistorySide from 'components/TradeHistory/TradeOfferHistorySide';
 import NewTabLink from 'components/NewTabLink/NewTabLink';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,14 +8,6 @@ import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 import { offerStates } from 'utils/static/offers';
 
 const OfferHistoryContent = ({ offers }) => {
-  const [steamID, setSteamID] = useState(null);
-
-  useEffect(() => {
-    chrome.storage.local.get(['steamIDOfUser'], ({ steamIDOfUser }) => {
-      setSteamID(steamIDOfUser);
-    });
-  }, []);
-
   const profileIDToURL = (userId) => {
     return `https://steamcommunity.com/profiles/${userId}`;
   };
@@ -43,13 +35,13 @@ const OfferHistoryContent = ({ offers }) => {
           <OfferMessage message={offer.message} />
           <OfferState state={offer.trade_offer_state} />
         </div>
-        {TradeOfferSide({
+        {TradeOfferHistorySide({
           assets: offer.assets_given_desc,
-          profileid: getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
+          itemsWithoutDescriptions: offer.itemsGivenWithoutDescriptions,
         })}
-        {TradeOfferSide({
+        {TradeOfferHistorySide({
           assets: offer.assets_received_desc,
-          profileid: steamID,
+          itemsWithoutDescriptions: offer.itemsToReceiveWithoutDescriptions,
         })}
         <div className="col-12 ">
           <div className="trade-history__exchange">
