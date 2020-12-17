@@ -1056,12 +1056,38 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                     </a>
                   </div>
                 </div>
+                <div class="realMoneySites">
+                 <div class="realMoneySite">
+                    <a href="https://dmarket.com/?ref=hJEDYLBTsV" target="_blank" class="realMoneySiteLink referralLink" data-site="dmarket">
+                        <img alt="Dmarket logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/dmarket.png')}" data-site="dmarket">
+                        <br>
+                        DMARKET
+                    </a>
+                  </div>
+                  <div class="realMoneySite">
+                    <a href="https://pricempire.com/market?name=${fullName}" target="_blank" class="realMoneySiteLink referralLink" data-site="pricempire">
+                        <img alt="Pricempire logo" src="${chrome.runtime.getURL('images/external_logos/pricempire.png')}" data-site="pricempire">
+                        <br>
+                        Pricempire.com
+                    </a>
+                  </div>
+                  <div class="realMoneySite">
+                    <a href="https://itemherald.com/market/csgo?query=${fullName}&ref=gery" target="_blank" class="realMoneySiteLink referralLink" data-site="itemherald" data-site="skinbaron">
+                        <img alt="Itemherald logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/itemherald.png')}" data-site="itemherald">
+                        <br>
+                        ItemHerald.com
+                    </a>
+                  </div>
+                </div>
                 
                 <div id="realMoneyExpand" class="clickable" title="Click to learn more about what this is">What is this?</div>
                 <div id="realMoneyMoreInfo" class="hidden">
                     <div style="margin: 10px 0 10px 0">
                       <a href="https://skinport.com/market/730?r=gery" target="_blank" class="referralLink" data-site="skinport">Skinport</a>,
                       <a href="https://skinbaron.com/partner/gery" target="_blank" class="referralLink" data-site="skinbaron">Skinbaron</a>,
+                      <a href="https://dmarket.com/?ref=hJEDYLBTsV" target="_blank" class="referralLink" data-site="dmarket">DMARKET</a>,
+                      <a href="https://itemherald.com/market/csgo?ref=gery" target="_blank" class="referralLink" data-site="itemherald">ItemHerald</a>,
+                      <a href="https://pricempire.com/market" target="_blank" class="referralLink" data-site="pricempire">ItemHerald</a>,
                       <a href="bskn.co/?ref_alias=xcW4c_phcUc" target="_blank" class="referralLink" data-site="bitskins">Bitskins</a> and 
                       <a href="https://csgofloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csgofloat">
                       CSGOFloat
