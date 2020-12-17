@@ -10,6 +10,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import TradeHistoryContent from 'components/TradeHistory/TradeHistoryContent';
 import CSVExport from 'components/TradeHistory/CSVExport';
 import IncomingOfferHistory from 'components/TradeHistory/IncomingOfferHistory';
+import SentOfferHistory from 'components/TradeHistory/SentOfferHistory';
 
 import { trackEvent } from 'utils/analytics';
 
@@ -32,7 +33,7 @@ const routes = [
   {
     to: 'sent-offer-history/',
     name: 'Sent Offer History',
-    component: IncomingOfferHistory,
+    component: SentOfferHistory,
   },
 ];
 

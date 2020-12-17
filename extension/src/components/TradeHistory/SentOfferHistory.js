@@ -6,11 +6,11 @@ import TradeOfferHistoryHeader from 'components/TradeHistory/TradeOfferHistoryHe
 import { offerStates } from 'utils/static/offers';
 import addItemDetails from './addItemDetails';
 
-const IncomingOfferHistory = () => {
-  document.title = 'Incoming Offer History';
+const SentOfferHistory = () => {
+  document.title = 'Sent Offer History';
   trackEvent({
     type: 'pageview',
-    action: 'ExtensionIncomingOfferHistoryView',
+    action: 'ExtensionSentOfferHistoryView',
   });
 
   const [offers, setOffers] = useState([]);
@@ -21,10 +21,10 @@ const IncomingOfferHistory = () => {
   const [currentPageOffers, setCurrentPageOffers] = useState(null);
 
   const loadOffers = () => {
-    getTradeOffers(0, 1, 1, 0, 1)
+    getTradeOffers(0, 1, 1, 1, 0)
       .then((offersResponse) => {
         const nonActiveOffers = [];
-        offersResponse.trade_offers_received.forEach((offer) => {
+        offersResponse.trade_offers_sent.forEach((offer) => {
           if (offer.trade_offer_state && offer.trade_offer_state !== offerStates[2].key) {
             nonActiveOffers.push(offer);
           }
@@ -59,7 +59,7 @@ const IncomingOfferHistory = () => {
 
   return (
     <TradeOfferHistoryHeader
-      type="Incoming"
+      type="Sent"
       totalOffers={totalOffers}
       error={error}
       currentPageOffers={currentPageOffers}
@@ -68,4 +68,4 @@ const IncomingOfferHistory = () => {
   );
 };
 
-export default IncomingOfferHistory;
+export default SentOfferHistory;
