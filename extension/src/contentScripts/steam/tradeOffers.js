@@ -239,6 +239,8 @@ const addTotals = (offers) => {
             `<span
                     class="profitOrLoss ${pLClass}"
                     data-profit-or-loss="${offer.profitOrLoss}"
+                    data-receiving-total="${offer.theirItemsTotal}"
+                    data-giving-total="${offer.yourItemsTotal}"
                     data-p-l-percentage="${offer.PLPercentage}"
                     data-updated="${offer.time_updated}"
                     title="Projected P/L">
@@ -260,41 +262,53 @@ const sortOffers = (sortingMode) => {
   const activeOffers = [...document.querySelectorAll('.tradeoffer')].filter((offerElement) => isOfferActive(offerElement));
   let sortedOffers = [];
 
-  if (sortingMode === 'profit_amount') {
+  if (sortingMode === offersSortingModes.profit_amount.key) {
     sortedOffers = activeOffers.sort((a, b) => {
       const profitOnA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-profit-or-loss'));
       const profitOnB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-profit-or-loss'));
       return profitOnB - profitOnA;
     });
-  } else if (sortingMode === 'loss_amount') {
+  } else if (sortingMode === offersSortingModes.loss_amount.key) {
     sortedOffers = activeOffers.sort((a, b) => {
       const profitOnA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-profit-or-loss'));
       const profitOnB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-profit-or-loss'));
       return profitOnA - profitOnB;
     });
-  } else if (sortingMode === 'profit_percentage') {
+  } else if (sortingMode === offersSortingModes.profit_percentage.key) {
     sortedOffers = activeOffers.sort((a, b) => {
       const pLA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
       const pLB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
       return pLB - pLA;
     });
-  } else if (sortingMode === 'loss_percentage') {
+  } else if (sortingMode === offersSortingModes.loss_percentage.key) {
     sortedOffers = activeOffers.sort((a, b) => {
       const pLA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
       const pLB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-p-l-percentage'));
       return pLA - pLB;
     });
-  } else if (sortingMode === 'default') {
+  } else if (sortingMode === offersSortingModes.default.key) {
     sortedOffers = activeOffers.sort((a, b) => {
       const updatedA = parseInt(a.querySelector('.profitOrLoss').getAttribute('data-updated'));
       const updatedB = parseInt(b.querySelector('.profitOrLoss').getAttribute('data-updated'));
       return updatedB - updatedA;
     });
-  } else if (sortingMode === 'reverse') {
+  } else if (sortingMode === offersSortingModes.reverse.key) {
     sortedOffers = activeOffers.sort((a, b) => {
       const updatedA = parseInt(a.querySelector('.profitOrLoss').getAttribute('data-updated'));
       const updatedB = parseInt(b.querySelector('.profitOrLoss').getAttribute('data-updated'));
       return updatedA - updatedB;
+    });
+  } else if (sortingMode === offersSortingModes.receiving_value.key) {
+    sortedOffers = activeOffers.sort((a, b) => {
+      const updatedA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-receiving-total'));
+      const updatedB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-receiving-total'));
+      return updatedB - updatedA;
+    });
+  } else if (sortingMode === offersSortingModes.giving_value.key) {
+    sortedOffers = activeOffers.sort((a, b) => {
+      const updatedA = parseFloat(a.querySelector('.profitOrLoss').getAttribute('data-giving-total'));
+      const updatedB = parseFloat(b.querySelector('.profitOrLoss').getAttribute('data-giving-total'));
+      return updatedB - updatedA;
     });
   }
 

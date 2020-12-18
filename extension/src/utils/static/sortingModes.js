@@ -74,6 +74,14 @@ const offersSortingModes = {
     key: 'loss_percentage',
     name: 'Loss percentage (lowest to highest)',
   },
+  receiving_value: {
+    key: 'receiving_value',
+    name: 'Receiving side total value',
+  },
+  giving_value: {
+    key: 'giving_value',
+    name: 'Giving side total value',
+  },
 };
 
 const listingsSortingModes = {
