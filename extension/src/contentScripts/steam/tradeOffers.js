@@ -244,7 +244,7 @@ const addTotals = (offers) => {
                     data-p-l-percentage="${offer.PLPercentage}"
                     data-updated="${offer.time_updated}"
                     title="Projected P/L">
-                    ${prettyPrintPrice(currency, (offer.profitOrLoss).toFixed(2))}
+                    ${prettyPrintPrice(currency, (offer.profitOrLoss).toFixed(2))} (${((offer.PLPercentage - 1) * 100).toFixed(2)}%)
                 </span>`,
           ),
         );
