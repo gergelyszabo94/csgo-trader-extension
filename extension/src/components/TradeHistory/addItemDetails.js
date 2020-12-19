@@ -24,12 +24,18 @@ const addOfferDetails = (offers, descriptions, currentIndex) => {
         getPlayerSummaries(uniquePartnerIDs).then((summaries) => {
           const offersWithDetails = [];
           currentBatch.forEach((offer) => {
+            const partnerSummary = summaries[
+              getProperStyleSteamIDFromOfferStyle(offer.accountid_other)
+            ] !== undefined
+              ? summaries[getProperStyleSteamIDFromOfferStyle(offer.accountid_other)]
+              : {
+                personaname: 'No name found',
+              };
             const offerWithDesc = {
               ...offer,
               receivedTotal: 0.0,
               givenTotal: 0.0,
-              partnerSummary:
-                summaries[getProperStyleSteamIDFromOfferStyle(offer.accountid_other)],
+              partnerSummary,
             };
             offerWithDesc.assets_received_desc = [];
             offerWithDesc.assets_given_desc = [];

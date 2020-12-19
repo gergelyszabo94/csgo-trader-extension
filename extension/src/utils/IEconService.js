@@ -31,11 +31,16 @@ const getTradeHistory = (
               getPlayerSummaries(uniquePartnerIDs).then((summaries) => {
                 const trades = [];
                 body.response.trades.forEach((trade) => {
+                  const partnerSummary = summaries[trade.steamid_other] !== undefined
+                    ? summaries[trade.steamid_other]
+                    : {
+                      personaname: 'No name found',
+                    };
                   const tradeWithDesc = {
                     ...trade,
                     receivedTotal: 0.0,
                     givenTotal: 0.0,
-                    partnerSummary: summaries[trade.steamid_other],
+                    partnerSummary,
                   };
                   tradeWithDesc.assets_received_desc = [];
                   tradeWithDesc.assets_given_desc = [];
