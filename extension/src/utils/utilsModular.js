@@ -457,7 +457,7 @@ const addSSTandExtIndicators = (itemElement, item, showStickerPrice) => {
 };
 
 const addFloatIndicator = (itemElement, floatInfo) => {
-  if (floatInfo !== null && itemElement !== null
+  if (floatInfo !== null && itemElement !== null && floatInfo !== undefined
     && itemElement.querySelector('div.floatIndicator') === null) {
     itemElement.insertAdjacentHTML(
       'beforeend',
