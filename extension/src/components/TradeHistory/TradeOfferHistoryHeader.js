@@ -9,7 +9,7 @@ const TradeOfferHistoryHeader = ({
       <div className="trade-history">
         <h1 className="trade-history__headline clearfix">
           { type }
-          Offer History BETA (
+          &nbsp;Offer History BETA (
           { totalOffers }
           )
         </h1>
