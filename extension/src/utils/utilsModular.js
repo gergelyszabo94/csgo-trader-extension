@@ -395,7 +395,7 @@ const addPageControlEventListeners = (type, addFloatIndicatorsFunction) => {
       setTimeout(() => {
         if (type === 'inventory') addFloatIndicatorsFunction(getActivePage('inventory'));
         else if (type === 'offer') addFloatIndicatorsFunction('page');
-      }, 500);
+      }, 100);
     });
   } else setTimeout(() => { addPageControlEventListeners(); }, 1000);
 };
