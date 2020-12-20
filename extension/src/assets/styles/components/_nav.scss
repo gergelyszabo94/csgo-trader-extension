@@ -11,14 +11,12 @@
 
   &__sidebar {
     background-color: #212529;
-    position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
     z-index: 100;
     padding: 0;
     border-right: 1px solid rgba(255, 255, 255, 0.2);
-    padding-top: 74px;
 
     .nav-link {
       &.sideNavActive {
