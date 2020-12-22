@@ -262,13 +262,8 @@ const faq = (props) => {
                         were removed because it’s not whitelisted.
                         My whitelisting requests were denied without explanation as well.
                     </p>
-                    <p>
-                        To complete the vicious circle the mods on
-                        <NewTabLink to='https://www.reddit.com/r/csgomarketforum/'> /r/csgomarketforum </NewTabLink>
-                        also removed posts because, wait for it... it is not whitelisted on /r/GlobalOffensiveTrade.
-                    </p>
                 </Question>
-                <Question titl='Does the extension mine my data, spy one me? How and what kind of information is stored? How is my privacy preserved?'>
+                <Question title='Does the extension mine my data, spy one me? How and what kind of information is stored? How is my privacy preserved?'>
                     <p2>
                         Read the
                         <Link to='/privacy/'> Privacy page </Link>
