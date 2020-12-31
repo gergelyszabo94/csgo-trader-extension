@@ -1030,6 +1030,12 @@ const sendQueryParamOffer = (urlParams, whose, items, message) => {
   const tradeOfferJSON = createTradeOfferJSON(toGive, toReceive);
   sendOffer(urlParams.get('partner'), tradeOfferJSON, urlParams.get('token'), message).then(() => {
     closeTab();
+  }).catch((err) => {
+    if (err.status === 500) {
+      setTimeout(() => {
+        sendQueryParamOffer(urlParams, whose, items, message);
+      }, 5000);
+    }
   });
 };
 
