@@ -28,7 +28,7 @@ import { getItemByIDs, getIDsFromElement, findElementByIDs } from 'utils/itemsTo
 import { listItem } from 'utils/market';
 import { sortingModes } from 'utils/static/sortingModes';
 import doTheSorting from 'utils/sorting';
-import { overridePopulateActions } from 'utils/steamOverriding';
+import { overridePopulateActions, overRideCSGOInventoryLoading } from 'utils/steamOverriding';
 import { trackEvent } from 'utils/analytics';
 import itemTypes from 'utils/static/itemTypes';
 import exteriors from 'utils/static/exteriors';
@@ -1763,6 +1763,9 @@ const loadInventoryItems = (appID, contextID) => {
 logExtensionPresence();
 updateWalletCurrency();
 initPriceQueue(onListingPricesLoaded);
+chrome.storage.local.get('useAlternativeCSGOInventoryEndpoint', ({ useAlternativeCSGOInventoryEndpoint }) => {
+  if (useAlternativeCSGOInventoryEndpoint) overRideCSGOInventoryLoading();
+});
 
 // listens to manual inventory tab/game changes
 const inventoriesMenu = document.querySelector('.games_list_tabs');

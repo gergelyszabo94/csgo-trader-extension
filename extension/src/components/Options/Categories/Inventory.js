@@ -92,6 +92,12 @@ const inventory = () => {
         type="flipSwitchStorage"
         description="Show lookup on buff link in inventories"
       />
+      <Row
+        name="Use alternative CS:GO inventory endpoint"
+        id="useAlternativeCSGOInventoryEndpoint"
+        type="flipSwitchStorage"
+        description="CS:GO inventories often don't load at all, when this setting is on the extension forces Steam to load the inventory from a more reliable endpoint."
+      />
     </Category>
   );
 };
