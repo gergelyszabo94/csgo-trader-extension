@@ -261,7 +261,7 @@ const storageKeys = {
   discordNotificationHook: '',
   allowDiscordNotification: false,
   showBuffLookupInInventory: false,
-  useAlternativeCSGOInventoryEndpoint: true,
+  useAlternativeCSGOInventoryEndpoint: false,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

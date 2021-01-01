@@ -86,6 +86,11 @@ chrome.runtime.onInstalled.addListener((details) => {
       action: 'ExtensionUpdate',
     });
 
+    // hotfix, remove after a while
+    if (chrome.runtime.getManifest().version === '2.10.2') {
+      chrome.storage.local.set({ useAlternativeCSGOInventoryEndpoint: false }, () => {});
+    }
+
     chrome.browserAction.setBadgeText({ text: 'U' });
 
     // notifies the user when the extension is updated
