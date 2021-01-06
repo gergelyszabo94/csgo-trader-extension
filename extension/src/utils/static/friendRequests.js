@@ -13,7 +13,7 @@ const conditions = {
   },
   steam_level_under: {
     key: 'steam_level_under',
-    pretty: 'Steam lever under',
+    pretty: 'Steam level under',
     description: 'User\' Steam profile lever is under or the same as the set number',
     with_value: true,
     value_type: 'number',
@@ -21,7 +21,7 @@ const conditions = {
   },
   steam_level_over: {
     key: 'steam_level_over',
-    pretty: 'Steam lever over',
+    pretty: 'Steam level over',
     description: 'User\' Steam profile lever is over the set number',
     with_value: true,
     value_type: 'number',
