@@ -1048,8 +1048,13 @@ getInventories(true);
 overrideHandleTradeActionMenu();
 repositionNameTagIcons();
 
-if (document.getElementById('error_msg') === null) {
+const errorMSGEl = document.getElementById('error_msg');
+if (errorMSGEl === null) {
   updateWalletCurrency();
+} else if (errorMSGEl.innerText.includes('An error was encountered while processing your request:')) { // english only
+  setTimeout(() => {
+    window.location.reload();
+  }, 2000);
 }
 
 injectStyle(`
