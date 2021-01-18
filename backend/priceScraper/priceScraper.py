@@ -485,7 +485,7 @@ def lambda_handler(event, context):
                     and not is_mispriced_knife(item, steam_aggregate["price"]) \
                     and not is_mispriced_glove(item, steam_aggregate["price"]) \
                     and not is_mispriced_compared_to_csb(item, steam_aggregate["price"], csgobackpack_prices):
-                if steam_aggregate["price"] >= 800 and item in buff163_prices:
+                if steam_aggregate["price"] >= 800 and item in buff163_prices and buff163_prices[item]["starting_at"]["price"] != "null":
                     price = get_formated_float(float(buff163_prices[item]["starting_at"]["price"]) * st_buff * week_to_day)
                     case = "H"
                 else: price = get_formated_float(steam_aggregate["price"])
