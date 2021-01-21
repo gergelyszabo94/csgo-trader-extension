@@ -386,7 +386,7 @@ def lambda_handler(event, context):
                         "highest_order": {"price": "null", "doppler": "null"} if pricempire_prices.get(
                             'buff163_quick') is None or pricempire_prices.get('buff163_quick').get(
                             'price') is None else {
-                                "price": get_formated_float(pricempire_prices.get("buff163").get("price") / 100),
+                                "price": get_formated_float(pricempire_prices.get("buff163_quick").get("price") / 100),
                                 "doppler": {
                                         "Sapphire": "null" if pricempire_prices.get("buff_sapphire_quick") is None or pricempire_prices.get("buff_sapphire_quick").get("price") is None else pricempire_prices.get("buff_sapphire_quick").get("price") / 100,
                                         "Ruby": "null" if pricempire_prices.get("buff_ruby_quick") is None or pricempire_prices.get("buff_ruby_quick").get("price") is None else pricempire_prices.get("buff_ruby_quick").get("price") / 100,
