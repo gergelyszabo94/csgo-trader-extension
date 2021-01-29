@@ -342,7 +342,7 @@ def lambda_handler(event, context):
 
     print("Requesting prices from pricempire")
     response = requests.get(
-        "https://pricempire.com/api/v1/getAllItems?token=" + pricempire_token + "&currency=USD",
+        "https://public-api.pricempire.com/api/v1/getAllItems?token=" + pricempire_token + "&currency=USD",
     )
     print("Received response from pricempire")
 
