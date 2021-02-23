@@ -1,4 +1,5 @@
 // only works on steam pages
+import DOMPurify from 'dompurify';
 import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 import { getItemMarketLink, isDopplerInName } from 'utils/simpleUtils';
 import {
@@ -224,13 +225,16 @@ const notifyAboutOfferOnDiscord = (offer, items) => {
     getPlayerSummaries([steamIDOfPartner]).then((summary) => {
       const userDetails = summary[steamIDOfPartner];
       const title = `Offer from **${userDetails.personaname}** (${prettyPrintPrice(currency, offer.profitOrLoss.toFixed(2))})\n`;
+      const offerMessage = offer.message !== ''
+        ? `Message: ${DOMPurify.sanitize(offer.message)}\n`
+        : '';
       let givingItems = `Giving (${prettyPrintPrice(currency, offer.yourItemsTotal.toFixed(2))}):\n`;
       givingItems += createDiscordSideSummary(offer.items_to_give, items);
 
       let receivingItems = `Receiving (${prettyPrintPrice(currency, offer.theirItemsTotal.toFixed(2))}):\n`;
       receivingItems += createDiscordSideSummary(offer.items_to_receive, items);
       const link = `Link: <https://steamcommunity.com/tradeoffer/${offer.tradeofferid}>`;
-      notifyOnDiscord(`${title}${givingItems}${receivingItems}${link}`);
+      notifyOnDiscord(`${title}${offerMessage}${givingItems}${receivingItems}${link}`);
     });
   });
 };
