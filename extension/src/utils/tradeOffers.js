@@ -204,7 +204,7 @@ const notifyAboutOffer = (offer) => {
 
 const createDiscordSideSummary = (offerSideItems, itemsWithDetails) => {
   let summary = '';
-  if (offerSideItems !== null) {
+  if (offerSideItems !== null && offerSideItems !== undefined) {
     offerSideItems.forEach((itemToGive) => {
       const item = getItemByIDs(
         itemsWithDetails,
