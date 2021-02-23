@@ -397,6 +397,7 @@ if (orders) {
         const outbidButton = orderRow.querySelector('.outbid');
         outbidButton.addEventListener('click', () => {
           const orderID = getMyOrderIDFromElement(orderRow);
+          const quantity = parseInt(orderRow.querySelector('.market_listing_right_cell.market_listing_my_price.market_listing_buyorder_qty').innerText);
           cancelOrder(orderID).then(
             () => {
               const marketLink = orderRow.querySelector('.market_listing_item_name_link').getAttribute('href');
@@ -404,7 +405,7 @@ if (orders) {
               const marketName = marketLink.split('market/listings/')[1].split('/')[1];
               getHighestBuyOrder(appID, marketName).then((highestOrder) => {
                 const newOrderPrice = parseInt(highestOrder) + 1;
-                createOrder(appID, marketName, newOrderPrice, 1).then(() => {
+                createOrder(appID, marketName, newOrderPrice, quantity).then(() => {
                   const priceEl = orderRow.querySelector('.highestOrderPrice');
                   priceEl.innerText = centsToSteamFormattedPrice(newOrderPrice);
                   priceEl.classList.add('highest');
