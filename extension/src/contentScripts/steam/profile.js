@@ -120,9 +120,19 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         <img style="width: 16px; height: 16px" src="${chrome.runtime.getURL('images/paperclip.png')}">
             &nbsp; Copy Trade Link
       </a>`;
+    const openSteamRepProfile = `
+      <a class="popup_menu_item" href="https://steamrep.com/profiles/${profileOwnerSteamID}">
+        <img style="width: 16px; height: 16px" src="${chrome.runtime.getURL('images/plus.png')}">
+            &nbsp; Open SteamRep Profile
+      </a>`;
+    const openCSGORepProfile = `
+      <a class="popup_menu_item" href="https://csgo-rep.com/profile/${profileOwnerSteamID}">
+        <img style="width: 16px; height: 16px" src="${chrome.runtime.getURL('images/growth.png')}">
+            &nbsp; Open CSGO-REP Profile
+      </a>`;
     profileActionPopup.querySelector('.popup_body.popup_menu.shadow_content').insertAdjacentHTML(
       'beforeend',
-      copyPermalink + showOfferSummary + copyTradeLink,
+      copyPermalink + showOfferSummary + copyTradeLink + openSteamRepProfile + openCSGORepProfile,
       // not sanitized because it breaks the images and it's static anyways
     );
 
