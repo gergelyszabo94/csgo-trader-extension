@@ -1,7 +1,7 @@
 // only works on steam pages
 import DOMPurify from 'dompurify';
 import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
-import { getItemMarketLink, isDopplerInName } from 'utils/simpleUtils';
+import { getItemMarketLink, isDopplerInName, getFormattedPLPercentage } from 'utils/simpleUtils';
 import {
   getDopplerInfo,
   getExteriorFromTags,
@@ -573,6 +573,10 @@ const addOfferTotals = (offers, items) => {
 
       offer.profitOrLoss = offer.theirItemsTotal - offer.yourItemsTotal;
       offer.PLPercentage = offer.theirItemsTotal / offer.yourItemsTotal;
+      offer.PLPercentageFormatted = getFormattedPLPercentage(
+        offer.yourItemsTotal,
+        offer.theirItemsTotal,
+      );
     });
 
     return offers;

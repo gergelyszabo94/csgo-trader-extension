@@ -1,6 +1,6 @@
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
-import { isDopplerInName } from '../../utils/simpleUtils';
+import { isDopplerInName, getFormattedPLPercentage } from '../../utils/simpleUtils';
 import { getDopplerInfo } from '../../utils/utilsModular';
 import { getPrice, prettyPrintPrice } from '../../utils/pricing';
 
@@ -115,7 +115,10 @@ const addOfferDetails = (offers, descriptions, currentIndex) => {
               currency,
               offerWithDesc.profitLoss.toFixed(2),
             );
-
+            offerWithDesc.PLPercentageFormatted = getFormattedPLPercentage(
+              offerWithDesc.givenTotal,
+              offerWithDesc.receivedTotal,
+            );
             offersWithDetails.push(offerWithDesc);
           });
           resolve(offersWithDetails);

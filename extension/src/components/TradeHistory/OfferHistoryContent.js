@@ -70,6 +70,8 @@ const OfferHistoryContent = ({ offers }) => {
               title="Profit/Loss made"
             >
               {offer.profitLossFormatted}
+              &nbsp;
+              {offer.PLPercentageFormatted}
             </span>
           </div>
         </div>

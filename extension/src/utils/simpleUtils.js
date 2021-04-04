@@ -41,6 +41,12 @@ const closeTab = () => new Promise((resolve, reject) => {
   }
 });
 
+const getFormattedPLPercentage = (giving, receiving) => {
+  return (giving === 0 || receiving === 0)
+    ? ''
+    : `(${(((receiving / giving) - 1) * 100).toFixed(2)}%)`;
+};
+
 // for phase detection we have to know if th item is a doppler
 const isDopplerInName = (name) => {
   // english and many other languages, polish iirc, simplified chinese, korean, bulgarian, russian
@@ -51,5 +57,5 @@ const isDopplerInName = (name) => {
 
 export {
   getItemMarketLink, getItemInventoryLink, getOfferLink, playAudio,
-  getItemByNameAndGame, closeTab, isDopplerInName,
+  getItemByNameAndGame, closeTab, isDopplerInName, getFormattedPLPercentage,
 };

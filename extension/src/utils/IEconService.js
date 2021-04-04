@@ -1,7 +1,7 @@
 import { getPrice, prettyPrintPrice } from 'utils/pricing';
 import { getDopplerInfo } from 'utils/utilsModular';
 import { getPlayerSummaries } from 'utils/ISteamUser';
-import { isDopplerInName } from './simpleUtils';
+import { isDopplerInName, getFormattedPLPercentage } from './simpleUtils';
 
 const getTradeHistory = (
   maxTrades, startTime = 0, afterTrade = 0,
@@ -113,6 +113,10 @@ const getTradeHistory = (
                   tradeWithDesc.profitLossFormatted = prettyPrintPrice(
                     currency,
                     tradeWithDesc.profitLoss.toFixed(2),
+                  );
+                  tradeWithDesc.PLPercentageFormatted = getFormattedPLPercentage(
+                    tradeWithDesc.givenTotal,
+                    tradeWithDesc.receivedTotal,
                   );
 
                   trades.push(tradeWithDesc);

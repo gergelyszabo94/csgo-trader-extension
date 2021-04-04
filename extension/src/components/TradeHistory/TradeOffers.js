@@ -76,6 +76,8 @@ const TradeOffers = ({ trades }) => {
               title="Profit/Loss made"
             >
               {trade.profitLossFormatted}
+              &nbsp;
+              {trade.PLPercentageFormatted}
             </span>
           </div>
         </div>

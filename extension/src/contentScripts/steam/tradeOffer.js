@@ -11,7 +11,7 @@ import {
   removeOfferFromActiveOffers, changePageTitle,
 } from 'utils/utilsModular';
 import {
-  getItemMarketLink, getItemByNameAndGame, closeTab, isDopplerInName,
+  getItemMarketLink, getItemByNameAndGame, closeTab, isDopplerInName, getFormattedPLPercentage,
 } from 'utils/simpleUtils';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
@@ -402,11 +402,10 @@ const addPLInfo = () => {
       const yourTotal = parseFloat(yourTotalEl.getAttribute('data-total'));
       const theirTotal = parseFloat(theirTotalEl.getAttribute('data-total'));
       const profitOrLoss = theirTotal - yourTotal;
-      const PLPercentage = theirTotal / yourTotal;
 
       const pLClass = profitOrLoss > 0.0 ? 'profit' : 'loss';
       document.getElementById('showSummary').innerHTML = DOMPurify.sanitize(`
-        Show trade Summary (<span class="${pLClass}">${prettyPrintPrice(currency, (profitOrLoss).toFixed(2))}  (${((PLPercentage - 1) * 100).toFixed(2)}%)</span>)`);
+        Show trade Summary (<span class="${pLClass}">${prettyPrintPrice(currency, (profitOrLoss).toFixed(2))}  ${getFormattedPLPercentage(yourTotal, theirTotal)}</span>)`);
     });
   }
 };
