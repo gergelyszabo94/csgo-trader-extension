@@ -42,6 +42,12 @@ const profile = () => {
                 when you want to avoid anime boobs showing on your screen."
       />
       <Row
+        name="Remove animated profile backgrounds"
+        id="removeAnimatedProfileBackgrounds"
+        type="flipSwitchStorage"
+        description="When enabled, it removes animated profile backgrounds from profiles. They can be quite annoying and can cause performance issues."
+      />
+      <Row
         name="Show real status"
         id="showRealStatus"
         type="flipSwitchStorage"

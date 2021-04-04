@@ -253,7 +253,9 @@ if (document.querySelector('body').classList.contains('profile_page')) {
     changePageTitle('profile');
   }
 
-  chrome.storage.local.get('nsfwFilter', ({ nsfwFilter }) => {
+  chrome.storage.local.get(['nsfwFilter', 'removeAnimatedProfileBackgrounds'], ({
+    nsfwFilter, removeAnimatedProfileBackgrounds,
+  }) => {
     if (nsfwFilter) {
       // makes the profile background the same as the default one
       document.querySelector('.no_header.profile_page').setAttribute('style', 'background-image: url(https://steamcommunity-a.akamaihd.net/public/images/profile/profile_bg.jpg); background-repeat: repeat-x; background-color: #262627;');
@@ -261,7 +263,7 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         element.classList.remove('has_profile_background');
       });
 
-      // removes artwork, screenshot showcases and animated backgrounds
+      // removes artwork, screenshot showcases
       document.querySelectorAll('.profile_background_holder_content, .screenshot_showcase, .profile_animated_background').forEach((element) => {
         element.remove();
       });
@@ -278,6 +280,11 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         document.querySelector('.w19_side_background, .w19_pig, .w19_strings, .profile_header_bg, .profile_header_bg_texture').style.background = 'url()';
         document.querySelector('.w19_sides_position').innerHTML = '';
       }
+    } else if (nsfwFilter || removeAnimatedProfileBackgrounds) {
+      // removes animated backgrounds
+      document.querySelectorAll('.profile_animated_background').forEach((element) => {
+        element.remove();
+      });
     }
   });
 

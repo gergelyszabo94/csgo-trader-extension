@@ -262,6 +262,7 @@ const storageKeys = {
   allowDiscordNotification: false,
   showBuffLookupInInventory: false,
   useAlternativeCSGOInventoryEndpoint: false,
+  removeAnimatedProfileBackgrounds: false,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
