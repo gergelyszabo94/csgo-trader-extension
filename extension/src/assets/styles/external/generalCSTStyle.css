@@ -14,15 +14,15 @@
     margin: 0 15px 2px 15px;
 }
 
-#functionBarValues{
+#functionBarValues {
     font-size: 1.5rem;
 }
 
-#functionBarActions{
+#functionBarActions {
     font-size: 1.2rem;
 }
 
-.functionBarRow{
+.functionBarRow {
     height: 30px;
 }
 
@@ -30,53 +30,53 @@
     float: right;
 }
 
-#offer_function_bar{
+#offer_function_bar {
     margin-top: -18px;
     margin-bottom: 2px;
 }
 
-#selectedTotal{
+#selectedTotal {
     float: left;
 }
 
-#sortingMethod{
+#sortingMethod {
     font-size: 1.2rem;
 }
 
-#sortingMenu{
+#sortingMenu {
     float: right;
 }
 
-.keyNumberInput{
+.keyNumberInput {
     width: 50px;
 }
 
-#functionBarGenerateMenu{
+#functionBarGenerateMenu {
     height: auto;
 }
 
-#generate_delimiter{
+#generate_delimiter {
     width: 15px;
 }
 
-#generate_options{
+#generate_options {
     margin-top: 5px;
 }
 
-#generate_button{
+#generate_button {
     margin-left: 15px;
     text-decoration: underline;
     font-size: 1rem;
 }
 
-#sellButton, #stopSale{
+#sellButton, #stopSale {
     font-size: 1rem;
     font-weight: bold;
     float: right;
     margin-right: 20px;
 }
 
-#retryStartingAt{
+#retryStartingAt {
     font-weight: bold;
     float: right;
     margin-right: 10px;
@@ -245,17 +245,17 @@ progress {
     padding: 0 60px 30px 60px;
 }
 
-.trade_offers_module{
+.trade_offers_module {
     padding-top: 24px;
     padding-left: 48px;
 }
 
-.hidden-copy-textarea{
+.hidden-copy-textarea {
     position: absolute;
     left: -9999px
 }
 
-.offer_action{
+.offer_action {
     margin-right: 10px;
 }
 
@@ -293,34 +293,34 @@ progress {
     margin: 0;
 }
 
-.tradability{
+.tradability {
     text-align: center;
     margin: 0.5rem;
     font-size: 1rem;
 }
 
-.tradable{
+.tradable {
     color: var(--steam-ingame-green);
 }
 
-.not_tradable{
+.not_tradable {
     color: var(--steam-nametag-red);
 }
 
-.countdown{
+.countdown {
     text-align: center;
     color: var(--steam-nametag-red);
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
 }
-.perItemDate{
+.perItemDate {
     position: absolute;
     left: 5px;
     top: 5px;
     font-size: 0.8rem;
 }
 
-.dopplerPhase{
+.dopplerPhase {
     color: white;
     position: absolute;
     left: 42%;
@@ -328,54 +328,54 @@ progress {
     font-size: 0.8rem;
 }
 
-.dopplerPhaseMarket{
+.dopplerPhaseMarket {
     color: white;
     position: absolute;
     left:40%;
     top: 10%;
 }
 
-.floatBar{
+.floatBar {
     position: relative;
     top: -35px;
 }
 
-.floatBarMarket{
+.floatBarMarket {
     width: 480px;
 }
 
-.floatBarFN{
+.floatBarFN {
     width: 7%;
     background-color: var(--steam-online-blue);
 }
 
-.floatBarMW{
+.floatBarMW {
     width: 8%;
     background-color: var(--steam-ingame-green);
 }
 
-.floatBarFT{
+.floatBarFT {
     width: 23%;
     background-color: var(--steam-souvenir-yellow);
 }
 
-.floatBarWW{
+.floatBarWW {
     width: 7%;
     background-color: var(--steam-stattrak-orange);
 }
 
-.floatBarBS{
+.floatBarBS {
     width: 55%;
     background-color: var(--steam-nametag-red);
 }
 
-.floatPointer{
+.floatPointer {
     height: 15px;
     width: 15px;
     margin: 0;
 }
 
-.floatToolTip{
+.floatToolTip {
     position: relative;
     top: 7px;
     left: -2%;
@@ -437,14 +437,14 @@ progress {
     white-space: pre-wrap; /* not sure what this is but it works to not let the text overflow */
 }
 
-.exteriorSTInfo{
+.exteriorSTInfo {
     position: absolute;
     top: 5px;
     right: 5px;
     font-size: 0.8rem;
 }
 
-.priceIndicator{
+.priceIndicator {
     color: white;
     position: absolute;
     bottom: 5px;
@@ -475,11 +475,11 @@ progress {
   margin-left: 50px;
 }
 
-.exteriorIndicator{
+.exteriorIndicator {
     color: var(--steam-note-blue);
 }
 
-.otherExteriors{
+.otherExteriors {
     color: var(--steam-note-blue);
     margin-top: 0.5rem;
     margin-bottom: 1rem;
@@ -494,13 +494,13 @@ progress {
     filter: invert(97%) sepia(91%) saturate(7144%) hue-rotate(184deg) brightness(123%) contrast(96%);
 }
 
-.customStickers{
+.customStickers {
     position: absolute;
     top: 5px;
     right: 5px;
 }
 
-.stickerIcon{
+.stickerIcon {
     width: 64px;
     height: 48px;
 }
@@ -509,39 +509,39 @@ progress {
     transform: scale(1.5);
 }
 
-.stickerHolderMarket{
+.stickerHolderMarket {
     margin-top: 15px;
     margin-bottom: 15px;
     text-align: center;
 }
 
-.stattrakOrange{
+.stattrakOrange {
     color: var(--steam-stattrak-orange) !important;
 }
 
-.souvenirYellow{
+.souvenirYellow {
     color: var(--steam-souvenir-yellow) !important;
 }
 
-.activeInfo{
+.activeInfo {
     border-color: white !important;
 }
 
-.cstSelected{
+.cstSelected {
     border: 1px dashed white !important;
 }
 
-#selectButton{
+#selectButton {
     width: 20px;
     height: 20px;
 }
 
-#generate_list{
+#generate_list {
     width: 20px;
     height: 20px;
 }
 
-#listingTable{
+#listingTable {
     border-bottom: solid;
     border-width: 1px;
     margin-bottom: 5px;
@@ -565,7 +565,7 @@ progress {
     margin-bottom: 10px;
 }
 
-.nametag{
+.nametag {
     color: var(--steam-nametag-red);
     font-size: 1.2rem;
     position: absolute;
@@ -573,7 +573,7 @@ progress {
     right: 80px;
 }
 
-.duplicate{
+.duplicate {
     color: yellow;
     position: absolute;
     left: 25px;
@@ -584,7 +584,15 @@ progress {
     -webkit-text-stroke-color: black;
 }
 
-.patternInfo{
+.copyButtons {
+    color: white;
+    position: absolute;
+    left: 25px;
+    top: 100px;
+    font-weight: bold;
+}
+
+.patternInfo {
     position: relative;
     left: 0;
     bottom: 15px;
@@ -592,19 +600,19 @@ progress {
     color: white;
 }
 
-.fadeGradient{
+.fadeGradient {
     background: linear-gradient(to right, #ffc94b 0%, #ca6390 50%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
-.marbleFadeGradient{
+.marbleFadeGradient {
     background: linear-gradient(to right, #ff0000 0%, #0000ff 70%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
-.caseHardenedGradient{
+.caseHardenedGradient {
     background: linear-gradient(to right, #ffc94b 0%, #68568d 70%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -623,35 +631,35 @@ progress {
     text-align: center;
 }
 
-.market_sorting{
+.market_sorting {
     margin-top: 5px;
 }
 
-.originalPrice{
+.originalPrice {
     font-size: 0.7rem;
 }
 
-.underline{
+.underline {
     text-decoration: underline;
 }
 
-.strikethrough{
+.strikethrough {
     text-decoration: line-through;
 }
 
-.sold{
+.sold {
     opacity: 30%;
 }
 
-.whiteBackground{
+.whiteBackground {
     background-color: white;
 }
 
-.offerHistory{
+.offerHistory {
     color: lightgray
 }
 
-.userPriceInput{
+.userPriceInput {
     width: 50px;
 }
 

@@ -49,6 +49,7 @@ const upperModule = `
     <div class="nametag"></div>
     <div class="descriptor customStickers"></div>
     <div class="duplicate">x1</div>
+    <div class="copyButtons"></div>
     ${floatBar}
     <div class="patternInfo"></div>
 </div>
@@ -443,7 +444,7 @@ const addRightSideElements = () => {
       || activeInventoryAppID === steamApps.TF2.appID
     ) {
       // removes previously added listeners
-      document.querySelectorAll('.showTechnical, .lowerModule, .marketActionInstantSell, .marketActionQuickSell').forEach((element) => {
+      document.querySelectorAll('.showTechnical, .lowerModule, .marketActionInstantSell, .marketActionQuickSell, .copyItemID, .copyItemName, .copyItemLink').forEach((element) => {
         element.removeEventListener('click');
       });
 
@@ -534,9 +535,9 @@ const addRightSideElements = () => {
           }
 
           // adds the in-offer module
-          chrome.storage.local.get(['activeOffers', 'itemInOffersInventory', 'showPriceEmpireLinkInInventory', 'showBuffLookupInInventory'], ({
+          chrome.storage.local.get(['activeOffers', 'itemInOffersInventory', 'showPriceEmpireLinkInInventory', 'showBuffLookupInInventory', 'inventoryShowCopyButtons'], ({
             activeOffers, itemInOffersInventory,
-            showPriceEmpireLinkInInventory, showBuffLookupInInventory,
+            showPriceEmpireLinkInInventory, showBuffLookupInInventory, inventoryShowCopyButtons,
           }) => {
             if (itemInOffersInventory) {
               const inOffers = activeOffers.items.filter((offerItem) => {
@@ -600,6 +601,45 @@ const addRightSideElements = () => {
                 .forEach((descriptor) => {
                   descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(buffLink, { ADD_ATTR: ['target'] }));
                 });
+            }
+
+            if (inventoryShowCopyButtons) {
+              console.log(item);
+              document.querySelectorAll('.copyButtons')
+                .forEach((copyButtons) => {
+                  copyButtons.insertAdjacentHTML(
+                    'afterbegin',
+                    DOMPurify.sanitize(
+                      `<div class="copyItemID clickable" title="Copy the AssetID of the item.">
+                                Copy ID
+                            </div>
+                            <div class="copyItemName clickable" title="Copy the full market name of the item.">
+                                Copy Name
+                            </div>
+                            <div class="copyItemLink clickable" title="Cop the item's inventory link.">
+                                Copy Link
+                            </div>`,
+                    ),
+                  );
+                });
+
+              document.querySelectorAll('.copyItemID').forEach((element) => {
+                element.addEventListener('click', () => {
+                  copyToClipboard(item.assetid);
+                });
+              });
+
+              document.querySelectorAll('.copyItemName').forEach((element) => {
+                element.addEventListener('click', () => {
+                  copyToClipboard(item.market_hash_name);
+                });
+              });
+
+              document.querySelectorAll('.copyItemLink').forEach((element) => {
+                element.addEventListener('click', () => {
+                  copyToClipboard(`https://steamcommunity.com/profiles/${item.owner}/inventory/#${item.appid}_${item.contextid}_${item.assetid}`);
+                });
+              });
             }
           });
 

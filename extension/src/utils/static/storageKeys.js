@@ -263,6 +263,7 @@ const storageKeys = {
   showBuffLookupInInventory: false,
   useAlternativeCSGOInventoryEndpoint: false,
   removeAnimatedProfileBackgrounds: false,
+  inventoryShowCopyButtons: false,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

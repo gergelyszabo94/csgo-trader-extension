@@ -81,6 +81,12 @@ const inventory = () => {
         description="Shows the selected items table in other people's inventory"
       />
       <Row
+        name="Show copy item id/name/link buttons on active items"
+        id="inventoryShowCopyButtons"
+        type="flipSwitchStorage"
+        description="Show copy item id/name/link buttons on active items in inventories."
+      />
+      <Row
         name="Show pricempire.com links in inventories"
         id="showPriceEmpireLinkInInventory"
         type="flipSwitchStorage"
