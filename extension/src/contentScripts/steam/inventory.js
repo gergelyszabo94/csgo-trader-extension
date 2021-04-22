@@ -949,9 +949,10 @@ const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
 const addPerItemInfo = (appID) => {
   const itemElements = document.querySelectorAll(`.item.app${appID}.context2`);
   if (itemElements.length !== 0) {
-    chrome.storage.local.get(['colorfulItems', 'autoFloatInventory', 'showStickerPrice', 'activeOffers', 'itemInOffersInventory'],
+    chrome.storage.local.get(['colorfulItems', 'autoFloatInventory', 'showStickerPrice', 'activeOffers', 'itemInOffersInventory', 'showShortExteriorsInventory'],
       ({
-        colorfulItems, showStickerPrice, autoFloatInventory, activeOffers, itemInOffersInventory,
+        colorfulItems, showStickerPrice, autoFloatInventory,
+        activeOffers, itemInOffersInventory, showShortExteriorsInventory,
       }) => {
         itemElements.forEach((itemElement) => {
           if (itemElement.getAttribute('data-processed') === null
@@ -978,7 +979,10 @@ const addPerItemInfo = (appID) => {
             if (appID === steamApps.CSGO.appID) {
               addDopplerPhase(itemElement, item.dopplerInfo);
               makeItemColorful(itemElement, item, colorfulItems);
-              addSSTandExtIndicators(itemElement, item, showStickerPrice);
+              addSSTandExtIndicators(
+                itemElement, item, showStickerPrice,
+                showShortExteriorsInventory,
+              );
               addPriceIndicator(itemElement, item.price);
               if (itemInOffersInventory) {
                 addInOtherTradeIndicator(itemElement, item, activeOffers.items);

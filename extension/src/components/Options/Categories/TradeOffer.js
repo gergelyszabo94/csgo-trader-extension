@@ -111,6 +111,12 @@ const tradeOffer = () => {
         type="flipSwitchStorage"
         description="Moves the trade offer header to the left on wide screens, saving you some scrolling"
       />
+      <Row
+        name="Show exteriors on items"
+        id="showShortExteriorsOffers"
+        type="flipSwitchStorage"
+        description="Adds short exteriors to each item to the top right corner as well as marks them stattrak or souvenir"
+      />
     </Category>
   );
 };

@@ -255,9 +255,10 @@ const addItemInfo = () => {
 
   const itemElements = document.querySelectorAll('.item.app730.context2');
   if (itemElements.length !== 0) {
-    chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice', 'activeOffers', 'itemInOtherOffers'],
+    chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice', 'activeOffers', 'itemInOtherOffers', 'showShortExteriorsOffers'],
       ({
-        colorfulItems, showStickerPrice, autoFloatOffer, activeOffers, itemInOtherOffers,
+        colorfulItems, showStickerPrice, autoFloatOffer,
+        activeOffers, itemInOtherOffers, showShortExteriorsOffers,
       }) => {
         itemElements.forEach((itemElement) => {
           if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') {
@@ -271,7 +272,7 @@ const addItemInfo = () => {
             const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
             addDopplerPhase(itemElement, item.dopplerInfo);
             makeItemColorful(itemElement, item, colorfulItems);
-            addSSTandExtIndicators(itemElement, item, showStickerPrice);
+            addSSTandExtIndicators(itemElement, item, showStickerPrice, showShortExteriorsOffers);
             addPriceIndicator(itemElement, item.price);
             if (itemInOtherOffers) addInOtherTradeIndicator(itemElement, item, activeOffers.items);
             if (autoFloatOffer) addFloatIndicator(itemElement, item.floatInfo);

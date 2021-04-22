@@ -104,6 +104,12 @@ const inventory = () => {
         type="flipSwitchStorage"
         description="CS:GO inventories often don't load at all, when this setting is on the extension forces Steam to load the inventory from a more reliable endpoint."
       />
+      <Row
+        name="Show exteriors on items"
+        id="showShortExteriorsInventory"
+        type="flipSwitchStorage"
+        description="Adds short exteriors to each item to the top right corner as well as marks them stattrak or souvenir"
+      />
     </Category>
   );
 };

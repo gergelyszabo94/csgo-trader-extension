@@ -265,6 +265,8 @@ const storageKeys = {
   removeAnimatedProfileBackgrounds: false,
   inventoryShowCopyButtons: false,
   outBidPercentage: 1,
+  showShortExteriorsInventory: true,
+  showShortExteriorsOffers: true,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

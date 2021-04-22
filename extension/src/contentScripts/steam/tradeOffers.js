@@ -150,9 +150,10 @@ const addItemInfo = (items) => {
     }
   });
 
-  chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice', 'activeOffers', 'itemInOtherOffers'],
+  chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice', 'activeOffers', 'itemInOtherOffers', 'showShortExteriorsOffers'],
     ({
-      colorfulItems, showStickerPrice, autoFloatOffer, activeOffers, itemInOtherOffers,
+      colorfulItems, showStickerPrice, autoFloatOffer,
+      activeOffers, itemInOtherOffers, showShortExteriorsOffers,
     }) => {
       activeItemElements.forEach(({ itemElement, side, position }) => {
         if ((itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false')) {
@@ -161,7 +162,7 @@ const addItemInfo = (items) => {
             if (item.appid === steamApps.CSGO.appID) {
               addDopplerPhase(itemElement, item.dopplerInfo);
               makeItemColorful(itemElement, item, colorfulItems);
-              addSSTandExtIndicators(itemElement, item, showStickerPrice);
+              addSSTandExtIndicators(itemElement, item, showStickerPrice, showShortExteriorsOffers);
               addPriceIndicator(itemElement, item.price);
               if (itemInOtherOffers) {
                 addInOtherTradeIndicator(itemElement, item, activeOffers.items);

@@ -436,20 +436,21 @@ const makeItemColorful = (itemElement, item, colorfulItemsEnabled) => {
 };
 
 // adds StatTrak, Souvenir and exterior indicators as well as sticker price when applicable
-const addSSTandExtIndicators = (itemElement, item, showStickerPrice) => {
+const addSSTandExtIndicators = (itemElement, item, showStickerPrice, showExterior) => {
   const stattrak = item.isStatrack ? 'ST' : '';
   const souvenir = item.isSouvenir ? 'S' : '';
   const exterior = item.exterior !== null ? item.exterior.localized_short : '';
   const stickerPrice = item.stickerPrice !== null ? item.stickerPrice.display : '';
   const showStickersClass = showStickerPrice ? '' : 'hidden';
+  const showExteriorsClass = showExterior ? '' : 'hidden';
 
   itemElement.insertAdjacentHTML(
     'beforeend',
     DOMPurify.sanitize(
       `<div class='exteriorSTInfo'>
-              <span class="souvenirYellow">${souvenir}</span>
-              <span class="stattrakOrange">${stattrak}</span>
-              <span class="exteriorIndicator">${exterior}</span>
+              <span class="souvenirYellow ${showExteriorsClass}">${souvenir}</span>
+              <span class="stattrakOrange ${showExteriorsClass}">${stattrak}</span>
+              <span class="exteriorIndicator ${showExteriorsClass}">${exterior}</span>
              </div>
              <div class="stickerPrice ${showStickersClass}">${stickerPrice}</div>`,
     ),
