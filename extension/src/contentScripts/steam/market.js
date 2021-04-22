@@ -366,18 +366,19 @@ if (orders) {
 
   // if there are actually any orders
   if (orderRows.length !== 0) {
-    let totalOrderAmount = 0;
-    const totalAllowedByWallet = getWalletAmount() * 10;
+    chrome.storage.local.get(['outBidPercentage'], ({ outBidPercentage }) => {
+      let totalOrderAmount = 0;
+      const totalAllowedByWallet = getWalletAmount() * 10;
 
-    // add starting at prices and total
-    orderRows.forEach((orderRow) => {
-      // makes the row higher to make space for the order buttons
-      orderRow.style['padding-bottom'] = '15px';
+      // add starting at prices and total
+      orderRows.forEach((orderRow) => {
+        // makes the row higher to make space for the order buttons
+        orderRow.style['padding-bottom'] = '15px';
 
-      // adds selection checkboxes
-      const priceElement = orderRow.querySelector('.market_listing_right_cell.market_listing_my_price');
-      if (priceElement !== null) {
-        priceElement.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(`
+        // adds selection checkboxes
+        const priceElement = orderRow.querySelector('.market_listing_right_cell.market_listing_my_price');
+        if (priceElement !== null) {
+          priceElement.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(`
             <div class="market_listing_right_cell market_listing_edit_buttons" style="line-height: 20px">
                 <div>
                     <input type="checkbox" />
@@ -388,112 +389,112 @@ if (orders) {
                     </button>
                 </div>
                 <div>
-                    <button type="submit" class="outbidOnePercent btn_green_white_innerfade btn_small" title="Cancel the current order and place a higher order by 1% than the current highest">
-                        Outbid by 1%
+                    <button type="submit" class="outbidByPercent btn_green_white_innerfade btn_small" title="Cancel the current order and place a higher order by 1% than the current highest">
+                        Outbid by ${outBidPercentage}%
                     </button>
                 </div>
             </div>`));
 
-        const outbidButton = orderRow.querySelector('.outbid');
-        outbidButton.addEventListener('click', () => {
-          const orderID = getMyOrderIDFromElement(orderRow);
-          const quantity = parseInt(orderRow.querySelector('.market_listing_right_cell.market_listing_my_price.market_listing_buyorder_qty').innerText);
-          cancelOrder(orderID).then(
-            () => {
-              const marketLink = orderRow.querySelector('.market_listing_item_name_link').getAttribute('href');
-              const appID = marketLink.split('market/listings/')[1].split('/')[0];
-              const marketName = marketLink.split('market/listings/')[1].split('/')[1];
-              getHighestBuyOrder(appID, marketName).then((highestOrder) => {
-                const newOrderPrice = parseInt(highestOrder) + 1;
-                createOrder(appID, marketName, newOrderPrice, quantity).then(() => {
-                  const priceEl = orderRow.querySelector('.highestOrderPrice');
-                  priceEl.innerText = centsToSteamFormattedPrice(newOrderPrice);
-                  priceEl.classList.add('highest');
-                  priceEl.classList.remove('not_highest');
-                  outbidButton.innerText = 'Order placed';
-                }).catch((err) => {
-                  document.querySelector('.ordersTotal').insertAdjacentHTML(
-                    'afterend',
-                    DOMPurify.sanitize(
-                      `<div class="listingError">
+          const outbidButton = orderRow.querySelector('.outbid');
+          outbidButton.addEventListener('click', () => {
+            const orderID = getMyOrderIDFromElement(orderRow);
+            const quantity = parseInt(orderRow.querySelector('.market_listing_right_cell.market_listing_my_price.market_listing_buyorder_qty').innerText);
+            cancelOrder(orderID).then(
+              () => {
+                const marketLink = orderRow.querySelector('.market_listing_item_name_link').getAttribute('href');
+                const appID = marketLink.split('market/listings/')[1].split('/')[0];
+                const marketName = marketLink.split('market/listings/')[1].split('/')[1];
+                getHighestBuyOrder(appID, marketName).then((highestOrder) => {
+                  const newOrderPrice = parseInt(highestOrder) + 1;
+                  createOrder(appID, marketName, newOrderPrice, quantity).then(() => {
+                    const priceEl = orderRow.querySelector('.highestOrderPrice');
+                    priceEl.innerText = centsToSteamFormattedPrice(newOrderPrice);
+                    priceEl.classList.add('highest');
+                    priceEl.classList.remove('not_highest');
+                    outbidButton.innerText = 'Order placed';
+                  }).catch((err) => {
+                    document.querySelector('.ordersTotal').insertAdjacentHTML(
+                      'afterend',
+                      DOMPurify.sanitize(
+                        `<div class="listingError">
                                 ${err}
                             </div>`,
-                    ),
-                  );
+                      ),
+                    );
+                  });
                 });
-              });
-            },
-          );
-        });
+              },
+            );
+          });
 
-        const outbidByOneButton = orderRow.querySelector('.outbidOnePercent');
-        outbidByOneButton.addEventListener('click', () => {
-          const orderID = getMyOrderIDFromElement(orderRow);
-          cancelOrder(orderID).then(
-            () => {
-              const marketLink = orderRow.querySelector('.market_listing_item_name_link').getAttribute('href');
-              const appID = marketLink.split('market/listings/')[1].split('/')[0];
-              const marketName = marketLink.split('market/listings/')[1].split('/')[1];
-              getHighestBuyOrder(appID, marketName).then((highestOrder) => {
-                const highestInt = parseInt(highestOrder);
-                const newOrderPrice = highestInt >= 100
-                  ? parseInt(highestInt * 1.01)
-                  : highestInt + 1;
-                createOrder(appID, marketName, newOrderPrice, 1).then(() => {
-                  const priceEl = orderRow.querySelector('.highestOrderPrice');
-                  priceEl.innerText = centsToSteamFormattedPrice(newOrderPrice);
-                  priceEl.classList.add('highest');
-                  priceEl.classList.remove('not_highest');
-                  outbidByOneButton.innerText = 'Order placed';
-                }).catch((err) => {
-                  document.querySelector('.ordersTotal').insertAdjacentHTML(
-                    'afterend',
-                    DOMPurify.sanitize(
-                      `<div class="listingError">
+          const outBidByPercentageButton = orderRow.querySelector('.outbidByPercent');
+          outBidByPercentageButton.addEventListener('click', () => {
+            const orderID = getMyOrderIDFromElement(orderRow);
+            cancelOrder(orderID).then(
+              () => {
+                const marketLink = orderRow.querySelector('.market_listing_item_name_link').getAttribute('href');
+                const appID = marketLink.split('market/listings/')[1].split('/')[0];
+                const marketName = marketLink.split('market/listings/')[1].split('/')[1];
+                getHighestBuyOrder(appID, marketName).then((highestOrder) => {
+                  const highestInt = parseInt(highestOrder);
+                  const newOrderPrice = highestInt >= 100
+                    ? Math.floor(highestInt * (1 + (outBidPercentage / 100)))
+                    : highestInt + outBidPercentage;
+                  createOrder(appID, marketName, newOrderPrice, 1).then(() => {
+                    const priceEl = orderRow.querySelector('.highestOrderPrice');
+                    priceEl.innerText = centsToSteamFormattedPrice(newOrderPrice);
+                    priceEl.classList.add('highest');
+                    priceEl.classList.remove('not_highest');
+                    outBidByPercentageButton.innerText = 'Order placed';
+                  }).catch((err) => {
+                    document.querySelector('.ordersTotal').insertAdjacentHTML(
+                      'afterend',
+                      DOMPurify.sanitize(
+                        `<div class="listingError">
                                 ${err}
                             </div>`,
-                    ),
-                  );
+                      ),
+                    );
+                  });
                 });
-              });
-            },
-          );
-        });
-      }
+              },
+            );
+          });
+        }
 
-      const nameElement = orderRow.querySelector('.market_listing_item_name_link');
-      if (nameElement !== null) {
-        const marketLink = nameElement.getAttribute('href');
-        const appID = getAppIDAndItemNameFromLink(marketLink).appID;
-        const marketHashName = getAppIDAndItemNameFromLink(marketLink).marketHashName;
-        const orderID = getMyOrderIDFromElement(orderRow);
+        const nameElement = orderRow.querySelector('.market_listing_item_name_link');
+        if (nameElement !== null) {
+          const marketLink = nameElement.getAttribute('href');
+          const appID = getAppIDAndItemNameFromLink(marketLink).appID;
+          const marketHashName = getAppIDAndItemNameFromLink(marketLink).marketHashName;
+          const orderID = getMyOrderIDFromElement(orderRow);
 
-        const orderPrice = orderRow.querySelector('.market_listing_price').innerText;
-        const orderQuantity = orderRow.querySelector('.market_listing_buyorder_qty').innerText;
+          const orderPrice = orderRow.querySelector('.market_listing_price').innerText;
+          const orderQuantity = orderRow.querySelector('.market_listing_buyorder_qty').innerText;
 
-        totalOrderAmount += parseInt(steamFormattedPriceToCents(orderPrice))
-          * parseInt(orderQuantity);
+          totalOrderAmount += parseInt(steamFormattedPriceToCents(orderPrice))
+            * parseInt(orderQuantity);
 
-        priceQueue.jobs.push({
-          type: 'my_buy_order',
-          orderID,
-          appID,
-          market_hash_name: marketHashName,
-          retries: 0,
-          callBackFunction: addHighestBuyOrderPrice,
-        });
+          priceQueue.jobs.push({
+            type: 'my_buy_order',
+            orderID,
+            appID,
+            market_hash_name: marketHashName,
+            retries: 0,
+            callBackFunction: addHighestBuyOrderPrice,
+          });
 
-        if (!priceQueue.active) workOnPriceQueue();
-      }
-    });
+          if (!priceQueue.active) workOnPriceQueue();
+        }
+      });
 
-    const remainingAmountForOrders = totalOrderAmount > totalAllowedByWallet
-      ? ''
-      : `You can set more orders totaling: ${centsToSteamFormattedPrice(totalAllowedByWallet - totalOrderAmount)}`;
-    orders.insertAdjacentHTML(
-      'afterend',
-      DOMPurify.sanitize(
-        `<div class="ordersTotal">
+      const remainingAmountForOrders = totalOrderAmount > totalAllowedByWallet
+        ? ''
+        : `You can set more orders totaling: ${centsToSteamFormattedPrice(totalAllowedByWallet - totalOrderAmount)}`;
+      orders.insertAdjacentHTML(
+        'afterend',
+        DOMPurify.sanitize(
+          `<div class="ordersTotal">
                    Orders placed total value: ${centsToSteamFormattedPrice(totalOrderAmount)}
                    Max allowed by current balance: 
                    <span
@@ -505,51 +506,52 @@ if (orders) {
                         ${remainingAmountForOrders} 
                    </span>
                </div>`,
-      ),
-    );
+        ),
+      );
 
-    const tableHeader = orders.querySelector('.market_listing_table_header');
-    const cancelColumnHeader = tableHeader.querySelector('.market_listing_right_cell.market_listing_edit_buttons.placeholder');
+      const tableHeader = orders.querySelector('.market_listing_table_header');
+      const cancelColumnHeader = tableHeader.querySelector('.market_listing_right_cell.market_listing_edit_buttons.placeholder');
 
-    cancelColumnHeader.innerText = 'CANCEL ALL';
-    cancelColumnHeader.setAttribute('title', 'Click here to cancel all your buy orders!');
-    cancelColumnHeader.classList.add('clickable');
+      cancelColumnHeader.innerText = 'CANCEL ALL';
+      cancelColumnHeader.setAttribute('title', 'Click here to cancel all your buy orders!');
+      cancelColumnHeader.classList.add('clickable');
 
-    // adds cancel selected column header/button
-    cancelColumnHeader.insertAdjacentHTML(
-      'afterend',
-      DOMPurify.sanitize(
-        `<span
+      // adds cancel selected column header/button
+      cancelColumnHeader.insertAdjacentHTML(
+        'afterend',
+        DOMPurify.sanitize(
+          `<span
                 id="cancelSelected"
                 class="market_listing_right_cell market_listing_edit_buttons placeholder clickable"
                 title="Click to cancel the selected buy orders."
               >
                 CANCEL
               </span>`,
-      ),
-    );
+        ),
+      );
 
-    document.getElementById('cancelSelected').addEventListener('click', () => {
-      orderRows.forEach((orderRow) => {
-        if (orderRow.querySelector('input').checked) {
+      document.getElementById('cancelSelected').addEventListener('click', () => {
+        orderRows.forEach((orderRow) => {
+          if (orderRow.querySelector('input').checked) {
+            const orderID = getMyOrderIDFromElement(orderRow);
+            cancelOrder(orderID).then(
+              () => {
+                orderRow.remove();
+              },
+            );
+          }
+        });
+      });
+
+      cancelColumnHeader.addEventListener('click', () => {
+        orderRows.forEach((orderRow) => {
           const orderID = getMyOrderIDFromElement(orderRow);
           cancelOrder(orderID).then(
             () => {
               orderRow.remove();
             },
           );
-        }
-      });
-    });
-
-    cancelColumnHeader.addEventListener('click', () => {
-      orderRows.forEach((orderRow) => {
-        const orderID = getMyOrderIDFromElement(orderRow);
-        cancelOrder(orderID).then(
-          () => {
-            orderRow.remove();
-          },
-        );
+        });
       });
     });
   }

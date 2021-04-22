@@ -133,6 +133,12 @@ const market = () => {
         type="flipSwitchStorage"
         description="Show Recent activity on non-commodity items"
       />
+      <Row
+        name="Market outbid percentage"
+        id="outBidPercentage"
+        type="number"
+        description="Set how much you want to outbid market orders by on the market pain page."
+      />
     </Category>
   );
 };

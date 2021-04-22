@@ -264,6 +264,7 @@ const storageKeys = {
   useAlternativeCSGOInventoryEndpoint: false,
   removeAnimatedProfileBackgrounds: false,
   inventoryShowCopyButtons: false,
+  outBidPercentage: 1,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
