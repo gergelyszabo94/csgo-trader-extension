@@ -187,6 +187,9 @@ const addStickers = () => {
     // if there are no listings the listings variable is an empty array
     // if there are listings it's an object
     if (!isCommodityItem && listings.length === undefined) {
+      const showStickerHolder = !csgoFloatExtPresent()
+        ? ''
+        : 'hidden';
       document.getElementById('searchResultsRows').querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
         (listingRow) => {
           if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
@@ -197,7 +200,7 @@ const addStickers = () => {
               nameBlock.classList.add('extension__row');
               nameBlock.insertAdjacentHTML(
                 'beforeend',
-                DOMPurify.sanitize(`<div class="stickerHolderMarket" id="stickerHolder_${listingID}"></div>`),
+                DOMPurify.sanitize(`<div class="stickerHolderMarket ${showStickerHolder}" id="stickerHolder_${listingID}"></div>`),
               );
               const stickers = listings[listingID].asset.stickers;
 
@@ -1146,6 +1149,7 @@ chrome.storage.local.get('numberOfListings', ({ numberOfListings }) => {
     addPhasesIndicator();
     addFloatBarSkeletons();
     addStickers();
+
     addListingsToFloatQueue();
     addPricesInOtherCurrencies();
     addInstantBuyButtons();
