@@ -213,7 +213,10 @@ const createDiscordSideSummary = (offerSideItems, itemsWithDetails) => {
         itemToGive.contextid,
         itemToGive.assetid,
       );
-      if (item) summary += `- ${item.market_hash_name} (${item.price.display})\n`;
+      if (item) {
+        if (item.price) summary += `- ${item.market_hash_name} (${item.price.display})\n`;
+        else summary += `- ${item.market_hash_name}\n`;
+      }
     });
   }
   return summary;
