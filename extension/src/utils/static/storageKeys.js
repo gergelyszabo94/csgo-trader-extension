@@ -263,7 +263,7 @@ const storageKeys = {
   showBuffLookupInInventory: false,
   useAlternativeCSGOInventoryEndpoint: false,
   removeAnimatedProfileBackgrounds: false,
-  inventoryShowCopyButtons: false,
+  inventoryShowCopyButtons: true,
   outBidPercentage: 1,
   showShortExteriorsInventory: true,
   showShortExteriorsOffers: true,
