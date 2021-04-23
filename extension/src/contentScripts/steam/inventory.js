@@ -290,7 +290,7 @@ const addFloatDataToPage = (job, activeFloatQueue, floatInfo) => {
       activeFloatQueue.jobs.find((floatJob, index) => {
         if (floatJob.type === 'inventory_floatbar' && job.assetID === floatJob.assetID) {
           updateFloatAndPatternElements(item);
-          removeFromArray(activeFloatQueue.jobs, index);
+          activeFloatQueue.jobs = removeFromArray(activeFloatQueue.jobs, index);
         }
         return null;
       });
@@ -604,7 +604,6 @@ const addRightSideElements = () => {
             }
 
             if (inventoryShowCopyButtons) {
-              console.log(item);
               document.querySelectorAll('.copyButtons')
                 .forEach((copyButtons) => {
                   copyButtons.insertAdjacentHTML(

@@ -103,9 +103,13 @@ const arrayFromArrayOrNotArray = (arrayOrNotArray) => {
 };
 
 const removeFromArray = (array, arrayIndex) => {
-  return array.map((element, index) => (
-    index !== arrayIndex ? element : null
-  ));
+  const newArray = [];
+
+  array.forEach((element, index) => {
+    if (index !== arrayIndex) newArray.push(element);
+  });
+
+  return newArray;
 };
 
 const getExteriorFromTags = (tags) => {
@@ -257,16 +261,17 @@ const getPattern = (name, paintSeed) => {
 };
 
 const handleStickerNamesWithCommas = (names) => {
-  let namesModified = [...names];
+  const namesModified = [];
   let nameWithCommaFound = false;
 
-  namesModified.forEach((name, index) => {
-    if (name === 'Don\'t Worry' && names[index + 1] === 'I\'m Pro') {
-      namesModified[index] = 'Don\'t Worry, I\'m Pro';
-      namesModified = removeFromArray(names, index + 1);
+  for (let i = 0; i < names.length; i += 1) {
+    const name = names[i];
+    if (name === 'Don\'t Worry' && names[i + 1] === 'I\'m Pro') {
+      namesModified.push('Don\'t Worry, I\'m Pro');
       nameWithCommaFound = true;
-    }
-  });
+      i += 1;
+    } else namesModified.push(name);
+  }
 
   if (nameWithCommaFound) return handleStickerNamesWithCommas(namesModified);
   return namesModified;
@@ -305,6 +310,7 @@ const parseStickerInfo = (
       if (description.value.includes('sticker_info')) {
         const type = isSticker(description.value) ? 'Sticker' : 'Patch';
         let names = description.value.split('><br>')[1].split(': ')[1].split('</center>')[0].split(', ');
+
         names = handleStickerNamesWithCommas(names);
         const iconURLs = description.value.split('src="');
 
