@@ -17,6 +17,7 @@ steam_apis_key = os.environ['STEAM_APIS_COM_API_KEY']
 skinport_cliend_id = os.environ['SKINPORT_CLIENT_ID']
 skinport_cliend_secret = os.environ['SKINPORT_CLIENT_SECRET']
 pricempire_token = os.environ['PRICEMPIRE_TOKEN']
+skinwallet_api_key = os.environ['SKINWALLET_API_KEY']
 
 special_phases = ["Ruby", "Sapphire", "Black Pearl", "Emerald"]
 knives = ["Bayonet", "Bowie Knife", "Butterfly Knife", "Falchion Knife", "Flip Knife",
@@ -415,6 +416,52 @@ def lambda_handler(event, context):
 
     else:
         error = "Could not get items from pricempire"
+        alert_via_sns(error)
+        print(error, " status code: ", response.status_code)
+        return {
+            'statusCode': response.status_code,
+            'body': json.dumps(error)
+        }
+
+    print("Requesting prices from skinwallet.com")
+    try:
+        response = requests.get(
+            "https://www.skinwallet.com/market/api/offers/overview?appId=730",
+            headers={
+                "accept": "application/json",
+                "x-auth-token": skinwallet_api_key,
+            },
+        )
+    except Exception as e:
+        print(e)
+        error = "Error during skinwallet request"
+        alert_via_sns(f'{error}: {e}')
+        return {
+            'statusCode': 500,
+            'body': error
+        }
+
+    print("Received response from skinwallet.com")
+
+    if response.status_code == 200 and response.json()['status'] == 'Success':
+        print("Valid response from skinwallet.com")
+        items = response.json()['result']
+        skinwallet_prices = {}
+        print("Extracting pricing information")
+        for item in items:
+            name = item.get('marketHashName')
+            price = item.get('cheapestOffer').get('price').get('amount')
+
+            if price:
+                skinwallet_prices[name] = price
+            else:
+                skinwallet_prices[name] = "null"
+
+        print("Pricing information extracted")
+        push_to_s3(skinwallet_prices, 'skinwallet', stage)
+
+    else:
+        error = "Could not get items from skinwallet.com"
         alert_via_sns(error)
         print(error, " status code: ", response.status_code)
         return {
