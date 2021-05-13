@@ -406,7 +406,8 @@ const updatePrices = () => {
           || provider === pricingProviders.csgotm.name
           || provider === pricingProviders.csgoempire.name
           || provider === pricingProviders.swapgg.name
-          || provider === pricingProviders.csgoexo.name) {
+          || provider === pricingProviders.csgoexo.name
+          || provider === pricingProviders.skinwallet.name) {
           for (const key of keys) {
             prices[key] = { price: pricesJSON[key] };
           }

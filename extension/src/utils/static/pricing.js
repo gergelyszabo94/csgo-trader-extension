@@ -456,6 +456,20 @@ const pricingProviders = {
       },
     },
   },
+  skinwallet: {
+    name: 'skinwallet',
+    long: 'Skinwallet.com',
+    short: 'SW',
+    url: 'https://www.skinwallet.com/',
+    description: 'SkinWallet is a market place and instant cash-for-skin service',
+    pricing_modes: {
+      skinwallet: {
+        description: 'Skinwallet.com price',
+        name: 'skinwallet',
+        long: 'Skinwallet.com price',
+      },
+    },
+  },
 };
 
 const realTimePricingModes = {
