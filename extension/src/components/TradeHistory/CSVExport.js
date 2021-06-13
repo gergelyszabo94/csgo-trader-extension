@@ -74,6 +74,8 @@ const CSVExport = () => {
         tradesResponse.trades.length === 0 || exportEndTimeUnix <= lastProcessedTradeTime)) {
         loadNextChunk(lastProcessedTradeTime, lastProcessedTradeID);
       } else finishExport();
+    }).catch(() => {
+      setStatusMessage('Steam did not return any trades for that period.');
     });
   };
 
