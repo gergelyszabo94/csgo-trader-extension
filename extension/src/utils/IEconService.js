@@ -126,6 +126,7 @@ const getTradeHistory = (
                   trades,
                   lastTradeID: trades[trades.length - 1].tradeid,
                   lastTradeTime: trades[trades.length - 1].time_init,
+                  more: body.response.more,
                 });
               }).catch((err) => {
                 console.log(err);

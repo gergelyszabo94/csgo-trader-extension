@@ -70,7 +70,8 @@ const CSVExport = () => {
       });
 
       csvContent += lines;
-      if (tradesResponse.trades.length === 0 || exportEndTimeUnix <= lastProcessedTradeTime) {
+      if (tradesResponse.more && (
+        tradesResponse.trades.length === 0 || exportEndTimeUnix <= lastProcessedTradeTime)) {
         loadNextChunk(lastProcessedTradeTime, lastProcessedTradeID);
       } else finishExport();
     });
