@@ -430,6 +430,7 @@ if (orders) {
           const outBidByPercentageButton = orderRow.querySelector('.outbidByPercent');
           outBidByPercentageButton.addEventListener('click', () => {
             const orderID = getMyOrderIDFromElement(orderRow);
+            const quantity = parseInt(orderRow.querySelector('.market_listing_right_cell.market_listing_my_price.market_listing_buyorder_qty').innerText);
             cancelOrder(orderID).then(
               () => {
                 const marketLink = orderRow.querySelector('.market_listing_item_name_link').getAttribute('href');
@@ -440,7 +441,7 @@ if (orders) {
                   const newOrderPrice = highestInt >= 100
                     ? Math.floor(highestInt * (1 + (outBidPercentage / 100)))
                     : highestInt + outBidPercentage;
-                  createOrder(appID, marketName, newOrderPrice, 1).then(() => {
+                  createOrder(appID, marketName, newOrderPrice, quantity).then(() => {
                     const priceEl = orderRow.querySelector('.highestOrderPrice');
                     priceEl.innerText = centsToSteamFormattedPrice(newOrderPrice);
                     priceEl.classList.add('highest');
