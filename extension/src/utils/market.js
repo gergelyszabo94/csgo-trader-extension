@@ -115,7 +115,7 @@ const createOrder = (appID, marketHashName, price, quantity, buyerKYC = {
       {
         method: 'POST',
         headers: myHeaders,
-        body: `sessionid=${getSessionID()}&currency=${currency}&appid=${appID}&market_hash_name=${marketHashName}&price_total=${price}&quantity=${quantity}&first_name=${buyerKYC.first_name}&last_name=${buyerKYC.last_name}&billing_address=${buyerKYC.billing_address}&billing_address_two=${buyerKYC.billing_address_two}&billing_country=${buyerKYC.billing_country}&billing_city=${buyerKYC.billing_city}&billing_state=${buyerKYC.billing_state}&billing_postal_code=${buyerKYC.billing_postal_code}&save_my_address=1`,
+        body: `sessionid=${getSessionID()}&currency=${currency}&appid=${appID}&market_hash_name=${marketHashName}&price_total=${price * quantity}&quantity=${quantity}&first_name=${buyerKYC.first_name}&last_name=${buyerKYC.last_name}&billing_address=${buyerKYC.billing_address}&billing_address_two=${buyerKYC.billing_address_two}&billing_country=${buyerKYC.billing_country}&billing_city=${buyerKYC.billing_city}&billing_state=${buyerKYC.billing_state}&billing_postal_code=${buyerKYC.billing_postal_code}&save_my_address=1`,
       });
 
     const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
