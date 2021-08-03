@@ -214,8 +214,13 @@ const createDiscordSideSummary = (offerSideItems, itemsWithDetails) => {
         itemToGive.assetid,
       );
       if (item) {
-        if (item.price) summary += `- ${item.market_hash_name} (${item.price.display})\n`;
-        else summary += `- ${item.market_hash_name}\n`;
+        const itemName = item.dopplerInfo
+          ? `${item.market_hash_name} (${item.dopplerInfo.name})`
+          : item.market_hash_name;
+        summary += `- ${itemName}`;
+        if (item.price) summary += ` (${item.price.display})`;
+        if (item.floatInfo) summary += ` (${item.floatInfo.floatvalue.toFixed(4)})`;
+        summary += '\n';
       }
     });
   }
