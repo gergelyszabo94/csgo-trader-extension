@@ -880,7 +880,7 @@ if (buyOrderInfoEl !== null) {
     createOrder(
       appID,
       fullName,
-      pricePerItem * quantity,
+      pricePerItem,
       quantity,
       getBuyerKYCFromPage(),
     ).then(() => {
