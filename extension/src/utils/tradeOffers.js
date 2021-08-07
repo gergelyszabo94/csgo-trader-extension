@@ -1,26 +1,32 @@
 // only works on steam pages
-import DOMPurify from 'dompurify';
-import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
-import { getItemMarketLink, isDopplerInName, getFormattedPLPercentage } from 'utils/simpleUtils';
+
+import {
+  actions,
+  conditions,
+  eventTypes,
+  offerStates,
+  operators,
+} from 'utils/static/offers';
 import {
   getDopplerInfo,
   getExteriorFromTags,
   getInspectLink,
   getNameTag,
   getQuality,
-  getType,
   getRemoteImageAsObjectURL,
+  getType,
 } from 'utils/utilsModular';
+import { getFormattedPLPercentage, getItemMarketLink, isDopplerInName } from 'utils/simpleUtils';
+import { notifyOnDiscord, playNotificationSound } from 'utils/notifications';
+
+import DOMPurify from 'dompurify';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
-import steamApps from 'utils/static/steamApps';
-import { getTradeOffers } from 'utils/IEconService';
-import {
-  conditions, eventTypes, offerStates, actions, operators,
-} from 'utils/static/offers';
-import { getPlayerSummaries } from 'utils/ISteamUser';
-import { prettyPrintPrice } from 'utils/pricing';
-import { playNotificationSound, notifyOnDiscord } from 'utils/notifications';
 import { getItemByIDs } from './itemsToElementsToItems';
+import { getPlayerSummaries } from 'utils/ISteamUser';
+import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
+import { getTradeOffers } from 'utils/IEconService';
+import { prettyPrintPrice } from 'utils/pricing';
+import steamApps from 'utils/static/steamApps';
 
 const createTradeOfferJSON = (itemsToGive, itemsToReceive) => {
   return {
@@ -217,7 +223,7 @@ const createDiscordSideSummary = (offerSideItems, itemsWithDetails) => {
         const itemName = item.dopplerInfo
           ? `${item.market_hash_name} (${item.dopplerInfo.name})`
           : item.market_hash_name;
-        summary += `- ${itemName}`;
+        summary += `${itemName}`;
         if (item.price) summary += ` (${item.price.display})`;
         if (item.floatInfo) summary += ` (${item.floatInfo.floatvalue.toFixed(4)})`;
         summary += '\n';
@@ -232,17 +238,33 @@ const notifyAboutOfferOnDiscord = (offer, items) => {
     const steamIDOfPartner = getProperStyleSteamIDFromOfferStyle(offer.accountid_other);
     getPlayerSummaries([steamIDOfPartner]).then((summary) => {
       const userDetails = summary[steamIDOfPartner];
-      const title = `Offer from **${userDetails.personaname}** (${prettyPrintPrice(currency, offer.profitOrLoss.toFixed(2))})\n`;
-      const offerMessage = offer.message !== ''
-        ? `Message: ${DOMPurify.sanitize(offer.message)}\n`
-        : '';
-      let givingItems = `Giving (${prettyPrintPrice(currency, offer.yourItemsTotal.toFixed(2))}):\n`;
-      givingItems += createDiscordSideSummary(offer.items_to_give, items);
 
-      let receivingItems = `Receiving (${prettyPrintPrice(currency, offer.theirItemsTotal.toFixed(2))}):\n`;
-      receivingItems += createDiscordSideSummary(offer.items_to_receive, items);
-      const link = `Link: <https://steamcommunity.com/tradeoffer/${offer.tradeofferid}>`;
-      notifyOnDiscord(`${title}${offerMessage}${givingItems}${receivingItems}${link}`);
+      let description = `Offer from **${userDetails.personaname}** (${prettyPrintPrice(currency, offer.profitOrLoss.toFixed(2))})\n`;
+      if (offer.message !== '') {
+        description += `*${DOMPurify.sanitize(offer.message)}*\n`;
+      }
+      description += `https://steamcommunity.com/tradeoffer/${offer.tradeofferid}`;
+
+      const giving = createDiscordSideSummary(offer.items_to_give, items);
+      const recieving = createDiscordSideSummary(offer.items_to_receive, items);
+
+      const fields = [];
+      if (giving) fields.push({ name: 'Giving', inline: false, value: giving });
+      if (recieving) fields.push({ name: 'Recieving', inline: false, value: recieving });
+      
+      const embed = {
+        author: {
+          icon_url: 'https://csgotrader.app/cstlogo48.png',
+          name: 'CSGO Trader',
+        },
+        // #ff8c00 (taken from csgotrader.app text color)
+        color: 16747520,
+        description,
+        fields,
+        type: 'rich',
+      };
+
+      notifyOnDiscord(embed);
     });
   });
 };

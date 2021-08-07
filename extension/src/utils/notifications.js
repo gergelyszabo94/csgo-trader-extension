@@ -1,5 +1,5 @@
-import { playAudio } from 'utils/simpleUtils';
 import { notificationSounds } from 'utils/static/notifications';
+import { playAudio } from 'utils/simpleUtils';
 
 const determineNotificationDate = (
   tradableDate,
@@ -86,14 +86,14 @@ const playNotificationSound = () => {
   );
 };
 
-const notifyOnDiscord = (message) => {
+const notifyOnDiscord = (embed) => {
   chrome.storage.local.get(['allowDiscordNotification', 'discordNotificationHook'],
     ({ allowDiscordNotification, discordNotificationHook }) => {
       if (allowDiscordNotification && discordNotificationHook !== '') {
         const request = new Request(discordNotificationHook, {
           method: 'POST',
           body: JSON.stringify({
-            content: message,
+            embeds: [embed],
             username: 'CSGOTRADER.APP',
             avatar_url: 'https://csgotrader.app/cstlogo48.png',
           }),
