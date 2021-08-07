@@ -230,6 +230,16 @@ const createDiscordSideSummary = (offerSideItems, itemsWithDetails) => {
       }
     });
   }
+  // 1024 is max size of an embed field
+  if (summary.length > 1024) {
+    // cut off all chars after 1024
+    summary = summary.slice(0, 1024)
+    // remove last line
+    summary = summary.split('\n').slice(0, -1).join('\n')
+    // add \n... if has 4 chars to spare 
+    summary += summary.length <= 1020 ? "\n..." : ""
+  }
+
   return summary;
 };
 
