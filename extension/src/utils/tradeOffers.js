@@ -234,10 +234,12 @@ const createDiscordSideSummary = (offerSideItems, itemsWithDetails) => {
   if (summary.length > 1024) {
     // cut off all chars after 1024
     summary = summary.slice(0, 1024)
-    // remove last line
-    summary = summary.split('\n').slice(0, -1).join('\n')
-    // add \n... if has 4 chars to spare 
-    summary += summary.length <= 1020 ? "\n..." : ""
+    // remove lines until there are 4 chars to spare
+    while (summary.length > 1020) {
+      summary = summary.split('\n').slice(0, -1).join('\n')
+    }
+    // add \n... 
+    summary += "\n..."
   }
 
   return summary;
