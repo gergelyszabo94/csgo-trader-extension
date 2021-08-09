@@ -591,7 +591,7 @@ const addRightSideElements = () => {
             if (showBuffLookupInInventory) {
               const buffLink = `
                 <div class="descriptor buffLink">
-                    <a href="https://buff.163.com/market/?game=csgo#tab=selling&page_num=1&search=${item.market_hash_name}" target="_blank" style="color: yellow;">
+                    <a href="https://api.pricempire.com/v1/redirectBuff/${item.market_hash_name}" target="_blank" style="color: yellow;">
                         Lookup item on Buff
                       </a>
                 </div>
