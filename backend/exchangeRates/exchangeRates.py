@@ -10,6 +10,7 @@ sns_topic = os.environ['SNS_TOPIC_ARN']
 cloudfront_dist_id = os.environ['CLOUDFRONT_DIST_ID']
 stage = os.environ['STAGE']
 fixerio_api_key = os.environ['FIXERIO_API_KEY']
+coinlayer_api_key = os.environ['COINLAYER_API_KEY']
 
 symbols = ['USD', 'EUR', 'GBP', 'CNY', 'JPY', 'CAD', 'AUD', 'HKD', 'ISK', 'PHP', 'DKK', 'HUF', 'CZK', 'RON', 'SEK',
            'IDR', 'INR', 'BRL', 'RUB', 'HRK', 'THB', 'CHF', 'MYR', 'BGN', 'TRY', 'NOK', 'NZD', 'ZAR', 'MXN', 'SGD',
@@ -51,7 +52,7 @@ def lambda_handler(event, context):
 
     print("Requesting cryptocurrency exchange rates from coincap.io")
     try:
-        response = requests.get("https://api.coincap.io/v2/assets?ids=bitcoin,ethereum")
+        response = requests.get("http://api.coinlayer.com/api/live?access_key=" + coinlayer_api_key)
     except Exception as e:
         print(e)
         error = "Error during request"
@@ -60,9 +61,9 @@ def lambda_handler(event, context):
             'statusCode': 500,
             'body': error
         }
-    print("Response from coincap.io")
+    print("Response from coinlayer.com")
     try:
-        cryptos = response.json()['data']
+        cryptos = response.json()['rates']
     except Exception as e:
         print(e)
         error = "Error parsing crypto rates from the request response"
@@ -71,10 +72,8 @@ def lambda_handler(event, context):
             'statusCode': 500,
             'body': error
         }
-    for crypto in cryptos:
-        symbol = crypto.get('symbol')
-        exchange_rate = crypto.get('priceUsd')
-        rates[symbol] = '{:.20f}'.format(1/float(exchange_rate))
+    rates['BTC'] = '{:.20f}'.format(1/float(cryptos['BTC']))
+    rates['ETH'] = '{:.20f}'.format(1/float(cryptos['ETH']))
 
     btc_price = float(rates.get('BTC'))
     micro_btc_price = btc_price*1000000
