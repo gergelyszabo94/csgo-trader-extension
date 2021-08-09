@@ -21,12 +21,12 @@ import { notifyOnDiscord, playNotificationSound } from 'utils/notifications';
 
 import DOMPurify from 'dompurify';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
+import { getItemByIDs } from './itemsToElementsToItems';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 import { getTradeOffers } from 'utils/IEconService';
 import { prettyPrintPrice } from 'utils/pricing';
 import steamApps from 'utils/static/steamApps';
-import { getItemByIDs } from './itemsToElementsToItems';
 
 const createTradeOfferJSON = (itemsToGive, itemsToReceive) => {
   return {
@@ -267,9 +267,9 @@ const notifyAboutOfferOnDiscord = (offer, items) => {
       const timestamp = new Date(offer.time_updated * 1000).toISOString();
 
       const embed = {
-        author: {
+        footer: {
+          text: 'CSGO Trader',
           icon_url: 'https://csgotrader.app/cstlogo48.png',
-          name: 'CSGO Trader',
         },
         // #ff8c00 (taken from csgotrader.app text color)
         color: 16747520,
