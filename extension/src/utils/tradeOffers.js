@@ -21,12 +21,12 @@ import { notifyOnDiscord, playNotificationSound } from 'utils/notifications';
 
 import DOMPurify from 'dompurify';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
-import { getItemByIDs } from './itemsToElementsToItems';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 import { getTradeOffers } from 'utils/IEconService';
 import { prettyPrintPrice } from 'utils/pricing';
 import steamApps from 'utils/static/steamApps';
+import { getItemByIDs } from './itemsToElementsToItems';
 
 const createTradeOfferJSON = (itemsToGive, itemsToReceive) => {
   return {
@@ -251,9 +251,8 @@ const notifyAboutOfferOnDiscord = (offer, items) => {
     getPlayerSummaries([steamIDOfPartner]).then((summary) => {
       const userDetails = summary[steamIDOfPartner];
 
-      let description = `Offer from **${userDetails.personaname}** (${prettyPrintPrice(currency, offer.profitOrLoss.toFixed(2))})\n`;
-      if (offer.message !== '') description += `*${DOMPurify.sanitize(offer.message)}*\n`;
-      description += `https://steamcommunity.com/tradeoffer/${offer.tradeofferid}`;
+      const title = `Tradeoffer from ${userDetails.personaname} (${prettyPrintPrice(currency, offer.profitOrLoss.toFixed(2))})`;
+      const description = offer.message !== '' ? `*${DOMPurify.sanitize(offer.message)}*` : '';
 
       const giving = createDiscordSideSummary(offer.items_to_give, items);
       const receiving = createDiscordSideSummary(offer.items_to_receive, items);
@@ -265,6 +264,11 @@ const notifyAboutOfferOnDiscord = (offer, items) => {
       const timestamp = new Date(offer.time_updated * 1000).toISOString();
 
       const embed = {
+        // author is actually used as a title
+        author: {
+          name: title,
+          url: `https://steamcommunity.com/tradeoffer/${offer.tradeofferid}`,
+        },
         footer: {
           text: 'CSGO Trader',
           icon_url: 'https://csgotrader.app/cstlogo48.png',
