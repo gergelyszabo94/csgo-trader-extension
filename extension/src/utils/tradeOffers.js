@@ -258,11 +258,11 @@ const notifyAboutOfferOnDiscord = (offer, items) => {
       description += `https://steamcommunity.com/tradeoffer/${offer.tradeofferid}`;
 
       const giving = createDiscordSideSummary(offer.items_to_give, items);
-      const recieving = createDiscordSideSummary(offer.items_to_receive, items);
+      const receiving = createDiscordSideSummary(offer.items_to_receive, items);
 
       const fields = [];
       if (giving) fields.push({ name: 'Giving', inline: false, value: giving });
-      if (recieving) fields.push({ name: 'Recieving', inline: false, value: recieving });
+      if (receiving) fields.push({ name: 'Receiving', inline: false, value: receiving });
       
       const embed = {
         author: {
