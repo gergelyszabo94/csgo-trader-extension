@@ -21,12 +21,12 @@ import { notifyOnDiscord, playNotificationSound } from 'utils/notifications';
 
 import DOMPurify from 'dompurify';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
-import { getItemByIDs } from './itemsToElementsToItems';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 import { getTradeOffers } from 'utils/IEconService';
 import { prettyPrintPrice } from 'utils/pricing';
 import steamApps from 'utils/static/steamApps';
+import { getItemByIDs } from './itemsToElementsToItems';
 
 const createTradeOfferJSON = (itemsToGive, itemsToReceive) => {
   return {
@@ -233,13 +233,13 @@ const createDiscordSideSummary = (offerSideItems, itemsWithDetails) => {
   // 1024 is max size of an embed field
   if (summary.length > 1024) {
     // cut off all chars after 1024
-    summary = summary.slice(0, 1024)
+    summary = summary.slice(0, 1024);
     // remove lines until there are 4 chars to spare
     while (summary.length > 1020) {
-      summary = summary.split('\n').slice(0, -1).join('\n')
+      summary = summary.split('\n').slice(0, -1).join('\n');
     }
     // add \n... 
-    summary += "\n..."
+    summary += '\n...';
   }
 
   return summary;
@@ -264,6 +264,8 @@ const notifyAboutOfferOnDiscord = (offer, items) => {
       if (giving) fields.push({ name: 'Giving', inline: false, value: giving });
       if (receiving) fields.push({ name: 'Receiving', inline: false, value: receiving });
       
+      const timestamp = new Date(offer.time_updated * 1000).toISOString();
+
       const embed = {
         author: {
           icon_url: 'https://csgotrader.app/cstlogo48.png',
@@ -273,6 +275,7 @@ const notifyAboutOfferOnDiscord = (offer, items) => {
         color: 16747520,
         description,
         fields,
+        timestamp,
         type: 'rich',
       };
 
