@@ -252,17 +252,15 @@ const notifyAboutOfferOnDiscord = (offer, items) => {
       const userDetails = summary[steamIDOfPartner];
 
       let description = `Offer from **${userDetails.personaname}** (${prettyPrintPrice(currency, offer.profitOrLoss.toFixed(2))})\n`;
-      if (offer.message !== '') {
-        description += `*${DOMPurify.sanitize(offer.message)}*\n`;
-      }
+      if (offer.message !== '') description += `*${DOMPurify.sanitize(offer.message)}*\n`;
       description += `https://steamcommunity.com/tradeoffer/${offer.tradeofferid}`;
 
       const giving = createDiscordSideSummary(offer.items_to_give, items);
       const receiving = createDiscordSideSummary(offer.items_to_receive, items);
 
       const fields = [];
-      if (giving) fields.push({ name: 'Giving', inline: false, value: giving });
-      if (receiving) fields.push({ name: 'Receiving', inline: false, value: receiving });
+      if (giving) fields.push({ name: `Giving (${prettyPrintPrice(currency, offer.yourItemsTotal.toFixed(2))})`, inline: false, value: giving });
+      if (receiving) fields.push({ name: `Receiving (${prettyPrintPrice(currency, offer.theirItemsTotal.toFixed(2))})`, inline: false, value: receiving });
       
       const timestamp = new Date(offer.time_updated * 1000).toISOString();
 
