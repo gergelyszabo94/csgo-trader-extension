@@ -251,8 +251,8 @@ const notifyAboutOfferOnDiscord = (offer, items) => {
     getPlayerSummaries([steamIDOfPartner]).then((summary) => {
       const userDetails = summary[steamIDOfPartner];
 
-      let description = `[Tradeoffer](https://steamcommunity.com/tradeoffer/${offer.tradeofferid}) from **${userDetails.personaname}** (${prettyPrintPrice(currency, offer.profitOrLoss.toFixed(2))})`;
-      if (offer.message !== '') description += `\n*${DOMPurify.sanitize(offer.message)}*`;
+      const title = `Trade Offer (${prettyPrintPrice(currency, offer.profitOrLoss.toFixed(2))})`;
+      const description = offer.message !== '' ? `*${DOMPurify.sanitize(offer.message)}*` : '';
       
       const giving = createDiscordSideSummary(offer.items_to_give, items);
       const receiving = createDiscordSideSummary(offer.items_to_receive, items);
@@ -268,12 +268,19 @@ const notifyAboutOfferOnDiscord = (offer, items) => {
           text: 'CSGO Trader',
           icon_url: 'https://csgotrader.app/cstlogo48.png',
         },
+        author: {
+          name: userDetails.personaname,
+          icon_url: userDetails.avatar,
+          url: `https://steamcommunity.com/profiles/${steamIDOfPartner}`,
+        },
+        title,
+        description,
         // #ff8c00 (taken from csgotrader.app text color)
         color: 16747520,
-        description,
         fields,
         timestamp,
         type: 'rich',
+        url: `https://steamcommunity.com/tradeoffer/${offer.tradeofferid}`,
       };
 
       notifyOnDiscord(embed);
