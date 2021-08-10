@@ -404,7 +404,7 @@ const addFloatBarSkeletons = () => {
           if (listingNameBlocks !== null && itemWithInspectLink) {
             listingNameBlocks.forEach((listingNameBlock) => {
               if (listingNameBlock.getAttribute('data-floatBar-added') === null
-                  || listingNameBlock.getAttribute('data-floatBar-added') === false) {
+                || listingNameBlock.getAttribute('data-floatBar-added') === false) {
                 listingNameBlock.insertAdjacentHTML('beforeend', DOMPurify.sanitize(getFloatBarSkeleton('market')));
                 listingNameBlock.setAttribute('data-floatBar-added', 'true');
 
@@ -521,7 +521,7 @@ const sortListings = (sortingMode) => {
 
 const addPricesInOtherCurrencies = () => {
   if (!isCommodityItem) {
-    chrome.storage.local.get('marketOriginalPrice', (marketOriginalPrice) => {
+    chrome.storage.local.get('marketOriginalPrice', ({ marketOriginalPrice }) => {
       if (marketOriginalPrice) {
         const listings = getListings();
         const listingsSection = document.getElementById('searchResultsRows');
@@ -531,7 +531,7 @@ const addPricesInOtherCurrencies = () => {
           listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
             (listingRow) => {
               if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows'
-                    && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
+                && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
                 const listingID = getListingIDFromElement(listingRow);
 
                 if (listingRow.querySelector('.originalPrice') === null) { // if not added before
@@ -611,7 +611,7 @@ const addInstantBuyButtons = () => {
         listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
           (listingRow) => {
             if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows'
-                  && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
+              && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
               const listingID = getListingIDFromElement(listingRow);
 
               if (listingRow.querySelector('.instantBuy') === null) { // if not added before
@@ -665,7 +665,7 @@ const highlightSeen = () => {
         listingsSection.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
           (listingRow) => {
             if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows'
-                  && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
+              && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
               if (listingRow.getAttribute('data-highlightseen') === null) { // if not processed yet
                 const listingID = getListingIDFromElement(listingRow);
                 if (highlighted[listingID] !== undefined) {
@@ -1001,9 +1001,9 @@ chrome.storage.local.get(['reloadListingOnError'], ({ reloadListingOnError }) =>
 
 chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }) => {
   if (showRealMoneySiteLinks
-      && (appID === steamApps.CSGO.appID || appID === steamApps.DOTA2.appID
-          || appID === steamApps.TF2.appID || appID === steamApps.RUST.appID
-          || appID === steamApps.Z1.appID)) {
+    && (appID === steamApps.CSGO.appID || appID === steamApps.DOTA2.appID
+      || appID === steamApps.TF2.appID || appID === steamApps.RUST.appID
+      || appID === steamApps.Z1.appID)) {
     const elementToInsertTo = isCommodityItem
       ? document.querySelector('.market_commodity_order_block')
       : document.getElementById('largeiteminfo_warning');
