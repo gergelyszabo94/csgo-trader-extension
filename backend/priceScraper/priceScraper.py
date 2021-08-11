@@ -775,12 +775,8 @@ def is_mispriced_compared_to_csb(item, price, csb_prices):
             and csb_prices[item]["7_days"]["median"] != "null" \
             and csb_prices[item]["7_days"]["median"] != 0:
         ratio = csb_prices[item]["7_days"]["median"] / price
-        if ratio < 0.8 or ratio > 1.2:
-            return True
-        else:
-            return False
-    else:
-        return False
+        return ratio < 0.8 or ratio > 1.2
+    return False
 
 def get_formated_float(price):
     return float("{0:.2f}".format(price))
