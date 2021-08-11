@@ -14,8 +14,8 @@ result_s3_bucket = os.environ['RESULTS_BUCKET']
 sns_topic = os.environ['SNS_TOPIC_ARN']
 own_prices_table = os.environ['OWN_PRICES_TABLE']
 steam_apis_key = os.environ['STEAM_APIS_COM_API_KEY']
-skinport_cliend_id = os.environ['SKINPORT_CLIENT_ID']
-skinport_cliend_secret = os.environ['SKINPORT_CLIENT_SECRET']
+skinport_client_id = os.environ['SKINPORT_CLIENT_ID']
+skinport_client_secret = os.environ['SKINPORT_CLIENT_SECRET']
 pricempire_token = os.environ['PRICEMPIRE_TOKEN']
 skinwallet_api_key = os.environ['SKINWALLET_API_KEY']
 
@@ -300,7 +300,7 @@ def lambda_handler(event, context):
 
     # base64 encoding of auth header per docs:
     # https://docs.skinport.com/#authentication
-    auth_string = (base64.b64encode((skinport_cliend_id + ":" + skinport_cliend_secret).encode('ascii'))).decode('ascii')
+    auth_string = (base64.b64encode((skinport_client_id + ":" + skinport_client_secret).encode('ascii'))).decode('ascii')
     print("Requesting prices from skinport.com")
     response = requests.get(
         "https://api.skinport.com/v1/items?app_id=730",
