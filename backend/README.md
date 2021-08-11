@@ -16,7 +16,7 @@ and puts the unified result on S3. When done it invalidates the CloudFront cache
 
 ## priceScraper
 ### priceScraper
-Triggered by CLoudWatch Scheduled events to run every day at 1AM GMT.
+Triggered by CloudWatch Scheduled events to run every day at 1AM GMT.
 It is responsible for fetching pricing information from pricing providers
 (steamapis, cs.money, bitskins, loot.farm, csgo.tm), unifying the result and
 creating csgotrader's own price.
