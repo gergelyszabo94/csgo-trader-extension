@@ -29,6 +29,7 @@ gloves = ["Gloves", "Hand Wraps"]
 
 master_list = []
 
+
 def lambda_handler(event, context):
     arn_split = context.invoked_function_arn.split(':')
     stage_candidate = arn_split[len(arn_split) - 1]
@@ -49,47 +50,46 @@ def lambda_handler(event, context):
 
     steam_prices = fetch_steamapis(response, stage)
     csgobackpack_prices = fetch_csgobackpack(response)
-    bitskins_prices = request_bitskins(master_list, response, stage)
-    lootfarm_prices = request_lootfarm(master_list, response, stage)
-    csgotm_prices = fetch_csgotm(master_list, stage)
-    csmoney_prices = request_csmoney(master_list, stage)
-    skinport_prices = request_skinport(master_list, stage)
+    bitskins_prices = request_bitskins(response, stage)
+    lootfarm_prices = request_lootfarm(response, stage)
+    csgotm_prices = fetch_csgotm(stage)
+    csmoney_prices = request_csmoney(stage)
+    skinport_prices = request_skinport(stage)
     (
         buff163_prices,
         csgoempire_prices,
         csgoexo_prices,
         swapgg_prices
-    ) = request_priceempire(master_list, stage)
+    ) = request_priceempire(stage)
 
     skinwallet_prices = fetch_skinwallet(response, stage)
 
-    csgotrader_prices = create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices, master_list, own_prices, stage, steam_prices)
+    csgotrader_prices = create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices, own_prices, stage, steam_prices)
 
     # only push if all of them have valid results
     # (aka all the requests succeeded)
 
     if all(
-        [
-            bitskins_prices,
-            buff163_prices,
-            csgoempire_prices,
-            csgoexo_prices,
-            csgotm_prices,
-            csgotrader_prices,
-            csmoney_prices,
-            lootfarm_prices,
-            master_list,
-            skinport_prices,
-            stage,
-            steam_prices,
-            swapgg_prices,
-        ]
+            [
+                bitskins_prices,
+                buff163_prices,
+                csgoempire_prices,
+                csgoexo_prices,
+                csgotm_prices,
+                csgotrader_prices,
+                csmoney_prices,
+                lootfarm_prices,
+                skinport_prices,
+                stage,
+                steam_prices,
+                swapgg_prices,
+            ]
     ):
-        push_final_prices(bitskins_prices, buff163_prices, csgoempire_prices, csgoexo_prices, csgotm_prices, csgotrader_prices, csmoney_prices, lootfarm_prices, master_list,
+        push_final_prices(bitskins_prices, buff163_prices, csgoempire_prices, csgoexo_prices, csgotm_prices, csgotrader_prices, csmoney_prices, lootfarm_prices,
                           skinport_prices, stage, steam_prices, swapgg_prices)
 
 
-def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices, master_list, own_prices, stage, steam_prices):
+def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices, own_prices, stage, steam_prices):
     print("Creates own pricing")
     print("Calculate market trends")
     week_to_day = 0
@@ -230,7 +230,7 @@ def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices
     return csgotrader_prices
 
 
-def push_final_prices(bitskins_prices, buff163_prices, csgoempire_prices, csgoexo_prices, csgotm_prices, csgotrader_prices, csmoney_prices, lootfarm_prices, master_list,
+def push_final_prices(bitskins_prices, buff163_prices, csgoempire_prices, csgoexo_prices, csgotm_prices, csgotrader_prices, csmoney_prices, lootfarm_prices,
                       skinport_prices, stage, steam_prices, swapgg_prices):
     print("Putting together the final prices dict")
     extract = {}
@@ -337,7 +337,7 @@ def fetch_skinwallet(response, stage):
     return skinwallet_prices
 
 
-def request_priceempire(master_list, stage):
+def request_priceempire(stage):
     print("Requesting prices from pricempire")
     response = requests.get("https://api.pricempire.com/v1/getAllItems", params={
         "token": pricempire_token,
@@ -412,7 +412,7 @@ def request_priceempire(master_list, stage):
     return buff163_prices, csgoempire_prices, csgoexo_prices, swapgg_prices
 
 
-def request_skinport(master_list, stage):
+def request_skinport(stage):
     # base64 encoding of auth header per docs:
     # https://docs.skinport.com/#authentication
     auth_string = (base64.b64encode((skinport_client_id + ":" + skinport_client_secret).encode('ascii'))).decode('ascii')
@@ -458,7 +458,7 @@ def request_skinport(master_list, stage):
     return skinport_prices
 
 
-def request_csmoney(master_list, stage):
+def request_csmoney(stage):
     print("Requesting prices from cs.money")
     response = requests.get("https://old.cs.money/js/database-skins/library-en-730.js")
     print("Received response from cs.money")
@@ -505,7 +505,7 @@ def request_csmoney(master_list, stage):
     return csmoney_prices
 
 
-def fetch_csgotm(master_list, stage):
+def fetch_csgotm(stage):
     print("Requesting prices from csgo.tm")
     response = requests.get("https://market.csgo.com/api/v2/prices/USD.json")
     print("Received response from csgo.tm")
@@ -536,7 +536,7 @@ def fetch_csgotm(master_list, stage):
     return csgotm_prices
 
 
-def request_lootfarm(master_list, response, stage):
+def request_lootfarm(response, stage):
     print("Requesting prices from loot.farm")
     try:
         response = requests.get("https://loot.farm/fullprice.json")
@@ -586,7 +586,7 @@ def request_lootfarm(master_list, response, stage):
     return lootfarm_prices
 
 
-def request_bitskins(master_list, response, stage):
+def request_bitskins(response, stage):
     print('Requesting bitskins prices')
     try:
         response = requests.get("https://bitskins.com/api/v1/get_all_item_prices/", params={
