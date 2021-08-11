@@ -245,49 +245,19 @@ def push_final_prices(bitskins_prices, buff163_prices, csgoempire_prices, csgoex
                 "last_7d": "null",
                 "last_24h": "null"
             }
-        if item in bitskins_prices:
-            extract[item]["bitskins"] = bitskins_prices[item]
-        else:
-            extract[item]["bitskins"] = "null"
-        if item in lootfarm_prices:
-            extract[item]["lootfarm"] = lootfarm_prices[item]
-        else:
-            extract[item]["lootfarm"] = "null"
-        if item in csgotm_prices:
-            extract[item]["csgotm"] = csgotm_prices[item]
-        else:
-            extract[item]["csgotm"] = "null"
-        if item in csmoney_prices:
-            extract[item]["csmoney"] = csmoney_prices[item]
-        else:
-            extract[item]["csmoney"] = "null"
-        if item in skinport_prices:
-            extract[item]["skinport"] = skinport_prices[item]
-        else:
-            extract[item]["skinport"] = "null"
-        if item in csgotrader_prices:
-            extract[item]["csgotrader"] = csgotrader_prices[item]
-        else:
-            extract[item]["csgotrader"] = "null"
-        if item in csgoempire_prices:
-            extract[item]["csgoempire"] = csgoempire_prices[item]
-        else:
-            extract[item]["csgoempire"] = "null"
-        if item in swapgg_prices:
-            extract[item]["swapgg"] = swapgg_prices[item]
-        else:
-            extract[item]["swapgg"] = "null"
-        if item in csgoexo_prices:
-            extract[item]["csgoexo"] = csgoexo_prices[item]
-        else:
-            extract[item]["csgoexo"] = "null"
-        if item in buff163_prices:
-            extract[item]["buff163"] = buff163_prices[item]
-        else:
-            extract[item]["buff163"] = {
-                "starting_at": "null",
-                "highest_order": "null",
-            }
+        extract[item]["bitskins"] = bitskins_prices.get(item, "null")
+        extract[item]["lootfarm"] = lootfarm_prices.get(item, "null")
+        extract[item]["csgotm"] = csgotm_prices.get(item, "null")
+        extract[item]["csmoney"] = csmoney_prices.get(item, "null")
+        extract[item]["skinport"] = skinport_prices.get(item, "null")
+        extract[item]["csgotrader"] = csgotrader_prices.get(item, "null")
+        extract[item]["csgoempire"] = csgoempire_prices.get(item, "null")
+        extract[item]["swapgg"] = swapgg_prices.get(item, "null")
+        extract[item]["csgoexo"] = csgoexo_prices.get(item, "null")
+        extract[item]["buff163"] = buff163_prices.get(item, {
+            "starting_at": "null",
+            "highest_order": "null",
+        })
     push_to_s3(extract, 'prices_v6', stage)
 
 
