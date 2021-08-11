@@ -790,10 +790,13 @@ def get_non_st_name(name):
 
 
 def is_mispriced_compared_to_csb(item, price, csb_prices):
-    if price in csb_prices and "7_days" in csb_prices[item] \
-            and "median" in csb_prices[item]["7_days"] \
-            and csb_prices[item]["7_days"]["median"] != "null" \
-            and csb_prices[item]["7_days"]["median"] != 0:
+    if (
+            price in csb_prices
+            and "7_days" in csb_prices[item]
+            and "median" in csb_prices[item]["7_days"]
+            and csb_prices[item]["7_days"]["median"] != "null"
+            and csb_prices[item]["7_days"]["median"] != 0
+    ):
         ratio = csb_prices[item]["7_days"]["median"] / price
         return ratio < 0.8 or ratio > 1.2
     return False
