@@ -101,8 +101,8 @@ def lambda_handler(event, context):
         csgobackpack_prices = {}
         print("Extracting pricing information")
         for key, value in items.items():
-            name = items.get(key).get('name').replace("&#39", "'")
-            price = items.get(key).get('price')
+            name = value.get('name').replace("&#39", "'")
+            price = value.get('price')
 
             if price:
                 csgobackpack_prices[name] = price
