@@ -27,13 +27,12 @@ knives = ["Bayonet", "Bowie Knife", "Butterfly Knife", "Falchion Knife", "Flip K
           "Skeleton Knife", "Survival Knife", "Paracord Knife", "Classic Knife"]
 gloves = ["Gloves", "Hand Wraps"]
 
+master_list = []
 
 def lambda_handler(event, context):
     arn_split = context.invoked_function_arn.split(':')
     stage_candidate = arn_split[len(arn_split) - 1]
     stage = 'dev' if stage_candidate == 'priceScraper' else 'prod'  # if there is an alias it's prod
-
-    master_list = []
 
     dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
     table = dynamodb.Table(own_prices_table)
@@ -46,7 +45,7 @@ def lambda_handler(event, context):
     for item in response['Items']:
         name = item["market_hash_name"]
         own_prices[name] = float(item["price"])
-        add_to_master_list(master_list, name)
+        add_to_master_list(name)
 
     steam_prices = fetch_steamapis(response, stage)
     csgobackpack_prices = fetch_csgobackpack(response)
@@ -394,7 +393,7 @@ def request_priceempire(master_list, stage):
                         "Phase 4": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p4_quick", {}).get("price")),
                     }
                 buff163_prices[name] = item_buff163_prices
-                add_to_master_list(master_list, name)
+                add_to_master_list(name)
 
         print("Pricing information extracted")
         push_to_s3(csgoempire_prices, 'csgoempire', stage)
@@ -443,7 +442,7 @@ def request_skinport(master_list, stage):
                 "instant_price": instant_price,
                 "starting_at": starting_at,
             }
-            add_to_master_list(master_list, name)
+            add_to_master_list(name)
 
         print("Pricing information extracted")
         push_to_s3(skinport_prices, 'skinport', stage)
@@ -477,7 +476,7 @@ def request_csmoney(master_list, stage):
             if "Doppler" in name:
                 phase = name.split("Doppler ")[1].split(" (")[0]
                 name = name.replace(phase + " ", "")
-                add_to_master_list(master_list, name)
+                add_to_master_list(name)
                 try:
                     csmoney_prices[name]['doppler'][phase] = price
                 except KeyError:
@@ -490,7 +489,7 @@ def request_csmoney(master_list, stage):
                 if phase == "Phase 3":
                     csmoney_prices[name]['price'] = price
             else:
-                add_to_master_list(master_list, name)
+                add_to_master_list(name)
                 csmoney_prices[name] = {'price': price}
 
         print("Pricing information extracted")
@@ -521,7 +520,7 @@ def fetch_csgotm(master_list, stage):
             price = item.get('price')
 
             csgotm_prices[name] = price
-            add_to_master_list(master_list, name)
+            add_to_master_list(name)
 
         print("Pricing information extracted")
         push_to_s3(csgotm_prices, 'csgotm', stage)
@@ -568,10 +567,10 @@ def request_lootfarm(master_list, response, stage):
                 name = name.replace(phase + " ", "")
                 if phase not in special_phases:
                     lootfarm_prices[name] = price
-                    add_to_master_list(master_list, name)
+                    add_to_master_list(name)
             else:
                 lootfarm_prices[name] = price
-                add_to_master_list(master_list, name)
+                add_to_master_list(name)
 
         print("Pricing information extracted")
         push_to_s3(lootfarm_prices, 'lootfarm', stage)
@@ -611,7 +610,7 @@ def request_bitskins(master_list, response, stage):
                 items = response.json()['prices']
                 for item in items:
                     name = item.get('market_hash_name').replace('\xe2\x98\x85', '\u2605').replace("/", '-')
-                    add_to_master_list(master_list, name)
+                    add_to_master_list(name)
                     instant_sale_price = item.get('instant_sale_price')
 
                     if instant_sale_price == "None":
@@ -700,15 +699,12 @@ def fetch_steamapis(response, stage):
         print(e)
         error = "Error during steam apis request"
         alert_via_sns(f'{error}: {e}')
-        # return {
-        #     'statusCode': 500,
-        #     'body': error
-        # }
     print('Received response from steamapis.com')
+    steam_prices = {}
     if response.status_code == 200:
         print("Valid response from steamapis.com")
         items = response.json()['data']
-        steam_prices = {}
+
         steam_prices_only = {}
         print("Extracting pricing information")
 
@@ -717,7 +713,7 @@ def fetch_steamapis(response, stage):
             steam_prices[name] = item["prices"]
             if "safe_ts" in item["prices"]:
                 steam_prices_only[name] = item["prices"]["safe_ts"]
-            add_to_master_list(master_list, name)
+            add_to_master_list(name)
 
         print("Pricing information extracted")
         push_to_s3(steam_prices_only, 'steam', stage)
@@ -816,7 +812,7 @@ def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
     }
 
 
-def add_to_master_list(master_list, name, should_log=False):
+def add_to_master_list(name, should_log=False):
     if name not in master_list:
         master_list.append(name)
         if should_log:
