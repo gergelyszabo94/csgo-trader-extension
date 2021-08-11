@@ -152,7 +152,7 @@ def lambda_handler(event, context):
 
                     bitskins_prices[name] = {
                         "price": item["price"],
-                        "instant_sale_price": item["instant_sale_price"]
+                        "instant_sale_price": instant_sale_price
                     }
                 print("Pricing info extracted")
                 push_to_s3(bitskins_prices, 'bitskins', stage)
