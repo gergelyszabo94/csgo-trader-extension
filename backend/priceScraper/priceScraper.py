@@ -370,49 +370,40 @@ def lambda_handler(event, context):
             pricempire_prices = item.get('prices')
 
             if pricempire_prices is not None:
-                csgoempire_prices[name] = "null" if pricempire_prices.get('csgoempire') is None or pricempire_prices.get('csgoempire').get('price') is None else get_formatted_float(pricempire_prices.get('csgoempire').get('price') / 100)
-                swapgg_prices[name] = "null" if pricempire_prices.get('swapgg') is None or pricempire_prices.get('swapgg').get('price') is None else get_formatted_float(pricempire_prices.get('swapgg').get('price') / 100)
-                csgoexo_prices[name] = "null" if pricempire_prices.get('csgoexo') is None or pricempire_prices.get('csgoexo').get('price') is None else get_formatted_float(pricempire_prices.get('csgoexo').get('price') / 100)
+                csgoempire_prices[name] = get_formatted_float_divided_by_100(pricempire_prices.get('csgoempire', {}).get('price'))
+                swapgg_prices[name] = get_formatted_float_divided_by_100(pricempire_prices.get('swapgg', {}).get('price'))
+                csgoexo_prices[name] = get_formatted_float_divided_by_100(pricempire_prices.get('csgoexo', {}).get('price'))
+
+                item_buff163_price = pricempire_prices.get('buff163', {}).get('price')
+                item_buff163_quick_price = pricempire_prices.get('buff163_quick', {}).get('price')
+
+                item_buff163_prices = {}
+                item_buff163_prices["starting_at"]["price"] = get_formatted_float_divided_by_100(item_buff163_price)
+                item_buff163_prices["highest_order"]["price"] = get_formatted_float_divided_by_100(item_buff163_quick_price)
+
 
                 if "Doppler" in name:
-                    buff163_prices[name] = {
-                        "starting_at": {"price": "null", "doppler": "null"} if pricempire_prices.get(
-                            'buff163') is None or pricempire_prices.get('buff163').get(
-                            'price') is None else {
-                                "price": get_formatted_float(pricempire_prices.get("buff163").get("price") / 100),
-                                "doppler": {
-                                        "Sapphire": "null" if pricempire_prices.get("buff_sapphire") is None or pricempire_prices.get("buff_sapphire").get("price") is None else pricempire_prices.get("buff_sapphire").get("price") / 100,
-                                        "Ruby": "null" if pricempire_prices.get("buff_ruby") is None or pricempire_prices.get("buff_ruby").get("price") is None else pricempire_prices.get("buff_ruby").get("price") / 100,
-                                        "Black Pearl": "null" if pricempire_prices.get("buff_bp") is None or pricempire_prices.get("buff_bp").get("price") is None else pricempire_prices.get("buff_bp").get("price") / 100,
-                                        "Emerald": "null" if pricempire_prices.get("buff_emerald") is None or pricempire_prices.get("buff_emerald").get("price") is None else pricempire_prices.get("buff_emerald").get("price") / 100,
-                                        "Phase 1": "null" if pricempire_prices.get("buff_p1") is None or pricempire_prices.get("buff_p1").get("price") is None else pricempire_prices.get("buff_p1").get("price") / 100,
-                                        "Phase 2": "null" if pricempire_prices.get("buff_p2") is None or pricempire_prices.get("buff_p2").get("price") is None else pricempire_prices.get("buff_p2").get("price") / 100,
-                                        "Phase 3": "null" if pricempire_prices.get("buff_p3") is None or pricempire_prices.get("buff_p3").get("price") is None else pricempire_prices.get("buff_p3").get("price") / 100,
-                                        "Phase 4": "null" if pricempire_prices.get("buff_p4") is None or pricempire_prices.get("buff_p4").get("price") is None else pricempire_prices.get("buff_p4").get("price") / 100,
-                                    }
-                                },
-                        "highest_order": {"price": "null", "doppler": "null"} if pricempire_prices.get(
-                            'buff163_quick') is None or pricempire_prices.get('buff163_quick').get(
-                            'price') is None else {
-                                "price": get_formatted_float(pricempire_prices.get("buff163_quick").get("price") / 100),
-                                "doppler": {
-                                        "Sapphire": "null" if pricempire_prices.get("buff_sapphire_quick") is None or pricempire_prices.get("buff_sapphire_quick").get("price") is None else pricempire_prices.get("buff_sapphire_quick").get("price") / 100,
-                                        "Ruby": "null" if pricempire_prices.get("buff_ruby_quick") is None or pricempire_prices.get("buff_ruby_quick").get("price") is None else pricempire_prices.get("buff_ruby_quick").get("price") / 100,
-                                        "Black Pearl": "null" if pricempire_prices.get("buff_bp_quick") is None or pricempire_prices.get("buff_bp_quick").get("price") is None else pricempire_prices.get("buff_bp_quick").get("price") / 100,
-                                        "Emerald": "null" if pricempire_prices.get("buff_emerald_quick") is None or pricempire_prices.get("buff_emerald_quick").get("price") is None else pricempire_prices.get("buff_emerald_quick").get("price") / 100,
-                                        "Phase 1": "null" if pricempire_prices.get("buff_p1_quick") is None or pricempire_prices.get("buff_p1_quick").get("price") is None else pricempire_prices.get("buff_p1_quick").get("price") / 100,
-                                        "Phase 2": "null" if pricempire_prices.get("buff_p2_quick") is None or pricempire_prices.get("buff_p2_quick").get("price") is None else pricempire_prices.get("buff_p2_quick").get("price") / 100,
-                                        "Phase 3": "null" if pricempire_prices.get("buff_p3_quick") is None or pricempire_prices.get("buff_p3_quick").get("price") is None else pricempire_prices.get("buff_p3_quick").get("price") / 100,
-                                        "Phase 4": "null" if pricempire_prices.get("buff_p4_quick") is None or pricempire_prices.get("buff_p4_quick").get("price") is None else pricempire_prices.get("buff_p4_quick").get("price") / 100,
-                                }
-                             }
+                    item_buff163_prices["starting_at"]["doppler"] = {
+                        "Sapphire": get_formatted_float_divided_by_100(pricempire_prices.get("buff_sapphire", {}).get("price")),
+                        "Ruby": get_formatted_float_divided_by_100(pricempire_prices.get("buff_ruby", {}).get("price")),
+                        "Black Pearl": get_formatted_float_divided_by_100(pricempire_prices.get("buff_bp", {}).get("price")),
+                        "Emerald": get_formatted_float_divided_by_100(pricempire_prices.get("buff_emerald", {}).get("price")),
+                        "Phase 1": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p1", {}).get("price")),
+                        "Phase 2": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p2", {}).get("price")),
+                        "Phase 3": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p3", {}).get("price")),
+                        "Phase 4": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p4", {}).get("price")),
                     }
-                else:
-                    buff163_prices[name] = {
-                        "starting_at": {"price": "null"} if pricempire_prices.get('buff163') is None or pricempire_prices.get('buff163').get('price') is None else {"price": get_formatted_float(pricempire_prices.get('buff163').get('price') / 100), },
-                        "highest_order": {"price": "null"} if pricempire_prices.get('buff163_quick') is None or pricempire_prices.get('buff163_quick').get('price') is None else {"price": get_formatted_float(pricempire_prices.get('buff163_quick').get('price') / 100), },
+                    item_buff163_prices["highest_order"]["doppler"] = {
+                        "Sapphire": get_formatted_float_divided_by_100(pricempire_prices.get("buff_sapphire_quick", {}).get("price")),
+                        "Ruby": get_formatted_float_divided_by_100(pricempire_prices.get("buff_ruby_quick", {}).get("price")),
+                        "Black Pearl": get_formatted_float_divided_by_100(pricempire_prices.get("buff_bp_quick", {}).get("price")),
+                        "Emerald": get_formatted_float_divided_by_100(pricempire_prices.get("buff_emerald_quick", {}).get("price")),
+                        "Phase 1": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p1_quick", {}).get("price")),
+                        "Phase 2": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p2_quick", {}).get("price")),
+                        "Phase 3": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p3_quick", {}).get("price")),
+                        "Phase 4": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p4_quick", {}).get("price")),
                     }
-
+                buff163_prices[name] = item_buff163_prices
                 add_to_master_list(master_list, name, False)
 
         print("Pricing information extracted")
@@ -810,4 +801,9 @@ def is_mispriced_compared_to_csb(item, price, csb_prices):
 
 
 def get_formatted_float(price):
-    return float("{0:.2f}".format(price))
+    if price:
+        return float("{0:.2f}".format(price))
+
+def get_formatted_float_divided_by_100(price):
+    if price:
+        return float("{0:.2f}".format(price / 100))
