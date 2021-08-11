@@ -363,16 +363,16 @@ def lambda_handler(event, context):
             pricempire_prices = item.get('prices')
 
             if pricempire_prices is not None:
-                csgoempire_prices[name] = "null" if pricempire_prices.get('csgoempire') is None or pricempire_prices.get('csgoempire').get('price') is None else get_formated_float(pricempire_prices.get('csgoempire').get('price') / 100)
-                swapgg_prices[name] = "null" if pricempire_prices.get('swapgg') is None or pricempire_prices.get('swapgg').get('price') is None else get_formated_float(pricempire_prices.get('swapgg').get('price') / 100)
-                csgoexo_prices[name] = "null" if pricempire_prices.get('csgoexo') is None or pricempire_prices.get('csgoexo').get('price') is None else get_formated_float(pricempire_prices.get('csgoexo').get('price') / 100)
+                csgoempire_prices[name] = "null" if pricempire_prices.get('csgoempire') is None or pricempire_prices.get('csgoempire').get('price') is None else get_formatted_float(pricempire_prices.get('csgoempire').get('price') / 100)
+                swapgg_prices[name] = "null" if pricempire_prices.get('swapgg') is None or pricempire_prices.get('swapgg').get('price') is None else get_formatted_float(pricempire_prices.get('swapgg').get('price') / 100)
+                csgoexo_prices[name] = "null" if pricempire_prices.get('csgoexo') is None or pricempire_prices.get('csgoexo').get('price') is None else get_formatted_float(pricempire_prices.get('csgoexo').get('price') / 100)
 
                 if "Doppler" in name:
                     buff163_prices[name] = {
                         "starting_at": {"price": "null", "doppler": "null"} if pricempire_prices.get(
                             'buff163') is None or pricempire_prices.get('buff163').get(
                             'price') is None else {
-                                "price": get_formated_float(pricempire_prices.get("buff163").get("price") / 100),
+                                "price": get_formatted_float(pricempire_prices.get("buff163").get("price") / 100),
                                 "doppler": {
                                         "Sapphire": "null" if pricempire_prices.get("buff_sapphire") is None or pricempire_prices.get("buff_sapphire").get("price") is None else pricempire_prices.get("buff_sapphire").get("price") / 100,
                                         "Ruby": "null" if pricempire_prices.get("buff_ruby") is None or pricempire_prices.get("buff_ruby").get("price") is None else pricempire_prices.get("buff_ruby").get("price") / 100,
@@ -387,7 +387,7 @@ def lambda_handler(event, context):
                         "highest_order": {"price": "null", "doppler": "null"} if pricempire_prices.get(
                             'buff163_quick') is None or pricempire_prices.get('buff163_quick').get(
                             'price') is None else {
-                                "price": get_formated_float(pricempire_prices.get("buff163_quick").get("price") / 100),
+                                "price": get_formatted_float(pricempire_prices.get("buff163_quick").get("price") / 100),
                                 "doppler": {
                                         "Sapphire": "null" if pricempire_prices.get("buff_sapphire_quick") is None or pricempire_prices.get("buff_sapphire_quick").get("price") is None else pricempire_prices.get("buff_sapphire_quick").get("price") / 100,
                                         "Ruby": "null" if pricempire_prices.get("buff_ruby_quick") is None or pricempire_prices.get("buff_ruby_quick").get("price") is None else pricempire_prices.get("buff_ruby_quick").get("price") / 100,
@@ -402,8 +402,8 @@ def lambda_handler(event, context):
                     }
                 else:
                     buff163_prices[name] = {
-                        "starting_at": {"price": "null"} if pricempire_prices.get('buff163') is None or pricempire_prices.get('buff163').get('price') is None else {"price": get_formated_float(pricempire_prices.get('buff163').get('price') / 100),},
-                        "highest_order": {"price": "null"} if pricempire_prices.get('buff163_quick') is None or pricempire_prices.get('buff163_quick').get('price') is None else {"price": get_formated_float(pricempire_prices.get('buff163_quick').get('price') / 100),},
+                        "starting_at": {"price": "null"} if pricempire_prices.get('buff163') is None or pricempire_prices.get('buff163').get('price') is None else {"price": get_formatted_float(pricempire_prices.get('buff163').get('price') / 100), },
+                        "highest_order": {"price": "null"} if pricempire_prices.get('buff163_quick') is None or pricempire_prices.get('buff163_quick').get('price') is None else {"price": get_formatted_float(pricempire_prices.get('buff163_quick').get('price') / 100), },
                     }
 
                 add_to_master_list(master_list, name, False)
@@ -533,15 +533,15 @@ def lambda_handler(event, context):
                     and not is_mispriced_glove(item, steam_aggregate["price"]) \
                     and not is_mispriced_compared_to_csb(item, steam_aggregate["price"], csgobackpack_prices):
                 if steam_aggregate["price"] >= 800 and item in buff163_prices and buff163_prices[item]["starting_at"]["price"] != "null":
-                    price = get_formated_float(float(buff163_prices[item]["starting_at"]["price"]) * st_buff * week_to_day)
+                    price = get_formatted_float(float(buff163_prices[item]["starting_at"]["price"]) * st_buff * week_to_day)
                     case = "H"
-                else: price = get_formated_float(steam_aggregate["price"])
+                else: price = get_formatted_float(steam_aggregate["price"])
             elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and \
                     csmoney_prices[item]["price"] != 0:
-                price = get_formated_float(float(csmoney_prices[item]["price"]) * st_csm * week_to_day)
+                price = get_formatted_float(float(csmoney_prices[item]["price"]) * st_csm * week_to_day)
                 case = "F"
             elif item in buff163_prices and buff163_prices[item]["starting_at"]["price"] != "null":
-                price = get_formated_float(float(buff163_prices[item]["starting_at"]["price"]) * st_buff * week_to_day)
+                price = get_formatted_float(float(buff163_prices[item]["starting_at"]["price"]) * st_buff * week_to_day)
                 case = "G"
             elif item in own_prices:
                 price = own_prices[item]
@@ -550,7 +550,7 @@ def lambda_handler(event, context):
             if "Doppler" in item:
                 doppler = {}
                 for phase in csmoney_prices[item]["doppler"]:
-                    doppler[phase] = get_formated_float(float(csmoney_prices[item]["doppler"][phase]) * st_csm)
+                    doppler[phase] = get_formatted_float(float(csmoney_prices[item]["doppler"][phase]) * st_csm)
                 if stage == "dev":
                     csgotrader_prices[item] = {
                         "price": price,
@@ -778,5 +778,6 @@ def is_mispriced_compared_to_csb(item, price, csb_prices):
         return ratio < 0.8 or ratio > 1.2
     return False
 
-def get_formated_float(price):
+
+def get_formatted_float(price):
     return float("{0:.2f}".format(price))
