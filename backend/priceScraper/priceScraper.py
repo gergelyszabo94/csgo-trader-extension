@@ -304,15 +304,11 @@ def fetch_skinwallet(response, stage):
         print(e)
         error = "Error during skinwallet request"
         alert_via_sns(f'{error}: {e}')
-        # return {
-        #     'statusCode': 500,
-        #     'body': error
-        # }
     print("Received response from skinwallet.com")
+    skinwallet_prices = {}
     if response.status_code == 200 and response.json()['status'] == 'Success':
         print("Valid response from skinwallet.com")
         items = response.json()['result']
-        skinwallet_prices = {}
         print("Extracting pricing information")
         for item in items:
             name = item.get('marketHashName')
@@ -330,10 +326,6 @@ def fetch_skinwallet(response, stage):
         error = "Could not get items from skinwallet.com"
         alert_via_sns(error)
         print(error, " status code: ", response.status_code)
-        # return {
-        #     'statusCode': response.status_code,
-        #     'body': json.dumps(error)
-        # }
     return skinwallet_prices
 
 
@@ -345,15 +337,16 @@ def request_priceempire(stage):
     })
     print("Received response from pricempire")
     response_json = response.json()
+
+    csgoempire_prices = {}
+    swapgg_prices = {}
+    csgoexo_prices = {}
+    buff163_prices = {}
+
     if response.status_code == 200 and len(response_json) != 0 and response_json.get("status") is True:
         print("Valid response from pricempire")
         items = response_json.get("items")
         print("Extracting pricing information")
-
-        csgoempire_prices = {}
-        swapgg_prices = {}
-        csgoexo_prices = {}
-        buff163_prices = {}
 
         for item in items:
             name = item.get('name')
@@ -405,30 +398,25 @@ def request_priceempire(stage):
         error = "Could not get items from pricempire"
         alert_via_sns(error)
         print(error, " status code: ", response.status_code)
-        # return {
-        #     'statusCode': response.status_code,
-        #     'body': json.dumps(error)
-        # }
     return buff163_prices, csgoempire_prices, csgoexo_prices, swapgg_prices
 
 
 def request_skinport(stage):
     # base64 encoding of auth header per docs:
     # https://docs.skinport.com/#authentication
-    auth_string = (base64.b64encode((skinport_client_id + ":" + skinport_client_secret).encode('ascii'))).decode('ascii')
     print("Requesting prices from skinport.com")
     response = requests.get("https://api.skinport.com/v1/items", params={
         "app_id": "730"
     }, headers={
-        "Authorization": "Basic " + auth_string
+        "Authorization": "Basic " + (base64.b64encode((skinport_client_id + ":" + skinport_client_secret).encode('ascii'))).decode('ascii')
     })
     print("Received response from skinport.com")
+    skinport_prices = {}
     if response.status_code == 200:
         print("Valid response from skinport.com")
         items = response.json()
         print("Extracting pricing information")
 
-        skinport_prices = {}
         for item in items:
             name = item.get('market_hash_name')
             suggested_price = item.get('suggested_price')
@@ -451,10 +439,6 @@ def request_skinport(stage):
         error = "Could not get items from skinport.com"
         alert_via_sns(error)
         print(error, " status code: ", response.status_code)
-        # return {
-        #     'statusCode': response.status_code,
-        #     'body': json.dumps(error)
-        # }
     return skinport_prices
 
 
@@ -462,12 +446,11 @@ def request_csmoney(stage):
     print("Requesting prices from cs.money")
     response = requests.get("https://old.cs.money/js/database-skins/library-en-730.js")
     print("Received response from cs.money")
+    csmoney_prices = {}
     if response.status_code == 200:
         print("Valid response from cs.money")
         items = json.loads(response.content.decode().split("skinsBaseList[730] = ")[1])
         print("Extracting pricing information")
-
-        csmoney_prices = {}
         for item in items:
             item = items.get(item)
             name = item.get('m').replace("/", '-')
@@ -498,10 +481,6 @@ def request_csmoney(stage):
         error = "Could not get items from cs.money"
         alert_via_sns(error)
         print(error, " status code: ", response.status_code)
-        # return {
-        #     'statusCode': response.status_code,
-        #     'body': json.dumps(error)
-        # }
     return csmoney_prices
 
 
@@ -509,12 +488,12 @@ def fetch_csgotm(stage):
     print("Requesting prices from csgo.tm")
     response = requests.get("https://market.csgo.com/api/v2/prices/USD.json")
     print("Received response from csgo.tm")
+    csgotm_prices = {}
     if response.status_code == 200 and response.json()['success']:
         print("Valid response from csgo.tm")
         items = response.json()['items']
         print("Extracting pricing information")
 
-        csgotm_prices = {}
         for item in items:
             name = item.get('market_hash_name')
             price = item.get('price')
@@ -524,15 +503,10 @@ def fetch_csgotm(stage):
 
         print("Pricing information extracted")
         push_to_s3(csgotm_prices, 'csgotm', stage)
-
     else:
         error = "Could not get items from csgo.tm"
         alert_via_sns(error)
         print(error, " status code: ", response.status_code)
-        # return {
-        #     'statusCode': response.status_code,
-        #     'body': json.dumps(error)
-        # }
     return csgotm_prices
 
 
@@ -544,15 +518,11 @@ def request_lootfarm(response, stage):
         print(e)
         error = "Error during loot.farm request"
         alert_via_sns(f'{error}: {e}')
-        # return {
-        #     'statusCode': 500,
-        #     'body': error
-        # }
     print("Received response from loot.farm")
+    lootfarm_prices = {}
     if response.status_code == 200:
         print("Valid response from loot.farm")
         items = response.json()
-        lootfarm_prices = {}
         print("Extracting pricing information")
 
         for item in items:
@@ -579,10 +549,6 @@ def request_lootfarm(response, stage):
         error = "Could not get items from loot.farm"
         alert_via_sns(error)
         print(error, " status code: ", response.status_code)
-        # return {
-        #     'statusCode': response.status_code,
-        #     'body': json.dumps(error)
-        # }
     return lootfarm_prices
 
 
@@ -598,14 +564,11 @@ def request_bitskins(response, stage):
         print(e)
         error = "Error during bitskins request"
         alert_via_sns(f'{error}: {e}')
-        # return {
-        #     'statusCode': 500,
-        #     'body': error
-        # }
+
+    bitskins_prices = {}
     if response.status_code == 200:
         try:
             if response.json()['status'] == "success":
-                bitskins_prices = {}
                 print("Extracting pricing info")
                 items = response.json()['prices']
                 for item in items:
@@ -626,26 +589,14 @@ def request_bitskins(response, stage):
             print(e)
             error = "Bitskins maintenance?"
             alert_via_sns(f'{error}: {e}')
-            # return {
-            #     'statusCode': 500,
-            #     'body': json.dumps(error)
-            # }
     elif response.status_code == 401:
         error = "Could not get items from bitskins, it's most likely an authentication problem"
         alert_via_sns(error)
         print(error, " status code: ", response.status_code)
-        # return {
-        #     'statusCode': response.status_code,
-        #     'body': json.dumps(error)
-        # }
     else:
         error = "Could not get items from bitskins"
         alert_via_sns(error)
         print(error, " status code: ", response.status_code)
-        # return {
-        #     'statusCode': response.status_code,
-        #     'body': json.dumps(error)
-        # }
     return bitskins_prices
 
 
@@ -657,35 +608,20 @@ def fetch_csgobackpack(response):
         print(e)
         error = "Error during csgobackpack request"
         alert_via_sns(f'{error}: {e}')
-        # return {
-        #     'statusCode': 500,
-        #     'body': error
-        # }
     print("Received response from csgobackpack.net")
+    csgobackpack_prices = {}
     if response.status_code == 200 and response.json()['success']:
         print("Valid response from csgobackpack.net")
         items = response.json()['items_list']
-        csgobackpack_prices = {}
         print("Extracting pricing information")
         for key, value in items.items():
             name = value.get('name').replace("&#39", "'")
-            price = value.get('price')
-
-            if price:
-                csgobackpack_prices[name] = price
-            else:
-                csgobackpack_prices[name] = "null"
-
+            csgobackpack_prices[name] = value.get('price') or "null"
         print("Pricing information extracted")
-
     else:
         error = "Could not get items from csgobackpack.net"
         alert_via_sns(error)
         print(error, " status code: ", response.status_code)
-        # return {
-        #     'statusCode': response.status_code,
-        #     'body': json.dumps(error)
-        # }
     return csgobackpack_prices
 
 
