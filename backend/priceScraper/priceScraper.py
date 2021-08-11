@@ -307,10 +307,11 @@ def lambda_handler(event, context):
     # https://docs.skinport.com/#authentication
     auth_string = (base64.b64encode((skinport_client_id + ":" + skinport_client_secret).encode('ascii'))).decode('ascii')
     print("Requesting prices from skinport.com")
-    response = requests.get("https://api.skinport.com/v1/items",
-        params={"app_id": "730"},
-        headers={"Authorization": "Basic " + auth_string}
-    )
+    response = requests.get("https://api.skinport.com/v1/items", params={
+        "app_id": "730"
+    }, headers={
+        "Authorization": "Basic " + auth_string
+    })
     print("Received response from skinport.com")
 
     if response.status_code == 200:
@@ -481,12 +482,20 @@ def lambda_handler(event, context):
     month_to_week = 0
     count = 0
     for item in master_list:
-        if item in steam_prices and "safe_ts" in steam_prices[item] and "last_24h" in steam_prices[item]["safe_ts"] \
-                and "last_7d" in steam_prices[item]["safe_ts"] and "last_30d" in steam_prices[item]["safe_ts"]:
-            daily = float(steam_prices[item]["safe_ts"]["last_24h"])
-            weekly = float(steam_prices[item]["safe_ts"]["last_7d"])
-            monthly = float(steam_prices[item]["safe_ts"]["last_30d"])
-            if (daily != 0 and weekly != 0 and monthly != 0) and (daily > 0.1 and weekly > 0.1 and monthly > 0.1):
+
+        item_prices = steam_prices.get(item)
+
+        if (
+                item_prices
+                and "safe_ts" in item_prices
+                and "last_24h" in item_prices["safe_ts"]
+                and "last_7d" in item_prices["safe_ts"]
+                and "last_30d" in item_prices["safe_ts"]
+        ):
+            daily = float(item_prices["safe_ts"]["last_24h"])
+            weekly = float(item_prices["safe_ts"]["last_7d"])
+            monthly = float(item_prices["safe_ts"]["last_30d"])
+            if daily > 0.1 and weekly > 0.1 and monthly > 0.1:
                 wtd_ratio = daily / weekly
                 mtw_ratio = weekly / monthly
 
@@ -504,15 +513,26 @@ def lambda_handler(event, context):
     count = 0
 
     for item in master_list:
-        if item in steam_prices and "safe_ts" in steam_prices[item] and "last_7d" in steam_prices[item]["safe_ts"] \
-                and item in buff163_prices and buff163_prices[item]["highest_order"]["price"] != "null" \
-                and buff163_prices[item]["starting_at"]["price"] != "null" \
-                and item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item][
-            "price"] != "" and csmoney_prices[item]["price"] != "null":
-            st_weekly = float(steam_prices[item]["safe_ts"]["last_7d"])
-            buff_mid_price = (float(buff163_prices[item]["highest_order"]["price"]) + float(buff163_prices[item]["starting_at"]["price"])) / 2
-            csm = float(csmoney_prices[item]["price"])
-            if (st_weekly != 0 and buff_mid_price != 0 and csm != 0) and (st_weekly > 0.1 and buff_mid_price > 0.1 and csm > 0.1):
+
+        item_steam_prices = steam_prices.get(item)
+        item_buff_prices = buff163_prices.get(item)
+        item_csmoney_prices = csmoney_prices.get(item)
+
+        if (
+                item_steam_prices
+                and item_buff_prices
+                and item_csmoney_prices
+                and "safe_ts" in item_steam_prices
+                and "last_7d" in item_steam_prices["safe_ts"]
+                and item_buff_prices["highest_order"]["price"] != "null"
+                and item_buff_prices["starting_at"]["price"] != "null"
+                and "price" in item_csmoney_prices
+                and item_csmoney_prices["price"] not in ["", "null"]
+        ):
+            st_weekly = float(item_steam_prices["safe_ts"]["last_7d"])
+            buff_mid_price = (float(item_buff_prices["highest_order"]["price"]) + float(item_buff_prices["starting_at"]["price"])) / 2
+            csm = float(item_csmoney_prices["price"])
+            if st_weekly > 0.1 and buff_mid_price > 0.1 and csm > 0.1:
                 st_buff_ratio = st_weekly / buff_mid_price
                 st_csm_ratio = st_weekly / csm
 
@@ -530,17 +550,22 @@ def lambda_handler(event, context):
     for item in master_list:
         if item is not None:
             steam_aggregate = get_steam_price(item, steam_prices, week_to_day, month_to_week)
+            steam_aggregate_price = steam_aggregate["price"]
             case = steam_aggregate["case"]  # only used to debug pricing in dev mode
             price = "null"
 
-            if steam_aggregate["price"] != "null" and steam_aggregate["price"] != 0.0 \
-                    and not is_mispriced_knife(item, steam_aggregate["price"]) \
-                    and not is_mispriced_glove(item, steam_aggregate["price"]) \
-                    and not is_mispriced_compared_to_csb(item, steam_aggregate["price"], csgobackpack_prices):
-                if steam_aggregate["price"] >= 800 and item in buff163_prices and buff163_prices[item]["starting_at"]["price"] != "null":
+            if (
+                    steam_aggregate_price != "null"
+                    and steam_aggregate_price != 0.0
+                    and not is_mispriced_knife(item, steam_aggregate["price"])
+                    and not is_mispriced_glove(item, steam_aggregate["price"])
+                    and not is_mispriced_compared_to_csb(item, steam_aggregate["price"], csgobackpack_prices)
+            ):
+                if steam_aggregate_price >= 800 and item in buff163_prices and buff163_prices[item]["starting_at"]["price"] != "null":
                     price = get_formatted_float(float(buff163_prices[item]["starting_at"]["price"]) * st_buff * week_to_day)
                     case = "H"
-                else: price = get_formatted_float(steam_aggregate["price"])
+                else:
+                    price = get_formatted_float(steam_aggregate["price"])
             elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and \
                     csmoney_prices[item]["price"] != 0:
                 price = get_formatted_float(float(csmoney_prices[item]["price"]) * st_csm * week_to_day)
