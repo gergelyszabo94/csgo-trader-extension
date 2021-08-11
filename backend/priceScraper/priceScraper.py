@@ -755,29 +755,11 @@ def add_to_master_list(master_list, name, to_log):
 
 
 def is_mispriced_knife(item_name, price):
-    contains = False
-
-    for knife in knives:
-        if knife in item_name:
-            contains = True
-
-    if contains and price < 50:
-        return True
-    else:
-        return False
+    return any(knife in item_name for knife in knives) and price < 50
 
 
 def is_mispriced_glove(item_name, price):
-    contains = False
-
-    for glove in gloves:
-        if glove in item_name:
-            contains = True
-
-    if contains and price < 60:
-        return True
-    else:
-        return False
+    return any(glove in item_name for glove in gloves) and price < 60
 
 
 def get_non_st_name(name):
