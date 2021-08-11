@@ -700,44 +700,50 @@ def alert_via_sns(error):
 
 
 def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
-    if item in steam_prices and "safe" in steam_prices[item] and steam_prices[item]["safe"] is not None:
-        if "safe_ts" in steam_prices[item] and "sold" in steam_prices[item]:
-            if float(steam_prices[item]["sold"]["last_24h"]) >= 5.0 and float(
-                    steam_prices[item]["safe_ts"]["last_7d"]) != 0.0:
-                if abs(1 - float(steam_prices[item]["safe_ts"]["last_24h"]) / float(
-                        steam_prices[item]["safe_ts"]["last_7d"])) <= 0.1:
-                    return {
-                        "price": steam_prices[item]["safe_ts"]["last_24h"],
-                        "case": "A"
-                    }
-                else:
-                    return {
-                        "price": float(steam_prices[item]["safe_ts"]["last_7d"]) * daily_trend,
-                        "case": "B"
-                    }
-            elif float(steam_prices[item]["safe_ts"]["last_7d"]) != 0.0 and float(
-                    steam_prices[item]["safe_ts"]["last_30d"]) != 0.0:
-                if abs(1 - float(steam_prices[item]["safe_ts"]["last_7d"]) / float(
-                        steam_prices[item]["safe_ts"]["last_30d"])) <= 0.1 \
-                        and float(steam_prices[item]["sold"]["last_7d"]) >= 5.0:
-                    return {
-                        "price": float(steam_prices[item]["safe_ts"]["last_7d"]) * daily_trend,
-                        "case": "C"
-                    }
-                else:
-                    return {
-                        "price": float(steam_prices[item]["safe_ts"]["last_30d"]) * weekly_trend * daily_trend,
-                        "case": "D"
-                    }
-            else:
-                return {
-                    "price": float(steam_prices[item]["safe_ts"]["last_30d"]) * weekly_trend * daily_trend,
-                    "case": "D"
-                }
+    item_prices = steam_prices[item]
+    if not (
+            item in steam_prices
+            and "safe" in item_prices
+            and item_prices["safe"] is not None
+            and "safe_ts" in item_prices
+            and "sold" in item_prices
+    ):
+        return {
+            "price": "null",
+            "case": "I"
+        }
 
+    sold_last_24h = float(item_prices["sold"]["last_24h"])
+    sold_last_7d = float(item_prices["sold"]["last_7d"])
+    safe_ts_last_24h = float(item_prices["safe_ts"]["last_24h"])
+    safe_ts_last_7d = float(item_prices["safe_ts"]["last_7d"])
+    safe_ts_last_30d = float(item_prices["safe_ts"]["last_30d"])
+
+    if sold_last_24h >= 5.0 and safe_ts_last_7d != 0.0:
+        if abs(1 - safe_ts_last_24h / safe_ts_last_7d) <= 0.1:
+            return {
+                "price": safe_ts_last_24h,
+                "case": "A"
+            }
+        else:
+            return {
+                "price": safe_ts_last_7d * daily_trend,
+                "case": "B"
+            }
+    elif safe_ts_last_7d != 0.0 and safe_ts_last_30d != 0.0:
+        if abs(1 - safe_ts_last_7d / safe_ts_last_30d) <= 0.1 and sold_last_7d >= 5.0:
+            return {
+                "price": safe_ts_last_7d * daily_trend,
+                "case": "C"
+            }
+        else:
+            return {
+                "price": safe_ts_last_30d * weekly_trend * daily_trend,
+                "case": "D"
+            }
     return {
-        "price": "null",
-        "case": "I"
+        "price": safe_ts_last_30d * weekly_trend * daily_trend,
+        "case": "D"
     }
 
 
