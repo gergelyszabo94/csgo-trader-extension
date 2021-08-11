@@ -1,11 +1,12 @@
+import base64
+import gzip
 import json
-import requests
+import os
+from datetime import date
+
 import boto3
 import pyotp
-import os
-import gzip
-from datetime import date
-import base64
+import requests
 
 bitskins_secret = os.environ['BITSKINS_SECRET']
 bitskins_token = pyotp.TOTP(bitskins_secret)
@@ -24,7 +25,6 @@ knives = ["Bayonet", "Bowie Knife", "Butterfly Knife", "Falchion Knife", "Flip K
           "Gut Knife", "Huntsman Knife", "Karambit", "M9 Bayonet", "Navaja Knife",
           "Shadow Daggers", "Stiletto Knife", "Talon Knife", "Ursus Knife", "Nomad Knife",
           "Skeleton Knife", "Survival Knife", "Paracord Knife", "Classic Knife"]
-
 gloves = ["Gloves", "Hand Wraps"]
 
 
@@ -46,7 +46,7 @@ def lambda_handler(event, context):
     for item in response['Items']:
         name = item["market_hash_name"]
         own_prices[name] = float(item["price"])
-        add_to_master_list(master_list, name, False)
+        add_to_master_list(master_list, name)
 
     print('Getting Prices from Steam APIs')
     try:
@@ -76,7 +76,7 @@ def lambda_handler(event, context):
             steam_prices[name] = item["prices"]
             if "safe_ts" in item["prices"]:
                 steam_prices_only[name] = item["prices"]["safe_ts"]
-            add_to_master_list(master_list, name, False)
+            add_to_master_list(master_list, name)
 
         print("Pricing information extracted")
         push_to_s3(steam_prices_only, 'steam', stage)
@@ -144,7 +144,7 @@ def lambda_handler(event, context):
                 items = response.json()['prices']
                 for item in items:
                     name = item.get('market_hash_name').replace('\xe2\x98\x85', '\u2605').replace("/", '-')
-                    add_to_master_list(master_list, name, False)
+                    add_to_master_list(master_list, name)
                     instant_sale_price = item.get('instant_sale_price')
 
                     if instant_sale_price == "None":
@@ -212,10 +212,10 @@ def lambda_handler(event, context):
                 name = name.replace(phase + " ", "")
                 if phase not in special_phases:
                     lootfarm_prices[name] = price
-                    add_to_master_list(master_list, name, False)
+                    add_to_master_list(master_list, name)
             else:
                 lootfarm_prices[name] = price
-                add_to_master_list(master_list, name, False)
+                add_to_master_list(master_list, name)
 
         print("Pricing information extracted")
         push_to_s3(lootfarm_prices, 'lootfarm', stage)
@@ -244,7 +244,7 @@ def lambda_handler(event, context):
             price = item.get('price')
 
             csgotm_prices[name] = price
-            add_to_master_list(master_list, name, False)
+            add_to_master_list(master_list, name)
 
         print("Pricing information extracted")
         push_to_s3(csgotm_prices, 'csgotm', stage)
@@ -276,7 +276,7 @@ def lambda_handler(event, context):
             if "Doppler" in name:
                 phase = name.split("Doppler ")[1].split(" (")[0]
                 name = name.replace(phase + " ", "")
-                add_to_master_list(master_list, name, False)
+                add_to_master_list(master_list, name)
                 try:
                     csmoney_prices[name]['doppler'][phase] = price
                 except KeyError:
@@ -289,7 +289,7 @@ def lambda_handler(event, context):
                 if phase == "Phase 3":
                     csmoney_prices[name]['price'] = price
             else:
-                add_to_master_list(master_list, name, False)
+                add_to_master_list(master_list, name)
                 csmoney_prices[name] = {'price': price}
 
         print("Pricing information extracted")
@@ -333,7 +333,7 @@ def lambda_handler(event, context):
                 "instant_price": instant_price,
                 "starting_at": starting_at,
             }
-            add_to_master_list(master_list, name, False)
+            add_to_master_list(master_list, name)
 
         print("Pricing information extracted")
         push_to_s3(skinport_prices, 'skinport', stage)
@@ -381,7 +381,6 @@ def lambda_handler(event, context):
                 item_buff163_prices["starting_at"]["price"] = get_formatted_float_divided_by_100(item_buff163_price)
                 item_buff163_prices["highest_order"]["price"] = get_formatted_float_divided_by_100(item_buff163_quick_price)
 
-
                 if "Doppler" in name:
                     item_buff163_prices["starting_at"]["doppler"] = {
                         "Sapphire": get_formatted_float_divided_by_100(pricempire_prices.get("buff_sapphire", {}).get("price")),
@@ -404,7 +403,7 @@ def lambda_handler(event, context):
                         "Phase 4": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p4_quick", {}).get("price")),
                     }
                 buff163_prices[name] = item_buff163_prices
-                add_to_master_list(master_list, name, False)
+                add_to_master_list(master_list, name)
 
         print("Pricing information extracted")
         push_to_s3(csgoempire_prices, 'csgoempire', stage)
@@ -768,10 +767,10 @@ def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
     }
 
 
-def add_to_master_list(master_list, name, to_log):
+def add_to_master_list(master_list, name, should_log=False):
     if name not in master_list:
         master_list.append(name)
-        if to_log:
+        if should_log:
             print(name + " was not seen before, adding it to master list")
 
 
@@ -803,6 +802,7 @@ def is_mispriced_compared_to_csb(item, price, csb_prices):
 def get_formatted_float(price):
     if price:
         return float("{0:.2f}".format(price))
+
 
 def get_formatted_float_divided_by_100(price):
     if price:
