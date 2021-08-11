@@ -50,7 +50,9 @@ def lambda_handler(event, context):
 
     print('Getting Prices from Steam APIs')
     try:
-        response = requests.get("https://api.steamapis.com/market/items/730?api_key=" + steam_apis_key)
+        response = requests.get("https://api.steamapis.com/market/items/730", params={
+            "api_key": steam_apis_key
+        })
     except Exception as e:
         print(e)
         error = "Error during steam apis request"
@@ -120,8 +122,11 @@ def lambda_handler(event, context):
 
     print('Requesting bitskins prices')
     try:
-        response = requests.get(
-            "https://bitskins.com/api/v1/get_all_item_prices/?api_key=" + bitskins_api_key + "&code=" + bitskins_token.now() + "&app_id=730")
+        response = requests.get("https://bitskins.com/api/v1/get_all_item_prices/", params={
+            "api_key": bitskins_api_key,
+            "code": bitskins_token.now(),
+            "app_id": "730"
+        })
     except Exception as e:
         print(e)
         error = "Error during bitskins request"
@@ -302,9 +307,9 @@ def lambda_handler(event, context):
     # https://docs.skinport.com/#authentication
     auth_string = (base64.b64encode((skinport_client_id + ":" + skinport_client_secret).encode('ascii'))).decode('ascii')
     print("Requesting prices from skinport.com")
-    response = requests.get(
-        "https://api.skinport.com/v1/items?app_id=730",
-        headers={"Authorization": "Basic " + auth_string},
+    response = requests.get("https://api.skinport.com/v1/items",
+        params={"app_id": "730"},
+        headers={"Authorization": "Basic " + auth_string}
     )
     print("Received response from skinport.com")
 
@@ -342,9 +347,10 @@ def lambda_handler(event, context):
         }
 
     print("Requesting prices from pricempire")
-    response = requests.get(
-        "https://api.pricempire.com/v1/getAllItems?token=" + pricempire_token + "&currency=USD",
-    )
+    response = requests.get("https://api.pricempire.com/v1/getAllItems", params={
+        "token": pricempire_token,
+        "currency": "USD"
+    })
     print("Received response from pricempire")
 
     response_json = response.json()
@@ -425,13 +431,12 @@ def lambda_handler(event, context):
 
     print("Requesting prices from skinwallet.com")
     try:
-        response = requests.get(
-            "https://www.skinwallet.com/market/api/offers/overview?appId=730",
-            headers={
-                "accept": "application/json",
-                "x-auth-token": skinwallet_api_key,
-            },
-        )
+        response = requests.get("https://www.skinwallet.com/market/api/offers/overview", params={
+            "appId": "730"
+        }, headers={
+            "accept": "application/json",
+            "x-auth-token": skinwallet_api_key
+        })
     except Exception as e:
         print(e)
         error = "Error during skinwallet request"
