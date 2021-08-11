@@ -48,312 +48,303 @@ def lambda_handler(event, context):
         own_prices[name] = float(item["price"])
         add_to_master_list(master_list, name)
 
-    print('Getting Prices from Steam APIs')
+    steam_prices = fetch_steamapis(response, stage)
+    csgobackpack_prices = fetch_csgobackpack(response)
+    bitskins_prices = request_bitskins(master_list, response, stage)
+    lootfarm_prices = request_lootfarm(master_list, response, stage)
+    csgotm_prices = fetch_csgotm(master_list, stage)
+    csmoney_prices = request_csmoney(master_list, stage)
+    skinport_prices = request_skinport(master_list, stage)
+    (
+        buff163_prices,
+        csgoempire_prices,
+        csgoexo_prices,
+        swapgg_prices
+    ) = request_priceempire(master_list, stage)
+
+    skinwallet_prices = fetch_skinwallet(response, stage)
+
+    csgotrader_prices = create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices, master_list, own_prices, stage, steam_prices)
+
+    # only push if all of them have valid results
+    # (aka all the requests succeeded)
+
+    if all(
+        [
+            bitskins_prices,
+            buff163_prices,
+            csgoempire_prices,
+            csgoexo_prices,
+            csgotm_prices,
+            csgotrader_prices,
+            csmoney_prices,
+            lootfarm_prices,
+            master_list,
+            skinport_prices,
+            stage,
+            steam_prices,
+            swapgg_prices,
+        ]
+    ):
+        push_final_prices(bitskins_prices, buff163_prices, csgoempire_prices, csgoexo_prices, csgotm_prices, csgotrader_prices, csmoney_prices, lootfarm_prices, master_list,
+                          skinport_prices, stage, steam_prices, swapgg_prices)
+
+
+def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices, master_list, own_prices, stage, steam_prices):
+    print("Creates own pricing")
+    print("Calculate market trends")
+    week_to_day = 0
+    month_to_week = 0
+    count = 0
+    for item in master_list:
+
+        item_prices = steam_prices.get(item)
+
+        if (
+                item_prices
+                and "safe_ts" in item_prices
+                and "last_24h" in item_prices["safe_ts"]
+                and "last_7d" in item_prices["safe_ts"]
+                and "last_30d" in item_prices["safe_ts"]
+        ):
+            daily = float(item_prices["safe_ts"]["last_24h"])
+            weekly = float(item_prices["safe_ts"]["last_7d"])
+            monthly = float(item_prices["safe_ts"]["last_30d"])
+            if daily > 0.1 and weekly > 0.1 and monthly > 0.1:
+                wtd_ratio = daily / weekly
+                mtw_ratio = weekly / monthly
+
+                if 0 < wtd_ratio < 2 and 0 < mtw_ratio < 2:
+                    week_to_day += wtd_ratio
+                    month_to_week += mtw_ratio
+                    count += 1
+    week_to_day = week_to_day / count
+    month_to_week = month_to_week / count
+    print("Market trends: WtD: " + str(week_to_day) + " MtW: " + str(month_to_week))
+    print("Getting price difference ratio between steam:buff and steam:csmoney")
+    st_buff = 0
+    st_csm = 0
+    count = 0
+    for item in master_list:
+
+        item_steam_prices = steam_prices.get(item)
+        item_buff_prices = buff163_prices.get(item)
+        item_csmoney_prices = csmoney_prices.get(item)
+
+        if (
+                item_steam_prices
+                and item_buff_prices
+                and item_csmoney_prices
+                and "safe_ts" in item_steam_prices
+                and "last_7d" in item_steam_prices["safe_ts"]
+                and item_buff_prices["highest_order"]["price"] != "null"
+                and item_buff_prices["starting_at"]["price"] != "null"
+                and "price" in item_csmoney_prices
+                and item_csmoney_prices["price"] not in ["", "null"]
+        ):
+            st_weekly = float(item_steam_prices["safe_ts"]["last_7d"])
+            buff_mid_price = (float(item_buff_prices["highest_order"]["price"]) + float(item_buff_prices["starting_at"]["price"])) / 2
+            csm = float(item_csmoney_prices["price"])
+            if st_weekly > 0.1 and buff_mid_price > 0.1 and csm > 0.1:
+                st_buff_ratio = st_weekly / buff_mid_price
+                st_csm_ratio = st_weekly / csm
+
+                if 0 < st_buff_ratio < 2 and 0 < st_csm_ratio < 2:
+                    st_buff += st_buff_ratio
+                    st_csm += st_csm_ratio
+                    count += 1
+    st_buff = st_buff / count
+    st_csm = st_csm / count
+    print("Steam:Buff: " + str(st_buff) + " Steam:Csmoney:  " + str(st_csm))
+    print("Creating csgotrader prices")
+    csgotrader_prices = {}
+    for item in master_list:
+        if item is not None:
+            steam_aggregate = get_steam_price(item, steam_prices, week_to_day, month_to_week)
+            steam_aggregate_price = steam_aggregate["price"]
+            case = steam_aggregate["case"]  # only used to debug pricing in dev mode
+            price = "null"
+
+            if (
+                    steam_aggregate_price != "null"
+                    and steam_aggregate_price != 0.0
+                    and not is_mispriced_knife(item, steam_aggregate["price"])
+                    and not is_mispriced_glove(item, steam_aggregate["price"])
+                    and not is_mispriced_compared_to_csb(item, steam_aggregate["price"], csgobackpack_prices)
+            ):
+                if steam_aggregate_price >= 800 and item in buff163_prices and buff163_prices[item]["starting_at"]["price"] != "null":
+                    price = get_formatted_float(float(buff163_prices[item]["starting_at"]["price"]) * st_buff * week_to_day)
+                    case = "H"
+                else:
+                    price = get_formatted_float(steam_aggregate["price"])
+            elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and \
+                    csmoney_prices[item]["price"] != 0:
+                price = get_formatted_float(float(csmoney_prices[item]["price"]) * st_csm * week_to_day)
+                case = "F"
+            elif item in buff163_prices and buff163_prices[item]["starting_at"]["price"] != "null":
+                price = get_formatted_float(float(buff163_prices[item]["starting_at"]["price"]) * st_buff * week_to_day)
+                case = "G"
+            elif item in own_prices:
+                price = own_prices[item]
+                case = "H"
+
+            if "Doppler" in item:
+                doppler = {}
+                for phase in csmoney_prices[item]["doppler"]:
+                    doppler[phase] = get_formatted_float(float(csmoney_prices[item]["doppler"][phase]) * st_csm)
+                if stage == "dev":
+                    csgotrader_prices[item] = {
+                        "price": price,
+                        "case": "J",
+                        "doppler": doppler
+                    }
+                else:
+                    csgotrader_prices[item] = {
+                        "price": price,
+                        "doppler": doppler
+                    }
+            elif stage == "dev":
+                csgotrader_prices[item] = {
+                    "price": price,
+                    "case": case
+                }
+            else:
+                csgotrader_prices[item] = {"price": price}
+    print("Check if the non-st version is cheaper")
+    for item in csgotrader_prices:
+        is_st = True if "StatTrak\u2122" in item else False
+        if is_st:
+            none_st_name = get_non_st_name(item)
+            if none_st_name in csgotrader_prices and csgotrader_prices[none_st_name]["price"] != "null" \
+                    and csgotrader_prices[item]["price"] != "null" and float(
+                csgotrader_prices[none_st_name]["price"]) > float(csgotrader_prices[item]["price"]):
+                # if the st version is cheaper then the non-st's price is used
+                if stage == "dev":
+                    csgotrader_prices[item] = {
+                        "price": float(csgotrader_prices[none_st_name]["price"]) * 1.1,
+                        "case": "E"
+                    }
+                else:
+                    csgotrader_prices[item] = {"price": float(csgotrader_prices[none_st_name]["price"]) * 1.1}
+    print("csgotrader prices created")
+    push_to_s3(csgotrader_prices, 'csgotrader', stage)
+    return csgotrader_prices
+
+
+def push_final_prices(bitskins_prices, buff163_prices, csgoempire_prices, csgoexo_prices, csgotm_prices, csgotrader_prices, csmoney_prices, lootfarm_prices, master_list,
+                      skinport_prices, stage, steam_prices, swapgg_prices):
+    print("Putting together the final prices dict")
+    extract = {}
+    for item in master_list:
+        extract[item] = {}
+        if item in steam_prices and "safe_ts" in steam_prices[item]:
+            extract[item]["steam"] = steam_prices[item]["safe_ts"]
+        else:
+            extract[item]["steam"] = {
+                "last_90d": "null",
+                "last_30d": "null",
+                "last_7d": "null",
+                "last_24h": "null"
+            }
+        if item in bitskins_prices:
+            extract[item]["bitskins"] = bitskins_prices[item]
+        else:
+            extract[item]["bitskins"] = "null"
+        if item in lootfarm_prices:
+            extract[item]["lootfarm"] = lootfarm_prices[item]
+        else:
+            extract[item]["lootfarm"] = "null"
+        if item in csgotm_prices:
+            extract[item]["csgotm"] = csgotm_prices[item]
+        else:
+            extract[item]["csgotm"] = "null"
+        if item in csmoney_prices:
+            extract[item]["csmoney"] = csmoney_prices[item]
+        else:
+            extract[item]["csmoney"] = "null"
+        if item in skinport_prices:
+            extract[item]["skinport"] = skinport_prices[item]
+        else:
+            extract[item]["skinport"] = "null"
+        if item in csgotrader_prices:
+            extract[item]["csgotrader"] = csgotrader_prices[item]
+        else:
+            extract[item]["csgotrader"] = "null"
+        if item in csgoempire_prices:
+            extract[item]["csgoempire"] = csgoempire_prices[item]
+        else:
+            extract[item]["csgoempire"] = "null"
+        if item in swapgg_prices:
+            extract[item]["swapgg"] = swapgg_prices[item]
+        else:
+            extract[item]["swapgg"] = "null"
+        if item in csgoexo_prices:
+            extract[item]["csgoexo"] = csgoexo_prices[item]
+        else:
+            extract[item]["csgoexo"] = "null"
+        if item in buff163_prices:
+            extract[item]["buff163"] = buff163_prices[item]
+        else:
+            extract[item]["buff163"] = {
+                "starting_at": "null",
+                "highest_order": "null",
+            }
+    push_to_s3(extract, 'prices_v6', stage)
+
+
+def fetch_skinwallet(response, stage):
+    print("Requesting prices from skinwallet.com")
     try:
-        response = requests.get("https://api.steamapis.com/market/items/730", params={
-            "api_key": steam_apis_key
+        response = requests.get("https://www.skinwallet.com/market/api/offers/overview", params={
+            "appId": "730"
+        }, headers={
+            "accept": "application/json",
+            "x-auth-token": skinwallet_api_key
         })
     except Exception as e:
         print(e)
-        error = "Error during steam apis request"
+        error = "Error during skinwallet request"
         alert_via_sns(f'{error}: {e}')
-        return {
-            'statusCode': 500,
-            'body': error
-        }
-
-    print('Received response from steamapis.com')
-
-    if response.status_code == 200:
-        print("Valid response from steamapis.com")
-        items = response.json()['data']
-        steam_prices = {}
-        steam_prices_only = {}
+        # return {
+        #     'statusCode': 500,
+        #     'body': error
+        # }
+    print("Received response from skinwallet.com")
+    if response.status_code == 200 and response.json()['status'] == 'Success':
+        print("Valid response from skinwallet.com")
+        items = response.json()['result']
+        skinwallet_prices = {}
         print("Extracting pricing information")
-
         for item in items:
-            name = item["market_hash_name"]
-            steam_prices[name] = item["prices"]
-            if "safe_ts" in item["prices"]:
-                steam_prices_only[name] = item["prices"]["safe_ts"]
-            add_to_master_list(master_list, name)
-
-        print("Pricing information extracted")
-        push_to_s3(steam_prices_only, 'steam', stage)
-
-    print("Requesting prices from csgobackpack.net")
-    try:
-        response = requests.get("http://csgobackpack.net/api/GetItemsList/v2/")
-    except Exception as e:
-        print(e)
-        error = "Error during csgobackpack request"
-        alert_via_sns(f'{error}: {e}')
-        return {
-            'statusCode': 500,
-            'body': error
-        }
-
-    print("Received response from csgobackpack.net")
-
-    if response.status_code == 200 and response.json()['success']:
-        print("Valid response from csgobackpack.net")
-        items = response.json()['items_list']
-        csgobackpack_prices = {}
-        print("Extracting pricing information")
-        for key, value in items.items():
-            name = value.get('name').replace("&#39", "'")
-            price = value.get('price')
+            name = item.get('marketHashName')
+            price = item.get('cheapestOffer').get('price').get('amount')
 
             if price:
-                csgobackpack_prices[name] = price
+                skinwallet_prices[name] = price
             else:
-                csgobackpack_prices[name] = "null"
+                skinwallet_prices[name] = "null"
 
         print("Pricing information extracted")
+        push_to_s3(skinwallet_prices, 'skinwallet', stage)
 
     else:
-        error = "Could not get items from csgobackpack.net"
+        error = "Could not get items from skinwallet.com"
         alert_via_sns(error)
         print(error, " status code: ", response.status_code)
-        return {
-            'statusCode': response.status_code,
-            'body': json.dumps(error)
-        }
+        # return {
+        #     'statusCode': response.status_code,
+        #     'body': json.dumps(error)
+        # }
+    return skinwallet_prices
 
-    print('Requesting bitskins prices')
-    try:
-        response = requests.get("https://bitskins.com/api/v1/get_all_item_prices/", params={
-            "api_key": bitskins_api_key,
-            "code": bitskins_token.now(),
-            "app_id": "730"
-        })
-    except Exception as e:
-        print(e)
-        error = "Error during bitskins request"
-        alert_via_sns(f'{error}: {e}')
-        return {
-            'statusCode': 500,
-            'body': error
-        }
 
-    if response.status_code == 200:
-        try:
-            if response.json()['status'] == "success":
-                bitskins_prices = {}
-                print("Extracting pricing info")
-                items = response.json()['prices']
-                for item in items:
-                    name = item.get('market_hash_name').replace('\xe2\x98\x85', '\u2605').replace("/", '-')
-                    add_to_master_list(master_list, name)
-                    instant_sale_price = item.get('instant_sale_price')
-
-                    if instant_sale_price == "None":
-                        instant_sale_price = "null"
-
-                    bitskins_prices[name] = {
-                        "price": item["price"],
-                        "instant_sale_price": instant_sale_price
-                    }
-                print("Pricing info extracted")
-                push_to_s3(bitskins_prices, 'bitskins', stage)
-        except Exception as e:
-            print(e)
-            error = "Bitskins maintenance?"
-            alert_via_sns(f'{error}: {e}')
-            return {
-                'statusCode': 500,
-                'body': json.dumps(error)
-            }
-    elif response.status_code == 401:
-        error = "Could not get items from bitskins, it's most likely an authentication problem"
-        alert_via_sns(error)
-        print(error, " status code: ", response.status_code)
-        return {
-            'statusCode': response.status_code,
-            'body': json.dumps(error)
-        }
-    else:
-        error = "Could not get items from bitskins"
-        alert_via_sns(error)
-        print(error, " status code: ", response.status_code)
-        return {
-            'statusCode': response.status_code,
-            'body': json.dumps(error)
-        }
-
-    print("Requesting prices from loot.farm")
-    try:
-        response = requests.get("https://loot.farm/fullprice.json")
-    except Exception as e:
-        print(e)
-        error = "Error during loot.farm request"
-        alert_via_sns(f'{error}: {e}')
-        return {
-            'statusCode': 500,
-            'body': error
-        }
-    print("Received response from loot.farm")
-
-    if response.status_code == 200:
-        print("Valid response from loot.farm")
-        items = response.json()
-        lootfarm_prices = {}
-        print("Extracting pricing information")
-
-        for item in items:
-            name = item.get('name')
-            price = item.get('price') / 100
-
-            if "M4A4 | Emperor" in name:
-                name = name.replace("M4A4 | Emperor", 'M4A4 | The Emperor')
-
-            if "Doppler" in name:
-                phase = name.split("Doppler ")[1].split(" (")[0]
-                name = name.replace(phase + " ", "")
-                if phase not in special_phases:
-                    lootfarm_prices[name] = price
-                    add_to_master_list(master_list, name)
-            else:
-                lootfarm_prices[name] = price
-                add_to_master_list(master_list, name)
-
-        print("Pricing information extracted")
-        push_to_s3(lootfarm_prices, 'lootfarm', stage)
-
-    else:
-        error = "Could not get items from loot.farm"
-        alert_via_sns(error)
-        print(error, " status code: ", response.status_code)
-        return {
-            'statusCode': response.status_code,
-            'body': json.dumps(error)
-        }
-
-    print("Requesting prices from csgo.tm")
-    response = requests.get("https://market.csgo.com/api/v2/prices/USD.json")
-    print("Received response from csgo.tm")
-
-    if response.status_code == 200 and response.json()['success']:
-        print("Valid response from csgo.tm")
-        items = response.json()['items']
-        print("Extracting pricing information")
-
-        csgotm_prices = {}
-        for item in items:
-            name = item.get('market_hash_name')
-            price = item.get('price')
-
-            csgotm_prices[name] = price
-            add_to_master_list(master_list, name)
-
-        print("Pricing information extracted")
-        push_to_s3(csgotm_prices, 'csgotm', stage)
-
-    else:
-        error = "Could not get items from csgo.tm"
-        alert_via_sns(error)
-        print(error, " status code: ", response.status_code)
-        return {
-            'statusCode': response.status_code,
-            'body': json.dumps(error)
-        }
-
-    print("Requesting prices from cs.money")
-    response = requests.get("https://old.cs.money/js/database-skins/library-en-730.js")
-    print("Received response from cs.money")
-
-    if response.status_code == 200:
-        print("Valid response from cs.money")
-        items = json.loads(response.content.decode().split("skinsBaseList[730] = ")[1])
-        print("Extracting pricing information")
-
-        csmoney_prices = {}
-        for item in items:
-            item = items.get(item)
-            name = item.get('m').replace("/", '-')
-            price = item.get('a')
-
-            if "Doppler" in name:
-                phase = name.split("Doppler ")[1].split(" (")[0]
-                name = name.replace(phase + " ", "")
-                add_to_master_list(master_list, name)
-                try:
-                    csmoney_prices[name]['doppler'][phase] = price
-                except KeyError:
-                    csmoney_prices[name] = {
-                        'price': price,
-                        'doppler': {
-                            phase: price
-                        }
-                    }
-                if phase == "Phase 3":
-                    csmoney_prices[name]['price'] = price
-            else:
-                add_to_master_list(master_list, name)
-                csmoney_prices[name] = {'price': price}
-
-        print("Pricing information extracted")
-        push_to_s3(csmoney_prices, 'csmoney', stage)
-    else:
-        error = "Could not get items from cs.money"
-        alert_via_sns(error)
-        print(error, " status code: ", response.status_code)
-        return {
-            'statusCode': response.status_code,
-            'body': json.dumps(error)
-        }
-
-    # base64 encoding of auth header per docs:
-    # https://docs.skinport.com/#authentication
-    auth_string = (base64.b64encode((skinport_client_id + ":" + skinport_client_secret).encode('ascii'))).decode('ascii')
-    print("Requesting prices from skinport.com")
-    response = requests.get("https://api.skinport.com/v1/items", params={
-        "app_id": "730"
-    }, headers={
-        "Authorization": "Basic " + auth_string
-    })
-    print("Received response from skinport.com")
-
-    if response.status_code == 200:
-        print("Valid response from skinport.com")
-        items = response.json()
-        print("Extracting pricing information")
-
-        skinport_prices = {}
-        for item in items:
-            name = item.get('market_hash_name')
-            suggested_price = item.get('suggested_price')
-            steam_price = item.get('steam_price')
-            instant_price = item.get('instant_price')
-            starting_at = item.get('min_price')
-
-            skinport_prices[name] = {
-                "suggested_price": suggested_price,
-                "steam_price": steam_price,
-                "instant_price": instant_price,
-                "starting_at": starting_at,
-            }
-            add_to_master_list(master_list, name)
-
-        print("Pricing information extracted")
-        push_to_s3(skinport_prices, 'skinport', stage)
-
-    else:
-        error = "Could not get items from skinport.com"
-        alert_via_sns(error)
-        print(error, " status code: ", response.status_code)
-        return {
-            'statusCode': response.status_code,
-            'body': json.dumps(error)
-        }
-
+def request_priceempire(master_list, stage):
     print("Requesting prices from pricempire")
     response = requests.get("https://api.pricempire.com/v1/getAllItems", params={
         "token": pricempire_token,
         "currency": "USD"
     })
     print("Received response from pricempire")
-
     response_json = response.json()
     if response.status_code == 200 and len(response_json) != 0 and response_json.get("status") is True:
         print("Valid response from pricempire")
@@ -415,264 +406,322 @@ def lambda_handler(event, context):
         error = "Could not get items from pricempire"
         alert_via_sns(error)
         print(error, " status code: ", response.status_code)
-        return {
-            'statusCode': response.status_code,
-            'body': json.dumps(error)
-        }
+        # return {
+        #     'statusCode': response.status_code,
+        #     'body': json.dumps(error)
+        # }
+    return buff163_prices, csgoempire_prices, csgoexo_prices, swapgg_prices
 
-    print("Requesting prices from skinwallet.com")
+
+def request_skinport(master_list, stage):
+    # base64 encoding of auth header per docs:
+    # https://docs.skinport.com/#authentication
+    auth_string = (base64.b64encode((skinport_client_id + ":" + skinport_client_secret).encode('ascii'))).decode('ascii')
+    print("Requesting prices from skinport.com")
+    response = requests.get("https://api.skinport.com/v1/items", params={
+        "app_id": "730"
+    }, headers={
+        "Authorization": "Basic " + auth_string
+    })
+    print("Received response from skinport.com")
+    if response.status_code == 200:
+        print("Valid response from skinport.com")
+        items = response.json()
+        print("Extracting pricing information")
+
+        skinport_prices = {}
+        for item in items:
+            name = item.get('market_hash_name')
+            suggested_price = item.get('suggested_price')
+            steam_price = item.get('steam_price')
+            instant_price = item.get('instant_price')
+            starting_at = item.get('min_price')
+
+            skinport_prices[name] = {
+                "suggested_price": suggested_price,
+                "steam_price": steam_price,
+                "instant_price": instant_price,
+                "starting_at": starting_at,
+            }
+            add_to_master_list(master_list, name)
+
+        print("Pricing information extracted")
+        push_to_s3(skinport_prices, 'skinport', stage)
+
+    else:
+        error = "Could not get items from skinport.com"
+        alert_via_sns(error)
+        print(error, " status code: ", response.status_code)
+        # return {
+        #     'statusCode': response.status_code,
+        #     'body': json.dumps(error)
+        # }
+    return skinport_prices
+
+
+def request_csmoney(master_list, stage):
+    print("Requesting prices from cs.money")
+    response = requests.get("https://old.cs.money/js/database-skins/library-en-730.js")
+    print("Received response from cs.money")
+    if response.status_code == 200:
+        print("Valid response from cs.money")
+        items = json.loads(response.content.decode().split("skinsBaseList[730] = ")[1])
+        print("Extracting pricing information")
+
+        csmoney_prices = {}
+        for item in items:
+            item = items.get(item)
+            name = item.get('m').replace("/", '-')
+            price = item.get('a')
+
+            if "Doppler" in name:
+                phase = name.split("Doppler ")[1].split(" (")[0]
+                name = name.replace(phase + " ", "")
+                add_to_master_list(master_list, name)
+                try:
+                    csmoney_prices[name]['doppler'][phase] = price
+                except KeyError:
+                    csmoney_prices[name] = {
+                        'price': price,
+                        'doppler': {
+                            phase: price
+                        }
+                    }
+                if phase == "Phase 3":
+                    csmoney_prices[name]['price'] = price
+            else:
+                add_to_master_list(master_list, name)
+                csmoney_prices[name] = {'price': price}
+
+        print("Pricing information extracted")
+        push_to_s3(csmoney_prices, 'csmoney', stage)
+    else:
+        error = "Could not get items from cs.money"
+        alert_via_sns(error)
+        print(error, " status code: ", response.status_code)
+        # return {
+        #     'statusCode': response.status_code,
+        #     'body': json.dumps(error)
+        # }
+    return csmoney_prices
+
+
+def fetch_csgotm(master_list, stage):
+    print("Requesting prices from csgo.tm")
+    response = requests.get("https://market.csgo.com/api/v2/prices/USD.json")
+    print("Received response from csgo.tm")
+    if response.status_code == 200 and response.json()['success']:
+        print("Valid response from csgo.tm")
+        items = response.json()['items']
+        print("Extracting pricing information")
+
+        csgotm_prices = {}
+        for item in items:
+            name = item.get('market_hash_name')
+            price = item.get('price')
+
+            csgotm_prices[name] = price
+            add_to_master_list(master_list, name)
+
+        print("Pricing information extracted")
+        push_to_s3(csgotm_prices, 'csgotm', stage)
+
+    else:
+        error = "Could not get items from csgo.tm"
+        alert_via_sns(error)
+        print(error, " status code: ", response.status_code)
+        # return {
+        #     'statusCode': response.status_code,
+        #     'body': json.dumps(error)
+        # }
+    return csgotm_prices
+
+
+def request_lootfarm(master_list, response, stage):
+    print("Requesting prices from loot.farm")
     try:
-        response = requests.get("https://www.skinwallet.com/market/api/offers/overview", params={
-            "appId": "730"
-        }, headers={
-            "accept": "application/json",
-            "x-auth-token": skinwallet_api_key
+        response = requests.get("https://loot.farm/fullprice.json")
+    except Exception as e:
+        print(e)
+        error = "Error during loot.farm request"
+        alert_via_sns(f'{error}: {e}')
+        # return {
+        #     'statusCode': 500,
+        #     'body': error
+        # }
+    print("Received response from loot.farm")
+    if response.status_code == 200:
+        print("Valid response from loot.farm")
+        items = response.json()
+        lootfarm_prices = {}
+        print("Extracting pricing information")
+
+        for item in items:
+            name = item.get('name')
+            price = item.get('price') / 100
+
+            if "M4A4 | Emperor" in name:
+                name = name.replace("M4A4 | Emperor", 'M4A4 | The Emperor')
+
+            if "Doppler" in name:
+                phase = name.split("Doppler ")[1].split(" (")[0]
+                name = name.replace(phase + " ", "")
+                if phase not in special_phases:
+                    lootfarm_prices[name] = price
+                    add_to_master_list(master_list, name)
+            else:
+                lootfarm_prices[name] = price
+                add_to_master_list(master_list, name)
+
+        print("Pricing information extracted")
+        push_to_s3(lootfarm_prices, 'lootfarm', stage)
+
+    else:
+        error = "Could not get items from loot.farm"
+        alert_via_sns(error)
+        print(error, " status code: ", response.status_code)
+        # return {
+        #     'statusCode': response.status_code,
+        #     'body': json.dumps(error)
+        # }
+    return lootfarm_prices
+
+
+def request_bitskins(master_list, response, stage):
+    print('Requesting bitskins prices')
+    try:
+        response = requests.get("https://bitskins.com/api/v1/get_all_item_prices/", params={
+            "api_key": bitskins_api_key,
+            "code": bitskins_token.now(),
+            "app_id": "730"
         })
     except Exception as e:
         print(e)
-        error = "Error during skinwallet request"
+        error = "Error during bitskins request"
         alert_via_sns(f'{error}: {e}')
-        return {
-            'statusCode': 500,
-            'body': error
-        }
+        # return {
+        #     'statusCode': 500,
+        #     'body': error
+        # }
+    if response.status_code == 200:
+        try:
+            if response.json()['status'] == "success":
+                bitskins_prices = {}
+                print("Extracting pricing info")
+                items = response.json()['prices']
+                for item in items:
+                    name = item.get('market_hash_name').replace('\xe2\x98\x85', '\u2605').replace("/", '-')
+                    add_to_master_list(master_list, name)
+                    instant_sale_price = item.get('instant_sale_price')
 
-    print("Received response from skinwallet.com")
+                    if instant_sale_price == "None":
+                        instant_sale_price = "null"
 
-    if response.status_code == 200 and response.json()['status'] == 'Success':
-        print("Valid response from skinwallet.com")
-        items = response.json()['result']
-        skinwallet_prices = {}
-        print("Extracting pricing information")
-        for item in items:
-            name = item.get('marketHashName')
-            price = item.get('cheapestOffer').get('price').get('amount')
-
-            if price:
-                skinwallet_prices[name] = price
-            else:
-                skinwallet_prices[name] = "null"
-
-        print("Pricing information extracted")
-        push_to_s3(skinwallet_prices, 'skinwallet', stage)
-
-    else:
-        error = "Could not get items from skinwallet.com"
+                    bitskins_prices[name] = {
+                        "price": item["price"],
+                        "instant_sale_price": instant_sale_price
+                    }
+                print("Pricing info extracted")
+                push_to_s3(bitskins_prices, 'bitskins', stage)
+        except Exception as e:
+            print(e)
+            error = "Bitskins maintenance?"
+            alert_via_sns(f'{error}: {e}')
+            # return {
+            #     'statusCode': 500,
+            #     'body': json.dumps(error)
+            # }
+    elif response.status_code == 401:
+        error = "Could not get items from bitskins, it's most likely an authentication problem"
         alert_via_sns(error)
         print(error, " status code: ", response.status_code)
-        return {
-            'statusCode': response.status_code,
-            'body': json.dumps(error)
-        }
+        # return {
+        #     'statusCode': response.status_code,
+        #     'body': json.dumps(error)
+        # }
+    else:
+        error = "Could not get items from bitskins"
+        alert_via_sns(error)
+        print(error, " status code: ", response.status_code)
+        # return {
+        #     'statusCode': response.status_code,
+        #     'body': json.dumps(error)
+        # }
+    return bitskins_prices
 
-    print("Creates own pricing")
-    print("Calculate market trends")
 
-    week_to_day = 0
-    month_to_week = 0
-    count = 0
-    for item in master_list:
+def fetch_csgobackpack(response):
+    print("Requesting prices from csgobackpack.net")
+    try:
+        response = requests.get("http://csgobackpack.net/api/GetItemsList/v2/")
+    except Exception as e:
+        print(e)
+        error = "Error during csgobackpack request"
+        alert_via_sns(f'{error}: {e}')
+        # return {
+        #     'statusCode': 500,
+        #     'body': error
+        # }
+    print("Received response from csgobackpack.net")
+    if response.status_code == 200 and response.json()['success']:
+        print("Valid response from csgobackpack.net")
+        items = response.json()['items_list']
+        csgobackpack_prices = {}
+        print("Extracting pricing information")
+        for key, value in items.items():
+            name = value.get('name').replace("&#39", "'")
+            price = value.get('price')
 
-        item_prices = steam_prices.get(item)
-
-        if (
-                item_prices
-                and "safe_ts" in item_prices
-                and "last_24h" in item_prices["safe_ts"]
-                and "last_7d" in item_prices["safe_ts"]
-                and "last_30d" in item_prices["safe_ts"]
-        ):
-            daily = float(item_prices["safe_ts"]["last_24h"])
-            weekly = float(item_prices["safe_ts"]["last_7d"])
-            monthly = float(item_prices["safe_ts"]["last_30d"])
-            if daily > 0.1 and weekly > 0.1 and monthly > 0.1:
-                wtd_ratio = daily / weekly
-                mtw_ratio = weekly / monthly
-
-                if 0 < wtd_ratio < 2 and 0 < mtw_ratio < 2:
-                    week_to_day += wtd_ratio
-                    month_to_week += mtw_ratio
-                    count += 1
-    week_to_day = week_to_day / count
-    month_to_week = month_to_week / count
-    print("Market trends: WtD: " + str(week_to_day) + " MtW: " + str(month_to_week))
-
-    print("Getting price difference ratio between steam:buff and steam:csmoney")
-    st_buff = 0
-    st_csm = 0
-    count = 0
-
-    for item in master_list:
-
-        item_steam_prices = steam_prices.get(item)
-        item_buff_prices = buff163_prices.get(item)
-        item_csmoney_prices = csmoney_prices.get(item)
-
-        if (
-                item_steam_prices
-                and item_buff_prices
-                and item_csmoney_prices
-                and "safe_ts" in item_steam_prices
-                and "last_7d" in item_steam_prices["safe_ts"]
-                and item_buff_prices["highest_order"]["price"] != "null"
-                and item_buff_prices["starting_at"]["price"] != "null"
-                and "price" in item_csmoney_prices
-                and item_csmoney_prices["price"] not in ["", "null"]
-        ):
-            st_weekly = float(item_steam_prices["safe_ts"]["last_7d"])
-            buff_mid_price = (float(item_buff_prices["highest_order"]["price"]) + float(item_buff_prices["starting_at"]["price"])) / 2
-            csm = float(item_csmoney_prices["price"])
-            if st_weekly > 0.1 and buff_mid_price > 0.1 and csm > 0.1:
-                st_buff_ratio = st_weekly / buff_mid_price
-                st_csm_ratio = st_weekly / csm
-
-                if 0 < st_buff_ratio < 2 and 0 < st_csm_ratio < 2:
-                    st_buff += st_buff_ratio
-                    st_csm += st_csm_ratio
-                    count += 1
-    st_buff = st_buff / count
-    st_csm = st_csm / count
-    print("Steam:Buff: " + str(st_buff) + " Steam:Csmoney:  " + str(st_csm))
-
-    print("Creating csgotrader prices")
-    csgotrader_prices = {}
-
-    for item in master_list:
-        if item is not None:
-            steam_aggregate = get_steam_price(item, steam_prices, week_to_day, month_to_week)
-            steam_aggregate_price = steam_aggregate["price"]
-            case = steam_aggregate["case"]  # only used to debug pricing in dev mode
-            price = "null"
-
-            if (
-                    steam_aggregate_price != "null"
-                    and steam_aggregate_price != 0.0
-                    and not is_mispriced_knife(item, steam_aggregate["price"])
-                    and not is_mispriced_glove(item, steam_aggregate["price"])
-                    and not is_mispriced_compared_to_csb(item, steam_aggregate["price"], csgobackpack_prices)
-            ):
-                if steam_aggregate_price >= 800 and item in buff163_prices and buff163_prices[item]["starting_at"]["price"] != "null":
-                    price = get_formatted_float(float(buff163_prices[item]["starting_at"]["price"]) * st_buff * week_to_day)
-                    case = "H"
-                else:
-                    price = get_formatted_float(steam_aggregate["price"])
-            elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and \
-                    csmoney_prices[item]["price"] != 0:
-                price = get_formatted_float(float(csmoney_prices[item]["price"]) * st_csm * week_to_day)
-                case = "F"
-            elif item in buff163_prices and buff163_prices[item]["starting_at"]["price"] != "null":
-                price = get_formatted_float(float(buff163_prices[item]["starting_at"]["price"]) * st_buff * week_to_day)
-                case = "G"
-            elif item in own_prices:
-                price = own_prices[item]
-                case = "H"
-
-            if "Doppler" in item:
-                doppler = {}
-                for phase in csmoney_prices[item]["doppler"]:
-                    doppler[phase] = get_formatted_float(float(csmoney_prices[item]["doppler"][phase]) * st_csm)
-                if stage == "dev":
-                    csgotrader_prices[item] = {
-                        "price": price,
-                        "case": "J",
-                        "doppler": doppler
-                    }
-                else:
-                    csgotrader_prices[item] = {
-                        "price": price,
-                        "doppler": doppler
-                    }
-            elif stage == "dev":
-                csgotrader_prices[item] = {
-                    "price": price,
-                    "case": case
-                }
+            if price:
+                csgobackpack_prices[name] = price
             else:
-                csgotrader_prices[item] = {"price": price}
+                csgobackpack_prices[name] = "null"
 
-    print("Check if the non-st version is cheaper")
-    for item in csgotrader_prices:
-        is_st = True if "StatTrak\u2122" in item else False
-        if is_st:
-            none_st_name = get_non_st_name(item)
-            if none_st_name in csgotrader_prices and csgotrader_prices[none_st_name]["price"] != "null" \
-                    and csgotrader_prices[item]["price"] != "null" and float(
-                csgotrader_prices[none_st_name]["price"]) > float(csgotrader_prices[item]["price"]):
-                # if the st version is cheaper then the non-st's price is used
-                if stage == "dev":
-                    csgotrader_prices[item] = {
-                        "price": float(csgotrader_prices[none_st_name]["price"]) * 1.1,
-                        "case": "E"
-                    }
-                else:
-                    csgotrader_prices[item] = {"price": float(csgotrader_prices[none_st_name]["price"]) * 1.1}
+        print("Pricing information extracted")
 
-    print("csgotrader prices created")
-    push_to_s3(csgotrader_prices, 'csgotrader', stage)
+    else:
+        error = "Could not get items from csgobackpack.net"
+        alert_via_sns(error)
+        print(error, " status code: ", response.status_code)
+        # return {
+        #     'statusCode': response.status_code,
+        #     'body': json.dumps(error)
+        # }
+    return csgobackpack_prices
 
-    print("Putting together the final prices dict")
-    extract = {}
 
-    for item in master_list:
-        extract[item] = {}
-        if item in steam_prices and "safe_ts" in steam_prices[item]:
-            extract[item]["steam"] = steam_prices[item]["safe_ts"]
-        else:
-            extract[item]["steam"] = {
-                "last_90d": "null",
-                "last_30d": "null",
-                "last_7d": "null",
-                "last_24h": "null"
-            }
-        if item in bitskins_prices:
-            extract[item]["bitskins"] = bitskins_prices[item]
-        else:
-            extract[item]["bitskins"] = "null"
-        if item in lootfarm_prices:
-            extract[item]["lootfarm"] = lootfarm_prices[item]
-        else:
-            extract[item]["lootfarm"] = "null"
-        if item in csgotm_prices:
-            extract[item]["csgotm"] = csgotm_prices[item]
-        else:
-            extract[item]["csgotm"] = "null"
-        if item in csmoney_prices:
-            extract[item]["csmoney"] = csmoney_prices[item]
-        else:
-            extract[item]["csmoney"] = "null"
-        if item in skinport_prices:
-            extract[item]["skinport"] = skinport_prices[item]
-        else:
-            extract[item]["skinport"] = "null"
-        if item in csgotrader_prices:
-            extract[item]["csgotrader"] = csgotrader_prices[item]
-        else:
-            extract[item]["csgotrader"] = "null"
-        if item in csgoempire_prices:
-            extract[item]["csgoempire"] = csgoempire_prices[item]
-        else:
-            extract[item]["csgoempire"] = "null"
-        if item in swapgg_prices:
-            extract[item]["swapgg"] = swapgg_prices[item]
-        else:
-            extract[item]["swapgg"] = "null"
-        if item in csgoexo_prices:
-            extract[item]["csgoexo"] = csgoexo_prices[item]
-        else:
-            extract[item]["csgoexo"] = "null"
-        if item in buff163_prices:
-            extract[item]["buff163"] = buff163_prices[item]
-        else:
-            extract[item]["buff163"] = {
-                "starting_at": "null",
-                "highest_order": "null",
-            }
+def fetch_steamapis(response, stage):
+    print('Getting Prices from Steam APIs')
+    try:
+        response = requests.get("https://api.steamapis.com/market/items/730", params={
+            "api_key": steam_apis_key
+        })
+    except Exception as e:
+        print(e)
+        error = "Error during steam apis request"
+        alert_via_sns(f'{error}: {e}')
+        # return {
+        #     'statusCode': 500,
+        #     'body': error
+        # }
+    print('Received response from steamapis.com')
+    if response.status_code == 200:
+        print("Valid response from steamapis.com")
+        items = response.json()['data']
+        steam_prices = {}
+        steam_prices_only = {}
+        print("Extracting pricing information")
 
-    push_to_s3(extract, 'prices_v6', stage)
-    return {
-        'statusCode': 200,
-        'body': json.dumps('Success!')
-    }
+        for item in items:
+            name = item["market_hash_name"]
+            steam_prices[name] = item["prices"]
+            if "safe_ts" in item["prices"]:
+                steam_prices_only[name] = item["prices"]["safe_ts"]
+            add_to_master_list(master_list, name)
+
+        print("Pricing information extracted")
+        push_to_s3(steam_prices_only, 'steam', stage)
+    return steam_prices
 
 
 def push_to_s3(content, provider, stage):
