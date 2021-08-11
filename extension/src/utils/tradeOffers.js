@@ -1,25 +1,31 @@
 // only works on steam pages
-import DOMPurify from 'dompurify';
-import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
-import { getItemMarketLink, isDopplerInName, getFormattedPLPercentage } from 'utils/simpleUtils';
+
+import {
+  actions,
+  conditions,
+  eventTypes,
+  offerStates,
+  operators,
+} from 'utils/static/offers';
 import {
   getDopplerInfo,
   getExteriorFromTags,
   getInspectLink,
   getNameTag,
   getQuality,
-  getType,
   getRemoteImageAsObjectURL,
+  getType,
 } from 'utils/utilsModular';
+import { getFormattedPLPercentage, getItemMarketLink, isDopplerInName } from 'utils/simpleUtils';
+import { notifyOnDiscord, playNotificationSound } from 'utils/notifications';
+
+import DOMPurify from 'dompurify';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
-import steamApps from 'utils/static/steamApps';
-import { getTradeOffers } from 'utils/IEconService';
-import {
-  conditions, eventTypes, offerStates, actions, operators,
-} from 'utils/static/offers';
 import { getPlayerSummaries } from 'utils/ISteamUser';
+import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
+import { getTradeOffers } from 'utils/IEconService';
 import { prettyPrintPrice } from 'utils/pricing';
-import { playNotificationSound, notifyOnDiscord } from 'utils/notifications';
+import steamApps from 'utils/static/steamApps';
 import { getItemByIDs } from './itemsToElementsToItems';
 
 const createTradeOfferJSON = (itemsToGive, itemsToReceive) => {
@@ -217,13 +223,25 @@ const createDiscordSideSummary = (offerSideItems, itemsWithDetails) => {
         const itemName = item.dopplerInfo
           ? `${item.market_hash_name} (${item.dopplerInfo.name})`
           : item.market_hash_name;
-        summary += `- ${itemName}`;
+        summary += `${itemName}`;
         if (item.price) summary += ` (${item.price.display})`;
         if (item.floatInfo) summary += ` (${item.floatInfo.floatvalue.toFixed(4)})`;
         summary += '\n';
       }
     });
   }
+  // 1024 is max size of an embed field
+  if (summary.length > 1024) {
+    // cut off all chars after 1024
+    summary = summary.slice(0, 1024);
+    // remove lines until there are 4 chars to spare
+    while (summary.length > 1020) {
+      summary = summary.split('\n').slice(0, -1).join('\n');
+    }
+    // add \n... 
+    summary += '\n...';
+  }
+
   return summary;
 };
 
@@ -232,17 +250,40 @@ const notifyAboutOfferOnDiscord = (offer, items) => {
     const steamIDOfPartner = getProperStyleSteamIDFromOfferStyle(offer.accountid_other);
     getPlayerSummaries([steamIDOfPartner]).then((summary) => {
       const userDetails = summary[steamIDOfPartner];
-      const title = `Offer from **${userDetails.personaname}** (${prettyPrintPrice(currency, offer.profitOrLoss.toFixed(2))})\n`;
-      const offerMessage = offer.message !== ''
-        ? `Message: ${DOMPurify.sanitize(offer.message)}\n`
-        : '';
-      let givingItems = `Giving (${prettyPrintPrice(currency, offer.yourItemsTotal.toFixed(2))}):\n`;
-      givingItems += createDiscordSideSummary(offer.items_to_give, items);
 
-      let receivingItems = `Receiving (${prettyPrintPrice(currency, offer.theirItemsTotal.toFixed(2))}):\n`;
-      receivingItems += createDiscordSideSummary(offer.items_to_receive, items);
-      const link = `Link: <https://steamcommunity.com/tradeoffer/${offer.tradeofferid}>`;
-      notifyOnDiscord(`${title}${offerMessage}${givingItems}${receivingItems}${link}`);
+      const title = `Trade Offer (${prettyPrintPrice(currency, offer.profitOrLoss.toFixed(2))})`;
+      const description = offer.message !== '' ? `*${DOMPurify.sanitize(offer.message)}*` : '';
+      
+      const giving = createDiscordSideSummary(offer.items_to_give, items);
+      const receiving = createDiscordSideSummary(offer.items_to_receive, items);
+
+      const fields = [];
+      if (giving) fields.push({ name: `Giving (${prettyPrintPrice(currency, offer.yourItemsTotal.toFixed(2))})`, inline: false, value: giving });
+      if (receiving) fields.push({ name: `Receiving (${prettyPrintPrice(currency, offer.theirItemsTotal.toFixed(2))})`, inline: false, value: receiving });
+      
+      const timestamp = new Date(offer.time_updated * 1000).toISOString();
+
+      const embed = {
+        footer: {
+          text: 'CSGO Trader',
+          icon_url: 'https://csgotrader.app/cstlogo48.png',
+        },
+        author: {
+          name: userDetails.personaname,
+          icon_url: userDetails.avatar,
+          url: `https://steamcommunity.com/profiles/${steamIDOfPartner}`,
+        },
+        title,
+        description,
+        // #ff8c00 (taken from csgotrader.app text color)
+        color: 16747520,
+        fields,
+        timestamp,
+        type: 'rich',
+        url: `https://steamcommunity.com/tradeoffer/${offer.tradeofferid}`,
+      };
+
+      notifyOnDiscord(embed);
     });
   });
 };
