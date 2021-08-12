@@ -5,8 +5,8 @@ import logging
 import os
 import sys
 import traceback
-from typing import Union, Tuple, Any, Dict, Optional
 from datetime import date
+from typing import Union, Tuple, Any, Dict, Optional
 
 import boto3
 import pyotp
@@ -303,12 +303,13 @@ def fetch_skinwallet(response, stage) -> Dict[str, float]:
             "accept": "application/json",
             "x-auth-token": skinwallet_api_key
         })
+        response.raise_for_status()
+        log.info("Received response from skinwallet.com")
     except RequestException:
         handle_exception("Error during skinwallet request")
+        return {}
 
-    log.info("Received response from skinwallet.com")
-
-    if response.status_code != 200 or response.json()['status'] != 'Success':
+    if response.json()['status'] != 'Success':
         handle_invalid_data("skinwallet.com", response.status_code)
         return {}
 
@@ -338,10 +339,12 @@ def request_priceempire(stage) -> Tuple[dict, dict, dict, dict]:
             "token": pricempire_token,
             "currency": "USD"
         })
+        response.raise_for_status()
+        log.info("Received response from pricempire")
     except RequestException:
         handle_exception("Error during priceempire request")
+        return {}, {}, {}, {}
 
-    log.info("Received response from pricempire")
     response_json = response.json()
 
     csgoempire_prices = {}
@@ -351,7 +354,7 @@ def request_priceempire(stage) -> Tuple[dict, dict, dict, dict]:
 
     if not (response.status_code == 200 and len(response_json) != 0 and response_json.get("status")):
         handle_invalid_data("priceempire", response.status_code)
-        return buff163_prices, csgoempire_prices, csgoexo_prices, swapgg_prices
+        return {}, {}, {}, {}
 
     log.info("Valid response from pricempire")
     items = response_json.get("items")
@@ -417,13 +420,10 @@ def request_skinport(stage) -> Dict[str, Dict[str, Optional[float]]]:
         }, headers={
             "Authorization": "Basic " + (base64.b64encode((skinport_client_id + ":" + skinport_client_secret).encode('ascii'))).decode('ascii')
         })
+        response.raise_for_status()
+        log.info("Received response from skinport.com")
     except RequestException:
         handle_exception("Error during skinport request")
-
-    log.info("Received response from skinport.com")
-
-    if response.status_code != 200:
-        handle_invalid_data("skinport.com", response.status_code)
         return {}
 
     log.info("Valid response from skinport.com")
@@ -457,13 +457,10 @@ def request_csmoney(stage) -> Dict[str, Dict[str, float]]:
 
     try:
         response = requests.get("https://old.cs.money/js/database-skins/library-en-730.js")
+        response.raise_for_status()
+        log.info("Received response from cs.money")
     except RequestException:
         handle_exception("Error during csmoney request")
-
-    log.info("Received response from cs.money")
-
-    if response.status_code != 200:
-        handle_invalid_data("cs.money", response.status_code)
         return {}
 
     log.info("Valid response from cs.money")
@@ -505,12 +502,13 @@ def fetch_csgotm(stage) -> Dict[str, str]:
 
     try:
         response = requests.get("https://market.csgo.com/api/v2/prices/USD.json")
+        response.raise_for_status()
+        log.info("Received response from csgo.tm")
     except RequestException:
         handle_exception("Error during csgo.tm request")
+        return {}
 
-    log.info("Received response from csgo.tm")
-
-    if not (response.status_code == 200 and response.json()['success']):
+    if not (response.json()['success']):
         handle_invalid_data("csgo.tm", response.status_code)
         return {}
 
@@ -537,13 +535,10 @@ def request_lootfarm(response, stage) -> Dict[str, float]:
 
     try:
         response = requests.get("https://loot.farm/fullprice.json")
+        response.raise_for_status()
+        log.info("Received response from loot.farm")
     except RequestException:
         handle_exception("Error during loot.farm request")
-
-    log.info("Received response from loot.farm")
-
-    if response.status_code != 200:
-        handle_invalid_data("loot.farm", response.status_code)
         return {}
 
     log.info("Valid response from loot.farm")
@@ -584,10 +579,13 @@ def request_bitskins(response, stage) -> Dict[str, Dict[str, Optional[str]]]:
             "code": bitskins_token.now(),
             "app_id": "730"
         })
+        response.raise_for_status()
+        log.info("Received response from bitskins")
     except RequestException:
         handle_exception("Error during bitskins request")
+        return {}
 
-    if not (response.status_code == 200 and response.json().get('status') == "success"):
+    if response.json().get('status') != "success":
         handle_invalid_data("bitskins", response.status_code)
         return {}
 
@@ -619,12 +617,13 @@ def fetch_csgobackpack(response) -> Dict[str, Optional[Dict[str, Dict[str, Union
 
     try:
         response = requests.get("http://csgobackpack.net/api/GetItemsList/v2/")
+        response.raise_for_status()
+        log.info("Received response from csgobackpack.net")
     except RequestException:
         handle_exception("Error during csgobackpack request")
+        return {}
 
-    log.info("Received response from csgobackpack.net")
-
-    if not (response.status_code == 200 and response.json()['success']):
+    if not (response.json()['success']):
         handle_invalid_data("csgobackpack.net", response.status_code)
         return {}
 
@@ -649,13 +648,10 @@ def fetch_steamapis(response, stage) -> Dict[str, Dict[str, float]]:
         response = requests.get("https://api.steamapis.com/market/items/730", params={
             "api_key": steam_apis_key
         })
+        response.raise_for_status()
+        log.info('Received response from steamapis.com')
     except RequestException:
         handle_exception("Error during steam apis request")
-
-    log.info('Received response from steamapis.com')
-
-    if response.status_code != 200:
-        handle_invalid_data("steamapis.com", response.status_code)
         return {}
 
     log.info("Valid response from steamapis.com")
