@@ -1,6 +1,7 @@
 import base64
 import gzip
 import json
+import logging
 import os
 import traceback
 from datetime import date
@@ -30,14 +31,25 @@ gloves = ["Gloves", "Hand Wraps"]
 
 master_list = []
 
+log = logging.getLogger(__name__)
+formatter = logging.Formatter("%(asctime)s [%(levelname)-10s] - %(message)s", datefmt="%d-%b-%y %H:%M:%S")
+stream = logging.StreamHandler()
+stream.setFormatter(formatter)
+log.addHandler(stream)
+log.setLevel(logging.INFO)
+
 
 def lambda_handler(event, context):
     arn_split = context.invoked_function_arn.split(':')
     stage_candidate = arn_split[len(arn_split) - 1]
     stage = 'dev' if stage_candidate == 'priceScraper' else 'prod'  # if there is an alias it's prod
 
-    own_prices, response = fetch_own_prices()
+    if stage == "dev":
+        log.setLevel(logging.INFO)
+    else:
+        log.setLevel(logging.WARNING)
 
+    own_prices, response = fetch_own_prices()
     steam_prices = fetch_steamapis(response, stage)
     csgobackpack_prices = fetch_csgobackpack(response)
     bitskins_prices = request_bitskins(response, stage)
@@ -60,29 +72,32 @@ def lambda_handler(event, context):
     # only push if all of them have valid results
     # (aka all the requests succeeded)
 
-    if all(
-            [
-                bitskins_prices,
-                buff163_prices,
-                csgoempire_prices,
-                csgoexo_prices,
-                csgotm_prices,
-                csgotrader_prices,
-                csmoney_prices,
-                lootfarm_prices,
-                skinport_prices,
-                steam_prices,
-                swapgg_prices,
-            ]
-    ):
+    all_prices_list = [
+        bitskins_prices,
+        buff163_prices,
+        csgoempire_prices,
+        csgoexo_prices,
+        csgotm_prices,
+        csgotrader_prices,
+        csmoney_prices,
+        lootfarm_prices,
+        skinport_prices,
+        steam_prices,
+        swapgg_prices,
+    ]
+
+    if all(all_prices_list):
         push_final_prices(bitskins_prices, buff163_prices, csgoempire_prices, csgoexo_prices, csgotm_prices, csgotrader_prices, csmoney_prices, lootfarm_prices,
                           skinport_prices, stage, steam_prices, swapgg_prices)
+    else:
+        falsy_prices = [p for p in all_prices_list if not p]
+        log.error(", ".join(falsy_prices) + " failed to be set.")
 
 
 def fetch_own_prices():
     dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
     table = dynamodb.Table(own_prices_table)
-    print("Getting own prices from Dynamo")
+    log.info("Getting own prices from Dynamo")
     response = table.scan(ProjectionExpression="market_hash_name, price")
     own_prices = {}
     for item in response['Items']:
@@ -93,8 +108,8 @@ def fetch_own_prices():
 
 
 def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices, own_prices, stage, steam_prices):
-    print("Creates own pricing")
-    print("Calculate market trends")
+    log.info("Creates own pricing")
+    log.info("Calculate market trends")
     week_to_day = 0
     month_to_week = 0
     count = 0
@@ -122,8 +137,8 @@ def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices
                     count += 1
     week_to_day = week_to_day / count
     month_to_week = month_to_week / count
-    print("Market trends: WtD: " + str(week_to_day) + " MtW: " + str(month_to_week))
-    print("Getting price difference ratio between steam:buff and steam:csmoney")
+    log.info("Market trends: WtD: " + str(week_to_day) + " MtW: " + str(month_to_week))
+    log.info("Getting price difference ratio between steam:buff and steam:csmoney")
     st_buff = 0
     st_csm = 0
     count = 0
@@ -157,8 +172,8 @@ def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices
                     count += 1
     st_buff = st_buff / count
     st_csm = st_csm / count
-    print("Steam:Buff: " + str(st_buff) + " Steam:Csmoney:  " + str(st_csm))
-    print("Creating csgotrader prices")
+    log.info("Steam:Buff: " + str(st_buff) + " Steam:Csmoney:  " + str(st_csm))
+    log.info("Creating csgotrader prices")
     csgotrader_prices = {}
     for item in master_list:
         if item is not None:
@@ -212,7 +227,7 @@ def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices
                 }
             else:
                 csgotrader_prices[item] = {"price": price}
-    print("Check if the non-st version is cheaper")
+    log.info("Check if the non-st version is cheaper")
     for item in csgotrader_prices:
         is_st = True if "StatTrak\u2122" in item else False
         if is_st:
@@ -228,14 +243,14 @@ def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices
                     }
                 else:
                     csgotrader_prices[item] = {"price": float(csgotrader_prices[none_st_name]["price"]) * 1.1}
-    print("csgotrader prices created")
+    log.info("csgotrader prices created")
     push_to_s3(csgotrader_prices, 'csgotrader', stage)
     return csgotrader_prices
 
 
 def push_final_prices(bitskins_prices, buff163_prices, csgoempire_prices, csgoexo_prices, csgotm_prices, csgotrader_prices, csmoney_prices, lootfarm_prices,
                       skinport_prices, stage, steam_prices, swapgg_prices):
-    print("Putting together the final prices dict")
+    log.info("Putting together the final prices dict")
     extract = {}
     for item in master_list:
         extract[item] = {}
@@ -265,7 +280,7 @@ def push_final_prices(bitskins_prices, buff163_prices, csgoempire_prices, csgoex
 
 
 def fetch_skinwallet(response, stage):
-    print("Requesting prices from skinwallet.com")
+    log.info("Requesting prices from skinwallet.com")
     try:
         response = requests.get("https://www.skinwallet.com/market/api/offers/overview", params={
             "appId": "730"
@@ -275,12 +290,12 @@ def fetch_skinwallet(response, stage):
         })
     except Exception as e:
         handle_exception(e, "Error during skinwallet request")
-    print("Received response from skinwallet.com")
+    log.info("Received response from skinwallet.com")
     skinwallet_prices = {}
     if response.status_code == 200 and response.json()['status'] == 'Success':
-        print("Valid response from skinwallet.com")
+        log.info("Valid response from skinwallet.com")
         items = response.json()['result']
-        print("Extracting pricing information")
+        log.info("Extracting pricing information")
         for item in items:
             name = item.get('marketHashName')
             price = item.get('cheapestOffer').get('price').get('amount')
@@ -290,23 +305,23 @@ def fetch_skinwallet(response, stage):
             else:
                 skinwallet_prices[name] = "null"
 
-        print("Pricing information extracted")
+        log.info("Pricing information extracted")
         push_to_s3(skinwallet_prices, 'skinwallet', stage)
 
     else:
         error = "Could not get items from skinwallet.com"
         alert_via_sns(error)
-        print(error, " status code: ", response.status_code)
+        log.warning(error, " status code: ", response.status_code)
     return skinwallet_prices
 
 
 def request_priceempire(stage):
-    print("Requesting prices from pricempire")
+    log.info("Requesting prices from pricempire")
     response = requests.get("https://api.pricempire.com/v1/getAllItems", params={
         "token": pricempire_token,
         "currency": "USD"
     })
-    print("Received response from pricempire")
+    log.info("Received response from pricempire")
     response_json = response.json()
 
     csgoempire_prices = {}
@@ -315,9 +330,9 @@ def request_priceempire(stage):
     buff163_prices = {}
 
     if response.status_code == 200 and len(response_json) != 0 and response_json.get("status") is True:
-        print("Valid response from pricempire")
+        log.info("Valid response from pricempire")
         items = response_json.get("items")
-        print("Extracting pricing information")
+        log.info("Extracting pricing information")
 
         for item in items:
             name = item.get('name')
@@ -359,7 +374,7 @@ def request_priceempire(stage):
                 buff163_prices[name] = item_buff163_prices
                 add_to_master_list(name)
 
-        print("Pricing information extracted")
+        log.info("Pricing information extracted")
         push_to_s3(csgoempire_prices, 'csgoempire', stage)
         push_to_s3(swapgg_prices, 'swapgg', stage)
         push_to_s3(csgoexo_prices, 'csgoexo', stage)
@@ -368,25 +383,25 @@ def request_priceempire(stage):
     else:
         error = "Could not get items from pricempire"
         alert_via_sns(error)
-        print(error, " status code: ", response.status_code)
+        log.warning(error, " status code: ", response.status_code)
     return buff163_prices, csgoempire_prices, csgoexo_prices, swapgg_prices
 
 
 def request_skinport(stage):
     # base64 encoding of auth header per docs:
     # https://docs.skinport.com/#authentication
-    print("Requesting prices from skinport.com")
+    log.info("Requesting prices from skinport.com")
     response = requests.get("https://api.skinport.com/v1/items", params={
         "app_id": "730"
     }, headers={
         "Authorization": "Basic " + (base64.b64encode((skinport_client_id + ":" + skinport_client_secret).encode('ascii'))).decode('ascii')
     })
-    print("Received response from skinport.com")
+    log.info("Received response from skinport.com")
     skinport_prices = {}
     if response.status_code == 200:
-        print("Valid response from skinport.com")
+        log.info("Valid response from skinport.com")
         items = response.json()
-        print("Extracting pricing information")
+        log.info("Extracting pricing information")
 
         for item in items:
             name = item.get('market_hash_name')
@@ -403,25 +418,25 @@ def request_skinport(stage):
             }
             add_to_master_list(name)
 
-        print("Pricing information extracted")
+        log.info("Pricing information extracted")
         push_to_s3(skinport_prices, 'skinport', stage)
 
     else:
         error = "Could not get items from skinport.com"
         alert_via_sns(error)
-        print(error, " status code: ", response.status_code)
+        log.warning(error, " status code: ", response.status_code)
     return skinport_prices
 
 
 def request_csmoney(stage):
-    print("Requesting prices from cs.money")
+    log.info("Requesting prices from cs.money")
     response = requests.get("https://old.cs.money/js/database-skins/library-en-730.js")
-    print("Received response from cs.money")
+    log.info("Received response from cs.money")
     csmoney_prices = {}
     if response.status_code == 200:
-        print("Valid response from cs.money")
+        log.info("Valid response from cs.money")
         items = json.loads(response.content.decode().split("skinsBaseList[730] = ")[1])
-        print("Extracting pricing information")
+        log.info("Extracting pricing information")
         for item in items:
             item = items.get(item)
             name = item.get('m').replace("/", '-')
@@ -446,24 +461,24 @@ def request_csmoney(stage):
                 add_to_master_list(name)
                 csmoney_prices[name] = {'price': price}
 
-        print("Pricing information extracted")
+        log.info("Pricing information extracted")
         push_to_s3(csmoney_prices, 'csmoney', stage)
     else:
         error = "Could not get items from cs.money"
         alert_via_sns(error)
-        print(error, " status code: ", response.status_code)
+        log.warning(error, " status code: ", response.status_code)
     return csmoney_prices
 
 
 def fetch_csgotm(stage):
-    print("Requesting prices from csgo.tm")
+    log.info("Requesting prices from csgo.tm")
     response = requests.get("https://market.csgo.com/api/v2/prices/USD.json")
-    print("Received response from csgo.tm")
+    log.info("Received response from csgo.tm")
     csgotm_prices = {}
     if response.status_code == 200 and response.json()['success']:
-        print("Valid response from csgo.tm")
+        log.info("Valid response from csgo.tm")
         items = response.json()['items']
-        print("Extracting pricing information")
+        log.info("Extracting pricing information")
 
         for item in items:
             name = item.get('market_hash_name')
@@ -472,27 +487,27 @@ def fetch_csgotm(stage):
             csgotm_prices[name] = price
             add_to_master_list(name)
 
-        print("Pricing information extracted")
+        log.info("Pricing information extracted")
         push_to_s3(csgotm_prices, 'csgotm', stage)
     else:
         error = "Could not get items from csgo.tm"
         alert_via_sns(error)
-        print(error, " status code: ", response.status_code)
+        log.warning(error, " status code: ", response.status_code)
     return csgotm_prices
 
 
 def request_lootfarm(response, stage):
-    print("Requesting prices from loot.farm")
+    log.info("Requesting prices from loot.farm")
     try:
         response = requests.get("https://loot.farm/fullprice.json")
     except Exception as e:
         handle_exception(e, "Error during loot.farm request")
-    print("Received response from loot.farm")
+    log.info("Received response from loot.farm")
     lootfarm_prices = {}
     if response.status_code == 200:
-        print("Valid response from loot.farm")
+        log.info("Valid response from loot.farm")
         items = response.json()
-        print("Extracting pricing information")
+        log.info("Extracting pricing information")
 
         for item in items:
             name = item.get('name')
@@ -511,18 +526,18 @@ def request_lootfarm(response, stage):
                 lootfarm_prices[name] = price
                 add_to_master_list(name)
 
-        print("Pricing information extracted")
+        log.info("Pricing information extracted")
         push_to_s3(lootfarm_prices, 'lootfarm', stage)
 
     else:
         error = "Could not get items from loot.farm"
         alert_via_sns(error)
-        print(error, " status code: ", response.status_code)
+        log.warning(error, " status code: ", response.status_code)
     return lootfarm_prices
 
 
 def request_bitskins(response, stage):
-    print('Requesting bitskins prices')
+    log.info('Requesting bitskins prices')
     try:
         response = requests.get("https://bitskins.com/api/v1/get_all_item_prices/", params={
             "api_key": bitskins_api_key,
@@ -536,7 +551,7 @@ def request_bitskins(response, stage):
     if response.status_code == 200:
         try:
             if response.json()['status'] == "success":
-                print("Extracting pricing info")
+                log.info("Extracting pricing info")
                 items = response.json()['prices']
                 for item in items:
                     name = item.get('market_hash_name').replace('\xe2\x98\x85', '\u2605').replace("/", '-')
@@ -550,62 +565,60 @@ def request_bitskins(response, stage):
                         "price": item["price"],
                         "instant_sale_price": instant_sale_price
                     }
-                print("Pricing info extracted")
+                log.info("Pricing info extracted")
                 push_to_s3(bitskins_prices, 'bitskins', stage)
         except Exception as e:
             handle_exception(e, "Bitskins maintenance?")
     elif response.status_code == 401:
         error = "Could not get items from bitskins, it's most likely an authentication problem"
         alert_via_sns(error)
-        print(error, " status code: ", response.status_code)
+        log.warning(error, " status code: ", response.status_code)
     else:
         error = "Could not get items from bitskins"
         alert_via_sns(error)
-        print(error, " status code: ", response.status_code)
+        log.warning(error, " status code: ", response.status_code)
     return bitskins_prices
 
 
 def fetch_csgobackpack(response):
-    print("Requesting prices from csgobackpack.net")
+    log.info("Requesting prices from csgobackpack.net")
     try:
         response = requests.get("http://csgobackpack.net/api/GetItemsList/v2/")
     except Exception as e:
         handle_exception(e, "Error during csgobackpack request")
-    print("Received response from csgobackpack.net")
+    log.info("Received response from csgobackpack.net")
     csgobackpack_prices = {}
     if response.status_code == 200 and response.json()['success']:
-        print("Valid response from csgobackpack.net")
+        log.info("Valid response from csgobackpack.net")
         items = response.json()['items_list']
-        print("Extracting pricing information")
+        log.info("Extracting pricing information")
         for key, value in items.items():
             name = value.get('name').replace("&#39", "'")
             csgobackpack_prices[name] = value.get('price') or "null"
-        print("Pricing information extracted")
+        log.info("Pricing information extracted")
     else:
         error = "Could not get items from csgobackpack.net"
         alert_via_sns(error)
-        print(error, " status code: ", response.status_code)
+        log.warning(error, " status code: ", response.status_code)
     return csgobackpack_prices
 
 
 def fetch_steamapis(response, stage):
-    print('Getting Prices from Steam APIs')
+    logging.info('Getting Prices from Steam APIs')
     try:
         response = requests.get("https://api.steamapis.com/market/items/730", params={
             "api_key": steam_apis_key
         })
     except Exception as e:
-        print(e)
-        error = "Error during steam apis request"
-        alert_via_sns(f'{error}: {e}')
-    print('Received response from steamapis.com')
+        handle_exception(e, "Error during steam apis request")
+    log.info('Received response from steamapis.com')
     steam_prices = {}
     if response.status_code == 200:
-        print("Valid response from steamapis.com")
+        log.info("Valid response from steamapis.com")
         items = response.json()['data']
 
         steam_prices_only = {}
-        print("Extracting pricing information")
+        log.info("Extracting pricing information")
 
         for item in items:
             name = item["market_hash_name"]
@@ -614,7 +627,7 @@ def fetch_steamapis(response, stage):
                 steam_prices_only[name] = item["prices"]["safe_ts"]
             add_to_master_list(name)
 
-        print("Pricing information extracted")
+        log.info("Pricing information extracted")
         push_to_s3(steam_prices_only, 'steam', stage)
     return steam_prices
 
@@ -623,27 +636,27 @@ def push_to_s3(content, provider, stage):
     s3 = boto3.resource('s3')
 
     if stage == "prod":
-        print("Getting date for result path")
+        log.info("Getting date for result path")
 
         today = date.today()
         year = today.strftime("%Y")
         month = today.strftime("%m")
         day = today.strftime("%d")
 
-        print(f"Updating latest/{provider}.json in s3")
+        log.info(f"Updating latest/{provider}.json in s3")
         s3.Object(result_s3_bucket, f'latest/{provider}.json').put(
             Body=(gzip.compress(bytes(json.dumps(content).encode('UTF-8')), 9)),
             ContentEncoding='gzip'
         )
-        print(f"latest/{provider}.json updated")
-        print(f'Uploading prices to {year}/{month}/{day}/{provider}.json')
+        log.info(f"latest/{provider}.json updated")
+        log.info(f'Uploading prices to {year}/{month}/{day}/{provider}.json')
         s3.Object(result_s3_bucket, f'{year}/{month}/{day}/{provider}.json').put(
             Body=(gzip.compress(bytes(json.dumps(content).encode('UTF-8')), 9)),
             ContentEncoding='gzip'
         )
-        print("Upload complete")
+        log.info("Upload complete")
     elif stage == "dev":
-        print(f"Updating test/{provider}.json in s3")
+        log.info(f"Updating test/{provider}.json in s3")
         s3.Object(result_s3_bucket, f'test/{provider}.json').put(
             Body=(gzip.compress(bytes(json.dumps(content, indent=2).encode('UTF-8')), 9)),
             ContentEncoding='gzip'
@@ -651,7 +664,7 @@ def push_to_s3(content, provider, stage):
 
 
 def alert_via_sns(error):
-    print("Publishing error to SNS")
+    log.info("Publishing error to SNS")
 
     sns = boto3.client('sns')
 
@@ -660,7 +673,7 @@ def alert_via_sns(error):
         Message=f'The script could not finish scrapping all prices, error: {error}',
     )
 
-    print(response)
+    log.info(response)
 
 
 def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
@@ -715,7 +728,7 @@ def add_to_master_list(name, should_log=False):
     if name not in master_list:
         master_list.append(name)
         if should_log:
-            print(name + " was not seen before, adding it to master list")
+            log.info(name + " was not seen before, adding it to master list")
 
 
 def is_mispriced_knife(item_name, price):
@@ -757,7 +770,7 @@ def get_formatted_float_divided_by_100(price):
 
 
 def handle_exception(e, text):
-    print(e)
+    logging.exception(text)
     formatted_exc = format_exception(e)
     max_length = max(len(i) for i in formatted_exc.split("\n"))
     error_msg = "\n" + text.center(max_length) + "\n"
