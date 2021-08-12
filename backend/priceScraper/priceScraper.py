@@ -55,17 +55,17 @@ def lambda_handler(event, context):
     own_prices, response = fetch_own_prices()
     steam_prices = fetch_steamapis(stage)
     csgobackpack_prices = fetch_csgobackpack()
-    bitskins_prices = request_bitskins(stage)
-    lootfarm_prices = request_lootfarm(stage)
+    bitskins_prices = fetch_bitskins(stage)
+    lootfarm_prices = fetch_lootfarm(stage)
     csgotm_prices = fetch_csgotm(stage)
-    csmoney_prices = request_csmoney(stage)
-    skinport_prices = request_skinport(stage)
+    csmoney_prices = fetch_csmoney(stage)
+    skinport_prices = fetch_skinport(stage)
     (
         buff163_prices,
         csgoempire_prices,
         csgoexo_prices,
         swapgg_prices
-    ) = request_priceempire(stage)
+    ) = fetch_priceempire(stage)
 
     # not used apparently
     skinwallet_prices = fetch_skinwallet(stage)
@@ -331,7 +331,7 @@ def fetch_skinwallet(stage) -> Dict[str, float]:
 
 # trying to typehint all of these would get really ugly really fast
 
-def request_priceempire(stage) -> Tuple[dict, dict, dict, dict]:
+def fetch_priceempire(stage) -> Tuple[dict, dict, dict, dict]:
     log.info("Requesting prices from pricempire")
 
     try:
@@ -409,7 +409,7 @@ def request_priceempire(stage) -> Tuple[dict, dict, dict, dict]:
     return buff163_prices, csgoempire_prices, csgoexo_prices, swapgg_prices
 
 
-def request_skinport(stage) -> Dict[str, Dict[str, Optional[float]]]:
+def fetch_skinport(stage) -> Dict[str, Dict[str, Optional[float]]]:
     # base64 encoding of auth header per docs:
     # https://docs.skinport.com/#authentication
     log.info("Requesting prices from skinport.com")
@@ -452,7 +452,7 @@ def request_skinport(stage) -> Dict[str, Dict[str, Optional[float]]]:
     return skinport_prices
 
 
-def request_csmoney(stage) -> Dict[str, Dict[str, float]]:
+def fetch_csmoney(stage) -> Dict[str, Dict[str, float]]:
     log.info("Requesting prices from cs.money")
 
     try:
@@ -530,7 +530,7 @@ def fetch_csgotm(stage) -> Dict[str, str]:
     return csgotm_prices
 
 
-def request_lootfarm(stage) -> Dict[str, float]:
+def fetch_lootfarm(stage) -> Dict[str, float]:
     log.info("Requesting prices from loot.farm")
 
     try:
@@ -569,7 +569,7 @@ def request_lootfarm(stage) -> Dict[str, float]:
     return lootfarm_prices
 
 
-def request_bitskins(stage) -> Dict[str, Dict[str, Optional[str]]]:
+def fetch_bitskins(stage) -> Dict[str, Dict[str, Optional[str]]]:
     log.info('Requesting bitskins prices')
 
     try:
