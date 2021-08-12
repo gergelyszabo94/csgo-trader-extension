@@ -469,7 +469,7 @@ def fetch_csmoney(stage) -> Dict[str, Dict[str, float]]:
     csmoney_prices = {}
     items = json.loads(response.content.decode().split("skinsBaseList[730] = ")[1])
 
-    for item in items:
+    for item in items.values():
         name = item.get('m').replace("/", '-')
         price = item.get('a')
 
