@@ -1,11 +1,15 @@
 import {
-  pricingProviders, currencies, realTimePricingModes, steamCurrencyCodes,
+  currencies,
+  pricingProviders,
+  realTimePricingModes,
+  steamCurrencyCodes,
 } from 'utils/static/pricing';
-import { injectScript } from 'utils/injection';
+
 import DOMPurify from 'dompurify';
-import { storageKeys } from 'utils/static/storageKeys';
 import { findElementByIDs } from 'utils/itemsToElementsToItems';
 import { getItemMarketLink } from 'utils/simpleUtils';
+import { injectScript } from 'utils/injection';
+import { storageKeys } from 'utils/static/storageKeys';
 
 const priceQueue = {
   active: false,
@@ -398,7 +402,7 @@ const updatePrices = () => {
             if (pricesJSON[key][pricingMode] !== undefined) {
               prices[key] = { price: pricesJSON[key][pricingMode] };
             } else {
-              prices[key] = { price: 'null' };
+              prices[key] = { price: null };
               console.log(key);
             }
           }
@@ -431,7 +435,7 @@ const updatePrices = () => {
                 };
               } else prices[key] = { price: pricesJSON[key][mode].price };
             } else {
-              prices[key] = { price: 'null' };
+              prices[key] = { price: null };
               console.log(key);
             }
           }
