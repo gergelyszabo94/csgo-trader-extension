@@ -3,6 +3,7 @@ import gzip
 import json
 import logging
 import os
+import sys
 import traceback
 from datetime import date
 
@@ -301,8 +302,8 @@ def fetch_skinwallet(response, stage):
             "accept": "application/json",
             "x-auth-token": skinwallet_api_key
         })
-    except RequestException as e:
-        handle_exception(e, "Error during skinwallet request")
+    except RequestException:
+        handle_exception("Error during skinwallet request")
     log.info("Received response from skinwallet.com")
     skinwallet_prices = {}
     if response.status_code == 200 and response.json()['status'] == 'Success':
@@ -508,8 +509,8 @@ def request_lootfarm(response, stage):
     log.info("Requesting prices from loot.farm")
     try:
         response = requests.get("https://loot.farm/fullprice.json")
-    except RequestException as e:
-        handle_exception(e, "Error during loot.farm request")
+    except RequestException:
+        handle_exception("Error during loot.farm request")
     log.info("Received response from loot.farm")
     lootfarm_prices = {}
     if response.status_code == 200:
@@ -552,8 +553,8 @@ def request_bitskins(response, stage):
             "code": bitskins_token.now(),
             "app_id": "730"
         })
-    except RequestException as e:
-        handle_exception(e, "Error during bitskins request")
+    except RequestException:
+        handle_exception("Error during bitskins request")
 
     bitskins_prices = {}
     if response.status_code == 200:
@@ -575,8 +576,8 @@ def request_bitskins(response, stage):
                     }
                 log.info("Pricing info extracted")
                 push_to_s3(bitskins_prices, 'bitskins', stage)
-        except RequestException as e:
-            handle_exception(e, "Bitskins maintenance?")
+        except RequestException:
+            handle_exception("Bitskins maintenance?")
     elif response.status_code == 401:
         error = "Could not get items from bitskins, it's most likely an authentication problem"
         alert_via_sns(error)
@@ -592,8 +593,8 @@ def fetch_csgobackpack(response):
     log.info("Requesting prices from csgobackpack.net")
     try:
         response = requests.get("http://csgobackpack.net/api/GetItemsList/v2/")
-    except RequestException as e:
-        handle_exception(e, "Error during csgobackpack request")
+    except RequestException:
+        handle_exception("Error during csgobackpack request")
     log.info("Received response from csgobackpack.net")
     csgobackpack_prices = {}
     if response.status_code == 200 and response.json()['success']:
@@ -617,8 +618,8 @@ def fetch_steamapis(response, stage):
         response = requests.get("https://api.steamapis.com/market/items/730", params={
             "api_key": steam_apis_key
         })
-    except RequestException as e:
-        handle_exception(e, "Error during steam apis request")
+    except RequestException:
+        handle_exception("Error during steam apis request")
     log.info('Received response from steamapis.com')
     steam_prices = {}
     if response.status_code == 200:
@@ -775,14 +776,17 @@ def get_formatted_float_divided_by_100(price):
     return get_formatted_float(price / 100)
 
 
-def handle_exception(e, text):
+def handle_exception(text):
     logging.exception(text)
-    formatted_exc = format_exception(e)
-    max_length = max(len(i) for i in formatted_exc.split("\n"))
-    error_msg = "\n" + text.center(max_length) + "\n"
-    error_msg += "-" * max_length + "\n"
-    error_msg += formatted_exc
-    alert_via_sns(error_msg)
+    if sys.last_value:
+        formatted_exc = format_exception(sys.last_value)
+        max_length = max(len(i) for i in formatted_exc.split("\n"))
+        error_msg = "\n" + text.center(max_length) + "\n"
+        error_msg += "-" * max_length + "\n"
+        error_msg += formatted_exc
+        alert_via_sns(error_msg)
+    else:
+        alert_via_sns(text)
 
 
 def format_exception(e):
