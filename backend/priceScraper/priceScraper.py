@@ -566,7 +566,6 @@ def request_lootfarm(stage) -> Dict[str, float]:
 
     log.info("Pricing information extracted")
     push_to_s3(lootfarm_prices, 'lootfarm', stage)
-
     return lootfarm_prices
 
 
@@ -753,11 +752,6 @@ def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
             return {
                 "price": safe_ts_last_7d * daily_trend,
                 "case": "C"
-            }
-        else:
-            return {
-                "price": safe_ts_last_30d * weekly_trend * daily_trend,
-                "case": "D"
             }
     return {
         "price": safe_ts_last_30d * weekly_trend * daily_trend,
