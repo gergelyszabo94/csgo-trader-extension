@@ -329,10 +329,12 @@ def fetch_skinwallet(response, stage):
 
 def request_priceempire(stage):
     log.info("Requesting prices from pricempire")
+
     response = requests.get("https://api.pricempire.com/v1/getAllItems", params={
         "token": pricempire_token,
         "currency": "USD"
     })
+
     log.info("Received response from pricempire")
     response_json = response.json()
 
@@ -341,61 +343,59 @@ def request_priceempire(stage):
     csgoexo_prices = {}
     buff163_prices = {}
 
-    if response.status_code == 200 and len(response_json) != 0 and response_json.get("status") is True:
-        log.info("Valid response from pricempire")
-        items = response_json.get("items")
-        log.info("Extracting pricing information")
+    if not (response.status_code == 200 and len(response_json) != 0 and response_json.get("status")):
+        handle_invalid_data("priceempire", response.status_code)
 
-        for item in items:
-            name = item.get('name')
-            pricempire_prices = item.get('prices')
+    log.info("Valid response from pricempire")
+    items = response_json.get("items")
+    log.info("Extracting pricing information")
 
-            if pricempire_prices is not None:
-                csgoempire_prices[name] = get_formatted_float_divided_by_100(pricempire_prices.get('csgoempire', {}).get('price'))
-                swapgg_prices[name] = get_formatted_float_divided_by_100(pricempire_prices.get('swapgg', {}).get('price'))
-                csgoexo_prices[name] = get_formatted_float_divided_by_100(pricempire_prices.get('csgoexo', {}).get('price'))
+    for item in items:
+        name = item.get('name')
+        pricempire_prices = item.get('prices')
 
-                item_buff163_price = pricempire_prices.get('buff163', {}).get('price')
-                item_buff163_quick_price = pricempire_prices.get('buff163_quick', {}).get('price')
+        if pricempire_prices is not None:
+            csgoempire_prices[name] = get_formatted_float_divided_by_100(pricempire_prices.get('csgoempire', {}).get('price'))
+            swapgg_prices[name] = get_formatted_float_divided_by_100(pricempire_prices.get('swapgg', {}).get('price'))
+            csgoexo_prices[name] = get_formatted_float_divided_by_100(pricempire_prices.get('csgoexo', {}).get('price'))
 
-                item_buff163_prices = {"starting_at": {}, "highest_order": {}}
-                item_buff163_prices["starting_at"]["price"] = get_formatted_float_divided_by_100(item_buff163_price)
-                item_buff163_prices["highest_order"]["price"] = get_formatted_float_divided_by_100(item_buff163_quick_price)
+            item_buff163_price = pricempire_prices.get('buff163', {}).get('price')
+            item_buff163_quick_price = pricempire_prices.get('buff163_quick', {}).get('price')
 
-                if "Doppler" in name:
-                    item_buff163_prices["starting_at"]["doppler"] = {
-                        "Sapphire": get_formatted_float_divided_by_100(pricempire_prices.get("buff_sapphire", {}).get("price")),
-                        "Ruby": get_formatted_float_divided_by_100(pricempire_prices.get("buff_ruby", {}).get("price")),
-                        "Black Pearl": get_formatted_float_divided_by_100(pricempire_prices.get("buff_bp", {}).get("price")),
-                        "Emerald": get_formatted_float_divided_by_100(pricempire_prices.get("buff_emerald", {}).get("price")),
-                        "Phase 1": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p1", {}).get("price")),
-                        "Phase 2": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p2", {}).get("price")),
-                        "Phase 3": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p3", {}).get("price")),
-                        "Phase 4": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p4", {}).get("price")),
-                    }
-                    item_buff163_prices["highest_order"]["doppler"] = {
-                        "Sapphire": get_formatted_float_divided_by_100(pricempire_prices.get("buff_sapphire_quick", {}).get("price")),
-                        "Ruby": get_formatted_float_divided_by_100(pricempire_prices.get("buff_ruby_quick", {}).get("price")),
-                        "Black Pearl": get_formatted_float_divided_by_100(pricempire_prices.get("buff_bp_quick", {}).get("price")),
-                        "Emerald": get_formatted_float_divided_by_100(pricempire_prices.get("buff_emerald_quick", {}).get("price")),
-                        "Phase 1": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p1_quick", {}).get("price")),
-                        "Phase 2": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p2_quick", {}).get("price")),
-                        "Phase 3": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p3_quick", {}).get("price")),
-                        "Phase 4": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p4_quick", {}).get("price")),
-                    }
-                buff163_prices[name] = item_buff163_prices
-                add_to_master_list(name)
+            item_buff163_prices = {"starting_at": {}, "highest_order": {}}
+            item_buff163_prices["starting_at"]["price"] = get_formatted_float_divided_by_100(item_buff163_price)
+            item_buff163_prices["highest_order"]["price"] = get_formatted_float_divided_by_100(item_buff163_quick_price)
 
-        log.info("Pricing information extracted")
-        push_to_s3(csgoempire_prices, 'csgoempire', stage)
-        push_to_s3(swapgg_prices, 'swapgg', stage)
-        push_to_s3(csgoexo_prices, 'csgoexo', stage)
-        push_to_s3(buff163_prices, 'buff163', stage)
+            if "Doppler" in name:
+                item_buff163_prices["starting_at"]["doppler"] = {
+                    "Sapphire": get_formatted_float_divided_by_100(pricempire_prices.get("buff_sapphire", {}).get("price")),
+                    "Ruby": get_formatted_float_divided_by_100(pricempire_prices.get("buff_ruby", {}).get("price")),
+                    "Black Pearl": get_formatted_float_divided_by_100(pricempire_prices.get("buff_bp", {}).get("price")),
+                    "Emerald": get_formatted_float_divided_by_100(pricempire_prices.get("buff_emerald", {}).get("price")),
+                    "Phase 1": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p1", {}).get("price")),
+                    "Phase 2": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p2", {}).get("price")),
+                    "Phase 3": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p3", {}).get("price")),
+                    "Phase 4": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p4", {}).get("price")),
+                }
+                item_buff163_prices["highest_order"]["doppler"] = {
+                    "Sapphire": get_formatted_float_divided_by_100(pricempire_prices.get("buff_sapphire_quick", {}).get("price")),
+                    "Ruby": get_formatted_float_divided_by_100(pricempire_prices.get("buff_ruby_quick", {}).get("price")),
+                    "Black Pearl": get_formatted_float_divided_by_100(pricempire_prices.get("buff_bp_quick", {}).get("price")),
+                    "Emerald": get_formatted_float_divided_by_100(pricempire_prices.get("buff_emerald_quick", {}).get("price")),
+                    "Phase 1": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p1_quick", {}).get("price")),
+                    "Phase 2": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p2_quick", {}).get("price")),
+                    "Phase 3": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p3_quick", {}).get("price")),
+                    "Phase 4": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p4_quick", {}).get("price")),
+                }
+            buff163_prices[name] = item_buff163_prices
+            add_to_master_list(name)
 
-    else:
-        error = "Could not get items from pricempire"
-        alert_via_sns(error)
-        log.warning(error, " status code: ", response.status_code)
+    log.info("Pricing information extracted")
+    push_to_s3(csgoempire_prices, 'csgoempire', stage)
+    push_to_s3(swapgg_prices, 'swapgg', stage)
+    push_to_s3(csgoexo_prices, 'csgoexo', stage)
+    push_to_s3(buff163_prices, 'buff163', stage)
+
     return buff163_prices, csgoempire_prices, csgoexo_prices, swapgg_prices
 
 
@@ -408,77 +408,80 @@ def request_skinport(stage):
     }, headers={
         "Authorization": "Basic " + (base64.b64encode((skinport_client_id + ":" + skinport_client_secret).encode('ascii'))).decode('ascii')
     })
+
     log.info("Received response from skinport.com")
+
+    if response.status_code != 200:
+        handle_invalid_data("skinport.com", response.status_code)
+
+    log.info("Valid response from skinport.com")
+    log.info("Extracting pricing information")
+
     skinport_prices = {}
-    if response.status_code == 200:
-        log.info("Valid response from skinport.com")
-        items = response.json()
-        log.info("Extracting pricing information")
+    items = response.json()
 
-        for item in items:
-            name = item.get('market_hash_name')
-            suggested_price = item.get('suggested_price')
-            steam_price = item.get('steam_price')
-            instant_price = item.get('instant_price')
-            starting_at = item.get('min_price')
+    for item in items:
+        name = item.get('market_hash_name')
+        suggested_price = item.get('suggested_price')
+        steam_price = item.get('steam_price')
+        instant_price = item.get('instant_price')
+        starting_at = item.get('min_price')
 
-            skinport_prices[name] = {
-                "suggested_price": suggested_price,
-                "steam_price": steam_price,
-                "instant_price": instant_price,
-                "starting_at": starting_at,
-            }
-            add_to_master_list(name)
+        skinport_prices[name] = {
+            "suggested_price": suggested_price,
+            "steam_price": steam_price,
+            "instant_price": instant_price,
+            "starting_at": starting_at,
+        }
+        add_to_master_list(name)
 
-        log.info("Pricing information extracted")
-        push_to_s3(skinport_prices, 'skinport', stage)
-
-    else:
-        error = "Could not get items from skinport.com"
-        alert_via_sns(error)
-        log.warning(error, " status code: ", response.status_code)
+    log.info("Pricing information extracted")
+    push_to_s3(skinport_prices, 'skinport', stage)
     return skinport_prices
 
 
 def request_csmoney(stage):
     log.info("Requesting prices from cs.money")
+
     response = requests.get("https://old.cs.money/js/database-skins/library-en-730.js")
+
     log.info("Received response from cs.money")
+
+    if response.status_code != 200:
+        handle_invalid_data("cs.money", response.status_code)
+
+    log.info("Valid response from cs.money")
+    log.info("Extracting pricing information")
+
     csmoney_prices = {}
-    if response.status_code == 200:
-        log.info("Valid response from cs.money")
-        items = json.loads(response.content.decode().split("skinsBaseList[730] = ")[1])
-        log.info("Extracting pricing information")
-        for item in items:
-            item = items.get(item)
-            name = item.get('m').replace("/", '-')
-            price = item.get('a')
+    items = json.loads(response.content.decode().split("skinsBaseList[730] = ")[1])
 
-            if "Doppler" in name:
-                phase = name.split("Doppler ")[1].split(" (")[0]
-                name = name.replace(phase + " ", "")
-                add_to_master_list(name)
-                try:
-                    csmoney_prices[name]['doppler'][phase] = price
-                except KeyError:
-                    csmoney_prices[name] = {
-                        'price': price,
-                        'doppler': {
-                            phase: price
-                        }
+    for item in items:
+        item = items.get(item)
+        name = item.get('m').replace("/", '-')
+        price = item.get('a')
+
+        if "Doppler" in name:
+            phase = name.split("Doppler ")[1].split(" (")[0]
+            name = name.replace(phase + " ", "")
+            add_to_master_list(name)
+            try:
+                csmoney_prices[name]['doppler'][phase] = price
+            except KeyError:
+                csmoney_prices[name] = {
+                    'price': price,
+                    'doppler': {
+                        phase: price
                     }
-                if phase == "Phase 3":
-                    csmoney_prices[name]['price'] = price
-            else:
-                add_to_master_list(name)
-                csmoney_prices[name] = {'price': price}
+                }
+            if phase == "Phase 3":
+                csmoney_prices[name]['price'] = price
+        else:
+            add_to_master_list(name)
+            csmoney_prices[name] = {'price': price}
 
-        log.info("Pricing information extracted")
-        push_to_s3(csmoney_prices, 'csmoney', stage)
-    else:
-        error = "Could not get items from cs.money"
-        alert_via_sns(error)
-        log.warning(error, " status code: ", response.status_code)
+    log.info("Pricing information extracted")
+    push_to_s3(csmoney_prices, 'csmoney', stage)
     return csmoney_prices
 
 
