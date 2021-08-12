@@ -190,16 +190,16 @@ def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices
                     and not is_mispriced_glove(item, steam_aggregate_price)
                     and not is_mispriced_compared_to_csb(item, steam_aggregate_price, csgobackpack_prices)
             ):
-                if steam_aggregate_price >= 800 and item in buff163_prices and buff163_prices[item]["starting_at"]["price"]:
+                if steam_aggregate_price >= 800 and item in buff163_prices and buff163_prices[item]["starting_at"]["price"] != "null":
                     price = get_formatted_float(float(buff163_prices[item]["starting_at"]["price"]) * st_buff * week_to_day)
                     case = "H"
                 else:
                     price = get_formatted_float(steam_aggregate_price)
-            elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] and \
+            elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and \
                     csmoney_prices[item]["price"] != 0:
                 price = get_formatted_float(float(csmoney_prices[item]["price"]) * st_csm * week_to_day)
                 case = "F"
-            elif item in buff163_prices and buff163_prices[item]["starting_at"]["price"]:
+            elif item in buff163_prices and buff163_prices[item]["starting_at"]["price"] != "null":
                 price = get_formatted_float(float(buff163_prices[item]["starting_at"]["price"]) * st_buff * week_to_day)
                 case = "G"
             elif item in own_prices:
@@ -768,11 +768,11 @@ def is_mispriced_compared_to_csb(item, price, csb_prices):
 def get_formatted_float(price):
     if price:
         return float("{0:.2f}".format(price))
+    return "null"
 
 
 def get_formatted_float_divided_by_100(price):
-    if price:
-        return float("{0:.2f}".format(price / 100))
+    return get_formatted_float(price / 100)
 
 
 def handle_exception(e, text):
