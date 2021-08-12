@@ -717,7 +717,7 @@ def alert_via_sns(error):
 
 
 def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
-    item_prices = steam_prices["item"]
+    item_prices = steam_prices.get(item)
     if not (
             item in steam_prices
             and "safe" in item_prices
