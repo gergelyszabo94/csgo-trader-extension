@@ -36,18 +36,7 @@ def lambda_handler(event, context):
     stage_candidate = arn_split[len(arn_split) - 1]
     stage = 'dev' if stage_candidate == 'priceScraper' else 'prod'  # if there is an alias it's prod
 
-    dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
-    table = dynamodb.Table(own_prices_table)
-
-    print("Getting own prices from Dynamo")
-
-    response = table.scan(ProjectionExpression="market_hash_name, price")
-    own_prices = {}
-
-    for item in response['Items']:
-        name = item["market_hash_name"]
-        own_prices[name] = float(item["price"])
-        add_to_master_list(name)
+    own_prices, response = fetch_own_prices()
 
     steam_prices = fetch_steamapis(response, stage)
     csgobackpack_prices = fetch_csgobackpack(response)
@@ -63,6 +52,7 @@ def lambda_handler(event, context):
         swapgg_prices
     ) = request_priceempire(stage)
 
+    # not used apparently
     skinwallet_prices = fetch_skinwallet(response, stage)
 
     csgotrader_prices = create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices, own_prices, stage, steam_prices)
@@ -88,6 +78,19 @@ def lambda_handler(event, context):
     ):
         push_final_prices(bitskins_prices, buff163_prices, csgoempire_prices, csgoexo_prices, csgotm_prices, csgotrader_prices, csmoney_prices, lootfarm_prices,
                           skinport_prices, stage, steam_prices, swapgg_prices)
+
+
+def fetch_own_prices():
+    dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
+    table = dynamodb.Table(own_prices_table)
+    print("Getting own prices from Dynamo")
+    response = table.scan(ProjectionExpression="market_hash_name, price")
+    own_prices = {}
+    for item in response['Items']:
+        name = item["market_hash_name"]
+        own_prices[name] = float(item["price"])
+        add_to_master_list(name)
+    return own_prices, response
 
 
 def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices, own_prices, stage, steam_prices):
