@@ -539,12 +539,12 @@ def request_lootfarm(response, stage):
         if "Doppler" in name:
             phase = name.split("Doppler ")[1].split(" (")[0]
             name = name.replace(phase + " ", "")
+
             if phase not in special_phases:
-                lootfarm_prices[name] = price
-                add_to_master_list(name)
-        else:
-            lootfarm_prices[name] = price
-            add_to_master_list(name)
+                continue
+
+        lootfarm_prices[name] = price
+        add_to_master_list(name)
 
         log.info("Pricing information extracted")
         push_to_s3(lootfarm_prices, 'lootfarm', stage)
