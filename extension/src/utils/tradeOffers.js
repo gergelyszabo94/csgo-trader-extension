@@ -251,7 +251,7 @@ const notifyAboutOfferOnDiscord = (offer, items) => {
     getPlayerSummaries([steamIDOfPartner]).then((summary) => {
       const userDetails = summary[steamIDOfPartner];
 
-      const title = `Trade Offer (${prettyPrintPrice(currency, offer.profitOrLoss.toFixed(2))})`;
+      const title = `Trade Offer (${prettyPrintPrice(currency, offer.profitOrLoss.toFixed(2))} ${offer.PLPercentageFormatted})`;
       const description = offer.message !== '' ? `*${DOMPurify.sanitize(offer.message)}*` : '';
       
       const giving = createDiscordSideSummary(offer.items_to_give, items);
