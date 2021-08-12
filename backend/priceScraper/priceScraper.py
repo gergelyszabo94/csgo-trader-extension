@@ -127,6 +127,7 @@ def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices
             daily = float(item_prices["safe_ts"]["last_24h"])
             weekly = float(item_prices["safe_ts"]["last_7d"])
             monthly = float(item_prices["safe_ts"]["last_30d"])
+
             if daily > 0.1 and weekly > 0.1 and monthly > 0.1:
                 wtd_ratio = daily / weekly
                 mtw_ratio = weekly / monthly
@@ -135,8 +136,8 @@ def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices
                     week_to_day += wtd_ratio
                     month_to_week += mtw_ratio
                     count += 1
-    week_to_day = week_to_day / count
-    month_to_week = month_to_week / count
+    week_to_day /= count
+    month_to_week /= count
     log.info("Market trends: WtD: " + str(week_to_day) + " MtW: " + str(month_to_week))
     log.info("Getting price difference ratio between steam:buff and steam:csmoney")
     st_buff = 0
@@ -170,8 +171,8 @@ def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices
                     st_buff += st_buff_ratio
                     st_csm += st_csm_ratio
                     count += 1
-    st_buff = st_buff / count
-    st_csm = st_csm / count
+    st_buff /= count
+    st_csm /= count
     log.info("Steam:Buff: " + str(st_buff) + " Steam:Csmoney:  " + str(st_csm))
     log.info("Creating csgotrader prices")
     csgotrader_prices = {}
@@ -185,20 +186,20 @@ def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices
             if (
                     steam_aggregate_price != "null"
                     and steam_aggregate_price != 0.0
-                    and not is_mispriced_knife(item, steam_aggregate["price"])
-                    and not is_mispriced_glove(item, steam_aggregate["price"])
-                    and not is_mispriced_compared_to_csb(item, steam_aggregate["price"], csgobackpack_prices)
+                    and not is_mispriced_knife(item, steam_aggregate_price)
+                    and not is_mispriced_glove(item, steam_aggregate_price)
+                    and not is_mispriced_compared_to_csb(item, steam_aggregate_price, csgobackpack_prices)
             ):
-                if steam_aggregate_price >= 800 and item in buff163_prices and buff163_prices[item]["starting_at"]["price"] != "null":
+                if steam_aggregate_price >= 800 and item in buff163_prices and buff163_prices[item]["starting_at"]["price"]:
                     price = get_formatted_float(float(buff163_prices[item]["starting_at"]["price"]) * st_buff * week_to_day)
                     case = "H"
                 else:
-                    price = get_formatted_float(steam_aggregate["price"])
-            elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and \
+                    price = get_formatted_float(steam_aggregate_price)
+            elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] and \
                     csmoney_prices[item]["price"] != 0:
                 price = get_formatted_float(float(csmoney_prices[item]["price"]) * st_csm * week_to_day)
                 case = "F"
-            elif item in buff163_prices and buff163_prices[item]["starting_at"]["price"] != "null":
+            elif item in buff163_prices and buff163_prices[item]["starting_at"]["price"]:
                 price = get_formatted_float(float(buff163_prices[item]["starting_at"]["price"]) * st_buff * week_to_day)
                 case = "G"
             elif item in own_prices:
@@ -209,6 +210,7 @@ def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices
                 doppler = {}
                 for phase in csmoney_prices[item]["doppler"]:
                     doppler[phase] = get_formatted_float(float(csmoney_prices[item]["doppler"][phase]) * st_csm)
+
                 if stage == "dev":
                     csgotrader_prices[item] = {
                         "price": price,
@@ -228,13 +230,17 @@ def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices
             else:
                 csgotrader_prices[item] = {"price": price}
     log.info("Check if the non-st version is cheaper")
-    for item in csgotrader_prices:
-        is_st = True if "StatTrak\u2122" in item else False
+    for item, value in csgotrader_prices.items():
+        is_st = "StatTrak\u2122" in item
         if is_st:
             none_st_name = get_non_st_name(item)
-            if none_st_name in csgotrader_prices and csgotrader_prices[none_st_name]["price"] != "null" \
-                    and csgotrader_prices[item]["price"] != "null" and float(
-                csgotrader_prices[none_st_name]["price"]) > float(csgotrader_prices[item]["price"]):
+            if (
+                    none_st_name in csgotrader_prices
+                    and csgotrader_prices[none_st_name]["price"] != "null"
+                    and value["price"] != "null"
+                    and float(csgotrader_prices[none_st_name]["price"])
+                    > float(csgotrader_prices[item]["price"])
+            ):
                 # if the st version is cheaper then the non-st's price is used
                 if stage == "dev":
                     csgotrader_prices[item] = {
