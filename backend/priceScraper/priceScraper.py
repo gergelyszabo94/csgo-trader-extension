@@ -717,7 +717,7 @@ def alert_via_sns(error):
 
 
 def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
-    item_prices = steam_prices[item]
+    item_prices = steam_prices["item"]
     if not (
             item in steam_prices
             and "safe" in item_prices
@@ -793,17 +793,17 @@ def is_mispriced_compared_to_csb(item, price, csb_prices):
     return False
 
 
-def get_formatted_float(price):
+def get_formatted_float(price: Optional[float]):
     if price:
         return float("{0:.2f}".format(price))
 
 
-def get_formatted_float_divided_by_100(price):
+def get_formatted_float_divided_by_100(price: Optional[float]):
     if price:
         return get_formatted_float(price / 100)
 
 
-def handle_exception(text):
+def handle_exception(text: str):
     logging.exception(text)
     if sys.last_value:
         formatted_exc = format_exception(sys.last_value)
@@ -816,7 +816,7 @@ def handle_exception(text):
         alert_via_sns(text)
 
 
-def format_exception(e):
+def format_exception(e: BaseException):
     formatted_exc = traceback.format_exception(type(e), e, e.__traceback__)
     del formatted_exc[0]
     last_line = formatted_exc.pop()
@@ -824,7 +824,7 @@ def format_exception(e):
     return "".join(formatted_exc + [last_line])
 
 
-def handle_invalid_data(name, status_code):
+def handle_invalid_data(name: str, status_code: int):
     error = f"Failed to parse request from {name}."
     alert_via_sns(error)
     log.warning(f"{error} status_code: {status_code}")
