@@ -71,7 +71,6 @@ def lambda_handler(event, context):
                 csmoney_prices,
                 lootfarm_prices,
                 skinport_prices,
-                stage,
                 steam_prices,
                 swapgg_prices,
             ]
