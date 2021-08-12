@@ -89,9 +89,17 @@ def lambda_handler(event, context):
     if all(all_prices_list):
         push_final_prices(bitskins_prices, buff163_prices, csgoempire_prices, csgoexo_prices, csgotm_prices, csgotrader_prices, csmoney_prices, lootfarm_prices,
                           skinport_prices, stage, steam_prices, swapgg_prices)
-    else:
-        falsy_prices = [p for p in all_prices_list if not p]
-        log.error(", ".join(falsy_prices) + " failed to be set.")
+        return {
+            "statusCode": 200,
+            "body": "\"Success!\""
+        }
+    falsy_prices = [p for p in all_prices_list if not p]
+    falsy_prices_str = ", ".join(falsy_prices) + " failed to be set."
+    log.error(falsy_prices_str)
+    return {
+        "statusCode": 500,
+        "body": falsy_prices_str
+    }
 
 
 def fetch_own_prices():
