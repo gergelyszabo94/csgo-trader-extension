@@ -554,8 +554,8 @@ def request_lootfarm(response, stage):
         lootfarm_prices[name] = price
         add_to_master_list(name)
 
-        log.info("Pricing information extracted")
-        push_to_s3(lootfarm_prices, 'lootfarm', stage)
+    log.info("Pricing information extracted")
+    push_to_s3(lootfarm_prices, 'lootfarm', stage)
 
     return lootfarm_prices
 
