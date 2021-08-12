@@ -799,7 +799,8 @@ def get_formatted_float(price):
 
 
 def get_formatted_float_divided_by_100(price):
-    return get_formatted_float(price / 100)
+    if price:
+        return get_formatted_float(price / 100)
 
 
 def handle_exception(text):
