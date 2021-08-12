@@ -345,6 +345,7 @@ def request_priceempire(stage):
 
     if not (response.status_code == 200 and len(response_json) != 0 and response_json.get("status")):
         handle_invalid_data("priceempire", response.status_code)
+        return buff163_prices, csgoempire_prices, csgoexo_prices, swapgg_prices
 
     log.info("Valid response from pricempire")
     items = response_json.get("items")
@@ -414,6 +415,7 @@ def request_skinport(stage):
 
     if response.status_code != 200:
         handle_invalid_data("skinport.com", response.status_code)
+        return {}
 
     log.info("Valid response from skinport.com")
     log.info("Extracting pricing information")
@@ -450,6 +452,7 @@ def request_csmoney(stage):
 
     if response.status_code != 200:
         handle_invalid_data("cs.money", response.status_code)
+        return {}
 
     log.info("Valid response from cs.money")
     log.info("Extracting pricing information")
@@ -494,6 +497,7 @@ def fetch_csgotm(stage):
 
     if not (response.status_code == 200 and response.json()['success']):
         handle_invalid_data("csgo.tm", response.status_code)
+        return {}
 
     log.info("Valid response from csgo.tm")
     log.info("Extracting pricing information")
@@ -525,6 +529,7 @@ def request_lootfarm(response, stage):
 
     if response.status_code != 200:
         handle_invalid_data("loot.farm", response.status_code)
+        return {}
 
     log.info("Valid response from loot.farm")
     log.info("Extracting pricing information")
@@ -607,6 +612,7 @@ def fetch_csgobackpack(response):
 
     if not (response.status_code == 200 and response.json()['success']):
         handle_invalid_data("csgobackpack.net", response.status_code)
+        return {}
 
     log.info("Valid response from csgobackpack.net")
     log.info("Extracting pricing information")
