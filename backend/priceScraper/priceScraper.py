@@ -403,6 +403,7 @@ def request_skinport(stage):
     # base64 encoding of auth header per docs:
     # https://docs.skinport.com/#authentication
     log.info("Requesting prices from skinport.com")
+
     response = requests.get("https://api.skinport.com/v1/items", params={
         "app_id": "730"
     }, headers={
@@ -457,7 +458,6 @@ def request_csmoney(stage):
     items = json.loads(response.content.decode().split("skinsBaseList[730] = ")[1])
 
     for item in items:
-        item = items.get(item)
         name = item.get('m').replace("/", '-')
         price = item.get('a')
 
@@ -624,6 +624,7 @@ def fetch_csgobackpack(response):
 
 def fetch_steamapis(response, stage):
     logging.info('Getting Prices from Steam APIs')
+
     try:
         response = requests.get("https://api.steamapis.com/market/items/730", params={
             "api_key": steam_apis_key
