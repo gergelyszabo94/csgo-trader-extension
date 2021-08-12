@@ -352,7 +352,7 @@ def request_priceempire(stage):
                 item_buff163_price = pricempire_prices.get('buff163', {}).get('price')
                 item_buff163_quick_price = pricempire_prices.get('buff163_quick', {}).get('price')
 
-                item_buff163_prices = {}
+                item_buff163_prices = {"starting_at": {}, "highest_order": {}}
                 item_buff163_prices["starting_at"]["price"] = get_formatted_float_divided_by_100(item_buff163_price)
                 item_buff163_prices["highest_order"]["price"] = get_formatted_float_divided_by_100(item_buff163_quick_price)
 
