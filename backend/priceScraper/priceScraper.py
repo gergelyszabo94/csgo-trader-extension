@@ -5,6 +5,7 @@ import logging
 import os
 import sys
 import traceback
+from typing import Union, Tuple, Any, Dict, Optional
 from datetime import date
 
 import boto3
@@ -104,7 +105,7 @@ def lambda_handler(event, context):
     }
 
 
-def fetch_own_prices():
+def fetch_own_prices() -> Tuple[Dict[str, float], Any]:
     dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
     table = dynamodb.Table(own_prices_table)
     log.info("Getting own prices from Dynamo")
@@ -117,7 +118,7 @@ def fetch_own_prices():
     return own_prices, response
 
 
-def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices, own_prices, stage, steam_prices):
+def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices, own_prices, stage, steam_prices) -> dict:
     log.info("Creates own pricing")
     log.info("Calculate market trends")
     week_to_day = 0
@@ -293,7 +294,7 @@ def push_final_prices(bitskins_prices, buff163_prices, csgoempire_prices, csgoex
     push_to_s3(extract, 'prices_v6', stage)
 
 
-def fetch_skinwallet(response, stage):
+def fetch_skinwallet(response, stage) -> Dict[str, float]:
     log.info("Requesting prices from skinwallet.com")
     try:
         response = requests.get("https://www.skinwallet.com/market/api/offers/overview", params={
@@ -327,7 +328,9 @@ def fetch_skinwallet(response, stage):
     return skinwallet_prices
 
 
-def request_priceempire(stage):
+# trying to typehint all of these would get really ugly really fast
+
+def request_priceempire(stage) -> Tuple[dict, dict, dict, dict]:
     log.info("Requesting prices from pricempire")
 
     response = requests.get("https://api.pricempire.com/v1/getAllItems", params={
@@ -400,7 +403,7 @@ def request_priceempire(stage):
     return buff163_prices, csgoempire_prices, csgoexo_prices, swapgg_prices
 
 
-def request_skinport(stage):
+def request_skinport(stage) -> Dict[str, Dict[str, Optional[float]]]:
     # base64 encoding of auth header per docs:
     # https://docs.skinport.com/#authentication
     log.info("Requesting prices from skinport.com")
@@ -443,7 +446,7 @@ def request_skinport(stage):
     return skinport_prices
 
 
-def request_csmoney(stage):
+def request_csmoney(stage) -> Dict[str, Dict[str, float]]:
     log.info("Requesting prices from cs.money")
 
     response = requests.get("https://old.cs.money/js/database-skins/library-en-730.js")
@@ -488,7 +491,7 @@ def request_csmoney(stage):
     return csmoney_prices
 
 
-def fetch_csgotm(stage):
+def fetch_csgotm(stage) -> Dict[str, str]:
     log.info("Requesting prices from csgo.tm")
 
     response = requests.get("https://market.csgo.com/api/v2/prices/USD.json")
@@ -517,7 +520,7 @@ def fetch_csgotm(stage):
     return csgotm_prices
 
 
-def request_lootfarm(response, stage):
+def request_lootfarm(response, stage) -> Dict[str, float]:
     log.info("Requesting prices from loot.farm")
 
     try:
@@ -560,7 +563,7 @@ def request_lootfarm(response, stage):
     return lootfarm_prices
 
 
-def request_bitskins(response, stage):
+def request_bitskins(response, stage) -> Dict[str, Dict[str, Optional[str]]]:
     log.info('Requesting bitskins prices')
 
     try:
@@ -600,7 +603,7 @@ def request_bitskins(response, stage):
     return bitskins_prices
 
 
-def fetch_csgobackpack(response):
+def fetch_csgobackpack(response) -> Dict[str, Optional[Dict[str, Dict[str, Union[str, float]]]]]:
     log.info("Requesting prices from csgobackpack.net")
 
     try:
@@ -628,7 +631,7 @@ def fetch_csgobackpack(response):
     return csgobackpack_prices
 
 
-def fetch_steamapis(response, stage):
+def fetch_steamapis(response, stage) -> Dict[str, Dict[str, float]]:
     logging.info('Getting Prices from Steam APIs')
 
     try:
