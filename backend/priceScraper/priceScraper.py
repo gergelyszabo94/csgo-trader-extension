@@ -333,10 +333,13 @@ def fetch_skinwallet(response, stage) -> Dict[str, float]:
 def request_priceempire(stage) -> Tuple[dict, dict, dict, dict]:
     log.info("Requesting prices from pricempire")
 
-    response = requests.get("https://api.pricempire.com/v1/getAllItems", params={
-        "token": pricempire_token,
-        "currency": "USD"
-    })
+    try:
+        response = requests.get("https://api.pricempire.com/v1/getAllItems", params={
+            "token": pricempire_token,
+            "currency": "USD"
+        })
+    except RequestException:
+        handle_exception("Error during priceempire request")
 
     log.info("Received response from pricempire")
     response_json = response.json()
@@ -408,11 +411,14 @@ def request_skinport(stage) -> Dict[str, Dict[str, Optional[float]]]:
     # https://docs.skinport.com/#authentication
     log.info("Requesting prices from skinport.com")
 
-    response = requests.get("https://api.skinport.com/v1/items", params={
-        "app_id": "730"
-    }, headers={
-        "Authorization": "Basic " + (base64.b64encode((skinport_client_id + ":" + skinport_client_secret).encode('ascii'))).decode('ascii')
-    })
+    try:
+        response = requests.get("https://api.skinport.com/v1/items", params={
+            "app_id": "730"
+        }, headers={
+            "Authorization": "Basic " + (base64.b64encode((skinport_client_id + ":" + skinport_client_secret).encode('ascii'))).decode('ascii')
+        })
+    except RequestException:
+        handle_exception("Error during skinport request")
 
     log.info("Received response from skinport.com")
 
@@ -449,7 +455,10 @@ def request_skinport(stage) -> Dict[str, Dict[str, Optional[float]]]:
 def request_csmoney(stage) -> Dict[str, Dict[str, float]]:
     log.info("Requesting prices from cs.money")
 
-    response = requests.get("https://old.cs.money/js/database-skins/library-en-730.js")
+    try:
+        response = requests.get("https://old.cs.money/js/database-skins/library-en-730.js")
+    except RequestException:
+        handle_exception("Error during csmoney request")
 
     log.info("Received response from cs.money")
 
@@ -494,7 +503,10 @@ def request_csmoney(stage) -> Dict[str, Dict[str, float]]:
 def fetch_csgotm(stage) -> Dict[str, str]:
     log.info("Requesting prices from csgo.tm")
 
-    response = requests.get("https://market.csgo.com/api/v2/prices/USD.json")
+    try:
+        response = requests.get("https://market.csgo.com/api/v2/prices/USD.json")
+    except RequestException:
+        handle_exception("Error during csgo.tm request")
 
     log.info("Received response from csgo.tm")
 
@@ -572,7 +584,6 @@ def request_bitskins(response, stage) -> Dict[str, Dict[str, Optional[str]]]:
             "code": bitskins_token.now(),
             "app_id": "730"
         })
-        response.raise_for_status()
     except RequestException:
         handle_exception("Error during bitskins request")
 
