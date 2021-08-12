@@ -9,6 +9,7 @@ from datetime import date
 import boto3
 import pyotp
 import requests
+from requests.exceptions import RequestException
 
 bitskins_secret = os.environ['BITSKINS_SECRET']
 bitskins_token = pyotp.TOTP(bitskins_secret)
@@ -300,7 +301,7 @@ def fetch_skinwallet(response, stage):
             "accept": "application/json",
             "x-auth-token": skinwallet_api_key
         })
-    except Exception as e:
+    except RequestException as e:
         handle_exception(e, "Error during skinwallet request")
     log.info("Received response from skinwallet.com")
     skinwallet_prices = {}
@@ -507,7 +508,7 @@ def request_lootfarm(response, stage):
     log.info("Requesting prices from loot.farm")
     try:
         response = requests.get("https://loot.farm/fullprice.json")
-    except Exception as e:
+    except RequestException as e:
         handle_exception(e, "Error during loot.farm request")
     log.info("Received response from loot.farm")
     lootfarm_prices = {}
@@ -551,7 +552,7 @@ def request_bitskins(response, stage):
             "code": bitskins_token.now(),
             "app_id": "730"
         })
-    except Exception as e:
+    except RequestException as e:
         handle_exception(e, "Error during bitskins request")
 
     bitskins_prices = {}
@@ -574,7 +575,7 @@ def request_bitskins(response, stage):
                     }
                 log.info("Pricing info extracted")
                 push_to_s3(bitskins_prices, 'bitskins', stage)
-        except Exception as e:
+        except RequestException as e:
             handle_exception(e, "Bitskins maintenance?")
     elif response.status_code == 401:
         error = "Could not get items from bitskins, it's most likely an authentication problem"
@@ -591,7 +592,7 @@ def fetch_csgobackpack(response):
     log.info("Requesting prices from csgobackpack.net")
     try:
         response = requests.get("http://csgobackpack.net/api/GetItemsList/v2/")
-    except Exception as e:
+    except RequestException as e:
         handle_exception(e, "Error during csgobackpack request")
     log.info("Received response from csgobackpack.net")
     csgobackpack_prices = {}
@@ -616,7 +617,7 @@ def fetch_steamapis(response, stage):
         response = requests.get("https://api.steamapis.com/market/items/730", params={
             "api_key": steam_apis_key
         })
-    except Exception as e:
+    except RequestException as e:
         handle_exception(e, "Error during steam apis request")
     log.info('Received response from steamapis.com')
     steam_prices = {}
