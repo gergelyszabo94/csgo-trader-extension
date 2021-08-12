@@ -155,10 +155,10 @@ def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices
                 and item_csmoney_prices
                 and "safe_ts" in item_steam_prices
                 and "last_7d" in item_steam_prices["safe_ts"]
-                and item_buff_prices["highest_order"]["price"] != "null"
-                and item_buff_prices["starting_at"]["price"] != "null"
+                and item_buff_prices["highest_order"]["price"]
+                and item_buff_prices["starting_at"]["price"]
                 and "price" in item_csmoney_prices
-                and item_csmoney_prices["price"] not in ["", "null"]
+                and item_csmoney_prices["price"]
         ):
             st_weekly = float(item_steam_prices["safe_ts"]["last_7d"])
             buff_mid_price = (float(item_buff_prices["highest_order"]["price"]) + float(item_buff_prices["starting_at"]["price"])) / 2
@@ -181,25 +181,23 @@ def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices
             steam_aggregate = get_steam_price(item, steam_prices, week_to_day, month_to_week)
             steam_aggregate_price = steam_aggregate["price"]
             case = steam_aggregate["case"]  # only used to debug pricing in dev mode
-            price = "null"
+            price = None
 
             if (
-                    steam_aggregate_price != "null"
-                    and steam_aggregate_price != 0.0
+                    steam_aggregate_price
                     and not is_mispriced_knife(item, steam_aggregate_price)
                     and not is_mispriced_glove(item, steam_aggregate_price)
                     and not is_mispriced_compared_to_csb(item, steam_aggregate_price, csgobackpack_prices)
             ):
-                if steam_aggregate_price >= 800 and item in buff163_prices and buff163_prices[item]["starting_at"]["price"] != "null":
+                if steam_aggregate_price >= 800 and item in buff163_prices and buff163_prices[item]["starting_at"]["price"]:
                     price = get_formatted_float(float(buff163_prices[item]["starting_at"]["price"]) * st_buff * week_to_day)
                     case = "H"
                 else:
                     price = get_formatted_float(steam_aggregate_price)
-            elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"] != "null" and \
-                    csmoney_prices[item]["price"] != 0:
+            elif item in csmoney_prices and "price" in csmoney_prices[item] and csmoney_prices[item]["price"]:
                 price = get_formatted_float(float(csmoney_prices[item]["price"]) * st_csm * week_to_day)
                 case = "F"
-            elif item in buff163_prices and buff163_prices[item]["starting_at"]["price"] != "null":
+            elif item in buff163_prices and buff163_prices[item]["starting_at"]["price"]:
                 price = get_formatted_float(float(buff163_prices[item]["starting_at"]["price"]) * st_buff * week_to_day)
                 case = "G"
             elif item in own_prices:
@@ -236,8 +234,8 @@ def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices
             none_st_name = get_non_st_name(item)
             if (
                     none_st_name in csgotrader_prices
-                    and csgotrader_prices[none_st_name]["price"] != "null"
-                    and value["price"] != "null"
+                    and csgotrader_prices[none_st_name]["price"]
+                    and value["price"]
                     and float(csgotrader_prices[none_st_name]["price"])
                     > float(csgotrader_prices[item]["price"])
             ):
@@ -264,23 +262,23 @@ def push_final_prices(bitskins_prices, buff163_prices, csgoempire_prices, csgoex
             extract[item]["steam"] = steam_prices[item]["safe_ts"]
         else:
             extract[item]["steam"] = {
-                "last_90d": "null",
-                "last_30d": "null",
-                "last_7d": "null",
-                "last_24h": "null"
+                "last_90d": None,
+                "last_30d": None,
+                "last_7d": None,
+                "last_24h": None
             }
-        extract[item]["bitskins"] = bitskins_prices.get(item, "null")
-        extract[item]["lootfarm"] = lootfarm_prices.get(item, "null")
-        extract[item]["csgotm"] = csgotm_prices.get(item, "null")
-        extract[item]["csmoney"] = csmoney_prices.get(item, "null")
-        extract[item]["skinport"] = skinport_prices.get(item, "null")
-        extract[item]["csgotrader"] = csgotrader_prices.get(item, "null")
-        extract[item]["csgoempire"] = csgoempire_prices.get(item, "null")
-        extract[item]["swapgg"] = swapgg_prices.get(item, "null")
-        extract[item]["csgoexo"] = csgoexo_prices.get(item, "null")
+        extract[item]["bitskins"] = bitskins_prices.get(item)
+        extract[item]["lootfarm"] = lootfarm_prices.get(item)
+        extract[item]["csgotm"] = csgotm_prices.get(item)
+        extract[item]["csmoney"] = csmoney_prices.get(item)
+        extract[item]["skinport"] = skinport_prices.get(item)
+        extract[item]["csgotrader"] = csgotrader_prices.get(item)
+        extract[item]["csgoempire"] = csgoempire_prices.get(item)
+        extract[item]["swapgg"] = swapgg_prices.get(item)
+        extract[item]["csgoexo"] = csgoexo_prices.get(item)
         extract[item]["buff163"] = buff163_prices.get(item, {
-            "starting_at": "null",
-            "highest_order": "null",
+            "starting_at": None,
+            "highest_order": None,
         })
     push_to_s3(extract, 'prices_v6', stage)
 
@@ -304,12 +302,7 @@ def fetch_skinwallet(response, stage):
         log.info("Extracting pricing information")
         for item in items:
             name = item.get('marketHashName')
-            price = item.get('cheapestOffer').get('price').get('amount')
-
-            if price:
-                skinwallet_prices[name] = price
-            else:
-                skinwallet_prices[name] = "null"
+            skinwallet_prices[name] = item.get('cheapestOffer').get('price').get('amount')
 
         log.info("Pricing information extracted")
         push_to_s3(skinwallet_prices, 'skinwallet', stage)
@@ -565,7 +558,7 @@ def request_bitskins(response, stage):
                     instant_sale_price = item.get('instant_sale_price')
 
                     if instant_sale_price == "None":
-                        instant_sale_price = "null"
+                        instant_sale_price = None
 
                     bitskins_prices[name] = {
                         "price": item["price"],
@@ -600,7 +593,7 @@ def fetch_csgobackpack(response):
         log.info("Extracting pricing information")
         for key, value in items.items():
             name = value.get('name').replace("&#39", "'")
-            csgobackpack_prices[name] = value.get('price') or "null"
+            csgobackpack_prices[name] = value.get('price')
         log.info("Pricing information extracted")
     else:
         error = "Could not get items from csgobackpack.net"
@@ -692,7 +685,7 @@ def get_steam_price(item, steam_prices, daily_trend, weekly_trend):
             and "sold" in item_prices
     ):
         return {
-            "price": "null",
+            "price": None,
             "case": "I"
         }
 
@@ -757,8 +750,7 @@ def is_mispriced_compared_to_csb(item, price, csb_prices):
             price in csb_prices
             and "7_days" in csb_prices[item]
             and "median" in csb_prices[item]["7_days"]
-            and csb_prices[item]["7_days"]["median"] != "null"
-            and csb_prices[item]["7_days"]["median"] != 0
+            and csb_prices[item]["7_days"]["median"]
     ):
         ratio = csb_prices[item]["7_days"]["median"] / price
         return ratio < 0.8 or ratio > 1.2
@@ -768,7 +760,6 @@ def is_mispriced_compared_to_csb(item, price, csb_prices):
 def get_formatted_float(price):
     if price:
         return float("{0:.2f}".format(price))
-    return "null"
 
 
 def get_formatted_float_divided_by_100(price):
