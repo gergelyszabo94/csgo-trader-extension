@@ -10,7 +10,7 @@ const WebChat = () => {
         name="Remove Steam header"
         id="removeWebChatHeader"
         type="flipSwitchStorage"
-        description="Rmoves the Steam header that takes up a lot of space on the web chat page."
+        description="Removes the Steam header that takes up a lot of space on the web chat page."
       />
     </Category>
   );
