@@ -21,12 +21,12 @@ import { notifyOnDiscord, playNotificationSound } from 'utils/notifications';
 
 import DOMPurify from 'dompurify';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
+import { getItemByIDs } from './itemsToElementsToItems';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 import { getTradeOffers } from 'utils/IEconService';
 import { prettyPrintPrice } from 'utils/pricing';
 import steamApps from 'utils/static/steamApps';
-import { getItemByIDs } from './itemsToElementsToItems';
 
 const createTradeOfferJSON = (itemsToGive, itemsToReceive) => {
   return {
@@ -210,7 +210,7 @@ const notifyAboutOffer = (offer) => {
 };
 
 const createDiscordSideSummary = (offerSideItems, itemsWithDetails) => {
-  let summary = '';
+  const itemNames = {};
   if (offerSideItems !== null && offerSideItems !== undefined) {
     offerSideItems.forEach((itemToGive) => {
       const item = getItemByIDs(
@@ -220,15 +220,25 @@ const createDiscordSideSummary = (offerSideItems, itemsWithDetails) => {
         itemToGive.assetid,
       );
       if (item) {
-        const itemName = item.dopplerInfo
+        let itemName = item.dopplerInfo
           ? `${item.market_hash_name} (${item.dopplerInfo.name})`
           : item.market_hash_name;
-        summary += `${itemName}`;
-        if (item.price) summary += ` (${item.price.display})`;
-        if (item.floatInfo) summary += ` (${item.floatInfo.floatvalue.toFixed(4)})`;
-        summary += '\n';
+        if (item.price) itemName += ` (${item.price.display})`;
+        if (item.floatInfo) itemName += ` (${item.floatInfo.floatvalue.toFixed(4)})`;
+        
+        if (itemName in itemNames) {
+          itemNames[itemName]++;
+        } else {
+          itemNames[itemName] = 1;
+        }
       }
     });
+    
+    let summary = '';
+    for (const [name, amount] of Object.entries(itemNames)) {
+      summary += amount > 1 ? `${name} (x${amount})\n` : `${name}\n`;
+    }
+    return summary;
   }
   // 1024 is max size of an embed field
   if (summary.length > 1024) {
