@@ -1,5 +1,4 @@
-.idea/*
-.vs/*
-backend/.idea/*
+.idea/
+.vs/
 backend/priceScraper/package/*
 extension/chrome/.DS_Store
