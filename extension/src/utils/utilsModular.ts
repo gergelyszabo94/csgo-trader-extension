@@ -447,12 +447,12 @@ const getAssetIDFromInspectLink = (inspectLink) =>
         ? inspectLink.split('A')[1].split('D')[0]
         : null;
 
-const getActivePage = (type, getActiveInventory) => {
+const getActivePage = (type?: string, getActiveInventory?: () => any) => {
     let activePage = null;
     if (type === 'inventory') {
-        document.querySelectorAll('.inventory_ctn').forEach((inventory) => {
+        document.querySelectorAll<HTMLElement>('.inventory_ctn').forEach((inventory) => {
             if (inventory.style.display !== 'none') {
-                inventory.querySelectorAll('.inventory_page').forEach((page) => {
+                inventory.querySelectorAll<HTMLElement>('.inventory_page').forEach((page) => {
                     if (page.style.display !== 'none') activePage = page;
                 });
             }
@@ -468,7 +468,7 @@ const getActivePage = (type, getActiveInventory) => {
     return activePage;
 };
 
-const addPageControlEventListeners = (type, addFloatIndicatorsFunction) => {
+const addPageControlEventListeners = (type?: string, addFloatIndicatorsFunction?: (a?: Element | string) => void) => {
     const pageControls = document.getElementById('inventory_pagecontrols');
     if (pageControls !== null) {
         pageControls.addEventListener('click', () => {
@@ -645,12 +645,12 @@ const reloadPageOnExtensionReload = () => {
 
 const isSIHActive = () => {
     const SIHSwitch = document.getElementById('switchPanel');
-    const SIHSwitcherCheckbox = document.getElementById('switcher');
+    const SIHSwitcherCheckbox = document.getElementById('switcher') as HTMLInputElement;
     return SIHSwitch !== null && SIHSwitcherCheckbox !== null && SIHSwitcherCheckbox.checked;
 };
 
 let searchListenerTimeout = null;
-const addSearchListener = (type, addFloatIndicatorsFunction) => {
+const addSearchListener = (type, addFloatIndicatorsFunction?) => {
     let searchElement;
     if (type === 'inventory') searchElement = document.getElementById('filter_control');
     else if (type === 'offer') searchElement = document.querySelector('.filter_search_box');
@@ -680,7 +680,7 @@ const getSessionID = () => {
 // updates the SteamID of the extension's user in storage
 const updateLoggedInUserInfo = () => {
     const steamID = getUserSteamID();
-    if (steamID !== 'false' && steamID !== false && steamID !== null) {
+    if (steamID !== 'false' && steamID !== null) {
         chrome.storage.local.set(
             {
                 steamIDOfUser: steamID,
@@ -741,7 +741,7 @@ const repositionNameTagIcons = () => {
 
 const jumpToAnchor = (anchor) => {
     if (anchor !== '') {
-        window.location = `${window.location.origin}${window.location.pathname}${anchor}`;
+        window.location.href = `${window.location.origin}${window.location.pathname}${anchor}`;
     }
 };
 
@@ -833,7 +833,7 @@ const copyToClipboard = (text) => {
         <textarea id="text_area_to_copy_to_clipboard" class="hidden-copy-textarea" readonly="">${text}</textarea>`),
     );
 
-    const textAreaElement = document.getElementById('text_area_to_copy_to_clipboard');
+    const textAreaElement = document.getElementById('text_area_to_copy_to_clipboard') as HTMLInputElement;
     textAreaElement.select();
     document.execCommand('copy');
     textAreaElement.remove();

@@ -36,7 +36,7 @@ const getProfileOwnerSteamID = () => {
 };
 
 const getGroupID = () => {
-    return document.querySelector('input[name=groupId]').value;
+    return document.querySelector<HTMLInputElement>('input[name=groupId]').value;
 };
 
 const getSharedFileIDAndOwner = () => {
