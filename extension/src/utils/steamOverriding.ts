@@ -2,7 +2,7 @@ import { injectScript } from 'utils/injection';
 
 // makes trade offers open in new tab instead of a separate window
 const overrideShowTradeOffer = () => {
-  const overRideShowTradeOfferScript = `
+    const overRideShowTradeOfferScript = `
     function ShowTradeOffer( tradeOfferID, rgParams )
         {
             var strParams = '';
@@ -17,14 +17,15 @@ const overrideShowTradeOffer = () => {
             winOffer.focus();
         }
 `;
-  chrome.storage.local.get(['openOfferInTab'], (result) => {
-    if (result.openOfferInTab) injectScript(overRideShowTradeOfferScript, false, 'ShowTradeOfferScript', null);
-  });
+    chrome.storage.local.get(['openOfferInTab'], (result) => {
+        if (result.openOfferInTab)
+            injectScript(overRideShowTradeOfferScript, false, 'ShowTradeOfferScript', null);
+    });
 };
 
 // adds In-browser inspect as action - in trade offers
 const overrideHandleTradeActionMenu = () => {
-  const overrideHandleTradeActionMenuScript = `
+    const overrideHandleTradeActionMenuScript = `
         function HandleTradeActionMenu( elActionMenuButton, item, user )
         {
             HideMenuFast( elActionMenuButton, 'trade_action_popup' );
@@ -112,12 +113,12 @@ const overrideHandleTradeActionMenu = () => {
         }
        `;
 
-  injectScript(overrideHandleTradeActionMenuScript, false, 'overrideHandleTradeActionMenu', null);
+    injectScript(overrideHandleTradeActionMenuScript, false, 'overrideHandleTradeActionMenu', null);
 };
 
 // adds In-browser inspect as action in inventory
 const overridePopulateActions = () => {
-  const overRidePopulateActionsMenuScript = `
+    const overRidePopulateActionsMenuScript = `
         function PopulateActions( prefix, elActions, rgActions, item, owner )
         {
             elActions.update('');
@@ -175,13 +176,13 @@ const overridePopulateActions = () => {
             elActions.show();
         }
 `;
-  injectScript(overRidePopulateActionsMenuScript, false, 'overRidePopulateActionsMenu', null);
+    injectScript(overRidePopulateActionsMenuScript, false, 'overRidePopulateActionsMenu', null);
 };
 
 // loads more market history items
 const overrideLoadMarketHistory = () => {
-  chrome.storage.local.get('marketHistoryEventsToShow', ({ marketHistoryEventsToShow }) => {
-    const overrideMarketHistoryScript = `
+    chrome.storage.local.get('marketHistoryEventsToShow', ({ marketHistoryEventsToShow }) => {
+        const overrideMarketHistoryScript = `
     function addItemInfoToElement(assets, hovers) {
       var hoversArray = hovers.split('CreateItemHoverFromContainer');
             hoversArray.forEach((hover) => {
@@ -245,13 +246,13 @@ const overrideLoadMarketHistory = () => {
       onComplete: function() { g_bBusyLoadingMarketHistory = false; }
    });
 }`;
-    injectScript(overrideMarketHistoryScript, false, 'overRidePopulateActionsMenu', null);
-  });
+        injectScript(overrideMarketHistoryScript, false, 'overRidePopulateActionsMenu', null);
+    });
 };
 
 // loads csgo inventories from alternative endpoint
 const overRideCSGOInventoryLoading = () => {
-  const overrideMarketHistoryScript = `
+    const overrideMarketHistoryScript = `
    CInventory.prototype.GetInventoryLoadURL = function () {
       if (this.m_appid === 730) {
         console.log("Loading csgo inventory via different endpoint :D")
@@ -461,10 +462,13 @@ const overRideCSGOInventoryLoading = () => {
     // add a div to clear the floating
     this.m_$TagContainer.append(new Element('div', {"style": "clear: left;"}));
   };`;
-  injectScript(overrideMarketHistoryScript, false, 'overRideCSGOInventoryLoading', null);
+    injectScript(overrideMarketHistoryScript, false, 'overRideCSGOInventoryLoading', null);
 };
 
 export {
-  overrideShowTradeOffer, overridePopulateActions,
-  overrideHandleTradeActionMenu, overrideLoadMarketHistory, overRideCSGOInventoryLoading,
+    overrideShowTradeOffer,
+    overridePopulateActions,
+    overrideHandleTradeActionMenu,
+    overrideLoadMarketHistory,
+    overRideCSGOInventoryLoading,
 };

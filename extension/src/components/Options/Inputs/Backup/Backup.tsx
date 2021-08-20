@@ -1,43 +1,41 @@
 import React, { useState, useEffect } from 'react';
 
-const Backup = ({
-  id,
-}) => {
-  const [href, setHref] = useState('');
+const Backup = ({ id }) => {
+    const [href, setHref] = useState('');
 
-  useEffect(() => {
-    const storageKeysToExclude = ['prices', 'exchangeRates', 'analyticsEvents'];
+    useEffect(() => {
+        const storageKeysToExclude = ['prices', 'exchangeRates', 'analyticsEvents'];
 
-    chrome.storage.local.get(null, (result) => { // gets all storage
-      let JSONContent = 'data:application/json,';
+        chrome.storage.local.get(null, (result) => {
+            // gets all storage
+            let JSONContent = 'data:application/json,';
 
-      const backupJSON = {
-        version: 2,
-        type: 'full_backup',
-        storage: {},
-      };
+            const backupJSON = {
+                version: 2,
+                type: 'full_backup',
+                storage: {},
+            };
 
-      for (const storageKey in result) {
-        if (!storageKeysToExclude.includes(storageKey) && storageKey.substring(0, 11) !== 'floatCache_'
-        && storageKey.substring(0, 14) !== 'seen_listings_') {
-          backupJSON.storage[storageKey] = result[storageKey];
-        }
-      }
+            for (const storageKey in result) {
+                if (
+                    !storageKeysToExclude.includes(storageKey) &&
+                    storageKey.substring(0, 11) !== 'floatCache_' &&
+                    storageKey.substring(0, 14) !== 'seen_listings_'
+                ) {
+                    backupJSON.storage[storageKey] = result[storageKey];
+                }
+            }
 
-      JSONContent += encodeURIComponent(JSON.stringify(backupJSON));
-      setHref(JSONContent);
-    });
-  }, []);
+            JSONContent += encodeURIComponent(JSON.stringify(backupJSON));
+            setHref(JSONContent);
+        });
+    }, []);
 
-  return (
-    <a
-      href={href}
-      download="csgotrader_data_backup.json"
-      id={id}
-    >
-      Backup
-    </a>
-  );
+    return (
+        <a href={href} download='csgotrader_data_backup.json' id={id}>
+            Backup
+        </a>
+    );
 };
 
 export default Backup;

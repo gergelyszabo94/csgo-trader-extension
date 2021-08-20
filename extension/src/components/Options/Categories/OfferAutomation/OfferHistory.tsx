@@ -3,12 +3,12 @@ import OfferRules from './OfferRules';
 import IncomingOfferHistory from './IncomingOfferHistory';
 
 const OfferHistory = () => {
-  return (
-    <>
-      <OfferRules />
-      <IncomingOfferHistory />
-    </>
-  );
+    return (
+        <>
+            <OfferRules />
+            <IncomingOfferHistory />
+        </>
+    );
 };
 
 export default OfferHistory;

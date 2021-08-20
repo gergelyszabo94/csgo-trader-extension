@@ -4,6 +4,4 @@ const souvenir = 'Souvenir ';
 const starChar = '%E2%98%85%20';
 const genericMarketLink = 'https://steamcommunity.com/market/listings/730/';
 
-export {
-  stattrak, stattrakPretty, souvenir, starChar, genericMarketLink,
-};
+export { stattrak, stattrakPretty, souvenir, starChar, genericMarketLink };

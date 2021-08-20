@@ -20,66 +20,58 @@ import NotificationSound from './Inputs/NotificationSound/NotificationSound';
 import './Row.css';
 
 const typeSwitch = (type, key, permission, origins, modalTitle, options) => {
-  switch (type) {
-    case 'flipSwitchStorage':
-      return <FlipSwitchStorage id={key} />;
-    case 'modalTextBox':
-      return <ModalTextBox id={key} modalTitle={modalTitle} />;
-    case 'modalCustomComments':
-      return <ModalCustomComments id={key} modalTitle={modalTitle} />;
-    case 'flipSwitchPermission':
-      return (
-        <FlipSwitchPermission
-          id={key}
-          permission={permission}
-          origins={origins}
-        />
-      );
-    case 'select':
-      return <SimpleSelect id={key} options={options} />;
-    case 'pricingProvider':
-      return <PricingProvider options={options} />;
-    case 'refresh':
-      return <Refresh id={key} />;
-    case 'linksToShow':
-      return <LinksToShow id={key} />;
-    case 'backup':
-      return <Backup id={key} />;
-    case 'restore':
-      return <Restore id={key} />;
-    case 'doubleSelect':
-      return <DoubleSelect id={[...key]} options={options} />;
-    case 'currency':
-      return <Currency id={key} options={options} />;
-    case 'number':
-      return <Number id={key} />;
-    case 'realtimepricingmode':
-      return <RealTimePricingMode id={key} options={options} />;
-    case 'volumeSlider':
-      return <VolumeSlider id={key} />;
-    case 'notifSound':
-      return <NotificationSound />;
-    default:
-      return null;
-  }
+    switch (type) {
+        case 'flipSwitchStorage':
+            return <FlipSwitchStorage id={key} />;
+        case 'modalTextBox':
+            return <ModalTextBox id={key} modalTitle={modalTitle} />;
+        case 'modalCustomComments':
+            return <ModalCustomComments id={key} modalTitle={modalTitle} />;
+        case 'flipSwitchPermission':
+            return <FlipSwitchPermission id={key} permission={permission} origins={origins} />;
+        case 'select':
+            return <SimpleSelect id={key} options={options} />;
+        case 'pricingProvider':
+            return <PricingProvider options={options} />;
+        case 'refresh':
+            return <Refresh id={key} />;
+        case 'linksToShow':
+            return <LinksToShow id={key} />;
+        case 'backup':
+            return <Backup id={key} />;
+        case 'restore':
+            return <Restore id={key} />;
+        case 'doubleSelect':
+            return <DoubleSelect id={[...key]} options={options} />;
+        case 'currency':
+            return <Currency id={key} options={options} />;
+        case 'number':
+            return <Number id={key} />;
+        case 'realtimepricingmode':
+            return <RealTimePricingMode id={key} options={options} />;
+        case 'volumeSlider':
+            return <VolumeSlider id={key} />;
+        case 'notifSound':
+            return <NotificationSound />;
+        default:
+            return null;
+    }
 };
 
-const row = ({
-  name, description, type, id, permission, origins, modalTitle, options,
-}) => {
-  return (
-    <div className="row mb-4 pb-4 option-row">
-      <div className="col-md-12">
-        <h5>{name}</h5>
-      </div>
-      <div className="col-md-6">
-        <p className="font-size--s">{description}</p>
-      </div>
-      <div className="col-md-6">
-        {typeSwitch(type, id, permission, origins, modalTitle, options)}
-      </div>
-    </div>
-  );
+const row = ({ name, description, type, id, permission, origins, modalTitle, options }) => {
+    return (
+        <div className='row mb-4 pb-4 option-row'>
+            <div className='col-md-12'>
+                <h5>{name}</h5>
+            </div>
+            <div className='col-md-6'>
+                <p className='font-size--s'>{description}</p>
+            </div>
+            <div className='col-md-6'>
+                {typeSwitch(type, id, permission, origins, modalTitle, options)}
+            </div>
+        </div>
+    );
 };
 
 export default row;

@@ -5,15 +5,15 @@ import ReversePercentage from 'components/Popup/Calculator/ReversePercentage';
 import ReverseIncDecPercentage from 'components/Popup/Calculator/ReverseIncDecPercentage';
 
 const Calculator = () => {
-  return (
-    <>
-      <CurrencyConverter />
-      <h5>Calculator</h5>
-      <SimplePercentage />
-      <ReversePercentage />
-      <ReverseIncDecPercentage />
-    </>
-  );
+    return (
+        <>
+            <CurrencyConverter />
+            <h5>Calculator</h5>
+            <SimplePercentage />
+            <ReversePercentage />
+            <ReverseIncDecPercentage />
+        </>
+    );
 };
 
 export default Calculator;
