@@ -1,15 +1,16 @@
-import exteriors from 'utils/static/exteriors';
 import { dopplerPhases, iconToPhaseMapping } from 'utils/static/dopplerPhases';
-import rarities from 'utils/static/rarities';
-import qualities from 'utils/static/qualities';
+import { injectScript, injectStyle } from 'utils/injection';
+
+import DOMPurify from 'dompurify';
+import collectionsWithSouvenirs from 'utils/static/collectionsWithSouvenirs';
+import exteriors from 'utils/static/exteriors';
+import { getIDsFromElement } from 'utils/itemsToElementsToItems';
+import { getPrice } from 'utils/pricing';
+import { getUserSteamID } from 'utils/steamID';
 import itemTypes from 'utils/static/itemTypes';
 import patterns from 'utils/static/patterns';
-import { getPrice } from 'utils/pricing';
-import collectionsWithSouvenirs from 'utils/static/collectionsWithSouvenirs';
-import { injectScript, injectStyle } from 'utils/injection';
-import { getUserSteamID } from 'utils/steamID';
-import DOMPurify from 'dompurify';
-import { getIDsFromElement } from 'utils/itemsToElementsToItems';
+import qualities from 'utils/static/qualities';
+import rarities from 'utils/static/rarities';
 
 // "Sticker" in different languages
 // english, simplified chinese, traditional chinese,
@@ -347,9 +348,8 @@ const goToInternalPage = (targetURL) => {
 };
 
 const uuidv4 = () => {
-  return (
-    // eslint-disable-next-line no-bitwise
-    [1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) => (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> c / 4))).toString(16));
+  // eslint-disable-next-line no-bitwise
+  return ((1e7).toString() + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) => (Number(c) ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> Number(c) / 4))).toString(16));
 };
 
 const listenToLocationChange = (callBackFunction) => {
