@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { determineNotificationDate, reverseWhenNotifDetails } from 'utils/notifications';
 import {
-  faBell, faChartLine, faComment, faEye, faLink, faTrash, faUser, faExchangeAlt,
+  faBell,
+  faChartLine,
+  faComment,
+  faExchangeAlt,
+  faEye,
+  faLink,
+  faTrash,
+  faUser,
 } from '@fortawesome/free-solid-svg-icons';
 
-import NewTabLink from 'components/NewTabLink/NewTabLink';
-import Modal from 'components/Modal/Modal';
-import FlipSwitch from 'components/FlipSwitch/FlipSwitch';
-import { determineNotificationDate, reverseWhenNotifDetails } from 'utils/notifications';
-import { getOfferStyleSteamID } from 'utils/steamID';
 import Action from 'components/Bookmarks/Bookmark/Action';
-import Tradability from 'components/Bookmarks/Bookmark/Tradability';
+import FlipSwitch from 'components/FlipSwitch/FlipSwitch';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Modal from 'components/Modal/Modal';
+import NewTabLink from 'components/NewTabLink/NewTabLink';
 import STS from 'components/Bookmarks/Bookmark/STS';
-
+import Tradability from 'components/Bookmarks/Bookmark/Tradability';
 import { getItemInventoryLink } from 'utils/simpleUtils';
+import { getOfferStyleSteamID } from 'utils/steamID';
 
 const Bookmark = ({
   bookmarkData, editBookmark, removeBookmark,

@@ -1,17 +1,16 @@
-import React from 'react';
 import {
+  Route,
   BrowserRouter as Router,
   Switch,
-  Route,
 } from 'react-router-dom';
-import { Nav } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
 
-import TradeHistoryContent from 'components/TradeHistory/TradeHistoryContent';
 import CSVExport from 'components/TradeHistory/CSVExport';
 import IncomingOfferHistory from 'components/TradeHistory/IncomingOfferHistory';
+import { LinkContainer } from 'react-router-bootstrap';
+import { Nav } from 'react-bootstrap';
+import React from 'react';
 import SentOfferHistory from 'components/TradeHistory/SentOfferHistory';
-
+import TradeHistoryContent from 'components/TradeHistory/TradeHistoryContent';
 import { trackEvent } from 'utils/analytics';
 
 const routes = [
