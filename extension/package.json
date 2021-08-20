@@ -51,7 +51,8 @@
   },
   "scripts": {
     "build": "webpack --progress --colors --env.mode='production'",
-    "start": "webpack --env.mode='development' --watch & webpack-dev-server --inline --progress --colors"
+    "start": "webpack --env.mode='development' --watch & webpack-dev-server --inline --progress --colors",
+    "style": "prettier --write \"src/**/*.{ts,tsx}\""
   },
   "browserslist": [
     "last 2 chrome version",
@@ -62,6 +63,7 @@
   },
   "devDependencies": {
     "@types/dompurify": "^2.2.3",
+    "prettier": "^2.3.2",
     "ts-loader": "^8.2.0",
     "typescript": "^4.3.5"
   }
