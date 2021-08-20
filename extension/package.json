@@ -61,6 +61,7 @@
     "build": "src/"
   },
   "devDependencies": {
+    "@types/dompurify": "^2.2.3",
     "ts-loader": "^8.2.0",
     "typescript": "^4.3.5"
   }
