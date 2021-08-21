@@ -1,6 +1,12 @@
 import React from 'react';
 
-const FlipSwitch = ({ id, checked, onChange }) => {
+export interface FlipSwitchProps {
+    id: string;
+    checked: boolean;
+    onChange: React.ChangeEventHandler<HTMLInputElement>
+}
+
+const FlipSwitch = ({ id, checked, onChange }: FlipSwitchProps) => {
     return (
         <div className='flipswitch'>
             <label className='switch'>
