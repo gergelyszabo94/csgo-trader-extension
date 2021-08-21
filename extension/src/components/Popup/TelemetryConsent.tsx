@@ -1,5 +1,5 @@
+import NewTabLink from 'components/NewTabLink';
 import React from 'react';
-import NewTabLink from 'components/NewTabLink/NewTabLink';
 
 const TelemetryConsent = ({ submitConsent }) => {
     return (

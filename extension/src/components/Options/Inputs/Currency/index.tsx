@@ -1,5 +1,5 @@
 import React from 'react';
-import Select from 'components/Select/Select';
+import Select from 'components/Select';
 
 const Currency = ({ id, options }) => {
     const setStorage = (thisValue) => {

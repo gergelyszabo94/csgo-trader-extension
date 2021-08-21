@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+
+import CustomA11yButton from 'components/CustomA11yButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import defaultPopupLinks from 'utils/static/defaultPopupLinks';
-import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const LinksToShow = ({ id }) => {
     const [links, setLinks] = useState([]);

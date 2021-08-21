@@ -1,8 +1,8 @@
-import React from 'react';
-
 import { currencies, pricingProviders, realTimePricingModes } from 'utils/static/pricing';
-import NewTabLink from 'components/NewTabLink/NewTabLink';
-import Category from '../Category/Category';
+
+import Category from '../Category';
+import NewTabLink from 'components/NewTabLink';
+import React from 'react';
 import Row from '../Row';
 
 const pricing = () => {

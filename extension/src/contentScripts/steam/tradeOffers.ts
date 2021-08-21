@@ -1,38 +1,39 @@
+import { acceptOffer, declineOffer } from 'utils/tradeOffers';
 import {
     addDopplerPhase,
-    makeItemColorful,
-    addUpdatedRibbon,
-    addSSTandExtIndicators,
-    addPriceIndicator,
     addFloatIndicator,
-    removeOfferFromActiveOffers,
-    removeLinkFilterFromLinks,
-    logExtensionPresence,
-    updateLoggedInUserInfo,
-    reloadPageOnExtensionReload,
-    repositionNameTagIcons,
-    jumpToAnchor,
+    addPriceIndicator,
+    addSSTandExtIndicators,
+    addUpdatedRibbon,
     changePageTitle,
+    jumpToAnchor,
+    logExtensionPresence,
+    makeItemColorful,
+    reloadPageOnExtensionReload,
+    removeLinkFilterFromLinks,
+    removeOfferFromActiveOffers,
+    repositionNameTagIcons,
+    updateLoggedInUserInfo,
 } from 'utils/utilsModular';
-import { prettyTimeAgo } from 'utils/dateTime';
-import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
-import itemTypes from 'utils/static/itemTypes';
 import {
     addRealTimePriceToPage,
     prettyPrintPrice,
     priceQueue,
     workOnPriceQueue,
 } from 'utils/pricing';
-import { overrideShowTradeOffer } from 'utils/steamOverriding';
-import { trackEvent } from 'utils/analytics';
-import { offersSortingModes } from 'utils/static/sortingModes';
-import { injectStyle } from 'utils/injection';
+import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
+
+import DOMPurify from 'dompurify';
+import { getIDsFromElement } from 'utils/itemsToElementsToItems';
 import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
-import { acceptOffer, declineOffer } from 'utils/tradeOffers';
-import DOMPurify from 'dompurify';
+import { injectStyle } from 'utils/injection';
+import itemTypes from 'utils/static/itemTypes';
+import { offersSortingModes } from 'utils/static/sortingModes';
+import { overrideShowTradeOffer } from 'utils/steamOverriding';
+import { prettyTimeAgo } from 'utils/dateTime';
 import steamApps from 'utils/static/steamApps';
-import { getIDsFromElement } from 'utils/itemsToElementsToItems';
+import { trackEvent } from 'utils/analytics';
 
 let activePage = 'incoming_offers';
 if (window.location.href.includes('/tradeoffers/?history=1'))

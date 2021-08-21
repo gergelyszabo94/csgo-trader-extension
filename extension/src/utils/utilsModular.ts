@@ -468,7 +468,10 @@ const getActivePage = (type?: string, getActiveInventory?: () => any) => {
     return activePage;
 };
 
-const addPageControlEventListeners = (type?: string, addFloatIndicatorsFunction?: (a?: Element | string) => void) => {
+const addPageControlEventListeners = (
+    type?: string,
+    addFloatIndicatorsFunction?: (a?: Element | string) => void,
+) => {
     const pageControls = document.getElementById('inventory_pagecontrols');
     if (pageControls !== null) {
         pageControls.addEventListener('click', () => {
@@ -833,7 +836,9 @@ const copyToClipboard = (text) => {
         <textarea id="text_area_to_copy_to_clipboard" class="hidden-copy-textarea" readonly="">${text}</textarea>`),
     );
 
-    const textAreaElement = document.getElementById('text_area_to_copy_to_clipboard') as HTMLInputElement;
+    const textAreaElement = document.getElementById(
+        'text_area_to_copy_to_clipboard',
+    ) as HTMLInputElement;
     textAreaElement.select();
     document.execCommand('copy');
     textAreaElement.remove();

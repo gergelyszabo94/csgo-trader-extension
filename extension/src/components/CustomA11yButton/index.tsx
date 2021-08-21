@@ -4,7 +4,7 @@ const CustomA11yButton = ({ action, children, className, title, id }) => {
     return (
         <span
             role='button'
-            tabIndex='0'
+            tabIndex={0}
             onClick={action}
             onKeyDown={action}
             className={`${className} customButton`}

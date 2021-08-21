@@ -1,7 +1,7 @@
+import NewTabLink from 'components/NewTabLink';
 import React from 'react';
 import { eventTypes } from 'utils/static/offers';
 import { getOfferLink } from 'utils/simpleUtils';
-import NewTabLink from 'components/NewTabLink/NewTabLink';
 
 const HistoryEvent = ({ eventType, ruleApplied, offerID }) => {
     return (

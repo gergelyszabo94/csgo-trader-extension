@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import NewTabLink from 'components/NewTabLink/NewTabLink';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
-import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
+
+import CustomA11yButton from 'components/CustomA11yButton';
 import HistoryEvent from './HistoryEvent';
+import NewTabLink from 'components/NewTabLink';
 
 const EventHistoryTable = ({ events }) => {
     const [showAll, setShowAll] = useState(false);

@@ -1,8 +1,7 @@
+import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
+import Category from '../Category';
 import React from 'react';
 import Row from 'components/Options/Row';
-
-import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
-import Category from '../Category/Category';
 
 const profile = () => {
     return (

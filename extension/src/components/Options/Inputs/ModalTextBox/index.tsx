@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import Modal from 'components/Modal/Modal';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useEffect, useState } from 'react';
 import { faEdit, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Modal from 'components/Modal';
 
 const ModalTextBox = ({ id, modalTitle }) => {
     const [state, setState] = useState({

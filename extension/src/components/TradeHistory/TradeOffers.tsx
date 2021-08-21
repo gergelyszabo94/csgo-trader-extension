@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import TradeOfferSide from 'components/TradeHistory/TradeOfferSide';
-import NewTabLink from 'components/NewTabLink/NewTabLink';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import NewTabLink from 'components/NewTabLink';
+import TradeOfferSide from 'components/TradeHistory/TradeOfferSide';
 import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons';
 
 const TradeOffers = ({ trades }) => {

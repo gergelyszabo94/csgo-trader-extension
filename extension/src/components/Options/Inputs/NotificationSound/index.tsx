@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import Select from 'components/Select/Select';
+import React, { useEffect, useState } from 'react';
+
+import Select from 'components/Select';
 import { notificationSounds } from 'utils/static/notifications';
 import { playAudio } from 'utils/simpleUtils';
 

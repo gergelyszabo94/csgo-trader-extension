@@ -1,9 +1,9 @@
+import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
+import Category from 'components/Options/Category';
+import NewTabLink from 'components/NewTabLink';
+import OfferHistory from './OfferHistory';
 import React from 'react';
 import Row from 'components/Options/Row';
-import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
-import Category from 'components/Options/Category/Category';
-import NewTabLink from 'components/NewTabLink/NewTabLink';
-import OfferHistory from './OfferHistory';
 
 const OfferAutomation = () => {
     return (

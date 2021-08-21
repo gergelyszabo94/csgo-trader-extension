@@ -1,8 +1,7 @@
+import Category from '../Category';
+import NewTabLink from 'components/NewTabLink';
 import React from 'react';
-
 import Row from 'components/Options/Row';
-import NewTabLink from 'components/NewTabLink/NewTabLink';
-import Category from '../Category/Category';
 
 const Notifications = () => {
     return (

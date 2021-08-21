@@ -1,10 +1,9 @@
-import React from 'react';
-
-import Category from 'components/Options/Category/Category';
-import Row from 'components/Options/Row';
+import Category from 'components/Options/Category';
+import IncomingInvites from 'components/Options/Categories/Friends/IncomingInvites';
 import InviteHistory from 'components/Options/Categories/Friends/InviteHistory';
 import InviteRules from 'components/Options/Categories/Friends/InviteRules';
-import IncomingInvites from 'components/Options/Categories/Friends/IncomingInvites';
+import React from 'react';
+import Row from 'components/Options/Row';
 
 const Friends = () => {
     return (

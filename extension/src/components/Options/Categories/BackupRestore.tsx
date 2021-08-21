@@ -1,7 +1,6 @@
+import Category from '../Category';
 import React from 'react';
-
 import Row from 'components/Options/Row';
-import Category from '../Category/Category';
 
 const backupRestore = () => {
     return (

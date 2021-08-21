@@ -1,7 +1,6 @@
+import Category from '../Category';
+import NewTabLink from 'components/NewTabLink';
 import React from 'react';
-
-import NewTabLink from 'components/NewTabLink/NewTabLink';
-import Category from '../Category/Category';
 import Row from '../Row';
 
 const other = () => {

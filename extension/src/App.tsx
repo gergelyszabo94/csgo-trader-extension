@@ -1,10 +1,10 @@
-import React, { Suspense, lazy } from 'react';
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.scss';
 
-import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
-import Navigation from './components/Navigation/Navigation';
+import React, { Suspense, lazy } from 'react';
+import { Redirect, Route, BrowserRouter as Router, Switch } from 'react-router-dom';
+
+import Navigation from './components/Navigation';
 
 const Bookmarks = lazy(() => import('./pages/Bookmarks/Bookmarks'));
 const Popup = lazy(() => import('./pages/Popup/Popup'));

@@ -1,8 +1,7 @@
-import React from 'react';
-
-import NewTabLink from 'components/NewTabLink/NewTabLink';
 import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
-import Category from 'components/Options/Category/Category';
+import Category from 'components/Options/Category';
+import NewTabLink from 'components/NewTabLink';
+import React from 'react';
 import Row from 'components/Options/Row';
 
 const general = () => {

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import Select from 'components/Select/Select';
-import NewTabLink from 'components/NewTabLink/NewTabLink';
-
 import './PricingProvider.css';
+
+import React, { useState } from 'react';
+
+import NewTabLink from 'components/NewTabLink';
+import Select from 'components/Select';
 import { updatePrices } from 'utils/pricing';
 
 const PricingProvider = ({ options }) => {

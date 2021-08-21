@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalculator, faCog } from '@fortawesome/free-solid-svg-icons';
 
-import NewTabLink from 'components/NewTabLink/NewTabLink';
-import { trackEvent } from 'utils/analytics';
-import Calculator from 'components/Popup/Calculator/Calculator';
-import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
+import Calculator from 'components/Popup/Calculator';
+import CustomA11yButton from 'components/CustomA11yButton';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import NewTabLink from 'components/NewTabLink';
 import TelemetryConsent from 'components/Popup/TelemetryConsent';
+import { trackEvent } from 'utils/analytics';
 
 const Popup = () => {
     // if there is any badge text it gets removed

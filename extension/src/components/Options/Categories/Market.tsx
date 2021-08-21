@@ -1,8 +1,7 @@
+import Category from '../Category';
 import React from 'react';
-
 import Row from 'components/Options/Row';
 import { listingsSortingModes } from 'utils/static/sortingModes';
-import Category from '../Category/Category';
 
 const market = () => {
     const transformSortingModes = () => {

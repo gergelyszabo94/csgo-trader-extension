@@ -1,10 +1,11 @@
-import React from 'react';
+import { conditions, operators } from 'utils/static/offers';
+
 import AddCondition from 'components/Options/Categories/OfferAutomation/AddCondition';
 import AddOperator from 'components/Options/Categories/OfferAutomation/AddOperator';
+import CustomA11yButton from 'components/CustomA11yButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
-import { conditions, operators } from 'utils/static/offers';
 
 const AddConditions = ({ ruleConditions, ruleOperators, modifyConditions }) => {
     const onOperatorChange = (index, operator) => {

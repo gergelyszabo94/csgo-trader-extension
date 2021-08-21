@@ -1,7 +1,6 @@
-import React from 'react';
-
-import NewTabLink from 'components/NewTabLink/NewTabLink';
 import MissingItems from 'components/TradeHistory/MissingItems';
+import NewTabLink from 'components/NewTabLink';
+import React from 'react';
 import { getItemMarketLink } from 'utils/simpleUtils';
 
 const TradeOfferHistorySide = (props) => {

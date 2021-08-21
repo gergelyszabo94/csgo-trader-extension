@@ -12,10 +12,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import Action from 'components/Bookmarks/Bookmark/Action';
-import FlipSwitch from 'components/FlipSwitch/FlipSwitch';
+import FlipSwitch from 'components/FlipSwitch';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Modal from 'components/Modal/Modal';
-import NewTabLink from 'components/NewTabLink/NewTabLink';
+import Modal from 'components/Modal';
+import NewTabLink from 'components/NewTabLink';
 import STS from 'components/Bookmarks/Bookmark/STS';
 import Tradability from 'components/Bookmarks/Bookmark/Tradability';
 import { getItemInventoryLink } from 'utils/simpleUtils';

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import Modal from 'components/Modal/Modal';
+import React, { useEffect, useState } from 'react';
+
+import CustomA11yButton from 'components/CustomA11yButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Modal from 'components/Modal';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
 
 const ModalCustomComments = ({ modalTitle }) => {
     const [state, setState] = useState({

@@ -1,23 +1,22 @@
-import React from 'react';
-
-import Currency from 'components/Options/Inputs/Currency/Currency';
-import FlipSwitchStorage from './Inputs/FlipSwitchStorage/FlipSwitchStorage';
-import FlipSwitchPermission from './Inputs/FlipSwitchPermission/FlipSwitchPermission';
-import ModalTextBox from './Inputs/ModalTextBox/ModalTextBox';
-import ModalCustomComments from './Inputs/ModalCustomComments/ModalCustomComments';
-import SimpleSelect from './Inputs/SimpleSelect/SimpleSelect';
-import DoubleSelect from './Inputs/DoubleSelect/DoubleSelect';
-import PricingProvider from './Inputs/PricingProvider/PricingProvider';
-import Refresh from './Inputs/Refresh/Refresh';
-import LinksToShow from './Inputs/LinksToShow/LinksToShow';
-import Backup from './Inputs/Backup/Backup';
-import Restore from './Inputs/Restore/Restore';
-import Number from './Inputs/Number/Number';
-import RealTimePricingMode from './Inputs/RealTimePricingMode/RealTimePricingMode';
-import VolumeSlider from './Inputs/VolumeSlider/VolumeSlider';
-import NotificationSound from './Inputs/NotificationSound/NotificationSound';
-
 import './Row.css';
+
+import Backup from './Inputs/Backup';
+import Currency from 'components/Options/Inputs/Currency';
+import DoubleSelect from './Inputs/DoubleSelect';
+import FlipSwitchPermission from './Inputs/FlipSwitchPermission';
+import FlipSwitchStorage from './Inputs/FlipSwitchStorage';
+import LinksToShow from './Inputs/LinksToShow';
+import ModalCustomComments from './Inputs/ModalCustomComments';
+import ModalTextBox from './Inputs/ModalTextBox';
+import NotificationSound from './Inputs/NotificationSound';
+import Number from './Inputs/Number';
+import PricingProvider from './Inputs/PricingProvider';
+import React from 'react';
+import RealTimePricingMode from './Inputs/RealTimePricingMode';
+import Refresh from './Inputs/Refresh';
+import Restore from './Inputs/Restore';
+import SimpleSelect from './Inputs/SimpleSelect';
+import VolumeSlider from './Inputs/VolumeSlider';
 
 const typeSwitch = (type, key, permission, origins, modalTitle, options) => {
     switch (type) {

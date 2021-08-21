@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExport, faPlay } from '@fortawesome/free-solid-svg-icons';
-import DatePicker from 'react-datepicker/es';
 
-import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
+import CustomA11yButton from 'components/CustomA11yButton';
+import DatePicker from 'react-datepicker/es';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getTradeHistory } from 'utils/IEconService';
 
 const CSVExport = () => {

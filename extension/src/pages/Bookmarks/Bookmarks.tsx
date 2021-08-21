@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import Bookmark from 'components/Bookmarks/Bookmark/Bookmark';
+import Bookmark from 'components/Bookmarks/Bookmark';
 import { trackEvent } from 'utils/analytics';
 
 const Bookmarks = () => {

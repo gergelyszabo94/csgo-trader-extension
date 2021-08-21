@@ -1,8 +1,9 @@
+import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import NewTabLink from 'components/NewTabLink';
 import React from 'react';
 import TradeOfferHistorySide from 'components/TradeHistory/TradeOfferHistorySide';
-import NewTabLink from 'components/NewTabLink/NewTabLink';
-import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons';
 import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 import { offerStates } from 'utils/static/offers';

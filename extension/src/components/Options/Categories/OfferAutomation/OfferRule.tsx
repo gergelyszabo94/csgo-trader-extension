@@ -1,9 +1,10 @@
-import React from 'react';
-import Conditions from 'components/Options/Categories/OfferAutomation/Conditions';
+import { faChevronDown, faChevronUp, faTrash } from '@fortawesome/free-solid-svg-icons';
+
 import Action from 'components/Options/Categories/OfferAutomation/Action';
-import { faTrash, faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import Conditions from 'components/Options/Categories/OfferAutomation/Conditions';
+import CustomA11yButton from 'components/CustomA11yButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
+import React from 'react';
 
 const OfferRule = ({ details, index, saveRuleState, removeRule, position, changeOrder }) => {
     const { active, conditions, action, operators } = details;

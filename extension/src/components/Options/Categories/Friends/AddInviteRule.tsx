@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { conditions, actions } from 'utils/static/friendRequests';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
+import { actions, conditions } from 'utils/static/friendRequests';
+
 import AddCondition from 'components/Options/Categories/Friends/AddCondition';
+import CustomA11yButton from 'components/CustomA11yButton';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 const Options = () => {
     const optionsArr = [];

@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import NewTabLink from 'components/NewTabLink/NewTabLink';
-import { prettyPrintPrice } from 'utils/pricing';
 import {
     acceptRequest,
-    ignoreRequest,
     blockRequest,
     getBansSummaryText,
+    ignoreRequest,
     updateFriendRequest,
 } from 'utils/friendRequests';
-import { prettyTimeAgo } from 'utils/dateTime';
-import { copyToClipboard } from 'utils/utilsModular';
 import {
-    faUserSlash,
-    faUserPlus,
-    faUserMinus,
     faClipboard,
+    faUserMinus,
+    faUserPlus,
+    faUserSlash,
 } from '@fortawesome/free-solid-svg-icons';
+
+import CustomA11yButton from 'components/CustomA11yButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
+import NewTabLink from 'components/NewTabLink';
+import { copyToClipboard } from 'utils/utilsModular';
+import { prettyPrintPrice } from 'utils/pricing';
+import { prettyTimeAgo } from 'utils/dateTime';
 
 const Invite = ({ details, currency, index, remove }) => {
     const [offerHistory, setOfferHistory] = useState({

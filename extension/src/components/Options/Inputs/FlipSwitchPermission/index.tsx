@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import FlipSwitch from 'components/FlipSwitch/FlipSwitch';
+import React, { useEffect, useState } from 'react';
+
+import FlipSwitch from 'components/FlipSwitch';
 
 const FlipSwitchPermission = ({ id, origins, permission }) => {
     const [state, setState] = useState(false);

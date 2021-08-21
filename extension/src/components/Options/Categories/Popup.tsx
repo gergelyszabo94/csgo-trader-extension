@@ -1,9 +1,8 @@
-import React from 'react';
-
-import { currencies } from 'utils/static/pricing';
 import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
-import Category from '../Category/Category';
+import Category from '../Category';
+import React from 'react';
 import Row from '../Row';
+import { currencies } from 'utils/static/pricing';
 
 const popup = () => {
     const transformCurrencies = () => {

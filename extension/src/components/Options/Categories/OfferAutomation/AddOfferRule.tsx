@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { conditions, actions } from 'utils/static/offers';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { actions, conditions } from 'utils/static/offers';
+
 import AddConditions from 'components/Options/Categories/OfferAutomation/AddConditions';
-import Modal from 'components/Modal/Modal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Modal from 'components/Modal';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 const Actions = () => {
     const actionsArr = [];
