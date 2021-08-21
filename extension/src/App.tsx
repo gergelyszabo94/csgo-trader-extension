@@ -6,10 +6,10 @@ import { Redirect, Route, BrowserRouter as Router, Switch } from 'react-router-d
 
 import Navigation from './components/Navigation';
 
-const Bookmarks = lazy(() => import('./pages/Bookmarks/Bookmarks'));
-const Popup = lazy(() => import('./pages/Popup/Popup'));
-const Options = lazy(() => import('./pages/Options/Options'));
-const TradeHistory = lazy(() => import('./pages/TradeHistory/TradeHistory'));
+const Bookmarks = lazy(() => import('./pages/Bookmarks'));
+const Popup = lazy(() => import('./pages/Popup'));
+const Options = lazy(() => import('./pages/Options'));
+const TradeHistory = lazy(() => import('./pages/TradeHistory'));
 
 function App() {
     if (window.location.search === '?page=popup') {
