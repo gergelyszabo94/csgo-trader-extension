@@ -14,7 +14,7 @@ const AddConditions = ({ ruleConditions, ruleOperators, modifyConditions }) => {
         modifyConditions(ruleConditions, newOperators);
     };
 
-    const onConditionChange = (index, condition) => {
+    const onConditionChange = (index: number, condition) => {
         const newCondition =
             condition.value === null
                 ? { type: condition.type }

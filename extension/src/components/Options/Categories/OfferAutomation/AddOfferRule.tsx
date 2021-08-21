@@ -1,3 +1,4 @@
+import { Condition, Operator, Rule } from '.';
 import React, { useState } from 'react';
 import { actions, conditions } from 'utils/static/offers';
 
@@ -21,7 +22,7 @@ const Actions = (): JSX.Element => {
     );
 };
 
-const initState = {
+const initState: Rule = {
     conditions: [
         {
             type: conditions.has_message.key,
@@ -29,20 +30,25 @@ const initState = {
             valueType: null,
         },
     ],
+    active: false,
     action: actions.notify.key,
     operators: [],
     value: null,
     valueType: null,
 };
 
-const AddOfferRule = ({ add }) => {
-    const [rule, setRule] = useState(initState);
+interface AddOfferRuleProps {
+    add: (rule: Rule) => void
+}
+
+const AddOfferRule = ({ add }: AddOfferRuleProps) => {
+    const [rule, setRule] = useState<Rule>(initState);
 
     const onActionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setRule({ ...rule, action: event.target.value });
     };
 
-    const onConditionsChange = (newConditions, newOperators) => {
+    const onConditionsChange = (newConditions: Condition[], newOperators: Operator[]) => {
         setRule({ ...rule, conditions: newConditions, operators: newOperators });
     };
 

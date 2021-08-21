@@ -10,6 +10,8 @@ export interface Rule {
     active: boolean;
     conditions: Condition[];
     operators: Operator[];
+    value?: any;
+    valueType?: any;
 }
 
 export type Operator = 'and' | 'or';

@@ -1,6 +1,6 @@
+import AddConditionValue from 'components/Options/Categories/OfferAutomation/AddConditionValue';
 import React from 'react';
 import { conditions } from 'utils/static/offers';
-import AddConditionValue from 'components/Options/Categories/OfferAutomation/AddConditionValue';
 
 const Options = () => {
     const optionsArr = [];
@@ -11,13 +11,17 @@ const Options = () => {
             desc: value.description,
         });
     }
-    return optionsArr.map((option) => {
-        return (
-            <option key={option.key} value={option.key} title={option.desc}>
-                {option.name}
-            </option>
-        );
-    });
+    return (
+        <>
+            {optionsArr.map((option) => {
+                return (
+                    <option key={option.key} value={option.key} title={option.desc}>
+                        {option.name}
+                    </option>
+                );
+            })}
+        </>
+    );
 };
 
 const AddCondition = ({ type, value, index, onChange }) => {
