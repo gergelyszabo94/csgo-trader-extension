@@ -6,22 +6,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'components/Modal';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
-const Actions = () => {
-    const actionsArr = [];
-    for (const [key, value] of Object.entries(actions)) {
-        actionsArr.push({
-            key,
-            name: value.pretty,
-            desc: value.description,
-        });
-    }
-    return actionsArr.map((option) => {
-        return (
-            <option key={option.key} value={option.key} title={option.desc}>
-                {option.name}
-            </option>
-        );
-    });
+const Actions = (): JSX.Element => {
+    return (
+        <>
+            {Object.keys(actions).map((key) => {
+                const action = actions[key];
+                return (
+                    <option key={key} value={key} title={action.description}>
+                        {action.pretty}
+                    </option>
+                );
+            })}
+        </>
+    );
 };
 
 const initState = {
@@ -41,7 +38,7 @@ const initState = {
 const AddOfferRule = ({ add }) => {
     const [rule, setRule] = useState(initState);
 
-    const onActionChange = (event) => {
+    const onActionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setRule({ ...rule, action: event.target.value });
     };
 
@@ -49,7 +46,7 @@ const AddOfferRule = ({ add }) => {
         setRule({ ...rule, conditions: newConditions, operators: newOperators });
     };
 
-    const addRule = (closeModal) => {
+    const addRule = (closeModal: () => void) => {
         add({
             active: true,
             action: rule.action,
