@@ -5,6 +5,21 @@ import OfferHistory from './OfferHistory';
 import React from 'react';
 import Row from 'components/Options/Row';
 
+export interface Rule {
+    action: string;
+    active: boolean;
+    conditions: Condition[];
+    operators: Operator[];
+}
+
+export type Operator = 'and' | 'or';
+
+export interface Condition {
+    type: string;
+    value?: string | number | null;
+    valueType?: null;
+}
+
 const OfferAutomation = () => {
     return (
         <Category title='Trade Offer Automation'>

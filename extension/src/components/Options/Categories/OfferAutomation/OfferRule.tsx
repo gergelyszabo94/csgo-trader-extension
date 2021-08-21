@@ -5,8 +5,25 @@ import Conditions from 'components/Options/Categories/OfferAutomation/Conditions
 import CustomA11yButton from 'components/CustomA11yButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
+import { Rule } from '.';
 
-const OfferRule = ({ details, index, saveRuleState, removeRule, position, changeOrder }) => {
+interface OfferRuleProps {
+    details: Rule;
+    index: number;
+    saveRuleState: (ruleIndex: number, state: boolean) => void;
+    removeRule: (ruleIndex: number) => void;
+    changeOrder: (ruleIndex: number, state: number) => void;
+    position: 'top' | 'bottom' | 'middle';
+}
+
+const OfferRule = ({
+    details,
+    index,
+    saveRuleState,
+    removeRule,
+    changeOrder,
+    position,
+}: OfferRuleProps) => {
     const { active, conditions, action, operators } = details;
 
     const moveRuleUp = (

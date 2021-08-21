@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
-import OfferRule from 'components/Options/Categories/OfferAutomation/OfferRule';
+import React, { useEffect, useState } from 'react';
+
 import AddOfferRule from 'components/Options/Categories/OfferAutomation/AddOfferRule';
+import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
+import { Link } from 'react-router-dom';
+import OfferRule from 'components/Options/Categories/OfferAutomation/OfferRule';
+import { Rule } from '.';
 
 const OfferRules = () => {
-    const [rules, setRules] = useState([]);
+    const [rules, setRules] = useState<Rule[]>([]);
 
-    const saveRules = (newRules) => {
+    const saveRules = (newRules: Rule[]) => {
         chrome.storage.local.set(
             {
                 offerEvalRules: newRules,
@@ -18,14 +20,14 @@ const OfferRules = () => {
         );
     };
 
-    const removeRule = (ruleIndex) => {
+    const removeRule = (ruleIndex: number) => {
         const newRules = rules.filter((rule, index) => {
             return index !== ruleIndex;
         });
         saveRules(newRules);
     };
 
-    const changeOrder = (ruleIndex, change) => {
+    const changeOrder = (ruleIndex: number, change: number) => {
         const rule = rules[ruleIndex];
         const newRules = [...rules];
         newRules.splice(ruleIndex, 1);
@@ -34,7 +36,7 @@ const OfferRules = () => {
         saveRules(newRules);
     };
 
-    const saveRuleState = (ruleIndex, state) => {
+    const saveRuleState = (ruleIndex: number, state: boolean) => {
         const newRules = rules.map((rule, index) => {
             if (index === ruleIndex) {
                 return {
@@ -47,7 +49,7 @@ const OfferRules = () => {
         saveRules(newRules);
     };
 
-    const addNewRule = (rule) => {
+    const addNewRule = (rule: Rule) => {
         saveRules([...rules, rule]);
     };
 
