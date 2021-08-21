@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
-const Countdown = ({ tradability }) => {
+interface CountdownProps {
+    tradability: string;
+}
+
+const Countdown = ({ tradability }: CountdownProps) => {
     const dateToCountDownTo = tradability;
     const [state, setState] = useState({
         text: '',

@@ -1,9 +1,11 @@
 import Countdown from 'components/Bookmarks/Bookmark/Countdown';
 import React from 'react';
 
-const Tradability = (props) => {
-    const { tradability } = props;
+interface TradabilityProps {
+    tradability: string;
+}
 
+const Tradability = ({ tradability }: TradabilityProps) => {
     if (tradability === 'Tradable') {
         return <span>{tradability}</span>;
     }
