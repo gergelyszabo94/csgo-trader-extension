@@ -3,9 +3,10 @@ import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 
 import CustomA11yButton from 'components/CustomA11yButton';
 import HistoryEvent from './HistoryEvent';
+import { HistoryEvents } from '.';
 import NewTabLink from 'components/NewTabLink';
 
-const EventHistoryTable = ({ events }) => {
+const EventHistoryTable = ({ events }: HistoryEvents) => {
     const [showAll, setShowAll] = useState(false);
 
     const onShowAll = () => {
@@ -49,7 +50,7 @@ const EventHistoryTable = ({ events }) => {
                     return null;
                 })}
                 <tr>
-                    <td colSpan='3' className='center'>
+                    <td colSpan={3} className='center'>
                         <CustomA11yButton
                             action={onShowAll}
                             title='Show All Invite Events form the past week'

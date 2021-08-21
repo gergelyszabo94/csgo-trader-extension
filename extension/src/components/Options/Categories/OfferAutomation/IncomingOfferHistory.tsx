@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+
 import EventHistoryTable from 'components/Options/Categories/OfferAutomation/EventHistoryTable';
+import { HistoryEvent } from '.';
 import OfferHistorySummary from 'components/Options/Categories/OfferAutomation/OfferHistorySummary';
 
 const IncomingOfferHistory = () => {
-    const [historyEvents, setHistoryEvents] = useState([]);
+    const [historyEvents, setHistoryEvents] = useState<HistoryEvent[]>([]);
 
     const loadHistoryEvents = () => {
         chrome.storage.local.get(['tradeOffersEventLogs'], ({ tradeOffersEventLogs }) => {

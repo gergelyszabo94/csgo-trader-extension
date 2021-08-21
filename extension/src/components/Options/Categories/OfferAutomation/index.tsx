@@ -22,6 +22,18 @@ export interface Condition {
     valueType?: null;
 }
 
+export interface HistoryEvent {
+    offerID: string;
+    rule: number;
+    steamID: string;
+    timestamp: number;
+    type: string;
+}
+
+export interface HistoryEvents {
+    events: HistoryEvent[];
+}
+
 const OfferAutomation = () => {
     return (
         <Category title='Trade Offer Automation'>

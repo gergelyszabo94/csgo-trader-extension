@@ -3,7 +3,13 @@ import React from 'react';
 import { eventTypes } from 'utils/static/offers';
 import { getOfferLink } from 'utils/simpleUtils';
 
-const HistoryEvent = ({ eventType, ruleApplied, offerID }) => {
+interface HistoryEventProps {
+    eventType: string;
+    ruleApplied: number;
+    offerID: string;
+}
+
+const HistoryEvent = ({ eventType, ruleApplied, offerID }: HistoryEventProps) => {
     return (
         <NewTabLink to={getOfferLink(offerID)}>
             <span title={eventTypes[eventType].description}>

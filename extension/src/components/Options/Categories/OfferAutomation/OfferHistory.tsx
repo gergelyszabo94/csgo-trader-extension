@@ -1,8 +1,8 @@
-import React from 'react';
-import OfferRules from './OfferRules';
 import IncomingOfferHistory from './IncomingOfferHistory';
+import OfferRules from './OfferRules';
+import React from 'react';
 
-const OfferHistory = () => {
+const OfferHistory = (): JSX.Element => {
     return (
         <>
             <OfferRules />

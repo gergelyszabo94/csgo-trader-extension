@@ -1,4 +1,5 @@
 import AddConditionValue from 'components/Options/Categories/OfferAutomation/AddConditionValue';
+import { Condition } from '.';
 import React from 'react';
 import { conditions } from 'utils/static/offers';
 
@@ -24,8 +25,15 @@ const Options = () => {
     );
 };
 
-const AddCondition = ({ type, value, index, onChange }) => {
-    const onConditionChange = (event) => {
+interface AddConditionProps {
+    type: string;
+    value?: string | number;
+    index: number;
+    onChange: (index: number, condition: Condition) => void;
+}
+
+const AddCondition = ({ type, value, index, onChange }: AddConditionProps) => {
+    const onConditionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const conditionType = event.target.value;
         onChange(index, {
             type: conditionType,
@@ -35,7 +43,7 @@ const AddCondition = ({ type, value, index, onChange }) => {
         });
     };
 
-    const onValueChange = (event) => {
+    const onValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         onChange(index, {
             type,
             value: event.target.value,

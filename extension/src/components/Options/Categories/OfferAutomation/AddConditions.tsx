@@ -1,3 +1,4 @@
+import { Condition, Operator } from '.';
 import { conditions, operators } from 'utils/static/offers';
 
 import AddCondition from 'components/Options/Categories/OfferAutomation/AddCondition';
@@ -7,14 +8,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
-const AddConditions = ({ ruleConditions, ruleOperators, modifyConditions }) => {
-    const onOperatorChange = (index, operator) => {
+interface AddConditionsProps {
+    ruleConditions: Condition[];
+    ruleOperators: Operator[];
+    modifyConditions: (newConditions: Condition[], newOperators: Operator[]) => void;
+}
+
+const AddConditions = ({ ruleConditions, ruleOperators, modifyConditions }: AddConditionsProps) => {
+    const onOperatorChange = (index: number, operator: Operator) => {
         const newOperators = [...ruleOperators];
         newOperators[index] = operator;
         modifyConditions(ruleConditions, newOperators);
     };
 
-    const onConditionChange = (index: number, condition) => {
+    const onConditionChange = (index: number, condition: Condition) => {
         const newCondition =
             condition.value === null
                 ? { type: condition.type }
@@ -31,7 +38,7 @@ const AddConditions = ({ ruleConditions, ruleOperators, modifyConditions }) => {
         });
 
         const newOperators = [...ruleOperators];
-        newOperators.push(operators.and.key);
+        newOperators.push(operators.and.key as Operator);
         modifyConditions(newConditions, newOperators);
     };
 
