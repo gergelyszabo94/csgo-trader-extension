@@ -1,12 +1,12 @@
 import React from 'react';
 
 export interface STSProps {
-    isStatrack: boolean;
+    stattrak: boolean;
     souvenir: boolean;
 }
 
-const STS = ({ isStatrack, souvenir }: STSProps) => {
-    if (isStatrack) {
+const STS = ({ stattrak, souvenir }: STSProps): JSX.Element | null => {
+    if (stattrak) {
         return <span className='statTrak'>StatTrak™</span>;
     }
     if (souvenir) {

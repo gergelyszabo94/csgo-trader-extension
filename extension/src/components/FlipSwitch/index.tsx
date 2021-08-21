@@ -3,7 +3,7 @@ import React from 'react';
 export interface FlipSwitchProps {
     id: string;
     checked: boolean;
-    onChange: React.ChangeEventHandler<HTMLInputElement>
+    onChange: React.ChangeEventHandler<HTMLInputElement>;
 }
 
 const FlipSwitch = ({ id, checked, onChange }: FlipSwitchProps) => {

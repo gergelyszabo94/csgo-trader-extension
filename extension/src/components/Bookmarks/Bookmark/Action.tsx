@@ -3,7 +3,7 @@ import React from 'react';
 export interface ActionProps {
     className?: string;
     title?: string;
-    children: React.ReactNode
+    children: React.ReactNode;
 }
 
 const Action = ({ className, title, children }: ActionProps) => (

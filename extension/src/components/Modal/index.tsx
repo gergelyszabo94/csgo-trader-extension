@@ -10,7 +10,6 @@ export interface ModalProps {
     children?: React.ReactNode;
 }
 
-
 const Modal = ({ modalTitle, opener, validator, children }: ModalProps) => {
     const [show, setShow] = useState(false);
 

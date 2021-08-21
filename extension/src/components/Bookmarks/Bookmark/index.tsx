@@ -20,38 +20,45 @@ import STS from 'components/Bookmarks/Bookmark/STS';
 import Tradability from 'components/Bookmarks/Bookmark/Tradability';
 import { getItemInventoryLink } from 'utils/simpleUtils';
 import { getOfferStyleSteamID } from 'utils/steamID';
+import { Bookmark } from 'pages/Bookmarks';
 
-const Bookmark = ({ bookmarkData, editBookmark, removeBookmark }) => {
-    const { added, itemInfo, notifTime, notifType, notify, owner } = bookmarkData;
+export interface BookmarkProps {
+    bookmarkData: Bookmark;
+    removeBookmark: (bookmarkData: Bookmark) => void;
+    editBookmark: (bookmarkData: Bookmark) => void;
+}
+
+const Bookmark = ({ bookmarkData, editBookmark, removeBookmark }: BookmarkProps) => {
+    const { added, itemInfo, notifTime, notifType, owner } = bookmarkData;
     const imageSRC = `https://steamcommunity.com/economy/image/${itemInfo.iconURL}/256x256`;
     const exterior = itemInfo.exterior ? itemInfo.exterior.localized_name : '';
-    const displayName = itemInfo.name.split('| ')[1] ? itemInfo.name.split('| ')[1] : itemInfo.name;
+    const displayName = itemInfo.name.split('| ')[1] || itemInfo.name;
 
     const [comment, setComment] = useState(bookmarkData.comment);
-    const [doNotify, setDoNotify] = useState(notify);
+    const [notify, setNotify] = useState(bookmarkData.notify);
 
     const whenDetails = reverseWhenNotifDetails(itemInfo.tradability, notifTime);
 
-    const notifTypeSelect = React.createRef();
-    const numberOfMinutesOrHours = React.createRef();
-    const minutesOrHours = React.createRef();
-    const beforeOrAfter = React.createRef();
+    const notifTypeSelect = React.createRef<HTMLSelectElement>();
+    const numberOfMinutesOrHours = React.createRef<HTMLInputElement>();
+    const minutesOrHours = React.createRef<HTMLSelectElement>();
+    const beforeOrAfter = React.createRef<HTMLSelectElement>();
 
-    const commentChangeHandler = (event) => {
+    const commentChangeHandler = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setComment(event.target.value);
     };
 
     const onNotifyChange = () => {
-        setDoNotify(!doNotify);
+        setNotify(!notify);
     };
 
-    const saveComment = (closeModal) => {
+    const saveComment = (closeModal: () => void) => {
         const newBookmarkData = { ...bookmarkData, comment };
         editBookmark(newBookmarkData);
         closeModal();
     };
 
-    const saveNotification = (closeModal) => {
+    const saveNotification = (closeModal: () => void) => {
         const newNotifTime = determineNotificationDate(
             itemInfo.tradability,
             minutesOrHours.current.value,
@@ -61,14 +68,14 @@ const Bookmark = ({ bookmarkData, editBookmark, removeBookmark }) => {
 
         const newBookmarkData = {
             ...bookmarkData,
-            notify: doNotify,
+            notify: notify,
             notifType: notifTypeSelect.current.value,
             notifTime: newNotifTime,
         };
 
         editBookmark(newBookmarkData);
 
-        if (doNotify) {
+        if (notify) {
             chrome.runtime.sendMessage(
                 {
                     setAlarm: {
@@ -91,7 +98,7 @@ const Bookmark = ({ bookmarkData, editBookmark, removeBookmark }) => {
     };
 
     const removeBookmarkFunction = () => {
-        removeBookmark(itemInfo.appid, itemInfo.contextid, itemInfo.assetid, added);
+        removeBookmark(bookmarkData);
     };
 
     const qualityClass =
@@ -107,7 +114,7 @@ const Bookmark = ({ bookmarkData, editBookmark, removeBookmark }) => {
             <div className='exterior'>{exterior}</div>
             <div className='bookmark__image-container'>
                 <span className='STS'>
-                    <STS st={itemInfo.isStatrack} souvenir={itemInfo.isSouvenir} />
+                    <STS stattrak={itemInfo.isStatrack} souvenir={itemInfo.isSouvenir} />
                 </span>
                 <img src={imageSRC} alt={itemInfo.name} title={itemInfo.name} />
             </div>
@@ -145,9 +152,9 @@ const Bookmark = ({ bookmarkData, editBookmark, removeBookmark }) => {
                         </div>
                         <div>
                             Notify:{' '}
-                            <FlipSwitch id='notify' checked={doNotify} onChange={onNotifyChange} />
+                            <FlipSwitch id='notify' checked={notify} onChange={onNotifyChange} />
                         </div>
-                        <div className={doNotify ? null : 'hidden'}>
+                        <div className={notify ? null : 'hidden'}>
                             <div className='mt-3'>
                                 How do you want to be notified?
                                 <div>
