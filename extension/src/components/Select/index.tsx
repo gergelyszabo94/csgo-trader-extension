@@ -1,6 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const Select = ({ options, foreignChangeHandler, foreignUseEffect, id }) => {
+interface SelectProps {
+    id: string;
+    foreignChangeHandler: ((thisValue: string | number) => void) | ((thisValue: string | number, key: string) => void);
+    foreignUseEffect: (() => Promise<string>) | ((key: string) => Promise<string>);
+    options: object;
+    
+}
+
+const Select = ({ options, foreignChangeHandler, foreignUseEffect, id }: SelectProps) => {
     const [value, setValue] = useState(options[0].key);
 
     const changeHandler = (e) => {

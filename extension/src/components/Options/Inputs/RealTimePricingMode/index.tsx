@@ -11,7 +11,7 @@ const RealTimePricingMode = ({ id, options }) => {
         );
     };
 
-    const getStorage = () => {
+    const getStorage = (): Promise<string> => {
         return new Promise((resolve) => {
             chrome.storage.local.get(['realTimePricesMode'], ({ realTimePricesMode }) => {
                 resolve(realTimePricesMode);

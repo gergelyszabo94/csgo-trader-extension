@@ -44,7 +44,7 @@ const NotificationSound = () => {
         });
     };
 
-    const getStorage = () => {
+    const getStorage = (): Promise<string> => {
         return new Promise((resolve) => {
             chrome.storage.local.get('notificationSoundToPlay', ({ notificationSoundToPlay }) => {
                 setNotifSound(notificationSoundToPlay);

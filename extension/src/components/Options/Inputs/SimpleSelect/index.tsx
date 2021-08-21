@@ -1,12 +1,17 @@
 import React from 'react';
 import Select from 'components/Select';
 
-const SimpleSelect = ({ id, options }) => {
-    const setStorage = (thisValue) => {
+interface SimpleSelectProps {
+    id: string;
+    options: object;
+}
+
+const SimpleSelect = ({ id, options }: SimpleSelectProps) => {
+    const setStorage = (thisValue: string | number) => {
         chrome.storage.local.set({ [id]: thisValue }, () => {});
     };
 
-    const getStorage = () => {
+    const getStorage = (): Promise<string> => {
         return new Promise((resolve) => {
             chrome.storage.local.get(id, (result) => {
                 resolve(result[id]);

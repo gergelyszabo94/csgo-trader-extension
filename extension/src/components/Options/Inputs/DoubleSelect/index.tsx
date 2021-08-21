@@ -2,12 +2,12 @@ import React from 'react';
 import Select from 'components/Select';
 
 const DoubleSelect = ({ id, options }) => {
-    const setStorage = (thisValue, key) => {
+    const setStorage = (thisValue: string | number, key: string) => {
         if (key === undefined) chrome.storage.local.set({ [id]: thisValue }, () => {});
         else chrome.storage.local.set({ [key]: thisValue }, () => {});
     };
 
-    const getStorage = (key) => {
+    const getStorage = (key: string): Promise<string> => {
         return new Promise((resolve) => {
             chrome.storage.local.get(key, (result) => {
                 resolve(result[key]);

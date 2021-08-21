@@ -42,7 +42,7 @@ const PricingProvider = ({ options }) => {
         });
     };
 
-    const getStorage = () => {
+    const getStorage = (): Promise<string> => {
         return new Promise((resolve) => {
             chrome.storage.local.get(['pricingProvider', 'pricingMode'], (result) => {
                 const { pricingProvider, pricingMode } = result;

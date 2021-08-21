@@ -1,8 +1,13 @@
 import React from 'react';
 import Select from 'components/Select';
 
-const Currency = ({ id, options }) => {
-    const setStorage = (thisValue) => {
+interface CurrencyProps {
+    id: string;
+    options: object;
+}
+
+const Currency = ({ id, options }: CurrencyProps) => {
+    const setStorage = (thisValue: string | number) => {
         chrome.storage.local.get(['exchangeRates'], ({ exchangeRates }) => {
             chrome.storage.local.set(
                 {
@@ -14,7 +19,7 @@ const Currency = ({ id, options }) => {
         });
     };
 
-    const getStorage = () => {
+    const getStorage = (): Promise<string> => {
         return new Promise((resolve) => {
             chrome.storage.local.get(['currency'], ({ currency }) => {
                 resolve(currency);

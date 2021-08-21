@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const Backup = ({ id }) => {
+interface BackupProps {
+    id: string;
+}
+
+const Backup = ({ id }: BackupProps): JSX.Element => {
     const [href, setHref] = useState('');
 
     useEffect(() => {
