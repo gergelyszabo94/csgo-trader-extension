@@ -472,7 +472,8 @@ const getPrice = (marketHashName, dopplerInfo, prices, provider, mode, exchangeR
         // when there is price for the specific doppler phase take that
         if (prices[marketHashName].doppler !== undefined && prices[marketHashName].doppler
           !== 'null' && prices[marketHashName].doppler[dopplerInfo.name] !== 'null'
-          && prices[marketHashName].doppler[dopplerInfo.name] !== undefined) {
+          && prices[marketHashName].doppler[dopplerInfo.name] !== undefined
+          && prices[marketHashName].doppler[dopplerInfo.name] !== null) {
           price = (prices[marketHashName].doppler[dopplerInfo.name] * exchangeRate).toFixed(2);
         } else if (provider === pricingProviders.buff163.name
             && mode === pricingProviders.buff163.pricing_modes.starting_at.name) {
