@@ -1,7 +1,11 @@
 import React from 'react';
 import { actions } from 'utils/static/friendRequests';
 
-const Action = ({ action }) => {
+interface ActionProps {
+    action: string;
+}
+
+const Action = ({ action }: ActionProps) => {
     return <span title={actions[action].description}>{actions[action].pretty}</span>;
 };
 

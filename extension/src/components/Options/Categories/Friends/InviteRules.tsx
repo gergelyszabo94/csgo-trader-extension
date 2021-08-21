@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
+import React, { useEffect, useState } from 'react';
+
 import AddInviteRule from 'components/Options/Categories/Friends/AddInviteRule';
+import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
 import InviteRule from './InviteRule';
+import { Rule } from '.';
 
 const InviteRules = () => {
-    const [rules, setRules] = useState([]);
+    const [rules, setRules] = useState<Rule[]>([]);
 
-    const saveRules = (newRules) => {
+    const saveRules = (newRules: Rule[]) => {
         chrome.storage.local.set(
             {
                 friendRequestEvalRules: newRules,
@@ -17,7 +19,7 @@ const InviteRules = () => {
         );
     };
 
-    const removeRule = (ruleIndex) => {
+    const removeRule = (ruleIndex: number) => {
         const newRules = rules.filter((rule, index) => {
             return index !== ruleIndex;
         });
@@ -31,7 +33,7 @@ const InviteRules = () => {
         );
     };
 
-    const changeOrder = (ruleIndex, change) => {
+    const changeOrder = (ruleIndex: number, change: number) => {
         const rule = rules[ruleIndex];
         const newRules = [...rules];
         newRules.splice(ruleIndex, 1);
@@ -47,7 +49,7 @@ const InviteRules = () => {
         );
     };
 
-    const saveRuleState = (ruleIndex, state) => {
+    const saveRuleState = (ruleIndex: number, state: boolean) => {
         const newRules = rules.map((rule, index) => {
             if (index === ruleIndex) {
                 return {
@@ -60,7 +62,7 @@ const InviteRules = () => {
         saveRules(newRules);
     };
 
-    const addNewRule = (rule) => {
+    const addNewRule = (rule: Rule) => {
         saveRules([...rules, rule]);
     };
 

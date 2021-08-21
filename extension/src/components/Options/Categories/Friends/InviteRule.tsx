@@ -5,8 +5,18 @@ import Condition from 'components/Options/Categories/Friends/Condition';
 import CustomA11yButton from 'components/CustomA11yButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
+import { Rule } from '.';
 
-const InviteRule = ({ details, index, saveRuleState, removeRule, position, changeOrder }) => {
+interface InviteRuleProps {
+    details: Rule;
+    index: number;
+    saveRuleState: (ruleIndex: number, state: boolean) => void;
+    removeRule: (ruleIndex: number) => void;
+    changeOrder: (ruleIndex: number, change: number) => void;
+    position: 'top' | 'bottom' | 'middle';
+}
+
+const InviteRule = ({ details, index, saveRuleState, removeRule, position, changeOrder }: InviteRuleProps) => {
     const { active, condition, action } = details;
     const moveRuleUp = (
         <CustomA11yButton

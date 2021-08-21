@@ -5,6 +5,17 @@ import InviteRules from 'components/Options/Categories/Friends/InviteRules';
 import React from 'react';
 import Row from 'components/Options/Row';
 
+export interface Rule {
+    action: string;
+    active: boolean;
+    condition: Condition;
+}
+
+export interface Condition {
+    type: string;
+    value?: string | number;
+}
+
 const Friends = () => {
     return (
         <Category title='Friends, Groups and Invites'>

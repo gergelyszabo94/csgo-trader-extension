@@ -6,7 +6,7 @@ import CustomA11yButton from 'components/CustomA11yButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
-const Options = () => {
+const Options = (): JSX.Element => {
     const optionsArr = [];
     for (const [key, value] of Object.entries(conditions)) {
         optionsArr.push({
@@ -15,16 +15,20 @@ const Options = () => {
             desc: value.description,
         });
     }
-    return optionsArr.map((option) => {
-        return (
-            <option key={option.key} value={option.key} title={option.desc}>
-                {option.name}
-            </option>
-        );
-    });
+    return (
+        <>
+            {optionsArr.map((option) => {
+                return (
+                    <option key={option.key} value={option.key} title={option.desc}>
+                        {option.name}
+                    </option>
+                );
+            })}
+        </>
+    );
 };
 
-const Actions = () => {
+const Actions = (): JSX.Element => {
     const actionsArr = [];
     for (const [key, value] of Object.entries(actions)) {
         actionsArr.push({
@@ -33,13 +37,18 @@ const Actions = () => {
             desc: value.description,
         });
     }
-    return actionsArr.map((option) => {
-        return (
-            <option key={option.key} value={option.key} title={option.desc}>
-                {option.name}
-            </option>
-        );
-    });
+
+    return (
+        <>
+            {actionsArr.map((option) => {
+                return (
+                    <option key={option.key} value={option.key} title={option.desc}>
+                        {option.name}
+                    </option>
+                );
+            })}
+        </>
+    );
 };
 
 const AddInviteRule = ({ add }) => {

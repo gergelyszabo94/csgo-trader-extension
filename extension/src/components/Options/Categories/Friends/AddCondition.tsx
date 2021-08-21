@@ -1,7 +1,13 @@
 import React from 'react';
 import countries from 'utils/static/countries';
 
-const AddCondition = ({ type, value, onValueChange }) => {
+interface AddConditionProps {
+    type: string;
+    value: string | number;
+    onValueChange: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement>;
+}
+
+const AddCondition = ({ type, value, onValueChange }: AddConditionProps) => {
     if (type === 'number') {
         return (
             <input

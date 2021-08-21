@@ -1,4 +1,12 @@
-const links = [
+interface Link {
+    title: string;
+    id: string;
+    path: string;
+    isExternal: boolean;
+}
+
+
+const links: Link[] = [
     {
         title: 'Options',
         id: 'options',

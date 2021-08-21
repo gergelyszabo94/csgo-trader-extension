@@ -45,7 +45,7 @@ const InviteHistoryTable = ({ events }) => {
                     return null;
                 })}
                 <tr>
-                    <td colSpan='3' className='center'>
+                    <td colSpan={3} className='center'>
                         <CustomA11yButton
                             action={onShowAll}
                             title='Show All Invite Events form the past week'
