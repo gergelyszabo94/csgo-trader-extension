@@ -1,6 +1,14 @@
 import React from 'react';
 
-const CustomA11yButton = ({ action, children, className, title, id }) => {
+export interface CustomA11yButtonProps {
+    action: () => void;
+    title?: string;
+    className?: string;
+    children?: React.ReactNode;
+    id?: string;
+}
+
+const CustomA11yButton = ({ action, children, className, title, id }: CustomA11yButtonProps) => {
     return (
         <span
             role='button'
