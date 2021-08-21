@@ -3,9 +3,10 @@ import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 
 import CustomA11yButton from 'components/CustomA11yButton';
 import HistoryEvent from './HistoryEvent';
+import { HistoryEvents } from '.';
 import NewTabLink from 'components/NewTabLink';
 
-const InviteHistoryTable = ({ events }) => {
+const InviteHistoryTable = ({ events }: HistoryEvents) => {
     const [showAll, setShowAll] = useState(false);
 
     const onShowAll = () => {

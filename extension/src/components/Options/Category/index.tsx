@@ -1,6 +1,12 @@
 import React, { useEffect } from 'react';
 
-const Category = ({ title, subTitle, children }) => {
+interface CategoryProps {
+    title: string;
+    subTitle?: string;
+    children?: React.ReactNode;
+}
+
+const Category = ({ title, subTitle, children }: CategoryProps) => {
     useEffect(() => {
         document.title = `Options - ${title}`;
     }, [title]);

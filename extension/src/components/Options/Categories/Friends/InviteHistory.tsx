@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import InviteHistoryTable from './InviteHistoryTable';
+import React, { useEffect, useState } from 'react';
+
+import { HistoryEvent } from '.';
 import InviteHistorySummary from './InviteHistorySummary';
+import InviteHistoryTable from './InviteHistoryTable';
 
 const InviteHistory = () => {
-    const [historyEvents, setHistoryEvents] = useState([]);
+    const [historyEvents, setHistoryEvents] = useState<HistoryEvent[]>([]);
 
     const loadHistoryEvents = () => {
         chrome.storage.local.get(['friendRequestLogs'], ({ friendRequestLogs }) => {

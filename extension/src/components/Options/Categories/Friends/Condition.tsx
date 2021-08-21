@@ -1,12 +1,8 @@
 import React from 'react';
 import { conditions } from 'utils/static/friendRequests';
+import { Condition } from '.';
 
-interface ConditionProps {
-    type: string;
-    value?: 
-}
-
-const Condition = ({ type, value }) => {
+const Condition = ({ type, value }: Condition) => {
     return (
         <span title={conditions[type].description}>
             {conditions[type].pretty}

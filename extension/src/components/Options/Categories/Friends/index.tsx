@@ -16,6 +16,18 @@ export interface Condition {
     value?: string | number;
 }
 
+export interface HistoryEvent {
+    steamID: string;
+    timestamp: number;
+    type: string;
+    username: string;
+    rule?: number;
+}
+
+export interface HistoryEvents {
+    events: HistoryEvent[]
+}
+
 const Friends = () => {
     return (
         <Category title='Friends, Groups and Invites'>
