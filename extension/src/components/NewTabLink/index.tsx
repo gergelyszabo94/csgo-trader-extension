@@ -1,12 +1,12 @@
 import React from 'react';
 
-export interface newTabLinkProps {
+export interface NewTabLinkProps {
     to: string;
-    className?: string;
     children: React.ReactNode;
+    className?: string;
 }
 
-const newTabLink = ({ className, to, children }: newTabLinkProps) => {
+const NewTabLink = ({ className, to, children }: NewTabLinkProps) => {
     return (
         <a href={to} target='_blank' rel='noopener' className={className}>
             {children}
@@ -14,4 +14,4 @@ const newTabLink = ({ className, to, children }: newTabLinkProps) => {
     );
 };
 
-export default newTabLink;
+export default NewTabLink;
