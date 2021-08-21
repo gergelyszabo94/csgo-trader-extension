@@ -38,7 +38,7 @@ const initState: Rule = {
 };
 
 interface AddOfferRuleProps {
-    add: (rule: Rule) => void
+    add: (rule: Rule) => void;
 }
 
 const AddOfferRule = ({ add }: AddOfferRuleProps) => {

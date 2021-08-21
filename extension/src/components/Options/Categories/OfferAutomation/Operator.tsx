@@ -3,7 +3,7 @@ import { operators } from 'utils/static/offers';
 import { Operator } from '.';
 
 interface OperatorProps {
-    operator: Operator
+    operator: Operator;
 }
 
 const Operator = ({ operator }: OperatorProps) => {
