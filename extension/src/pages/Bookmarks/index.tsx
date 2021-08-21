@@ -3,6 +3,93 @@ import React, { useEffect, useState } from 'react';
 import Bookmark from 'components/Bookmarks/Bookmark';
 import { trackEvent } from 'utils/analytics';
 
+export interface Bookmark {
+    added: number;
+    comment: string;
+    itemInfo: ItemInfo;
+    notifTime: string;
+    notifType: string;
+    notify: boolean;
+    owner: string;
+}
+
+interface ItemInfo {
+    appid: string;
+    assetid: string;
+    classid: string;
+    contextid: string;
+    dopplerInfo?: any;
+    duplicates: Duplicates;
+    exterior: Exterior;
+    floatInfo: FloatInfo;
+    iconURL: string;
+    inspectLink: string;
+    instanceid: string;
+    isSouvenir: boolean;
+    isStatrack: boolean;
+    market_hash_name: string;
+    marketable: number;
+    marketlink: string;
+    name: string;
+    name_color: string;
+    nametag?: any;
+    owner: string;
+    patternInfo?: any;
+    position: number;
+    price: Price;
+    quality: Quality;
+    starInName: boolean;
+    stickerPrice?: any;
+    stickers: any[];
+    tradability: string;
+    tradabilityShort: string;
+    type: Type;
+}
+
+interface Type {
+    float: boolean;
+    internal_name: string;
+    key: string;
+    name: string;
+}
+
+interface Quality {
+    backgroundcolor: string;
+    color: string;
+    name: string;
+    prettyName: string;
+}
+
+interface Price {
+    display: string;
+    price: string;
+}
+
+interface FloatInfo {
+    floatvalue: number;
+    low_rank?: any;
+    max: number;
+    min: number;
+    origin_name: string;
+    paintindex: number;
+    paintseed: number;
+    stickers: any[];
+}
+
+interface Exterior {
+    internal_name: string;
+    localized_name: string;
+    localized_short: string;
+    name: string;
+    short: string;
+    type: string;
+}
+
+interface Duplicates {
+    instances: string[];
+    num: number;
+}
+
 const Bookmarks = () => {
     trackEvent({
         type: 'pageview',
@@ -17,7 +104,7 @@ const Bookmarks = () => {
         }
     });
 
-    const [bookmarks, setBookmarks] = useState([]);
+    const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 
     const saveBookmarks = (bookmarksToSave) => {
         chrome.storage.local.set({ bookmarks: bookmarksToSave }, () => {
@@ -25,20 +112,15 @@ const Bookmarks = () => {
         });
     };
 
-    const removeBookmark = (appID, contextID, assetID, added) => {
+    const removeBookmark = (bookmarkData: Bookmark) => {
         const bookmarksToKeep = bookmarks.filter((bookmark) => {
-            return (
-                bookmark.itemInfo.appid !== appID ||
-                bookmark.itemInfo.contextid !== contextID ||
-                bookmark.itemInfo.assetid !== assetID ||
-                bookmark.added !== added
-            );
+            return bookmark != bookmarkData;
         });
 
         saveBookmarks(bookmarksToKeep);
     };
 
-    const editBookmark = (bookmarkData) => {
+    const editBookmark = (bookmarkData: Bookmark) => {
         const newBookmarks = bookmarks.map((bookmark) =>
             bookmark.itemInfo.assetid === bookmarkData.itemInfo.assetid &&
             bookmark.itemInfo.appid === bookmarkData.itemInfo.appid &&
@@ -72,18 +154,30 @@ const Bookmarks = () => {
     );
 };
 
-const BookmarkContent = (props) => {
-    if (props.bookmarks.length === 0)
-        return "You don't have any bookmarks yet. You can bookmark items from user inventories!";
+export interface BookmarkContentProps {
+    bookmarks: Bookmark[];
+    remove: (bookmarkData: Bookmark) => void;
+    edit: (bookmarkData: Bookmark) => void;
+}
 
-    return props.bookmarks.map((bookmark) => (
-        <Bookmark
-            key={`${bookmark.itemInfo.appid}_${bookmark.itemInfo.contextid}_${bookmark.itemInfo.assetid}_${bookmark.added}`}
-            bookmarkData={bookmark}
-            removeBookmark={props.remove}
-            editBookmark={props.edit}
-        />
-    ));
+const BookmarkContent = ({ bookmarks, remove, edit }: BookmarkContentProps): JSX.Element => {
+    if (bookmarks.length === 0)
+        return (
+            <>{"You don't have any bookmarks yet. You can bookmark items from user inventories!"}</>
+        );
+
+    return (
+        <>
+            {bookmarks.map((bookmark) => (
+                <Bookmark
+                    key={`${bookmark.itemInfo.appid}_${bookmark.itemInfo.contextid}_${bookmark.itemInfo.assetid}_${bookmark.added}`}
+                    bookmarkData={bookmark}
+                    removeBookmark={remove}
+                    editBookmark={edit}
+                />
+            ))}
+        </>
+    );
 };
 
 export default Bookmarks;
