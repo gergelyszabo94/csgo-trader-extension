@@ -1,9 +1,17 @@
-import { Modal as BSModal, Button } from 'react-bootstrap';
+import { Modal as BSModal, Button, ModalTitle } from 'react-bootstrap';
 import React, { useState } from 'react';
 
 import CustomA11yButton from 'components/CustomA11yButton';
 
-const Modal = ({ modalTitle, opener, validator, children }) => {
+export interface ModalProps {
+    modalTitle: string;
+    opener: JSX.Element;
+    validator: ((closeModal: any) => void) | (() => void);
+    children?: React.ReactNode;
+}
+
+
+const Modal = ({ modalTitle, opener, validator, children }: ModalProps) => {
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
