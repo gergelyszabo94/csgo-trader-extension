@@ -1,4 +1,4 @@
-import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
+import { NavLinkProps, Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 
 import BackupRestore from 'components/Options/Categories/BackupRestore';
 import Friends from 'components/Options/Categories/Friends';
@@ -138,8 +138,12 @@ const options = ({ match }) => {
     );
 };
 
+export interface RouterNavLinkProps extends NavLinkProps {
+    children: React.ReactNode;
+}
+
 // workaround from here: https://github.com/react-bootstrap/react-linkr-bootstrap/issues/242#issuecomment-480330910
-const RouterNavLink = ({ children, ...props }) => (
+const RouterNavLink = ({ children, ...props }: RouterNavLinkProps) => (
     <LinkContainer {...props}>
         <Nav.Link active={false}>{children}</Nav.Link>
     </LinkContainer>
