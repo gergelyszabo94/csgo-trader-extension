@@ -1,5 +1,5 @@
-import React from 'react';
 import Countdown from 'components/Bookmarks/Bookmark/Countdown';
+import React from 'react';
 
 const Tradability = (props) => {
     const { tradability } = props;

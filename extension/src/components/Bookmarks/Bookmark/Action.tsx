@@ -1,6 +1,12 @@
 import React from 'react';
 
-const Action = ({ children, className, title }) => (
+export interface ActionProps {
+    className?: string;
+    title?: string;
+    children: React.ReactNode
+}
+
+const Action = ({ className, title, children }: ActionProps) => (
     <span className={`action ${className}`} title={title}>
         {children}
     </span>
