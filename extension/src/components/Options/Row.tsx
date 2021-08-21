@@ -18,7 +18,17 @@ import Restore from './Inputs/Restore';
 import SimpleSelect from './Inputs/SimpleSelect';
 import VolumeSlider from './Inputs/VolumeSlider';
 
-const typeSwitch = (type, key, permission, origins, modalTitle, options) => {
+interface TypeSwitchProps {
+    type: string;
+    id: string | string[];
+    key?: string;
+    permission?: string;
+    origins?: string[];
+    modalTitle?: string;
+    options?: object;
+}
+
+const TypeSwitch = ({ type, key, permission, origins, modalTitle, options }: TypeSwitchProps) => {
     switch (type) {
         case 'flipSwitchStorage':
             return <FlipSwitchStorage id={key} />;
@@ -57,7 +67,27 @@ const typeSwitch = (type, key, permission, origins, modalTitle, options) => {
     }
 };
 
-const row = ({ name, description, type, id, permission, origins, modalTitle, options }) => {
+interface RowProps {
+    name: string;
+    description: string | JSX.Element;
+    type: string;
+    id: string | string[];
+    permission?: string;
+    origins?: string[];
+    modalTitle?: string;
+    options?: object;
+}
+
+const row = ({
+    name,
+    description,
+    type,
+    id,
+    permission,
+    origins,
+    modalTitle,
+    options,
+}: RowProps) => {
     return (
         <div className='row mb-4 pb-4 option-row'>
             <div className='col-md-12'>
@@ -67,7 +97,14 @@ const row = ({ name, description, type, id, permission, origins, modalTitle, opt
                 <p className='font-size--s'>{description}</p>
             </div>
             <div className='col-md-6'>
-                {typeSwitch(type, id, permission, origins, modalTitle, options)}
+                <TypeSwitch
+                    type={type}
+                    id={id}
+                    permission={permission}
+                    origins={origins}
+                    modalTitle={modalTitle}
+                    options={options}
+                />
             </div>
         </div>
     );

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 
 interface CategoryProps {
     title: string;
-    subTitle?: string;
+    subTitle?: string | JSX.Element;
     children?: React.ReactNode;
 }
 
