@@ -16,7 +16,14 @@ interface InviteRuleProps {
     position: 'top' | 'bottom' | 'middle';
 }
 
-const InviteRule = ({ details, index, saveRuleState, removeRule, position, changeOrder }: InviteRuleProps) => {
+const InviteRule = ({
+    details,
+    index,
+    saveRuleState,
+    removeRule,
+    position,
+    changeOrder,
+}: InviteRuleProps) => {
     const { active, condition, action } = details;
     const moveRuleUp = (
         <CustomA11yButton

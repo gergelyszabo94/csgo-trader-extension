@@ -1,15 +1,15 @@
 interface Actions {
-  accept: Action;
-  decline: Action;
-  notify: Action;
-  notify_discord: Action;
-  no_action: Action;
+    accept: Action;
+    decline: Action;
+    notify: Action;
+    notify_discord: Action;
+    no_action: Action;
 }
 
 interface Action {
-  key: string;
-  pretty: string;
-  description: string;
+    key: string;
+    pretty: string;
+    description: string;
 }
 
 const actions: Actions = {
@@ -232,24 +232,24 @@ const conditions: Conditions = {
 };
 
 interface OfferStates {
-  '1': OfferState;
-  '2': OfferState;
-  '3': OfferState;
-  '4': OfferState;
-  '5': OfferState;
-  '6': OfferState;
-  '7': OfferState;
-  '8': OfferState;
-  '9': OfferState;
-  '10': OfferState;
-  '11': OfferState;
+    '1': OfferState;
+    '2': OfferState;
+    '3': OfferState;
+    '4': OfferState;
+    '5': OfferState;
+    '6': OfferState;
+    '7': OfferState;
+    '8': OfferState;
+    '9': OfferState;
+    '10': OfferState;
+    '11': OfferState;
 }
 
 interface OfferState {
-  key: number;
-  short: string;
-  pretty: string;
-  description: string;
+    key: number;
+    short: string;
+    pretty: string;
+    description: string;
 }
 
 // from: https://developer.valvesoftware.com/wiki/Steam_Web_API/IEconService
@@ -326,14 +326,14 @@ const offerStates: OfferStates = {
 };
 
 interface Operators {
-  or: Operator;
-  and: Operator;
+    or: Operator;
+    and: Operator;
 }
 
 interface Operator {
-  key: string;
-  pretty: string;
-  description: string;
+    key: string;
+    pretty: string;
+    description: string;
 }
 
 const operators: Operators = {

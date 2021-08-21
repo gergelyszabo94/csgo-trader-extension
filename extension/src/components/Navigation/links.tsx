@@ -5,7 +5,6 @@ interface Link {
     isExternal: boolean;
 }
 
-
 const links: Link[] = [
     {
         title: 'Options',

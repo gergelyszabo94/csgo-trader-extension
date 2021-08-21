@@ -35,7 +35,7 @@ const TypeSwitch = ({ type, key, permission, origins, modalTitle, options }: Typ
         case 'modalTextBox':
             return <ModalTextBox id={key} modalTitle={modalTitle} />;
         case 'modalCustomComments':
-            return <ModalCustomComments id={key} modalTitle={modalTitle} />;
+            return <ModalCustomComments modalTitle={modalTitle} />;
         case 'flipSwitchPermission':
             return <FlipSwitchPermission id={key} permission={permission} origins={origins} />;
         case 'select':
@@ -43,13 +43,13 @@ const TypeSwitch = ({ type, key, permission, origins, modalTitle, options }: Typ
         case 'pricingProvider':
             return <PricingProvider options={options} />;
         case 'refresh':
-            return <Refresh id={key} />;
+            return <Refresh />;
         case 'linksToShow':
             return <LinksToShow id={key} />;
         case 'backup':
             return <Backup id={key} />;
         case 'restore':
-            return <Restore id={key} />;
+            return <Restore />;
         case 'doubleSelect':
             return <DoubleSelect id={[...key]} options={options} />;
         case 'currency':

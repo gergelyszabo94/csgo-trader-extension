@@ -3,12 +3,12 @@ import React, { useState } from 'react';
 const Restore = () => {
     const [state, setState] = useState('hidden');
 
-    const onChangeHandler = (change) => {
+    const onChangeHandler = (change: React.ChangeEvent<HTMLInputElement>) => {
         const file = change.target.files[0];
         const fr = new FileReader();
 
         fr.addEventListener('load', (event) => {
-            const inputAsJSON = JSON.parse(event.target.result);
+            const inputAsJSON = JSON.parse(event.target.result as string);
 
             chrome.storage.local.set(inputAsJSON.storage, () => {
                 setState('');

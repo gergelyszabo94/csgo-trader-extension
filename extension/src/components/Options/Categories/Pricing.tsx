@@ -65,6 +65,7 @@ const pricing = () => {
             <Row
                 name='Provider'
                 type='pricingProvider'
+                id='pricingProvider'
                 description={
                     <>
                         The pricing provider and pricing mode you want to get your prices from.

@@ -25,7 +25,7 @@ export interface HistoryEvent {
 }
 
 export interface HistoryEvents {
-    events: HistoryEvent[]
+    events: HistoryEvent[];
 }
 
 const Friends = () => {
