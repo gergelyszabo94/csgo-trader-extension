@@ -107,7 +107,7 @@ const Bookmark = ({ bookmarkData, editBookmark, removeBookmark }) => {
             <div className='exterior'>{exterior}</div>
             <div className='bookmark__image-container'>
                 <span className='STS'>
-                    <STS st={itemInfo.isStatrack} s={itemInfo.isSouvenir} />
+                    <STS st={itemInfo.isStatrack} souvenir={itemInfo.isSouvenir} />
                 </span>
                 <img src={imageSRC} alt={itemInfo.name} title={itemInfo.name} />
             </div>

@@ -1,10 +1,15 @@
 import React from 'react';
 
-const STS = ({ st, s }) => {
-    if (st) {
+export interface STSProps {
+    isStatrack: boolean;
+    souvenir: boolean;
+}
+
+const STS = ({ isStatrack, souvenir }: STSProps) => {
+    if (isStatrack) {
         return <span className='statTrak'>StatTrak™</span>;
     }
-    if (s) {
+    if (souvenir) {
         return <span className='souvenir'>Souvenir</span>;
     }
     return null;
