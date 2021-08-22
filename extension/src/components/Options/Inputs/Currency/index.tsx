@@ -1,3 +1,4 @@
+import { ExchangeRates } from 'types';
 import React from 'react';
 import Select from 'components/Select';
 
@@ -8,7 +9,7 @@ interface CurrencyProps {
 
 const Currency = ({ id, options }: CurrencyProps) => {
     const setStorage = (thisValue: string | number) => {
-        chrome.storage.local.get(['exchangeRates'], ({ exchangeRates }) => {
+        chrome.storage.local.get(['exchangeRates'], ({ exchangeRates }: ExchangeRates) => {
             chrome.storage.local.set(
                 {
                     currency: thisValue,

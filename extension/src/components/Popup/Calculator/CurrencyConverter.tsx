@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
 import CurrencySelect from 'components/Popup/Calculator/CurrencySelect';
+import { ExchangeRates } from 'types';
 import { currencies } from 'utils/static/pricing';
 import { prettyPrintPrice } from 'utils/pricing';
-
-interface ExchangeRates {
-    [key: string]: number | string;
-}
 
 const CurrencyConverter = () => {
     const [currency1, setCurrency1] = useState('USD');
