@@ -1,21 +1,22 @@
-import { storageKeys } from 'utils/static/storageKeys';
-import { trackEvent, sendTelemetry } from 'utils/analytics';
-import { updatePrices, updateExchangeRates, getUserCurrencyBestGuess } from 'utils/pricing';
-import {
-    scrapeSteamAPIkey,
-    goToInternalPage,
-    uuidv4,
-    markModMessagesAsRead,
-} from 'utils/utilsModular';
 import {
     getGroupInvites,
-    updateFriendRequest,
     ignoreGroupRequest,
     removeOldFriendRequestEvents,
+    updateFriendRequest,
 } from 'utils/friendRequests';
-import { trimFloatCache } from 'utils/floatCaching';
 import { getSteamNotificationCount, playNotificationSound } from 'utils/notifications';
-import { updateTrades, removeOldOfferEvents } from 'utils/tradeOffers';
+import { getUserCurrencyBestGuess, updateExchangeRates, updatePrices } from 'utils/pricing';
+import {
+    goToInternalPage,
+    markModMessagesAsRead,
+    scrapeSteamAPIkey,
+    uuidv4,
+} from 'utils/utilsModular';
+import { removeOldOfferEvents, updateTrades } from 'utils/tradeOffers';
+import { sendTelemetry, trackEvent } from 'utils/analytics';
+
+import { storageKeys } from 'utils/static/storageKeys';
+import { trimFloatCache } from 'utils/floatCaching';
 
 // handles install and update events
 chrome.runtime.onInstalled.addListener((details) => {
@@ -146,10 +147,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 });
 
 // redirects to feedback survey on uninstall
-chrome.runtime.setUninstallURL(
-    'https://docs.google.com/forms/d/e/1FAIpQLSdGzY8TrSjfZZtfoerFdAna1E79Y13afxNKG1yytjZkypKTpg/viewform?usp=sf_link',
-    () => {},
-);
+chrome.runtime.setUninstallURL('https://docs.google.com/forms/d/e/1FAIpQLSdGzY8TrSjfZZtfoerFdAna1E79Y13afxNKG1yytjZkypKTpg/viewform?usp=sf_link');
 
 // handles what happens when one of the extension's notification gets clicked
 chrome.notifications.onClicked.addListener((notificationID) => {
