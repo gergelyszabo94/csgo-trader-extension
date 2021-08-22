@@ -6,3 +6,10 @@ export * from './storage';
 
 // from steam api
 export * from './api';
+
+export interface DopplerMapping {
+    type: string;
+    name: string;
+    short: string;
+    color: string;
+}

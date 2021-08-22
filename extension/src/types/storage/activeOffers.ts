@@ -2,13 +2,13 @@ export interface ActiveOffers {
     descriptions: SmallDescription[];
     items: Item[];
     lastFullUpdate: number;
-    received: Received[];
+    received: Offer[];
     receivedActiveCount: number;
-    sent: Received[];
+    sent: Offer[];
     sentActiveCount: number;
 }
 
-interface Received {
+export interface Offer {
     PLPercentage: number;
     PLPercentageFormatted: string;
     accountid_other: number;
@@ -17,8 +17,8 @@ interface Received {
     expiration_time: number;
     from_real_time_trade: boolean;
     is_our_offer: boolean;
-    items_to_give: itemsInOffer[];
-    items_to_receive: itemsInOffer[];
+    items_to_give: ItemsInOffer[];
+    items_to_receive: ItemsInOffer[];
     message: string;
     profitOrLoss: number;
     theirIncludesItemWIthNoPrice: boolean;
@@ -33,7 +33,7 @@ interface Received {
     yourItemsTotal: number;
 }
 
-interface itemsInOffer {
+export interface ItemsInOffer {
     amount: string;
     appid: number;
     assetid: string;

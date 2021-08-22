@@ -5,7 +5,7 @@ export interface TradeOffers {
     next_cursor: number;
 }
 
-interface Description {
+export interface Description {
     appid: number;
     classid: string;
     instanceid: string;
@@ -28,23 +28,23 @@ interface Description {
     tags: Tag[];
 }
 
-interface SmallDescription {
+export interface SmallDescription {
     type: string;
     value: string;
     color?: string;
 }
 
-interface Action {
+export interface Action {
     link: string;
     name: string;
 }
 
-interface MarketAction {
+export interface MarketAction {
     link: string;
     name: string;
 }
 
-interface Tag {
+export interface Tag {
     category: string;
     internal_name: string;
     localized_category_name: string;
@@ -52,7 +52,7 @@ interface Tag {
     color?: string;
 }
 
-interface TradeOffer {
+export interface TradeOffer {
     tradeofferid: string;
     accountid_other: number;
     message: string;
@@ -68,7 +68,7 @@ interface TradeOffer {
     confirmation_method: number;
 }
 
-interface Item {
+export interface Item {
     appid: number;
     contextid: string;
     assetid: string;

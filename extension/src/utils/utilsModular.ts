@@ -11,6 +11,7 @@ import itemTypes from 'utils/static/itemTypes';
 import patterns from 'utils/static/patterns';
 import qualities from 'utils/static/qualities';
 import rarities from 'utils/static/rarities';
+import { DopplerMapping } from 'types';
 
 // "Sticker" in different languages
 // english, simplified chinese, traditional chinese,
@@ -188,7 +189,8 @@ const getInspectLink = (item, owner?: string, assetID?: string) => {
     }
 };
 
-const getDopplerInfo = (icon) => {
+
+const getDopplerInfo = (icon: string): DopplerMapping | null => {
     return iconToPhaseMapping[icon] !== undefined ? iconToPhaseMapping[icon] : dopplerPhases.unk;
 };
 

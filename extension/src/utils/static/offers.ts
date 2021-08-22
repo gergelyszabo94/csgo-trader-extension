@@ -1,18 +1,4 @@
-interface Actions {
-    accept: Action;
-    decline: Action;
-    notify: Action;
-    notify_discord: Action;
-    no_action: Action;
-}
-
-interface Action {
-    key: string;
-    pretty: string;
-    description: string;
-}
-
-const actions: Actions = {
+const actions = {
     accept: {
         key: 'accept',
         pretty: 'Accept',
@@ -40,21 +26,8 @@ const actions: Actions = {
     },
 };
 
-interface EventTypes {
-    new: EventType;
-    notify: EventType;
-    notify_discord: EventType;
-    decline: EventType;
-    accept: EventType;
-}
 
-interface EventType {
-    key: string;
-    pretty: string;
-    description: string;
-}
-
-const eventTypes: EventTypes = {
+const eventTypes = {
     new: {
         key: 'new',
         pretty: 'New Trade Offer',
@@ -82,35 +55,7 @@ const eventTypes: EventTypes = {
     },
 };
 
-interface Conditions {
-    profit_over: Condition;
-    profit_under: Condition;
-    profit_percentage_over: Condition;
-    profit_percentage_under: Condition;
-    has_message: Condition;
-    no_message: Condition;
-    message_includes: Condition;
-    message_doesnt_include: Condition;
-    receiving_items_over: Condition;
-    receiving_items_under: Condition;
-    giving_items_over: Condition;
-    giving_items_under: Condition;
-    receiving_non_csgo_items: Condition;
-    giving_non_csgo_items: Condition;
-    receiving_no_price_items: Condition;
-    giving_no_price_items: Condition;
-}
-
-interface Condition {
-    key: string;
-    pretty: string;
-    description: string;
-    with_value: boolean;
-    value_type?: string;
-    default_value?: string | number;
-}
-
-const conditions: Conditions = {
+const conditions = {
     profit_over: {
         key: 'profit_over',
         pretty: 'Profit over',
@@ -229,29 +174,8 @@ const conditions: Conditions = {
     },
 };
 
-interface OfferStates {
-    '1': OfferState;
-    '2': OfferState;
-    '3': OfferState;
-    '4': OfferState;
-    '5': OfferState;
-    '6': OfferState;
-    '7': OfferState;
-    '8': OfferState;
-    '9': OfferState;
-    '10': OfferState;
-    '11': OfferState;
-}
-
-interface OfferState {
-    key: number;
-    short: string;
-    pretty: string;
-    description: string;
-}
-
 // from: https://developer.valvesoftware.com/wiki/Steam_Web_API/IEconService
-const offerStates: OfferStates = {
+const offerStates = {
     1: {
         key: 1,
         short: 'invalid',
@@ -323,18 +247,7 @@ const offerStates: OfferStates = {
     },
 };
 
-interface Operators {
-    or: Operator;
-    and: Operator;
-}
-
-interface Operator {
-    key: string;
-    pretty: string;
-    description: string;
-}
-
-const operators: Operators = {
+const operators = {
     or: {
         key: 'or',
         pretty: 'OR',

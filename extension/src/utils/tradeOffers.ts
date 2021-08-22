@@ -21,6 +21,18 @@ import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 import { getTradeOffers } from 'utils/IEconService';
 import { prettyPrintPrice } from 'utils/pricing';
 import steamApps from 'utils/static/steamApps';
+import {
+    ActiveOffers,
+    Description,
+    DopplerMapping,
+    Item,
+    ItemsInOffer,
+    Offer,
+    OfferEvalRule,
+    SteamIDOfUser,
+    TradeOffer,
+    TradeOffers,
+} from 'types';
 
 const createTradeOfferJSON = (itemsToGive, itemsToReceive) => {
     return {
@@ -78,7 +90,7 @@ const acceptOffer = (offerID, partnerID): Promise<AcceptedOffer> => {
 };
 
 // opens the offer in a new tab where it gets accepted
-const openAndAcceptOffer = (offerID, partnerID) => {
+const openAndAcceptOffer = (offerID: string, partnerID: string) => {
     chrome.tabs.create({
         url: `https://steamcommunity.com/tradeoffer/${offerID}/?csgotrader_accept=true&partner=${partnerID}`,
     });
@@ -132,7 +144,7 @@ const acceptTradeInBackground = (offerID: string, partnerID: string) => {
 };
 
 // works in background pages as well
-const declineOffer = (offerID) => {
+const declineOffer = (offerID: string) => {
     return new Promise((resolve, reject) => {
         chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }) => {
             const myHeaders = new Headers();
@@ -200,7 +212,7 @@ const sendOffer = (partnerID, tradeOfferJSON, token, message) => {
     });
 };
 
-const notifyAboutOffer = (offer) => {
+const notifyAboutOffer = (offer: Offer) => {
     chrome.storage.local.get('currency', ({ currency }) => {
         const steamIDOfPartner = getProperStyleSteamIDFromOfferStyle(offer.accountid_other);
         getPlayerSummaries([steamIDOfPartner]).then((summary) => {
@@ -279,7 +291,7 @@ const createDiscordSideSummary = (offerSideItems, itemsWithDetails) => {
     }
 };
 
-const notifyAboutOfferOnDiscord = (offer, items) => {
+const notifyAboutOfferOnDiscord = (offer: Offer, items) => {
     chrome.storage.local.get('currency', ({ currency }) => {
         const steamIDOfPartner = getProperStyleSteamIDFromOfferStyle(offer.accountid_other);
         getPlayerSummaries([steamIDOfPartner]).then((summary) => {
@@ -377,7 +389,15 @@ const updateActiveOffers = (offers, items) => {
     );
 };
 
-const extractItemsFromOffers = (offers, sentOrReceived, userID) => {
+interface SmartItem extends Item {
+    owner: string;
+    position: number;
+    inOffer: string;
+    side: 'your' | 'their';
+    offerOrigin: string;
+}
+
+const extractItemsFromOffers = (offers: TradeOffer[], sentOrReceived: string, userID: string): SmartItem[] => {
     const itemsToReturn = [];
     if (offers) {
         offers.forEach((offer) => {
@@ -411,7 +431,24 @@ const extractItemsFromOffers = (offers, sentOrReceived, userID) => {
     return itemsToReturn;
 };
 
-const matchItemsWithDescriptions = (items) => {
+interface SmartestItem {
+    appid: string;
+    contextid: string;
+    name: string;
+    marketable: boolean;
+    market_hash_name: string;
+    name_color: string;
+    marketlink: string;
+    classid: string;
+    instanceid: string;
+    assetid: string;
+    position: number;
+    side: 'your' | 'their';
+    dopplerInfo: DopplerMapping | null;
+
+}
+
+const matchItemsWithDescriptions = (items: SmarterItem[]) => {
     const itemsToReturn = [];
     items.forEach((item) => {
         // some items don't have descriptions for some reason - will have to be investigated later
@@ -453,17 +490,19 @@ const matchItemsWithDescriptions = (items) => {
     return itemsToReturn;
 };
 
-const matchItemsAndAddDetails = (offers, userID) => {
+interface SmarterItem extends SmartItem, Description {}
+
+const matchItemsAndAddDetails = (offers: TradeOffers, userID: string) => {
     return new Promise((resolve) => {
         let allItemsInOffer = extractItemsFromOffers(offers.trade_offers_sent, 'sent', userID);
         allItemsInOffer = allItemsInOffer.concat(
             extractItemsFromOffers(offers.trade_offers_received, 'received', userID),
         );
 
-        const itemsWithMoreInfo = [];
+        const itemsWithMoreInfo: SmarterItem[] = [];
         if (allItemsInOffer) {
             allItemsInOffer.forEach((item) => {
-                const itemDescription = offers.descriptions.find((description) => {
+                const itemDescription: Description = offers.descriptions.find((description) => {
                     return description.classid === item.classid && description.instanceid === item.instanceid;
                 });
                 itemsWithMoreInfo.push({ ...item, ...itemDescription });
@@ -692,6 +731,12 @@ const addOfferTotals = (offers, items) => {
     return undefined; // if there are no offers Steam does not include the property at all
 };
 
+interface UpdateTradesProps {
+    steamIDOfUser: string;
+    activeOffers: ActiveOffers;
+    offerEvalRules: OfferEvalRule[];
+}
+
 // loads active offers, updates active offers in storage
 // checks for new offers and starts evaluation
 const updateTrades = () => {
@@ -699,7 +744,7 @@ const updateTrades = () => {
         // active offers has the previously loaded active trade offer info
         chrome.storage.local.get(
             ['steamIDOfUser', 'activeOffers', 'offerEvalRules'],
-            ({ steamIDOfUser, activeOffers, offerEvalRules }) => {
+            ({ steamIDOfUser, activeOffers, offerEvalRules }: UpdateTradesProps) => {
                 const prevProcessedOffersIDs = [];
                 if (activeOffers.received) {
                     activeOffers.received.forEach((offer) => {

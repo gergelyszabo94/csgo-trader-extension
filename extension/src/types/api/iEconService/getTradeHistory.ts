@@ -4,7 +4,7 @@ export interface TradeHistory {
     trades: Trade[];
 }
 
-interface Trade {
+export interface Trade {
     tradeid: string;
     steamid_other: string;
     time_init: number;
@@ -14,7 +14,7 @@ interface Trade {
     time_escrow_end?: number;
 }
 
-interface Assets {
+export interface Assets {
     appid: number;
     contextid: string;
     assetid: string;

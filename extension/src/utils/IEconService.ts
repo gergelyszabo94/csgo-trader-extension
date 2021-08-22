@@ -1,6 +1,6 @@
 import { getFormattedPLPercentage, isDopplerInName } from './simpleUtils';
 import { getPrice, prettyPrintPrice } from 'utils/pricing';
-import { numberBoolean, TradeOffers as tradeOffers } from 'types';
+import { numberBoolean, TradeOffers } from 'types';
 
 import { getDopplerInfo } from 'utils/utilsModular';
 import { getPlayerSummaries } from 'utils/ISteamUser';
@@ -172,7 +172,7 @@ const getTradeOffers = (
     includeDescriptions: numberBoolean,
     sent: numberBoolean,
     received: numberBoolean,
-): Promise<tradeOffers> =>
+): Promise<TradeOffers> =>
     new Promise((resolve, reject) => {
         chrome.storage.local.get(['apiKeyValid', 'steamAPIKey'], ({ apiKeyValid, steamAPIKey }) => {
             if (apiKeyValid) {

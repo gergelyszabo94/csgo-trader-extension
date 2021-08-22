@@ -1,60 +1,60 @@
-import DOMPurify from 'dompurify';
-
+import { acceptOffer, createTradeOfferJSON, declineOffer, sendOffer } from 'utils/tradeOffers';
 import {
-    getItemByAssetID,
-    getAssetIDOfElement,
     addDopplerPhase,
-    makeItemColorful,
-    addSSTandExtIndicators,
-    addPriceIndicator,
     addFloatIndicator,
+    addPageControlEventListeners,
+    addPriceIndicator,
+    addSSTandExtIndicators,
+    addSearchListener,
+    changePageTitle,
+    getActivePage,
+    getAssetIDOfElement,
+    getDopplerInfo,
     getExteriorFromTags,
+    getInspectLink,
+    getItemByAssetID,
+    getNameTag,
+    getPattern,
     getQuality,
     getType,
-    getInspectLink,
-    repositionNameTagIcons,
-    getDopplerInfo,
-    getActivePage,
-    reloadPageOnExtensionReload,
     logExtensionPresence,
-    updateLoggedInUserInfo,
-    warnOfScammer,
-    addPageControlEventListeners,
-    addSearchListener,
-    getPattern,
-    getNameTag,
+    makeItemColorful,
+    reloadPageOnExtensionReload,
     removeLinkFilterFromLinks,
     removeOfferFromActiveOffers,
-    changePageTitle,
+    repositionNameTagIcons,
+    updateLoggedInUserInfo,
+    warnOfScammer,
 } from 'utils/utilsModular';
 import {
-    getItemMarketLink,
-    getItemByNameAndGame,
+    addRealTimePriceToPage,
+    initPriceQueue,
+    prettyPrintPrice,
+    priceQueue,
+    updateWalletCurrency,
+    workOnPriceQueue,
+} from 'utils/pricing';
+import {
     closeTab,
-    isDopplerInName,
     getFormattedPLPercentage,
+    getItemByNameAndGame,
+    getItemMarketLink,
+    isDopplerInName,
 } from 'utils/simpleUtils';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
-import {
-    priceQueue,
-    workOnPriceQueue,
-    prettyPrintPrice,
-    initPriceQueue,
-    addRealTimePriceToPage,
-    updateWalletCurrency,
-} from 'utils/pricing';
-import { getItemByIDs, getIDsFromElement, findElementByIDs } from 'utils/itemsToElementsToItems';
-import doTheSorting from 'utils/sorting';
-import { sortingModes } from 'utils/static/sortingModes';
-import { trackEvent } from 'utils/analytics';
-import itemTypes from 'utils/static/itemTypes';
+import { findElementByIDs, getIDsFromElement, getItemByIDs } from 'utils/itemsToElementsToItems';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
-import { overrideHandleTradeActionMenu } from 'utils/steamOverriding';
 import { injectScript, injectStyle } from 'utils/injection';
-import { inOtherOfferIndicator } from 'utils/static/miscElements';
+
+import DOMPurify from 'dompurify';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
-import { acceptOffer, declineOffer, sendOffer, createTradeOfferJSON } from 'utils/tradeOffers';
+import doTheSorting from 'utils/sorting';
+import { inOtherOfferIndicator } from 'utils/static/miscElements';
+import itemTypes from 'utils/static/itemTypes';
+import { overrideHandleTradeActionMenu } from 'utils/steamOverriding';
+import { sortingModes } from 'utils/static/sortingModes';
 import steamApps from 'utils/static/steamApps';
+import { trackEvent } from 'utils/analytics';
 
 let yourInventory = null;
 let theirInventory = null;
@@ -103,26 +103,32 @@ const addInOtherOffersInfoBlock = (item, otherOfferItems) => {
     }
 };
 
-const getActiveInventory = () => {
+const getActiveInventory = (): HTMLElement | null => {
     let activeInventory = null;
-    document.querySelectorAll('.inventory_ctn').forEach((inventory) => {
+    document.querySelectorAll('.inventory_ctn').forEach((inventory: HTMLElement) => {
         if (inventory.style.display !== 'none' && inventory.id !== 'trade_inventory_unavailable')
             activeInventory = inventory;
     });
     return activeInventory;
 };
 
-const getActiveInventoryIDs = () => {
+interface ActiveInventoryIDS {
+    appID: string;
+    contextID: string;
+}
+
+const getActiveInventoryIDs = (): ActiveInventoryIDS | null => {
     const activeInv = getActiveInventory();
-    return activeInv === null
-        ? null
-        : {
-              appID: activeInv.id.split('_')[2].split('_')[0],
-              contextID: activeInv.id.split('_')[3].split('_')[0],
-          };
+    if (activeInv !== null) {
+        return {
+            appID: activeInv.id.split('_')[2].split('_')[0],
+            contextID: activeInv.id.split('_')[3].split('_')[0],
+        };
+    }
+    return null;
 };
 
-const getItemInfoFromPage = (who) => {
+const getItemInfoFromPage = (who: string) => {
     const getAppInfoScript = `
     appIDs = {};
     appIDsArray = Object.keys(User${who}.rgAppInfo);
@@ -370,7 +376,9 @@ const addInTradeTotals = (whose) => {
                 if (item.price !== undefined) inTradeTotal += parseFloat(item.price.price);
                 if (inTradeItemsSummary[item.type.key] !== undefined) {
                     inTradeItemsSummary[item.type.key] += 1;
-                } else inTradeItemsSummary[item.type.key] = 1;
+                } else {
+                    inTradeItemsSummary[item.type.key] = 1;
+                }
             } else if (inTradeItemsSummary.nonCSGO !== undefined) {
                 inTradeItemsSummary.nonCSGO += 1;
             } else inTradeItemsSummary.nonCSGO = 1;
@@ -477,8 +485,10 @@ const loadAllItemsProperly = () => {
     injectScript(loadAllItemsProperlyScript, true, 'loadAllItemsProperly', null);
 };
 
-const sortItems = (method, type) => {
-    if (getActiveInventoryIDs().appID === steamApps.CSGO.appID) {
+const sortItems = (method: string, type: string) => {
+    const inventoryIDS = getActiveInventoryIDs();
+    if (inventoryIDS === null) return;
+    if (inventoryIDS.appID === steamApps.CSGO.appID) {
         if (type === 'offer') {
             const activeInventory = getActiveInventory();
             const items = activeInventory.querySelectorAll('.item.app730.context2');
@@ -663,10 +673,15 @@ const singleClickControlClick = () => {
     });
 };
 
+interface DoInitSortingProps {
+    offerSortingMode: string;
+    switchToOtherInventory: boolean;
+}
+
 const doInitSorting = (initial) => {
     chrome.storage.local.get(
         ['offerSortingMode', 'switchToOtherInventory'],
-        ({ offerSortingMode, switchToOtherInventory }) => {
+        ({ offerSortingMode, switchToOtherInventory }: DoInitSortingProps) => {
             if (switchToOtherInventory && initial) {
                 const inventoryTab = document.getElementById('inventory_select_their_inventory');
                 inventoryTab.click();

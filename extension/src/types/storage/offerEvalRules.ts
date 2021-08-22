@@ -5,6 +5,10 @@ export interface OfferEvalRule {
     operators: string[];
 }
 
+export interface OfferEvalRules {
+    offerEvalRules: OfferEvalRule[]
+}
+
 interface Condition {
     type: string;
     value?: any;

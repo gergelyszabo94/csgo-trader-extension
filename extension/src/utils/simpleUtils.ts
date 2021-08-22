@@ -1,18 +1,18 @@
 // this utils module should never have any non-static dependencies
 
-const getItemMarketLink = (appID, marketHashName) => {
+const getItemMarketLink = (appID: string, marketHashName: string) => {
     return `https://steamcommunity.com/market/listings/${appID}/${marketHashName}`;
 };
 
-const getItemInventoryLink = (steamID, appID, contextID, assetID) => {
+const getItemInventoryLink = (steamID: string, appID: string, contextID: string, assetID: string) => {
     return `https://steamcommunity.com/profiles/${steamID}/inventory/#${appID}_${contextID}_${assetID}`;
 };
 
-const getOfferLink = (offerID) => {
+const getOfferLink = (offerID: string) => {
     return `https://steamcommunity.com/tradeoffer/${offerID}`;
 };
 
-const playAudio = (source, sourceType, volume) => {
+const playAudio = (source: string, sourceType: string, volume: number) => {
     const sourceURL = sourceType === 'local' ? chrome.runtime.getURL(source) : source;
     const audio = new Audio(sourceURL);
     audio.volume = volume;
@@ -47,7 +47,7 @@ const getFormattedPLPercentage = (giving, receiving) => {
 };
 
 // for phase detection we have to know if th item is a doppler
-const isDopplerInName = (name) => {
+const isDopplerInName = (name: string): boolean => {
     // english and many other languages, polish iirc, simplified chinese, korean, bulgarian, russian
     const patterns = ['Doppler', 'doppler', '多普勒', '도플러', 'Доплер', 'Волны'];
     const dopplerCheckRegex = new RegExp(patterns.join('|'), 'i');
