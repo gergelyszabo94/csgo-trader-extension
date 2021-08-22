@@ -29,6 +29,7 @@ const buyListing = (listing, buyerKYC) => {
             },
         );
 
+        //@ts-ignore
         const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
 
         fetchFunction(request)
@@ -59,6 +60,7 @@ const removeListing = (listingID) => {
             },
         );
 
+        //@ts-ignore
         const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
 
         fetchFunction(request)
@@ -96,6 +98,7 @@ const listItem = (appID, contextID, amount, assetID, price) => {
         // sent by the content itself can use  content.XMLHttpRequest and content.fetch() instead.
         // For cross-browser extensions, the presence of these methods must be feature-detected.
         // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Content_scripts#XHR_and_Fetch
+        //@ts-ignore
         const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
 
         fetchFunction(request)
@@ -155,6 +158,7 @@ const createOrder = (
             }&save_my_address=1`,
         });
 
+        //@ts-ignore
         const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
 
         fetchFunction(request)
@@ -188,6 +192,7 @@ const cancelOrder = (orderID) => {
             body: `sessionid=${getSessionID()}&buy_orderid=${orderID}`,
         });
 
+        //@ts-ignore
         const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
 
         fetchFunction(request)
@@ -204,7 +209,68 @@ const cancelOrder = (orderID) => {
     });
 };
 
-const getMarketHistory = (start, count) => {
+interface MarketHistory {
+    success: boolean;
+    pagesize: number;
+    total_count: null | number;
+    start: number;
+    assets: Assets;
+    hovers: string;
+    results_html: string;
+}
+
+interface Assets {
+    [key: string]: Context
+}
+
+interface Context {
+    [key: string]: Asset;
+}
+
+interface Asset {
+    currency: number;
+    appid: number;
+    contextid: string;
+    id: string;
+    classid: string;
+    instanceid: string;
+    amount: string;
+    status: number;
+    original_amount: string;
+    unowned_id: string;
+    unowned_contextid: string;
+    background_color: string;
+    icon_url: string;
+    icon_url_large: string;
+    descriptions: Description[];
+    tradable: number;
+    actions: Owneraction[];
+    owner_actions: Owneraction[];
+    name: string;
+    type: string;
+    market_name: string;
+    market_hash_name: string;
+    market_fee_app: number;
+    commodity: number;
+    market_tradable_restriction: number;
+    market_marketable_restriction: number;
+    marketable: number;
+    app_icon: string;
+    owner: number;
+}
+
+interface Owneraction {
+    link: string;
+    name: string;
+}
+
+interface Description {
+    value: string;
+    type?: string;
+    color?: string;
+}
+
+const getMarketHistory = (start: number, count: number): Promise<MarketHistory> => {
     return new Promise((resolve, reject) => {
         const myHeaders = new Headers();
         myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
@@ -218,6 +284,7 @@ const getMarketHistory = (start, count) => {
             },
         );
 
+        //@ts-ignore
         const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
 
         fetchFunction(request)
@@ -230,7 +297,7 @@ const getMarketHistory = (start, count) => {
             })
             .then((historyJSON) => {
                 if (historyJSON === null) reject('success:false');
-                else if (historyJSON.success === true) resolve(historyJSON);
+                else if (historyJSON.success === true) resolve(historyJSON as MarketHistory);
                 else reject('success:false');
             })
             .catch((err) => {
@@ -256,6 +323,7 @@ const loadItemOrderHistogram = (nameID) => {
             },
         );
 
+        //@ts-ignore
         const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
 
         fetchFunction(request)

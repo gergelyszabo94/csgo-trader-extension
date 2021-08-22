@@ -30,8 +30,8 @@ const marketHistoryExport = {
     lastRequestSuccessful: true,
 };
 
-const getWalletAmount = () => {
-    return steamFormattedPriceToCents(document.getElementById('header_wallet_balance').innerText);
+const getWalletAmount = (): number => {
+    return Number(steamFormattedPriceToCents(document.getElementById('header_wallet_balance').innerText));
 };
 
 const getMyListingIDFromElement = (listingElement) => {
@@ -203,15 +203,15 @@ const extractHistoryEvents = (resultHtml) => {
     tempEl
         .querySelectorAll('.market_listing_row.market_recent_listing_row')
         .forEach((historyRow) => {
-            const itemName = historyRow.querySelector('.market_listing_item_name').innerText;
-            const gameName = historyRow.querySelector('.market_listing_game_name').innerText;
+            const itemName = historyRow.querySelector<HTMLElement>('.market_listing_item_name').innerText;
+            const gameName = historyRow.querySelector<HTMLElement>('.market_listing_game_name').innerText;
             const listedOn = historyRow
-                .querySelectorAll('.market_listing_listed_date')[1]
+                .querySelectorAll<HTMLElement>('.market_listing_listed_date')[1]
                 .innerText.trim();
             const actedOn = historyRow
-                .querySelectorAll('.market_listing_listed_date')[0]
+                .querySelectorAll<HTMLElement>('.market_listing_listed_date')[0]
                 .innerText.trim();
-            const displayPrice = historyRow.querySelector('.market_listing_price').innerText.trim();
+            const displayPrice = historyRow.querySelector<HTMLElement>('.market_listing_price').innerText.trim();
             const priceInCents = steamFormattedPriceToCents(displayPrice);
             const partnerElement = historyRow.querySelector('.market_listing_whoactedwith');
             const type = getHistoryType(historyRow);
@@ -377,7 +377,7 @@ if (sellListings !== null) {
             });
         }
 
-        const removeColumnHeader = tableHeader.querySelector(
+        const removeColumnHeader = tableHeader.querySelector<HTMLInputElement>(
             '.market_listing_right_cell.market_listing_edit_buttons.placeholder',
         );
 
@@ -434,7 +434,7 @@ const listingSections = document.querySelectorAll(
 );
 const orders = listingSections.length === 2 ? listingSections[1] : listingSections[2];
 if (orders) {
-    const orderRows = orders.querySelectorAll('.market_listing_row.market_recent_listing_row');
+    const orderRows = orders.querySelectorAll<HTMLElement>('.market_listing_row.market_recent_listing_row');
 
     // if there are actually any orders
     if (orderRows.length !== 0) {
@@ -648,7 +648,7 @@ if (marketHistoryTab !== null) {
                         const itemName = historyRow.getAttribute('data-name');
                         if (itemName !== null) {
                             const appID = historyRow.getAttribute('data-appid');
-                            const nameElement = historyRow.querySelector(
+                            const nameElement = historyRow.querySelector<HTMLInputElement>(
                                 '.market_listing_item_name',
                             );
                             const name = nameElement.innerText;
@@ -758,10 +758,10 @@ if (marketHistoryButton !== null) {
 
     document.querySelectorAll('#exportFrom, #exportTo').forEach((range) => {
         range.addEventListener('change', () => {
-            const fromElement = document.getElementById('exportFrom');
-            const toElement = document.getElementById('exportTo');
+            const fromElement = document.getElementById('exportFrom') as HTMLInputElement;
+            const toElement = document.getElementById('exportTo') as HTMLInputElement;
             if (parseInt(fromElement.value) >= parseInt(toElement.value)) {
-                fromElement.value = 0;
+                fromElement.value = "0";
                 toElement.value = toElement.getAttribute('max');
             }
         });
@@ -776,8 +776,8 @@ if (marketHistoryButton !== null) {
 
             document.getElementById('exportHelperMessage').innerText =
                 'Exporting market history...';
-            marketHistoryExport.from = parseInt(document.getElementById('exportFrom').value);
-            marketHistoryExport.to = parseInt(document.getElementById('exportTo').value);
+            marketHistoryExport.from = parseInt((document.getElementById('exportFrom') as HTMLInputElement).value);
+            marketHistoryExport.to = parseInt((document.getElementById('exportTo') as HTMLInputElement).value);
 
             const numOfRequests = Math.ceil(
                 (marketHistoryExport.to - marketHistoryExport.from) / 50,
@@ -805,12 +805,13 @@ if (marketHistoryButton !== null) {
         marketHistoryTab.style.display = 'none';
 
         getMarketHistory(0, 50).then((history) => {
-            document.getElementById('exportFrom').setAttribute('max', history.total_count);
+            const totalCount = String(history.total_count)
+            document.getElementById('exportFrom').setAttribute('max', totalCount);
             const exportToElement = document.getElementById('exportTo');
-            exportToElement.setAttribute('max', history.total_count);
-            exportToElement.value = history.total_count;
-            document.querySelectorAll('.numberOfHistoryEvents').forEach((numberOfEvents) => {
-                numberOfEvents.innerText = history.total_count;
+            exportToElement.setAttribute('max', totalCount);
+            exportToElement.value = totalCount;
+            document.querySelectorAll<HTMLElement>('.numberOfHistoryEvents').forEach((numberOfEvents) => {
+                numberOfEvents.innerText = totalCount;
             });
         });
     });

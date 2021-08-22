@@ -20,8 +20,8 @@ const determineNotificationDate = (
 
 const reverseWhenNotifDetails = (tradability, notifTime) => {
     const difference =
-        parseInt(new Date(notifTime).getTime() / 1000).toFixed(0) -
-        parseInt(new Date(tradability).getTime() / 1000).toFixed(0);
+        Math.floor(new Date(notifTime).getTime() / 1000) -
+        Math.floor(new Date(tradability).getTime() / 1000);
     const differenceAbs = Math.abs(difference);
 
     return {

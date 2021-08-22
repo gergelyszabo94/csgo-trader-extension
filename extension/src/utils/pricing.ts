@@ -46,7 +46,7 @@ const getSteamWalletInfo = (): WalletInfo => {
     return JSON.parse(injectScript(getWalletInfoScript, true, 'steamWalletScript', 'steamWallet'));
 };
 
-const initPriceQueue = (cleanupFunction) => {
+const initPriceQueue = (cleanupFunction?) => {
     chrome.storage.local.get(
         ['realTimePricesFreqSuccess', 'realTimePricesFreqFailure'],
         ({ realTimePricesFreqSuccess, realTimePricesFreqFailure }) => {

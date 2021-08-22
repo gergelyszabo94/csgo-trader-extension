@@ -31,7 +31,7 @@ const workOnFloatQueue = () => {
                             ['floatQueueActivity'],
                             ({ floatQueueActivity }) => {
                                 const secondsFromLastUse =
-                                    (Date.now() - new Date(floatQueueActivity.lastUsed)) / 1000;
+                                    (Date.now() - new Date(floatQueueActivity.lastUsed).getTime()) / 1000;
                                 // tries to avoid having multiple float queues running concurrently on different pages
                                 if (
                                     secondsFromLastUse < 5 &&

@@ -1,5 +1,5 @@
 const goldenMiniprofile = () => {
-    const miniProfile = document.querySelector('.miniprofile_player');
+    const miniProfile = document.querySelector<HTMLElement>('.miniprofile_player');
 
     if (miniProfile !== null) {
         miniProfile.querySelector('.playerAvatar').classList.add('golden');
@@ -18,7 +18,7 @@ const goldenMiniProfileHandler = () => {
 };
 
 const goldenCommenters = () => {
-    document.querySelectorAll('.commentthread_author_link').forEach((commenter) => {
+    document.querySelectorAll<HTMLElement>('.commentthread_author_link').forEach((commenter) => {
         if (commenter.innerText.toLowerCase().includes('csgotrader.app')) {
             commenter.classList.add('golden');
             const avatar =
@@ -31,10 +31,10 @@ const goldenCommenters = () => {
 };
 
 const goldenMemberNames = () => {
-    document.querySelectorAll('.member_block').forEach((memberBlock) => {
+    document.querySelectorAll<HTMLElement>('.member_block').forEach((memberBlock) => {
         if (
             memberBlock
-                .querySelector('.linkFriend')
+                .querySelector<HTMLElement>('.linkFriend')
                 .innerText.toLowerCase()
                 .includes('csgotrader.app')
         ) {

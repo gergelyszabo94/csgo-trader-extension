@@ -1,11 +1,21 @@
-import { getPlayerBans, getPlayerSummaries } from 'utils/ISteamUser';
 import { actions, conditions, eventTypes } from 'utils/static/friendRequests';
-import { getSteamRepInfo, getRemoteImageAsObjectURL } from 'utils/utilsModular';
-import { getUserCSGOInventory } from 'utils/getUserInventory';
+import { getPlayerBans, getPlayerSummaries } from 'utils/ISteamUser';
+import { getRemoteImageAsObjectURL, getSteamRepInfo } from 'utils/utilsModular';
+
 import DOMPurify from 'dompurify';
+import { getUserCSGOInventory } from 'utils/getUserInventory';
 import { playNotificationSound } from 'utils/notifications';
 
-const getFriendRequests = () =>
+interface Inviter {
+    steamID: string;
+    accountID: string;
+    name: string;
+    level: string;
+    evalTries: number;
+    avatar: string;
+}
+
+const getFriendRequests = (): Promise<Inviter[]> =>
     new Promise((resolve, reject) => {
         const getRequest = new Request('https://steamcommunity.com/my/friends/pending');
 
@@ -23,7 +33,7 @@ const getFriendRequests = () =>
                     const html = document.createElement('html');
                     html.innerHTML = DOMPurify.sanitize(body);
                     const receivedInvitesElement = html.querySelector('#search_results');
-                    const inviters = [];
+                    const inviters: Inviter[] = [];
 
                     if (receivedInvitesElement !== null) {
                         receivedInvitesElement
@@ -32,10 +42,13 @@ const getFriendRequests = () =>
                                 inviters.push({
                                     steamID: inviteRow.getAttribute('data-steamid'),
                                     accountID: inviteRow.getAttribute('data-accountid'),
-                                    name: inviteRow.querySelector('.invite_block_name')
-                                        .firstElementChild.innerText,
-                                    level: inviteRow.querySelector('.friendPlayerLevelNum')
-                                        .innerText,
+                                    name: (
+                                        inviteRow.querySelector('.invite_block_name')
+                                            .firstElementChild as HTMLElement
+                                    ).innerText,
+                                    level: inviteRow.querySelector<HTMLElement>(
+                                        '.friendPlayerLevelNum',
+                                    ).innerText,
                                     evalTries: 0,
                                     avatar: inviteRow
                                         .querySelector('.playerAvatar > a > img')
@@ -191,7 +204,8 @@ const getCommonFriends = (accountID) =>
                     html.innerHTML = DOMPurify.sanitize(body);
                     const friends = [];
                     html.querySelectorAll('.friendBlock.persona').forEach((friendBlock) => {
-                        const nickNameBlock = friendBlock.querySelector('.nickname_block');
+                        const nickNameBlock =
+                            friendBlock.querySelector<HTMLElement>('.nickname_block');
 
                         friends.push({
                             profileLink: friendBlock
@@ -496,7 +510,7 @@ const addPastRequestsInfo = () => {
     );
 };
 
-const createFriendRequestEvent = (invite, type, appliedRule) => {
+const createFriendRequestEvent = (invite, type, appliedRule?) => {
     let eventType;
     switch (type) {
         case actions.accept.key:
@@ -780,7 +794,7 @@ const updateFriendRequest = () => {
             ['friendRequests', 'apiKeyValid', 'notifyOnFriendRequest'],
             ({ friendRequests, apiKeyValid, notifyOnFriendRequest }) => {
                 const minutesFromLastCheck =
-                    (Date.now() - new Date(friendRequests.lastUpdated)) / 1000 / 60;
+                    (Date.now() - new Date(friendRequests.lastUpdated).getTime()) / 1000 / 60;
                 // safeguarding against an edge case where the invites page loads
                 // but the invites themselves don't, which means
                 // that the extension would falsely update the incoming requests to 0
@@ -802,9 +816,11 @@ const updateFriendRequest = () => {
 
                     // if the invite was canceled by the sender or
                     // accepted, ignored or blocked by the user since the last check
-                    const disappearedInvites = friendRequests.inviters.filter((inviter) => {
-                        return !upToDateInviterIDs.includes(inviter.steamID);
-                    });
+                    const disappearedInvites = friendRequests.inviters.filter(
+                        (inviter: Inviter) => {
+                            return !upToDateInviterIDs.includes(inviter.steamID);
+                        },
+                    );
 
                     const disappearedInviteEvents = disappearedInvites.map((invite) => {
                         return createFriendRequestEvent(invite, eventTypes.disappeared.key);

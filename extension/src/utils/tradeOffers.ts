@@ -39,8 +39,14 @@ const createTradeOfferJSON = (itemsToGive, itemsToReceive) => {
     };
 };
 
+// not complete
+interface AcceptedOffer {
+    needs_mobile_confirmation: boolean;
+    needs_email_confirmation: boolean;
+}
+
 // only works in content scripts, not in background
-const acceptOffer = (offerID, partnerID) => {
+const acceptOffer = (offerID, partnerID): Promise<AcceptedOffer> => {
     return new Promise((resolve, reject) => {
         chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }) => {
             const myHeaders = new Headers();

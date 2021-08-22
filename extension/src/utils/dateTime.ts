@@ -6,7 +6,7 @@ const dateToISODisplay = (unixTimestamp) => {
 };
 
 const prettyTimeAgo = (unixTimestamp) => {
-    const differenceSeconds = (Date.now() - new Date(unixTimestamp * 1000)) / 1000;
+    const differenceSeconds = (Date.now() - new Date(unixTimestamp * 1000).getTime()) / 1000;
     let prettyString = '';
 
     if (differenceSeconds < 60) prettyString = 'Just now';
@@ -36,7 +36,7 @@ const prettyTimeAgo = (unixTimestamp) => {
 const getShortDate = (tradabibilityDate) => {
     if (tradabibilityDate === 'Tradable' || tradabibilityDate === '') return 'T';
     const now = new Date().getTime();
-    const distance = new Date(tradabibilityDate) - now;
+    const distance = new Date(tradabibilityDate).getTime() - now;
     if (distance <= 0) return 'T';
 
     const days = Math.floor(distance / (1000 * 60 * 60 * 24));

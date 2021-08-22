@@ -58,6 +58,7 @@ const getFloatInfoFromCache = (assetIDs) => {
 };
 
 const extractUsefulFloatInfo = (floatInfo) => {
+    
     const {
         // eslint-disable-next-line camelcase
         floatvalue,
