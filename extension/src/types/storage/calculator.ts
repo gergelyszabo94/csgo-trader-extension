@@ -1,7 +1,21 @@
-export type CalculatorConversionPlaceholder = number;
-export type CalculatorIncDecPercentage = number;
-export type CalculatorIncDecResult = number;
-export type CalculatorPercentageOf = number;
-export type CalculatorPercentagePercentage = number;
-export type CalculatorReversePercentage = number;
-export type CalculatorReverseValue = number;
+export interface CalculatorConversionPlaceholder {
+    calculatorConversionPlaceholder: number;
+}
+export interface CalculatorIncDecPercentage {
+    calculatorIncDecPercentage: number;
+}
+export interface CalculatorIncDecResult {
+    calculatorIncDecResult: number;
+}
+export interface CalculatorPercentageOf {
+    calculatorPercentageOf: number;
+}
+export interface CalculatorPercentagePercentage {
+    calculatorPercentagePercentage: number;
+}
+export interface CalculatorReversePercentage {
+    calculatorReversePercentage: number;
+}
+export interface CalculatorReverseValue {
+    calculatorReverseValue: number;
+}

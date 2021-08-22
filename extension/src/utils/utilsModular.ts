@@ -12,6 +12,7 @@ import patterns from 'utils/static/patterns';
 import qualities from 'utils/static/qualities';
 import rarities from 'utils/static/rarities';
 import { DopplerMapping } from 'types';
+import { LinkFilterOff, SteamIDOfUser } from 'types/storage';
 
 // "Sticker" in different languages
 // english, simplified chinese, traditional chinese,
@@ -188,7 +189,6 @@ const getInspectLink = (item, owner?: string, assetID?: string) => {
         return null;
     }
 };
-
 
 const getDopplerInfo = (icon: string): DopplerMapping | null => {
     return iconToPhaseMapping[icon] !== undefined ? iconToPhaseMapping[icon] : dopplerPhases.unk;
@@ -829,7 +829,7 @@ const csgoFloatExtPresent = () => {
 };
 
 const removeLinkFilterFromLinks = () => {
-    chrome.storage.local.get('linkFilterOff', ({ linkFilterOff }) => {
+    chrome.storage.local.get('linkFilterOff', ({ linkFilterOff }: LinkFilterOff) => {
         if (linkFilterOff) {
             document.querySelectorAll('a').forEach((anchor) => {
                 const oldHref = anchor.getAttribute('href');
@@ -843,7 +843,7 @@ const removeLinkFilterFromLinks = () => {
 
 // finds unread moderation messages and loads the page to mark them as read
 const markModMessagesAsRead = () => {
-    chrome.storage.local.get('steamIDOfUser', ({ steamIDOfUser }) => {
+    chrome.storage.local.get('steamIDOfUser', ({ steamIDOfUser }: SteamIDOfUser) => {
         const getRequest = new Request(`https://steamcommunity.com/profiles/${steamIDOfUser}/moderatormessages`);
         fetch(getRequest)
             .then((response) => {

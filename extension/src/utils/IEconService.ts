@@ -1,6 +1,6 @@
 import { getFormattedPLPercentage, isDopplerInName } from './simpleUtils';
 import { getPrice, prettyPrintPrice } from 'utils/pricing';
-import { numberBoolean, TradeOffers } from 'types';
+import { numberBoolean, TradeOffers } from 'types/api';
 
 import { getDopplerInfo } from 'utils/utilsModular';
 import { getPlayerSummaries } from 'utils/ISteamUser';

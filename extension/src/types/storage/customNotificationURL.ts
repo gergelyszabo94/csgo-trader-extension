@@ -1,1 +1,3 @@
-export type CustomNotificationURL = string;
+export interface CustomNotificationURL {
+    customNotificationURL: string;
+}

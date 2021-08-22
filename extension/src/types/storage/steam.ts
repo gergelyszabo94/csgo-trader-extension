@@ -1,3 +1,9 @@
-export type SteamAPIKey = string;
-export type SteamIDOfUser = string;
-export type SteamSessionID = string;
+export interface SteamAPIKey {
+    steamAPIKey: string;
+}
+export interface SteamIDOfUser {
+    steamIDOfUser: string;
+}
+export interface SteamSessionID {
+    steamSessionID: string;
+}

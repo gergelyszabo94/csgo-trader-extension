@@ -26,7 +26,6 @@ const actions = {
     },
 };
 
-
 const eventTypes = {
     new: {
         key: 'new',

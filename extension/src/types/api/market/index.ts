@@ -1,1 +1,1 @@
-export * from './priceOverview'
+export * from './priceOverview';

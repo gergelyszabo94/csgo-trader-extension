@@ -1881,7 +1881,7 @@ const addFunctionBar = () => {
         document.getElementById('selectButton').addEventListener('click', (event) => {
             chrome.storage.local.get('showSelectedItemsTable', ({ showSelectedItemsTable }) => {
                 const selectMenu = document.getElementById('functionBarSelectionMenu');
-                const target = event.target as HTMLElement
+                const target = event.target as HTMLElement;
                 if (target.classList.contains('selectionActive')) {
                     // analytics
                     trackEvent({

@@ -1,1 +1,3 @@
-export type ClientID = string; // uuidv4
+export interface ClientID {
+    clientID: string;
+}

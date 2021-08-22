@@ -1,3 +1,5 @@
+import { Action } from 'types';
+
 export interface TradeOffers {
     trade_offers_sent: TradeOffer[];
     trade_offers_received: TradeOffer[];
@@ -32,11 +34,6 @@ export interface SmallDescription {
     type: string;
     value: string;
     color?: string;
-}
-
-export interface Action {
-    link: string;
-    name: string;
 }
 
 export interface MarketAction {

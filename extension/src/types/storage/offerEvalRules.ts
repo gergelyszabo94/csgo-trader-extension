@@ -6,7 +6,7 @@ export interface OfferEvalRule {
 }
 
 export interface OfferEvalRules {
-    offerEvalRules: OfferEvalRule[]
+    offerEvalRules: OfferEvalRule[];
 }
 
 interface Condition {

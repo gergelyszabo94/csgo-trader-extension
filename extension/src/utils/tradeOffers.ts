@@ -21,20 +21,24 @@ import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 import { getTradeOffers } from 'utils/IEconService';
 import { prettyPrintPrice } from 'utils/pricing';
 import steamApps from 'utils/static/steamApps';
-import {
-    ActiveOffers,
-    Description,
-    DopplerMapping,
-    Item,
-    ItemsInOffer,
-    Offer,
-    OfferEvalRule,
-    SteamIDOfUser,
-    TradeOffer,
-    TradeOffers,
-} from 'types';
+import { ActiveOffers, SmallerDescription, Item, Offer, OfferEvalRule, SteamSessionID, Currency } from 'types/storage';
+import { DopplerMapping, SmallItem } from 'types';
+import { TradeOffer, TradeOffers } from 'types/api';
 
-const createTradeOfferJSON = (itemsToGive, itemsToReceive) => {
+interface Side {
+    assets: SmallItem[];
+    currency: [];
+    ready: boolean;
+}
+
+interface TradeOfferJSON {
+    newversion: true;
+    version: number;
+    me: Side;
+    them: Side;
+}
+
+const createTradeOfferJSON = (itemsToGive: SmallItem[], itemsToReceive: SmallItem[]): TradeOfferJSON => {
     return {
         newversion: true,
         version: 2,
@@ -58,7 +62,7 @@ interface AcceptedOffer {
 }
 
 // only works in content scripts, not in background
-const acceptOffer = (offerID, partnerID): Promise<AcceptedOffer> => {
+const acceptOffer = (offerID: string, partnerID: string): Promise<AcceptedOffer> => {
     return new Promise((resolve, reject) => {
         chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }) => {
             const myHeaders = new Headers();
@@ -176,9 +180,9 @@ const declineOffer = (offerID: string) => {
     });
 };
 
-const sendOffer = (partnerID, tradeOfferJSON, token, message) => {
+const sendOffer = (partnerID: string, tradeOfferJSON: TradeOfferJSON, token: string, message: string) => {
     return new Promise((resolve, reject) => {
-        chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }) => {
+        chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }: SteamSessionID) => {
             const myHeaders = new Headers();
             myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 
@@ -213,7 +217,7 @@ const sendOffer = (partnerID, tradeOfferJSON, token, message) => {
 };
 
 const notifyAboutOffer = (offer: Offer) => {
-    chrome.storage.local.get('currency', ({ currency }) => {
+    chrome.storage.local.get('currency', ({ currency }: Currency) => {
         const steamIDOfPartner = getProperStyleSteamIDFromOfferStyle(offer.accountid_other);
         getPlayerSummaries([steamIDOfPartner]).then((summary) => {
             const userDetails = summary[steamIDOfPartner];
@@ -445,7 +449,6 @@ interface SmartestItem {
     position: number;
     side: 'your' | 'their';
     dopplerInfo: DopplerMapping | null;
-
 }
 
 const matchItemsWithDescriptions = (items: SmarterItem[]) => {
@@ -490,7 +493,7 @@ const matchItemsWithDescriptions = (items: SmarterItem[]) => {
     return itemsToReturn;
 };
 
-interface SmarterItem extends SmartItem, Description {}
+interface SmarterItem extends SmartItem, SmallerDescription {}
 
 const matchItemsAndAddDetails = (offers: TradeOffers, userID: string) => {
     return new Promise((resolve) => {
@@ -502,7 +505,7 @@ const matchItemsAndAddDetails = (offers: TradeOffers, userID: string) => {
         const itemsWithMoreInfo: SmarterItem[] = [];
         if (allItemsInOffer) {
             allItemsInOffer.forEach((item) => {
-                const itemDescription: Description = offers.descriptions.find((description) => {
+                const itemDescription: SmallerDescription = offers.descriptions.find((description) => {
                     return description.classid === item.classid && description.instanceid === item.instanceid;
                 });
                 itemsWithMoreInfo.push({ ...item, ...itemDescription });

@@ -1,3 +1,5 @@
+import { Action, Exterior, FloatInfo, Price, Quality, Type } from 'types';
+
 export interface ActiveOffers {
     descriptions: SmallDescription[];
     items: Item[];
@@ -44,12 +46,12 @@ export interface ItemsInOffer {
     missing: boolean;
 }
 
-interface Item {
+export interface Item {
     appid: string;
     assetid: string;
     classid: string;
     contextid: string;
-    descriptions: Description[];
+    descriptions: SmallerDescription[];
     dopplerInfo?: any;
     exterior?: Exterior;
     floatInfo?: FloatInfo;
@@ -78,65 +80,26 @@ interface Item {
     type: Type;
 }
 
-interface Type {
-    float: boolean;
-    internal_name: string;
-    key: string;
-    name: string;
-}
-
-interface Sticker {
+export interface Sticker {
     iconURL: string;
     marketURL: string;
     name: string;
     price: Price;
 }
 
-interface StickerPrice {
+export interface StickerPrice {
     display: string;
     price: number;
 }
 
-interface Quality {
-    backgroundcolor: string;
-    color: string;
-    name: string;
-    prettyName: string;
-}
-
-interface Price {
-    display: string;
-    price: string;
-}
-
-interface FloatInfo {
-    floatvalue: number;
-    low_rank?: number;
-    max: number;
-    min: number;
-    origin_name: string;
-    paintindex: number;
-    paintseed: number;
-    stickers: any[];
-}
-
-interface Exterior {
-    internal_name: string;
-    localized_name: string;
-    localized_short: string;
-    name: string;
-    short: string;
-    type: string;
-}
-
-interface SmallDescription {
+export interface SmallDescription {
     actions: Action[];
     appid: number;
     background_color: string;
     classid: string;
     commodity: boolean;
     currency: boolean;
-    descriptions: Description[];
+    descriptions: SmallerDescription[];
     icon_url: string;
     icon_url_large: string;
     instanceid: string;
@@ -152,7 +115,7 @@ interface SmallDescription {
     type: string;
 }
 
-interface Tag {
+export interface Tag {
     category: string;
     internal_name: string;
     localized_category_name: string;
@@ -160,13 +123,8 @@ interface Tag {
     color?: string;
 }
 
-interface Description {
+export interface SmallerDescription {
     type: string;
     value: string;
     color?: string;
-}
-
-interface Action {
-    link: string;
-    name: string;
 }

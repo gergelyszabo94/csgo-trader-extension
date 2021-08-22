@@ -55,6 +55,7 @@ import { overrideHandleTradeActionMenu } from 'utils/steamOverriding';
 import { sortingModes } from 'utils/static/sortingModes';
 import steamApps from 'utils/static/steamApps';
 import { trackEvent } from 'utils/analytics';
+import { SmallItem } from 'types';
 
 let yourInventory = null;
 let theirInventory = null;
@@ -1116,7 +1117,7 @@ const addFriendRequestInfo = () => {
     });
 };
 
-const sendQueryParamOffer = (urlParams, whose, items, message) => {
+const sendQueryParamOffer = (urlParams: URLSearchParams, whose: string, items: SmallItem[], message: string) => {
     let toGive = [];
     let toReceive = [];
     if (whose === 'your') toGive = items;
@@ -1350,6 +1351,7 @@ if (urlParams.get('csgotrader_accept') === 'true') {
 
 // send trade offer with gift item based on query params (for P2P trading)
 // or simply select items
+
 const csgoTraderSendParams = urlParams.get('csgotrader_send');
 const csgoTraderSelectParams = urlParams.get('csgotrader_select');
 if (csgoTraderSendParams !== null || csgoTraderSelectParams !== null) {
@@ -1369,7 +1371,7 @@ if (csgoTraderSendParams !== null || csgoTraderSelectParams !== null) {
                 if (csgoTraderSendParams !== null) {
                     if (type === 'id') {
                         const ids = args[4].split(',');
-                        const items = [];
+                        const items: SmallItem[] = [];
                         ids.forEach((id) => {
                             items.push({
                                 appid: appID,
@@ -1415,7 +1417,7 @@ if (csgoTraderSendParams !== null || csgoTraderSelectParams !== null) {
                                         `TradePageSelectInventory( User${side}, ${appID}, "${contextID}" );`,
                                         true,
                                         'selectInventory',
-                                        false,
+                                        'false',
                                     );
                                 }
                             }
@@ -1429,7 +1431,7 @@ if (csgoTraderSendParams !== null || csgoTraderSelectParams !== null) {
                             `TradePageSelectInventory( User${side}, ${appID}, "${contextID}" );`,
                             true,
                             'selectInventory',
-                            false,
+                            'false',
                         );
 
                         if (type === 'id') {
