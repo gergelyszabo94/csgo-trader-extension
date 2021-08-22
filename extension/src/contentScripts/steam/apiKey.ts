@@ -1,12 +1,13 @@
 import { logExtensionPresence, updateLoggedInUserInfo } from 'utils/utilsModular';
 
+import { AutoSetSteamAPIKey } from 'types';
 import DOMPurify from 'dompurify';
 import { trackEvent } from 'utils/analytics';
 
 logExtensionPresence();
 updateLoggedInUserInfo();
 
-chrome.storage.local.get('autoSetSteamAPIKey', ({ autoSetSteamAPIKey }) => {
+chrome.storage.local.get('autoSetSteamAPIKey', ({ autoSetSteamAPIKey }: { autoSetSteamAPIKey: AutoSetSteamAPIKey }) => {
     trackEvent({
         type: 'event',
         action: 'apiKeyAutoSet',

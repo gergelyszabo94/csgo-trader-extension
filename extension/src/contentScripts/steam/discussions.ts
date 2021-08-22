@@ -1,13 +1,15 @@
 import {
     addUpdatedRibbon,
     logExtensionPresence,
-    updateLoggedInUserInfo,
     removeLinkFilterFromLinks,
+    updateLoggedInUserInfo,
 } from 'utils/utilsModular';
-import { trackEvent } from 'utils/analytics';
-import DOMPurify from 'dompurify';
 import { deleteForumComment, postForumComment } from 'utils/comments';
+
+import DOMPurify from 'dompurify';
+import React from 'react';
 import { injectScript } from 'utils/injection';
+import { trackEvent } from 'utils/analytics';
 
 logExtensionPresence();
 updateLoggedInUserInfo();
@@ -64,7 +66,7 @@ if (searchElement !== null) {
             </div>`,
         ),
     );
-    const autoBumpCheckBox = document.getElementById('autoBumpDiscussion');
+    const autoBumpCheckBox = document.getElementById('autoBumpDiscussion') as HTMLInputElement;
 
     chrome.storage.local.get(['discussionsToAutoBump'], ({ discussionsToAutoBump }) => {
         if (discussionsToAutoBump.includes(window.location.href)) {

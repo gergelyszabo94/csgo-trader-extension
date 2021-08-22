@@ -1,69 +1,69 @@
-import DOMPurify from 'dompurify';
-
 import {
-    addPageControlEventListeners,
-    getItemByAssetID,
-    changePageTitle,
-    getAssetIDOfElement,
-    makeItemColorful,
     addDopplerPhase,
-    addSSTandExtIndicators,
     addFloatIndicator,
+    addPageControlEventListeners,
     addPriceIndicator,
-    getDataFilledFloatTechnical,
-    souvenirExists,
-    copyToClipboard,
-    getFloatBarSkeleton,
-    addUpdatedRibbon,
-    logExtensionPresence,
-    repositionNameTagIcons,
-    csgoFloatExtPresent,
-    updateLoggedInUserInfo,
-    reloadPageOnExtensionReload,
-    isSIHActive,
-    getActivePage,
+    addSSTandExtIndicators,
     addSearchListener,
+    addUpdatedRibbon,
+    changePageTitle,
+    copyToClipboard,
+    csgoFloatExtPresent,
+    getActivePage,
+    getAssetIDOfElement,
+    getDataFilledFloatTechnical,
+    getFloatBarSkeleton,
+    getItemByAssetID,
     getPattern,
+    isSIHActive,
+    logExtensionPresence,
+    makeItemColorful,
+    reloadPageOnExtensionReload,
     removeFromArray,
+    repositionNameTagIcons,
+    souvenirExists,
     toFixedNoRounding,
+    updateLoggedInUserInfo
 } from 'utils/utilsModular';
-import { getItemMarketLink } from 'utils/simpleUtils';
-import { getShortDate, dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
-import { stattrak, starChar, souvenir, stattrakPretty, genericMarketLink } from 'utils/static/simpleStrings';
-import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import {
-    getPriceOverview,
-    getPriceAfterFees,
-    userPriceToProperPrice,
-    centsToSteamFormattedPrice,
-    prettyPrintPrice,
     addRealTimePriceToPage,
-    priceQueue,
-    workOnPriceQueue,
-    getSteamWalletCurrency,
-    initPriceQueue,
-    updateWalletCurrency,
+    centsToSteamFormattedPrice,
     getHighestBuyOrder,
     getLowestListingPrice,
+    getPriceAfterFees,
+    getPriceOverview,
+    getSteamWalletCurrency,
+    initPriceQueue,
+    prettyPrintPrice,
+    priceQueue,
+    updateWalletCurrency,
+    userPriceToProperPrice,
+    workOnPriceQueue
 } from 'utils/pricing';
-import { getItemByIDs, getIDsFromElement, findElementByIDs } from 'utils/itemsToElementsToItems';
-import { listItem } from 'utils/market';
-import { sortingModes } from 'utils/static/sortingModes';
+import { dateToISODisplay, getShortDate, prettyTimeAgo } from 'utils/dateTime';
+import { findElementByIDs, getIDsFromElement, getItemByIDs } from 'utils/itemsToElementsToItems';
+import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
+import { genericMarketLink, souvenir, starChar, stattrak, stattrakPretty } from 'utils/static/simpleStrings';
+import { overRideCSGOInventoryLoading, overridePopulateActions } from 'utils/steamOverriding';
+
+import DOMPurify from 'dompurify';
 import doTheSorting from 'utils/sorting';
-import { overridePopulateActions, overRideCSGOInventoryLoading } from 'utils/steamOverriding';
-import { trackEvent } from 'utils/analytics';
-import itemTypes from 'utils/static/itemTypes';
 import exteriors from 'utils/static/exteriors';
-import { injectScript } from 'utils/injection';
+import { getItemMarketLink } from 'utils/simpleUtils';
 import { getUserSteamID } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
+import { injectScript } from 'utils/injection';
+import itemTypes from 'utils/static/itemTypes';
+import { listItem } from 'utils/market';
+import { sortingModes } from 'utils/static/sortingModes';
 import steamApps from 'utils/static/steamApps';
+import { trackEvent } from 'utils/analytics';
 
 let items = [];
 let inventoryTotal = 0.0;
 // variables for the countdown recursive logic
 let countingDown = false;
-let countDownID = '';
+let countDownID = null;
 
 const floatBar = getFloatBarSkeleton('inventory');
 const upperModule = `
@@ -174,13 +174,13 @@ const addBookmark = (module) => {
     });
 };
 
-const countDown = (dateToCountDownTo) => {
+const countDown = (dateToCountDownTo: string | number) => {
     if (!countingDown) {
         countingDown = true;
         countDownID = setInterval(() => {
             document.querySelectorAll('.countdown').forEach((countdown) => {
                 const now = new Date().getTime();
-                const distance = new Date(dateToCountDownTo) - now;
+                const distance = new Date(dateToCountDownTo).getTime() - now;
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
@@ -339,10 +339,10 @@ const dealWithNewFloatData = (job, floatInfo, activeFloatQueue) => {
 
 const sellNext = () => {
     if (document.getElementById('stopSale').getAttribute('data-stopped') === 'false') {
-        for (const listingRow of document
+        for (const listingRow of Array.from(document
             .getElementById('listingTable')
             .querySelector('.rowGroup')
-            .querySelectorAll('.row')) {
+            .querySelectorAll('.row'))) {
             const IDs = listingRow.getAttribute('data-ids').split(',');
             const soldIDs = listingRow.getAttribute('data-sold-ids').split(',');
             const name = listingRow.getAttribute('data-item-name');
@@ -392,10 +392,10 @@ const sellNext = () => {
                             document.getElementById('totalItems').innerText = totalItems.toString();
 
                             let alreadySold = 0;
-                            for (const row of document
+                            for (const row of Array.from(document
                                 .getElementById('listingTable')
                                 .querySelector('.rowGroup')
-                                .querySelectorAll('.row')) {
+                                .querySelectorAll('.row'))) {
                                 const alreadySoldIDs = row.getAttribute('data-sold-ids').split(',');
                                 alreadySold +=
                                     alreadySoldIDs.length === 1
@@ -454,7 +454,7 @@ const addStartingAtPrice = (appID, marketHashName) => {
             document.querySelectorAll('.startingAtVolume').forEach((previousElement) => previousElement.remove());
 
             // adds new elements
-            document.querySelectorAll('.item_owner_actions').forEach((marketActions) => {
+            document.querySelectorAll<HTMLElement>('.item_owner_actions').forEach((marketActions) => {
                 marketActions.style.display = 'block';
                 const startingAt = priceOverview.lowest_price === undefined ? 'Unknown' : priceOverview.lowest_price;
                 const volume = priceOverview.volume === undefined ? 'Unknown amount' : priceOverview.volume;
@@ -862,12 +862,12 @@ const addRightSideElements = () => {
                 document.querySelectorAll('.tradabilityDiv').forEach((tradabilityDiv) => {
                     if (item.tradability === 'Tradable') {
                         tradabilityDiv.innerHTML = DOMPurify.sanitize(tradable);
-                        document.querySelectorAll('.countdown').forEach((countdown) => {
+                        document.querySelectorAll<HTMLElement>('.countdown').forEach((countdown) => {
                             countdown.style.display = 'none';
                         });
                     } else if (item.tradability === 'Not Tradable') {
                         tradabilityDiv.innerHTML = DOMPurify.sanitize(notTradable);
-                        document.querySelectorAll('.countdown').forEach((countdown) => {
+                        document.querySelectorAll<HTMLElement>('.countdown').forEach((countdown) => {
                             countdown.style.display = 'none';
                         });
                     } else {
@@ -876,7 +876,7 @@ const addRightSideElements = () => {
                             `<span class='not_tradable'>Tradable After ${tradableAt}</span>`,
                         );
                         countDown(tradableAt);
-                        document.querySelectorAll('.countdown').forEach((countdown) => {
+                        document.querySelectorAll<HTMLElement>('.countdown').forEach((countdown) => {
                             countdown.style.display = 'block';
                         });
                     }
@@ -885,7 +885,7 @@ const addRightSideElements = () => {
 
             if (item.duplicates !== undefined) {
                 // adds duplicates counts
-                document.querySelectorAll('.duplicate').forEach((duplicate) => {
+                document.querySelectorAll<HTMLElement>('.duplicate').forEach((duplicate) => {
                     duplicate.style.display = 'block';
                     duplicate.innerText = `x${item.duplicates.num}`;
                 });
@@ -1307,7 +1307,7 @@ const addListingRow = (item) => {
         .querySelector('.itemAmount')
         .querySelector('input[type=number]')
         .addEventListener('change', (event) => {
-            const quantity = parseInt(event.target.value);
+            const quantity = parseInt((event.target as HTMLElement).value);
             let selected = 0;
             document
                 .getElementById('tabcontent_inventory')
@@ -1341,12 +1341,13 @@ const addListingRow = (item) => {
         .querySelector('.itemUserPrice')
         .querySelector('input[type=text]')
         .addEventListener('change', (event) => {
-            const priceInt = userPriceToProperPrice(event.target.value);
-            event.target.parentElement.setAttribute('data-price-in-cents', priceInt);
-            event.target.parentElement.setAttribute('data-listing-price', getPriceAfterFees(priceInt));
-            event.target.value = centsToSteamFormattedPrice(priceInt);
-            event.target.parentElement.classList.add('cstSelected');
-            event.target.parentElement.parentElement
+            const target = event.target as HTMLElement
+            const priceInt = userPriceToProperPrice(target.value);
+            target.parentElement.setAttribute('data-price-in-cents', String(priceInt));
+            target.parentElement.setAttribute('data-listing-price', String(getPriceAfterFees(priceInt)));
+            target.value = centsToSteamFormattedPrice(priceInt);
+            target.parentElement.classList.add('cstSelected');
+            target.parentElement.parentElement
                 .querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell,.itemMidPrice')
                 .forEach((priceType) => priceType.classList.remove('cstSelected'));
             updateMassSaleTotal();
@@ -1356,8 +1357,9 @@ const addListingRow = (item) => {
         .querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell,.itemMidPrice')
         .forEach((priceType) => {
             priceType.addEventListener('click', (event) => {
-                event.target.classList.add('cstSelected');
-                event.target.parentNode.querySelectorAll('.cell').forEach((column) => {
+                const target = event.target as HTMLElement
+                target.classList.add('cstSelected');
+                target.parentNode.querySelectorAll('.cell').forEach((column) => {
                     if (column !== event.target) column.classList.remove('cstSelected');
                 });
                 updateMassSaleTotal();
@@ -1372,7 +1374,7 @@ const addStartingAtAndQuickSellPrice = (marketHashName, priceInCents, appID, ass
     // and now there is nowhere to add the price to
     if (listingRow !== null) {
         const startingAtElement = listingRow.querySelector('.itemStartingAt');
-        const quickSell = listingRow.querySelector('.itemQuickSell');
+        const quickSell = listingRow.querySelector<HTMLElement>('.itemQuickSell');
         const quickSellPrice = priceInCents > 3 ? priceInCents - 1 : priceInCents;
 
         startingAtElement.innerText = centsToSteamFormattedPrice(priceInCents);
@@ -1449,17 +1451,16 @@ const addMidPrice = (marketHashName, midPrice, appID, assetID, contextID) => {
 
 const addToPriceQueueIfNeeded = (item) => {
     const listingRow = getListingRow(item.appid, item.contextid, item.market_hash_name);
-    const startingAtElement = listingRow.querySelector('.itemStartingAt');
+    const startingAtElement = listingRow.querySelector<HTMLElement>('.itemStartingAt');
     const instantElement = listingRow.querySelector('.itemInstantSell');
     const midPriceElement = listingRow.querySelector('.itemMidPrice');
 
     // check if price is already set or in progress
     if (
-        startingAtElement.getAttribute('data-price-set') !== true &&
-        startingAtElement.getAttribute('data-price-in-progress') !== true
+        startingAtElement.getAttribute('data-price-set') !== "true" &&
+        startingAtElement.getAttribute('data-price-in-progress') !== "true"
     ) {
         startingAtElement.setAttribute('data-price-in-progress', true.toString());
-
         priceQueue.jobs.push({
             type: 'inventory_mass_sell_starting_at',
             appID: item.appid,
@@ -1474,8 +1475,8 @@ const addToPriceQueueIfNeeded = (item) => {
 
     // check if price is already set or in progress
     if (
-        instantElement.getAttribute('data-price-set') !== true &&
-        instantElement.getAttribute('data-price-in-progress') !== true
+        instantElement.getAttribute('data-price-set') !== "true" &&
+        instantElement.getAttribute('data-price-in-progress') !== "true"
     ) {
         instantElement.setAttribute('data-price-in-progress', true.toString());
 
@@ -1493,8 +1494,8 @@ const addToPriceQueueIfNeeded = (item) => {
 
     // check if price is already set or in progress
     if (
-        midPriceElement.getAttribute('data-price-set') !== true &&
-        midPriceElement.getAttribute('data-price-in-progress') !== true
+        midPriceElement.getAttribute('data-price-set') !== "true" &&
+        midPriceElement.getAttribute('data-price-in-progress') !== "true"
     ) {
         midPriceElement.setAttribute('data-price-in-progress', true.toString());
 
@@ -1594,8 +1595,8 @@ const sortItems = (inventoryItems, method) => {
 const doInitSorting = () => {
     chrome.storage.local.get('inventorySortingMode', (result) => {
         sortItems(items, result.inventorySortingMode);
-        document.querySelector(`#sortingMethod [value="${result.inventorySortingMode}"]`).selected = true;
-        document.querySelector(`#generate_sort [value="${result.inventorySortingMode}"]`).selected = true;
+        document.querySelector<HTMLInputElement>(`#sortingMethod [value="${result.inventorySortingMode}"]`).select()
+        document.querySelector<HTMLInputElement>(`#generate_sort [value="${result.inventorySortingMode}"]`).select()
         addFloatIndicatorsToPage();
         addRealTimePricesToQueue();
     });
@@ -1621,7 +1622,7 @@ const generateItemsList = () => {
 
     const delimiter = document.getElementById('generate_delimiter').value;
 
-    const limit = document.getElementById('generate_limit').value;
+    const limit = Number(document.getElementById('generate_limit').value);
 
     const exteriorSelect = document.getElementById('generate_exterior');
     const exteriorSelected = exteriorSelect.options[exteriorSelect.selectedIndex].value;
@@ -1802,7 +1803,7 @@ const addFunctionBar = () => {
         );
 
         document.getElementById('selectAllPage').addEventListener('click', () => {
-            document.querySelectorAll('.inventory_page').forEach((page) => {
+            document.querySelectorAll<HTMLElement>('.inventory_page').forEach((page) => {
                 if (page.style.display === 'block') {
                     page.querySelectorAll('.item').forEach((item) => {
                         if (!item.classList.contains('cstSelected')) item.classList.add('cstSelected');
@@ -1839,7 +1840,7 @@ const addFunctionBar = () => {
         document.getElementById('stopSale').setAttribute('data-stopped', 'true');
 
         document.getElementById('stopSale').addEventListener('click', (event) => {
-            event.target.setAttribute('data-stopped', 'true');
+            (event.target as HTMLElement).setAttribute('data-stopped', 'true');
         });
 
         // shows currency mismatch warning and option to change currency

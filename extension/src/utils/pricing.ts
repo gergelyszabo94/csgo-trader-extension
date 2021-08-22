@@ -1,6 +1,7 @@
 import { currencies, pricingProviders, realTimePricingModes, steamCurrencyCodes } from 'utils/static/pricing';
 
 import DOMPurify from 'dompurify';
+import { PriceOverview } from 'types';
 import { findElementByIDs } from 'utils/itemsToElementsToItems';
 import { getItemMarketLink } from 'utils/simpleUtils';
 import { injectScript } from 'utils/injection';
@@ -101,7 +102,7 @@ const getHighestBuyOrder = (appID, marketHashName): Promise<string> => {
     });
 };
 
-const getPriceOverview = (appID, marketHashName) => {
+const getPriceOverview = (appID: string, marketHashName: string): Promise<PriceOverview> => {
     return new Promise((resolve, reject) => {
         const currencyID = getSteamWalletInfo().wallet_currency;
         const request = new Request(

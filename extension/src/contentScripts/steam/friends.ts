@@ -1,7 +1,8 @@
-import { logExtensionPresence, updateLoggedInUserInfo, addUpdatedRibbon } from 'utils/utilsModular';
-import { trackEvent } from 'utils/analytics';
-import { friendAndInvitesBanner } from 'utils/static/miscElements';
+import { addUpdatedRibbon, logExtensionPresence, updateLoggedInUserInfo } from 'utils/utilsModular';
+
 import DOMPurify from 'dompurify';
+import { friendAndInvitesBanner } from 'utils/static/miscElements';
+import { trackEvent } from 'utils/analytics';
 
 logExtensionPresence();
 updateLoggedInUserInfo();
@@ -25,5 +26,5 @@ document.querySelectorAll('.selectable.friend_block_v2.persona').forEach((friend
 // adds links to friends and invites options
 const friendTitle = document.querySelector('.profile_friends.title_bar');
 if (friendTitle !== null) {
-    friendTitle.insertAdjacentHTML('beforeBegin', DOMPurify.sanitize(friendAndInvitesBanner));
+    friendTitle.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(friendAndInvitesBanner));
 }
