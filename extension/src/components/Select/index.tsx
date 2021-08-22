@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 
+import { Option } from '../Options/Row';
+
 interface SelectProps {
     id: string;
-    foreignChangeHandler:
-        | ((thisValue: string | number) => void)
-        | ((thisValue: string | number, key: string) => void);
-    foreignUseEffect: (() => Promise<string>) | ((key: string) => Promise<string>);
-    options: object;
+    foreignChangeHandler: (thisValue: string | number, key?: string) => void;
+    foreignUseEffect: (key?: string) => Promise<string>;
+    options: Option[];
 }
 
 const Select = ({ options, foreignChangeHandler, foreignUseEffect, id }: SelectProps) => {
     const [value, setValue] = useState(options[0].key);
 
-    const changeHandler = (e) => {
-        const thisValue = e.target.value;
+    const changeHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const thisValue = event.target.value;
         foreignChangeHandler(thisValue, id);
         setValue(thisValue);
     };
