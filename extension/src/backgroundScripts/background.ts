@@ -15,7 +15,7 @@ import {
 import { removeOldOfferEvents, updateTrades } from 'utils/tradeOffers';
 import { sendTelemetry, trackEvent } from 'utils/analytics';
 
-import { ExchangeRates } from 'types';
+import { exchangeRates } from 'types';
 import { storageKeys } from 'utils/static/storageKeys';
 import { trimFloatCache } from 'utils/floatCaching';
 
@@ -46,7 +46,7 @@ chrome.runtime.onInstalled.addListener((details) => {
         // the delay is to wait for exchange rates data to be set
         setTimeout(() => {
             getUserCurrencyBestGuess().then((currency) => {
-                chrome.storage.local.get(['exchangeRates'], ({ exchangeRates }: ExchangeRates) => {
+                chrome.storage.local.get(['exchangeRates'], ({ exchangeRates }: exchangeRates) => {
                     chrome.storage.local.set({
                         currency,
                         exchangeRate: exchangeRates[currency],

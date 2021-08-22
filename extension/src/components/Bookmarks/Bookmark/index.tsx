@@ -18,14 +18,14 @@ import Modal from 'components/Modal';
 import NewTabLink from 'components/NewTabLink';
 import STS from 'components/Bookmarks/Bookmark/STS';
 import Tradability from 'components/Bookmarks/Bookmark/Tradability';
+import { bookmark } from 'types';
 import { getItemInventoryLink } from 'utils/simpleUtils';
 import { getOfferStyleSteamID } from 'utils/steamID';
-import { Bookmark } from 'pages/Bookmarks';
 
-export interface BookmarkProps {
-    bookmarkData: Bookmark;
-    removeBookmark: (bookmarkData: Bookmark) => void;
-    editBookmark: (bookmarkData: Bookmark) => void;
+interface BookmarkProps {
+    bookmarkData: bookmark;
+    removeBookmark: (bookmarkData: bookmark) => void;
+    editBookmark: (bookmarkData: bookmark) => void;
 }
 
 const Bookmark = ({ bookmarkData, editBookmark, removeBookmark }: BookmarkProps) => {

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
 import CurrencySelect from 'components/Popup/Calculator/CurrencySelect';
-import { ExchangeRates } from 'types';
 import { currencies } from 'utils/static/pricing';
+import { exchangeRates } from 'types';
 import { prettyPrintPrice } from 'utils/pricing';
 
 const CurrencyConverter = () => {
@@ -12,7 +12,7 @@ const CurrencyConverter = () => {
     const [result, setResult] = useState<string>();
 
     const convert = (input: number) => {
-        chrome.storage.local.get('exchangeRates', ({ exchangeRates }: ExchangeRates) => {
+        chrome.storage.local.get('exchangeRates', ({ exchangeRates }: exchangeRates) => {
             const convertedValue =
                 (input / Number(exchangeRates[currency1])) * Number(exchangeRates[currency2]);
             setResult(convertedValue.toFixed(2));
