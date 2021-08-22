@@ -2,8 +2,6 @@ import { Condition as ConditionType, Operator as OperatorType } from '.';
 
 import Condition from './Condition';
 import Operator from './Operator';
-// import Condition from 'components/Options/Categories/OfferAutomation/Condition';
-// import Operator from 'components/Options/Categories/OfferAutomation/Operator';
 import React from 'react';
 
 interface ConditionsProps {

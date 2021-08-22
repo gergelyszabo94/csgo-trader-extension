@@ -4,6 +4,7 @@ import { actions, conditions } from 'utils/static/friendRequests';
 import AddCondition from 'components/Options/Categories/Friends/AddCondition';
 import CustomA11yButton from 'components/CustomA11yButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Rule } from '.';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 const Options = (): JSX.Element => {
@@ -51,7 +52,11 @@ const Actions = (): JSX.Element => {
     );
 };
 
-const AddInviteRule = ({ add }) => {
+interface AddInviteRuleProps {
+    add: (rule: Rule) => void;
+}
+
+const AddInviteRule = ({ add }: AddInviteRuleProps) => {
     const [rule, setRule] = useState({
         condition: conditions.profile_private.key,
         action: actions.ignore.key,
@@ -59,7 +64,7 @@ const AddInviteRule = ({ add }) => {
         valueType: null,
     });
 
-    const onConditionChange = (event) => {
+    const onConditionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const conditionType = event.target.value;
         setRule({
             ...rule,
@@ -73,11 +78,11 @@ const AddInviteRule = ({ add }) => {
         });
     };
 
-    const onActionChange = (event) => {
+    const onActionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setRule({ ...rule, action: event.target.value });
     };
 
-    const onValueChange = (event) => {
+    const onValueChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setRule({ ...rule, value: event.target.value });
     };
 

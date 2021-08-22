@@ -1,13 +1,86 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+
 import Invite from 'components/Options/Categories/Friends/Invite';
 import { currencies } from 'utils/static/pricing';
 
+interface Inviter {
+  accountID: string;
+  avatar: string;
+  bans: Bans;
+  commonFriends: CommonFriend[];
+  csgoInventoryValue: number;
+  evalTries: number;
+  evaluation: Evaluation;
+  level: string;
+  name: string;
+  pastRequests: number;
+  steamID: string;
+  steamRepInfo: SteamRepInfo;
+  summary: Summary;
+}
+
+interface Summary {
+  avatar: string;
+  avatarfull: string;
+  avatarhash: string;
+  avatarmedium: string;
+  communityvisibilitystate: number;
+  personaname: string;
+  personastate: number;
+  personastateflags: number;
+  primaryclanid: string;
+  profilestate: number;
+  profileurl: string;
+  realname: string;
+  steamid: string;
+  timecreated: number;
+}
+
+interface SteamRepInfo {
+  flags: Flags;
+  reputation: Reputation;
+  steamID32: string;
+  steamID64: string;
+  steamrepurl: string;
+}
+
+interface Reputation {
+  full: string;
+  summary: string;
+}
+
+interface Flags {
+  status: string;
+}
+
+interface Evaluation {
+  action: string;
+  appliedRule: number;
+}
+
+interface CommonFriend {
+  accountID: string;
+  avatar: string;
+  name: string;
+  nickname: string;
+  profileLink: string;
+}
+
+interface Bans {
+  CommunityBanned: boolean;
+  DaysSinceLastBan: number;
+  EconomyBan: string;
+  NumberOfGameBans: number;
+  NumberOfVACBans: number;
+  SteamId: string;
+  VACBanned: boolean;
+}
 const IncomingInvites = () => {
-    const [invites, setInvites] = useState([]);
+    const [invites, setInvites] = useState<Inviter[]>([]);
     const [curr, setCurr] = useState(currencies.USD);
     const [sortingMode, setSortingMode] = useState('invent_value_desc');
 
-    const removeInvite = (indexToRemove) => {
+    const removeInvite = (indexToRemove: number) => {
         const newInvites = invites.filter((invite, index) => {
             return index !== indexToRemove;
         });
@@ -18,11 +91,11 @@ const IncomingInvites = () => {
         let sorted = [];
         if (sortBy === 'level_asc') {
             sorted = invitesToSort.sort((invite1, invite2) => {
-                return invite1.level - invite2.level;
+                return Number(invite1.level) - Number(invite2.level);
             });
         } else if (sortBy === 'level_desc') {
             sorted = invitesToSort.sort((invite1, invite2) => {
-                return invite2.level - invite1.level;
+                return Number(invite2.level) - Number(invite1.level);
             });
         } else if (sortBy === 'name_asc') {
             sorted = invitesToSort.sort((invite1, invite2) => {

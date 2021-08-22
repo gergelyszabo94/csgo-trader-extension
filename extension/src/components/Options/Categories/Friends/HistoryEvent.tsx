@@ -1,7 +1,12 @@
 import React from 'react';
 import { eventTypes } from 'utils/static/friendRequests';
 
-const HistoryEvent = ({ eventType, ruleApplied }) => {
+interface HistoryEventProps {
+    eventType: string;
+    ruleApplied: number;
+}
+
+const HistoryEvent = ({ eventType, ruleApplied }: HistoryEventProps) => {
     return (
         <span title={eventTypes[eventType].description}>
             {eventTypes[eventType].pretty}
