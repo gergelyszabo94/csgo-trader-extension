@@ -1,7 +1,7 @@
 export interface analyticsEvent {
+    type: string;
     action: string;
     timestamp: number;
-    type: string;
 }
 
 export interface analyticsEvents {
