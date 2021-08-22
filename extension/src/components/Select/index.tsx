@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 
 interface SelectProps {
     id: string;
-    foreignChangeHandler: ((thisValue: string | number) => void) | ((thisValue: string | number, key: string) => void);
+    foreignChangeHandler:
+        | ((thisValue: string | number) => void)
+        | ((thisValue: string | number, key: string) => void);
     foreignUseEffect: (() => Promise<string>) | ((key: string) => Promise<string>);
     options: object;
-    
 }
 
 const Select = ({ options, foreignChangeHandler, foreignUseEffect, id }: SelectProps) => {

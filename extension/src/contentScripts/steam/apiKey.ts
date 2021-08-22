@@ -1,6 +1,7 @@
 import { logExtensionPresence, updateLoggedInUserInfo } from 'utils/utilsModular';
-import { trackEvent } from 'utils/analytics';
+
 import DOMPurify from 'dompurify';
+import { trackEvent } from 'utils/analytics';
 
 logExtensionPresence();
 updateLoggedInUserInfo();
@@ -14,9 +15,9 @@ chrome.storage.local.get('autoSetSteamAPIKey', ({ autoSetSteamAPIKey }) => {
     if (autoSetSteamAPIKey) {
         if (document.getElementById('editForm').action.includes('registerkey')) {
             // if no API key registered yet, registers one
-            document.getElementById('domain').value = `registered_${Date.now()}`;
-            document.getElementById('agreeToTerms').checked = true;
-            document.querySelector('input[type=submit]').click();
+            document.querySelector<HTMLInputElement>('#domain').value = `registered_${Date.now()}`;
+            document.querySelector<HTMLInputElement>('#agreeToTerms').checked = true;
+            document.querySelector<HTMLInputElement>('input[type=submit]').click();
         } else {
             // if API key registered, just parse it and add it to extension
             const apiKey = document
@@ -29,11 +30,9 @@ chrome.storage.local.get('autoSetSteamAPIKey', ({ autoSetSteamAPIKey }) => {
                     chrome.storage.local.set({ steamAPIKey: apiKey, apiKeyValid: true }, () => {
                         document.getElementById('editForm').insertAdjacentHTML(
                             'afterend',
-                            DOMPurify.sanitize(
-                                `<div class="apiKeyAdded" ">
+                            DOMPurify.sanitize(`<div class="apiKeyAdded">
                         Added API key to CSGOTrader Extension, if you don't like this happening you can go the options and turn Autoset off.
-                    </div>`,
-                            ),
+                    </div>`),
                         );
                     });
                 } else {

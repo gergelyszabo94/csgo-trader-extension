@@ -399,7 +399,7 @@ const parseStickerInfo = (
     return null;
 };
 
-const goToInternalPage = (targetURL) => {
+const goToInternalPage = (targetURL: string) => {
     chrome.tabs.query({}, (tabs) => {
         for (let i = 0; i < tabs.length; i += 1) {
             const tab = tabs[i];
@@ -424,14 +424,14 @@ const uuidv4 = () => {
     );
 };
 
-const listenToLocationChange = (callBackFunction) => {
+const listenToLocationChange = (callback: () => void) => {
     let oldHref = document.location.href;
 
     const locationObserver = new MutationObserver((mutations) => {
         mutations.forEach(() => {
             if (oldHref !== document.location.href) {
                 oldHref = document.location.href;
-                callBackFunction();
+                callback();
             }
         });
     });

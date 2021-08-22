@@ -755,7 +755,8 @@ if (activePage === 'incoming_offers') {
             acceptButton.addEventListener('click', () => {
                 let message = '';
                 const offerContent = offerElement.querySelector('.tradeoffer_items_ctn');
-                const middleElement = offerContent.querySelector<HTMLElement>('.tradeoffer_items_rule');
+                const middleElement =
+                    offerContent.querySelector<HTMLElement>('.tradeoffer_items_rule');
 
                 acceptOffer(offerID, partnerID)
                     .then((res) => {
@@ -765,7 +766,9 @@ if (activePage === 'incoming_offers') {
                             message = 'Trade Accepted';
                             middleElement.classList.add('accepted');
                         }
-                        offerElement.querySelector<HTMLElement>('.tradeoffer_footer').style.display = 'none';
+                        offerElement.querySelector<HTMLElement>(
+                            '.tradeoffer_footer',
+                        ).style.display = 'none';
                     })
                     .catch((err) => {
                         console.log(err);
@@ -812,7 +815,9 @@ if (activePage === 'incoming_offers') {
                     declineOffer(offerID)
                         .then(() => {
                             message = 'Trade Declined';
-                            offerElement.querySelector<HTMLElement>('.tradeoffer_footer').style.display = 'none';
+                            offerElement.querySelector<HTMLElement>(
+                                '.tradeoffer_footer',
+                            ).style.display = 'none';
                         })
                         .catch((err) => {
                             console.log(err);
@@ -957,9 +962,11 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
                 );
 
                 chrome.storage.local.get('tradeOffersSortingMode', ({ tradeOffersSortingMode }) => {
-                    document.querySelector<HTMLInputElement>(
-                        `#offerSortingMethod [value="${tradeOffersSortingMode}"]`,
-                    ).select()
+                    document
+                        .querySelector<HTMLInputElement>(
+                            `#offerSortingMethod [value="${tradeOffersSortingMode}"]`,
+                        )
+                        .select();
                     sortOffers(tradeOffersSortingMode);
                     if (activePage === 'sent_offers') jumpToAnchor(window.location.hash);
                     document.getElementById('tradeOffersSortingMenu').classList.remove('hidden');

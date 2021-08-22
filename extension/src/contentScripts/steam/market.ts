@@ -31,7 +31,9 @@ const marketHistoryExport = {
 };
 
 const getWalletAmount = (): number => {
-    return Number(steamFormattedPriceToCents(document.getElementById('header_wallet_balance').innerText));
+    return Number(
+        steamFormattedPriceToCents(document.getElementById('header_wallet_balance').innerText),
+    );
 };
 
 const getMyListingIDFromElement = (listingElement) => {
@@ -203,15 +205,21 @@ const extractHistoryEvents = (resultHtml) => {
     tempEl
         .querySelectorAll('.market_listing_row.market_recent_listing_row')
         .forEach((historyRow) => {
-            const itemName = historyRow.querySelector<HTMLElement>('.market_listing_item_name').innerText;
-            const gameName = historyRow.querySelector<HTMLElement>('.market_listing_game_name').innerText;
+            const itemName = historyRow.querySelector<HTMLElement>(
+                '.market_listing_item_name',
+            ).innerText;
+            const gameName = historyRow.querySelector<HTMLElement>(
+                '.market_listing_game_name',
+            ).innerText;
             const listedOn = historyRow
                 .querySelectorAll<HTMLElement>('.market_listing_listed_date')[1]
                 .innerText.trim();
             const actedOn = historyRow
                 .querySelectorAll<HTMLElement>('.market_listing_listed_date')[0]
                 .innerText.trim();
-            const displayPrice = historyRow.querySelector<HTMLElement>('.market_listing_price').innerText.trim();
+            const displayPrice = historyRow
+                .querySelector<HTMLElement>('.market_listing_price')
+                .innerText.trim();
             const priceInCents = steamFormattedPriceToCents(displayPrice);
             const partnerElement = historyRow.querySelector('.market_listing_whoactedwith');
             const type = getHistoryType(historyRow);
@@ -434,7 +442,9 @@ const listingSections = document.querySelectorAll(
 );
 const orders = listingSections.length === 2 ? listingSections[1] : listingSections[2];
 if (orders) {
-    const orderRows = orders.querySelectorAll<HTMLElement>('.market_listing_row.market_recent_listing_row');
+    const orderRows = orders.querySelectorAll<HTMLElement>(
+        '.market_listing_row.market_recent_listing_row',
+    );
 
     // if there are actually any orders
     if (orderRows.length !== 0) {
@@ -472,61 +482,71 @@ if (orders) {
             </div>`),
                     );
 
-                    orderRow.querySelectorAll<HTMLInputElement>('.outBidButton').forEach((outBidButton) => {
-                        outBidButton.addEventListener('click', () => {
-                            const outBidType = outBidButton.classList.contains('outbidByPercent')
-                                ? 'percentage'
-                                : 'highest';
-                            const orderID = getMyOrderIDFromElement(orderRow);
-                            const quantity = parseInt(
-                                orderRow.querySelector<HTMLInputElement>(
-                                    '.market_listing_right_cell.market_listing_my_price.market_listing_buyorder_qty',
-                                ).innerText,
-                            );
-                            cancelOrder(orderID).then(() => {
-                                const marketLink = orderRow
-                                    .querySelector('.market_listing_item_name_link')
-                                    .getAttribute('href');
-                                const appID = marketLink.split('market/listings/')[1].split('/')[0];
-                                const marketName = marketLink
-                                    .split('market/listings/')[1]
-                                    .split('/')[1];
-                                getHighestBuyOrder(appID, marketName).then((highestOrder) => {
-                                    const highestInt = parseInt(highestOrder);
-                                    const newOrderPrice =
-                                        outBidType === 'highest'
-                                            ? highestInt + 1
-                                            : highestInt >= 100
-                                            ? Math.floor(highestInt * (1 + outBidPercentage / 100))
-                                            : highestInt + outBidPercentage;
-                                    createOrder(appID, marketName, newOrderPrice, quantity)
-                                        .then(() => {
-                                            const priceEl =
-                                                orderRow.querySelector<HTMLInputElement>('.highestOrderPrice');
-                                            if (priceEl) {
-                                                priceEl.innerText =
-                                                    centsToSteamFormattedPrice(newOrderPrice);
-                                                priceEl.classList.add('highest');
-                                                priceEl.classList.remove('not_highest');
-                                            }
-                                            outBidButton.innerText = 'Order placed';
-                                        })
-                                        .catch((err) => {
-                                            document
-                                                .querySelector('.ordersTotal')
-                                                .insertAdjacentHTML(
-                                                    'afterend',
-                                                    DOMPurify.sanitize(
-                                                        `<div class="listingError">
+                    orderRow
+                        .querySelectorAll<HTMLInputElement>('.outBidButton')
+                        .forEach((outBidButton) => {
+                            outBidButton.addEventListener('click', () => {
+                                const outBidType = outBidButton.classList.contains(
+                                    'outbidByPercent',
+                                )
+                                    ? 'percentage'
+                                    : 'highest';
+                                const orderID = getMyOrderIDFromElement(orderRow);
+                                const quantity = parseInt(
+                                    orderRow.querySelector<HTMLInputElement>(
+                                        '.market_listing_right_cell.market_listing_my_price.market_listing_buyorder_qty',
+                                    ).innerText,
+                                );
+                                cancelOrder(orderID).then(() => {
+                                    const marketLink = orderRow
+                                        .querySelector('.market_listing_item_name_link')
+                                        .getAttribute('href');
+                                    const appID = marketLink
+                                        .split('market/listings/')[1]
+                                        .split('/')[0];
+                                    const marketName = marketLink
+                                        .split('market/listings/')[1]
+                                        .split('/')[1];
+                                    getHighestBuyOrder(appID, marketName).then((highestOrder) => {
+                                        const highestInt = parseInt(highestOrder);
+                                        const newOrderPrice =
+                                            outBidType === 'highest'
+                                                ? highestInt + 1
+                                                : highestInt >= 100
+                                                ? Math.floor(
+                                                      highestInt * (1 + outBidPercentage / 100),
+                                                  )
+                                                : highestInt + outBidPercentage;
+                                        createOrder(appID, marketName, newOrderPrice, quantity)
+                                            .then(() => {
+                                                const priceEl =
+                                                    orderRow.querySelector<HTMLInputElement>(
+                                                        '.highestOrderPrice',
+                                                    );
+                                                if (priceEl) {
+                                                    priceEl.innerText =
+                                                        centsToSteamFormattedPrice(newOrderPrice);
+                                                    priceEl.classList.add('highest');
+                                                    priceEl.classList.remove('not_highest');
+                                                }
+                                                outBidButton.innerText = 'Order placed';
+                                            })
+                                            .catch((err) => {
+                                                document
+                                                    .querySelector('.ordersTotal')
+                                                    .insertAdjacentHTML(
+                                                        'afterend',
+                                                        DOMPurify.sanitize(
+                                                            `<div class="listingError">
                                 ${err}
                             </div>`,
-                                                    ),
-                                                );
-                                        });
+                                                        ),
+                                                    );
+                                            });
+                                    });
                                 });
                             });
                         });
-                    });
                 }
 
                 const nameElement = orderRow.querySelector('.market_listing_item_name_link');
@@ -536,7 +556,8 @@ if (orders) {
                     const marketHashName = getAppIDAndItemNameFromLink(marketLink).marketHashName;
                     const orderID = getMyOrderIDFromElement(orderRow);
 
-                    const orderPrice = orderRow.querySelector<HTMLInputElement>('.market_listing_price').innerText;
+                    const orderPrice =
+                        orderRow.querySelector<HTMLInputElement>('.market_listing_price').innerText;
                     const orderQuantity = orderRow.querySelector<HTMLInputElement>(
                         '.market_listing_buyorder_qty',
                     ).innerText;
@@ -761,7 +782,7 @@ if (marketHistoryButton !== null) {
             const fromElement = document.getElementById('exportFrom') as HTMLInputElement;
             const toElement = document.getElementById('exportTo') as HTMLInputElement;
             if (parseInt(fromElement.value) >= parseInt(toElement.value)) {
-                fromElement.value = "0";
+                fromElement.value = '0';
                 toElement.value = toElement.getAttribute('max');
             }
         });
@@ -776,8 +797,12 @@ if (marketHistoryButton !== null) {
 
             document.getElementById('exportHelperMessage').innerText =
                 'Exporting market history...';
-            marketHistoryExport.from = parseInt((document.getElementById('exportFrom') as HTMLInputElement).value);
-            marketHistoryExport.to = parseInt((document.getElementById('exportTo') as HTMLInputElement).value);
+            marketHistoryExport.from = parseInt(
+                (document.getElementById('exportFrom') as HTMLInputElement).value,
+            );
+            marketHistoryExport.to = parseInt(
+                (document.getElementById('exportTo') as HTMLInputElement).value,
+            );
 
             const numOfRequests = Math.ceil(
                 (marketHistoryExport.to - marketHistoryExport.from) / 50,
@@ -805,14 +830,16 @@ if (marketHistoryButton !== null) {
         marketHistoryTab.style.display = 'none';
 
         getMarketHistory(0, 50).then((history) => {
-            const totalCount = String(history.total_count)
+            const totalCount = String(history.total_count);
             document.getElementById('exportFrom').setAttribute('max', totalCount);
             const exportToElement = document.getElementById('exportTo');
             exportToElement.setAttribute('max', totalCount);
             exportToElement.value = totalCount;
-            document.querySelectorAll<HTMLElement>('.numberOfHistoryEvents').forEach((numberOfEvents) => {
-                numberOfEvents.innerText = totalCount;
-            });
+            document
+                .querySelectorAll<HTMLElement>('.numberOfHistoryEvents')
+                .forEach((numberOfEvents) => {
+                    numberOfEvents.innerText = totalCount;
+                });
         });
     });
 }

@@ -121,7 +121,8 @@ const reportComments = (type, pageID) => {
                 .forEach((comment) => {
                     if (
                         spamTextCheck.test(
-                            comment.querySelector<HTMLElement>('.commentthread_comment_text').innerText,
+                            comment.querySelector<HTMLElement>('.commentthread_comment_text')
+                                .innerText,
                         ) &&
                         !comment.classList.contains('hidden_post')
                     ) {

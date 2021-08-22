@@ -147,7 +147,9 @@ chrome.runtime.onInstalled.addListener((details) => {
 });
 
 // redirects to feedback survey on uninstall
-chrome.runtime.setUninstallURL('https://docs.google.com/forms/d/e/1FAIpQLSdGzY8TrSjfZZtfoerFdAna1E79Y13afxNKG1yytjZkypKTpg/viewform?usp=sf_link');
+chrome.runtime.setUninstallURL(
+    'https://docs.google.com/forms/d/e/1FAIpQLSdGzY8TrSjfZZtfoerFdAna1E79Y13afxNKG1yytjZkypKTpg/viewform?usp=sf_link',
+);
 
 // handles what happens when one of the extension's notification gets clicked
 chrome.notifications.onClicked.addListener((notificationID) => {

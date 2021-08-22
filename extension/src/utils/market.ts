@@ -220,7 +220,7 @@ interface MarketHistory {
 }
 
 interface Assets {
-    [key: string]: Context
+    [key: string]: Context;
 }
 
 interface Context {

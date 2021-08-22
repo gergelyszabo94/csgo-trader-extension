@@ -196,7 +196,6 @@ const getTradeHistory = (maxTrades, startTime = 0, afterTrade = 0) =>
         );
     });
 
-
 type numberBoolean = 0 | 1;
 
 interface Description {

@@ -1,7 +1,12 @@
 // inject scripts from content scripts the the page context
 // usually to access variables or override functionality
 
-const injectScript = (scriptString, toRemove, id, executeAndReturn) => {
+const injectScript = (
+    scriptString: string,
+    toRemove: boolean,
+    id: string,
+    executeAndReturn: string,
+) => {
     // removes previously added instance of the script
     const elementFromBefore = document.getElementById(id);
     if (elementFromBefore !== null) elementFromBefore.remove();
