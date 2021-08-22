@@ -2,7 +2,13 @@ import React, { useEffect, useState } from 'react';
 
 import FlipSwitch from 'components/FlipSwitch';
 
-const FlipSwitchPermission = ({ id, origins, permission }) => {
+interface FlipSwitchPermissionProps {
+    id: string;
+    origins: string[];
+    permission: string;
+}
+
+const FlipSwitchPermission = ({ id, origins, permission }: FlipSwitchPermissionProps) => {
     const [state, setState] = useState(false);
 
     useEffect(() => {

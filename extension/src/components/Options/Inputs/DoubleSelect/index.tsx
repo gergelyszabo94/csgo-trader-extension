@@ -1,8 +1,15 @@
+import { Option } from '../../Row';
 import React from 'react';
 import Select from 'components/Select';
 
-const DoubleSelect = ({ id, options }) => {
+interface DoubleSelectProps {
+    id: string[];
+    options: Option[];
+}
+
+const DoubleSelect = ({ id, options }: DoubleSelectProps ) => {
     const setStorage = (thisValue: string | number, key: string) => {
+        //@ts-ignore idk why this takes a stirng[] over a string :shrug:
         if (key === undefined) chrome.storage.local.set({ [id]: thisValue }, () => {});
         else chrome.storage.local.set({ [key]: thisValue }, () => {});
     };

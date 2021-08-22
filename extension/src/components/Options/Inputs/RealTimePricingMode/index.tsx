@@ -1,8 +1,14 @@
+import { Option } from '../../Row';
 import React from 'react';
 import Select from 'components/Select';
 
-const RealTimePricingMode = ({ id, options }) => {
-    const setStorage = (thisValue) => {
+interface RealTimePricingModeProps {
+    id: string;
+    options: Option[];
+}
+
+const RealTimePricingMode = ({ id, options }: RealTimePricingModeProps) => {
+    const setStorage = (thisValue: string | number) => {
         chrome.storage.local.set(
             {
                 realTimePricesMode: thisValue,

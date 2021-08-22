@@ -5,7 +5,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'components/Modal';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 
-const ModalCustomComments = ({ modalTitle }) => {
+interface ModalCustomCommentsProps {
+    modalTitle: string;
+}
+
+const ModalCustomComments = ({ modalTitle }: ModalCustomCommentsProps) => {
     const [state, setState] = useState({
         content: [],
         inputValue: '',

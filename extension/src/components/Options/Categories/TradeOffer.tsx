@@ -1,13 +1,13 @@
+import Row, { Option } from 'components/Options/Row';
 import { offersSortingModes, sortingModes } from 'utils/static/sortingModes';
 
 import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
 import Category from '../Category';
 import React from 'react';
-import Row from 'components/Options/Row';
 
 const tradeOffer = () => {
-    const transformSortingModes = () => {
-        const transformed = [];
+    const transformSortingModes = (): Option[] => {
+        const transformed: Option[] = [];
         for (const mode of Object.values(sortingModes)) {
             transformed.push({
                 key: mode.key,
@@ -17,8 +17,8 @@ const tradeOffer = () => {
         return transformed;
     };
 
-    const transformOfferSortingModes = () => {
-        const transformed = [];
+    const transformOfferSortingModes = (): Option[] => {
+        const transformed: Option[] = [];
         for (const mode of Object.values(offersSortingModes)) {
             transformed.push({
                 key: mode.key,

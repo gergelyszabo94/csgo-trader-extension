@@ -4,7 +4,12 @@ import { faEdit, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'components/Modal';
 
-const ModalTextBox = ({ id, modalTitle }) => {
+interface ModalTextBoxProps {
+    id: string;
+    modalTitle: string;
+}
+
+const ModalTextBox = ({ id, modalTitle }: ModalTextBoxProps) => {
     const [state, setState] = useState({
         content: '',
         inputValid: true,

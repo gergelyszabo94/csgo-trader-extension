@@ -1,12 +1,12 @@
+import Row, { Option } from '../Row';
 import { currencies, pricingProviders, realTimePricingModes } from 'utils/static/pricing';
 
 import Category from '../Category';
 import NewTabLink from 'components/NewTabLink';
 import React from 'react';
-import Row from '../Row';
 
 const pricing = () => {
-    const transformCurrencies = () => {
+    const transformCurrencies = (): Option[] => {
         const transformedCurrencies = [];
         for (const currency of Object.values(currencies)) {
             transformedCurrencies.push({
@@ -18,7 +18,7 @@ const pricing = () => {
         return transformedCurrencies;
     };
 
-    const transformRealTimeModes = () => {
+    const transformRealTimeModes = (): Option[] => {
         const transformedModes = [];
         for (const mode of Object.values(realTimePricingModes)) {
             transformedModes.push({

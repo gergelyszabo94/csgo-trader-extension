@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 
 import FlipSwitch from 'components/FlipSwitch';
 
-const FlipSwitchStorage = ({ id }) => {
+interface FlipSwitchStorageProps {
+    id: string;
+}
+
+const FlipSwitchStorage = ({ id }: FlipSwitchStorageProps) => {
     const [state, setState] = useState(false);
 
     const onChangeHandler = (event) => {

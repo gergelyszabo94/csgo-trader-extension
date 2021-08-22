@@ -22,18 +22,18 @@ const NotificationSound = () => {
 
     useEffect(() => {
         chrome.storage.local.get('customNotificationURL', ({ customNotificationURL }) => {
-            setCustomURL(customNotificationURL);
+            setCustomURL(customNotificationURL as string);
         });
     });
 
-    const setURL = (event) => {
+    const setURL = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newURL = event.target.value;
         setCustomURL(newURL);
         playAudio(newURL, 'remote', 1);
         chrome.storage.local.set({ customNotificationURL: newURL });
     };
 
-    const setStorage = (thisValue) => {
+    const setStorage = (thisValue: string) => {
         chrome.storage.local.set({ notificationSoundToPlay: thisValue }, () => {
             setNotifSound(thisValue);
             if (thisValue === notificationSounds.custom.key) {

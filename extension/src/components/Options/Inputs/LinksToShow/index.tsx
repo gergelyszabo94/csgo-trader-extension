@@ -5,7 +5,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import defaultPopupLinks from 'utils/static/defaultPopupLinks';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
-const LinksToShow = ({ id }) => {
+interface LinksToShowProps {
+    id: string;
+}
+
+const LinksToShow = ({ id }: LinksToShowProps) => {
     const [links, setLinks] = useState([]);
     const [customLink, setCustomLink] = useState({
         name: '',

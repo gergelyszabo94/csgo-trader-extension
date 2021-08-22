@@ -6,7 +6,11 @@ import NewTabLink from 'components/NewTabLink';
 import Select from 'components/Select';
 import { updatePrices } from 'utils/pricing';
 
-const PricingProvider = ({ options }) => {
+interface PricingProviderProps {
+    options: object
+}
+
+const PricingProvider = ({ options }: PricingProviderProps) => {
     const [aboutProvider, setAboutProvider] = useState({
         description: options.csgotrader.description,
         link: options.csgotrader.url,

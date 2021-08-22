@@ -25,10 +25,10 @@ interface TypeSwitchProps {
     permission?: string;
     origins?: string[];
     modalTitle?: string;
-    options?: object;
+    options?: Option[] | object;
 }
 
-const TypeSwitch = ({ type, key, permission, origins, modalTitle, options }: TypeSwitchProps) => {
+const TypeSwitch = ({ type, key, permission, origins, modalTitle, options }: TypeSwitchProps) => {    
     switch (type) {
         case 'flipSwitchStorage':
             return <FlipSwitchStorage id={key} />;
@@ -39,9 +39,9 @@ const TypeSwitch = ({ type, key, permission, origins, modalTitle, options }: Typ
         case 'flipSwitchPermission':
             return <FlipSwitchPermission id={key} permission={permission} origins={origins} />;
         case 'select':
-            return <SimpleSelect id={key} options={options} />;
+            return <SimpleSelect id={key} options={options as Option[]} />;
         case 'pricingProvider':
-            return <PricingProvider options={options} />;
+            return <PricingProvider options={options as object} />;
         case 'refresh':
             return <Refresh />;
         case 'linksToShow':
@@ -51,13 +51,13 @@ const TypeSwitch = ({ type, key, permission, origins, modalTitle, options }: Typ
         case 'restore':
             return <Restore />;
         case 'doubleSelect':
-            return <DoubleSelect id={[...key]} options={options} />;
+            return <DoubleSelect id={[...key]} options={options as Option[]} />;
         case 'currency':
-            return <Currency id={key} options={options} />;
+            return <Currency id={key} options={options as Option[]} />;
         case 'number':
             return <Number id={key} />;
         case 'realtimepricingmode':
-            return <RealTimePricingMode id={key} options={options} />;
+            return <RealTimePricingMode id={key} options={options as Option[]} />;
         case 'volumeSlider':
             return <VolumeSlider id={key} />;
         case 'notifSound':
@@ -67,6 +67,12 @@ const TypeSwitch = ({ type, key, permission, origins, modalTitle, options }: Typ
     }
 };
 
+export interface Option {
+    key: string;
+    text: string;
+    description?: string;
+}
+
 interface RowProps {
     name: string;
     description: string | JSX.Element;
@@ -75,7 +81,7 @@ interface RowProps {
     permission?: string;
     origins?: string[];
     modalTitle?: string;
-    options?: object;
+    options?: Option[] | object;
 }
 
 const row = ({

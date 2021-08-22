@@ -1,7 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+
 import ReactSlider from 'react-slider';
 
-const VolumeSlider = ({ id }) => {
+interface VolumeSliderProps {
+    id: string;
+}
+
+const VolumeSlider = ({ id }: VolumeSliderProps) => {
     const [volume, setVolume] = useState(50);
 
     const onChangeHandler = (value) => {

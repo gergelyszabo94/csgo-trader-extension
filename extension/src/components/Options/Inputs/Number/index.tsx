@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const Number = ({ id }) => {
+interface NumberProps {
+    id: string;
+}
+
+const Number = ({ id }: NumberProps) => {
     const [state, setState] = useState(false);
 
-    const onChangeHandler = (event) => {
+    const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         chrome.storage.local.set({ [id]: value }, () => {
-            setState(value);
+            setState(value.toLowerCase() === 'true');
         });
     };
 
@@ -21,7 +25,7 @@ const Number = ({ id }) => {
             type='number'
             id={id}
             className='numberInput numberInput__wide'
-            value={state}
+            value={String(state)}
             onChange={onChangeHandler}
         />
     );

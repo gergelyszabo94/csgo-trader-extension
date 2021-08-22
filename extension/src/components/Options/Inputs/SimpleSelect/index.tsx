@@ -1,9 +1,10 @@
+import { Option } from '../../Row';
 import React from 'react';
 import Select from 'components/Select';
 
 interface SimpleSelectProps {
     id: string;
-    options: object;
+    options: Option[];
 }
 
 const SimpleSelect = ({ id, options }: SimpleSelectProps) => {
