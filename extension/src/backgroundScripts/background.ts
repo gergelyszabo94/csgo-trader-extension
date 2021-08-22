@@ -228,7 +228,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
                     }) => {
                         // friend request monitoring
                         const minutesFromLastFriendCheck =
-                            (Date.now() - new Date(friendRequests.lastUpdated)) / 1000 / 60;
+                            (Date.now() - new Date(friendRequests.lastUpdated).getTime()) / 1000 / 60;
                         const friendAndGroupInviteCount =
                             friendRequests.inviters.length + groupInvites.invitedTo.length;
 
@@ -252,7 +252,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 
                         // trade offers monitoring
                         const minutesFromLastOfferCheck =
-                            (Date.now() - new Date(activeOffers.lastFullUpdate) * 1000) / 1000 / 60;
+                            (Date.now() - new Date(activeOffers.lastFullUpdate).getTime() * 1000) / 1000 / 60;
 
                         if (
                             monitorIncomingOffers &&

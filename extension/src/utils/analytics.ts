@@ -1,24 +1,39 @@
-import { storageKeys, nonSettingStorageKeys } from 'utils/static/storageKeys';
+import { nonSettingStorageKeys, storageKeys } from 'utils/static/storageKeys';
 
-const trackEvent = (event) => {
-    const analyticsInfo = {
-        type: event.type,
-        action: event.action,
+interface TrackEventProps {
+    type: string;
+    action: string;
+}
+
+interface AnalyticsEvent {
+    type: string;
+    action: string;
+    timestamp: number;
+}
+
+interface AnalyticsEvents {
+    analyticsEvents: AnalyticsEvent[];
+}
+
+const trackEvent = ({ type, action }: TrackEventProps) => {
+    const analyticsInfo: AnalyticsEvent = {
+        type: type,
+        action: action,
         timestamp: Date.now(),
     };
 
-    chrome.storage.local.get('analyticsEvents', (result) => {
+    chrome.storage.local.get('analyticsEvents', ({ analyticsEvents }: AnalyticsEvents) => {
         chrome.storage.local.set(
             {
-                analyticsEvents: [...result.analyticsEvents, analyticsInfo],
+                analyticsEvents: [...analyticsEvents, analyticsInfo],
             },
             () => {},
         );
     });
 };
 
-const sendTelemetry = (retries) => {
-    const settingsStorageKeys = [];
+const sendTelemetry = (retries?: number) => {
+    const settingsStorageKeys: string[] = [];
     const keysNotToGet = nonSettingStorageKeys;
     keysNotToGet.push('steamAPIKey', 'steamIDOfUser');
 
@@ -34,7 +49,7 @@ const sendTelemetry = (retries) => {
                 pageviews: {},
             };
 
-            result.analyticsEvents.forEach((event) => {
+            result.analyticsEvents.forEach((event: AnalyticsEvent) => {
                 const date = new Date(event.timestamp).toISOString().split('T')[0];
 
                 if (
@@ -55,14 +70,14 @@ const sendTelemetry = (retries) => {
             });
 
             const preferences = {};
-
+            const customOrDefault = [
+                'customCommentsToReport',
+                'popupLinks',
+                'reoccuringMessage',
+                'reputationMessage',
+            ];
+            
             settingsStorageKeys.forEach((setting) => {
-                const customOrDefault = [
-                    'customCommentsToReport',
-                    'popupLinks',
-                    'reoccuringMessage',
-                    'reputationMessage',
-                ];
                 const toIgnore = ['analyticsEvents', 'clientID', 'exchangeRate'];
 
                 if (customOrDefault.includes(setting))
@@ -107,7 +122,7 @@ const sendTelemetry = (retries) => {
                                 }, 600 * 5);
                             } else {
                                 const newAnalyticsEvents = result.analyticsEvents.filter(
-                                    (event) => {
+                                    (event: { timestamp: number }) => {
                                         return (
                                             event.timestamp > Date.now() - 1000 * 60 * 60 * 24 * 7
                                         );

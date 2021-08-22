@@ -68,7 +68,12 @@ const getFriendRequests = (): Promise<Inviter[]> =>
             });
     });
 
-const getGroupInvites = () =>
+interface GroupInvite {
+    steamID: string;
+    name: string;
+}
+
+const getGroupInvites = (): Promise<GroupInvite[]> =>
     new Promise((resolve, reject) => {
         const getRequest = new Request('https://steamcommunity.com/my/groups/pending');
 

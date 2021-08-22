@@ -740,7 +740,7 @@ const steamFormattedPriceToCents = (formattedPrice) => {
     return injectScript(formattedToIntScript, true, 'formattedToIntScript', 'formattedToInt');
 };
 
-const getUserCurrencyBestGuess = () =>
+const getUserCurrencyBestGuess = (): Promise<string> =>
     new Promise((resolve) => {
         const getRequest = new Request('https://steamcommunity.com/market/');
 
