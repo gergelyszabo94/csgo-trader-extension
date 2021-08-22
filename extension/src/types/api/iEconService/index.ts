@@ -1,2 +1,2 @@
-export * from './getTradeHistory'
-export * from './getTradeOffers'
+export * from './getTradeHistory';
+export * from './getTradeOffers';

@@ -1,0 +1,1 @@
+export type CustomNotificationURL = string;
