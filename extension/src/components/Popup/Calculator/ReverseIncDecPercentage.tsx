@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const ReverseIncDecPercentage = () => {
     const [percentage, setPercentage] = useState(27);
@@ -6,15 +6,15 @@ const ReverseIncDecPercentage = () => {
     const [result, setResult] = useState('787.40');
     const [option, setOption] = useState('inc');
 
-    const onPercentageChange = (event) => {
-        setPercentage(event.target.value);
+    const onPercentageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setPercentage(Number(event.target.value));
     };
 
-    const onNumberChange = (event) => {
-        setNumber(event.target.value);
+    const onNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNumber(Number(event.target.value));
     };
 
-    const onSelectChange = (event) => {
+    const onSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setOption(event.target.value);
     };
 
@@ -31,8 +31,8 @@ const ReverseIncDecPercentage = () => {
         chrome.storage.local.get(
             ['calculatorIncDecPercentage', 'calculatorIncDecResult'],
             ({ calculatorIncDecPercentage, calculatorIncDecResult }) => {
-                setPercentage(parseFloat(calculatorIncDecPercentage).toFixed(2));
-                setNumber(parseFloat(calculatorIncDecResult).toFixed(2));
+                setPercentage(calculatorIncDecPercentage);
+                setNumber(calculatorIncDecResult);
             },
         );
     }, []);
@@ -60,14 +60,14 @@ const ReverseIncDecPercentage = () => {
             </div>
             <input
                 type='number'
-                value={percentage}
+                value={percentage.toFixed(2)}
                 onChange={onPercentageChange}
                 className='numberInput numberInput__narrow'
             />
             <span>% when the result is </span>
             <input
                 type='number'
-                value={number}
+                value={number.toFixed(2)}
                 onChange={onNumberChange}
                 className='numberInput numberInput__narrow'
             />

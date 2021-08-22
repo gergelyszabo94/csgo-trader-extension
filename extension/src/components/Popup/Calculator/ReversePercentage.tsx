@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const ReversePercentage = () => {
     const [percentage, setPercentage] = useState(30);
     const [number, setNumber] = useState(2.7);
     const [result, setResult] = useState('90');
 
-    const onPercentageChange = (event) => {
-        setPercentage(event.target.value);
+    const onPercentageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setPercentage(Number(event.target.value));
     };
 
-    const onNumberChange = (event) => {
-        setNumber(event.target.value);
+    const onNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNumber(Number(event.target.value));
     };
 
     useEffect(() => {
@@ -21,8 +21,8 @@ const ReversePercentage = () => {
         chrome.storage.local.get(
             ['calculatorReversePercentage', 'calculatorReverseValue'],
             ({ calculatorReverseValue, calculatorReversePercentage }) => {
-                setNumber(parseFloat(calculatorReverseValue).toFixed(2));
-                setPercentage(parseFloat(calculatorReversePercentage).toFixed(2));
+                setNumber(calculatorReverseValue);
+                setPercentage(calculatorReversePercentage);
             },
         );
     }, []);
@@ -37,14 +37,14 @@ const ReversePercentage = () => {
             </span>
             <input
                 type='number'
-                value={number}
+                value={number.toFixed(2)}
                 onChange={onNumberChange}
                 className='numberInput numberInput__narrow'
             />
             <span> is </span>
             <input
                 type='number'
-                value={percentage}
+                value={percentage.toFixed(2)}
                 onChange={onPercentageChange}
                 className='numberInput numberInput__narrow'
             />

@@ -1,7 +1,14 @@
 import React, { useEffect } from 'react';
+
 import { currencies } from 'utils/static/pricing';
 
-const CurrencySelect = ({ id, selected, setSelected }) => {
+interface CurrencySelectProps {
+    id: string;
+    selected: string;
+    setSelected: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const CurrencySelect = ({ id, selected, setSelected }: CurrencySelectProps) => {
     const transformCurrencies = () => {
         const transformedCurrencies = [];
         for (const currency of Object.values(currencies)) {
@@ -20,8 +27,8 @@ const CurrencySelect = ({ id, selected, setSelected }) => {
         });
     }, []);
 
-    const applySelection = (e) => {
-        const targetValue = e.target.value;
+    const applySelection = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const targetValue = event.target.value;
         setSelected(targetValue);
     };
 

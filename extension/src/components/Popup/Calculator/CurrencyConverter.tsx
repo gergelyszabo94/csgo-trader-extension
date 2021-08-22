@@ -1,19 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+
 import CurrencySelect from 'components/Popup/Calculator/CurrencySelect';
-import { prettyPrintPrice } from 'utils/pricing';
 import { currencies } from 'utils/static/pricing';
+import { prettyPrintPrice } from 'utils/pricing';
+
+interface ExchangeRates {
+    [key: string]: number | string;
+}
 
 const CurrencyConverter = () => {
     const [currency1, setCurrency1] = useState('USD');
     const [currency2, setCurrency2] = useState('EUR');
     const [inputNumber, setInputNumber] = useState(100);
-    const [result, setResult] = useState('');
+    const [result, setResult] = useState<string>();
 
-    const convert = (input) => {
-        chrome.storage.local.get('exchangeRates', ({ exchangeRates }) => {
+    const convert = (input: number) => {
+        chrome.storage.local.get('exchangeRates', ({ exchangeRates }: ExchangeRates) => {
             const convertedValue =
-                (input / parseFloat(exchangeRates[currency1])) *
-                parseFloat(exchangeRates[currency2]);
+                (input / Number(exchangeRates[currency1])) * Number(exchangeRates[currency2]);
             setResult(convertedValue.toFixed(2));
         });
     };
@@ -31,8 +35,8 @@ const CurrencyConverter = () => {
         );
     }, []);
 
-    const onInputChange = (change) => {
-        const newInputNumber = change.target.value;
+    const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newInputNumber = Number(event.target.value);
         setInputNumber(newInputNumber);
         convert(newInputNumber);
     };
