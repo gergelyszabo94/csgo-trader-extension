@@ -1,7 +1,3 @@
-import { getFloatInfoFromCache } from 'utils/floatCaching';
-import itemTypes from 'utils/static/itemTypes';
-import { getPrice, getStickerPriceTotal } from 'utils/pricing';
-import { getShortDate } from 'utils/dateTime';
 import {
     getDopplerInfo,
     getExteriorFromTags,
@@ -12,8 +8,79 @@ import {
     getType,
     parseStickerInfo,
 } from 'utils/utilsModular';
-import steamApps from 'utils/static/steamApps';
+import { getPrice, getStickerPriceTotal } from 'utils/pricing';
+
+import { getFloatInfoFromCache } from 'utils/floatCaching';
 import { getItemMarketLink } from 'utils/simpleUtils';
+import { getShortDate } from 'utils/dateTime';
+import itemTypes from 'utils/static/itemTypes';
+import steamApps from 'utils/static/steamApps';
+
+interface Inventory {
+    [key: string]: Item
+}
+
+interface Item {
+    id: string;
+    classid: string;
+    instanceid: string;
+    amount: string;
+    hide_in_china: number;
+    pos: number;
+}
+
+interface Descriptions {
+    [key: string]: Description
+}
+
+interface Description {
+  appid: string;
+  classid: string;
+  instanceid: string;
+  icon_url: string;
+  icon_url_large: string;
+  icon_drag_url: string;
+  name: string;
+  market_hash_name: string;
+  market_name: string;
+  name_color: string;
+  background_color: string;
+  type: string;
+  tradable: number;
+  marketable: number;
+  commodity: number;
+  market_tradable_restriction: string;
+  cache_expiration: string;
+  descriptions: SmallDescription[];
+  actions: Action[];
+  market_actions: Action[];
+  tags: Tag[];
+}
+
+interface Tag {
+  internal_name: string;
+  name: string;
+  category: string;
+  category_name: string;
+  color?: string;
+}
+
+interface Action {
+  name: string;
+  link: string;
+}
+
+interface SmallDescription {
+  type: string;
+  value: string;
+  color?: string;
+  app_data?: AppData;
+}
+
+interface AppData {
+  def_index: string;
+  is_itemset_name: number;
+}
 
 const getUserCSGOInventory = (steamID) =>
     new Promise((resolve, reject) => {
@@ -34,8 +101,8 @@ const getUserCSGOInventory = (steamID) =>
                     })
                     .then((body) => {
                         if (body.success) {
-                            const items = body.rgDescriptions;
-                            const ids = body.rgInventory;
+                            const items: Descriptions = body.rgDescriptions;
+                            const ids: Inventory = body.rgInventory;
 
                             const itemsPropertiesToReturn = [];
                             let inventoryTotal = 0.0;
@@ -212,8 +279,8 @@ const getOtherInventory = (appID, steamID) =>
             })
             .then((body) => {
                 if (body.success) {
-                    const items = body.rgDescriptions;
-                    const ids = body.rgInventory;
+                    const items: Descriptions = body.rgDescriptions;
+                    const ids: Inventory = body.rgInventory;
 
                     const itemsPropertiesToReturn = [];
                     const duplicates = {};

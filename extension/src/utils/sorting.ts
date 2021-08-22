@@ -1,4 +1,4 @@
-import { getItemByAssetID, getAssetIDOfElement } from 'utils/utilsModular';
+import { getAssetIDOfElement, getItemByAssetID } from 'utils/utilsModular';
 
 const doTheSorting = (items, itemElements, method, pages, type) => {
     let sortedElements = [];
@@ -63,10 +63,8 @@ const doTheSorting = (items, itemElements, method, pages, type) => {
             if (tradabilityOfB === 'Tradable') return 1;
             if (tradabilityOfB === 'Not Tradable') return -1;
 
-            let tradabilityOfATime = new Date(tradabilityOfA);
-            tradabilityOfATime = tradabilityOfATime.getTime();
-            let tradabilityOfBTime = new Date(tradabilityOfB);
-            tradabilityOfBTime = tradabilityOfBTime.getTime();
+            let tradabilityOfATime = new Date(tradabilityOfA).getTime();
+            let tradabilityOfBTime = new Date(tradabilityOfB).getTime();
             if (tradabilityOfATime < tradabilityOfBTime) return -1;
             if (tradabilityOfATime > tradabilityOfBTime) return 1;
             return 0;
@@ -80,10 +78,8 @@ const doTheSorting = (items, itemElements, method, pages, type) => {
             if (tradabilityOfB === 'Tradable') return -1;
             if (tradabilityOfB === 'Not Tradable') return 1;
 
-            let tradabilityOfATime = new Date(tradabilityOfA);
-            tradabilityOfATime = tradabilityOfATime.getTime();
-            let tradabilityOfBTime = new Date(tradabilityOfB);
-            tradabilityOfBTime = tradabilityOfBTime.getTime();
+            let tradabilityOfATime = new Date(tradabilityOfA).getTime();
+            let tradabilityOfBTime = new Date(tradabilityOfB).getTime();
             if (tradabilityOfATime > tradabilityOfBTime) return -1;
             if (tradabilityOfATime < tradabilityOfBTime) return 1;
             return 0;

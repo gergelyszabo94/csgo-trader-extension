@@ -1,25 +1,25 @@
-import DOMPurify from 'dompurify';
-
 import {
-    reloadPageOnExtensionReload,
-    logExtensionPresence,
-    updateLoggedInUserInfo,
     addUpdatedRibbon,
+    logExtensionPresence,
+    reloadPageOnExtensionReload,
+    updateLoggedInUserInfo,
 } from 'utils/utilsModular';
-import { getItemMarketLink } from 'utils/simpleUtils';
-import { removeListing, getMarketHistory, cancelOrder, createOrder } from 'utils/market';
-import { trackEvent } from 'utils/analytics';
+import { cancelOrder, createOrder, getMarketHistory, removeListing } from 'utils/market';
 import {
-    steamFormattedPriceToCents,
     centsToSteamFormattedPrice,
-    priceQueue,
-    workOnPriceQueue,
-    initPriceQueue,
-    updateWalletCurrency,
     getHighestBuyOrder,
+    initPriceQueue,
+    priceQueue,
+    steamFormattedPriceToCents,
+    updateWalletCurrency,
+    workOnPriceQueue,
 } from 'utils/pricing';
+
+import DOMPurify from 'dompurify';
+import { getItemMarketLink } from 'utils/simpleUtils';
 import { injectStyle } from 'utils/injection';
 import { overrideLoadMarketHistory } from 'utils/steamOverriding';
+import { trackEvent } from 'utils/analytics';
 
 const marketHistoryExport = {
     history: [],
@@ -472,14 +472,14 @@ if (orders) {
             </div>`),
                     );
 
-                    orderRow.querySelectorAll('.outBidButton').forEach((outBidButton) => {
+                    orderRow.querySelectorAll<HTMLInputElement>('.outBidButton').forEach((outBidButton) => {
                         outBidButton.addEventListener('click', () => {
                             const outBidType = outBidButton.classList.contains('outbidByPercent')
                                 ? 'percentage'
                                 : 'highest';
                             const orderID = getMyOrderIDFromElement(orderRow);
                             const quantity = parseInt(
-                                orderRow.querySelector(
+                                orderRow.querySelector<HTMLInputElement>(
                                     '.market_listing_right_cell.market_listing_my_price.market_listing_buyorder_qty',
                                 ).innerText,
                             );
@@ -502,7 +502,7 @@ if (orders) {
                                     createOrder(appID, marketName, newOrderPrice, quantity)
                                         .then(() => {
                                             const priceEl =
-                                                orderRow.querySelector('.highestOrderPrice');
+                                                orderRow.querySelector<HTMLInputElement>('.highestOrderPrice');
                                             if (priceEl) {
                                                 priceEl.innerText =
                                                     centsToSteamFormattedPrice(newOrderPrice);
@@ -536,8 +536,8 @@ if (orders) {
                     const marketHashName = getAppIDAndItemNameFromLink(marketLink).marketHashName;
                     const orderID = getMyOrderIDFromElement(orderRow);
 
-                    const orderPrice = orderRow.querySelector('.market_listing_price').innerText;
-                    const orderQuantity = orderRow.querySelector(
+                    const orderPrice = orderRow.querySelector<HTMLInputElement>('.market_listing_price').innerText;
+                    const orderQuantity = orderRow.querySelector<HTMLInputElement>(
                         '.market_listing_buyorder_qty',
                     ).innerText;
 
@@ -586,7 +586,7 @@ if (orders) {
             );
 
             const tableHeader = orders.querySelector('.market_listing_table_header');
-            const cancelColumnHeader = tableHeader.querySelector(
+            const cancelColumnHeader = tableHeader.querySelector<HTMLInputElement>(
                 '.market_listing_right_cell.market_listing_edit_buttons.placeholder',
             );
 

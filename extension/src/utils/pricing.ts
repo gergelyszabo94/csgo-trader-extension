@@ -21,9 +21,26 @@ const priceQueue = {
     cleanupFunction: () => {}, // optional function that is executed when all jobs are done
 };
 
+interface WalletInfo {
+  wallet_currency: number;
+  wallet_country: string;
+  wallet_state: string;
+  wallet_fee: string;
+  wallet_fee_minimum: string;
+  wallet_fee_percent: string;
+  wallet_publisher_fee_percent_default: string;
+  wallet_fee_base: string;
+  wallet_balance: string;
+  wallet_delayed_balance: string;
+  wallet_max_balance: string;
+  wallet_trade_max_balance: string;
+  success: number;
+  rwgrsn: number;
+}
+
 // tested and works in inventories, offers and market pages
 // does not work on profiles and incoming offers page
-const getSteamWalletInfo = () => {
+const getSteamWalletInfo = (): WalletInfo => {
     const getWalletInfoScript =
         "document.querySelector('body').setAttribute('steamWallet', JSON.stringify(g_rgWalletInfo));";
     return JSON.parse(injectScript(getWalletInfoScript, true, 'steamWalletScript', 'steamWallet'));
@@ -43,7 +60,7 @@ const initPriceQueue = (cleanupFunction) => {
 const getSteamWalletCurrency = () => {
     const getCurrencyScript = `
   document.querySelector('body').setAttribute('steamWalletCurrency', GetCurrencyCode(${DOMPurify.sanitize(
-      getSteamWalletInfo().wallet_currency,
+      String(getSteamWalletInfo().wallet_currency),
   )}));
   `;
     return injectScript(
@@ -54,21 +71,42 @@ const getSteamWalletCurrency = () => {
     );
 };
 
-const getHighestBuyOrder = (appID, marketHashName) => {
+interface CurrencyProps {
+    currency: string;
+}
+
+interface BuyOrderInfo {
+  success: number;
+  sell_order_table: string;
+  sell_order_summary: string;
+  buy_order_table: string;
+  buy_order_summary: string;
+  highest_buy_order: string;
+  lowest_sell_order: string;
+  buy_order_graph: (number | string)[][];
+  sell_order_graph: (number | string)[][];
+  graph_max_y: number;
+  graph_min_x: number;
+  graph_max_x: number;
+  price_prefix: string;
+  price_suffix: string;
+}
+
+const getHighestBuyOrder = (appID, marketHashName): Promise<string> => {
     return new Promise((resolve, reject) => {
-        chrome.storage.local.get(['currency'], ({ currency }) => {
+        chrome.storage.local.get(['currency'], ({ currency }: CurrencyProps) => {
             const steamWalletInfo = getSteamWalletInfo();
             let currencyID = 1;
             if (steamWalletInfo !== null) currencyID = steamWalletInfo.wallet_currency;
             else {
                 for (const [code, short] of Object.entries(steamCurrencyCodes)) {
-                    if (short === currency) currencyID = code;
+                    if (short === currency) currencyID = Number(code);
                 }
             }
             chrome.runtime.sendMessage(
                 { getBuyOrderInfo: { appID, currencyID, marketHashName } },
                 (response) => {
-                    if (response !== 'error') resolve(response.getBuyOrderInfo.highest_buy_order);
+                    if (response !== 'error') resolve((response.getBuyOrderInfo as BuyOrderInfo).highest_buy_order);
                     else reject('error');
                 },
             );
@@ -103,15 +141,54 @@ const getPriceOverview = (appID, marketHashName) => {
     });
 };
 
-const getLowestListingPrice = (appID, marketHashName) => {
+interface ListingInfo {
+    [key: string]: Listing
+}
+
+interface Listing {
+  listingid: string;
+  price: number;
+  fee: number;
+  publisher_fee_app: number;
+  publisher_fee_percent: string;
+  currencyid: number;
+  steam_fee: number;
+  publisher_fee: number;
+  converted_price: number;
+  converted_fee: number;
+  converted_currencyid: number;
+  converted_steam_fee: number;
+  converted_publisher_fee: number;
+  converted_price_per_unit: number;
+  converted_fee_per_unit: number;
+  converted_steam_fee_per_unit: number;
+  converted_publisher_fee_per_unit: number;
+  asset: Asset;
+}
+
+interface Asset {
+  currency: number;
+  appid: number;
+  contextid: string;
+  id: string;
+  amount: string;
+  market_actions: MarketAction[];
+}
+
+interface MarketAction {
+  link: string;
+  name: string;
+}
+
+const getLowestListingPrice = (appID: string | number, marketHashName: string): Promise<number> => {
     return new Promise((resolve, reject) => {
         chrome.storage.local.get(['currency'], ({ currency }) => {
             const steamWalletInfo = getSteamWalletInfo();
-            let currencyID = 1;
+            let currencyID: number = 1;
             if (steamWalletInfo !== null) currencyID = steamWalletInfo.wallet_currency;
             else {
                 for (const [code, short] of Object.entries(steamCurrencyCodes)) {
-                    if (short === currency) currencyID = code;
+                    if (short === currency) currencyID = Number(code);
                 }
             }
             const request = new Request(
@@ -135,7 +212,7 @@ const getLowestListingPrice = (appID, marketHashName) => {
                     if (listingsJSONData === null) reject('success:false');
                     else if (listingsJSONData.success === true) {
                         if (listingsJSONData.listinginfo) {
-                            const listingInfo = Object.values(listingsJSONData.listinginfo);
+                            const listingInfo = Object.values(listingsJSONData.listinginfo as ListingInfo);
                             if (listingInfo.length !== 0) {
                                 for (const listing of listingInfo) {
                                     if (
@@ -230,7 +307,7 @@ const workOnPriceQueue = () => {
             chrome.storage.local.get(['priceQueueActivity'], ({ priceQueueActivity }) => {
                 const job = priceQueue.jobs.shift();
                 const secondsFromLastUse =
-                    (Date.now() - new Date(priceQueueActivity.lastUsed)) / 1000;
+                    (Date.now() - new Date(priceQueueActivity.lastUsed).getTime()) / 1000;
 
                 // tries to avoid having multiple price queues running concurrently on different pages
                 if (
@@ -258,10 +335,7 @@ const workOnPriceQueue = () => {
                                             job.appID + job.market_hash_name + job.type
                                         ],
                                     );
-                                else if (
-                                    job.type === 'inventory_mass_sell_instant_sell' ||
-                                    job.type === `offer_${realTimePricingModes.highest_order.key}`
-                                ) {
+                                else if (job.type === 'inventory_mass_sell_instant_sell') {
                                     job.callBackFunction(
                                         job.market_hash_name,
                                         priceQueue.localCache[
@@ -443,14 +517,14 @@ const updatePrices = () => {
         const headers = new Headers();
 
         headers.append('Accept-Encoding', 'gzip');
-        const init = {
+
+        const request = new Request(`https://prices.csgotrader.app/latest/${provider}.json`, {
             method: 'GET',
             headers,
             mode: 'cors',
             cache: 'default',
-        };
+        });
 
-        const request = new Request(`https://prices.csgotrader.app/latest/${provider}.json`, init);
         fetch(request)
             .then((response) => {
                 if (!response.ok) {
@@ -553,7 +627,7 @@ const updateExchangeRates = () => {
 };
 
 const getPrice = (marketHashName, dopplerInfo, prices, provider, mode, exchangeRate, currency) => {
-    let price = 0.0;
+    let price = '0.00';
     if (
         prices[marketHashName] !== undefined &&
         prices[marketHashName] !== 'null' &&
@@ -583,14 +657,14 @@ const getPrice = (marketHashName, dopplerInfo, prices, provider, mode, exchangeR
                     provider === pricingProviders.buff163.name &&
                     mode === pricingProviders.buff163.pricing_modes.starting_at.name
                 ) {
-                    price = 0.0;
+                    price = '0.00';
                 } else price = (prices[marketHashName].price * exchangeRate).toFixed(2);
             } else price = (prices[marketHashName].price * exchangeRate).toFixed(2);
         } else price = (prices[marketHashName].price * exchangeRate).toFixed(2);
     }
     return {
         price,
-        display: price === 0.0 ? '' : currencies[currency].sign + price,
+        display: price === '0.00' ? '' : currencies[currency].sign + price,
     };
 };
 

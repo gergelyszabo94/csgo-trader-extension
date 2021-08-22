@@ -81,7 +81,7 @@ const openAndAcceptOffer = (offerID, partnerID) => {
 };
 
 // this gets injected to the page page context from the background script
-const getAcceptScriptAsString = (offerID, partnerID) => {
+const getAcceptScriptAsString = (offerID: string, partnerID: string): Promise<string> => {
     return new Promise((resolve) => {
         chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }) => {
             resolve(`
@@ -107,7 +107,7 @@ const getAcceptScriptAsString = (offerID, partnerID) => {
 
 // trade offers can't be accepted from background scripts because of CORS
 // this function looks for tab that has Steam open and injects the accept script
-const acceptTradeInBackground = (offerID, partnerID) => {
+const acceptTradeInBackground = (offerID: string, partnerID: string) => {
     chrome.permissions.contains({ permissions: ['tabs'] }, (permission) => {
         if (permission) {
             chrome.tabs.query({ url: 'https://steamcommunity.com/*' }, (tabs) => {
@@ -267,21 +267,19 @@ const createDiscordSideSummary = (offerSideItems, itemsWithDetails) => {
         for (const [name, amount] of Object.entries(itemNames)) {
             summary += amount > 1 ? `${name} (x${amount})\n` : `${name}\n`;
         }
+        // 1024 is max size of an embed field
+        if (summary.length > 1024) {
+            // cut off all chars after 1024
+            summary = summary.slice(0, 1024);
+            // remove lines until there are 4 chars to spare
+            while (summary.length > 1020) {
+                summary = summary.split('\n').slice(0, -1).join('\n');
+            }
+            // add \n...
+            summary += '\n...';
+        }
         return summary;
     }
-    // 1024 is max size of an embed field
-    if (summary.length > 1024) {
-        // cut off all chars after 1024
-        summary = summary.slice(0, 1024);
-        // remove lines until there are 4 chars to spare
-        while (summary.length > 1020) {
-            summary = summary.split('\n').slice(0, -1).join('\n');
-        }
-        // add \n...
-        summary += '\n...';
-    }
-
-    return summary;
 };
 
 const notifyAboutOfferOnDiscord = (offer, items) => {

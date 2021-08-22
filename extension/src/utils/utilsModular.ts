@@ -183,7 +183,7 @@ const getNameTag = (item) => {
     }
 };
 
-const getInspectLink = (item, owner, assetID) => {
+const getInspectLink = (item, owner?: string, assetID?: string) => {
     try {
         if (item.actions !== undefined && item.actions[0] !== undefined) {
             const beggining = item.actions[0].link.split('%20S')[0];
@@ -946,7 +946,7 @@ const markModMessagesAsRead = () => {
 // chrome only allows notification icons locally
 // or from trusted (by manifest) urls
 // this is a workaround to that because Steam's CDN is not in the manifest
-const getRemoteImageAsObjectURL = (imageURL) =>
+const getRemoteImageAsObjectURL = (imageURL: string): Promise<string> =>
     new Promise((resolve, reject) => {
         fetch(new Request(imageURL))
             .then((response) => {
