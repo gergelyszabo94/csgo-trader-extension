@@ -1,11 +1,11 @@
-export interface offerEvalRule {
+export interface OfferEvalRule {
     action: string;
     active: boolean;
-    conditions: condition[];
+    conditions: Condition[];
     operators: string[];
 }
 
-interface condition {
+interface Condition {
     type: string;
     value?: any;
     valueType?: any;

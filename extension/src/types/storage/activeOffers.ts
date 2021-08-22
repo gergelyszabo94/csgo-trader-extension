@@ -1,5 +1,5 @@
-export interface activeOffers {
-    descriptions: smallDescription[];
+export interface ActiveOffers {
+    descriptions: SmallDescription[];
     items: Item[];
     lastFullUpdate: number;
     received: Received[];
@@ -129,7 +129,7 @@ interface Exterior {
     type: string;
 }
 
-interface smallDescription {
+interface SmallDescription {
     actions: Action[];
     appid: number;
     background_color: string;

@@ -1,7 +1,7 @@
+import { ExchangeRates } from 'types';
 import { Option } from '../../Row';
 import React from 'react';
 import Select from 'components/Select';
-import { exchangeRates } from 'types';
 
 interface CurrencyProps {
     id: string;
@@ -10,7 +10,7 @@ interface CurrencyProps {
 
 const Currency = ({ id, options }: CurrencyProps) => {
     const setStorage = (thisValue: string | number) => {
-        chrome.storage.local.get(['exchangeRates'], ({ exchangeRates }: exchangeRates) => {
+        chrome.storage.local.get(['exchangeRates'], ({ exchangeRates }: ExchangeRates) => {
             chrome.storage.local.set(
                 {
                     currency: thisValue,

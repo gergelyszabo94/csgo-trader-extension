@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import Bookmark from 'components/Bookmarks/Bookmark';
-import { bookmark } from 'types';
+import { Bookmark as BookmarkType } from 'types';
 import { trackEvent } from 'utils/analytics';
 
 const Bookmarks = () => {
@@ -18,7 +18,7 @@ const Bookmarks = () => {
         }
     });
 
-    const [bookmarks, setBookmarks] = useState<bookmark[]>([]);
+    const [bookmarks, setBookmarks] = useState<BookmarkType[]>([]);
 
     const saveBookmarks = (bookmarksToSave) => {
         chrome.storage.local.set({ bookmarks: bookmarksToSave }, () => {
@@ -26,7 +26,7 @@ const Bookmarks = () => {
         });
     };
 
-    const removeBookmark = (bookmarkData: bookmark) => {
+    const removeBookmark = (bookmarkData: BookmarkType) => {
         const bookmarksToKeep = bookmarks.filter((bookmark) => {
             return bookmark != bookmarkData;
         });
@@ -34,7 +34,7 @@ const Bookmarks = () => {
         saveBookmarks(bookmarksToKeep);
     };
 
-    const editBookmark = (bookmarkData: bookmark) => {
+    const editBookmark = (bookmarkData: BookmarkType) => {
         const newBookmarks = bookmarks.map((bookmark) =>
             bookmark.itemInfo.assetid === bookmarkData.itemInfo.assetid &&
             bookmark.itemInfo.appid === bookmarkData.itemInfo.appid &&
@@ -65,9 +65,9 @@ const Bookmarks = () => {
 };
 
 export interface BookmarkContentProps {
-    bookmarks: bookmark[];
-    remove: (bookmarkData: bookmark) => void;
-    edit: (bookmarkData: bookmark) => void;
+    bookmarks: BookmarkType[];
+    remove: (bookmarkData: BookmarkType) => void;
+    edit: (bookmarkData: BookmarkType) => void;
 }
 
 const BookmarkContent = ({ bookmarks, remove, edit }: BookmarkContentProps): JSX.Element => {

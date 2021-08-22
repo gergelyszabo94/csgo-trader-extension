@@ -1,4 +1,4 @@
-export interface bookmark {
+export interface Bookmark {
     added: number;
     comment: string;
     itemInfo: ItemInfo;
@@ -8,8 +8,8 @@ export interface bookmark {
     owner: string;
 }
 
-export interface bookmarks {
-    bookmarks: bookmark[];
+export interface Bookmarks {
+    bookmarks: Bookmark[];
 }
 
 interface ItemInfo {

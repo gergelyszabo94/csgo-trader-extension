@@ -1,4 +1,4 @@
-import { analyticsEvent, analyticsEvents } from 'types';
+import { AnalyticsEvent, AnalyticsEvents } from 'types';
 import { nonSettingStorageKeys, storageKeys } from 'utils/static/storageKeys';
 
 interface TrackEventProps {
@@ -7,13 +7,13 @@ interface TrackEventProps {
 }
 
 const trackEvent = ({ type, action }: TrackEventProps) => {
-    const analyticsInfo: analyticsEvent = {
+    const analyticsInfo: AnalyticsEvent = {
         type: type,
         action: action,
         timestamp: Date.now(),
     };
 
-    chrome.storage.local.get('analyticsEvents', ({ analyticsEvents }: analyticsEvents) => {
+    chrome.storage.local.get('analyticsEvents', ({ analyticsEvents }: AnalyticsEvents) => {
         chrome.storage.local.set(
             {
                 analyticsEvents: [...analyticsEvents, analyticsInfo],

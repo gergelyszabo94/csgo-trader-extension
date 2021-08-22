@@ -1,3 +1,3 @@
-export interface exchangeRates {
+export interface ExchangeRates {
     [key: string]: number | string;
 }

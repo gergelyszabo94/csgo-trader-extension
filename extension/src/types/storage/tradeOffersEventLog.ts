@@ -1,4 +1,4 @@
-export interface tradeOffersEventLog {
+export interface TradeOffersEventLog {
     offerID: string;
     rule: number;
     steamID: string;

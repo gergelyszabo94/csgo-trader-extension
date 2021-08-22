@@ -1,9 +1,9 @@
-export interface analyticsEvent {
+export interface AnalyticsEvent {
     type: string;
     action: string;
     timestamp: number;
 }
 
-export interface analyticsEvents {
-    analyticsEvents: analyticsEvent[];
+export interface AnalyticsEvents {
+    analyticsEvents: AnalyticsEvent[];
 }

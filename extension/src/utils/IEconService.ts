@@ -5,7 +5,7 @@ import { numberBoolean, TradeOffers as tradeOffers } from 'types';
 import { getDopplerInfo } from 'utils/utilsModular';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 
-const getTradeHistory = (maxTrades, startTime = 0, afterTrade = 0) =>
+const getTradeHistory = (maxTrades: number, startTime = 0, afterTrade = 0) =>
     new Promise((resolve, reject) => {
         chrome.storage.local.get(
             ['apiKeyValid', 'steamAPIKey', 'prices', 'pricingProvider', 'currency', 'exchangeRate'],
