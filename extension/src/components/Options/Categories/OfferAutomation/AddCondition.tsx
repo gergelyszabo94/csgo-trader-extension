@@ -37,9 +37,7 @@ const AddCondition = ({ type, value, index, onChange }: AddConditionProps) => {
         const conditionType = event.target.value;
         onChange(index, {
             type: conditionType,
-            value: conditions[conditionType].with_value
-                ? conditions[conditionType].default_value
-                : null,
+            value: conditions[conditionType].with_value ? conditions[conditionType].default_value : null,
         });
     };
 

@@ -77,11 +77,7 @@ const AddOfferRule = ({ add }: AddOfferRuleProps) => {
                 />
                 <div>
                     Action:
-                    <select
-                        className='select-theme'
-                        onChange={onActionChange}
-                        defaultValue={rule.action}
-                    >
+                    <select className='select-theme' onChange={onActionChange} defaultValue={rule.action}>
                         <Actions />
                     </select>
                 </div>

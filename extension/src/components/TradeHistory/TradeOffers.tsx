@@ -26,18 +26,12 @@ const TradeOffers = ({ trades }) => {
                     <h4 className='trade-history__title'>
                         #{Number(index) + 1}
                         &nbsp;You have traded with&nbsp;
-                        <NewTabLink
-                            to={profileIDToURL(trade.steamid_other)}
-                            className='trade-history__partner'
-                        >
+                        <NewTabLink to={profileIDToURL(trade.steamid_other)} className='trade-history__partner'>
                             {trade.partnerSummary.personaname}
                         </NewTabLink>
                         .
                     </h4>
-                    <span
-                        className='trade-history__date-of-trade'
-                        title={dateToISODisplay(trade.time_init)}
-                    >
+                    <span className='trade-history__date-of-trade' title={dateToISODisplay(trade.time_init)}>
                         {prettyTimeAgo(trade.time_init)}
                     </span>
                 </div>

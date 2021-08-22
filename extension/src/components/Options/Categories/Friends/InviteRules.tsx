@@ -77,10 +77,9 @@ const InviteRules = () => {
             <h5>Invite Rules</h5>
             <div className='mb-3 font-size--s'>
                 <span>
-                    You can set your own rules for incoming friend requests to be evaluated by. The
-                    rules are evaluated in order, the first matching rule&apos;s action is applied.
-                    The feature only works if you are logged into Steam in this browser. It&apos;s
-                    useful for example to automatically ignore scammers.
+                    You can set your own rules for incoming friend requests to be evaluated by. The rules are evaluated
+                    in order, the first matching rule&apos;s action is applied. The feature only works if you are logged
+                    into Steam in this browser. It&apos;s useful for example to automatically ignore scammers.
                 </span>
                 <ApiKeyIndicator />
             </div>
@@ -97,16 +96,10 @@ const InviteRules = () => {
                 </thead>
                 <tbody>
                     {rules.map((rule, index) => {
-                        const position =
-                            index === 0 ? 'top' : index === rules.length - 1 ? 'bottom' : 'middle';
+                        const position = index === 0 ? 'top' : index === rules.length - 1 ? 'bottom' : 'middle';
                         return (
                             <InviteRule
-                                key={
-                                    rule.condition.type +
-                                    rule.condition.value +
-                                    rule.action +
-                                    rule.active
-                                }
+                                key={rule.condition.type + rule.condition.value + rule.action + rule.active}
                                 details={rule}
                                 index={index}
                                 saveRuleState={saveRuleState}

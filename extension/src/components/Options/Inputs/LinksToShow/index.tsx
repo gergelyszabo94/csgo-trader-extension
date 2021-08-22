@@ -99,28 +99,15 @@ const LinksToShow = ({ id }: LinksToShowProps) => {
                     <div key={link.id} className='row mb-2'>
                         <div className='col-md-2 justify-content-start'>
                             <label className='switch'>
-                                <input
-                                    type='checkbox'
-                                    id={index}
-                                    checked={link.active}
-                                    onChange={onChangeHandler}
-                                />
+                                <input type='checkbox' id={index} checked={link.active} onChange={onChangeHandler} />
                                 <span className='slider round' />
                             </label>
                         </div>
                         <div className='col-md-3 justify-content-end pb-3'>{link.name}</div>
                         {!defaultPopupLinkIDs.includes(link.id) ? (
                             <div className='col-md-1'>
-                                <CustomA11yButton
-                                    id={link.id}
-                                    action={removeCustomUrl}
-                                    title='Delete'
-                                >
-                                    <FontAwesomeIcon
-                                        id={link.id}
-                                        icon={faTrash}
-                                        className='apiIcon'
-                                    />
+                                <CustomA11yButton id={link.id} action={removeCustomUrl} title='Delete'>
+                                    <FontAwesomeIcon id={link.id} icon={faTrash} className='apiIcon' />
                                 </CustomA11yButton>
                             </div>
                         ) : null}

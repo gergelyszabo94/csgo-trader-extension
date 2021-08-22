@@ -4,76 +4,76 @@ import Invite from 'components/Options/Categories/Friends/Invite';
 import { currencies } from 'utils/static/pricing';
 
 interface Inviter {
-  accountID: string;
-  avatar: string;
-  bans: Bans;
-  commonFriends: CommonFriend[];
-  csgoInventoryValue: number;
-  evalTries: number;
-  evaluation: Evaluation;
-  level: string;
-  name: string;
-  pastRequests: number;
-  steamID: string;
-  steamRepInfo: SteamRepInfo;
-  summary: Summary;
+    accountID: string;
+    avatar: string;
+    bans: Bans;
+    commonFriends: CommonFriend[];
+    csgoInventoryValue: number;
+    evalTries: number;
+    evaluation: Evaluation;
+    level: string;
+    name: string;
+    pastRequests: number;
+    steamID: string;
+    steamRepInfo: SteamRepInfo;
+    summary: Summary;
 }
 
 interface Summary {
-  avatar: string;
-  avatarfull: string;
-  avatarhash: string;
-  avatarmedium: string;
-  communityvisibilitystate: number;
-  personaname: string;
-  personastate: number;
-  personastateflags: number;
-  primaryclanid: string;
-  profilestate: number;
-  profileurl: string;
-  realname: string;
-  steamid: string;
-  timecreated: number;
+    avatar: string;
+    avatarfull: string;
+    avatarhash: string;
+    avatarmedium: string;
+    communityvisibilitystate: number;
+    personaname: string;
+    personastate: number;
+    personastateflags: number;
+    primaryclanid: string;
+    profilestate: number;
+    profileurl: string;
+    realname: string;
+    steamid: string;
+    timecreated: number;
 }
 
 interface SteamRepInfo {
-  flags: Flags;
-  reputation: Reputation;
-  steamID32: string;
-  steamID64: string;
-  steamrepurl: string;
+    flags: Flags;
+    reputation: Reputation;
+    steamID32: string;
+    steamID64: string;
+    steamrepurl: string;
 }
 
 interface Reputation {
-  full: string;
-  summary: string;
+    full: string;
+    summary: string;
 }
 
 interface Flags {
-  status: string;
+    status: string;
 }
 
 interface Evaluation {
-  action: string;
-  appliedRule: number;
+    action: string;
+    appliedRule: number;
 }
 
 interface CommonFriend {
-  accountID: string;
-  avatar: string;
-  name: string;
-  nickname: string;
-  profileLink: string;
+    accountID: string;
+    avatar: string;
+    name: string;
+    nickname: string;
+    profileLink: string;
 }
 
 interface Bans {
-  CommunityBanned: boolean;
-  DaysSinceLastBan: number;
-  EconomyBan: string;
-  NumberOfGameBans: number;
-  NumberOfVACBans: number;
-  SteamId: string;
-  VACBanned: boolean;
+    CommunityBanned: boolean;
+    DaysSinceLastBan: number;
+    EconomyBan: string;
+    NumberOfGameBans: number;
+    NumberOfVACBans: number;
+    SteamId: string;
+    VACBanned: boolean;
 }
 const IncomingInvites = () => {
     const [invites, setInvites] = useState<Inviter[]>([]);
@@ -179,9 +179,7 @@ const IncomingInvites = () => {
                             >
                                 Steam Level
                             </th>
-                            <th title='The country the user has set on their Steam profile'>
-                                Country
-                            </th>
+                            <th title='The country the user has set on their Steam profile'>Country</th>
                             <th
                                 title='Order by how many common friends you and this user has'
                                 className='clickAbleColumnHeader'
@@ -192,15 +190,12 @@ const IncomingInvites = () => {
                             >
                                 Common Friends
                             </th>
-                            <th title="The user's Steam community profile's privacy state">
-                                Profile
-                            </th>
+                            <th title="The user's Steam community profile's privacy state">Profile</th>
                             <th
                                 title="Sort by the user's CS:GO inventory value"
                                 className='clickAbleColumnHeader'
                                 onClick={() => {
-                                    if (sortingMode !== 'invent_value_desc')
-                                        sortInvites('invent_value_desc');
+                                    if (sortingMode !== 'invent_value_desc') sortInvites('invent_value_desc');
                                     else sortInvites('invent_value_asc');
                                 }}
                             >

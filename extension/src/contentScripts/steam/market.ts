@@ -31,9 +31,7 @@ const marketHistoryExport = {
 };
 
 const getWalletAmount = (): number => {
-    return Number(
-        steamFormattedPriceToCents(document.getElementById('header_wallet_balance').innerText),
-    );
+    return Number(steamFormattedPriceToCents(document.getElementById('header_wallet_balance').innerText));
 };
 
 const getMyListingIDFromElement = (listingElement) => {
@@ -76,9 +74,7 @@ const getHistoryType = (historyRow) => {
             historyType = 'sale';
             break;
         default:
-            historyType = historyRow
-                .querySelector('.market_listing_whoactedwith')
-                .innerText.replace(/\s/g, '');
+            historyType = historyRow.querySelector('.market_listing_whoactedwith').innerText.replace(/\s/g, '');
     }
     return historyType;
 };
@@ -132,52 +128,48 @@ const addListingStartingAtPricesAndTotal = (sellListings) => {
     let totalYouReceivePrice = 0;
 
     // add starting at prices and total
-    sellListings
-        .querySelectorAll('.market_listing_row.market_recent_listing_row')
-        .forEach((listingRow) => {
-            // adds selection checkboxes
-            const priceElement = listingRow.querySelector(
-                '.market_listing_right_cell.market_listing_my_price',
-            );
-            if (priceElement !== null) {
-                priceElement.insertAdjacentHTML(
-                    'beforebegin',
-                    DOMPurify.sanitize(`
+    sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((listingRow) => {
+        // adds selection checkboxes
+        const priceElement = listingRow.querySelector('.market_listing_right_cell.market_listing_my_price');
+        if (priceElement !== null) {
+            priceElement.insertAdjacentHTML(
+                'beforebegin',
+                DOMPurify.sanitize(`
             <div class="market_listing_right_cell market_listing_edit_buttons">
                 <input type="checkbox">
             </div>`),
-                );
-            }
+            );
+        }
 
-            const nameElement = listingRow.querySelector('.market_listing_item_name_link');
-            if (nameElement !== null) {
-                const marketLink = nameElement.getAttribute('href');
-                const appID = getAppIDAndItemNameFromLink(marketLink).appID;
-                const marketHashName = getAppIDAndItemNameFromLink(marketLink).marketHashName;
-                const listingID = getMyListingIDFromElement(listingRow);
+        const nameElement = listingRow.querySelector('.market_listing_item_name_link');
+        if (nameElement !== null) {
+            const marketLink = nameElement.getAttribute('href');
+            const appID = getAppIDAndItemNameFromLink(marketLink).appID;
+            const marketHashName = getAppIDAndItemNameFromLink(marketLink).marketHashName;
+            const listingID = getMyListingIDFromElement(listingRow);
 
-                const lisintPriceElement = listingRow.querySelector('.market_listing_price');
-                const listedPrice = lisintPriceElement.querySelectorAll('span')[1].innerText;
-                const youReceivePrice = lisintPriceElement
-                    .querySelectorAll('span')[2]
-                    .innerText.split('(')[1]
-                    .split(')')[0];
+            const lisintPriceElement = listingRow.querySelector('.market_listing_price');
+            const listedPrice = lisintPriceElement.querySelectorAll('span')[1].innerText;
+            const youReceivePrice = lisintPriceElement
+                .querySelectorAll('span')[2]
+                .innerText.split('(')[1]
+                .split(')')[0];
 
-                totalPrice += parseInt(steamFormattedPriceToCents(listedPrice));
-                totalYouReceivePrice += parseInt(steamFormattedPriceToCents(youReceivePrice));
+            totalPrice += parseInt(steamFormattedPriceToCents(listedPrice));
+            totalYouReceivePrice += parseInt(steamFormattedPriceToCents(youReceivePrice));
 
-                priceQueue.jobs.push({
-                    type: 'my_listing',
-                    listingID,
-                    appID,
-                    market_hash_name: marketHashName,
-                    retries: 0,
-                    callBackFunction: addStartingAtPriceInfoToPage,
-                });
+            priceQueue.jobs.push({
+                type: 'my_listing',
+                listingID,
+                appID,
+                market_hash_name: marketHashName,
+                retries: 0,
+                callBackFunction: addStartingAtPriceInfoToPage,
+            });
 
-                if (!priceQueue.active) workOnPriceQueue();
-            }
-        });
+            if (!priceQueue.active) workOnPriceQueue();
+        }
+    });
 
     const listingsTotal = document.getElementById('listingsTotal');
     if (listingsTotal !== null) listingsTotal.remove();
@@ -188,9 +180,7 @@ const addListingStartingAtPricesAndTotal = (sellListings) => {
             `<div id='listingsTotal' style="margin: -15px 0 15px;">
                 Total listed price: ${centsToSteamFormattedPrice(
                     totalPrice,
-                )} You will receive: ${centsToSteamFormattedPrice(
-                totalYouReceivePrice,
-            )} (on this page)
+                )} You will receive: ${centsToSteamFormattedPrice(totalYouReceivePrice)} (on this page)
             </div>`,
         ),
     );
@@ -202,47 +192,35 @@ const extractHistoryEvents = (resultHtml) => {
 
     const eventsToReturn = [];
 
-    tempEl
-        .querySelectorAll('.market_listing_row.market_recent_listing_row')
-        .forEach((historyRow) => {
-            const itemName = historyRow.querySelector<HTMLElement>(
-                '.market_listing_item_name',
-            ).innerText;
-            const gameName = historyRow.querySelector<HTMLElement>(
-                '.market_listing_game_name',
-            ).innerText;
-            const listedOn = historyRow
-                .querySelectorAll<HTMLElement>('.market_listing_listed_date')[1]
-                .innerText.trim();
-            const actedOn = historyRow
-                .querySelectorAll<HTMLElement>('.market_listing_listed_date')[0]
-                .innerText.trim();
-            const displayPrice = historyRow
-                .querySelector<HTMLElement>('.market_listing_price')
-                .innerText.trim();
-            const priceInCents = steamFormattedPriceToCents(displayPrice);
-            const partnerElement = historyRow.querySelector('.market_listing_whoactedwith');
-            const type = getHistoryType(historyRow);
-            let partner = null;
+    tempEl.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((historyRow) => {
+        const itemName = historyRow.querySelector<HTMLElement>('.market_listing_item_name').innerText;
+        const gameName = historyRow.querySelector<HTMLElement>('.market_listing_game_name').innerText;
+        const listedOn = historyRow.querySelectorAll<HTMLElement>('.market_listing_listed_date')[1].innerText.trim();
+        const actedOn = historyRow.querySelectorAll<HTMLElement>('.market_listing_listed_date')[0].innerText.trim();
+        const displayPrice = historyRow.querySelector<HTMLElement>('.market_listing_price').innerText.trim();
+        const priceInCents = steamFormattedPriceToCents(displayPrice);
+        const partnerElement = historyRow.querySelector('.market_listing_whoactedwith');
+        const type = getHistoryType(historyRow);
+        let partner = null;
 
-            // non-transactional (listing creation or cancellation) history events don't have partners
-            if (type === 'sale' || type === 'purchase') {
-                const partnerName = partnerElement.querySelector('img').title;
-                const partnerLink = partnerElement.querySelector('a').getAttribute('href');
-                partner = { partnerName, partnerLink };
-            }
+        // non-transactional (listing creation or cancellation) history events don't have partners
+        if (type === 'sale' || type === 'purchase') {
+            const partnerName = partnerElement.querySelector('img').title;
+            const partnerLink = partnerElement.querySelector('a').getAttribute('href');
+            partner = { partnerName, partnerLink };
+        }
 
-            eventsToReturn.push({
-                itemName,
-                gameName,
-                listedOn,
-                actedOn,
-                displayPrice,
-                priceInCents,
-                partner,
-                type,
-            });
+        eventsToReturn.push({
+            itemName,
+            gameName,
+            listedOn,
+            actedOn,
+            displayPrice,
+            priceInCents,
+            partner,
+            type,
         });
+    });
 
     tempEl.remove();
     return eventsToReturn;
@@ -255,13 +233,7 @@ const createCSV = () => {
 
     for (let i = 0; i < marketHistoryExport.to - marketHistoryExport.from; i += 1) {
         const historyEvent = marketHistoryExport.history[i];
-        if (
-            !(
-                excludeNonTransaction &&
-                historyEvent.type !== 'purchase' &&
-                historyEvent.type !== 'sale'
-            )
-        ) {
+        if (!(excludeNonTransaction && historyEvent.type !== 'purchase' && historyEvent.type !== 'sale')) {
             const lineCSV =
                 historyEvent.partner !== null
                     ? `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}","${historyEvent.partner.partnerName}","${historyEvent.partner.partnerLink}"\n`
@@ -288,16 +260,11 @@ const workOnExport = () => {
                 );
 
                 const requestProgressEl = document.getElementById('requestProgress');
-                requestProgressEl.innerText = (
-                    parseInt(requestProgressEl.innerText) + 1
-                ).toString();
+                requestProgressEl.innerText = (parseInt(requestProgressEl.innerText) + 1).toString();
                 const timeRemainingEl = document.getElementById('timeRemaining');
                 timeRemainingEl.innerText = (parseInt(timeRemainingEl.innerText) - 5).toString();
 
-                if (
-                    marketHistoryExport.progress >=
-                    marketHistoryExport.to - marketHistoryExport.from
-                ) {
+                if (marketHistoryExport.progress >= marketHistoryExport.to - marketHistoryExport.from) {
                     marketHistoryExport.inProgress = false;
                     createCSV();
                     document.getElementById('exportHelperMessage').innerText =
@@ -390,10 +357,7 @@ if (sellListings !== null) {
         );
 
         removeColumnHeader.innerText = 'REMOVE ALL';
-        removeColumnHeader.setAttribute(
-            'title',
-            'Click here to remove all listings from this page!',
-        );
+        removeColumnHeader.setAttribute('title', 'Click here to remove all listings from this page!');
         removeColumnHeader.classList.add('clickable');
 
         // adds remove selected column header/button
@@ -406,29 +370,25 @@ if (sellListings !== null) {
         );
 
         document.getElementById('removeSelected').addEventListener('click', () => {
-            sellListings
-                .querySelectorAll('.market_listing_row.market_recent_listing_row')
-                .forEach((listingRow) => {
-                    if (listingRow.querySelector('input').checked) {
-                        const listingID = getMyListingIDFromElement(listingRow);
-                        removeListing(listingID).then(() => {
-                            listingRow.remove();
-                            switchToNextPageIfEmpty(sellListings);
-                        });
-                    }
-                });
-        });
-
-        removeColumnHeader.addEventListener('click', () => {
-            sellListings
-                .querySelectorAll('.market_listing_row.market_recent_listing_row')
-                .forEach((listingRow) => {
+            sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((listingRow) => {
+                if (listingRow.querySelector('input').checked) {
                     const listingID = getMyListingIDFromElement(listingRow);
                     removeListing(listingID).then(() => {
                         listingRow.remove();
                         switchToNextPageIfEmpty(sellListings);
                     });
+                }
+            });
+        });
+
+        removeColumnHeader.addEventListener('click', () => {
+            sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((listingRow) => {
+                const listingID = getMyListingIDFromElement(listingRow);
+                removeListing(listingID).then(() => {
+                    listingRow.remove();
+                    switchToNextPageIfEmpty(sellListings);
                 });
+            });
         });
 
         addListingStartingAtPricesAndTotal(sellListings);
@@ -437,14 +397,10 @@ if (sellListings !== null) {
 
 // buy order related functionality, highest buy order price, cancel selected, cancel all
 // it's hard to tell apart buy orders and listings awaiting confirmation
-const listingSections = document.querySelectorAll(
-    '.my_listing_section.market_content_block.market_home_listing_table',
-);
+const listingSections = document.querySelectorAll('.my_listing_section.market_content_block.market_home_listing_table');
 const orders = listingSections.length === 2 ? listingSections[1] : listingSections[2];
 if (orders) {
-    const orderRows = orders.querySelectorAll<HTMLElement>(
-        '.market_listing_row.market_recent_listing_row',
-    );
+    const orderRows = orders.querySelectorAll<HTMLElement>('.market_listing_row.market_recent_listing_row');
 
     // if there are actually any orders
     if (orderRows.length !== 0) {
@@ -458,9 +414,7 @@ if (orders) {
                 orderRow.style['padding-bottom'] = '15px';
 
                 // adds selection checkboxes
-                const priceElement = orderRow.querySelector(
-                    '.market_listing_right_cell.market_listing_my_price',
-                );
+                const priceElement = orderRow.querySelector('.market_listing_right_cell.market_listing_my_price');
                 if (priceElement !== null) {
                     priceElement.insertAdjacentHTML(
                         'beforebegin',
@@ -482,71 +436,56 @@ if (orders) {
             </div>`),
                     );
 
-                    orderRow
-                        .querySelectorAll<HTMLInputElement>('.outBidButton')
-                        .forEach((outBidButton) => {
-                            outBidButton.addEventListener('click', () => {
-                                const outBidType = outBidButton.classList.contains(
-                                    'outbidByPercent',
-                                )
-                                    ? 'percentage'
-                                    : 'highest';
-                                const orderID = getMyOrderIDFromElement(orderRow);
-                                const quantity = parseInt(
-                                    orderRow.querySelector<HTMLInputElement>(
-                                        '.market_listing_right_cell.market_listing_my_price.market_listing_buyorder_qty',
-                                    ).innerText,
-                                );
-                                cancelOrder(orderID).then(() => {
-                                    const marketLink = orderRow
-                                        .querySelector('.market_listing_item_name_link')
-                                        .getAttribute('href');
-                                    const appID = marketLink
-                                        .split('market/listings/')[1]
-                                        .split('/')[0];
-                                    const marketName = marketLink
-                                        .split('market/listings/')[1]
-                                        .split('/')[1];
-                                    getHighestBuyOrder(appID, marketName).then((highestOrder) => {
-                                        const highestInt = parseInt(highestOrder);
-                                        const newOrderPrice =
-                                            outBidType === 'highest'
-                                                ? highestInt + 1
-                                                : highestInt >= 100
-                                                ? Math.floor(
-                                                      highestInt * (1 + outBidPercentage / 100),
-                                                  )
-                                                : highestInt + outBidPercentage;
-                                        createOrder(appID, marketName, newOrderPrice, quantity)
-                                            .then(() => {
-                                                const priceEl =
-                                                    orderRow.querySelector<HTMLInputElement>(
-                                                        '.highestOrderPrice',
-                                                    );
-                                                if (priceEl) {
-                                                    priceEl.innerText =
-                                                        centsToSteamFormattedPrice(newOrderPrice);
-                                                    priceEl.classList.add('highest');
-                                                    priceEl.classList.remove('not_highest');
-                                                }
-                                                outBidButton.innerText = 'Order placed';
-                                            })
-                                            .catch((err) => {
-                                                document
-                                                    .querySelector('.ordersTotal')
-                                                    .insertAdjacentHTML(
-                                                        'afterend',
-                                                        DOMPurify.sanitize(
-                                                            `<div class="listingError">
+                    orderRow.querySelectorAll<HTMLInputElement>('.outBidButton').forEach((outBidButton) => {
+                        outBidButton.addEventListener('click', () => {
+                            const outBidType = outBidButton.classList.contains('outbidByPercent')
+                                ? 'percentage'
+                                : 'highest';
+                            const orderID = getMyOrderIDFromElement(orderRow);
+                            const quantity = parseInt(
+                                orderRow.querySelector<HTMLInputElement>(
+                                    '.market_listing_right_cell.market_listing_my_price.market_listing_buyorder_qty',
+                                ).innerText,
+                            );
+                            cancelOrder(orderID).then(() => {
+                                const marketLink = orderRow
+                                    .querySelector('.market_listing_item_name_link')
+                                    .getAttribute('href');
+                                const appID = marketLink.split('market/listings/')[1].split('/')[0];
+                                const marketName = marketLink.split('market/listings/')[1].split('/')[1];
+                                getHighestBuyOrder(appID, marketName).then((highestOrder) => {
+                                    const highestInt = parseInt(highestOrder);
+                                    const newOrderPrice =
+                                        outBidType === 'highest'
+                                            ? highestInt + 1
+                                            : highestInt >= 100
+                                            ? Math.floor(highestInt * (1 + outBidPercentage / 100))
+                                            : highestInt + outBidPercentage;
+                                    createOrder(appID, marketName, newOrderPrice, quantity)
+                                        .then(() => {
+                                            const priceEl =
+                                                orderRow.querySelector<HTMLInputElement>('.highestOrderPrice');
+                                            if (priceEl) {
+                                                priceEl.innerText = centsToSteamFormattedPrice(newOrderPrice);
+                                                priceEl.classList.add('highest');
+                                                priceEl.classList.remove('not_highest');
+                                            }
+                                            outBidButton.innerText = 'Order placed';
+                                        })
+                                        .catch((err) => {
+                                            document.querySelector('.ordersTotal').insertAdjacentHTML(
+                                                'afterend',
+                                                DOMPurify.sanitize(
+                                                    `<div class="listingError">
                                 ${err}
                             </div>`,
-                                                        ),
-                                                    );
-                                            });
-                                    });
+                                                ),
+                                            );
+                                        });
                                 });
                             });
                         });
+                    });
                 }
 
                 const nameElement = orderRow.querySelector('.market_listing_item_name_link');
@@ -556,14 +495,11 @@ if (orders) {
                     const marketHashName = getAppIDAndItemNameFromLink(marketLink).marketHashName;
                     const orderID = getMyOrderIDFromElement(orderRow);
 
-                    const orderPrice =
-                        orderRow.querySelector<HTMLInputElement>('.market_listing_price').innerText;
-                    const orderQuantity = orderRow.querySelector<HTMLInputElement>(
-                        '.market_listing_buyorder_qty',
-                    ).innerText;
+                    const orderPrice = orderRow.querySelector<HTMLInputElement>('.market_listing_price').innerText;
+                    const orderQuantity =
+                        orderRow.querySelector<HTMLInputElement>('.market_listing_buyorder_qty').innerText;
 
-                    totalOrderAmount +=
-                        parseInt(steamFormattedPriceToCents(orderPrice)) * parseInt(orderQuantity);
+                    totalOrderAmount += parseInt(steamFormattedPriceToCents(orderPrice)) * parseInt(orderQuantity);
 
                     priceQueue.jobs.push({
                         type: 'my_buy_order',
@@ -669,9 +605,7 @@ if (marketHistoryTab !== null) {
                         const itemName = historyRow.getAttribute('data-name');
                         if (itemName !== null) {
                             const appID = historyRow.getAttribute('data-appid');
-                            const nameElement = historyRow.querySelector<HTMLInputElement>(
-                                '.market_listing_item_name',
-                            );
+                            const nameElement = historyRow.querySelector<HTMLInputElement>('.market_listing_item_name');
                             const name = nameElement.innerText;
 
                             nameElement.innerHTML = DOMPurify.sanitize(
@@ -795,26 +729,17 @@ if (marketHistoryButton !== null) {
             marketHistoryExport.progress = 0;
             document.getElementById('requestProgress').innerText = '0';
 
-            document.getElementById('exportHelperMessage').innerText =
-                'Exporting market history...';
-            marketHistoryExport.from = parseInt(
-                (document.getElementById('exportFrom') as HTMLInputElement).value,
-            );
-            marketHistoryExport.to = parseInt(
-                (document.getElementById('exportTo') as HTMLInputElement).value,
-            );
+            document.getElementById('exportHelperMessage').innerText = 'Exporting market history...';
+            marketHistoryExport.from = parseInt((document.getElementById('exportFrom') as HTMLInputElement).value);
+            marketHistoryExport.to = parseInt((document.getElementById('exportTo') as HTMLInputElement).value);
 
-            const numOfRequests = Math.ceil(
-                (marketHistoryExport.to - marketHistoryExport.from) / 50,
-            );
+            const numOfRequests = Math.ceil((marketHistoryExport.to - marketHistoryExport.from) / 50);
             document.getElementById('numberOfRequests').innerText = numOfRequests.toString();
             document.getElementById('timeRemaining').innerText = (numOfRequests * 5).toString();
             document.getElementById('exportProgress').classList.remove('hidden');
 
             workOnExport();
-        } else
-            document.getElementById('exportHelperMessage').innerText =
-                'Exporting is already in progress!';
+        } else document.getElementById('exportHelperMessage').innerText = 'Exporting is already in progress!';
     });
 
     marketHistoryExportTabButton.addEventListener('click', () => {
@@ -835,11 +760,9 @@ if (marketHistoryButton !== null) {
             const exportToElement = document.getElementById('exportTo');
             exportToElement.setAttribute('max', totalCount);
             exportToElement.value = totalCount;
-            document
-                .querySelectorAll<HTMLElement>('.numberOfHistoryEvents')
-                .forEach((numberOfEvents) => {
-                    numberOfEvents.innerText = totalCount;
-                });
+            document.querySelectorAll<HTMLElement>('.numberOfHistoryEvents').forEach((numberOfEvents) => {
+                numberOfEvents.innerText = totalCount;
+            });
         });
     });
 }

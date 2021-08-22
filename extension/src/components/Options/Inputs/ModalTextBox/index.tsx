@@ -25,13 +25,10 @@ const ModalTextBox = ({ id, modalTitle }: ModalTextBoxProps) => {
             if (state.content !== '') {
                 chrome.runtime.sendMessage({ apikeytovalidate: state.content }, (response) => {
                     if (response.valid) {
-                        chrome.storage.local.set(
-                            { steamAPIKey: state.content, apiKeyValid: true },
-                            () => {
-                                setState({ ...state, inputValid: true, validationError: '' });
-                                closeModal();
-                            },
-                        );
+                        chrome.storage.local.set({ steamAPIKey: state.content, apiKeyValid: true }, () => {
+                            setState({ ...state, inputValid: true, validationError: '' });
+                            closeModal();
+                        });
                     } else {
                         setState({
                             ...state,
@@ -63,11 +60,7 @@ const ModalTextBox = ({ id, modalTitle }: ModalTextBoxProps) => {
     return (
         <>
             <p>{`${state.content.substring(0, 8)}...`}</p>
-            <Modal
-                modalTitle={modalTitle}
-                opener={<FontAwesomeIcon icon={faEdit} />}
-                validator={inputValidator}
-            >
+            <Modal modalTitle={modalTitle} opener={<FontAwesomeIcon icon={faEdit} />} validator={inputValidator}>
                 <textarea
                     className='modalTextArea'
                     placeholder='Type your text here'

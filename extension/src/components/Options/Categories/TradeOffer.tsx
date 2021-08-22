@@ -88,8 +88,8 @@ const tradeOffer = () => {
                 type='flipSwitchStorage'
                 description={
                     <>
-                        Show the number of offers received from a user and how many was sent to them
-                        (on the tradeoffers and the individual offer pages)
+                        Show the number of offers received from a user and how many was sent to them (on the tradeoffers
+                        and the individual offer pages)
                         <ApiKeyIndicator />
                     </>
                 }
@@ -100,9 +100,8 @@ const tradeOffer = () => {
                 type='flipSwitchStorage'
                 description={
                     <>
-                        Shows an indicator on the items if they are in present in other trade
-                        offers. Clicking the indicator adds links to the other offers it is present
-                        in.
+                        Shows an indicator on the items if they are in present in other trade offers. Clicking the
+                        indicator adds links to the other offers it is present in.
                         <ApiKeyIndicator />
                     </>
                 }

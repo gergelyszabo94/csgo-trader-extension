@@ -7,8 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getTradeHistory } from 'utils/IEconService';
 
 const CSVExport = () => {
-    let csvContent =
-        'Partner SteamID,Partner Name,Time,P/L,Given Total,Received Total,Items Given,Items Taken\n';
+    let csvContent = 'Partner SteamID,Partner Name,Time,P/L,Given Total,Received Total,Items Given,Items Taken\n';
     let requestCount = 0;
 
     const [downloadURI, setDownloadURI] = useState('');
@@ -17,19 +16,13 @@ const CSVExport = () => {
     const [exclude, setExclude] = useState(false);
     const [exportStartTime, setExportStartTime] = useState(Date.now());
     const [exportEndTime, setExportEndTime] = useState(Date.now());
-    const [exportStartTimeUnix, setExportStartTimeUnix] = useState(
-        parseInt(new Date().getTime() / 1000),
-    );
-    const [exportEndTimeUnix, setExportEndTimeUnix] = useState(
-        parseInt(new Date().getTime() / 1000),
-    );
+    const [exportStartTimeUnix, setExportStartTimeUnix] = useState(parseInt(new Date().getTime() / 1000));
+    const [exportEndTimeUnix, setExportEndTimeUnix] = useState(parseInt(new Date().getTime() / 1000));
 
     const finishExport = () => {
         const encodedURI = `data:text/csv;charset=utf-8,${encodeURIComponent(csvContent)}`;
         setDownloadURI(encodedURI);
-        setStatusMessage(
-            'Export finished, click the file icon to download the resulting .CSV file',
-        );
+        setStatusMessage('Export finished, click the file icon to download the resulting .CSV file');
         setShowDownload(true);
     };
 
@@ -59,11 +52,11 @@ const CSVExport = () => {
                         trade.assets_received_desc.forEach((item) => {
                             receivedItems += `${item.market_hash_name}(${item.price.price}),`;
                         });
-                        lines += `${trade.steamid_other},${
-                            trade.partnerSummary.personaname
-                        },${new Date(trade.time_init * 1000)},${trade.profitLoss},${
-                            trade.givenTotal
-                        },${trade.receivedTotal},"${givenItems}","${receivedItems}"\n`;
+                        lines += `${trade.steamid_other},${trade.partnerSummary.personaname},${new Date(
+                            trade.time_init * 1000,
+                        )},${trade.profitLoss},${trade.givenTotal},${
+                            trade.receivedTotal
+                        },"${givenItems}","${receivedItems}"\n`;
                     }
                     lastProcessedTradeTime = trade.time_init;
                     lastProcessedTradeID = trade.tradeid;
@@ -72,8 +65,7 @@ const CSVExport = () => {
                 csvContent += lines;
                 if (
                     tradesResponse.more &&
-                    (tradesResponse.trades.length === 0 ||
-                        exportEndTimeUnix <= lastProcessedTradeTime)
+                    (tradesResponse.trades.length === 0 || exportEndTimeUnix <= lastProcessedTradeTime)
                 ) {
                     loadNextChunk(lastProcessedTradeTime, lastProcessedTradeID);
                 } else finishExport();
@@ -159,11 +151,7 @@ const CSVExport = () => {
             </div>
 
             {showDownload ? (
-                <a
-                    href={downloadURI}
-                    download='trade_history_export.csv'
-                    title='Download trade_history_export.csv'
-                >
+                <a href={downloadURI} download='trade_history_export.csv' title='Download trade_history_export.csv'>
                     <FontAwesomeIcon icon={faFileExport} />
                 </a>
             ) : null}

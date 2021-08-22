@@ -52,10 +52,7 @@ const sendTelemetry = (retries?: number) => {
             result.analyticsEvents.forEach((event: AnalyticsEvent) => {
                 const date = new Date(event.timestamp).toISOString().split('T')[0];
 
-                if (
-                    eventsSummary.events[date] === undefined &&
-                    eventsSummary.pageviews[date] === undefined
-                ) {
+                if (eventsSummary.events[date] === undefined && eventsSummary.pageviews[date] === undefined) {
                     eventsSummary.events[date] = {};
                     eventsSummary.pageviews[date] = {};
                 }
@@ -70,21 +67,14 @@ const sendTelemetry = (retries?: number) => {
             });
 
             const preferences = {};
-            const customOrDefault = [
-                'customCommentsToReport',
-                'popupLinks',
-                'reoccuringMessage',
-                'reputationMessage',
-            ];
-            
+            const customOrDefault = ['customCommentsToReport', 'popupLinks', 'reoccuringMessage', 'reputationMessage'];
+
             settingsStorageKeys.forEach((setting) => {
                 const toIgnore = ['analyticsEvents', 'clientID', 'exchangeRate'];
 
                 if (customOrDefault.includes(setting))
                     preferences[setting] =
-                        JSON.stringify(result[setting]) === JSON.stringify(storageKeys[setting])
-                            ? 'default'
-                            : 'custom';
+                        JSON.stringify(result[setting]) === JSON.stringify(storageKeys[setting]) ? 'default' : 'custom';
                 else if (!toIgnore.includes(setting)) preferences[setting] = result[setting];
             });
 
@@ -107,10 +97,7 @@ const sendTelemetry = (retries?: number) => {
 
                 fetch(getRequest)
                     .then((response) => {
-                        if (!response.ok)
-                            console.log(
-                                `Error code: ${response.status} Status: ${response.statusText}`,
-                            );
+                        if (!response.ok) console.log(`Error code: ${response.status} Status: ${response.statusText}`);
                         else return response.json();
                     })
                     .then((body) => {
@@ -123,15 +110,10 @@ const sendTelemetry = (retries?: number) => {
                             } else {
                                 const newAnalyticsEvents = result.analyticsEvents.filter(
                                     (event: { timestamp: number }) => {
-                                        return (
-                                            event.timestamp > Date.now() - 1000 * 60 * 60 * 24 * 7
-                                        );
+                                        return event.timestamp > Date.now() - 1000 * 60 * 60 * 24 * 7;
                                     },
                                 );
-                                chrome.storage.local.set(
-                                    { analyticsEvents: newAnalyticsEvents },
-                                    () => {},
-                                );
+                                chrome.storage.local.set({ analyticsEvents: newAnalyticsEvents }, () => {});
                             }
                         } else if (body.body.success === 'true') {
                             chrome.storage.local.set({ analyticsEvents: [] }, () => {});

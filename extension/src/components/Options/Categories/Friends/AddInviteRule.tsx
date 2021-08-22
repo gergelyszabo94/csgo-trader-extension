@@ -69,12 +69,8 @@ const AddInviteRule = ({ add }: AddInviteRuleProps) => {
         setRule({
             ...rule,
             condition: conditionType,
-            value: conditions[conditionType].with_value
-                ? conditions[conditionType].default_value
-                : null,
-            valueType: conditions[conditionType].with_value
-                ? conditions[conditionType].value_type
-                : null,
+            value: conditions[conditionType].with_value ? conditions[conditionType].default_value : null,
+            valueType: conditions[conditionType].with_value ? conditions[conditionType].value_type : null,
         });
     };
 
@@ -87,10 +83,7 @@ const AddInviteRule = ({ add }: AddInviteRuleProps) => {
     };
 
     const addRule = () => {
-        const condition =
-            rule.value === null
-                ? { type: rule.condition }
-                : { type: rule.condition, value: rule.value };
+        const condition = rule.value === null ? { type: rule.condition } : { type: rule.condition, value: rule.value };
 
         add({
             active: true,
@@ -104,19 +97,11 @@ const AddInviteRule = ({ add }: AddInviteRuleProps) => {
             <CustomA11yButton action={addRule} title='Add new rule' className='mx-3'>
                 <FontAwesomeIcon icon={faPlus} />
             </CustomA11yButton>
-            <select
-                className='select-theme'
-                onChange={onConditionChange}
-                defaultValue={rule.condition}
-            >
+            <select className='select-theme' onChange={onConditionChange} defaultValue={rule.condition}>
                 <Options />
             </select>
             {rule.value !== null ? (
-                <AddCondition
-                    type={rule.valueType}
-                    value={rule.value}
-                    onValueChange={onValueChange}
-                />
+                <AddCondition type={rule.valueType} value={rule.value} onValueChange={onValueChange} />
             ) : null}
             <select className='select-theme' onChange={onActionChange} defaultValue={rule.action}>
                 <Actions />

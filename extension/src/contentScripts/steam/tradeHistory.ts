@@ -29,15 +29,10 @@ chrome.runtime.sendMessage({ hasTabsAccess: 'hasTabsAccess' }, (response) => {
         if (tradeHistoryRibbon !== null) {
             tradeHistoryRibbon.insertAdjacentHTML(
                 'beforeend',
-                DOMPurify.sanitize(
-                    '<div><a id="viewTradeHistory">Trade History (CSGO Trader)</a></div>',
-                ),
+                DOMPurify.sanitize('<div><a id="viewTradeHistory">Trade History (CSGO Trader)</a></div>'),
             );
             document.getElementById('viewTradeHistory').addEventListener('click', () => {
-                chrome.runtime.sendMessage(
-                    { openInternalPage: 'index.html?page=trade-history' },
-                    () => {},
-                );
+                chrome.runtime.sendMessage({ openInternalPage: 'index.html?page=trade-history' }, () => {});
             });
         }
     }

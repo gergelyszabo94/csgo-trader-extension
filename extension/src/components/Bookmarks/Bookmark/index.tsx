@@ -88,12 +88,9 @@ const Bookmark = ({ bookmarkData, editBookmark, removeBookmark }: BookmarkProps)
                 },
             );
         } else {
-            chrome.alarms.clear(
-                `${itemInfo.appid}_${itemInfo.contextid}_${itemInfo.assetid}_${added}`,
-                () => {
-                    closeModal();
-                },
-            );
+            chrome.alarms.clear(`${itemInfo.appid}_${itemInfo.contextid}_${itemInfo.assetid}_${added}`, () => {
+                closeModal();
+            });
         }
     };
 
@@ -102,9 +99,7 @@ const Bookmark = ({ bookmarkData, editBookmark, removeBookmark }: BookmarkProps)
     };
 
     const qualityClass =
-        itemInfo.quality !== undefined && itemInfo.quality !== null
-            ? `bookmark__${itemInfo.quality.name}`
-            : '';
+        itemInfo.quality !== undefined && itemInfo.quality !== null ? `bookmark__${itemInfo.quality.name}` : '';
 
     return (
         <div className={`bookmark ${qualityClass}`}>
@@ -136,10 +131,7 @@ const Bookmark = ({ bookmarkData, editBookmark, removeBookmark }: BookmarkProps)
                 <Action
                     title='Edit notifications options'
                     className={
-                        itemInfo.tradability === 'Tradable' ||
-                        itemInfo.tradability === 'Not Tradable'
-                            ? 'hidden'
-                            : null
+                        itemInfo.tradability === 'Tradable' || itemInfo.tradability === 'Not Tradable' ? 'hidden' : null
                     }
                 >
                     <Modal
@@ -151,18 +143,13 @@ const Bookmark = ({ bookmarkData, editBookmark, removeBookmark }: BookmarkProps)
                             <Tradability tradability={itemInfo.tradability} />
                         </div>
                         <div>
-                            Notify:{' '}
-                            <FlipSwitch id='notify' checked={notify} onChange={onNotifyChange} />
+                            Notify: <FlipSwitch id='notify' checked={notify} onChange={onNotifyChange} />
                         </div>
                         <div className={notify ? null : 'hidden'}>
                             <div className='mt-3'>
                                 How do you want to be notified?
                                 <div>
-                                    <select
-                                        ref={notifTypeSelect}
-                                        defaultValue={notifType}
-                                        className='select'
-                                    >
+                                    <select ref={notifTypeSelect} defaultValue={notifType} className='select'>
                                         <option value='chrome'>Browser desktop notification</option>
                                         <option value='alert'>Browser alert (to focus)</option>
                                     </select>
@@ -214,22 +201,13 @@ const Bookmark = ({ bookmarkData, editBookmark, removeBookmark }: BookmarkProps)
                     </NewTabLink>
                 </Action>
                 <Action title={"View the item in the owner's inventory"}>
-                    <NewTabLink
-                        to={getItemInventoryLink(
-                            owner,
-                            itemInfo.appid,
-                            itemInfo.contextid,
-                            itemInfo.assetid,
-                        )}
-                    >
+                    <NewTabLink to={getItemInventoryLink(owner, itemInfo.appid, itemInfo.contextid, itemInfo.assetid)}>
                         <FontAwesomeIcon icon={faLink} />
                     </NewTabLink>
                 </Action>
                 <Action title='Send a trade offer to the owner (if on friend list)'>
                     <NewTabLink
-                        to={`https://steamcommunity.com/tradeoffer/new/?partner=${getOfferStyleSteamID(
-                            owner,
-                        )}`}
+                        to={`https://steamcommunity.com/tradeoffer/new/?partner=${getOfferStyleSteamID(owner)}`}
                     >
                         <FontAwesomeIcon icon={faExchangeAlt} />
                     </NewTabLink>

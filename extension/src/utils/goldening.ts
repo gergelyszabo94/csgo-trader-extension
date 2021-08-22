@@ -21,8 +21,7 @@ const goldenCommenters = () => {
     document.querySelectorAll<HTMLElement>('.commentthread_author_link').forEach((commenter) => {
         if (commenter.innerText.toLowerCase().includes('csgotrader.app')) {
             commenter.classList.add('golden');
-            const avatar =
-                commenter.parentElement.parentElement.parentElement.querySelector('.playerAvatar');
+            const avatar = commenter.parentElement.parentElement.parentElement.querySelector('.playerAvatar');
             avatar.classList.add('golden');
             commenter.addEventListener('mouseover', goldenMiniProfileHandler);
             avatar.addEventListener('mouseover', goldenMiniProfileHandler);
@@ -32,16 +31,9 @@ const goldenCommenters = () => {
 
 const goldenMemberNames = () => {
     document.querySelectorAll<HTMLElement>('.member_block').forEach((memberBlock) => {
-        if (
-            memberBlock
-                .querySelector<HTMLElement>('.linkFriend')
-                .innerText.toLowerCase()
-                .includes('csgotrader.app')
-        ) {
+        if (memberBlock.querySelector<HTMLElement>('.linkFriend').innerText.toLowerCase().includes('csgotrader.app')) {
             memberBlock.querySelector('.playerAvatar').classList.add('golden');
-            memberBlock
-                .querySelector('.member_block_content')
-                .classList.remove('online', 'offline', 'in-game');
+            memberBlock.querySelector('.member_block_content').classList.remove('online', 'offline', 'in-game');
             memberBlock.querySelector('.member_block_content').classList.add('golden');
         }
     });

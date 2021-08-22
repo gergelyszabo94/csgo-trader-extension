@@ -37,9 +37,8 @@ const pricing = () => {
             subTitle={
                 <>
                     <span className='countdown'>DISCLAIMER: </span>
-                    No pricing provider is 100% accurate all the time. Take these prices as
-                    advisory, always with a pinch of salt. You should not rely on them solely when
-                    doing your trades.
+                    No pricing provider is 100% accurate all the time. Take these prices as advisory, always with a
+                    pinch of salt. You should not rely on them solely when doing your trades.
                 </>
             }
         >
@@ -68,8 +67,8 @@ const pricing = () => {
                 id='pricingProvider'
                 description={
                     <>
-                        The pricing provider and pricing mode you want to get your prices from.
-                        Learn more about pricing and price on the
+                        The pricing provider and pricing mode you want to get your prices from. Learn more about pricing
+                        and price on the
                         <NewTabLink to='https://csgotrader.app/prices/'> prices page</NewTabLink>
                     </>
                 }

@@ -10,12 +10,7 @@ interface AddConditionProps {
 const AddCondition = ({ type, value, onValueChange }: AddConditionProps) => {
     if (type === 'number') {
         return (
-            <input
-                type='number'
-                className='numberInput numberInput__narrow'
-                value={value}
-                onChange={onValueChange}
-            />
+            <input type='number' className='numberInput numberInput__narrow' value={value} onChange={onValueChange} />
         );
     }
     if (type === 'string') {

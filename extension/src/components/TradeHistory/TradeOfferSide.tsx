@@ -18,19 +18,9 @@ const TradeOfferSide = (props) => {
             <div className='assets__items'>
                 {assets.map((asset) => {
                     return (
-                        <div
-                            className='row assets__item '
-                            key={asset.assetid + asset.appid + asset.contextid}
-                        >
+                        <div className='row assets__item ' key={asset.assetid + asset.appid + asset.contextid}>
                             <div className='col-3'>
-                                <NewTabLink
-                                    to={linkToItem(
-                                        profileid,
-                                        asset.appid,
-                                        asset.contextid,
-                                        asset.new_assetid,
-                                    )}
-                                >
+                                <NewTabLink to={linkToItem(profileid, asset.appid, asset.contextid, asset.new_assetid)}>
                                     <img
                                         className='assets__image'
                                         key={asset.assetid}
@@ -41,9 +31,7 @@ const TradeOfferSide = (props) => {
                             </div>
                             <div className='col-9'>
                                 <h3 className='assets__name'>
-                                    <NewTabLink
-                                        to={getItemMarketLink(asset.appid, asset.market_hash_name)}
-                                    >
+                                    <NewTabLink to={getItemMarketLink(asset.appid, asset.market_hash_name)}>
                                         {asset.market_hash_name}
                                     </NewTabLink>
                                 </h3>

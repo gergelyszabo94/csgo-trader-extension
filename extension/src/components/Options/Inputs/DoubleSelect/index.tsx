@@ -7,7 +7,7 @@ interface DoubleSelectProps {
     options: Option[];
 }
 
-const DoubleSelect = ({ id, options }: DoubleSelectProps ) => {
+const DoubleSelect = ({ id, options }: DoubleSelectProps) => {
     const setStorage = (thisValue: string | number, key: string) => {
         //@ts-ignore idk why this takes a stirng[] over a string :shrug:
         if (key === undefined) chrome.storage.local.set({ [id]: thisValue }, () => {});
@@ -24,18 +24,8 @@ const DoubleSelect = ({ id, options }: DoubleSelectProps ) => {
 
     return (
         <>
-            <Select
-                id={id[0]}
-                foreignChangeHandler={setStorage}
-                foreignUseEffect={getStorage}
-                options={options}
-            />
-            <Select
-                id={id[1]}
-                foreignChangeHandler={setStorage}
-                foreignUseEffect={getStorage}
-                options={options}
-            />
+            <Select id={id[0]} foreignChangeHandler={setStorage} foreignUseEffect={getStorage} options={options} />
+            <Select id={id[1]} foreignChangeHandler={setStorage} foreignUseEffect={getStorage} options={options} />
         </>
     );
 };

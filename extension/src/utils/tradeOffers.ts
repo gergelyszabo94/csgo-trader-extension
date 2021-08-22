@@ -62,9 +62,7 @@ const acceptOffer = (offerID, partnerID): Promise<AcceptedOffer> => {
             fetch(request)
                 .then((response) => {
                     if (!response.ok) {
-                        console.log(
-                            `Error code: ${response.status} Status: ${response.statusText}`,
-                        );
+                        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
                         reject({ status: response.status, statusText: response.statusText });
                     } else return response.json();
                 })
@@ -140,21 +138,16 @@ const declineOffer = (offerID) => {
             const myHeaders = new Headers();
             myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 
-            const request = new Request(
-                `https://steamcommunity.com/tradeoffer/${offerID}/decline`,
-                {
-                    method: 'POST',
-                    headers: myHeaders,
-                    body: `sessionid=${steamSessionID}`,
-                },
-            );
+            const request = new Request(`https://steamcommunity.com/tradeoffer/${offerID}/decline`, {
+                method: 'POST',
+                headers: myHeaders,
+                body: `sessionid=${steamSessionID}`,
+            });
 
             fetch(request)
                 .then((response) => {
                     if (!response.ok) {
-                        console.log(
-                            `Error code: ${response.status} Status: ${response.statusText}`,
-                        );
+                        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
                         reject({ status: response.status, statusText: response.statusText });
                     } else return response.json();
                 })
@@ -192,9 +185,7 @@ const sendOffer = (partnerID, tradeOfferJSON, token, message) => {
             fetch(request)
                 .then((response) => {
                     if (!response.ok) {
-                        console.log(
-                            `Error code: ${response.status} Status: ${response.statusText}`,
-                        );
+                        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
                         reject({ status: response.status, statusText: response.statusText });
                     } else return response.json();
                 })
@@ -294,12 +285,10 @@ const notifyAboutOfferOnDiscord = (offer, items) => {
         getPlayerSummaries([steamIDOfPartner]).then((summary) => {
             const userDetails = summary[steamIDOfPartner];
 
-            const title = `Trade Offer (${prettyPrintPrice(
-                currency,
-                offer.profitOrLoss.toFixed(2),
-            )} ${offer.PLPercentageFormatted})`;
-            const description =
-                offer.message !== '' ? `*${DOMPurify.sanitize(offer.message)}*` : '';
+            const title = `Trade Offer (${prettyPrintPrice(currency, offer.profitOrLoss.toFixed(2))} ${
+                offer.PLPercentageFormatted
+            })`;
+            const description = offer.message !== '' ? `*${DOMPurify.sanitize(offer.message)}*` : '';
 
             const giving = createDiscordSideSummary(offer.items_to_give, items);
             const receiving = createDiscordSideSummary(offer.items_to_receive, items);
@@ -313,10 +302,7 @@ const notifyAboutOfferOnDiscord = (offer, items) => {
                 });
             if (receiving)
                 fields.push({
-                    name: `Receiving (${prettyPrintPrice(
-                        currency,
-                        offer.theirItemsTotal.toFixed(2),
-                    )})`,
+                    name: `Receiving (${prettyPrintPrice(currency, offer.theirItemsTotal.toFixed(2))})`,
                     inline: false,
                     value: receiving,
                 });
@@ -478,10 +464,7 @@ const matchItemsAndAddDetails = (offers, userID) => {
         if (allItemsInOffer) {
             allItemsInOffer.forEach((item) => {
                 const itemDescription = offers.descriptions.find((description) => {
-                    return (
-                        description.classid === item.classid &&
-                        description.instanceid === item.instanceid
-                    );
+                    return description.classid === item.classid && description.instanceid === item.instanceid;
                 });
                 itemsWithMoreInfo.push({ ...item, ...itemDescription });
             });
@@ -530,10 +513,7 @@ const executeVerdict = (offer, ruleNumber, verdict, items) => {
             declineOffer(offer.tradeofferid);
             break;
         case actions.accept.key:
-            acceptTradeInBackground(
-                offer.tradeofferid,
-                getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
-            );
+            acceptTradeInBackground(offer.tradeofferid, getProperStyleSteamIDFromOfferStyle(offer.accountid_other));
             break;
         default:
             break;
@@ -548,16 +528,10 @@ const evaluateCondition = (offer, condition) => {
             (offer.items_to_give === undefined || offer.items_to_give.length === 0)
         )
     ) {
-        if (
-            condition.type === conditions.profit_over.key &&
-            offer.profitOrLoss >= condition.value
-        ) {
+        if (condition.type === conditions.profit_over.key && offer.profitOrLoss >= condition.value) {
             return true;
         }
-        if (
-            condition.type === conditions.profit_under.key &&
-            offer.profitOrLoss < condition.value
-        ) {
+        if (condition.type === conditions.profit_under.key && offer.profitOrLoss < condition.value) {
             return true;
         }
         if (
@@ -578,10 +552,7 @@ const evaluateCondition = (offer, condition) => {
         if (condition.type === conditions.no_message.key && offer.message === '') {
             return true;
         }
-        if (
-            condition.type === conditions.message_includes.key &&
-            offer.message.includes(condition.value)
-        ) {
+        if (condition.type === conditions.message_includes.key && offer.message.includes(condition.value)) {
             return true;
         }
         if (
@@ -593,16 +564,14 @@ const evaluateCondition = (offer, condition) => {
         }
         if (
             condition.type === conditions.receiving_items_over.key &&
-            ((offer.items_to_receive !== undefined &&
-                offer.items_to_receive.length >= condition.value) ||
+            ((offer.items_to_receive !== undefined && offer.items_to_receive.length >= condition.value) ||
                 (condition.value <= 0 && offer.items_to_receive === undefined))
         ) {
             return true;
         }
         if (
             condition.type === conditions.receiving_items_under.key &&
-            ((offer.items_to_receive !== undefined &&
-                offer.items_to_receive.length < condition.value) ||
+            ((offer.items_to_receive !== undefined && offer.items_to_receive.length < condition.value) ||
                 (condition.value <= 1 && offer.items_to_receive === undefined))
         ) {
             return true;
@@ -621,25 +590,16 @@ const evaluateCondition = (offer, condition) => {
         ) {
             return true;
         }
-        if (
-            condition.type === conditions.receiving_non_csgo_items.key &&
-            offer.theirIncludesNonCSGO
-        ) {
+        if (condition.type === conditions.receiving_non_csgo_items.key && offer.theirIncludesNonCSGO) {
             return true;
         }
         if (condition.type === conditions.giving_non_csgo_items.key && offer.yourIncludesNonCSGO) {
             return true;
         }
-        if (
-            condition.type === conditions.receiving_no_price_items.key &&
-            offer.theirIncludesItemWIthNoPrice
-        ) {
+        if (condition.type === conditions.receiving_no_price_items.key && offer.theirIncludesItemWIthNoPrice) {
             return true;
         }
-        if (
-            condition.type === conditions.giving_no_price_items.key &&
-            offer.yourIncludesItemWIthNoPrice
-        ) {
+        if (condition.type === conditions.giving_no_price_items.key && offer.yourIncludesItemWIthNoPrice) {
             return true;
         }
         return false;
@@ -683,18 +643,13 @@ const addOfferTotals = (offers, items) => {
             if (offer.items_to_receive) {
                 offer.items_to_receive.forEach((item) => {
                     const itemWithDescription = items.find((description) => {
-                        return (
-                            description.classid === item.classid &&
-                            description.instanceid === item.instanceid
-                        );
+                        return description.classid === item.classid && description.instanceid === item.instanceid;
                     });
 
                     if (itemWithDescription) {
                         if (itemWithDescription.appid === steamApps.CSGO.appID) {
                             if (itemWithDescription.price && itemWithDescription.price.price) {
-                                offer.theirItemsTotal += parseFloat(
-                                    itemWithDescription.price.price,
-                                );
+                                offer.theirItemsTotal += parseFloat(itemWithDescription.price.price);
                             } else offer.theirIncludesItemWIthNoPrice = true;
                         } else {
                             offer.theirIncludesItemWIthNoPrice = true;
@@ -711,10 +666,7 @@ const addOfferTotals = (offers, items) => {
             if (offer.items_to_give) {
                 offer.items_to_give.forEach((item) => {
                     const itemWithDescription = items.find((description) => {
-                        return (
-                            description.classid === item.classid &&
-                            description.instanceid === item.instanceid
-                        );
+                        return description.classid === item.classid && description.instanceid === item.instanceid;
                     });
 
                     if (itemWithDescription) {
@@ -732,10 +684,7 @@ const addOfferTotals = (offers, items) => {
 
             offer.profitOrLoss = offer.theirItemsTotal - offer.yourItemsTotal;
             offer.PLPercentage = offer.theirItemsTotal / offer.yourItemsTotal;
-            offer.PLPercentageFormatted = getFormattedPLPercentage(
-                offer.yourItemsTotal,
-                offer.theirItemsTotal,
-            );
+            offer.PLPercentageFormatted = getFormattedPLPercentage(offer.yourItemsTotal, offer.theirItemsTotal);
         });
 
         return offers;
@@ -771,9 +720,7 @@ const updateTrades = () => {
                                     offer.trade_offer_state === offerStates['2'].key
                                 ) {
                                     newOffers.push(offer);
-                                    newOfferEvents.push(
-                                        createTradeOfferEvent(offer, eventTypes.new.key, 0),
-                                    );
+                                    newOfferEvents.push(createTradeOfferEvent(offer, eventTypes.new.key, 0));
                                 }
                             });
                         }
@@ -781,14 +728,8 @@ const updateTrades = () => {
                         logTradeOfferEvents(newOfferEvents);
 
                         matchItemsAndAddDetails(offersData, steamIDOfUser).then((items) => {
-                            offersData.trade_offers_received = addOfferTotals(
-                                offersData.trade_offers_received,
-                                items,
-                            );
-                            offersData.trade_offers_sent = addOfferTotals(
-                                offersData.trade_offers_sent,
-                                items,
-                            );
+                            offersData.trade_offers_received = addOfferTotals(offersData.trade_offers_received, items);
+                            offersData.trade_offers_sent = addOfferTotals(offersData.trade_offers_sent, items);
 
                             updateActiveOffers(offersData, items);
                             evaluateOffers(newOffers, offerEvalRules, items);

@@ -54,11 +54,9 @@ const OfferAutomation = () => {
                 type='flipSwitchStorage'
                 description={
                     <>
-                        Send trade offers based on query parameters. When turned on and you open a
-                        link with
-                        &csgotrader_send=side(your/their)_type(name/id)appID_contextID_(market name
-                        / asset ID) in it the extension sends the offer automatically. Useful for
-                        P2P trading and automation.
+                        Send trade offers based on query parameters. When turned on and you open a link with
+                        &csgotrader_send=side(your/their)_type(name/id)appID_contextID_(market name / asset ID) in it
+                        the extension sends the offer automatically. Useful for P2P trading and automation.
                         <NewTabLink to='https://csgotrader.app/release-notes/#2.9'>
                             {' '}
                             More info about this here{' '}

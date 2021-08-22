@@ -20,19 +20,14 @@ const OfferHistoryContent = ({ offers }) => {
                     <h4 className='trade-history__title'>
                         Offer from:&nbsp;
                         <NewTabLink
-                            to={profileIDToURL(
-                                getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
-                            )}
+                            to={profileIDToURL(getProperStyleSteamIDFromOfferStyle(offer.accountid_other))}
                             className='trade-history__partner'
                         >
                             {offer.partnerSummary.personaname}
                         </NewTabLink>
                         .
                     </h4>
-                    <span
-                        className='trade-history__date-of-trade'
-                        title={dateToISODisplay(offer.time_updated)}
-                    >
+                    <span className='trade-history__date-of-trade' title={dateToISODisplay(offer.time_updated)}>
                         {prettyTimeAgo(offer.time_updated)}
                     </span>
                     <OfferMessage message={offer.message} />

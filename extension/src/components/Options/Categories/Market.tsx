@@ -122,9 +122,7 @@ const market = () => {
                 name={'Show "Buy and Sell Orders (cumulative)"'}
                 id='marketShowBuySellNonCommodity'
                 type='flipSwitchStorage'
-                description={
-                    'Show "Buy and Sell Orders (cumulative)" chart for non-commodity items'
-                }
+                description={'Show "Buy and Sell Orders (cumulative)" chart for non-commodity items'}
             />
             <Row
                 name='Recent activity on non-commmodity'

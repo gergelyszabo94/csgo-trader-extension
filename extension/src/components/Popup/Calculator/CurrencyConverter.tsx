@@ -13,8 +13,7 @@ const CurrencyConverter = () => {
 
     const convert = (input: number) => {
         chrome.storage.local.get('exchangeRates', ({ exchangeRates }: exchangeRates) => {
-            const convertedValue =
-                (input / Number(exchangeRates[currency1])) * Number(exchangeRates[currency2]);
+            const convertedValue = (input / Number(exchangeRates[currency1])) * Number(exchangeRates[currency2]);
             setResult(convertedValue.toFixed(2));
         });
     };
@@ -24,12 +23,9 @@ const CurrencyConverter = () => {
     }, [currency1, currency2, inputNumber]);
 
     useEffect(() => {
-        chrome.storage.local.get(
-            'calculatorConversionPlaceholder',
-            ({ calculatorConversionPlaceholder }) => {
-                setInputNumber(parseFloat(calculatorConversionPlaceholder));
-            },
-        );
+        chrome.storage.local.get('calculatorConversionPlaceholder', ({ calculatorConversionPlaceholder }) => {
+            setInputNumber(parseFloat(calculatorConversionPlaceholder));
+        });
     }, []);
 
     const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,17 +50,9 @@ const CurrencyConverter = () => {
                     {prettyPrintPrice(currency2, result)}
                 </span>
             </div>
-            <CurrencySelect
-                id='defaultConverterCurrency1'
-                selected={currency1}
-                setSelected={setCurrency1}
-            />
+            <CurrencySelect id='defaultConverterCurrency1' selected={currency1} setSelected={setCurrency1} />
             <span> - </span>
-            <CurrencySelect
-                id='defaultConverterCurrency2'
-                selected={currency2}
-                setSelected={setCurrency2}
-            />
+            <CurrencySelect id='defaultConverterCurrency2' selected={currency2} setSelected={setCurrency2} />
         </>
     );
 };

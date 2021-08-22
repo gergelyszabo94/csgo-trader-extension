@@ -1,10 +1,5 @@
 import { extractUsefulFloatInfo, addToFloatCache } from 'utils/floatCaching';
-import {
-    goToInternalPage,
-    validateSteamAPIKey,
-    getAssetIDFromInspectLink,
-    getSteamRepInfo,
-} from 'utils/utilsModular';
+import { goToInternalPage, validateSteamAPIKey, getAssetIDFromInspectLink, getSteamRepInfo } from 'utils/utilsModular';
 import { getItemMarketLink } from 'utils/simpleUtils';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import { getUserCSGOInventory, getOtherInventory } from 'utils/getUserInventory';
@@ -82,9 +77,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             fetch(getRequest)
                 .then((response) => {
                     if (!response.ok) {
-                        console.log(
-                            `Error code: ${response.status} Status: ${response.statusText}`,
-                        );
+                        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
                         if (response.status === 500) sendResponse(response.status);
                         else sendResponse('error');
                     } else return response.json();
@@ -93,8 +86,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     if (body.iteminfo.floatvalue !== undefined) {
                         const usefulFloatInfo = extractUsefulFloatInfo(body.iteminfo);
                         addToFloatCache(assetID, usefulFloatInfo);
-                        if (usefulFloatInfo.floatvalue !== 0)
-                            sendResponse({ floatInfo: usefulFloatInfo });
+                        if (usefulFloatInfo.floatvalue !== 0) sendResponse({ floatInfo: usefulFloatInfo });
                         else sendResponse('nofloat');
                     } else sendResponse('error');
                 })
@@ -138,10 +130,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return true; // async return to signal that it will return later
     } else if (request.getBuyOrderInfo !== undefined) {
         const getRequest = new Request(
-            getItemMarketLink(
-                request.getBuyOrderInfo.appID,
-                request.getBuyOrderInfo.marketHashName,
-            ),
+            getItemMarketLink(request.getBuyOrderInfo.appID, request.getBuyOrderInfo.marketHashName),
         );
 
         fetch(getRequest)
@@ -167,9 +156,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     .then((response) => {
                         if (!response.ok) {
                             sendResponse('error');
-                            console.log(
-                                `Error code: ${response.status} Status: ${response.statusText}`,
-                            );
+                            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
                         } else return response.json();
                     })
                     .then((body2) => {

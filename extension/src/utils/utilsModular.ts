@@ -62,9 +62,7 @@ const logExtensionPresence = () => {
     console.log(
         `CSGO Trader - Steam Trading Enhancer ${version} is running on this page. Changelog at: https://csgotrader.app/changelog/`,
     );
-    console.log(
-        'If you see any errors that seem related to the extension please email support@csgotrader.app.',
-    );
+    console.log('If you see any errors that seem related to the extension please email support@csgotrader.app.');
     console.log('"DevTools failed to parse SourceMap" is not an error, you can disregard it.');
 };
 
@@ -101,8 +99,7 @@ const scrapeSteamAPIkey = () => {
 
     fetch(getRequest)
         .then((response) => {
-            if (!response.ok)
-                console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+            if (!response.ok) console.log(`Error code: ${response.status} Status: ${response.statusText}`);
             else return response.text();
         })
         .then((body) => {
@@ -111,10 +108,7 @@ const scrapeSteamAPIkey = () => {
             let apiKey = null;
 
             try {
-                apiKey = html
-                    .querySelector('#bodyContents_ex')
-                    .querySelector('p')
-                    .innerText.split(': ')[1];
+                apiKey = html.querySelector('#bodyContents_ex').querySelector('p').innerText.split(': ')[1];
             } catch (e) {
                 console.log(e);
                 console.log(body);
@@ -124,10 +118,7 @@ const scrapeSteamAPIkey = () => {
                 (apiKeyValid) => {
                     if (apiKeyValid) {
                         console.log('api key valid');
-                        chrome.storage.local.set(
-                            { steamAPIKey: apiKey, apiKeyValid: true },
-                            () => {},
-                        );
+                        chrome.storage.local.set({ steamAPIKey: apiKey, apiKeyValid: true }, () => {});
                     }
                 },
                 (error) => {
@@ -160,8 +151,7 @@ const getExteriorFromTags = (tags) => {
         for (const tag of tags) {
             if (tag.category === 'Exterior') {
                 for (const exterior in exteriors) {
-                    if (exteriors[exterior].internal_name === tag.internal_name)
-                        return exteriors[exterior];
+                    if (exteriors[exterior].internal_name === tag.internal_name) return exteriors[exterior];
                 }
 
                 // no exterior
@@ -257,8 +247,7 @@ const getPattern = (name, paintSeed) => {
         else if (name.includes('Falchion')) pattern = patterns.marble_fades.falchion[paintSeed];
         else return null;
 
-        if (pattern !== null && pattern !== undefined)
-            return { type: 'marble_fade', value: pattern };
+        if (pattern !== null && pattern !== undefined) return { type: 'marble_fade', value: pattern };
         return null;
     }
     if (name.includes(' Fade ')) {
@@ -280,8 +269,7 @@ const getPattern = (name, paintSeed) => {
         else if (name.includes('Glock')) percentage = patterns.fades.glock[paintSeed];
         else return null;
 
-        if (percentage !== null && percentage !== undefined)
-            return { type: 'fade', value: `${percentage}% Fade` };
+        if (percentage !== null && percentage !== undefined) return { type: 'fade', value: `${percentage}% Fade` };
         return null;
     }
     if (name.includes(' Case Hardened')) {
@@ -301,12 +289,10 @@ const getPattern = (name, paintSeed) => {
         else if (name.includes('Gut')) pattern = patterns.case_hardeneds.gut[paintSeed];
         else if (name.includes('Falchion')) pattern = patterns.case_hardeneds.falchion[paintSeed];
         else if (name.includes('Karambit')) pattern = patterns.case_hardeneds.karambit[paintSeed];
-        else if (name.includes('/Five-SeveN'))
-            pattern = patterns.case_hardeneds.five_seven[paintSeed];
+        else if (name.includes('/Five-SeveN')) pattern = patterns.case_hardeneds.five_seven[paintSeed];
         else return null;
 
-        if (pattern !== null && pattern !== undefined)
-            return { type: 'case_hardened', value: pattern };
+        if (pattern !== null && pattern !== undefined) return { type: 'case_hardened', value: pattern };
         return null; // return {type: 'case_hardened', value: 'Not special or not found'};
     }
     return null;
@@ -346,26 +332,14 @@ const isSticker = (description) => {
     return matchFound;
 };
 
-const parseStickerInfo = (
-    descriptions,
-    linkType,
-    prices,
-    pricingProvider,
-    pricingMode,
-    exchangeRate,
-    currency,
-) => {
+const parseStickerInfo = (descriptions, linkType, prices, pricingProvider, pricingMode, exchangeRate, currency) => {
     if (descriptions !== undefined && linkType !== undefined) {
         let stickers = [];
 
         descriptions.forEach((description) => {
             if (description.value.includes('sticker_info')) {
                 const type = isSticker(description.value) ? 'Sticker' : 'Patch';
-                let names = description.value
-                    .split('><br>')[1]
-                    .split(': ')[1]
-                    .split('</center>')[0]
-                    .split(', ');
+                let names = description.value.split('><br>')[1].split(': ')[1].split('</center>')[0].split(', ');
 
                 names = handleStickerNamesWithCommas(names);
                 const iconURLs = description.value.split('src="');
@@ -417,10 +391,7 @@ const goToInternalPage = (targetURL: string) => {
 const uuidv4 = () => {
     // eslint-disable-next-line no-bitwise
     return ((1e7).toString() + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
-        (
-            Number(c) ^
-            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (Number(c) / 4)))
-        ).toString(16),
+        (Number(c) ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (Number(c) / 4)))).toString(16),
     );
 };
 
@@ -443,9 +414,7 @@ const listenToLocationChange = (callback: () => void) => {
 };
 
 const getAssetIDFromInspectLink = (inspectLink) =>
-    inspectLink !== null && inspectLink !== undefined
-        ? inspectLink.split('A')[1].split('D')[0]
-        : null;
+    inspectLink !== null && inspectLink !== undefined ? inspectLink.split('A')[1].split('D')[0] : null;
 
 const getActivePage = (type?: string, getActiveInventory?: () => any) => {
     let activePage = null;
@@ -468,10 +437,7 @@ const getActivePage = (type?: string, getActiveInventory?: () => any) => {
     return activePage;
 };
 
-const addPageControlEventListeners = (
-    type?: string,
-    addFloatIndicatorsFunction?: (a?: Element | string) => void,
-) => {
+const addPageControlEventListeners = (type?: string, addFloatIndicatorsFunction?: (a?: Element | string) => void) => {
     const pageControls = document.getElementById('inventory_pagecontrols');
     if (pageControls !== null) {
         pageControls.addEventListener('click', () => {
@@ -504,28 +470,16 @@ const addDopplerPhase = (item, dopplerInfo) => {
 
         switch (dopplerInfo.short) {
             case 'SH':
-                dopplerDiv.insertAdjacentHTML(
-                    'beforeend',
-                    DOMPurify.sanitize(dopplerPhases.sh.element),
-                );
+                dopplerDiv.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.sh.element));
                 break;
             case 'RB':
-                dopplerDiv.insertAdjacentHTML(
-                    'beforeend',
-                    DOMPurify.sanitize(dopplerPhases.rb.element),
-                );
+                dopplerDiv.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.rb.element));
                 break;
             case 'EM':
-                dopplerDiv.insertAdjacentHTML(
-                    'beforeend',
-                    DOMPurify.sanitize(dopplerPhases.em.element),
-                );
+                dopplerDiv.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.em.element));
                 break;
             case 'BP':
-                dopplerDiv.insertAdjacentHTML(
-                    'beforeend',
-                    DOMPurify.sanitize(dopplerPhases.bp.element),
-                );
+                dopplerDiv.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.bp.element));
                 break;
             default:
                 dopplerDiv.innerText = dopplerInfo.short;
@@ -538,10 +492,7 @@ const addDopplerPhase = (item, dopplerInfo) => {
 const makeItemColorful = (itemElement, item, colorfulItemsEnabled) => {
     if (colorfulItemsEnabled) {
         if (item.dopplerInfo !== null)
-            itemElement.setAttribute(
-                'style',
-                `background-image: url(); background-color: #${item.dopplerInfo.color}`,
-            );
+            itemElement.setAttribute('style', `background-image: url(); background-color: #${item.dopplerInfo.color}`);
         else
             itemElement.setAttribute(
                 'style',
@@ -581,9 +532,7 @@ const addFloatIndicator = (itemElement, floatInfo) => {
     ) {
         itemElement.insertAdjacentHTML(
             'beforeend',
-            DOMPurify.sanitize(
-                `<div class="floatIndicator">${toFixedNoRounding(floatInfo.floatvalue, 4)}</div>`,
-            ),
+            DOMPurify.sanitize(`<div class="floatIndicator">${toFixedNoRounding(floatInfo.floatvalue, 4)}</div>`),
         );
     }
 };
@@ -599,9 +548,7 @@ const addPriceIndicator = (itemElement, priceInfo) => {
 
 const getDataFilledFloatTechnical = (floatInfo) => {
     const floatRankLine =
-        floatInfo.low_rank !== undefined && floatInfo.low_rank !== null
-            ? `Low Rank: ${floatInfo.low_rank}<br>`
-            : '';
+        floatInfo.low_rank !== undefined && floatInfo.low_rank !== null ? `Low Rank: ${floatInfo.low_rank}<br>` : '';
     return `
             Technical:<br>
             Float Value: ${floatInfo.floatvalue}<br>
@@ -675,8 +622,7 @@ const addSearchListener = (type, addFloatIndicatorsFunction?) => {
 };
 
 const getSessionID = () => {
-    const getSessionIDScript =
-        "document.querySelector('body').setAttribute('sessionid', g_sessionID);";
+    const getSessionIDScript = "document.querySelector('body').setAttribute('sessionid', g_sessionID);";
     return injectScript(getSessionIDScript, true, 'getSessionID', 'sessionid');
 };
 
@@ -784,9 +730,7 @@ const addUpdatedRibbon = () => {
                 'afterbegin',
                 DOMPurify.sanitize(
                     `<div id="extensionUpdatedRibbon">
-                       CSGO Trader Extension was updated to ${
-                           chrome.runtime.getManifest().version
-                       }. Check out the 
+                       CSGO Trader Extension was updated to ${chrome.runtime.getManifest().version}. Check out the 
                       <a href="https://csgotrader.app/changelog/" target="_blank" title="Open CSGOTrader Changelog">
                           Changelog
                       </a>
@@ -807,9 +751,7 @@ const addUpdatedRibbon = () => {
 
 const getSteamRepInfo = (steamID) =>
     new Promise((resolve, reject) => {
-        const getRequest = new Request(
-            `https://steamrep.com/api/beta4/reputation/${steamID}?json=1`,
-        );
+        const getRequest = new Request(`https://steamrep.com/api/beta4/reputation/${steamID}?json=1`);
 
         fetch(getRequest)
             .then((response) => {
@@ -836,9 +778,7 @@ const copyToClipboard = (text) => {
         <textarea id="text_area_to_copy_to_clipboard" class="hidden-copy-textarea" readonly="">${text}</textarea>`),
     );
 
-    const textAreaElement = document.getElementById(
-        'text_area_to_copy_to_clipboard',
-    ) as HTMLInputElement;
+    const textAreaElement = document.getElementById('text_area_to_copy_to_clipboard') as HTMLInputElement;
     textAreaElement.select();
     document.execCommand('copy');
     textAreaElement.remove();
@@ -891,14 +831,8 @@ const removeLinkFilterFromLinks = () => {
         if (linkFilterOff) {
             document.querySelectorAll('a').forEach((anchor) => {
                 const oldHref = anchor.getAttribute('href');
-                if (
-                    oldHref !== null &&
-                    oldHref.includes('https://steamcommunity.com/linkfilter/?url=')
-                ) {
-                    anchor.setAttribute(
-                        'href',
-                        oldHref.split('https://steamcommunity.com/linkfilter/?url=')[1],
-                    );
+                if (oldHref !== null && oldHref.includes('https://steamcommunity.com/linkfilter/?url=')) {
+                    anchor.setAttribute('href', oldHref.split('https://steamcommunity.com/linkfilter/?url=')[1]);
                 }
             });
         }
@@ -908,9 +842,7 @@ const removeLinkFilterFromLinks = () => {
 // finds unread moderation messages and loads the page to mark them as read
 const markModMessagesAsRead = () => {
     chrome.storage.local.get('steamIDOfUser', ({ steamIDOfUser }) => {
-        const getRequest = new Request(
-            `https://steamcommunity.com/profiles/${steamIDOfUser}/moderatormessages`,
-        );
+        const getRequest = new Request(`https://steamcommunity.com/profiles/${steamIDOfUser}/moderatormessages`);
         fetch(getRequest)
             .then((response) => {
                 if (!response.ok) {

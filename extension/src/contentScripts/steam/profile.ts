@@ -10,11 +10,7 @@ import {
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import { trackEvent } from 'utils/analytics';
-import {
-    addReplyToCommentsFunctionality,
-    addCommentsMutationObserver,
-    reportComments,
-} from 'utils/comments';
+import { addReplyToCommentsFunctionality, addCommentsMutationObserver, reportComments } from 'utils/comments';
 import { goldenMiniProfileHandler, goldenCommenters } from 'utils/goldening';
 import steamTextFormattingTags from 'utils/static/steamTextFormatingTags';
 import { overrideShowTradeOffer } from 'utils/steamOverriding';
@@ -79,55 +75,47 @@ if (document.querySelector('body').classList.contains('profile_page')) {
 
     if (loggedInUserID === profileOwnerSteamID) {
         // when on the logged in user's own profile
-        chrome.storage.local.get(
-            ['reoccuringMessage', 'showReoccButton'],
-            ({ reoccuringMessage, showReoccButton }) => {
-                if (showReoccButton) {
-                    const reooccButton =
-                        '<div style="float: right; text-align: center; margin-top: 6px;" class="commentthread_user_avatar playerAvatar"><span class="btn_green_white_innerfade btn_small" id="reocc" style="padding: 5px;">Reocc<span></div>';
+        chrome.storage.local.get(['reoccuringMessage', 'showReoccButton'], ({ reoccuringMessage, showReoccButton }) => {
+            if (showReoccButton) {
+                const reooccButton =
+                    '<div style="float: right; text-align: center; margin-top: 6px;" class="commentthread_user_avatar playerAvatar"><span class="btn_green_white_innerfade btn_small" id="reocc" style="padding: 5px;">Reocc<span></div>';
 
-                    commentThreadEntryBox.insertAdjacentHTML(
-                        'afterend',
-                        DOMPurify.sanitize(reooccButton),
-                    );
+                commentThreadEntryBox.insertAdjacentHTML('afterend', DOMPurify.sanitize(reooccButton));
 
-                    document.getElementById('reocc').addEventListener('click', () => {
-                        // analytics
-                        trackEvent({
-                            type: 'event',
-                            action: 'ReoccuringCommentPosted',
-                        });
-
-                        document
-                            .querySelectorAll('.commentthread_comment.responsive_body_text')
-                            .forEach((commentThread) => {
-                                // regex: replaces whitespaces and steam text formatting tags
-                                let toReplace = '';
-                                steamTextFormattingTags.forEach((tag) => {
-                                    toReplace += `${tag.replace('[', '\\[').replace(']', '\\]')}|`;
-                                });
-                                toReplace += '\\s';
-                                const toReplaceRegex = new RegExp(toReplace, 'g');
-
-                                if (
-                                    commentThread
-                                        .querySelector('.commentthread_comment_text')
-                                        .innerText.replace(toReplaceRegex, '') ===
-                                    reoccuringMessage.replace(toReplaceRegex, '')
-                                ) {
-                                    commentThread.querySelectorAll('img')[1].click();
-                                }
-                            });
-                        document.querySelector('.commentthread_textarea').value = reoccuringMessage;
-                        setTimeout(() => {
-                            document
-                                .querySelectorAll('.btn_green_white_innerfade.btn_small')[1]
-                                .click();
-                        }, 2000);
+                document.getElementById('reocc').addEventListener('click', () => {
+                    // analytics
+                    trackEvent({
+                        type: 'event',
+                        action: 'ReoccuringCommentPosted',
                     });
-                }
-            },
-        );
+
+                    document
+                        .querySelectorAll('.commentthread_comment.responsive_body_text')
+                        .forEach((commentThread) => {
+                            // regex: replaces whitespaces and steam text formatting tags
+                            let toReplace = '';
+                            steamTextFormattingTags.forEach((tag) => {
+                                toReplace += `${tag.replace('[', '\\[').replace(']', '\\]')}|`;
+                            });
+                            toReplace += '\\s';
+                            const toReplaceRegex = new RegExp(toReplace, 'g');
+
+                            if (
+                                commentThread
+                                    .querySelector('.commentthread_comment_text')
+                                    .innerText.replace(toReplaceRegex, '') ===
+                                reoccuringMessage.replace(toReplaceRegex, '')
+                            ) {
+                                commentThread.querySelectorAll('img')[1].click();
+                            }
+                        });
+                    document.querySelector('.commentthread_textarea').value = reoccuringMessage;
+                    setTimeout(() => {
+                        document.querySelectorAll('.btn_green_white_innerfade.btn_small')[1].click();
+                    }, 2000);
+                });
+            }
+        });
 
         changePageTitle('own_profile');
     } else if (!isProfilePrivate) {
@@ -135,9 +123,7 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         // adds "copy profile permalink" and "show offer history" to the context menu
         const copyPermalink = `
       <a class="popup_menu_item" href="#" id="copy_profile_perma_link">
-        <img style="width: 16px; height: 16px" src="${chrome.runtime.getURL(
-            'images/paperclip.png',
-        )}">
+        <img style="width: 16px; height: 16px" src="${chrome.runtime.getURL('images/paperclip.png')}">
             &nbsp; Copy Profile Permalink
       </a>`;
         const showOfferSummary = `
@@ -147,9 +133,7 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         </a>`;
         const copyTradeLink = `
       <a class="popup_menu_item" href="#" id="copy_trade_link">
-        <img style="width: 16px; height: 16px" src="${chrome.runtime.getURL(
-            'images/paperclip.png',
-        )}">
+        <img style="width: 16px; height: 16px" src="${chrome.runtime.getURL('images/paperclip.png')}">
             &nbsp; Copy Trade Link
       </a>`;
         const openSteamRepProfile = `
@@ -162,17 +146,11 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         <img style="width: 16px; height: 16px" src="${chrome.runtime.getURL('images/growth.png')}">
             &nbsp; Open CSGO-REP Profile
       </a>`;
-        profileActionPopup
-            .querySelector('.popup_body.popup_menu.shadow_content')
-            .insertAdjacentHTML(
-                'beforeend',
-                copyPermalink +
-                    showOfferSummary +
-                    copyTradeLink +
-                    openSteamRepProfile +
-                    openCSGORepProfile,
-                // not sanitized because it breaks the images and it's static anyways
-            );
+        profileActionPopup.querySelector('.popup_body.popup_menu.shadow_content').insertAdjacentHTML(
+            'beforeend',
+            copyPermalink + showOfferSummary + copyTradeLink + openSteamRepProfile + openCSGORepProfile,
+            // not sanitized because it breaks the images and it's static anyways
+        );
 
         document.getElementById('copy_profile_perma_link').addEventListener('click', () => {
             // analytics
@@ -193,40 +171,34 @@ if (document.querySelector('body').classList.contains('profile_page')) {
                 action: 'ProfileOfferHistoryChecked',
             });
             // prints trade offer history summary
-            chrome.storage.local.get(
-                [`offerHistory_${profileOwnerSteamID}`, 'apiKeyValid'],
-                (result) => {
-                    let offerHistory = result[`offerHistory_${profileOwnerSteamID}`];
-                    let offerSummaryElement = '';
+            chrome.storage.local.get([`offerHistory_${profileOwnerSteamID}`, 'apiKeyValid'], (result) => {
+                let offerHistory = result[`offerHistory_${profileOwnerSteamID}`];
+                let offerSummaryElement = '';
 
-                    if (result.apiKeyValid) {
-                        if (offerHistory === undefined) {
-                            offerHistory = {
-                                offers_received: 0,
-                                offers_sent: 0,
-                                last_received: 0,
-                                last_sent: 0,
-                            };
-                        }
-                        offerSummaryElement = `
+                if (result.apiKeyValid) {
+                    if (offerHistory === undefined) {
+                        offerHistory = {
+                            offers_received: 0,
+                            offers_sent: 0,
+                            last_received: 0,
+                            last_sent: 0,
+                        };
+                    }
+                    offerSummaryElement = `
                         <div class="trade_partner_info_block" style="color: lightgray"> 
                             <div title=${dateToISODisplay(offerHistory.last_received)}>
                             Offers Received: ${offerHistory.offers_received} Last:  ${
-                            offerHistory.offers_received !== 0
-                                ? prettyTimeAgo(offerHistory.last_received)
-                                : '-'
-                        }
+                        offerHistory.offers_received !== 0 ? prettyTimeAgo(offerHistory.last_received) : '-'
+                    }
                             </div>
                             <div title=${dateToISODisplay(offerHistory.last_sent)}>
                             Offers Sent: ${offerHistory.offers_sent} Last:  ${
-                            offerHistory.offers_sent !== 0
-                                ? prettyTimeAgo(offerHistory.last_sent)
-                                : '-'
-                        }
+                        offerHistory.offers_sent !== 0 ? prettyTimeAgo(offerHistory.last_sent) : '-'
+                    }
                             </div>
                         </div>`;
-                    } else {
-                        offerSummaryElement = `
+                } else {
+                    offerSummaryElement = `
                         <div class="trade_partner_info_block" style="color: lightgray"> 
                             <div><b>CSGOTrader Extension:</b> It looks like you don't have your Steam API Key set yet.</div>
                             <div>If you had that you would see partner offer history here. Check the 
@@ -234,27 +206,20 @@ if (document.querySelector('body').classList.contains('profile_page')) {
                                 for more info.
                             </div>
                         </div>`;
-                    }
+                }
 
-                    const profileStatusElement = document.querySelector('.responsive_status_info');
+                const profileStatusElement = document.querySelector('.responsive_status_info');
 
-                    if (profileStatusElement !== null)
-                        profileStatusElement.insertAdjacentHTML(
-                            'beforeend',
-                            DOMPurify.sanitize(offerSummaryElement),
-                        );
-                    else
-                        document
-                            .querySelector('.profile_header_badgeinfo')
-                            .insertAdjacentHTML(
-                                'beforeend',
-                                DOMPurify.sanitize(offerSummaryElement),
-                            );
+                if (profileStatusElement !== null)
+                    profileStatusElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(offerSummaryElement));
+                else
+                    document
+                        .querySelector('.profile_header_badgeinfo')
+                        .insertAdjacentHTML('beforeend', DOMPurify.sanitize(offerSummaryElement));
 
-                    // for the context menu to go away
-                    document.querySelector('.playerAvatarAutoSizeInner').click();
-                },
-            );
+                // for the context menu to go away
+                document.querySelector('.playerAvatarAutoSizeInner').click();
+            });
         });
 
         document.getElementById('copy_trade_link').addEventListener('click', () => {
@@ -294,22 +259,16 @@ if (document.querySelector('body').classList.contains('profile_page')) {
             </div>`;
 
                 if (commentThreadEntryBox !== null) {
-                    commentThreadEntryBox.insertAdjacentHTML(
-                        'afterend',
-                        DOMPurify.sanitize(repButton),
-                    );
+                    commentThreadEntryBox.insertAdjacentHTML('afterend', DOMPurify.sanitize(repButton));
                     document.getElementById('repper').addEventListener('click', () => {
                         // analytics
                         trackEvent({
                             type: 'event',
                             action: 'ReputionMessagePosted',
                         });
-                        document.querySelector('.commentthread_textarea').value =
-                            result.reputationMessage;
+                        document.querySelector('.commentthread_textarea').value = result.reputationMessage;
                         setTimeout(() => {
-                            document
-                                .querySelectorAll('.btn_green_white_innerfade.btn_small')[1]
-                                .click();
+                            document.querySelectorAll('.btn_green_white_innerfade.btn_small')[1].click();
                         }, 500);
                     });
                 }
@@ -331,11 +290,9 @@ if (document.querySelector('body').classList.contains('profile_page')) {
                         'style',
                         'background-image: url(https://steamcommunity-a.akamaihd.net/public/images/profile/profile_bg.jpg); background-repeat: repeat-x; background-color: #262627;',
                     );
-                document
-                    .querySelectorAll('.profile_content, body, .no_header.profile_page')
-                    .forEach((element) => {
-                        element.classList.remove('has_profile_background');
-                    });
+                document.querySelectorAll('.profile_content, body, .no_header.profile_page').forEach((element) => {
+                    element.classList.remove('has_profile_background');
+                });
 
                 // removes artwork, screenshot showcases
                 document
@@ -357,19 +314,12 @@ if (document.querySelector('body').classList.contains('profile_page')) {
 
                 // removes holiday cheer
                 if (document.querySelector('.golden_profile') !== null) {
-                    injectStyle(
-                        '.profile_header_bg:before {background-image: url()}',
-                        'holidayheaderstyle',
-                    );
+                    injectStyle('.profile_header_bg:before {background-image: url()}', 'holidayheaderstyle');
                     document
                         .querySelector('.golden_profile')
                         .classList.remove('golden_profile', '.profile_customization_snow');
-                    document
-                        .querySelector('.golden_profile_header')
-                        .classList.remove('golden_profile_header');
-                    document
-                        .querySelector('.profile_header_bg_texture')
-                        .classList.remove('profile_header_bg_texture');
+                    document.querySelector('.golden_profile_header').classList.remove('golden_profile_header');
+                    document.querySelector('.profile_header_bg_texture').classList.remove('profile_header_bg_texture');
                     document.querySelector(
                         '.w19_side_background, .w19_pig, .w19_strings, .profile_header_bg, .profile_header_bg_texture',
                     ).style.background = 'url()';
@@ -394,16 +344,13 @@ if (document.querySelector('body').classList.contains('profile_page')) {
                 if (statusDiv.classList.contains('online')) {
                     const textDiv = statusDiv.querySelector('.profile_in_game_header');
 
-                    chrome.runtime.sendMessage(
-                        { GetPersonaState: profileOwnerSteamID },
-                        (response) => {
-                            if (response.apiKeyValid) {
-                                textDiv.innerText = steamProfileStatuses[response.personastate]
-                                    ? steamProfileStatuses[response.personastate]
-                                    : textDiv.innerText;
-                            }
-                        },
-                    );
+                    chrome.runtime.sendMessage({ GetPersonaState: profileOwnerSteamID }, (response) => {
+                        if (response.apiKeyValid) {
+                            textDiv.innerText = steamProfileStatuses[response.personastate]
+                                ? steamProfileStatuses[response.personastate]
+                                : textDiv.innerText;
+                        }
+                    });
                 }
             }
         }

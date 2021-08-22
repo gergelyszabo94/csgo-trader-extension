@@ -64,11 +64,10 @@ const OfferRules = () => {
             <h5>Incoming Offer Rules</h5>
             <div className='mb-3 font-size--s'>
                 <span>
-                    You can set your own rules for incoming trade offers to be evaluated by. The
-                    rules are evaluated in order, the first matching rule&apos;s action is applied.
-                    The feature only works if you are logged into Steam in this browser. For the
-                    accept action to work the extension needs permission to interactive with
-                    existing Steam tabs or open the offer for accepting. You can grant browser.tabs
+                    You can set your own rules for incoming trade offers to be evaluated by. The rules are evaluated in
+                    order, the first matching rule&apos;s action is applied. The feature only works if you are logged
+                    into Steam in this browser. For the accept action to work the extension needs permission to
+                    interactive with existing Steam tabs or open the offer for accepting. You can grant browser.tabs
                     permission by going to&nbsp;
                 </span>
                 <Link to='/options/general/'>General</Link>
@@ -88,8 +87,7 @@ const OfferRules = () => {
                 </thead>
                 <tbody>
                     {rules.map((rule, index) => {
-                        const position =
-                            index === 0 ? 'top' : index === rules.length - 1 ? 'bottom' : 'middle';
+                        const position = index === 0 ? 'top' : index === rules.length - 1 ? 'bottom' : 'middle';
                         return (
                             <OfferRule
                                 key={JSON.stringify(rule)}

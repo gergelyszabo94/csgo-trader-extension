@@ -28,28 +28,16 @@ const doTheSorting = (items, itemElements, method, pages, type) => {
         });
     } else if (method === 'name_asc') {
         sortedElements = itemElements.sort((a, b) => {
-            const nameOfA = getItemByAssetID(
-                items,
-                getAssetIDOfElement(a),
-            ).market_hash_name.toLowerCase();
-            const nameOfB = getItemByAssetID(
-                items,
-                getAssetIDOfElement(b),
-            ).market_hash_name.toLowerCase();
+            const nameOfA = getItemByAssetID(items, getAssetIDOfElement(a)).market_hash_name.toLowerCase();
+            const nameOfB = getItemByAssetID(items, getAssetIDOfElement(b)).market_hash_name.toLowerCase();
             if (nameOfA < nameOfB) return -1;
             if (nameOfA > nameOfB) return 1;
             return 0;
         });
     } else if (method === 'name_desc') {
         sortedElements = itemElements.sort((a, b) => {
-            const nameOfA = getItemByAssetID(
-                items,
-                getAssetIDOfElement(a),
-            ).market_hash_name.toLowerCase();
-            const nameOfB = getItemByAssetID(
-                items,
-                getAssetIDOfElement(b),
-            ).market_hash_name.toLowerCase();
+            const nameOfA = getItemByAssetID(items, getAssetIDOfElement(a)).market_hash_name.toLowerCase();
+            const nameOfB = getItemByAssetID(items, getAssetIDOfElement(b)).market_hash_name.toLowerCase();
             if (nameOfA > nameOfB) return -1;
             if (nameOfA < nameOfB) return 1;
             return 0;

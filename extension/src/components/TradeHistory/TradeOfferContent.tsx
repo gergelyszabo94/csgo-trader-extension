@@ -22,11 +22,7 @@ const TradeOfferContent = ({ trades, type, loadNextBatch }) => {
 };
 
 const TypeSwitch = ({ trades, type }) => {
-    return type === 'history' ? (
-        <TradeOffers trades={trades} />
-    ) : (
-        <OfferHistoryContent offers={trades} />
-    );
+    return type === 'history' ? <TradeOffers trades={trades} /> : <OfferHistoryContent offers={trades} />;
 };
 
 export default TradeOfferContent;

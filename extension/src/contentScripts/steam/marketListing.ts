@@ -28,13 +28,7 @@ import {
     updateWalletCurrency,
 } from 'utils/pricing';
 import { trackEvent } from 'utils/analytics';
-import {
-    genericMarketLink,
-    souvenir,
-    starChar,
-    stattrak,
-    stattrakPretty,
-} from 'utils/static/simpleStrings';
+import { genericMarketLink, souvenir, starChar, stattrak, stattrakPretty } from 'utils/static/simpleStrings';
 import { injectScript, injectStyle } from 'utils/injection';
 import steamApps from 'utils/static/steamApps';
 import { isDopplerInName } from 'utils/simpleUtils';
@@ -87,10 +81,7 @@ if (actions !== null && appID === steamApps.CSGO.appID) {
     </a>`;
         document
             .getElementById('largeiteminfo_item_actions')
-            .insertAdjacentHTML(
-                'beforeend',
-                DOMPurify.sanitize(inBrowserInspectButton, { ADD_ATTR: ['target'] }),
-            );
+            .insertAdjacentHTML('beforeend', DOMPurify.sanitize(inBrowserInspectButton, { ADD_ATTR: ['target'] }));
         document.getElementById('inbrowser_inspect_button').addEventListener('click', () => {
             // analytics
             trackEvent({
@@ -122,48 +113,30 @@ const addPhasesIndicator = () => {
     if (isDopplerInName(fullName)) {
         const listingsTable = document.getElementById('searchResultsTable');
         if (listingsTable !== null) {
-            listingsTable
-                .querySelectorAll('.market_listing_item_img_container')
-                .forEach((container) => {
-                    container.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhase));
-                    const phase = getDopplerInfo(
-                        container
-                            .querySelector('img')
-                            .getAttribute('src')
-                            .split('economy/image/')[1]
-                            .split('/')[0],
-                    );
-                    const dopplerElement = container.querySelector('.dopplerPhaseMarket');
+            listingsTable.querySelectorAll('.market_listing_item_img_container').forEach((container) => {
+                container.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhase));
+                const phase = getDopplerInfo(
+                    container.querySelector('img').getAttribute('src').split('economy/image/')[1].split('/')[0],
+                );
+                const dopplerElement = container.querySelector('.dopplerPhaseMarket');
 
-                    switch (phase.short) {
-                        case dopplerPhases.sh.short:
-                            dopplerElement.insertAdjacentHTML(
-                                'beforeend',
-                                DOMPurify.sanitize(dopplerPhases.sh.element),
-                            );
-                            break;
-                        case dopplerPhases.rb.short:
-                            dopplerElement.insertAdjacentHTML(
-                                'beforeend',
-                                DOMPurify.sanitize(dopplerPhases.rb.element),
-                            );
-                            break;
-                        case dopplerPhases.em.short:
-                            dopplerElement.insertAdjacentHTML(
-                                'beforeend',
-                                DOMPurify.sanitize(dopplerPhases.em.element),
-                            );
-                            break;
-                        case dopplerPhases.bp.short:
-                            dopplerElement.insertAdjacentHTML(
-                                'beforeend',
-                                DOMPurify.sanitize(dopplerPhases.bp.element),
-                            );
-                            break;
-                        default:
-                            dopplerElement.querySelector('span').innerText = phase.short;
-                    }
-                });
+                switch (phase.short) {
+                    case dopplerPhases.sh.short:
+                        dopplerElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.sh.element));
+                        break;
+                    case dopplerPhases.rb.short:
+                        dopplerElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.rb.element));
+                        break;
+                    case dopplerPhases.em.short:
+                        dopplerElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.em.element));
+                        break;
+                    case dopplerPhases.bp.short:
+                        dopplerElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.bp.element));
+                        break;
+                    default:
+                        dopplerElement.querySelector('span').innerText = phase.short;
+                }
+            });
         }
     }
 };
@@ -175,9 +148,7 @@ const getListings = () => {
         assets: typeof g_rgAssets !== 'undefined' ? g_rgAssets : {${appID}:{2:{}}}
     }));`;
 
-    const listingsInfo = JSON.parse(
-        injectScript(getListingsScript, true, 'getListings', 'listingsInfo'),
-    );
+    const listingsInfo = JSON.parse(injectScript(getListingsScript, true, 'getListings', 'listingsInfo'));
     const assets = listingsInfo.assets[appID][2];
     const listings = listingsInfo.listings;
 
@@ -233,9 +204,7 @@ const addStickers = () => {
 
                         if (listingRow.querySelector('.stickerHolderMarket') === null) {
                             // if stickers elements not added already
-                            const nameBlock = listingRow.querySelector(
-                                '.market_listing_item_name_block',
-                            );
+                            const nameBlock = listingRow.querySelector('.market_listing_item_name_block');
                             nameBlock.classList.add('extension__row');
                             nameBlock.insertAdjacentHTML(
                                 'beforeend',
@@ -288,25 +257,21 @@ const populateFloatInfo = (listingID, floatInfo) => {
                             // agents don't have float values yet they sometimes return float info, weird
                             listingElement.querySelector('.floatBarMarket').remove();
                         } else {
-                            floatTechnical.innerHTML = DOMPurify.sanitize(
-                                getDataFilledFloatTechnical(floatInfo),
-                                { ADD_ATTR: ['target'] },
-                            );
+                            floatTechnical.innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo), {
+                                ADD_ATTR: ['target'],
+                            });
                             const position = toFixedNoRounding(floatInfo.floatvalue, 2) * 100 - 2;
-                            listingElement
-                                .querySelector('.floatToolTip')
-                                .setAttribute('style', `left: ${position}%`);
-                            listingElement.querySelector('.floatDropTarget').innerText =
-                                toFixedNoRounding(floatInfo.floatvalue, 4);
+                            listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
+                            listingElement.querySelector('.floatDropTarget').innerText = toFixedNoRounding(
+                                floatInfo.floatvalue,
+                                4,
+                            );
 
-                            if (marketAlwaysShowFloatTechnical)
-                                floatTechnical.classList.remove('hidden');
+                            if (marketAlwaysShowFloatTechnical) floatTechnical.classList.remove('hidden');
                         }
                     }
                 } else {
-                    const itemImageDiv = listingElement.querySelector(
-                        '.market_listing_item_img_container',
-                    );
+                    const itemImageDiv = listingElement.querySelector('.market_listing_item_img_container');
                     if (itemImageDiv !== null) {
                         itemImageDiv.querySelector('img').insertAdjacentHTML(
                             'afterend',
@@ -337,11 +302,8 @@ const setStickerInfo = (listingID, stickers) => {
                 if (listingElement !== null) {
                     stickers.forEach((stickerInfo, index) => {
                         const wear =
-                            stickerInfo.wear !== undefined
-                                ? Math.trunc(Math.abs(1 - stickerInfo.wear) * 100)
-                                : 100;
-                        const currentSticker =
-                            listingElement.querySelectorAll('.stickerSlotMarket')[index];
+                            stickerInfo.wear !== undefined ? Math.trunc(Math.abs(1 - stickerInfo.wear) * 100) : 100;
+                        const currentSticker = listingElement.querySelectorAll('.stickerSlotMarket')[index];
                         const stickerPrice = getPrice(
                             `Sticker | ${stickerInfo.name}`,
                             null,
@@ -359,10 +321,7 @@ const setStickerInfo = (listingID, stickers) => {
                         );
                         currentSticker
                             .querySelector('img')
-                            .setAttribute(
-                                'style',
-                                `opacity: ${wear > 10 ? wear / 100 : wear / 100 + 0.1}`,
-                            );
+                            .setAttribute('style', `opacity: ${wear > 10 ? wear / 100 : wear / 100 + 0.1}`);
                     });
 
                     const stickersTotalPrice = getStickerPriceTotal(stickers, currency);
@@ -372,8 +331,7 @@ const setStickerInfo = (listingID, stickers) => {
                     );
 
                     const stickersTotalElement = listingElement.querySelector('.stickersTotal');
-                    stickersTotalElement.innerText =
-                        stickersTotalPrice === null ? '' : stickersTotalPrice.display;
+                    stickersTotalElement.innerText = stickersTotalPrice === null ? '' : stickersTotalPrice.display;
                 }
             },
         );
@@ -386,15 +344,12 @@ const addPatterns = (listingID, floatInfo) => {
         const listingElement = getElementByListingID(listingID);
 
         if (listingElement !== null) {
-            const patternClass =
-                patternInfo.type === 'marble_fade' ? 'marbleFadeGradient' : 'fadeGradient';
+            const patternClass = patternInfo.type === 'marble_fade' ? 'marbleFadeGradient' : 'fadeGradient';
             listingElement
                 .querySelector('.market_listing_item_name')
                 .insertAdjacentHTML(
                     'afterend',
-                    DOMPurify.sanitize(
-                        `<span class="${patternClass}"> ${patternInfo.value}</span>`,
-                    ),
+                    DOMPurify.sanitize(`<span class="${patternClass}"> ${patternInfo.value}</span>`),
                 );
         }
     }
@@ -444,10 +399,7 @@ const addListingsToFloatQueue = () => {
                             floatQueue.jobs.push({
                                 type: 'market',
                                 assetID,
-                                inspectLink: listing.asset.actions[0].link.replace(
-                                    '%assetid%',
-                                    assetID,
-                                ),
+                                inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
                                 listingID: listing.listingid,
                                 price,
                                 callBackFunction: dealWithNewFloatData,
@@ -471,9 +423,7 @@ const addFloatBarSkeletons = () => {
 
                     // so it does not throw any errors when it can't find it on commodity items
                     if (listingsSection !== null) {
-                        const listingNameBlocks = listingsSection.querySelectorAll(
-                            '.market_listing_item_name_block',
-                        );
+                        const listingNameBlocks = listingsSection.querySelectorAll('.market_listing_item_name_block');
                         if (listingNameBlocks !== null && itemWithInspectLink) {
                             listingNameBlocks.forEach((listingNameBlock) => {
                                 if (
@@ -568,13 +518,11 @@ const sortListings = (sortingMode) => {
     } else if (sortingMode === listingsSortingModes.sticker_price_asc.key) {
         sortedElements = listingElements.sort((a, b) => {
             const stickerPriceOfA =
-                a.getAttribute('data-sticker-price') !== 'null' &&
-                a.getAttribute('data-sticker-price') !== undefined
+                a.getAttribute('data-sticker-price') !== 'null' && a.getAttribute('data-sticker-price') !== undefined
                     ? parseFloat(a.getAttribute('data-sticker-price'))
                     : 0.0;
             const stickerPriceOfB =
-                b.getAttribute('data-sticker-price') !== 'null' &&
-                b.getAttribute('data-sticker-price') !== undefined
+                b.getAttribute('data-sticker-price') !== 'null' && b.getAttribute('data-sticker-price') !== undefined
                     ? parseFloat(b.getAttribute('data-sticker-price'))
                     : 0.0;
             return stickerPriceOfA - stickerPriceOfB;
@@ -582,13 +530,11 @@ const sortListings = (sortingMode) => {
     } else if (sortingMode === listingsSortingModes.sticker_price_desc.key) {
         sortedElements = listingElements.sort((a, b) => {
             const stickerPriceOfA =
-                a.getAttribute('data-sticker-price') !== 'null' &&
-                a.getAttribute('data-sticker-price') !== undefined
+                a.getAttribute('data-sticker-price') !== 'null' && a.getAttribute('data-sticker-price') !== undefined
                     ? parseFloat(a.getAttribute('data-sticker-price'))
                     : 0.0;
             const stickerPriceOfB =
-                b.getAttribute('data-sticker-price') !== 'null' &&
-                b.getAttribute('data-sticker-price') !== undefined
+                b.getAttribute('data-sticker-price') !== 'null' && b.getAttribute('data-sticker-price') !== undefined
                     ? parseFloat(b.getAttribute('data-sticker-price'))
                     : 0.0;
             return stickerPriceOfB - stickerPriceOfA;
@@ -625,8 +571,7 @@ const addPricesInOtherCurrencies = () => {
                         .querySelectorAll('.market_listing_row.market_recent_listing_row')
                         .forEach((listingRow) => {
                             if (
-                                listingRow.parentNode.id !==
-                                    'tabContentsMyActiveMarketListingsRows' &&
+                                listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' &&
                                 listingRow.parentNode.parentNode.id !== 'tabContentsMyListings'
                             ) {
                                 const listingID = getListingIDFromElement(listingRow);
@@ -635,20 +580,17 @@ const addPricesInOtherCurrencies = () => {
                                     // if not added before
                                     const price = parseInt(listings[listingID].price);
                                     const priceWithFees = price + parseInt(listings[listingID].fee);
-                                    const currencyID =
-                                        parseInt(listings[listingID].currencyid) - 2000;
+                                    const currencyID = parseInt(listings[listingID].currencyid) - 2000;
 
-                                    listingRow
-                                        .querySelector('.market_table_value')
-                                        .insertAdjacentHTML(
-                                            'beforeend',
-                                            DOMPurify.sanitize(
-                                                `<div class="originalPrice" data-currency-id="${currencyID}" data-converted="false">
+                                    listingRow.querySelector('.market_table_value').insertAdjacentHTML(
+                                        'beforeend',
+                                        DOMPurify.sanitize(
+                                            `<div class="originalPrice" data-currency-id="${currencyID}" data-converted="false">
                            <div class="market_listing_price_original_after_fees" title="Price including market fees in the seller's currency">${priceWithFees}</div>
                            <div class="market_listing_price_original_before_fees" title="The amount the seller receives after fees in their own currency">${price}</div>
                          </div>`,
-                                            ),
-                                        );
+                                        ),
+                                    );
                                 }
                             }
                         });
@@ -692,10 +634,8 @@ const getBuyerKYCFromPage = () => {
     return {
         first_name: firstNameEl !== null ? encodeURIComponent(firstNameEl.value) : '',
         last_name: lastNameEl !== null ? encodeURIComponent(lastNameEl.value) : '',
-        billing_address:
-            billingAddressEl !== null ? encodeURIComponent(billingAddressEl.value) : '',
-        billing_address_two:
-            billingAddress2El !== null ? encodeURIComponent(billingAddress2El.value) : '',
+        billing_address: billingAddressEl !== null ? encodeURIComponent(billingAddressEl.value) : '',
+        billing_address_two: billingAddress2El !== null ? encodeURIComponent(billingAddress2El.value) : '',
         billing_country: countryEl !== null ? encodeURIComponent(countryEl.value) : '',
         billing_city: cityEl !== null ? encodeURIComponent(cityEl.value) : '',
         billing_state: stateEl !== null ? encodeURIComponent(stateEl.value) : '',
@@ -721,9 +661,7 @@ const addInstantBuyButtons = () => {
 
                             if (listingRow.querySelector('.instantBuy') === null) {
                                 // if not added before
-                                const buyButton = listingRow.querySelector(
-                                    '.market_listing_buy_button',
-                                );
+                                const buyButton = listingRow.querySelector('.market_listing_buy_button');
                                 // for example it's our listing, then there is no buy button but a remove button
                                 if (buyButton !== null) {
                                     buyButton.parentElement.style['line-height'] = '30px';
@@ -744,9 +682,8 @@ const addInstantBuyButtons = () => {
                                     instaBuyEl.addEventListener('click', () => {
                                         buyListing(listings[listingID], getBuyerKYCFromPage())
                                             .then(() => {
-                                                listingRow.querySelector(
-                                                    '.market_listing_action_buttons',
-                                                ).innerText = 'Purchased';
+                                                listingRow.querySelector('.market_listing_action_buttons').innerText =
+                                                    'Purchased';
                                             })
                                             .catch((err) => {
                                                 console.log(err);
@@ -803,10 +740,7 @@ const highlightSeen = () => {
 };
 
 const getNameID = () => {
-    return document
-        .querySelector('body')
-        .innerHTML.split('Market_LoadOrderSpread( ')[1]
-        .split(' ')[0];
+    return document.querySelector('body').innerHTML.split('Market_LoadOrderSpread( ')[1].split(' ')[0];
 };
 
 const showAllOrders = (type) => {
@@ -866,45 +800,35 @@ if (appID === steamApps.CSGO.appID) {
             <div class="descriptor otherExteriors">
                 <span>${chrome.i18n.getMessage('links_to_other_exteriors')}:</span>
                 <ul>
-                    <li><a href="${`${
-                        genericMarketLink + star + weaponName
-                    }%28Factory%20New%29`}" target="_blank">${
+                    <li><a href="${`${genericMarketLink + star + weaponName}%28Factory%20New%29`}" target="_blank">${
         exteriors.factory_new.localized_name
     }</a> - <a href="${
         genericMarketLink + linkMidPart + weaponName
     }%28Factory%20New%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${
         exteriors.factory_new.localized_name
     }</span></a></li>
-                    <li><a href="${`${
-                        genericMarketLink + star + weaponName
-                    }%28Minimal%20Wear%29`}"" target="_blank">${
+                    <li><a href="${`${genericMarketLink + star + weaponName}%28Minimal%20Wear%29`}"" target="_blank">${
         exteriors.minimal_wear.localized_name
     }</a> - <a href="${
         genericMarketLink + linkMidPart + weaponName
     }%28Minimal%20Wear%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${
         exteriors.minimal_wear.localized_name
     }</span></a></li>
-                    <li><a href="${`${
-                        genericMarketLink + star + weaponName
-                    }%28Field-Tested%29`}"" target="_blank">${
+                    <li><a href="${`${genericMarketLink + star + weaponName}%28Field-Tested%29`}"" target="_blank">${
         exteriors.field_tested.localized_name
     }</a> - <a href="${
         genericMarketLink + linkMidPart + weaponName
     }%28Field-Tested%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${
         exteriors.field_tested.localized_name
     }</span></a></li>
-                    <li><a href="${`${
-                        genericMarketLink + star + weaponName
-                    }%28Well-Worn%29`}"" target="_blank">${
+                    <li><a href="${`${genericMarketLink + star + weaponName}%28Well-Worn%29`}"" target="_blank">${
         exteriors.well_worn.localized_name
     }</a> - <a href="${
         genericMarketLink + linkMidPart + weaponName
     }%28Well-Worn%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${
         exteriors.well_worn.localized_name
     }</span></a></li>
-                    <li><a href="${`${
-                        genericMarketLink + star + weaponName
-                    }%28Battle-Scarred%29`}"" target="_blank">${
+                    <li><a href="${`${genericMarketLink + star + weaponName}%28Battle-Scarred%29`}"" target="_blank">${
         exteriors.battle_scarred.localized_name
     }</a> - <a href="${
         genericMarketLink + linkMidPart + weaponName
@@ -918,19 +842,13 @@ if (appID === steamApps.CSGO.appID) {
 
     const descriptor = document.getElementById('largeiteminfo_item_descriptors');
     if (fullName.split('(')[1] !== undefined && descriptor !== null) {
-        descriptor.insertAdjacentHTML(
-            'beforeend',
-            DOMPurify.sanitize(otherExteriors, { ADD_ATTR: ['target'] }),
-        );
+        descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(otherExteriors, { ADD_ATTR: ['target'] }));
     }
 
     // adds the in-browser inspect button to the context menu
     document
         .getElementById('market_action_popup_itemactions')
-        .insertAdjacentHTML(
-            'afterend',
-            DOMPurify.sanitize(inBrowserInspectButtonPopupLink, { ADD_ATTR: ['target'] }),
-        );
+        .insertAdjacentHTML('afterend', DOMPurify.sanitize(inBrowserInspectButtonPopupLink, { ADD_ATTR: ['target'] }));
 
     // adds the proper link to the context menu before it gets clicked
     // needed because the context menu resets when clicked
@@ -939,10 +857,7 @@ if (appID === steamApps.CSGO.appID) {
             .getElementById('market_action_popup_itemactions')
             .querySelector('a.popup_menu_item')
             .getAttribute('href');
-        event.target.setAttribute(
-            'href',
-            `https://market.swap.gg/screenshot?inspectLink=${inspectLink}`,
-        );
+        event.target.setAttribute('href', `https://market.swap.gg/screenshot?inspectLink=${inspectLink}`);
     });
 
     document.getElementById('inbrowser_inspect').addEventListener('click', () => {
@@ -1040,9 +955,7 @@ if (buyOrderInfoEl !== null) {
 
     document.getElementById('quick_place_order').addEventListener('click', () => {
         const quantity = parseInt(document.getElementById('quick_order_qt').value);
-        const pricePerItem = parseInt(
-            steamFormattedPriceToCents(document.getElementById('quick_order_price').value),
-        );
+        const pricePerItem = parseInt(steamFormattedPriceToCents(document.getElementById('quick_order_price').value));
 
         createOrder(appID, fullName, pricePerItem, quantity, getBuyerKYCFromPage())
             .then(() => {
@@ -1050,10 +963,7 @@ if (buyOrderInfoEl !== null) {
             })
             .catch((err) => {
                 console.log(err);
-                buyOrderInfoEl.insertAdjacentHTML(
-                    'beforeend',
-                    `<div class="marketListingBuyOrderError">${err}</div>`,
-                );
+                buyOrderInfoEl.insertAdjacentHTML('beforeend', `<div class="marketListingBuyOrderError">${err}</div>`);
             });
     });
 }
@@ -1086,12 +996,7 @@ if (isCommodityItem) {
     if (fullName.includes('Case') || fullName.includes('Capsule')) {
         const descriptors = document.getElementById('largeiteminfo_item_descriptors');
         if (descriptors !== null) {
-            const qualityRBGS = [
-                'rgb(75, 105, 255)',
-                'rgb(136, 71, 255)',
-                'rgb(211, 44, 230)',
-                'rgb(235, 75, 75)',
-            ];
+            const qualityRBGS = ['rgb(75, 105, 255)', 'rgb(136, 71, 255)', 'rgb(211, 44, 230)', 'rgb(235, 75, 75)'];
 
             descriptors.querySelectorAll('.descriptor').forEach((descriptor) => {
                 if (descriptor.style !== '' && qualityRBGS.includes(descriptor.style.color)) {
@@ -1110,9 +1015,7 @@ if (isCommodityItem) {
             descriptors.insertAdjacentHTML(
                 'beforeend',
                 DOMPurify.sanitize(
-                    `<a href="https://steamcommunity.com/market/search?q=${
-                        fullName.split('Sticker | ')[1]
-                    }&appid=730">
+                    `<a href="https://steamcommunity.com/market/search?q=${fullName.split('Sticker | ')[1]}&appid=730">
                     Look up similar stickers
                 </a>`,
                 ),

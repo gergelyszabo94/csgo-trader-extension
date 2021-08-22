@@ -25,8 +25,7 @@ const Countdown = ({ tradability }: CountdownProps) => {
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            if (distance > 0)
-                setState({ ...state, text: `${days}d ${hours}h ${minutes}m ${seconds}s` });
+            if (distance > 0) setState({ ...state, text: `${days}d ${hours}h ${minutes}m ${seconds}s` });
             else {
                 setState({ text: 'Tradable', class: null });
                 clearInterval(countDownInterval);

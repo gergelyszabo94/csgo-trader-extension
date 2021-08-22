@@ -8,15 +8,7 @@ const getTradeHistory = (maxTrades, startTime = 0, afterTrade = 0) =>
     new Promise((resolve, reject) => {
         chrome.storage.local.get(
             ['apiKeyValid', 'steamAPIKey', 'prices', 'pricingProvider', 'currency', 'exchangeRate'],
-            ({
-                apiKeyValid,
-                steamAPIKey,
-                prices,
-                pricingProvider,
-                pricingMode,
-                currency,
-                exchangeRate,
-            }) => {
+            ({ apiKeyValid, steamAPIKey, prices, pricingProvider, pricingMode, currency, exchangeRate }) => {
                 if (apiKeyValid) {
                     const getRequest = new Request(
                         `https://api.steampowered.com/IEconService/GetTradeHistory/v1/?max_trades=${maxTrades}&start_after_time=${startTime}&start_after_tradeid=${afterTrade}&get_descriptions=1&include_total=1language=english&key=${steamAPIKey}`,
@@ -25,9 +17,7 @@ const getTradeHistory = (maxTrades, startTime = 0, afterTrade = 0) =>
                     fetch(getRequest)
                         .then((response) => {
                             if (!response.ok) {
-                                console.log(
-                                    `Error code: ${response.status} Status: ${response.statusText}`,
-                                );
+                                console.log(`Error code: ${response.status} Status: ${response.statusText}`);
                                 reject(response.statusText);
                             } else return response.json();
                         })
@@ -60,25 +50,19 @@ const getTradeHistory = (maxTrades, startTime = 0, afterTrade = 0) =>
 
                                                 if (trade.assets_received) {
                                                     trade.assets_received.forEach((received) => {
-                                                        const description =
-                                                            body.response.descriptions.filter(
-                                                                (desc) => {
-                                                                    return (
-                                                                        desc.appid ===
-                                                                            received.appid &&
-                                                                        desc.classid ===
-                                                                            received.classid &&
-                                                                        desc.instanceid ===
-                                                                            received.instanceid
-                                                                    );
-                                                                },
-                                                            );
+                                                        const description = body.response.descriptions.filter(
+                                                            (desc) => {
+                                                                return (
+                                                                    desc.appid === received.appid &&
+                                                                    desc.classid === received.classid &&
+                                                                    desc.instanceid === received.instanceid
+                                                                );
+                                                            },
+                                                        );
                                                         const dopplerInfo = isDopplerInName(
                                                             description[0].market_hash_name,
                                                         )
-                                                            ? getDopplerInfo(
-                                                                  description[0].icon_url,
-                                                              )
+                                                            ? getDopplerInfo(description[0].icon_url)
                                                             : null;
                                                         const price = getPrice(
                                                             description[0].market_hash_name,
@@ -89,9 +73,7 @@ const getTradeHistory = (maxTrades, startTime = 0, afterTrade = 0) =>
                                                             exchangeRate,
                                                             currency,
                                                         );
-                                                        tradeWithDesc.receivedTotal += parseFloat(
-                                                            price.price,
-                                                        );
+                                                        tradeWithDesc.receivedTotal += parseFloat(price.price);
                                                         tradeWithDesc.assets_received_desc.push({
                                                             ...received,
                                                             ...description[0],
@@ -103,25 +85,19 @@ const getTradeHistory = (maxTrades, startTime = 0, afterTrade = 0) =>
 
                                                 if (trade.assets_given) {
                                                     trade.assets_given.forEach((given) => {
-                                                        const description =
-                                                            body.response.descriptions.filter(
-                                                                (desc) => {
-                                                                    return (
-                                                                        desc.appid ===
-                                                                            given.appid &&
-                                                                        desc.classid ===
-                                                                            given.classid &&
-                                                                        desc.instanceid ===
-                                                                            given.instanceid
-                                                                    );
-                                                                },
-                                                            );
+                                                        const description = body.response.descriptions.filter(
+                                                            (desc) => {
+                                                                return (
+                                                                    desc.appid === given.appid &&
+                                                                    desc.classid === given.classid &&
+                                                                    desc.instanceid === given.instanceid
+                                                                );
+                                                            },
+                                                        );
                                                         const dopplerInfo = isDopplerInName(
                                                             description[0].market_hash_name,
                                                         )
-                                                            ? getDopplerInfo(
-                                                                  description[0].icon_url,
-                                                              )
+                                                            ? getDopplerInfo(description[0].icon_url)
                                                             : null;
                                                         const price = getPrice(
                                                             description[0].market_hash_name,
@@ -132,9 +108,7 @@ const getTradeHistory = (maxTrades, startTime = 0, afterTrade = 0) =>
                                                             exchangeRate,
                                                             currency,
                                                         );
-                                                        tradeWithDesc.givenTotal += parseFloat(
-                                                            price.price,
-                                                        );
+                                                        tradeWithDesc.givenTotal += parseFloat(price.price);
                                                         tradeWithDesc.assets_given_desc.push({
                                                             ...given,
                                                             ...description[0],
@@ -145,28 +119,23 @@ const getTradeHistory = (maxTrades, startTime = 0, afterTrade = 0) =>
                                                 }
 
                                                 tradeWithDesc.profitLoss =
-                                                    tradeWithDesc.receivedTotal -
-                                                    tradeWithDesc.givenTotal;
-                                                tradeWithDesc.receivedTotalFormatted =
-                                                    prettyPrintPrice(
-                                                        currency,
-                                                        tradeWithDesc.receivedTotal.toFixed(2),
-                                                    );
-                                                tradeWithDesc.givenTotalFormatted =
-                                                    prettyPrintPrice(
-                                                        currency,
-                                                        tradeWithDesc.givenTotal.toFixed(2),
-                                                    );
-                                                tradeWithDesc.profitLossFormatted =
-                                                    prettyPrintPrice(
-                                                        currency,
-                                                        tradeWithDesc.profitLoss.toFixed(2),
-                                                    );
-                                                tradeWithDesc.PLPercentageFormatted =
-                                                    getFormattedPLPercentage(
-                                                        tradeWithDesc.givenTotal,
-                                                        tradeWithDesc.receivedTotal,
-                                                    );
+                                                    tradeWithDesc.receivedTotal - tradeWithDesc.givenTotal;
+                                                tradeWithDesc.receivedTotalFormatted = prettyPrintPrice(
+                                                    currency,
+                                                    tradeWithDesc.receivedTotal.toFixed(2),
+                                                );
+                                                tradeWithDesc.givenTotalFormatted = prettyPrintPrice(
+                                                    currency,
+                                                    tradeWithDesc.givenTotal.toFixed(2),
+                                                );
+                                                tradeWithDesc.profitLossFormatted = prettyPrintPrice(
+                                                    currency,
+                                                    tradeWithDesc.profitLoss.toFixed(2),
+                                                );
+                                                tradeWithDesc.PLPercentageFormatted = getFormattedPLPercentage(
+                                                    tradeWithDesc.givenTotal,
+                                                    tradeWithDesc.receivedTotal,
+                                                );
 
                                                 trades.push(tradeWithDesc);
                                             });
@@ -296,9 +265,7 @@ const getTradeOffers = (
                 fetch(getRequest)
                     .then((response) => {
                         if (!response.ok) {
-                            console.log(
-                                `Error code: ${response.status} Status: ${response.statusText}`,
-                            );
+                            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
                             reject(response.statusText);
                         } else return response.json();
                     })

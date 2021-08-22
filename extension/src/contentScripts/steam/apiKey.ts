@@ -20,10 +20,7 @@ chrome.storage.local.get('autoSetSteamAPIKey', ({ autoSetSteamAPIKey }) => {
             document.querySelector<HTMLInputElement>('input[type=submit]').click();
         } else {
             // if API key registered, just parse it and add it to extension
-            const apiKey = document
-                .getElementById('bodyContents_ex')
-                .querySelector('p')
-                .innerText.split(': ')[1];
+            const apiKey = document.getElementById('bodyContents_ex').querySelector('p').innerText.split(': ')[1];
 
             chrome.runtime.sendMessage({ apikeytovalidate: apiKey }, (response) => {
                 if (response.valid) {

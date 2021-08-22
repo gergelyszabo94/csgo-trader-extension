@@ -29,14 +29,7 @@ const Currency = ({ id, options }: CurrencyProps) => {
         });
     };
 
-    return (
-        <Select
-            id={id}
-            foreignChangeHandler={setStorage}
-            foreignUseEffect={getStorage}
-            options={options}
-        />
-    );
+    return <Select id={id} foreignChangeHandler={setStorage} foreignUseEffect={getStorage} options={options} />;
 };
 
 export default Currency;

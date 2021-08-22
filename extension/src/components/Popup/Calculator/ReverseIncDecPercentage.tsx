@@ -19,10 +19,7 @@ const ReverseIncDecPercentage = () => {
     };
 
     useEffect(() => {
-        const res =
-            option === 'inc'
-                ? number / (percentage / 100 + 1.0)
-                : number / (1.0 - percentage / 100);
+        const res = option === 'inc' ? number / (percentage / 100 + 1.0) : number / (1.0 - percentage / 100);
 
         setResult(res.toFixed(2));
     }, [percentage, number, option]);

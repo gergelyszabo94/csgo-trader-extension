@@ -90,8 +90,7 @@ const conditions = {
     common_friends_under: {
         key: 'common_friends_under',
         pretty: 'Common friends same or less than',
-        description:
-            'You have fewer or the same number of common friends with the user than this number',
+        description: 'You have fewer or the same number of common friends with the user than this number',
         with_value: true,
         value_type: 'number',
         default_value: 5,
@@ -121,8 +120,7 @@ const conditions = {
     all_users: {
         key: 'all_users',
         pretty: 'All users',
-        description:
-            'Matches all users, useful if you want to accept or ignore everyone for example',
+        description: 'Matches all users, useful if you want to accept or ignore everyone for example',
         with_value: false,
     },
 };

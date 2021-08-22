@@ -7,7 +7,7 @@ import Select from 'components/Select';
 import { updatePrices } from 'utils/pricing';
 
 interface PricingProviderProps {
-    options: object
+    options: object;
 }
 
 const PricingProvider = ({ options }: PricingProviderProps) => {
@@ -15,9 +15,7 @@ const PricingProvider = ({ options }: PricingProviderProps) => {
         description: options.csgotrader.description,
         link: options.csgotrader.url,
     });
-    const [aboutMode, setAboutMode] = useState(
-        options.csgotrader.pricing_modes.csgotrader.description,
-    );
+    const [aboutMode, setAboutMode] = useState(options.csgotrader.pricing_modes.csgotrader.description);
 
     const selectOptions = [];
 

@@ -19,13 +19,7 @@ const Restore = () => {
 
     return (
         <>
-            <input
-                type='file'
-                id='restore'
-                name='restore'
-                accept='.json'
-                onChange={onChangeHandler}
-            />
+            <input type='file' id='restore' name='restore' accept='.json' onChange={onChangeHandler} />
             <div className={state}>Restore completed!</div>
         </>
     );

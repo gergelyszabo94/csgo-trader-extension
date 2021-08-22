@@ -8,9 +8,7 @@ interface OperatorProps {
 
 const Operator = ({ operator }: OperatorProps) => {
     if (operator !== undefined) {
-        return (
-            <strong title={operators[operator].description}>{operators[operator].pretty}</strong>
-        );
+        return <strong title={operators[operator].description}>{operators[operator].pretty}</strong>;
     }
     return null;
 };

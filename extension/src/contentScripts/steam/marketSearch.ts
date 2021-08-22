@@ -8,8 +8,7 @@ addUpdatedRibbon();
 
 const searchResultControls = document.getElementById('searchResults_controls');
 if (searchResultControls !== null) {
-    const currentPage =
-        window.location.hash !== '' ? window.location.hash.split('_')[0].split('p')[1] : '1';
+    const currentPage = window.location.hash !== '' ? window.location.hash.split('_')[0].split('p')[1] : '1';
 
     searchResultControls.insertAdjacentHTML(
         'beforebegin',

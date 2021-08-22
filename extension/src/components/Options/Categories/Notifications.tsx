@@ -50,8 +50,8 @@ const Notifications = () => {
                 type='modalTextBox'
                 description={
                     <>
-                        Add the Webhook URL of channel you want to receive notifications to. More
-                        info from Discord here:&nbsp;
+                        Add the Webhook URL of channel you want to receive notifications to. More info from Discord
+                        here:&nbsp;
                         <NewTabLink to='https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks'>
                             Intro to Webhooks
                         </NewTabLink>

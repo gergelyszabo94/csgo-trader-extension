@@ -30,9 +30,7 @@ const addReplyToCommentsFunctionality = () => {
             commentThread.insertAdjacentHTML(
                 'beforeend',
                 `<a class="actionlink replybutton" data-tooltip-text="Reply">
-                <img style="height: 16px; width: 16px" src="${chrome.runtime.getURL(
-                    'images/reply.png',
-                )}">
+                <img style="height: 16px; width: 16px" src="${chrome.runtime.getURL('images/reply.png')}">
               </a>`,
             );
         }
@@ -112,30 +110,24 @@ const hideAndReport = (type, pageID, commentID) => {
 const reportComments = (type, pageID) => {
     chrome.storage.local.get(['flagScamComments', 'customCommentsToReport'], (result) => {
         if (result.flagScamComments) {
-            const mergedStringToReport =
-                result.customCommentsToReport.concat(commentPatternsToReport);
+            const mergedStringToReport = result.customCommentsToReport.concat(commentPatternsToReport);
             const spamTextCheck = new RegExp(mergedStringToReport.join('|'), 'i');
 
-            document
-                .querySelectorAll('.commentthread_comment.responsive_body_text')
-                .forEach((comment) => {
-                    if (
-                        spamTextCheck.test(
-                            comment.querySelector<HTMLElement>('.commentthread_comment_text')
-                                .innerText,
-                        ) &&
-                        !comment.classList.contains('hidden_post')
-                    ) {
-                        // analytics
-                        trackEvent({
-                            type: 'event',
-                            action: 'CommentReported',
-                        });
+            document.querySelectorAll('.commentthread_comment.responsive_body_text').forEach((comment) => {
+                if (
+                    spamTextCheck.test(comment.querySelector<HTMLElement>('.commentthread_comment_text').innerText) &&
+                    !comment.classList.contains('hidden_post')
+                ) {
+                    // analytics
+                    trackEvent({
+                        type: 'event',
+                        action: 'CommentReported',
+                    });
 
-                        const commentID = comment.id.split('comment_')[1];
-                        hideAndReport(type, pageID, commentID);
-                    }
-                });
+                    const commentID = comment.id.split('comment_')[1];
+                    hideAndReport(type, pageID, commentID);
+                }
+            });
         }
     });
 };
@@ -145,14 +137,11 @@ const deleteForumComment = (abuseID, gIDForum, gIDTopic, commentID, extendedData
     headers.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
     headers.append('accept', 'text/javascript, text/html, application/xml, text/xml, */*');
 
-    const request = new Request(
-        `https://steamcommunity.com/comment/ForumTopic/delete/${abuseID}/${gIDForum}/`,
-        {
-            method: 'POST',
-            headers,
-            body: `sessionid=${getSessionID()}&gidcomment=${commentID}&start=0&count=50&feature2=${gIDTopic}&oldestfirst=true&include_raw=true&extended_data=${extendedData}`,
-        },
-    );
+    const request = new Request(`https://steamcommunity.com/comment/ForumTopic/delete/${abuseID}/${gIDForum}/`, {
+        method: 'POST',
+        headers,
+        body: `sessionid=${getSessionID()}&gidcomment=${commentID}&start=0&count=50&feature2=${gIDTopic}&oldestfirst=true&include_raw=true&extended_data=${extendedData}`,
+    });
 
     fetch(request)
         .then((response) => {
@@ -172,14 +161,11 @@ const postForumComment = (abuseID, gIDForum, gIDTopic, comment, extendedData) =>
     headers.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
     headers.append('accept', 'text/javascript, text/html, application/xml, text/xml, */*');
 
-    const request = new Request(
-        `https://steamcommunity.com/comment/ForumTopic/post/${abuseID}/${gIDForum}/`,
-        {
-            method: 'POST',
-            headers,
-            body: `sessionid=${getSessionID()}&comment=${comment}&count=50&feature2=${gIDTopic}&oldestfirst=true&include_raw=true&extended_data=${extendedData}`,
-        },
-    );
+    const request = new Request(`https://steamcommunity.com/comment/ForumTopic/post/${abuseID}/${gIDForum}/`, {
+        method: 'POST',
+        headers,
+        body: `sessionid=${getSessionID()}&comment=${comment}&count=50&feature2=${gIDTopic}&oldestfirst=true&include_raw=true&extended_data=${extendedData}`,
+    });
 
     fetch(request)
         .then((response) => {

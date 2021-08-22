@@ -1,32 +1,23 @@
 import { notificationSounds } from 'utils/static/notifications';
 import { playAudio } from 'utils/simpleUtils';
 
-const determineNotificationDate = (
-    tradableDate,
-    minutesOrHours,
-    numberOfMinutesOrHours,
-    beforeOrAfter,
-) => {
+const determineNotificationDate = (tradableDate, minutesOrHours, numberOfMinutesOrHours, beforeOrAfter) => {
     let baseTimeUnit = 0;
     if (minutesOrHours === 'minutes') baseTimeUnit = 60;
     else if (minutesOrHours === 'hours') baseTimeUnit = 3600;
     if (beforeOrAfter === 'before') baseTimeUnit *= -1;
     const timeDifference = numberOfMinutesOrHours * baseTimeUnit;
 
-    return new Date(
-        (parseInt((new Date(tradableDate).getTime() / 1000).toFixed(0)) + timeDifference) * 1000,
-    );
+    return new Date((parseInt((new Date(tradableDate).getTime() / 1000).toFixed(0)) + timeDifference) * 1000);
 };
 
 const reverseWhenNotifDetails = (tradability, notifTime) => {
     const difference =
-        Math.floor(new Date(notifTime).getTime() / 1000) -
-        Math.floor(new Date(tradability).getTime() / 1000);
+        Math.floor(new Date(notifTime).getTime() / 1000) - Math.floor(new Date(tradability).getTime() / 1000);
     const differenceAbs = Math.abs(difference);
 
     return {
-        numberOfMinutesOrHours:
-            differenceAbs / 60 >= 60 ? differenceAbs / 60 / 60 : differenceAbs / 60,
+        numberOfMinutesOrHours: differenceAbs / 60 >= 60 ? differenceAbs / 60 / 60 : differenceAbs / 60,
         minutesOrHours: differenceAbs / 60 >= 60 ? 'hours' : 'minutes',
         beforeOrAfter: difference >= 0 ? 'after' : 'before',
     };
@@ -74,28 +65,14 @@ const getSteamNotificationCount = () =>
 
 const playNotificationSound = () => {
     chrome.storage.local.get(
-        [
-            'notificationSoundOn',
-            'notificationSoundToPlay',
-            'notificationVolume',
-            'customNotificationURL',
-        ],
-        ({
-            notificationSoundOn,
-            notificationSoundToPlay,
-            notificationVolume,
-            customNotificationURL,
-        }) => {
+        ['notificationSoundOn', 'notificationSoundToPlay', 'notificationVolume', 'customNotificationURL'],
+        ({ notificationSoundOn, notificationSoundToPlay, notificationVolume, customNotificationURL }) => {
             if (notificationSoundOn) {
                 const volume = notificationVolume / 100;
                 if (notificationSoundToPlay === notificationSounds.custom.key) {
                     playAudio(customNotificationURL, 'remote', volume);
                 } else {
-                    playAudio(
-                        `sounds/notification/${notificationSoundToPlay}.mp3`,
-                        'local',
-                        volume,
-                    );
+                    playAudio(`sounds/notification/${notificationSoundToPlay}.mp3`, 'local', volume);
                 }
             }
         },
@@ -121,10 +98,7 @@ const notifyOnDiscord = (embed) => {
 
                 fetch(request)
                     .then((response) => {
-                        if (!response.ok)
-                            console.log(
-                                `Error code: ${response.status} Status: ${response.statusText}`,
-                            );
+                        if (!response.ok) console.log(`Error code: ${response.status} Status: ${response.statusText}`);
                     })
                     .catch((err) => {
                         console.log(err);

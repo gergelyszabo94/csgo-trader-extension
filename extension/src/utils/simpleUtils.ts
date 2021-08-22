@@ -21,11 +21,7 @@ const playAudio = (source, sourceType, volume) => {
 
 const getItemByNameAndGame = (inventory, appID, contextID, itemName) => {
     return inventory.find((item) => {
-        return (
-            item.market_hash_name === itemName &&
-            item.appid === appID &&
-            item.contextid === contextID
-        );
+        return item.market_hash_name === itemName && item.appid === appID && item.contextid === contextID;
     });
 };
 
@@ -47,9 +43,7 @@ const closeTab = () =>
     });
 
 const getFormattedPLPercentage = (giving, receiving) => {
-    return giving === 0 || receiving === 0
-        ? ''
-        : `(${((receiving / giving - 1) * 100).toFixed(2)}%)`;
+    return giving === 0 || receiving === 0 ? '' : `(${((receiving / giving - 1) * 100).toFixed(2)}%)`;
 };
 
 // for phase detection we have to know if th item is a doppler

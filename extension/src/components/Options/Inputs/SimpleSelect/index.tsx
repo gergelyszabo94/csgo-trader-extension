@@ -20,14 +20,7 @@ const SimpleSelect = ({ id, options }: SimpleSelectProps) => {
         });
     };
 
-    return (
-        <Select
-            id={id}
-            foreignChangeHandler={setStorage}
-            foreignUseEffect={getStorage}
-            options={options}
-        />
-    );
+    return <Select id={id} foreignChangeHandler={setStorage} foreignUseEffect={getStorage} options={options} />;
 };
 
 export default SimpleSelect;

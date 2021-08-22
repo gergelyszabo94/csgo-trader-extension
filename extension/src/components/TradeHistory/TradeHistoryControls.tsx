@@ -7,13 +7,7 @@ import DatePicker from 'react-datepicker';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSync } from '@fortawesome/free-solid-svg-icons';
 
-const TradeHistoryControls = ({
-    historySize,
-    setHistorySize,
-    setExcludeEmpty,
-    setStartTime,
-    updateTrades,
-}) => {
+const TradeHistoryControls = ({ historySize, setHistorySize, setExcludeEmpty, setStartTime, updateTrades }) => {
     const [selectState, setSelectState] = useState(historySize);
     const [exclude, setExclude] = useState(false);
     const [date, setDate] = useState(Date.now());
@@ -57,12 +51,7 @@ const TradeHistoryControls = ({
             <div className='row'>
                 <span className='trade-history__control'>
                     Show before:&nbsp;
-                    <DatePicker
-                        selected={date}
-                        onChange={onDateChange}
-                        className='input'
-                        showTimeSelect
-                    />
+                    <DatePicker selected={date} onChange={onDateChange} className='input' showTimeSelect />
                 </span>
             </div>
             <div className='row'>

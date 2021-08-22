@@ -6,12 +6,7 @@ import {
     ignoreRequest,
     updateFriendRequest,
 } from 'utils/friendRequests';
-import {
-    faClipboard,
-    faUserMinus,
-    faUserPlus,
-    faUserSlash,
-} from '@fortawesome/free-solid-svg-icons';
+import { faClipboard, faUserMinus, faUserPlus, faUserSlash } from '@fortawesome/free-solid-svg-icons';
 
 import CustomA11yButton from 'components/CustomA11yButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -61,9 +56,7 @@ const Invite = ({ details, currency, index, remove }) => {
     return (
         <tr>
             <td>
-                <NewTabLink to={`https://steamcommunity.com/profiles/${details.steamID}`}>
-                    {details.name}
-                </NewTabLink>
+                <NewTabLink to={`https://steamcommunity.com/profiles/${details.steamID}`}>{details.name}</NewTabLink>
                 <CustomA11yButton
                     action={() => copyToClipboard(details.name)}
                     title='Copy name to clipboard'
@@ -85,13 +78,9 @@ const Invite = ({ details, currency, index, remove }) => {
                 )}
             </td>
             <td>{details.commonFriends !== undefined ? details.commonFriends.length : '-'}</td>
+            <td>{details.summary ? (details.summary.profilestate === 1 ? 'Public' : 'Private') : ''}</td>
             <td>
-                {details.summary ? (details.summary.profilestate === 1 ? 'Public' : 'Private') : ''}
-            </td>
-            <td>
-                <NewTabLink
-                    to={`https://steamcommunity.com/profiles/${details.steamID}/inventory/`}
-                >
+                <NewTabLink to={`https://steamcommunity.com/profiles/${details.steamID}/inventory/`}>
                     {invValue}
                 </NewTabLink>
             </td>
@@ -108,25 +97,13 @@ const Invite = ({ details, currency, index, remove }) => {
             </td>
             <td>{getBansSummaryText(details.bans, details.steamRepInfo)}</td>
             <td>
-                <CustomA11yButton
-                    action={onAcceptFriend}
-                    title='Accept friend request'
-                    className='mx-1'
-                >
+                <CustomA11yButton action={onAcceptFriend} title='Accept friend request' className='mx-1'>
                     <FontAwesomeIcon icon={faUserPlus} />
                 </CustomA11yButton>
-                <CustomA11yButton
-                    action={onIgnoreFriend}
-                    title='Ignore friend request'
-                    className='mx-1'
-                >
+                <CustomA11yButton action={onIgnoreFriend} title='Ignore friend request' className='mx-1'>
                     <FontAwesomeIcon icon={faUserMinus} />
                 </CustomA11yButton>
-                <CustomA11yButton
-                    action={onBlockFriend}
-                    title='Block friend request'
-                    className='mx-1'
-                >
+                <CustomA11yButton action={onBlockFriend} title='Block friend request' className='mx-1'>
                     <FontAwesomeIcon icon={faUserSlash} />
                 </CustomA11yButton>
             </td>

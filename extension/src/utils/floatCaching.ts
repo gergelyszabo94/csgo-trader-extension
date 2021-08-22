@@ -47,9 +47,7 @@ const getFloatInfoFromCache = (assetIDs) => {
             assetIDsArray.forEach((assetID) => {
                 const itemFloatCache = result[`floatCache_${assetID}`];
                 floatInfoToReturn[assetID] =
-                    itemFloatCache !== undefined && itemFloatCache !== null
-                        ? itemFloatCache.floatInfo
-                        : null;
+                    itemFloatCache !== undefined && itemFloatCache !== null ? itemFloatCache.floatInfo : null;
             });
             updateFloatCache(assetIDsArray);
             resolve(floatInfoToReturn);
@@ -93,10 +91,7 @@ const trimFloatCache = () => {
                 // if unused and in cache for over a day, or used but not for over a week
                 // then this whole thing negated
                 // because the ones that do not fit this wil remain in the cache
-                if (
-                    (used === 0 && timeSinceLastUsed > 86400) ||
-                    (used > 0 && timeSinceLastUsed > 604800)
-                ) {
+                if ((used === 0 && timeSinceLastUsed > 86400) || (used > 0 && timeSinceLastUsed > 604800)) {
                     chrome.storage.local.remove([storageKey], () => {});
                 }
             }
@@ -104,10 +99,4 @@ const trimFloatCache = () => {
     });
 };
 
-export {
-    trimFloatCache,
-    getFloatInfoFromCache,
-    extractUsefulFloatInfo,
-    addToFloatCache,
-    updateFloatCache,
-};
+export { trimFloatCache, getFloatInfoFromCache, extractUsefulFloatInfo, addToFloatCache, updateFloatCache };

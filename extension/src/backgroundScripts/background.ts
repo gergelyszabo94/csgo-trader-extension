@@ -6,12 +6,7 @@ import {
 } from 'utils/friendRequests';
 import { getSteamNotificationCount, playNotificationSound } from 'utils/notifications';
 import { getUserCurrencyBestGuess, updateExchangeRates, updatePrices } from 'utils/pricing';
-import {
-    goToInternalPage,
-    markModMessagesAsRead,
-    scrapeSteamAPIkey,
-    uuidv4,
-} from 'utils/utilsModular';
+import { goToInternalPage, markModMessagesAsRead, scrapeSteamAPIkey, uuidv4 } from 'utils/utilsModular';
 import { removeOldOfferEvents, updateTrades } from 'utils/tradeOffers';
 import { sendTelemetry, trackEvent } from 'utils/analytics';
 
@@ -65,8 +60,7 @@ chrome.runtime.onInstalled.addListener((details) => {
                 type: 'basic',
                 iconUrl: '/images/cstlogo128.png',
                 title: 'Extension installed!',
-                message:
-                    'Go to the options through the extension popup and customize your experience!',
+                message: 'Go to the options through the extension popup and customize your experience!',
             },
             () => {
                 playNotificationSound();
@@ -232,10 +226,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
                         const friendAndGroupInviteCount =
                             friendRequests.inviters.length + groupInvites.invitedTo.length;
 
-                        if (
-                            invites !== friendAndGroupInviteCount ||
-                            minutesFromLastFriendCheck >= 30
-                        ) {
+                        if (invites !== friendAndGroupInviteCount || minutesFromLastFriendCheck >= 30) {
                             if (monitorFriendRequests) updateFriendRequest();
                             getGroupInvites().then((inviters) => {
                                 if (ignoreGroupInvites) {
@@ -247,8 +238,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
                         }
 
                         // moderation messages
-                        if (markModerationMessagesAsRead && moderatorMessages > 0)
-                            markModMessagesAsRead();
+                        if (markModerationMessagesAsRead && moderatorMessages > 0) markModMessagesAsRead();
 
                         // trade offers monitoring
                         const minutesFromLastOfferCheck =
@@ -256,16 +246,14 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 
                         if (
                             monitorIncomingOffers &&
-                            (tradeOffers !== activeOffers.receivedActiveCount ||
-                                minutesFromLastOfferCheck >= 2)
+                            (tradeOffers !== activeOffers.receivedActiveCount || minutesFromLastOfferCheck >= 2)
                         ) {
                             updateTrades();
                         }
 
                         // new items notification
                         if (notifyAboutNewItems && items !== numberOfNewItems) {
-                            const numberOfJustNoticedNewItems =
-                                items > numberOfNewItems ? items - numberOfNewItems : 0;
+                            const numberOfJustNoticedNewItems = items > numberOfNewItems ? items - numberOfNewItems : 0;
                             if (numberOfJustNoticedNewItems > 0) {
                                 const title =
                                     numberOfJustNoticedNewItems === 1
@@ -299,9 +287,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
                             const newComments = comments - numberOfComments;
                             if (newComments > 0) {
                                 const title =
-                                    newComments === 1
-                                        ? `${newComments} new comment!`
-                                        : `${newComments} new comments!`;
+                                    newComments === 1 ? `${newComments} new comment!` : `${newComments} new comments!`;
                                 const message =
                                     newComments === 1
                                         ? `You have ${newComments} new comment!`
@@ -331,14 +317,10 @@ chrome.alarms.onAlarm.addListener((alarm) => {
                 if (error === 401 || error === 403) {
                     if (error === 401) {
                         // user not logged in
-                        console.log(
-                            'User not logged in, suspending notification checks for an hour.',
-                        );
+                        console.log('User not logged in, suspending notification checks for an hour.');
                     } else if (error === 403) {
                         // Steam is temporarily blocking this ip
-                        console.log(
-                            'Steam is denying access, suspending notification checks for an hour.',
-                        );
+                        console.log('Steam is denying access, suspending notification checks for an hour.');
                     }
                     chrome.alarms.clear('getSteamNotificationCount', () => {
                         const now = new Date();
@@ -364,8 +346,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     } else {
         // this is when bookmarks notification are handled
         chrome.browserAction.getBadgeText({}, (result) => {
-            if (result === '' || result === 'U' || result === 'I')
-                chrome.browserAction.setBadgeText({ text: '1' });
+            if (result === '' || result === 'U' || result === 'I') chrome.browserAction.setBadgeText({ text: '1' });
             else chrome.browserAction.setBadgeText({ text: (parseInt(result) + 1).toString() });
         });
         chrome.storage.local.get('bookmarks', (result) => {

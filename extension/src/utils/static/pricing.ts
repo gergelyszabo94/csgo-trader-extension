@@ -296,8 +296,7 @@ const pricingProviders = {
                 long: 'Standard BITSKINS price',
             },
             instant_sale: {
-                description:
-                    'Instant sale - what bitskins pays for your item when they buy it themselves',
+                description: 'Instant sale - what bitskins pays for your item when they buy it themselves',
                 name: 'instant_sale',
                 long: 'Instant sale price',
             },
@@ -377,8 +376,7 @@ const pricingProviders = {
         long: 'Skinport.com',
         short: 'SC',
         url: 'https://skinport.com/?r=gery',
-        description:
-            'Skinport is a real money skin marketplace offering good prices and premium service',
+        description: 'Skinport is a real money skin marketplace offering good prices and premium service',
         pricing_modes: {
             suggested_price: {
                 description: 'Skinport suggested price',

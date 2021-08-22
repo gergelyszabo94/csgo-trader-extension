@@ -2,11 +2,7 @@ import { currencies, pricingProviders, realTimePricingModes } from 'utils/static
 import { listingsSortingModes, offersSortingModes, sortingModes } from 'utils/static/sortingModes';
 import defaultPopupLinks from 'utils/static/defaultPopupLinks';
 import { actions, conditions } from 'utils/static/friendRequests';
-import {
-    actions as offerActions,
-    conditions as offerConditions,
-    operators,
-} from 'utils/static/offers';
+import { actions as offerActions, conditions as offerConditions, operators } from 'utils/static/offers';
 import { notificationSounds } from 'utils/static/notifications';
 
 const storageKeys = {
@@ -15,8 +11,7 @@ const storageKeys = {
     showPlusRepButton: true,
     reputationMessage: '+rep',
     showReoccButton: true,
-    reoccuringMessage:
-        "I don't have other accounts. If someone adds you with my name and picture they are scammers.",
+    reoccuringMessage: "I don't have other accounts. If someone adds you with my name and picture they are scammers.",
     nsfwFilter: false,
     flagScamComments: true,
     bookmarks: [],
@@ -249,8 +244,7 @@ const storageKeys = {
     notificationSoundOn: true,
     notificationSoundToPlay: notificationSounds['done-for-you'].key,
     notificationVolume: 50,
-    customNotificationURL:
-        'https://csgotrader.app/extension/sound/notification/glitch-in-the-matrix.ogg',
+    customNotificationURL: 'https://csgotrader.app/extension/sound/notification/glitch-in-the-matrix.ogg',
     showNumberOfOfferOnBadge: true,
     notifyOnFriendRequest: true,
     notifyAboutComments: false,

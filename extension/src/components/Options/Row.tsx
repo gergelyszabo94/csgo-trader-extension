@@ -28,7 +28,7 @@ interface TypeSwitchProps {
     options?: Option[] | object;
 }
 
-const TypeSwitch = ({ type, key, permission, origins, modalTitle, options }: TypeSwitchProps) => {    
+const TypeSwitch = ({ type, key, permission, origins, modalTitle, options }: TypeSwitchProps) => {
     switch (type) {
         case 'flipSwitchStorage':
             return <FlipSwitchStorage id={key} />;
@@ -84,16 +84,7 @@ interface RowProps {
     options?: Option[] | object;
 }
 
-const row = ({
-    name,
-    description,
-    type,
-    id,
-    permission,
-    origins,
-    modalTitle,
-    options,
-}: RowProps) => {
+const row = ({ name, description, type, id, permission, origins, modalTitle, options }: RowProps) => {
     return (
         <div className='row mb-4 pb-4 option-row'>
             <div className='col-md-12'>

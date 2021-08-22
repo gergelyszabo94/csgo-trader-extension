@@ -7,27 +7,20 @@ const buyListing = (listing, buyerKYC) => {
         myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 
         const currencyID = listing.converted_currencyid - 2000;
-        const request = new Request(
-            `https://steamcommunity.com/market/buylisting/${listing.listingid}`,
-            {
-                method: 'POST',
-                headers: myHeaders,
-                body: `sessionid=${getSessionID()}&currency=${currencyID}&fee=${
-                    listing.converted_fee
-                }&subtotal=${listing.converted_price}&total=${
-                    listing.converted_fee + listing.converted_price
-                }&quantity=1&first_name=${buyerKYC.first_name}&last_name=${
-                    buyerKYC.last_name
-                }&billing_address=${buyerKYC.billing_address}&billing_address_two=${
-                    buyerKYC.billing_address_two
-                }&billing_country=${buyerKYC.billing_country}&billing_city=${
-                    buyerKYC.billing_city
-                }&billing_state=${buyerKYC.billing_state}&billing_postal_code=${
-                    buyerKYC.billing_postal_code
-                }&save_my_address=1`,
-                credentials: 'include',
-            },
-        );
+        const request = new Request(`https://steamcommunity.com/market/buylisting/${listing.listingid}`, {
+            method: 'POST',
+            headers: myHeaders,
+            body: `sessionid=${getSessionID()}&currency=${currencyID}&fee=${listing.converted_fee}&subtotal=${
+                listing.converted_price
+            }&total=${listing.converted_fee + listing.converted_price}&quantity=1&first_name=${
+                buyerKYC.first_name
+            }&last_name=${buyerKYC.last_name}&billing_address=${buyerKYC.billing_address}&billing_address_two=${
+                buyerKYC.billing_address_two
+            }&billing_country=${buyerKYC.billing_country}&billing_city=${buyerKYC.billing_city}&billing_state=${
+                buyerKYC.billing_state
+            }&billing_postal_code=${buyerKYC.billing_postal_code}&save_my_address=1`,
+            credentials: 'include',
+        });
 
         //@ts-ignore
         const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
@@ -51,14 +44,11 @@ const removeListing = (listingID) => {
         const myHeaders = new Headers();
         myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 
-        const request = new Request(
-            `https://steamcommunity.com/market/removelisting/${listingID}`,
-            {
-                method: 'POST',
-                headers: myHeaders,
-                body: `sessionid=${getSessionID()}`,
-            },
-        );
+        const request = new Request(`https://steamcommunity.com/market/removelisting/${listingID}`, {
+            method: 'POST',
+            headers: myHeaders,
+            body: `sessionid=${getSessionID()}`,
+        });
 
         //@ts-ignore
         const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
@@ -147,13 +137,11 @@ const createOrder = (
             headers: myHeaders,
             body: `sessionid=${getSessionID()}&currency=${currency}&appid=${appID}&market_hash_name=${marketHashName}&price_total=${
                 price * quantity
-            }&quantity=${quantity}&first_name=${buyerKYC.first_name}&last_name=${
-                buyerKYC.last_name
-            }&billing_address=${buyerKYC.billing_address}&billing_address_two=${
-                buyerKYC.billing_address_two
-            }&billing_country=${buyerKYC.billing_country}&billing_city=${
-                buyerKYC.billing_city
-            }&billing_state=${buyerKYC.billing_state}&billing_postal_code=${
+            }&quantity=${quantity}&first_name=${buyerKYC.first_name}&last_name=${buyerKYC.last_name}&billing_address=${
+                buyerKYC.billing_address
+            }&billing_address_two=${buyerKYC.billing_address_two}&billing_country=${
+                buyerKYC.billing_country
+            }&billing_city=${buyerKYC.billing_city}&billing_state=${buyerKYC.billing_state}&billing_postal_code=${
                 buyerKYC.billing_postal_code
             }&save_my_address=1`,
         });
@@ -275,14 +263,11 @@ const getMarketHistory = (start: number, count: number): Promise<MarketHistory> 
         const myHeaders = new Headers();
         myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 
-        const request = new Request(
-            `https://steamcommunity.com/market/myhistory/?start=${start}&count=${count}`,
-            {
-                method: 'POST',
-                headers: myHeaders,
-                body: `sessionid=${getSessionID()}`,
-            },
-        );
+        const request = new Request(`https://steamcommunity.com/market/myhistory/?start=${start}&count=${count}`, {
+            method: 'POST',
+            headers: myHeaders,
+            body: `sessionid=${getSessionID()}`,
+        });
 
         //@ts-ignore
         const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
@@ -346,12 +331,4 @@ const loadItemOrderHistogram = (nameID) => {
     });
 };
 
-export {
-    removeListing,
-    cancelOrder,
-    getMarketHistory,
-    listItem,
-    buyListing,
-    createOrder,
-    loadItemOrderHistogram,
-};
+export { removeListing, cancelOrder, getMarketHistory, listItem, buyListing, createOrder, loadItemOrderHistogram };

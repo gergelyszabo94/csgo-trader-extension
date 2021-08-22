@@ -28,10 +28,7 @@ const TradeHistoryContent = () => {
             .then((tradesResponse) => {
                 const noEmptyTrades = [];
                 tradesResponse.trades.forEach((trade) => {
-                    if (
-                        trade.assets_given_desc.length !== 0 &&
-                        trade.assets_received_desc.length !== 0
-                    ) {
+                    if (trade.assets_given_desc.length !== 0 && trade.assets_received_desc.length !== 0) {
                         noEmptyTrades.push(trade);
                     }
                 });
@@ -42,9 +39,7 @@ const TradeHistoryContent = () => {
             })
             .catch((err) => {
                 console.log(err);
-                setError(
-                    "Could not load your offer history, Steam might be down or you don't have your API key set.",
-                );
+                setError("Could not load your offer history, Steam might be down or you don't have your API key set.");
             });
     };
 
@@ -60,8 +55,7 @@ const TradeHistoryContent = () => {
         <div className='container'>
             <div className='trade-history'>
                 <h1 className='trade-history__headline clearfix'>
-                    Trade History ({totalTrades})
-                    {trades !== null ? <TradeSummary trades={trades} /> : null}
+                    Trade History ({totalTrades}){trades !== null ? <TradeSummary trades={trades} /> : null}
                 </h1>
                 <TradeHistoryControls
                     setHistorySize={setHistorySize}
@@ -71,11 +65,7 @@ const TradeHistoryContent = () => {
                     updateTrades={updateTrades}
                 />
                 {error === null ? (
-                    <TradeOfferContent
-                        trades={trades}
-                        type='history'
-                        loadNextBatch={loadNextBatch}
-                    />
+                    <TradeOfferContent trades={trades} type='history' loadNextBatch={loadNextBatch} />
                 ) : (
                     <div className='warning'>{error}</div>
                 )}

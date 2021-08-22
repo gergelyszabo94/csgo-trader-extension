@@ -13,26 +13,15 @@ const getOfferStyleSteamID = (steamID64) => {
 
 // gets SteamID of the user logged into steam (returns false if there is no user logged in)
 const getUserSteamID = () => {
-    const getUserSteamIDScript =
-        "document.querySelector('body').setAttribute('steamidOfLoggedinUser', g_steamID);";
-    return injectScript(
-        getUserSteamIDScript,
-        true,
-        'steamidOfLoggedinUser',
-        'steamidOfLoggedinUser',
-    );
+    const getUserSteamIDScript = "document.querySelector('body').setAttribute('steamidOfLoggedinUser', g_steamID);";
+    return injectScript(getUserSteamIDScript, true, 'steamidOfLoggedinUser', 'steamidOfLoggedinUser');
 };
 
 // gets the steam id of the user that's profile this script is run on
 const getProfileOwnerSteamID = () => {
     const steamIDOfProfileOwnerScript =
         "document.querySelector('body').setAttribute('steamidOfProfileOwner', g_rgProfileData.steamid);";
-    return injectScript(
-        steamIDOfProfileOwnerScript,
-        true,
-        'steamidOfProfileOwner',
-        'steamidOfProfileOwner',
-    );
+    return injectScript(steamIDOfProfileOwnerScript, true, 'steamidOfProfileOwner', 'steamidOfProfileOwner');
 };
 
 const getGroupID = () => {

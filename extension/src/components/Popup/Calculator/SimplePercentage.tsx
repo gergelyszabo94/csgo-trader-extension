@@ -29,10 +29,7 @@ const SimplePercentage = () => {
 
     return (
         <div className='calCategory'>
-            <span
-                className='calcSubtitle'
-                title='Percentage - Find how much a specific percentage is of a number'
-            >
+            <span className='calcSubtitle' title='Percentage - Find how much a specific percentage is of a number'>
                 Percentage
             </span>
             <input

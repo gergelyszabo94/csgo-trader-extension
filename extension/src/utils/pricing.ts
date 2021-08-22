@@ -1,9 +1,4 @@
-import {
-    currencies,
-    pricingProviders,
-    realTimePricingModes,
-    steamCurrencyCodes,
-} from 'utils/static/pricing';
+import { currencies, pricingProviders, realTimePricingModes, steamCurrencyCodes } from 'utils/static/pricing';
 
 import DOMPurify from 'dompurify';
 import { findElementByIDs } from 'utils/itemsToElementsToItems';
@@ -63,12 +58,7 @@ const getSteamWalletCurrency = () => {
       String(getSteamWalletInfo().wallet_currency),
   )}));
   `;
-    return injectScript(
-        getCurrencyScript,
-        true,
-        'steamWalletCurrencyScript',
-        'steamWalletCurrency',
-    );
+    return injectScript(getCurrencyScript, true, 'steamWalletCurrencyScript', 'steamWalletCurrency');
 };
 
 interface CurrencyProps {
@@ -103,14 +93,10 @@ const getHighestBuyOrder = (appID, marketHashName): Promise<string> => {
                     if (short === currency) currencyID = Number(code);
                 }
             }
-            chrome.runtime.sendMessage(
-                { getBuyOrderInfo: { appID, currencyID, marketHashName } },
-                (response) => {
-                    if (response !== 'error')
-                        resolve((response.getBuyOrderInfo as BuyOrderInfo).highest_buy_order);
-                    else reject('error');
-                },
-            );
+            chrome.runtime.sendMessage({ getBuyOrderInfo: { appID, currencyID, marketHashName } }, (response) => {
+                if (response !== 'error') resolve((response.getBuyOrderInfo as BuyOrderInfo).highest_buy_order);
+                else reject('error');
+            });
         });
     });
 };
@@ -202,9 +188,7 @@ const getLowestListingPrice = (appID: string | number, marketHashName: string): 
             fetch(request)
                 .then((response) => {
                     if (!response.ok) {
-                        console.log(
-                            `Error code: ${response.status} Status: ${response.statusText}`,
-                        );
+                        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
                         reject({ status: response.status, statusText: response.statusText });
                     }
                     return response.json();
@@ -213,15 +197,10 @@ const getLowestListingPrice = (appID: string | number, marketHashName: string): 
                     if (listingsJSONData === null) reject('success:false');
                     else if (listingsJSONData.success === true) {
                         if (listingsJSONData.listinginfo) {
-                            const listingInfo = Object.values(
-                                listingsJSONData.listinginfo as ListingInfo,
-                            );
+                            const listingInfo = Object.values(listingsJSONData.listinginfo as ListingInfo);
                             if (listingInfo.length !== 0) {
                                 for (const listing of listingInfo) {
-                                    if (
-                                        listing.converted_price !== undefined &&
-                                        listing.converted_fee !== undefined
-                                    ) {
+                                    if (listing.converted_price !== undefined && listing.converted_fee !== undefined) {
                                         resolve(listing.converted_price + listing.converted_fee);
                                         return;
                                     }
@@ -309,14 +288,10 @@ const workOnPriceQueue = () => {
             priceQueue.active = true; // marks the queue active
             chrome.storage.local.get(['priceQueueActivity'], ({ priceQueueActivity }) => {
                 const job = priceQueue.jobs.shift();
-                const secondsFromLastUse =
-                    (Date.now() - new Date(priceQueueActivity.lastUsed).getTime()) / 1000;
+                const secondsFromLastUse = (Date.now() - new Date(priceQueueActivity.lastUsed).getTime()) / 1000;
 
                 // tries to avoid having multiple price queues running concurrently on different pages
-                if (
-                    secondsFromLastUse > 10 ||
-                    priceQueueActivity.usedAt === window.location.pathname
-                ) {
+                if (secondsFromLastUse > 10 || priceQueueActivity.usedAt === window.location.pathname) {
                     if (job.retries < 5) {
                         // limits the number of retries to avoid infinite loop
                         if (
@@ -326,24 +301,16 @@ const workOnPriceQueue = () => {
                             job.type === `offers_${realTimePricingModes.bid_price.key}` ||
                             job.type === `inventory_${realTimePricingModes.bid_price.key}`
                         ) {
-                            if (
-                                priceQueue.localCache[
-                                    job.appID + job.market_hash_name + job.type
-                                ] !== undefined
-                            ) {
+                            if (priceQueue.localCache[job.appID + job.market_hash_name + job.type] !== undefined) {
                                 if (job.type === 'my_buy_order')
                                     job.callBackFunction(
                                         job,
-                                        priceQueue.localCache[
-                                            job.appID + job.market_hash_name + job.type
-                                        ],
+                                        priceQueue.localCache[job.appID + job.market_hash_name + job.type],
                                     );
                                 else if (job.type === 'inventory_mass_sell_instant_sell') {
                                     job.callBackFunction(
                                         job.market_hash_name,
-                                        priceQueue.localCache[
-                                            job.appID + job.market_hash_name + job.type
-                                        ],
+                                        priceQueue.localCache[job.appID + job.market_hash_name + job.type],
                                         job.appID,
                                         job.assetID,
                                         job.contextID,
@@ -354,12 +321,10 @@ const workOnPriceQueue = () => {
                                 getHighestBuyOrder(job.appID, job.market_hash_name).then(
                                     (highestBuyOrder) => {
                                         if (highestBuyOrder !== undefined) {
-                                            if (job.type === 'my_buy_order')
-                                                job.callBackFunction(job, highestBuyOrder);
+                                            if (job.type === 'my_buy_order') job.callBackFunction(job, highestBuyOrder);
                                             else if (
                                                 job.type === 'inventory_mass_sell_instant_sell' ||
-                                                job.type ===
-                                                    `offer_${realTimePricingModes.bid_price.key}`
+                                                job.type === `offer_${realTimePricingModes.bid_price.key}`
                                             ) {
                                                 job.callBackFunction(
                                                     job.market_hash_name,
@@ -369,12 +334,10 @@ const workOnPriceQueue = () => {
                                                     job.contextID,
                                                 );
                                             }
-                                            priceQueue.localCache[
-                                                job.appID + job.market_hash_name + job.type
-                                            ] = highestBuyOrder;
+                                            priceQueue.localCache[job.appID + job.market_hash_name + job.type] =
+                                                highestBuyOrder;
                                             priceQueueSuccess();
-                                        } else
-                                            priceQueueFailure('highestBuyOrder is undefined', job);
+                                        } else priceQueueFailure('highestBuyOrder is undefined', job);
                                     },
                                     (error) => {
                                         priceQueueFailure(error, job);
@@ -389,31 +352,21 @@ const workOnPriceQueue = () => {
                             job.type === 'my_listing' ||
                             job.type === 'history_row'
                         ) {
-                            if (
-                                priceQueue.localCache[
-                                    job.appID + job.market_hash_name + job.type
-                                ] !== undefined
-                            ) {
+                            if (priceQueue.localCache[job.appID + job.market_hash_name + job.type] !== undefined) {
                                 if (job.type === 'my_listing') {
                                     job.callBackFunction(
                                         job.listingID,
-                                        priceQueue.localCache[
-                                            job.appID + job.market_hash_name + job.type
-                                        ],
+                                        priceQueue.localCache[job.appID + job.market_hash_name + job.type],
                                     );
                                 } else if (job.type === 'history_row') {
                                     job.callBackFunction(
                                         job.rowID,
-                                        priceQueue.localCache[
-                                            job.appID + job.market_hash_name + job.type
-                                        ],
+                                        priceQueue.localCache[job.appID + job.market_hash_name + job.type],
                                     );
                                 } else {
                                     job.callBackFunction(
                                         job.market_hash_name,
-                                        priceQueue.localCache[
-                                            job.appID + job.market_hash_name + job.type
-                                        ],
+                                        priceQueue.localCache[job.appID + job.market_hash_name + job.type],
                                         job.appID,
                                         job.assetID,
                                         job.contextID,
@@ -425,10 +378,7 @@ const workOnPriceQueue = () => {
                                     (lowestListingPrice) => {
                                         if (lowestListingPrice !== undefined) {
                                             if (job.type === 'my_listing') {
-                                                job.callBackFunction(
-                                                    job.listingID,
-                                                    lowestListingPrice,
-                                                );
+                                                job.callBackFunction(job.listingID, lowestListingPrice);
                                             } else if (job.type === 'history_row') {
                                                 job.callBackFunction(job.rowID, lowestListingPrice);
                                             } else {
@@ -441,9 +391,8 @@ const workOnPriceQueue = () => {
                                                     job.type,
                                                 );
                                             }
-                                            priceQueue.localCache[
-                                                job.appID + job.market_hash_name + job.type
-                                            ] = lowestListingPrice;
+                                            priceQueue.localCache[job.appID + job.market_hash_name + job.type] =
+                                                lowestListingPrice;
                                             priceQueueSuccess();
                                         } else priceQueueFailure('lowest_price is undefined', job);
                                     },
@@ -458,16 +407,10 @@ const workOnPriceQueue = () => {
                             job.type === `inventory_${realTimePricingModes.mid_price.key}` ||
                             job.type === 'inventory_mass_sell_mid_price'
                         ) {
-                            if (
-                                priceQueue.localCache[
-                                    job.appID + job.market_hash_name + job.type
-                                ] !== undefined
-                            ) {
+                            if (priceQueue.localCache[job.appID + job.market_hash_name + job.type] !== undefined) {
                                 job.callBackFunction(
                                     job.market_hash_name,
-                                    priceQueue.localCache[
-                                        job.appID + job.market_hash_name + job.type
-                                    ],
+                                    priceQueue.localCache[job.appID + job.market_hash_name + job.type],
                                     job.appID,
                                     job.assetID,
                                     job.contextID,
@@ -485,9 +428,7 @@ const workOnPriceQueue = () => {
                                             job.contextID,
                                             job.type,
                                         );
-                                        priceQueue.localCache[
-                                            job.appID + job.market_hash_name + job.type
-                                        ] = midPrice;
+                                        priceQueue.localCache[job.appID + job.market_hash_name + job.type] = midPrice;
                                         priceQueueSuccess();
                                     },
                                     (error) => {
@@ -546,11 +487,8 @@ const updatePrices = () => {
                         provider === pricingProviders.skinport.name
                     ) {
                         let pricingMode = mode;
-                        if (mode === pricingProviders.bitskins.pricing_modes.bitskins.name)
-                            pricingMode = 'price';
-                        else if (
-                            mode === pricingProviders.bitskins.pricing_modes.instant_sale.name
-                        ) {
+                        if (mode === pricingProviders.bitskins.pricing_modes.bitskins.name) pricingMode = 'price';
+                        else if (mode === pricingProviders.bitskins.pricing_modes.instant_sale.name) {
                             pricingMode = 'instant_sale_price';
                         }
 
@@ -614,8 +552,7 @@ const updateExchangeRates = () => {
 
     fetch(request)
         .then((response) => {
-            if (!response.ok)
-                console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+            if (!response.ok) console.log(`Error code: ${response.status} Status: ${response.statusText}`);
             return response.json();
         })
         .then((exchangeRatesJSON) => {
@@ -654,9 +591,7 @@ const getPrice = (marketHashName, dopplerInfo, prices, provider, mode, exchangeR
                     prices[marketHashName].doppler[dopplerInfo.name] !== 'null' &&
                     prices[marketHashName].doppler[dopplerInfo.name] !== undefined
                 ) {
-                    price = (
-                        prices[marketHashName].doppler[dopplerInfo.name] * exchangeRate
-                    ).toFixed(2);
+                    price = (prices[marketHashName].doppler[dopplerInfo.name] * exchangeRate).toFixed(2);
                 } else if (
                     provider === pricingProviders.buff163.name &&
                     mode === pricingProviders.buff163.pricing_modes.starting_at.name
@@ -679,9 +614,7 @@ const getStickerPriceTotal = (stickers, currency) => {
             if (sticker.price !== null) total += parseFloat(sticker.price.price);
         });
     }
-    return total === 0
-        ? null
-        : { price: total, display: currencies[currency].sign + total.toFixed(2) };
+    return total === 0 ? null : { price: total, display: currencies[currency].sign + total.toFixed(2) };
 };
 
 const prettyPrintPrice = (currency, price) => {
@@ -699,18 +632,12 @@ const getPriceAfterFees = (priceBeforeFees) => {
           ${DOMPurify.sanitize(priceBeforeFees)} - CalculateFeeAmount( ${DOMPurify.sanitize(
         priceBeforeFees,
     )}, g_rgWalletInfo['wallet_publisher_fee_percent_default'] ).fees);`;
-    return parseInt(
-        injectScript(priceAfterFeesScript, true, 'priceAfterFeesScript', 'priceAfterFees'),
-    );
+    return parseInt(injectScript(priceAfterFeesScript, true, 'priceAfterFeesScript', 'priceAfterFees'));
 };
 
 const userPriceToProperPrice = (userInput) => {
     const strippedFromExtraChars = userInput.replace(/[^0-9.,]/g, '');
-    const splitChar = strippedFromExtraChars.includes('.')
-        ? '.'
-        : strippedFromExtraChars.includes(',')
-        ? ','
-        : '';
+    const splitChar = strippedFromExtraChars.includes('.') ? '.' : strippedFromExtraChars.includes(',') ? ',' : '';
     if (splitChar === '') return parseInt(`${strippedFromExtraChars}00`); // whole number
 
     const parts = strippedFromExtraChars.split(splitChar);
@@ -786,16 +713,11 @@ const addRealTimePriceToPage = (marketHashName, price, appID, assetID, contextID
         chrome.storage.local.get(['userSteamWalletCurrency'], ({ userSteamWalletCurrency }) => {
             addRealTimePriceIndicator(
                 itemElement,
-                price !== null
-                    ? prettyPrintPrice(userSteamWalletCurrency, (price / 100).toFixed(2))
-                    : 'No Data',
+                price !== null ? prettyPrintPrice(userSteamWalletCurrency, (price / 100).toFixed(2)) : 'No Data',
             );
         });
     } else {
-        addRealTimePriceIndicator(
-            itemElement,
-            price !== null ? centsToSteamFormattedPrice(price) : 'No Data',
-        );
+        addRealTimePriceIndicator(itemElement, price !== null ? centsToSteamFormattedPrice(price) : 'No Data');
     }
     itemElement.setAttribute('data-realtime-price', price !== null ? price.toString() : '0');
 };
@@ -804,9 +726,7 @@ const updateWalletCurrency = () => {
     const walletCurrency = getSteamWalletCurrency();
     chrome.storage.local.set({
         userSteamWalletCurrency:
-            walletCurrency !== 'Unknown' && walletCurrency !== undefined
-                ? walletCurrency
-                : currencies.USD.short,
+            walletCurrency !== 'Unknown' && walletCurrency !== undefined ? walletCurrency : currencies.USD.short,
     });
 };
 

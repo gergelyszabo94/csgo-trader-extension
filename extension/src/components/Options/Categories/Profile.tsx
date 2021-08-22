@@ -54,8 +54,7 @@ const profile = () => {
                 type='flipSwitchStorage'
                 description={
                     <>
-                        Shows users&apos; real chat status on their profile - if they are away it
-                        will show away.
+                        Shows users&apos; real chat status on their profile - if they are away it will show away.
                         <ApiKeyIndicator />
                     </>
                 }

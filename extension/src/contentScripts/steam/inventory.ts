@@ -29,13 +29,7 @@ import {
 } from 'utils/utilsModular';
 import { getItemMarketLink } from 'utils/simpleUtils';
 import { getShortDate, dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
-import {
-    stattrak,
-    starChar,
-    souvenir,
-    stattrakPretty,
-    genericMarketLink,
-} from 'utils/static/simpleStrings';
+import { stattrak, starChar, souvenir, stattrakPretty, genericMarketLink } from 'utils/static/simpleStrings';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import {
     getPriceOverview,
@@ -171,9 +165,7 @@ const addBookmark = (module) => {
                 },
                 ({ openInternalPage }) => {
                     if (openInternalPage === 'no_tabs_api_access') {
-                        module.parentElement.parentElement.querySelector(
-                            '.descriptor.tradability.bookmark',
-                        ).innerText =
+                        module.parentElement.parentElement.querySelector('.descriptor.tradability.bookmark').innerText =
                             'Bookmarked! Open the bookmarks menu to see what you have saved!';
                     }
                 },
@@ -249,10 +241,7 @@ const changeName = (name, color, appID, marketHashName, dopplerInfo) => {
         .querySelector('.inventory_page_right')
         .querySelectorAll('.hover_item_name')
         .forEach((nameElement) => {
-            nameElement.insertAdjacentHTML(
-                'afterend',
-                DOMPurify.sanitize(newNameElement, { ADD_ATTR: ['target'] }),
-            );
+            nameElement.insertAdjacentHTML('afterend', DOMPurify.sanitize(newNameElement, { ADD_ATTR: ['target'] }));
             nameElement.classList.add('hidden');
         });
 };
@@ -279,10 +268,8 @@ const setPatternInfo = (patternInfo) => {
     document.querySelectorAll('.patternInfo').forEach((patternInfoElement) => {
         if (patternInfo !== null) {
             if (patternInfo.type === 'fade') patternInfoElement.classList.add('fadeGradient');
-            else if (patternInfo.type === 'marble_fade')
-                patternInfoElement.classList.add('marbleFadeGradient');
-            else if (patternInfo.type === 'case_hardened')
-                patternInfoElement.classList.add('caseHardenedGradient');
+            else if (patternInfo.type === 'marble_fade') patternInfoElement.classList.add('marbleFadeGradient');
+            else if (patternInfo.type === 'case_hardened') patternInfoElement.classList.add('caseHardenedGradient');
             patternInfoElement.innerText = `Pattern: ${patternInfo.value}`;
         }
     });
@@ -292,26 +279,17 @@ const setPatternInfo = (patternInfo) => {
 const setStickerInfo = (stickers) => {
     if (stickers !== null) {
         stickers.forEach((stickerInfo, index) => {
-            const wear =
-                stickerInfo.wear !== undefined
-                    ? Math.trunc(Math.abs(1 - stickerInfo.wear) * 100)
-                    : 100;
+            const wear = stickerInfo.wear !== undefined ? Math.trunc(Math.abs(1 - stickerInfo.wear) * 100) : 100;
 
             document.querySelectorAll('.customStickers').forEach((customStickers) => {
                 const currentSticker = customStickers.querySelectorAll('.stickerSlot')[index];
 
                 if (currentSticker !== undefined) {
                     const currentToolTipText = currentSticker.getAttribute('data-tooltip');
-                    currentSticker.setAttribute(
-                        'data-tooltip',
-                        `${currentToolTipText} - Condition: ${wear}%`,
-                    );
+                    currentSticker.setAttribute('data-tooltip', `${currentToolTipText} - Condition: ${wear}%`);
                     currentSticker
                         .querySelector('img')
-                        .setAttribute(
-                            'style',
-                            `opacity: ${wear > 10 ? wear / 100 : wear / 100 + 0.1}`,
-                        );
+                        .setAttribute('style', `opacity: ${wear > 10 ? wear / 100 : wear / 100 + 0.1}`);
                 }
             });
         });
@@ -332,10 +310,7 @@ const hideFloatBars = () => {
 
 const addFloatDataToPage = (job, activeFloatQueue, floatInfo) => {
     if (floatInfo !== null && floatInfo !== undefined) {
-        addFloatIndicator(
-            findElementByIDs(steamApps.CSGO.appID, '2', job.assetID, 'inventory'),
-            floatInfo,
-        );
+        addFloatIndicator(findElementByIDs(steamApps.CSGO.appID, '2', job.assetID, 'inventory'), floatInfo);
 
         // add float and pattern info to page variable
         const item = getItemByAssetID(items, job.assetID);
@@ -394,40 +369,26 @@ const sellNext = () => {
                             rowSoldIDs = rowSoldIDs[0] === '' ? [] : rowSoldIDs;
 
                             rowSoldIDs.push(`${appID}_${contextID}_${assetID}`);
-                            if (rowIDs.toString() === rowSoldIDs.toString())
-                                soldFromRow.classList.add('strikethrough');
+                            if (rowIDs.toString() === rowSoldIDs.toString()) soldFromRow.classList.add('strikethrough');
                             const quantityCell = soldFromRow.querySelector('.itemAmount');
                             const quantityElement = quantityCell.querySelector('input');
-                            quantityElement.value = (
-                                parseInt(quantityElement.value) - 1
-                            ).toString();
+                            quantityElement.value = (parseInt(quantityElement.value) - 1).toString();
 
                             // flashing quantity as visual feedback when it changes
                             quantityCell.classList.add('whiteBackground');
-                            document
-                                .getElementById('remainingItems')
-                                .classList.add('whiteBackground');
+                            document.getElementById('remainingItems').classList.add('whiteBackground');
                             setTimeout(() => {
                                 quantityCell.classList.remove('whiteBackground');
-                                document
-                                    .getElementById('remainingItems')
-                                    .classList.remove('whiteBackground');
+                                document.getElementById('remainingItems').classList.remove('whiteBackground');
                             }, 200);
 
                             soldFromRow.setAttribute('data-sold-ids', rowSoldIDs.toString());
-                            const itemElement = findElementByIDs(
-                                appID,
-                                contextID,
-                                assetID,
-                                'inventory',
-                            );
+                            const itemElement = findElementByIDs(appID, contextID, assetID, 'inventory');
                             itemElement.classList.add('sold');
                             itemElement.classList.remove('cstSelected');
 
                             // updates remaining and total items
-                            const totalItems = parseInt(
-                                document.getElementById('numberOfItemsToSell').innerText,
-                            );
+                            const totalItems = parseInt(document.getElementById('numberOfItemsToSell').innerText);
                             document.getElementById('totalItems').innerText = totalItems.toString();
 
                             let alreadySold = 0;
@@ -443,9 +404,7 @@ const sellNext = () => {
                                             : 1
                                         : alreadySoldIDs.length;
                             }
-                            document.getElementById('remainingItems').innerText = (
-                                totalItems - alreadySold
-                            ).toString();
+                            document.getElementById('remainingItems').innerText = (totalItems - alreadySold).toString();
 
                             sellNext();
                         })
@@ -492,19 +451,13 @@ const addStartingAtPrice = (appID, marketHashName) => {
     getPriceOverview(appID, marketHashName).then(
         (priceOverview) => {
             // removes previous leftover elements
-            document
-                .querySelectorAll('.startingAtVolume')
-                .forEach((previousElement) => previousElement.remove());
+            document.querySelectorAll('.startingAtVolume').forEach((previousElement) => previousElement.remove());
 
             // adds new elements
             document.querySelectorAll('.item_owner_actions').forEach((marketActions) => {
                 marketActions.style.display = 'block';
-                const startingAt =
-                    priceOverview.lowest_price === undefined
-                        ? 'Unknown'
-                        : priceOverview.lowest_price;
-                const volume =
-                    priceOverview.volume === undefined ? 'Unknown amount' : priceOverview.volume;
+                const startingAt = priceOverview.lowest_price === undefined ? 'Unknown' : priceOverview.lowest_price;
+                const volume = priceOverview.volume === undefined ? 'Unknown amount' : priceOverview.volume;
 
                 marketActions.insertAdjacentHTML(
                     'afterbegin',
@@ -550,11 +503,9 @@ const addRightSideElements = () => {
                 });
 
             // adds the lower module that includes tradability, countdown  and bookmarking
-            document
-                .querySelectorAll('#iteminfo1_item_actions, #iteminfo0_item_actions')
-                .forEach((action) => {
-                    action.insertAdjacentHTML('afterend', DOMPurify.sanitize(lowerModule));
-                });
+            document.querySelectorAll('#iteminfo1_item_actions, #iteminfo0_item_actions').forEach((action) => {
+                action.insertAdjacentHTML('afterend', DOMPurify.sanitize(lowerModule));
+            });
 
             document.querySelectorAll('.lowerModule').forEach((module) => {
                 module.addEventListener('click', (event) => {
@@ -569,8 +520,7 @@ const addRightSideElements = () => {
                         '#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors',
                     )
                     .forEach((tagsElement) => {
-                        if (!tagsElement.classList.contains('hidden'))
-                            tagsElement.classList.add('hidden');
+                        if (!tagsElement.classList.contains('hidden')) tagsElement.classList.add('hidden');
                     });
 
                 // adds float bar, sticker info, nametag
@@ -591,10 +541,7 @@ const addRightSideElements = () => {
                 // they would not be visible otherwise on high-float items
                 // also removes background from the right side of the page
                 document.querySelectorAll('.item_desc_content').forEach((itemDescContent) => {
-                    itemDescContent.setAttribute(
-                        'style',
-                        'overflow: visible; background-image: url()',
-                    );
+                    itemDescContent.setAttribute('style', 'overflow: visible; background-image: url()');
                 });
             }
         } else {
@@ -634,20 +581,18 @@ const addRightSideElements = () => {
 
                         // adds own sticker elements
                         item.stickers.forEach((stickerInfo) => {
-                            document
-                                .querySelectorAll('.customStickers')
-                                .forEach((customStickers) => {
-                                    customStickers.innerHTML += DOMPurify.sanitize(
-                                        `
+                            document.querySelectorAll('.customStickers').forEach((customStickers) => {
+                                customStickers.innerHTML += DOMPurify.sanitize(
+                                    `
                                     <div class="stickerSlot" data-tooltip="${stickerInfo.name} (${stickerInfo.price.display})">
                                         <a href="${stickerInfo.marketURL}" target="_blank">
                                             <img src="${stickerInfo.iconURL}" class="stickerIcon">
                                         </a>
                                     </div>
                                     `,
-                                        { ADD_ATTR: ['target'] },
-                                    );
-                                });
+                                    { ADD_ATTR: ['target'] },
+                                );
+                            });
                         });
                     }
 
@@ -697,9 +642,7 @@ const addRightSideElements = () => {
                 </div>`;
 
                                     document
-                                        .querySelectorAll(
-                                            '#iteminfo1_item_descriptors, #iteminfo0_item_descriptors',
-                                        )
+                                        .querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
                                         .forEach((descriptor) => {
                                             descriptor.insertAdjacentHTML(
                                                 'afterend',
@@ -721,9 +664,7 @@ const addRightSideElements = () => {
               `;
 
                                 document
-                                    .querySelectorAll(
-                                        '#iteminfo1_item_descriptors, #iteminfo0_item_descriptors',
-                                    )
+                                    .querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
                                     .forEach((descriptor) => {
                                         descriptor.insertAdjacentHTML(
                                             'afterend',
@@ -744,9 +685,7 @@ const addRightSideElements = () => {
               `;
 
                                 document
-                                    .querySelectorAll(
-                                        '#iteminfo1_item_descriptors, #iteminfo0_item_descriptors',
-                                    )
+                                    .querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
                                     .forEach((descriptor) => {
                                         descriptor.insertAdjacentHTML(
                                             'afterend',
@@ -827,8 +766,7 @@ const addRightSideElements = () => {
                     document.querySelectorAll('.descriptor').forEach((descriptor) => {
                         if (
                             descriptor.parentNode.classList.contains('item_desc_descriptors') &&
-                            descriptor.parentNode.parentNode.parentNode.parentNode.style.display !==
-                                'none'
+                            descriptor.parentNode.parentNode.parentNode.parentNode.style.display !== 'none'
                         ) {
                             textOfDescriptors += descriptor.innerText;
                         }
@@ -840,15 +778,11 @@ const addRightSideElements = () => {
                     const star = item.starInName ? starChar : '';
 
                     if (item.isStatrack)
-                        weaponName = item.market_hash_name
-                            .split(`${stattrakPretty} `)[1]
-                            .split('(')[0];
-                    else if (item.isSouvenir)
-                        weaponName = item.market_hash_name.split('Souvenir ')[1].split('(')[0];
+                        weaponName = item.market_hash_name.split(`${stattrakPretty} `)[1].split('(')[0];
+                    else if (item.isSouvenir) weaponName = item.market_hash_name.split('Souvenir ')[1].split('(')[0];
                     else {
                         weaponName = item.market_hash_name.split('(')[0].split('★ ')[1];
-                        if (weaponName === undefined)
-                            weaponName = item.market_hash_name.split('(')[0];
+                        if (weaponName === undefined) weaponName = item.market_hash_name.split('(')[0];
                     }
 
                     let stOrSv = stattrakPretty;
@@ -893,9 +827,7 @@ const addRightSideElements = () => {
                     }</span></a></li>
                             <li><a href="${`${
                                 genericMarketLink + star + weaponName
-                            }%28Well-Worn%29`}"" target="_blank">${
-                        exteriors.well_worn.localized_name
-                    }</a> - <a href="${
+                            }%28Well-Worn%29`}"" target="_blank">${exteriors.well_worn.localized_name}</a> - <a href="${
                         genericMarketLink + linkMidPart + weaponName
                     }%28Well-Worn%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${
                         exteriors.well_worn.localized_name
@@ -916,9 +848,7 @@ const addRightSideElements = () => {
 
                     if (item.exterior !== undefined) {
                         document
-                            .querySelectorAll(
-                                '#iteminfo1_item_descriptors, #iteminfo0_item_descriptors',
-                            )
+                            .querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
                             .forEach((descriptor) => {
                                 descriptor.insertAdjacentHTML(
                                     'afterend',
@@ -976,17 +906,13 @@ const addRightSideElements = () => {
             if (!isOwnInventory()) addStartingAtPrice(item.appid, item.market_hash_name);
             else if (item.marketable) {
                 // adds quick and instant sell buttons
-                chrome.storage.local.get(
-                    ['inventoryInstantQuickButtons'],
-                    ({ inventoryInstantQuickButtons }) => {
-                        if (inventoryInstantQuickButtons) {
-                            document
-                                .querySelectorAll('.item_market_actions')
-                                .forEach((marketActions) => {
-                                    marketActions.insertAdjacentHTML(
-                                        'beforeend',
-                                        DOMPurify.sanitize(
-                                            `<a class="marketActionInstantSell item_market_action_button item_market_action_button_green">
+                chrome.storage.local.get(['inventoryInstantQuickButtons'], ({ inventoryInstantQuickButtons }) => {
+                    if (inventoryInstantQuickButtons) {
+                        document.querySelectorAll('.item_market_actions').forEach((marketActions) => {
+                            marketActions.insertAdjacentHTML(
+                                'beforeend',
+                                DOMPurify.sanitize(
+                                    `<a class="marketActionInstantSell item_market_action_button item_market_action_button_green">
                            <span class="item_market_action_button_edge item_market_action_button_left"></span>
                            <span class="item_market_action_button_contents" title="List the item on the market to be bought by the highest buy order">Instant Sell</span>
                            <span class="item_market_action_button_edge item_market_action_button_right"></span>
@@ -996,65 +922,25 @@ const addRightSideElements = () => {
                            <span class="item_market_action_button_contents" title="List the item to be the cheapest on the market">Quick Sell</span>
                            <span class="item_market_action_button_edge item_market_action_button_right"></span>
                       </a>`,
-                                        ),
-                                    );
+                                ),
+                            );
 
-                                    marketActions
-                                        .querySelectorAll('.marketActionInstantSell')
-                                        .forEach((instantSellButton) => {
-                                            instantSellButton.addEventListener('click', () => {
-                                                getHighestBuyOrder(
+                            marketActions.querySelectorAll('.marketActionInstantSell').forEach((instantSellButton) => {
+                                instantSellButton.addEventListener('click', () => {
+                                    getHighestBuyOrder(item.appid, item.market_hash_name)
+                                        .then((highestOrderPrice) => {
+                                            if (highestOrderPrice !== null) {
+                                                listItem(
                                                     item.appid,
-                                                    item.market_hash_name,
+                                                    item.contextid,
+                                                    1,
+                                                    item.assetid,
+                                                    getPriceAfterFees(highestOrderPrice),
                                                 )
-                                                    .then((highestOrderPrice) => {
-                                                        if (highestOrderPrice !== null) {
-                                                            listItem(
-                                                                item.appid,
-                                                                item.contextid,
-                                                                1,
-                                                                item.assetid,
-                                                                getPriceAfterFees(
-                                                                    highestOrderPrice,
-                                                                ),
-                                                            )
-                                                                .then(() => {
-                                                                    instantSellButton.querySelector(
-                                                                        '.item_market_action_button_contents',
-                                                                    ).innerText =
-                                                                        'Listing created!';
-                                                                })
-                                                                .catch((err) => {
-                                                                    console.log(err);
-                                                                    document
-                                                                        .querySelectorAll(
-                                                                            '#iteminfo1_market_content, #iteminfo0_market_content',
-                                                                        )
-                                                                        .forEach(
-                                                                            (marketContent) => {
-                                                                                marketContent.insertAdjacentHTML(
-                                                                                    'beforeend',
-                                                                                    DOMPurify.sanitize(
-                                                                                        `<div class="listingError">${err.message}</div>`,
-                                                                                    ),
-                                                                                );
-                                                                            },
-                                                                        );
-                                                                });
-                                                        } else {
-                                                            document
-                                                                .querySelectorAll(
-                                                                    '#iteminfo1_market_content, #iteminfo0_market_content',
-                                                                )
-                                                                .forEach((marketContent) => {
-                                                                    marketContent.insertAdjacentHTML(
-                                                                        'beforeend',
-                                                                        DOMPurify.sanitize(
-                                                                            '<div class="listingError">No buy orders to sell to.</div>',
-                                                                        ),
-                                                                    );
-                                                                });
-                                                        }
+                                                    .then(() => {
+                                                        instantSellButton.querySelector(
+                                                            '.item_market_action_button_contents',
+                                                        ).innerText = 'Listing created!';
                                                     })
                                                     .catch((err) => {
                                                         console.log(err);
@@ -1066,76 +952,95 @@ const addRightSideElements = () => {
                                                                 marketContent.insertAdjacentHTML(
                                                                     'beforeend',
                                                                     DOMPurify.sanitize(
-                                                                        `<div class="listingError">${err}</div>`,
+                                                                        `<div class="listingError">${err.message}</div>`,
                                                                     ),
                                                                 );
                                                             });
                                                     });
-                                            });
-                                        });
-
-                                    marketActions
-                                        .querySelectorAll('.marketActionQuickSell')
-                                        .forEach((quickSellButton) => {
-                                            quickSellButton.addEventListener('click', () => {
-                                                getLowestListingPrice(
-                                                    item.appid,
-                                                    item.market_hash_name,
+                                            } else {
+                                                document
+                                                    .querySelectorAll(
+                                                        '#iteminfo1_market_content, #iteminfo0_market_content',
+                                                    )
+                                                    .forEach((marketContent) => {
+                                                        marketContent.insertAdjacentHTML(
+                                                            'beforeend',
+                                                            DOMPurify.sanitize(
+                                                                '<div class="listingError">No buy orders to sell to.</div>',
+                                                            ),
+                                                        );
+                                                    });
+                                            }
+                                        })
+                                        .catch((err) => {
+                                            console.log(err);
+                                            document
+                                                .querySelectorAll(
+                                                    '#iteminfo1_market_content, #iteminfo0_market_content',
                                                 )
-                                                    .then((lowestListingPrice) => {
-                                                        const newPrice =
-                                                            lowestListingPrice > 3
-                                                                ? lowestListingPrice - 1
-                                                                : 3;
-                                                        listItem(
-                                                            item.appid,
-                                                            item.contextid,
-                                                            1,
-                                                            item.assetid,
-                                                            getPriceAfterFees(newPrice),
-                                                        )
-                                                            .then(() => {
-                                                                quickSellButton.querySelector(
-                                                                    '.item_market_action_button_contents',
-                                                                ).innerText = 'Listing created!';
-                                                            })
-                                                            .catch((err) => {
-                                                                console.log(err);
-                                                                document
-                                                                    .querySelectorAll(
-                                                                        '#iteminfo1_market_content, #iteminfo0_market_content',
-                                                                    )
-                                                                    .forEach((marketContent) => {
-                                                                        marketContent.insertAdjacentHTML(
-                                                                            'beforeend',
-                                                                            DOMPurify.sanitize(
-                                                                                `<div class="listingError">${err.message}</div>`,
-                                                                            ),
-                                                                        );
-                                                                    });
-                                                            });
-                                                    })
-                                                    .catch((err) => {
-                                                        console.log(err);
-                                                        document
-                                                            .querySelectorAll(
-                                                                '#iteminfo1_market_content, #iteminfo0_market_content',
-                                                            )
-                                                            .forEach((marketContent) => {
-                                                                marketContent.insertAdjacentHTML(
-                                                                    'beforeend',
-                                                                    DOMPurify.sanitize(
-                                                                        '<div class="listingError">Could not get lowest listing price</div>',
-                                                                    ),
-                                                                );
-                                                            });
-                                                    });
-                                            });
+                                                .forEach((marketContent) => {
+                                                    marketContent.insertAdjacentHTML(
+                                                        'beforeend',
+                                                        DOMPurify.sanitize(`<div class="listingError">${err}</div>`),
+                                                    );
+                                                });
                                         });
                                 });
-                        }
-                    },
-                );
+                            });
+
+                            marketActions.querySelectorAll('.marketActionQuickSell').forEach((quickSellButton) => {
+                                quickSellButton.addEventListener('click', () => {
+                                    getLowestListingPrice(item.appid, item.market_hash_name)
+                                        .then((lowestListingPrice) => {
+                                            const newPrice = lowestListingPrice > 3 ? lowestListingPrice - 1 : 3;
+                                            listItem(
+                                                item.appid,
+                                                item.contextid,
+                                                1,
+                                                item.assetid,
+                                                getPriceAfterFees(newPrice),
+                                            )
+                                                .then(() => {
+                                                    quickSellButton.querySelector(
+                                                        '.item_market_action_button_contents',
+                                                    ).innerText = 'Listing created!';
+                                                })
+                                                .catch((err) => {
+                                                    console.log(err);
+                                                    document
+                                                        .querySelectorAll(
+                                                            '#iteminfo1_market_content, #iteminfo0_market_content',
+                                                        )
+                                                        .forEach((marketContent) => {
+                                                            marketContent.insertAdjacentHTML(
+                                                                'beforeend',
+                                                                DOMPurify.sanitize(
+                                                                    `<div class="listingError">${err.message}</div>`,
+                                                                ),
+                                                            );
+                                                        });
+                                                });
+                                        })
+                                        .catch((err) => {
+                                            console.log(err);
+                                            document
+                                                .querySelectorAll(
+                                                    '#iteminfo1_market_content, #iteminfo0_market_content',
+                                                )
+                                                .forEach((marketContent) => {
+                                                    marketContent.insertAdjacentHTML(
+                                                        'beforeend',
+                                                        DOMPurify.sanitize(
+                                                            '<div class="listingError">Could not get lowest listing price</div>',
+                                                        ),
+                                                    );
+                                                });
+                                        });
+                                });
+                            });
+                        });
+                    }
+                });
             }
         } else {
             // show the original names if the name can't be changed
@@ -1195,12 +1100,7 @@ const addRealTimePricesToQueue = () => {
                         itemElements.forEach((itemElement) => {
                             if (itemElement.getAttribute('data-realtime-price') === null) {
                                 const IDs = getIDsFromElement(itemElement, 'inventory');
-                                const item = getItemByIDs(
-                                    items,
-                                    IDs.appID,
-                                    IDs.contextID,
-                                    IDs.assetID,
-                                );
+                                const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
 
                                 itemElement.setAttribute('data-realtime-price', '0');
                                 if (item && item.marketable === 1) {
@@ -1287,12 +1187,7 @@ const addPerItemInfo = (appID) => {
                         if (appID === steamApps.CSGO.appID) {
                             addDopplerPhase(itemElement, item.dopplerInfo);
                             makeItemColorful(itemElement, item, colorfulItems);
-                            addSSTandExtIndicators(
-                                itemElement,
-                                item,
-                                showStickerPrice,
-                                showShortExteriorsInventory,
-                            );
+                            addSSTandExtIndicators(itemElement, item, showStickerPrice, showShortExteriorsInventory);
                             addPriceIndicator(itemElement, item.price);
                             if (itemInOffersInventory) {
                                 addInOtherTradeIndicator(itemElement, item, activeOffers.items);
@@ -1317,10 +1212,7 @@ const addPerItemInfo = (appID) => {
 const setInventoryTotal = () => {
     chrome.storage.local.get(['currency'], ({ currency }) => {
         const inventoryTotalValueElement = document.getElementById('inventoryTotalValue');
-        inventoryTotalValueElement.innerText = prettyPrintPrice(
-            currency,
-            inventoryTotal.toFixed(0),
-        );
+        inventoryTotalValueElement.innerText = prettyPrintPrice(currency, inventoryTotal.toFixed(0));
     });
 };
 
@@ -1339,17 +1231,14 @@ const updateMassSaleTotal = () => {
         .querySelectorAll('.row')
         .forEach((listingRow) => {
             total +=
-                parseInt(
-                    listingRow.querySelector('.cstSelected').getAttribute('data-price-in-cents'),
-                ) * parseInt(listingRow.querySelector('.itemAmount').querySelector('input').value);
+                parseInt(listingRow.querySelector('.cstSelected').getAttribute('data-price-in-cents')) *
+                parseInt(listingRow.querySelector('.itemAmount').querySelector('input').value);
             totalAfterFees +=
-                parseInt(
-                    listingRow.querySelector('.cstSelected').getAttribute('data-listing-price'),
-                ) * parseInt(listingRow.querySelector('.itemAmount').querySelector('input').value);
+                parseInt(listingRow.querySelector('.cstSelected').getAttribute('data-listing-price')) *
+                parseInt(listingRow.querySelector('.itemAmount').querySelector('input').value);
         });
     document.getElementById('saleTotal').innerText = centsToSteamFormattedPrice(total);
-    document.getElementById('saleTotalAfterFees').innerText =
-        centsToSteamFormattedPrice(totalAfterFees);
+    document.getElementById('saleTotalAfterFees').innerText = centsToSteamFormattedPrice(totalAfterFees);
 };
 
 const getListingRow = (appID, contextID, name) => {
@@ -1367,18 +1256,14 @@ const removeUnselectedItemsFromTable = () => {
             const IDs = listingRow.getAttribute('data-ids').split(',');
             const remainingIDs = IDs.filter((ID) => {
                 const IDSplit = ID.split('_');
-                return findElementByIDs(
-                    IDSplit[0],
-                    IDSplit[1],
-                    IDSplit[2],
-                    'inventory',
-                ).classList.contains('cstSelected');
+                return findElementByIDs(IDSplit[0], IDSplit[1], IDSplit[2], 'inventory').classList.contains(
+                    'cstSelected',
+                );
             });
             if (remainingIDs.length === 0) listingRow.remove();
             else {
                 listingRow.setAttribute('data-ids', remainingIDs.toString());
-                listingRow.querySelector('.itemAmount').querySelector('input').value =
-                    remainingIDs.length.toString();
+                listingRow.querySelector('.itemAmount').querySelector('input').value = remainingIDs.length.toString();
             }
         });
 };
@@ -1398,13 +1283,9 @@ const addListingRow = (item) => {
               </div>
               <div
                   class="cell itemExtensionPrice cstSelected clickable"
-                  data-price-in-cents="${
-                      item.price ? userPriceToProperPrice(item.price.price).toString() : '0'
-                  }"
+                  data-price-in-cents="${item.price ? userPriceToProperPrice(item.price.price).toString() : '0'}"
                   data-listing-price="${
-                      item.price
-                          ? getPriceAfterFees(userPriceToProperPrice(item.price.price)).toString()
-                          : '0'
+                      item.price ? getPriceAfterFees(userPriceToProperPrice(item.price.price)).toString() : '0'
                   }"
                   >
                   ${item.price ? item.price.display : '0'}
@@ -1462,24 +1343,17 @@ const addListingRow = (item) => {
         .addEventListener('change', (event) => {
             const priceInt = userPriceToProperPrice(event.target.value);
             event.target.parentElement.setAttribute('data-price-in-cents', priceInt);
-            event.target.parentElement.setAttribute(
-                'data-listing-price',
-                getPriceAfterFees(priceInt),
-            );
+            event.target.parentElement.setAttribute('data-listing-price', getPriceAfterFees(priceInt));
             event.target.value = centsToSteamFormattedPrice(priceInt);
             event.target.parentElement.classList.add('cstSelected');
             event.target.parentElement.parentElement
-                .querySelectorAll(
-                    '.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell,.itemMidPrice',
-                )
+                .querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell,.itemMidPrice')
                 .forEach((priceType) => priceType.classList.remove('cstSelected'));
             updateMassSaleTotal();
         });
 
     listingRow
-        .querySelectorAll(
-            '.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell,.itemMidPrice',
-        )
+        .querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell,.itemMidPrice')
         .forEach((priceType) => {
             priceType.addEventListener('click', (event) => {
                 event.target.classList.add('cstSelected');
@@ -1491,13 +1365,7 @@ const addListingRow = (item) => {
         });
 };
 
-const addStartingAtAndQuickSellPrice = (
-    marketHashName,
-    priceInCents,
-    appID,
-    assetID,
-    contextID,
-) => {
+const addStartingAtAndQuickSellPrice = (marketHashName, priceInCents, appID, assetID, contextID) => {
     const listingRow = getListingRow(appID, contextID, marketHashName);
 
     // the user might have unselected the item while it as in the queue
@@ -1510,10 +1378,7 @@ const addStartingAtAndQuickSellPrice = (
         startingAtElement.innerText = centsToSteamFormattedPrice(priceInCents);
         startingAtElement.setAttribute('data-price-set', true.toString());
         startingAtElement.setAttribute('data-price-in-cents', priceInCents);
-        startingAtElement.setAttribute(
-            'data-listing-price',
-            getPriceAfterFees(priceInCents).toString(),
-        );
+        startingAtElement.setAttribute('data-listing-price', getPriceAfterFees(priceInCents).toString());
         quickSell.setAttribute('data-price-in-cents', quickSellPrice.toString());
         quickSell.setAttribute('data-listing-price', getPriceAfterFees(quickSellPrice).toString());
         quickSell.innerText = centsToSteamFormattedPrice(quickSellPrice);
@@ -1547,10 +1412,7 @@ const addInstantSellPrice = (marketHashName, highestOrder, appID, assetID, conte
                 instantElement.innerText = centsToSteamFormattedPrice(highestOrder);
                 instantElement.setAttribute('data-price-set', true.toString());
                 instantElement.setAttribute('data-price-in-cents', highestOrder);
-                instantElement.setAttribute(
-                    'data-listing-price',
-                    getPriceAfterFees(highestOrder).toString(),
-                );
+                instantElement.setAttribute('data-listing-price', getPriceAfterFees(highestOrder).toString());
             }
         } else instantElement.setAttribute('data-price-set', false.toString());
 
@@ -1577,10 +1439,7 @@ const addMidPrice = (marketHashName, midPrice, appID, assetID, contextID) => {
                 midPriceElement.innerText = centsToSteamFormattedPrice(midPrice);
                 midPriceElement.setAttribute('data-price-set', true.toString());
                 midPriceElement.setAttribute('data-price-in-cents', parseInt(midPrice).toString());
-                midPriceElement.setAttribute(
-                    'data-listing-price',
-                    getPriceAfterFees(midPrice).toString(),
-                );
+                midPriceElement.setAttribute('data-listing-price', getPriceAfterFees(midPrice).toString());
             }
         } else midPriceElement.setAttribute('data-price-set', false.toString());
 
@@ -1653,9 +1512,7 @@ const addToPriceQueueIfNeeded = (item) => {
 };
 
 const updateSelectedItemsSummary = () => {
-    const selectedItems = document
-        .getElementById('inventories')
-        .querySelectorAll('.item.cstSelected');
+    const selectedItems = document.getElementById('inventories').querySelectorAll('.item.cstSelected');
     const numberOfSelectedItems = selectedItems.length;
     let selectedTotal = 0;
 
@@ -1694,10 +1551,7 @@ const updateSelectedItemsSummary = () => {
     updateMassSaleTotal();
 
     chrome.storage.local.get('currency', (result) => {
-        document.getElementById('selectedTotalValue').innerText = prettyPrintPrice(
-            result.currency,
-            selectedTotal,
-        );
+        document.getElementById('selectedTotalValue').innerText = prettyPrintPrice(result.currency, selectedTotal);
     });
 };
 
@@ -1708,29 +1562,15 @@ const listenSelectClicks = (event) => {
     ) {
         if (event.ctrlKey) {
             const IDs = getIDsFromElement(event.target.parentNode, 'inventory');
-            const marketHashNameToLookFor = getItemByIDs(
-                items,
-                IDs.appID,
-                IDs.contextID,
-                IDs.assetID,
-            ).market_hash_name;
+            const marketHashNameToLookFor = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID).market_hash_name;
 
             document
                 .getElementById('inventories')
                 .querySelectorAll('.item')
                 .forEach((itemEl) => {
                     const itemIDs = getIDsFromElement(itemEl, 'inventory');
-                    const item = getItemByIDs(
-                        items,
-                        itemIDs.appID,
-                        itemIDs.contextID,
-                        itemIDs.assetID,
-                    );
-                    if (
-                        item &&
-                        item.market_hash_name === marketHashNameToLookFor &&
-                        IDs.appID === itemIDs.appID
-                    ) {
+                    const item = getItemByIDs(items, itemIDs.appID, itemIDs.contextID, itemIDs.assetID);
+                    if (item && item.market_hash_name === marketHashNameToLookFor && IDs.appID === itemIDs.appID) {
                         itemEl.classList.toggle('cstSelected');
                     }
                 });
@@ -1746,13 +1586,7 @@ const sortItems = (inventoryItems, method) => {
         const inventoryPages = document
             .getElementById(`inventory_${getInventoryOwnerID()}_730_2`)
             .querySelectorAll('.inventory_page');
-        doTheSorting(
-            inventoryItems,
-            Array.from(itemElements),
-            method,
-            Array.from(inventoryPages),
-            'inventory',
-        );
+        doTheSorting(inventoryItems, Array.from(itemElements), method, Array.from(inventoryPages), 'inventory');
         addPerItemInfo(activeAppID);
     }
 };
@@ -1760,10 +1594,8 @@ const sortItems = (inventoryItems, method) => {
 const doInitSorting = () => {
     chrome.storage.local.get('inventorySortingMode', (result) => {
         sortItems(items, result.inventorySortingMode);
-        document.querySelector(`#sortingMethod [value="${result.inventorySortingMode}"]`).selected =
-            true;
-        document.querySelector(`#generate_sort [value="${result.inventorySortingMode}"]`).selected =
-            true;
+        document.querySelector(`#sortingMethod [value="${result.inventorySortingMode}"]`).selected = true;
+        document.querySelector(`#generate_sort [value="${result.inventorySortingMode}"]`).selected = true;
         addFloatIndicatorsToPage();
         addRealTimePricesToQueue();
     });
@@ -1806,9 +1638,9 @@ const generateItemsList = () => {
     const namesAlreadyInList = [];
 
     let csvContent = 'data:text/csv;charset=utf-8,';
-    const headers = `Name,Exterior${showPrice ? ',Price' : ''}${
-        showTradability ? ',Tradability' : ''
-    }${includeDupes ? '' : ',Duplicates'}\n`;
+    const headers = `Name,Exterior${showPrice ? ',Price' : ''}${showTradability ? ',Tradability' : ''}${
+        includeDupes ? '' : ',Duplicates'
+    }\n`;
     csvContent += headers;
 
     sortedItems.forEach((itemElement) => {
@@ -1816,34 +1648,21 @@ const generateItemsList = () => {
         const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
         const price = showPrice && item.price !== null ? ` ${delimiter} ${item.price.display}` : '';
         const priceCSV = showPrice && item.price !== null ? `,${item.price.display}` : '';
-        const exterior =
-            item.exterior !== undefined && item.exterior !== null
-                ? item.exterior[exteriorType]
-                : '';
+        const exterior = item.exterior !== undefined && item.exterior !== null ? item.exterior[exteriorType] : '';
         const tradableAt = new Date(item.tradability).toString().split('GMT')[0];
-        const tradability =
-            showTradability && tradableAt !== 'Invalid Date' ? `${delimiter} ${tradableAt}` : '';
-        const tradabilityCSV =
-            showTradability && tradableAt !== 'Invalid Date' ? `,${tradableAt}` : '';
-        const duplicate =
-            !includeDupes && item.duplicates.num !== 1
-                ? `${delimiter} x${item.duplicates.num}`
-                : '';
-        const duplicateCSV =
-            !includeDupes && item.duplicates.num !== 1 ? `,x${item.duplicates.num}` : '';
+        const tradability = showTradability && tradableAt !== 'Invalid Date' ? `${delimiter} ${tradableAt}` : '';
+        const tradabilityCSV = showTradability && tradableAt !== 'Invalid Date' ? `,${tradableAt}` : '';
+        const duplicate = !includeDupes && item.duplicates.num !== 1 ? `${delimiter} x${item.duplicates.num}` : '';
+        const duplicateCSV = !includeDupes && item.duplicates.num !== 1 ? `,x${item.duplicates.num}` : '';
         const line = `${item.name} ${delimiter} ${exterior}${price}${tradability} ${duplicate}\n`;
         const lineCSV = `"${item.name}",${exterior}${priceCSV}${tradabilityCSV}${duplicateCSV}\n`;
 
         if (lineCount < limit) {
-            if (
-                includeDupes ||
-                (!includeDupes && !namesAlreadyInList.includes(item.market_hash_name))
-            ) {
+            if (includeDupes || (!includeDupes && !namesAlreadyInList.includes(item.market_hash_name))) {
                 if (
                     ((!includeNonMarketable && item.tradability !== 'Not Tradable') ||
                         (item.tradability === 'Not Tradable' && includeNonMarketable)) &&
-                    (!selectedOnly ||
-                        (selectedOnly && itemElement.classList.contains('cstSelected')))
+                    (!selectedOnly || (selectedOnly && itemElement.classList.contains('cstSelected')))
                 ) {
                     namesAlreadyInList.push(item.market_hash_name);
                     copyText += line;
@@ -1986,8 +1805,7 @@ const addFunctionBar = () => {
             document.querySelectorAll('.inventory_page').forEach((page) => {
                 if (page.style.display === 'block') {
                     page.querySelectorAll('.item').forEach((item) => {
-                        if (!item.classList.contains('cstSelected'))
-                            item.classList.add('cstSelected');
+                        if (!item.classList.contains('cstSelected')) item.classList.add('cstSelected');
                     });
                 }
             });
@@ -2031,14 +1849,11 @@ const addFunctionBar = () => {
                 document.getElementById('currency_mismatch_warning').classList.remove('hidden');
                 document.getElementById('changeCurrency').addEventListener('click', () => {
                     chrome.storage.local.set({ currency: walletCurrency }, () => {
-                        chrome.runtime.sendMessage(
-                            { updateExchangeRates: 'updateExchangeRates' },
-                            () => {
-                                setTimeout(() => {
-                                    window.location.reload();
-                                }, 2000);
-                            },
-                        );
+                        chrome.runtime.sendMessage({ updateExchangeRates: 'updateExchangeRates' }, () => {
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 2000);
+                        });
                     });
                 });
             }
@@ -2075,9 +1890,7 @@ const addFunctionBar = () => {
                     if (isOwnInventory()) {
                         document.getElementById('massListingTitle').classList.add('hidden');
                         document.getElementById('startListMenu').classList.add('hidden');
-                        document
-                            .getElementById('listingTable')
-                            .querySelector('.rowGroup').innerHTML = '';
+                        document.getElementById('listingTable').querySelector('.rowGroup').innerHTML = '';
                     }
                     document.body.removeEventListener('click', listenSelectClicks, false);
                 } else {
@@ -2142,14 +1955,7 @@ const loadFullInventory = () => {
                     document.querySelector('body').setAttribute('allItemsLoaded', true);
                 });
                 `;
-            if (
-                injectScript(
-                    loadFullInventoryScript,
-                    true,
-                    'loadFullInventory',
-                    'allItemsLoaded',
-                ) === null
-            ) {
+            if (injectScript(loadFullInventoryScript, true, 'loadFullInventory', 'allItemsLoaded') === null) {
                 setTimeout(() => {
                     loadFullInventory();
                 }, 2000);
@@ -2261,12 +2067,9 @@ const loadInventoryItems = (appID, contextID) => {
 logExtensionPresence();
 updateWalletCurrency();
 initPriceQueue(onListingPricesLoaded);
-chrome.storage.local.get(
-    'useAlternativeCSGOInventoryEndpoint',
-    ({ useAlternativeCSGOInventoryEndpoint }) => {
-        if (useAlternativeCSGOInventoryEndpoint) overRideCSGOInventoryLoading();
-    },
-);
+chrome.storage.local.get('useAlternativeCSGOInventoryEndpoint', ({ useAlternativeCSGOInventoryEndpoint }) => {
+    if (useAlternativeCSGOInventoryEndpoint) overRideCSGOInventoryLoading();
+});
 
 // listens to manual inventory tab/game changes
 const inventoriesMenu = document.querySelector('.games_list_tabs');
@@ -2275,11 +2078,7 @@ if (inventoriesMenu !== null) {
         tab.addEventListener('click', () => {
             const appID = getActiveInventoryAppID();
             const contextID = getDefaultContextID(appID);
-            if (
-                appID === steamApps.CSGO.appID ||
-                appID === steamApps.DOTA2.appID ||
-                appID === steamApps.TF2.appID
-            ) {
+            if (appID === steamApps.CSGO.appID || appID === steamApps.DOTA2.appID || appID === steamApps.TF2.appID) {
                 requestInventory(appID);
             } else {
                 loadInventoryItems(appID, contextID);
@@ -2317,10 +2116,7 @@ const observer2 = new MutationObserver(() => {
 
 // does not execute if inventory is private or failed to load the page
 // (502 for example, mostly when steam is dead)
-if (
-    document.getElementById('no_inventories') === null &&
-    document.getElementById('iteminfo0') !== null
-) {
+if (document.getElementById('no_inventories') === null && document.getElementById('iteminfo0') !== null) {
     observer.observe(document.getElementById('iteminfo0'), {
         subtree: false,
         attributes: true,
@@ -2362,14 +2158,9 @@ if (isOwnInventory()) {
                                     '<a class="popup_menu_item" id="viewTradeHistory">Trade History (CSGO Trader)</a>',
                                 ),
                             );
-                        document
-                            .getElementById('viewTradeHistory')
-                            .addEventListener('mouseup', () => {
-                                chrome.runtime.sendMessage(
-                                    { openInternalPage: 'index.html?page=trade-history' },
-                                    () => {},
-                                );
-                            });
+                        document.getElementById('viewTradeHistory').addEventListener('mouseup', () => {
+                            chrome.runtime.sendMessage({ openInternalPage: 'index.html?page=trade-history' }, () => {});
+                        });
                     }
                 }
             });
@@ -2404,16 +2195,12 @@ if (isOwnInventory()) {
                                 `<div class="trade_partner_info_block"> 
                         <div title="${dateToISODisplay(offerHistory.last_received)}">
                           Offers Received: ${offerHistory.offers_received} Last:  ${
-                                    offerHistory.offers_received !== 0
-                                        ? prettyTimeAgo(offerHistory.last_received)
-                                        : '-'
+                                    offerHistory.offers_received !== 0 ? prettyTimeAgo(offerHistory.last_received) : '-'
                                 }
                         </div>
                         <div title="${dateToISODisplay(offerHistory.last_sent)}">
                           Offers Sent: ${offerHistory.offers_sent} Last:  ${
-                                    offerHistory.offers_sent !== 0
-                                        ? prettyTimeAgo(offerHistory.last_sent)
-                                        : '-'
+                                    offerHistory.offers_sent !== 0 ? prettyTimeAgo(offerHistory.last_sent) : '-'
                                 }
                         </div>
                      </div>`,

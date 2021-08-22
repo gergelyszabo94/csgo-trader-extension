@@ -16,14 +16,7 @@ interface OfferRuleProps {
     position: 'top' | 'bottom' | 'middle';
 }
 
-const OfferRule = ({
-    details,
-    index,
-    saveRuleState,
-    removeRule,
-    changeOrder,
-    position,
-}: OfferRuleProps) => {
+const OfferRule = ({ details, index, saveRuleState, removeRule, changeOrder, position }: OfferRuleProps) => {
     const { active, conditions, action, operators } = details;
 
     const moveRuleUp = (

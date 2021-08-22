@@ -58,11 +58,7 @@ const Bookmarks = () => {
         <div>
             <h1>Bookmark and Notify</h1>
             <div className='bookmarks'>
-                <BookmarkContent
-                    bookmarks={bookmarks}
-                    remove={removeBookmark}
-                    edit={editBookmark}
-                />
+                <BookmarkContent bookmarks={bookmarks} remove={removeBookmark} edit={editBookmark} />
             </div>
         </div>
     );
@@ -76,9 +72,7 @@ export interface BookmarkContentProps {
 
 const BookmarkContent = ({ bookmarks, remove, edit }: BookmarkContentProps): JSX.Element => {
     if (bookmarks.length === 0)
-        return (
-            <>{"You don't have any bookmarks yet. You can bookmark items from user inventories!"}</>
-        );
+        return <>{"You don't have any bookmarks yet. You can bookmark items from user inventories!"}</>;
 
     return (
         <>

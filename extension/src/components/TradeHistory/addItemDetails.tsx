@@ -25,12 +25,8 @@ const addOfferDetails = (offers, descriptions, currentIndex) => {
                         const offersWithDetails = [];
                         currentBatch.forEach((offer) => {
                             const partnerSummary =
-                                summaries[
-                                    getProperStyleSteamIDFromOfferStyle(offer.accountid_other)
-                                ] !== undefined
-                                    ? summaries[
-                                          getProperStyleSteamIDFromOfferStyle(offer.accountid_other)
-                                      ]
+                                summaries[getProperStyleSteamIDFromOfferStyle(offer.accountid_other)] !== undefined
+                                    ? summaries[getProperStyleSteamIDFromOfferStyle(offer.accountid_other)]
                                     : {
                                           personaname: 'No name found',
                                       };
@@ -54,9 +50,7 @@ const addOfferDetails = (offers, descriptions, currentIndex) => {
                                         );
                                     });
                                     if (description[0]) {
-                                        const dopplerInfo = isDopplerInName(
-                                            description[0].market_hash_name,
-                                        )
+                                        const dopplerInfo = isDopplerInName(description[0].market_hash_name)
                                             ? getDopplerInfo(description[0].icon_url)
                                             : null;
                                         const price = getPrice(
@@ -90,9 +84,7 @@ const addOfferDetails = (offers, descriptions, currentIndex) => {
                                         );
                                     });
                                     if (description[0]) {
-                                        const dopplerInfo = isDopplerInName(
-                                            description[0].market_hash_name,
-                                        )
+                                        const dopplerInfo = isDopplerInName(description[0].market_hash_name)
                                             ? getDopplerInfo(description[0].icon_url)
                                             : null;
                                         const price = getPrice(
@@ -115,8 +107,7 @@ const addOfferDetails = (offers, descriptions, currentIndex) => {
                                 });
                             }
 
-                            offerWithDesc.profitLoss =
-                                offerWithDesc.receivedTotal - offerWithDesc.givenTotal;
+                            offerWithDesc.profitLoss = offerWithDesc.receivedTotal - offerWithDesc.givenTotal;
                             offerWithDesc.receivedTotalFormatted = prettyPrintPrice(
                                 currency,
                                 offerWithDesc.receivedTotal.toFixed(2),

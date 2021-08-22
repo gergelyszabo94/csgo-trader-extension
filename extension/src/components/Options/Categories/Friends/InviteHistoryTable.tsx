@@ -28,9 +28,7 @@ const InviteHistoryTable = ({ events }: HistoryEvents) => {
                         return (
                             <tr key={event.steamID + event.type + event.timestamp}>
                                 <td>
-                                    <NewTabLink
-                                        to={`https://steamcommunity.com/profiles/${event.steamID}`}
-                                    >
+                                    <NewTabLink to={`https://steamcommunity.com/profiles/${event.steamID}`}>
                                         {event.username}
                                     </NewTabLink>
                                 </td>

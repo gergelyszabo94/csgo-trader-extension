@@ -25,14 +25,7 @@ const RealTimePricingMode = ({ id, options }: RealTimePricingModeProps) => {
         });
     };
 
-    return (
-        <Select
-            id={id}
-            foreignChangeHandler={setStorage}
-            foreignUseEffect={getStorage}
-            options={options}
-        />
-    );
+    return <Select id={id} foreignChangeHandler={setStorage} foreignUseEffect={getStorage} options={options} />;
 };
 
 export default RealTimePricingMode;

@@ -55,11 +55,7 @@ const ModalCustomComments = ({ modalTitle }: ModalCustomCommentsProps) => {
 
     return (
         <>
-            <Modal
-                modalTitle={modalTitle}
-                opener={<FontAwesomeIcon icon={faEdit} />}
-                validator={addNewString}
-            >
+            <Modal modalTitle={modalTitle} opener={<FontAwesomeIcon icon={faEdit} />} validator={addNewString}>
                 {state.content.map((line, index) => {
                     return (
                         <div key={line.id}>

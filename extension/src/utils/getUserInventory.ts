@@ -94,9 +94,7 @@ const getUserCSGOInventory = (steamID) =>
                     .then((response) => {
                         if (!response.ok) {
                             reject(response.statusText);
-                            console.log(
-                                `Error code: ${response.status} Status: ${response.statusText}`,
-                            );
+                            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
                         } else return response.json();
                     })
                     .then((body) => {
@@ -115,10 +113,7 @@ const getUserCSGOInventory = (steamID) =>
                                 floatCacheAssetIDs.push(assetID);
 
                                 for (const item of Object.values(items)) {
-                                    if (
-                                        asset.classid === item.classid &&
-                                        asset.instanceid === item.instanceid
-                                    ) {
+                                    if (asset.classid === item.classid && asset.instanceid === item.instanceid) {
                                         const marketHashName = item.market_hash_name;
                                         if (duplicates[marketHashName] === undefined) {
                                             const instances = [assetID];
@@ -139,10 +134,7 @@ const getUserCSGOInventory = (steamID) =>
                                     const position = asset.pos;
 
                                     for (const item of Object.values(items)) {
-                                        if (
-                                            asset.classid === item.classid &&
-                                            asset.instanceid === item.instanceid
-                                        ) {
+                                        if (asset.classid === item.classid && asset.instanceid === item.instanceid) {
                                             const name = item.name;
                                             const marketHashName = item.market_hash_name;
                                             let tradability = 'Tradable';
@@ -174,10 +166,7 @@ const getUserCSGOInventory = (steamID) =>
                                             }
                                             const patternInfo =
                                                 floatInfo !== null
-                                                    ? getPattern(
-                                                          marketHashName,
-                                                          floatInfo.paintseed,
-                                                      )
+                                                    ? getPattern(marketHashName, floatInfo.paintseed)
                                                     : null;
 
                                             if (itemPricing) {
@@ -206,10 +195,7 @@ const getUserCSGOInventory = (steamID) =>
                                                 name,
                                                 market_hash_name: marketHashName,
                                                 name_color: item.name_color,
-                                                marketlink: getItemMarketLink(
-                                                    steamApps.CSGO.appID,
-                                                    marketHashName,
-                                                ),
+                                                marketlink: getItemMarketLink(steamApps.CSGO.appID, marketHashName),
                                                 appid: item.appid,
                                                 contextid: '2',
                                                 classid: item.classid,
@@ -228,10 +214,7 @@ const getUserCSGOInventory = (steamID) =>
                                                 isSouvenir: name.includes('Souvenir'),
                                                 starInName: name.includes('★'),
                                                 stickers,
-                                                stickerPrice: getStickerPriceTotal(
-                                                    stickers,
-                                                    currency,
-                                                ),
+                                                stickerPrice: getStickerPriceTotal(stickers, currency),
                                                 nametag: getNameTag(item),
                                                 duplicates: duplicates[marketHashName],
                                                 owner,
@@ -289,10 +272,7 @@ const getOtherInventory = (appID, steamID) =>
                     for (const asset of Object.values(ids)) {
                         const assetID = asset.id;
                         for (const item of Object.values(items)) {
-                            if (
-                                asset.classid === item.classid &&
-                                asset.instanceid === item.instanceid
-                            ) {
+                            if (asset.classid === item.classid && asset.instanceid === item.instanceid) {
                                 const marketHashName = item.market_hash_name;
                                 if (duplicates[marketHashName] === undefined) {
                                     const instances = [assetID];
@@ -312,10 +292,7 @@ const getOtherInventory = (appID, steamID) =>
                         const position = asset.pos;
 
                         for (const item of Object.values(items)) {
-                            if (
-                                asset.classid === item.classid &&
-                                asset.instanceid === item.instanceid
-                            ) {
+                            if (asset.classid === item.classid && asset.instanceid === item.instanceid) {
                                 const name = item.name;
                                 const marketHashName = item.market_hash_name;
                                 let tradability = 'Tradable';

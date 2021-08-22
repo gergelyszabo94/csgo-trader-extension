@@ -35,9 +35,7 @@ const IncomingOfferHistory = () => {
             })
             .catch((err) => {
                 console.log(err);
-                setError(
-                    "Could not load your offer history, Steam might be down or you don't have your API key set.",
-                );
+                setError("Could not load your offer history, Steam might be down or you don't have your API key set.");
             });
     };
 

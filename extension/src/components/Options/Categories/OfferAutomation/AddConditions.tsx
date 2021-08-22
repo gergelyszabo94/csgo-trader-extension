@@ -23,9 +23,7 @@ const AddConditions = ({ ruleConditions, ruleOperators, modifyConditions }: AddC
 
     const onConditionChange = (index: number, condition: Condition) => {
         const newCondition =
-            condition.value === null
-                ? { type: condition.type }
-                : { type: condition.type, value: condition.value };
+            condition.value === null ? { type: condition.type } : { type: condition.type, value: condition.value };
         const newConditions = [...ruleConditions];
         newConditions[index] = newCondition;
         modifyConditions(newConditions, ruleOperators);
@@ -67,11 +65,7 @@ const AddConditions = ({ ruleConditions, ruleOperators, modifyConditions }: AddC
                 );
             })}
             <div>
-                <CustomA11yButton
-                    action={addNewCondition}
-                    title='Add new condition'
-                    className='mx-3'
-                >
+                <CustomA11yButton action={addNewCondition} title='Add new condition' className='mx-3'>
                     <FontAwesomeIcon icon={faPlus} />
                 </CustomA11yButton>
             </div>

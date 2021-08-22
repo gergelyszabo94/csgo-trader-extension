@@ -11,9 +11,7 @@ const getPlayerBans = (steamIDs) =>
                 fetch(getRequest)
                     .then((response) => {
                         if (!response.ok) {
-                            console.log(
-                                `Error code: ${response.status} Status: ${response.statusText}`,
-                            );
+                            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
                             reject(response.statusText);
                         } else return response.json();
                     })
@@ -50,9 +48,7 @@ const getPlayerSummaries = (steamIDs) =>
                 fetch(getRequest)
                     .then((response) => {
                         if (!response.ok) {
-                            console.log(
-                                `Error code: ${response.status} Status: ${response.statusText}`,
-                            );
+                            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
                             reject(response.statusText);
                         } else return response.json();
                     })

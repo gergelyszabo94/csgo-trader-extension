@@ -147,11 +147,7 @@ const getItemInfoFromPage = (who) => {
     if (side !== null) {
         side.querySelectorAll('.item').forEach((itemEl) => {
             const itemIDs = getIDsFromElement(itemEl, 'offer');
-            if (
-                itemIDs !== null &&
-                itemIDs.appID !== 'anonymous' &&
-                appInfo[itemIDs.appID] !== undefined
-            ) {
+            if (itemIDs !== null && itemIDs.appID !== 'anonymous' && appInfo[itemIDs.appID] !== undefined) {
                 sideAppAndContextIDs = sideAppAndContextIDs.filter((IDs) => {
                     return !(IDs.appID === itemIDs.appID && IDs.contextID === itemIDs.contextID);
                 });
@@ -201,9 +197,7 @@ const getItemInfoFromPage = (who) => {
              else trimmedAssets = null;
         document.querySelector('body').setAttribute('offerInventoryInfo', JSON.stringify(trimmedAssets));`;
 
-        const items = JSON.parse(
-            injectScript(getItemsScript, true, 'getOfferItemInfo', 'offerInventoryInfo'),
-        );
+        const items = JSON.parse(injectScript(getItemsScript, true, 'getOfferItemInfo', 'offerInventoryInfo'));
         if (items === null) return null;
 
         inventoryInfos[IDs.appID] = {
@@ -319,21 +313,12 @@ const addItemInfo = () => {
                             }, 1000);
                             return false;
                         }
-                        const item = getItemByAssetID(
-                            combinedInventories,
-                            getAssetIDOfElement(itemElement),
-                        );
+                        const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
                         addDopplerPhase(itemElement, item.dopplerInfo);
                         makeItemColorful(itemElement, item, colorfulItems);
-                        addSSTandExtIndicators(
-                            itemElement,
-                            item,
-                            showStickerPrice,
-                            showShortExteriorsOffers,
-                        );
+                        addSSTandExtIndicators(itemElement, item, showStickerPrice, showShortExteriorsOffers);
                         addPriceIndicator(itemElement, item.price);
-                        if (itemInOtherOffers)
-                            addInOtherTradeIndicator(itemElement, item, activeOffers.items);
+                        if (itemInOtherOffers) addInOtherTradeIndicator(itemElement, item, activeOffers.items);
                         if (autoFloatOffer) addFloatIndicator(itemElement, item.floatInfo);
 
                         // marks the item "processed" to avoid additional unnecessary work later
@@ -352,130 +337,104 @@ const addItemInfo = () => {
 
 const addInventoryTotals = (yourInventoryTotal, theirInventoryTotal) => {
     chrome.storage.local.get(['currency'], ({ currency }) => {
-        const yourInventoryTitleDiv = document
-            .getElementById('inventory_select_your_inventory')
-            .querySelector('div');
+        const yourInventoryTitleDiv = document.getElementById('inventory_select_your_inventory').querySelector('div');
         const yourPrettyPrice = prettyPrintPrice(currency, yourInventoryTotal.toFixed(0));
         yourInventoryTitleDiv.innerText = `${yourInventoryTitleDiv.innerText} (${yourPrettyPrice})`;
         yourInventoryTitleDiv.style.fontSize =
             yourPrettyPrice.length <= 7 ? '16px' : yourPrettyPrice.length <= 9 ? '14px' : '13px';
 
-        const theirInventoryTitleDiv = document
-            .getElementById('inventory_select_their_inventory')
-            .querySelector('div');
+        const theirInventoryTitleDiv = document.getElementById('inventory_select_their_inventory').querySelector('div');
         const theirPrettyPrice = prettyPrintPrice(currency, theirInventoryTotal.toFixed(0));
         theirInventoryTitleDiv.innerText = `${theirInventoryTitleDiv.innerText} (${theirPrettyPrice})`;
         theirInventoryTitleDiv.style.fontSize =
-            theirPrettyPrice.length <= 7
-                ? '16px'
-                : theirInventoryTitleDiv.length <= 9
-                ? '14px'
-                : '13px';
+            theirPrettyPrice.length <= 7 ? '16px' : theirInventoryTitleDiv.length <= 9 ? '14px' : '13px';
     });
 };
 
 // also generates the offer summary
 const addInTradeTotals = (whose) => {
-    chrome.storage.local.get(
-        ['userSteamWalletCurrency', 'currency'],
-        ({ userSteamWalletCurrency, currency }) => {
-            const itemsInTrade = document
-                .getElementById(`${whose}_slots`)
-                .querySelectorAll('.item');
-            let inTradeTotal = 0;
-            let inTradeRealTimeTotal = 0;
-            let numberOfItemsInTrade = 0;
-            const inTradeItemsSummary = {};
+    chrome.storage.local.get(['userSteamWalletCurrency', 'currency'], ({ userSteamWalletCurrency, currency }) => {
+        const itemsInTrade = document.getElementById(`${whose}_slots`).querySelectorAll('.item');
+        let inTradeTotal = 0;
+        let inTradeRealTimeTotal = 0;
+        let numberOfItemsInTrade = 0;
+        const inTradeItemsSummary = {};
 
-            itemsInTrade.forEach((inTradeItem) => {
-                const realTimePrice = inTradeItem.getAttribute('data-realtime-price');
-                if (realTimePrice !== null) inTradeRealTimeTotal += parseFloat(realTimePrice);
+        itemsInTrade.forEach((inTradeItem) => {
+            const realTimePrice = inTradeItem.getAttribute('data-realtime-price');
+            if (realTimePrice !== null) inTradeRealTimeTotal += parseFloat(realTimePrice);
 
-                const IDs = getIDsFromElement(inTradeItem, 'offer');
-                const item = getItemByIDs(
-                    combinedInventories,
-                    IDs.appID,
-                    IDs.contextID,
-                    IDs.assetID,
-                );
-                if (item !== undefined) {
-                    if (item.price !== undefined) inTradeTotal += parseFloat(item.price.price);
-                    if (inTradeItemsSummary[item.type.key] !== undefined) {
-                        inTradeItemsSummary[item.type.key] += 1;
-                    } else inTradeItemsSummary[item.type.key] = 1;
-                } else if (inTradeItemsSummary.nonCSGO !== undefined) {
-                    inTradeItemsSummary.nonCSGO += 1;
-                } else inTradeItemsSummary.nonCSGO = 1;
-                numberOfItemsInTrade += 1;
-            });
+            const IDs = getIDsFromElement(inTradeItem, 'offer');
+            const item = getItemByIDs(combinedInventories, IDs.appID, IDs.contextID, IDs.assetID);
+            if (item !== undefined) {
+                if (item.price !== undefined) inTradeTotal += parseFloat(item.price.price);
+                if (inTradeItemsSummary[item.type.key] !== undefined) {
+                    inTradeItemsSummary[item.type.key] += 1;
+                } else inTradeItemsSummary[item.type.key] = 1;
+            } else if (inTradeItemsSummary.nonCSGO !== undefined) {
+                inTradeItemsSummary.nonCSGO += 1;
+            } else inTradeItemsSummary.nonCSGO = 1;
+            numberOfItemsInTrade += 1;
+        });
 
-            const summaryEl = document.getElementById(`${whose}Summary`);
-            const itemList = summaryEl.querySelector('ul');
-            itemList.innerHTML = '';
-            const numberOfItems = summaryEl.querySelector('.numberOfItems');
-            numberOfItems.innerText = numberOfItemsInTrade;
-            const inTradeTotalValue = summaryEl.querySelector('.total');
-            inTradeTotalValue.innerText = prettyPrintPrice(currency, inTradeTotal);
+        const summaryEl = document.getElementById(`${whose}Summary`);
+        const itemList = summaryEl.querySelector('ul');
+        itemList.innerHTML = '';
+        const numberOfItems = summaryEl.querySelector('.numberOfItems');
+        numberOfItems.innerText = numberOfItemsInTrade;
+        const inTradeTotalValue = summaryEl.querySelector('.total');
+        inTradeTotalValue.innerText = prettyPrintPrice(currency, inTradeTotal);
 
-            for (const [name, value] of Object.entries(inTradeItemsSummary)) {
-                const listItem = document.createElement('li');
-                const type = itemTypes[name] !== undefined ? itemTypes[name].name : 'Non-CSGO';
-                listItem.innerText = `${type}: ${value}`;
-                itemList.appendChild(listItem);
-            }
+        for (const [name, value] of Object.entries(inTradeItemsSummary)) {
+            const listItem = document.createElement('li');
+            const type = itemTypes[name] !== undefined ? itemTypes[name].name : 'Non-CSGO';
+            listItem.innerText = `${type}: ${value}`;
+            itemList.appendChild(listItem);
+        }
 
-            const totalEl = document.getElementById(`${whose}InTradeTotal`);
-            if (totalEl === null) {
-                let itemsTextDiv;
-                if (whose === 'your')
-                    itemsTextDiv = document
-                        .getElementById('trade_yours')
-                        .querySelector('h2.ellipsis');
-                else
-                    itemsTextDiv = document
-                        .getElementById('trade_theirs')
-                        .querySelector('.offerheader')
-                        .querySelector('h2');
-                itemsTextDiv.innerHTML = DOMPurify.sanitize(
-                    `${
-                        itemsTextDiv.innerText.split(':')[0]
-                    } (<span id="${whose}InTradeTotal" data-total="${inTradeTotal}" title="In-trade total">${prettyPrintPrice(
-                        userSteamWalletCurrency,
-                        inTradeTotal,
-                    )}</span>):`,
+        const totalEl = document.getElementById(`${whose}InTradeTotal`);
+        if (totalEl === null) {
+            let itemsTextDiv;
+            if (whose === 'your') itemsTextDiv = document.getElementById('trade_yours').querySelector('h2.ellipsis');
+            else
+                itemsTextDiv = document
+                    .getElementById('trade_theirs')
+                    .querySelector('.offerheader')
+                    .querySelector('h2');
+            itemsTextDiv.innerHTML = DOMPurify.sanitize(
+                `${
+                    itemsTextDiv.innerText.split(':')[0]
+                } (<span id="${whose}InTradeTotal" data-total="${inTradeTotal}" title="In-trade total">${prettyPrintPrice(
+                    userSteamWalletCurrency,
+                    inTradeTotal,
+                )}</span>):`,
+            );
+        } else {
+            totalEl.innerText = prettyPrintPrice(currency, inTradeTotal);
+            totalEl.setAttribute('data-total', inTradeTotal);
+        }
+
+        if (inTradeRealTimeTotal !== 0) {
+            const realTimeTotalEl = document.getElementById(`${whose}InTradeRealTimeTotal`);
+            if (realTimeTotalEl === null) {
+                const itemBox = document.getElementById(`trade_${whose}s`).querySelector('.trade_item_box');
+                itemBox.style['margin-bottom'] = '20px';
+                itemBox.insertAdjacentHTML(
+                    'beforeend',
+                    DOMPurify.sanitize(
+                        `<div id="${whose}InTradeRealTimeTotal" class="realTimePriceTradeTotal" title="RealTime price total">
+                    ${prettyPrintPrice(userSteamWalletCurrency, (inTradeRealTimeTotal / 100).toFixed(2))}
+                </div>`,
+                    ),
                 );
             } else {
-                totalEl.innerText = prettyPrintPrice(currency, inTradeTotal);
-                totalEl.setAttribute('data-total', inTradeTotal);
+                realTimeTotalEl.innerText = prettyPrintPrice(
+                    userSteamWalletCurrency,
+                    (inTradeRealTimeTotal / 100).toFixed(2),
+                );
             }
-
-            if (inTradeRealTimeTotal !== 0) {
-                const realTimeTotalEl = document.getElementById(`${whose}InTradeRealTimeTotal`);
-                if (realTimeTotalEl === null) {
-                    const itemBox = document
-                        .getElementById(`trade_${whose}s`)
-                        .querySelector('.trade_item_box');
-                    itemBox.style['margin-bottom'] = '20px';
-                    itemBox.insertAdjacentHTML(
-                        'beforeend',
-                        DOMPurify.sanitize(
-                            `<div id="${whose}InTradeRealTimeTotal" class="realTimePriceTradeTotal" title="RealTime price total">
-                    ${prettyPrintPrice(
-                        userSteamWalletCurrency,
-                        (inTradeRealTimeTotal / 100).toFixed(2),
-                    )}
-                </div>`,
-                        ),
-                    );
-                } else {
-                    realTimeTotalEl.innerText = prettyPrintPrice(
-                        userSteamWalletCurrency,
-                        (inTradeRealTimeTotal / 100).toFixed(2),
-                    );
-                }
-            }
-        },
-    );
+        }
+    });
 };
 
 const addPLInfo = () => {
@@ -526,9 +485,7 @@ const sortItems = (method, type) => {
             const offerPages = activeInventory.querySelectorAll('.inventory_page');
             doTheSorting(combinedInventories, Array.from(items), method, offerPages, type);
         } else {
-            const items = document
-                .getElementById(`trade_${type}s`)
-                .querySelectorAll('.item.app730.context2');
+            const items = document.getElementById(`trade_${type}s`).querySelectorAll('.item.app730.context2');
             doTheSorting(
                 combinedInventories,
                 Array.from(items),
@@ -576,10 +533,7 @@ const addFloatIndicatorsToPage = (type) => {
                 }
             }
             itemElements.forEach((itemElement) => {
-                const item = getItemByAssetID(
-                    combinedInventories,
-                    getAssetIDOfElement(itemElement),
-                );
+                const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
                 if (item && item.inspectLink !== null) {
                     if (item.floatInfo === null && itemTypes[item.type.key].float) {
                         floatQueue.jobs.push({
@@ -620,12 +574,7 @@ const addRealTimePricesToQueue = (type) => {
                     itemElements.forEach((itemElement) => {
                         if (itemElement.getAttribute('data-realtime-price') === null) {
                             const IDs = getIDsFromElement(itemElement, 'offer');
-                            const item = getItemByIDs(
-                                combinedInventories,
-                                IDs.appID,
-                                IDs.contextID,
-                                IDs.assetID,
-                            );
+                            const item = getItemByIDs(combinedInventories, IDs.appID, IDs.contextID, IDs.assetID);
 
                             itemElement.setAttribute('data-realtime-price', '0');
                             if (item && item.marketable === 1) {
@@ -653,8 +602,7 @@ const addRealTimePricesToQueue = (type) => {
 const removeLeftOverSlots = () => {
     setTimeout(() => {
         document.querySelectorAll('.itemHolder.trade_slot').forEach((slot) => {
-            if (slot.parentNode.id !== 'your_slots' && slot.parentNode.id !== 'their_slots')
-                slot.remove();
+            if (slot.parentNode.id !== 'your_slots' && slot.parentNode.id !== 'their_slots') slot.remove();
         });
     }, 500);
 };
@@ -681,8 +629,8 @@ const singleClickControlClickHandler = (event) => {
 
         inInventory.querySelectorAll('.item.app730.context2').forEach((item) => {
             if (
-                getItemByAssetID(combinedInventories, getAssetIDOfElement(item))
-                    .market_hash_name === marketHashNameToLookFor
+                getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name ===
+                marketHashNameToLookFor
             ) {
                 moveItem(item);
             }
@@ -734,14 +682,9 @@ const doInitSorting = (initial) => {
             addRealTimePricesToQueue('your');
             addRealTimePricesToQueue('page');
 
-            document.querySelector(`#offer_sorting_mode [value="${offerSortingMode}"]`).selected =
-                true;
-            document.querySelector(
-                `#offer_your_sorting_mode [value="${offerSortingMode}"]`,
-            ).selected = true;
-            document.querySelector(
-                `#offer_their_sorting_mode [value="${offerSortingMode}"]`,
-            ).selected = true;
+            document.querySelector(`#offer_sorting_mode [value="${offerSortingMode}"]`).selected = true;
+            document.querySelector(`#offer_your_sorting_mode [value="${offerSortingMode}"]`).selected = true;
+            document.querySelector(`#offer_their_sorting_mode [value="${offerSortingMode}"]`).selected = true;
 
             singleClickControlClick();
         },
@@ -756,8 +699,7 @@ const getInventories = (initial) => {
         const yourBuiltInventory = {
             ...yourInventory,
             [steamApps.CSGO.appID]:
-                yourInventory[steamApps.CSGO.appID] !== undefined &&
-                yourInventory[steamApps.CSGO.appID] !== null
+                yourInventory[steamApps.CSGO.appID] !== undefined && yourInventory[steamApps.CSGO.appID] !== null
                     ? {
                           contextID: yourInventory[steamApps.CSGO.appID].contextID,
                           items: buildInventoryStructure(yourInventory[steamApps.CSGO.appID].items),
@@ -770,13 +712,10 @@ const getInventories = (initial) => {
         const theirBuiltInventory = {
             ...theirInventory,
             [steamApps.CSGO.appID]:
-                theirInventory[steamApps.CSGO.appID] !== undefined &&
-                theirInventory[steamApps.CSGO.appID] !== null
+                theirInventory[steamApps.CSGO.appID] !== undefined && theirInventory[steamApps.CSGO.appID] !== null
                     ? {
                           contextID: theirInventory[steamApps.CSGO.appID].contextID,
-                          items: buildInventoryStructure(
-                              theirInventory[steamApps.CSGO.appID].items,
-                          ),
+                          items: buildInventoryStructure(theirInventory[steamApps.CSGO.appID].items),
                       }
                     : {
                           contextID: '2',
@@ -784,50 +723,46 @@ const getInventories = (initial) => {
                       },
         };
 
-        addPricesAndFloatsToInventory(yourBuiltInventory[steamApps.CSGO.appID].items).then(
-            ({ items, total }) => {
-                const yourInventoryWithPrices = {
-                    ...yourBuiltInventory,
+        addPricesAndFloatsToInventory(yourBuiltInventory[steamApps.CSGO.appID].items).then(({ items, total }) => {
+            const yourInventoryWithPrices = {
+                ...yourBuiltInventory,
+                [steamApps.CSGO.appID]: {
+                    contextID: yourBuiltInventory[steamApps.CSGO.appID].contextID,
+                    items,
+                },
+            };
+            addPricesAndFloatsToInventory(theirBuiltInventory[steamApps.CSGO.appID].items).then((theirInventoryRes) => {
+                const theirInventoryWithPrices = {
+                    ...theirBuiltInventory,
                     [steamApps.CSGO.appID]: {
-                        contextID: yourBuiltInventory[steamApps.CSGO.appID].contextID,
-                        items,
+                        contextID: theirBuiltInventory[steamApps.CSGO.appID].contextID,
+                        items: theirInventoryRes.items,
                     },
                 };
-                addPricesAndFloatsToInventory(theirBuiltInventory[steamApps.CSGO.appID].items).then(
-                    (theirInventoryRes) => {
-                        const theirInventoryWithPrices = {
-                            ...theirBuiltInventory,
-                            [steamApps.CSGO.appID]: {
-                                contextID: theirBuiltInventory[steamApps.CSGO.appID].contextID,
-                                items: theirInventoryRes.items,
-                            },
-                        };
 
-                        for (const app of Object.values(yourInventoryWithPrices)) {
-                            app.items.forEach((item) => {
-                                combinedInventories.push(item);
-                            });
-                        }
+                for (const app of Object.values(yourInventoryWithPrices)) {
+                    app.items.forEach((item) => {
+                        combinedInventories.push(item);
+                    });
+                }
 
-                        for (const app of Object.values(theirInventoryWithPrices)) {
-                            app.items.forEach((item) => {
-                                combinedInventories.push(item);
-                            });
-                        }
+                for (const app of Object.values(theirInventoryWithPrices)) {
+                    app.items.forEach((item) => {
+                        combinedInventories.push(item);
+                    });
+                }
 
-                        addItemInfo();
-                        doInitSorting(initial);
-                        if (initial) {
-                            addInventoryTotals(total, theirInventoryRes.total);
-                            addInTradeTotals('your');
-                            addInTradeTotals('their');
-                            addPLInfo();
-                            periodicallyUpdateTotals();
-                        }
-                    },
-                );
-            },
-        );
+                addItemInfo();
+                doInitSorting(initial);
+                if (initial) {
+                    addInventoryTotals(total, theirInventoryRes.total);
+                    addInTradeTotals('your');
+                    addInTradeTotals('their');
+                    addPLInfo();
+                    periodicallyUpdateTotals();
+                }
+            });
+        });
     } else if (document.getElementById('error_msg') === null) {
         setTimeout(() => {
             getInventories(initial);
@@ -881,8 +816,8 @@ const addAPartysFunctionBar = (whose) => {
             .forEach((item) => {
                 if (
                     keysRemoved < numberOfKeys &&
-                    getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).type
-                        .internal_name === itemTypes.key.internal_name
+                    getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).type.internal_name ===
+                        itemTypes.key.internal_name
                 ) {
                     moveItem(item);
                     keysRemoved += 1;
@@ -893,16 +828,13 @@ const addAPartysFunctionBar = (whose) => {
 
     // remove your/their selected items functionality
     document.getElementById(`remove_${whose}_selected`).addEventListener('click', () => {
-        const numberOfSelected = document.getElementById(
-            `remove_${whose}_number_of_selected`,
-        ).value;
+        const numberOfSelected = document.getElementById(`remove_${whose}_number_of_selected`).value;
         const itemElements = document.getElementById(`trade_${whose}s`).querySelectorAll('.item');
         let selectedRemoved = 0;
 
         const selectedItems = [...itemElements].map((item) => {
             if (item.classList.contains('cstSelected')) {
-                return getItemByAssetID(combinedInventories, getAssetIDOfElement(item))
-                    .market_hash_name;
+                return getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name;
             }
             return null;
         });
@@ -911,8 +843,7 @@ const addAPartysFunctionBar = (whose) => {
             if (
                 selectedRemoved < numberOfSelected &&
                 selectedItems.includes(
-                    getItemByAssetID(combinedInventories, getAssetIDOfElement(item))
-                        .market_hash_name,
+                    getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name,
                 )
             ) {
                 moveItem(item);
@@ -980,8 +911,8 @@ const addFunctionBars = () => {
                     .forEach((item) => {
                         if (
                             keysTaken < numberOfKeys &&
-                            getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).type
-                                .internal_name === itemTypes.key.internal_name
+                            getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).type.internal_name ===
+                                itemTypes.key.internal_name
                         ) {
                             moveItem(item);
                             keysTaken += 1;
@@ -998,8 +929,7 @@ const addFunctionBars = () => {
                 // goes through the items and collects the names of the selected ones
                 const selectedItems = [...itemElements].map((item) => {
                     if (item.classList.contains('cstSelected')) {
-                        return getItemByAssetID(combinedInventories, getAssetIDOfElement(item))
-                            .market_hash_name;
+                        return getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name;
                     }
                     return null;
                 });
@@ -1008,8 +938,7 @@ const addFunctionBars = () => {
                     if (
                         selectedTaken < numberOfSelected &&
                         selectedItems.includes(
-                            getItemByAssetID(combinedInventories, getAssetIDOfElement(item))
-                                .market_hash_name,
+                            getItemByAssetID(combinedInventories, getAssetIDOfElement(item)).market_hash_name,
                         )
                     ) {
                         moveItem(item);
@@ -1065,10 +994,7 @@ const addFunctionBars = () => {
                     action: 'OfferSorting',
                 });
 
-                sortItems(
-                    theirSortingSelect.options[theirSortingSelect.selectedIndex].value,
-                    'their',
-                );
+                sortItems(theirSortingSelect.options[theirSortingSelect.selectedIndex].value, 'their');
                 addFloatIndicatorsToPage('their');
                 addRealTimePricesToQueue('their');
             });
@@ -1089,12 +1015,7 @@ const addFunctionBars = () => {
 const getTradePartnerSteamID = () => {
     const tradePartnerSteamIDScript =
         "document.querySelector('body').setAttribute('tradePartnerSteamID', g_ulTradePartnerSteamID);";
-    return injectScript(
-        tradePartnerSteamIDScript,
-        true,
-        'tradePartnerSteamID',
-        'tradePartnerSteamID',
-    );
+    return injectScript(tradePartnerSteamIDScript, true, 'tradePartnerSteamID', 'tradePartnerSteamID');
 };
 
 // add an info card to the top of the offer about offer history with the user (sent/received)
@@ -1121,19 +1042,15 @@ const addPartnerOfferSummary = () => {
                             'afterend',
                             DOMPurify.sanitize(
                                 `<div class="trade_partner_info_block" style="color: lightgray"> 
-                        <div title="${dateToISODisplay(
-                            offerHistory.last_received,
-                        )}">Offers Received: ${offerHistory.offers_received} Last:  ${
-                                    offerHistory.offers_received !== 0
-                                        ? prettyTimeAgo(offerHistory.last_received)
-                                        : '-'
+                        <div title="${dateToISODisplay(offerHistory.last_received)}">Offers Received: ${
+                                    offerHistory.offers_received
+                                } Last:  ${
+                                    offerHistory.offers_received !== 0 ? prettyTimeAgo(offerHistory.last_received) : '-'
                                 }</div>
                         <div title="${dateToISODisplay(offerHistory.last_sent)}">Offers Sent: ${
                                     offerHistory.offers_sent
                                 } Last:  ${
-                                    offerHistory.offers_sent !== 0
-                                        ? prettyTimeAgo(offerHistory.last_sent)
-                                        : '-'
+                                    offerHistory.offers_sent !== 0 ? prettyTimeAgo(offerHistory.last_sent) : '-'
                                 }</div>
                     </div>`,
                             ),
@@ -1216,9 +1133,7 @@ repositionNameTagIcons();
 const errorMSGEl = document.getElementById('error_msg');
 if (errorMSGEl === null) {
     updateWalletCurrency();
-} else if (
-    errorMSGEl.innerText.includes('An error was encountered while processing your request:')
-) {
+} else if (errorMSGEl.innerText.includes('An error was encountered while processing your request:')) {
     // english only
     setTimeout(() => {
         window.location.reload();
@@ -1238,8 +1153,7 @@ trackEvent({
     action: 'TradeOfferView',
 });
 
-const getPartnerNameScript =
-    "document.querySelector('body').setAttribute('partnerName', g_strTradePartnerPersonaName)";
+const getPartnerNameScript = "document.querySelector('body').setAttribute('partnerName', g_strTradePartnerPersonaName)";
 const partnerName = injectScript(getPartnerNameScript, true, 'partnerName', 'partnerName');
 if (partnerName !== null) changePageTitle('trade_offer', partnerName);
 
@@ -1428,14 +1342,9 @@ if (csgoTraderSendParams !== null || csgoTraderSelectParams !== null) {
         ['sendOfferBasedOnQueryParams', 'selectItemsBasedOnQueryParams'],
         ({ sendOfferBasedOnQueryParams, selectItemsBasedOnQueryParams }) => {
             if (sendOfferBasedOnQueryParams || selectItemsBasedOnQueryParams) {
-                const message =
-                    urlParams.get('csgotrader_message') !== null
-                        ? urlParams.get('csgotrader_message')
-                        : '';
+                const message = urlParams.get('csgotrader_message') !== null ? urlParams.get('csgotrader_message') : '';
                 const args =
-                    csgoTraderSendParams !== null
-                        ? csgoTraderSendParams.split('_')
-                        : csgoTraderSelectParams.split('_');
+                    csgoTraderSendParams !== null ? csgoTraderSendParams.split('_') : csgoTraderSelectParams.split('_');
                 const whose = args[0]; // your or their
                 const type = args[1]; // id or name
                 const appID = args[2];
@@ -1469,10 +1378,7 @@ if (csgoTraderSendParams !== null || csgoTraderSelectParams !== null) {
                                         contextID,
                                         name,
                                     );
-                                    if (
-                                        itemWithAllDetails !== null &&
-                                        itemWithAllDetails !== undefined
-                                    ) {
+                                    if (itemWithAllDetails !== null && itemWithAllDetails !== undefined) {
                                         clearInterval(itemFoundInterval);
                                         const items = [
                                             {
@@ -1537,10 +1443,7 @@ if (csgoTraderSendParams !== null || csgoTraderSelectParams !== null) {
                                         contextID,
                                         name,
                                     );
-                                    if (
-                                        itemWithAllDetails !== null &&
-                                        itemWithAllDetails !== undefined
-                                    ) {
+                                    if (itemWithAllDetails !== null && itemWithAllDetails !== undefined) {
                                         clearInterval(selectInterval);
                                         const itemElement = findElementByIDs(
                                             appID,

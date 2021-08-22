@@ -12,14 +12,10 @@ const other = () => {
                 id='loungeBump'
                 description={
                     <>
-                        Automatically bumps your trades every 30-40 minutes on csgolounge.com if you
-                        have the page
-                        <NewTabLink to='https://csgolounge.com/mytrades'>
-                            {' '}
-                            https://csgolounge.com/mytrades{' '}
-                        </NewTabLink>
-                        open. Note: Lounge is broken and it never disables the bump button,
-                        regardless trades do get bumped.
+                        Automatically bumps your trades every 30-40 minutes on csgolounge.com if you have the page
+                        <NewTabLink to='https://csgolounge.com/mytrades'> https://csgolounge.com/mytrades </NewTabLink>
+                        open. Note: Lounge is broken and it never disables the bump button, regardless trades do get
+                        bumped.
                     </>
                 }
                 permission='tabs'
@@ -31,14 +27,13 @@ const other = () => {
                 id='tradersBump'
                 description={
                     <>
-                        Automatically bumps your trades every 30-40 minutes on CSGOTraders.net if
-                        you have the page
+                        Automatically bumps your trades every 30-40 minutes on CSGOTraders.net if you have the page
                         <NewTabLink to='https://csgotraders.net/mytrades'>
                             {' '}
                             https://csgotraders.net/mytrades{' '}
                         </NewTabLink>
-                        open. Note: The way it works looks the bump buttons unpressed, but it does
-                        the bumping as you can see if you refresh the page.
+                        open. Note: The way it works looks the bump buttons unpressed, but it does the bumping as you
+                        can see if you refresh the page.
                     </>
                 }
                 permission='tabs'

@@ -45,10 +45,7 @@ const TradeHistory = ({ match }) => {
                     <div className='row'>
                         <div className='col-md-2 d-none d-md-block nav__sidebar'>
                             <div className='sidebar-sticky'>
-                                <Nav
-                                    defaultActiveKey='/trade-history/history/'
-                                    className='flex-column'
-                                >
+                                <Nav defaultActiveKey='/trade-history/history/' className='flex-column'>
                                     {routes.map((route) => (
                                         <RouterNavLink
                                             to={match.path + route.to}
@@ -66,11 +63,7 @@ const TradeHistory = ({ match }) => {
                         <div className='col-md-10 ml-sm-auto col-lg-10 pt-3 px-4 options__content'>
                             <Switch>
                                 {routes.map((route) => (
-                                    <Route
-                                        path={match.path + route.to}
-                                        component={route.component}
-                                        key={route.to}
-                                    />
+                                    <Route path={match.path + route.to} component={route.component} key={route.to} />
                                 ))}
                             </Switch>
                         </div>

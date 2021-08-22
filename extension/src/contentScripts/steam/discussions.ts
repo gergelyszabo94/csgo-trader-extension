@@ -29,12 +29,7 @@ const doTheAutoBumping = () => {
     const getExtendedDataScript = `document.querySelector('body').setAttribute('commentExtendedData', g_rgCommentThreads['${
         forumTopicEl.id.split('commentthread_')[1].split('_area')[0]
     }'].m_rgCommentData.extended_data)`;
-    const extendedData = injectScript(
-        getExtendedDataScript,
-        true,
-        'getExtendedData',
-        'commentExtendedData',
-    );
+    const extendedData = injectScript(getExtendedDataScript, true, 'getExtendedData', 'commentExtendedData');
 
     document.querySelectorAll('.commentthread_comment').forEach((commentThread) => {
         const commentTextElement = commentThread.querySelector('.commentthread_comment_text');

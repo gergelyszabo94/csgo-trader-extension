@@ -63,11 +63,7 @@ const Popup = () => {
                         <span>{chrome.runtime.getManifest().version}</span>
                     </h5>
                 </NewTabLink>
-                {showTelemetryConsent ? (
-                    <TelemetryConsent submitConsent={saveConsentResult} />
-                ) : (
-                    links
-                )}
+                {showTelemetryConsent ? <TelemetryConsent submitConsent={saveConsentResult} /> : links}
             </>
         );
     };

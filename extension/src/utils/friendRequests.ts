@@ -36,25 +36,17 @@ const getFriendRequests = (): Promise<Inviter[]> =>
                     const inviters: Inviter[] = [];
 
                     if (receivedInvitesElement !== null) {
-                        receivedInvitesElement
-                            .querySelectorAll('.invite_row')
-                            .forEach((inviteRow) => {
-                                inviters.push({
-                                    steamID: inviteRow.getAttribute('data-steamid'),
-                                    accountID: inviteRow.getAttribute('data-accountid'),
-                                    name: (
-                                        inviteRow.querySelector('.invite_block_name')
-                                            .firstElementChild as HTMLElement
-                                    ).innerText,
-                                    level: inviteRow.querySelector<HTMLElement>(
-                                        '.friendPlayerLevelNum',
-                                    ).innerText,
-                                    evalTries: 0,
-                                    avatar: inviteRow
-                                        .querySelector('.playerAvatar > a > img')
-                                        .getAttribute('src'),
-                                });
+                        receivedInvitesElement.querySelectorAll('.invite_row').forEach((inviteRow) => {
+                            inviters.push({
+                                steamID: inviteRow.getAttribute('data-steamid'),
+                                accountID: inviteRow.getAttribute('data-accountid'),
+                                name: (inviteRow.querySelector('.invite_block_name').firstElementChild as HTMLElement)
+                                    .innerText,
+                                level: inviteRow.querySelector<HTMLElement>('.friendPlayerLevelNum').innerText,
+                                evalTries: 0,
+                                avatar: inviteRow.querySelector('.playerAvatar > a > img').getAttribute('src'),
                             });
+                        });
                         resolve(inviters);
                     } else {
                         console.log('no received invites element');
@@ -97,13 +89,8 @@ const getGroupInvites = (): Promise<GroupInvite[]> =>
                         // is because of DOMPurify removes the in-line js actions
                         // that are used to parse the group ID
                         for (let i = 1; i <= rows.length - 1; i += 1) {
-                            const groupID = rows[i]
-                                .split("ApplyFriendAction( 'group_accept', '")[1]
-                                .split("'")[0];
-                            const name = rows[i]
-                                .split('<div class="groupTitle">')[1]
-                                .split('">')[1]
-                                .split('</a>')[0];
+                            const groupID = rows[i].split("ApplyFriendAction( 'group_accept', '")[1].split("'")[0];
+                            const name = rows[i].split('<div class="groupTitle">')[1].split('">')[1].split('</a>')[0];
 
                             invitedTo.push({
                                 steamID: groupID,
@@ -132,37 +119,29 @@ const getGroupInvites = (): Promise<GroupInvite[]> =>
     });
 
 const makeFriendActionCall = (targetSteamID, action) => {
-    chrome.storage.local.get(
-        ['steamIDOfUser', 'steamSessionID'],
-        ({ steamIDOfUser, steamSessionID }) => {
-            const myHeaders = new Headers();
-            myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    chrome.storage.local.get(['steamIDOfUser', 'steamSessionID'], ({ steamIDOfUser, steamSessionID }) => {
+        const myHeaders = new Headers();
+        myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 
-            const apiRequest = new Request(
-                `https://steamcommunity.com/profiles/${steamIDOfUser}/friends/action`,
-                {
-                    method: 'POST',
-                    headers: myHeaders,
-                    body: `sessionid=${steamSessionID}&steamid=${steamIDOfUser}&ajax=1&action=${action}&steamids%5B%5D=${targetSteamID}`,
-                },
-            );
+        const apiRequest = new Request(`https://steamcommunity.com/profiles/${steamIDOfUser}/friends/action`, {
+            method: 'POST',
+            headers: myHeaders,
+            body: `sessionid=${steamSessionID}&steamid=${steamIDOfUser}&ajax=1&action=${action}&steamids%5B%5D=${targetSteamID}`,
+        });
 
-            fetch(apiRequest)
-                .then((response) => {
-                    if (!response.ok) {
-                        console.log(
-                            `Error code: ${response.status} Status: ${response.statusText}`,
-                        );
-                    } else return response.json();
-                })
-                .then((data) => {
-                    if (!data.success) console.log(data);
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-        },
-    );
+        fetch(apiRequest)
+            .then((response) => {
+                if (!response.ok) {
+                    console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+                } else return response.json();
+            })
+            .then((data) => {
+                if (!data.success) console.log(data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    });
 };
 
 const ignoreRequest = (steamIDToIgnore) => {
@@ -209,20 +188,13 @@ const getCommonFriends = (accountID) =>
                     html.innerHTML = DOMPurify.sanitize(body);
                     const friends = [];
                     html.querySelectorAll('.friendBlock.persona').forEach((friendBlock) => {
-                        const nickNameBlock =
-                            friendBlock.querySelector<HTMLElement>('.nickname_block');
+                        const nickNameBlock = friendBlock.querySelector<HTMLElement>('.nickname_block');
 
                         friends.push({
-                            profileLink: friendBlock
-                                .querySelector('.friendBlockLinkOverlay')
-                                .getAttribute('href'),
+                            profileLink: friendBlock.querySelector('.friendBlockLinkOverlay').getAttribute('href'),
                             accountID: friendBlock.getAttribute('data-miniprofile'),
-                            name: friendBlock
-                                .querySelector('.friendBlockContent')
-                                .firstChild.nodeValue.trim(),
-                            avatar: friendBlock
-                                .querySelector('.playerAvatar')
-                                .firstElementChild.getAttribute('src'),
+                            name: friendBlock.querySelector('.friendBlockContent').firstChild.nodeValue.trim(),
+                            avatar: friendBlock.querySelector('.playerAvatar').firstElementChild.getAttribute('src'),
                             nickname: nickNameBlock !== null ? nickNameBlock.innerText : '',
                         });
                     });
@@ -346,11 +318,7 @@ const addSteamRepInfoToInvites = () => {
             chrome.storage.local.set(
                 {
                     friendRequests: {
-                        inviters: [
-                            ...invitesWithSteamRep,
-                            ...stillNoSteamRep,
-                            ...nowWithSteamRepInfo,
-                        ],
+                        inviters: [...invitesWithSteamRep, ...stillNoSteamRep, ...nowWithSteamRepInfo],
                         lastUpdated: Date.now(),
                     },
                 },
@@ -404,11 +372,7 @@ const addInventoryValueInfo = () => {
             chrome.storage.local.set(
                 {
                     friendRequests: {
-                        inviters: [
-                            ...invitesWithInventoryValue,
-                            ...stillNoInventoryValue,
-                            ...nowWithInventoryValue,
-                        ],
+                        inviters: [...invitesWithInventoryValue, ...stillNoInventoryValue, ...nowWithInventoryValue],
                         lastUpdated: Date.now(),
                     },
                 },
@@ -475,44 +439,41 @@ const addCommonFriendsInfo = () => {
 };
 
 const addPastRequestsInfo = () => {
-    chrome.storage.local.get(
-        ['friendRequests', 'friendRequestLogs'],
-        ({ friendRequests, friendRequestLogs }) => {
-            const invitesWithPastRequestsInfo = [];
-            const noPastRequestsInfo = [];
+    chrome.storage.local.get(['friendRequests', 'friendRequestLogs'], ({ friendRequests, friendRequestLogs }) => {
+        const invitesWithPastRequestsInfo = [];
+        const noPastRequestsInfo = [];
 
-            friendRequests.inviters.forEach((invite) => {
-                if (invite.pastRequests === undefined) {
-                    noPastRequestsInfo.push(invite);
-                } else invitesWithPastRequestsInfo.push(invite);
+        friendRequests.inviters.forEach((invite) => {
+            if (invite.pastRequests === undefined) {
+                noPastRequestsInfo.push(invite);
+            } else invitesWithPastRequestsInfo.push(invite);
+        });
+
+        const nowWithPastRequestsInfo = noPastRequestsInfo.map((invite) => {
+            let pastRequests = 0;
+
+            friendRequestLogs.forEach((event) => {
+                if (event.steamID === invite.steamID && event.type === eventTypes.new.key) {
+                    pastRequests += 1;
+                }
             });
 
-            const nowWithPastRequestsInfo = noPastRequestsInfo.map((invite) => {
-                let pastRequests = 0;
+            return {
+                ...invite,
+                pastRequests,
+            };
+        });
 
-                friendRequestLogs.forEach((event) => {
-                    if (event.steamID === invite.steamID && event.type === eventTypes.new.key) {
-                        pastRequests += 1;
-                    }
-                });
-
-                return {
-                    ...invite,
-                    pastRequests,
-                };
-            });
-
-            chrome.storage.local.set(
-                {
-                    friendRequests: {
-                        inviters: [...invitesWithPastRequestsInfo, ...nowWithPastRequestsInfo],
-                        lastUpdated: Date.now(),
-                    },
+        chrome.storage.local.set(
+            {
+                friendRequests: {
+                    inviters: [...invitesWithPastRequestsInfo, ...nowWithPastRequestsInfo],
+                    lastUpdated: Date.now(),
                 },
-                () => {},
-            );
-        },
-    );
+            },
+            () => {},
+        );
+    });
 };
 
 const createFriendRequestEvent = (invite, type, appliedRule?) => {
@@ -598,19 +559,13 @@ const evaluateRequest = (invite, rules) => {
                         appliedRule: index + 1,
                     };
                 }
-                if (
-                    rule.condition.type === conditions.community_banned.key &&
-                    invite.bans.CommunityBanned
-                ) {
+                if (rule.condition.type === conditions.community_banned.key && invite.bans.CommunityBanned) {
                     return {
                         action: rule.action,
                         appliedRule: index + 1,
                     };
                 }
-                if (
-                    rule.condition.type === conditions.game_banned.key &&
-                    invite.bans.NumberOfGameBans !== 0
-                ) {
+                if (rule.condition.type === conditions.game_banned.key && invite.bans.NumberOfGameBans !== 0) {
                     return {
                         action: rule.action,
                         appliedRule: index + 1,
@@ -749,11 +704,7 @@ const evaluateInvites = () => {
                     if (requestVerdict !== null) {
                         executeVerdict(invite, requestVerdict.action);
                         evaluationEvents.push(
-                            createFriendRequestEvent(
-                                invite,
-                                requestVerdict.action,
-                                requestVerdict.appliedRule,
-                            ),
+                            createFriendRequestEvent(invite, requestVerdict.action, requestVerdict.appliedRule),
                         );
                         if (requestVerdict.action === actions.no_action.key) {
                             evaluatedInvites.push({
@@ -798,8 +749,7 @@ const updateFriendRequest = () => {
         chrome.storage.local.get(
             ['friendRequests', 'apiKeyValid', 'notifyOnFriendRequest'],
             ({ friendRequests, apiKeyValid, notifyOnFriendRequest }) => {
-                const minutesFromLastCheck =
-                    (Date.now() - new Date(friendRequests.lastUpdated).getTime()) / 1000 / 60;
+                const minutesFromLastCheck = (Date.now() - new Date(friendRequests.lastUpdated).getTime()) / 1000 / 60;
                 // safeguarding against an edge case where the invites page loads
                 // but the invites themselves don't, which means
                 // that the extension would falsely update the incoming requests to 0
@@ -821,11 +771,9 @@ const updateFriendRequest = () => {
 
                     // if the invite was canceled by the sender or
                     // accepted, ignored or blocked by the user since the last check
-                    const disappearedInvites = friendRequests.inviters.filter(
-                        (inviter: Inviter) => {
-                            return !upToDateInviterIDs.includes(inviter.steamID);
-                        },
-                    );
+                    const disappearedInvites = friendRequests.inviters.filter((inviter: Inviter) => {
+                        return !upToDateInviterIDs.includes(inviter.steamID);
+                    });
 
                     const disappearedInviteEvents = disappearedInvites.map((invite) => {
                         return createFriendRequestEvent(invite, eventTypes.disappeared.key);
@@ -930,8 +878,7 @@ const getBansSummaryText = (bans, steamRepInfo) => {
     if (bans && steamRepInfo) {
         let bansText = '';
         if (bans.CommunityBanned) bansText += 'Community banned\n';
-        if (bans.EconomyBan === 'banned' || bans.EconomyBan === 'probation')
-            bansText += 'Trade banned\n';
+        if (bans.EconomyBan === 'banned' || bans.EconomyBan === 'probation') bansText += 'Trade banned\n';
         if (bans.NumberOfGameBans !== 0) bansText += 'Game banned\n';
         if (bans.VACBanned) bansText += 'VAC banned\n';
         if (steamRepInfo.reputation.summary === 'SCAMMER') bansText += 'SteamRep banned scammer';
