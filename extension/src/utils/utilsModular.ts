@@ -784,7 +784,7 @@ const copyToClipboard = (text) => {
     textAreaElement.remove();
 };
 
-const changePageTitle = (type, text) => {
+const changePageTitle = (type: string, text?: string) => {
     chrome.storage.local.get(['usefulTitles'], ({ usefulTitles }) => {
         if (usefulTitles) {
             let title = document.title.split(':: ')[1];

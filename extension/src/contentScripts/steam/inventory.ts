@@ -23,7 +23,7 @@ import {
     repositionNameTagIcons,
     souvenirExists,
     toFixedNoRounding,
-    updateLoggedInUserInfo
+    updateLoggedInUserInfo,
 } from 'utils/utilsModular';
 import {
     addRealTimePriceToPage,
@@ -38,7 +38,7 @@ import {
     priceQueue,
     updateWalletCurrency,
     userPriceToProperPrice,
-    workOnPriceQueue
+    workOnPriceQueue,
 } from 'utils/pricing';
 import { dateToISODisplay, getShortDate, prettyTimeAgo } from 'utils/dateTime';
 import { findElementByIDs, getIDsFromElement, getItemByIDs } from 'utils/itemsToElementsToItems';
@@ -339,10 +339,9 @@ const dealWithNewFloatData = (job, floatInfo, activeFloatQueue) => {
 
 const sellNext = () => {
     if (document.getElementById('stopSale').getAttribute('data-stopped') === 'false') {
-        for (const listingRow of Array.from(document
-            .getElementById('listingTable')
-            .querySelector('.rowGroup')
-            .querySelectorAll('.row'))) {
+        for (const listingRow of Array.from(
+            document.getElementById('listingTable').querySelector('.rowGroup').querySelectorAll('.row'),
+        )) {
             const IDs = listingRow.getAttribute('data-ids').split(',');
             const soldIDs = listingRow.getAttribute('data-sold-ids').split(',');
             const name = listingRow.getAttribute('data-item-name');
@@ -392,10 +391,12 @@ const sellNext = () => {
                             document.getElementById('totalItems').innerText = totalItems.toString();
 
                             let alreadySold = 0;
-                            for (const row of Array.from(document
-                                .getElementById('listingTable')
-                                .querySelector('.rowGroup')
-                                .querySelectorAll('.row'))) {
+                            for (const row of Array.from(
+                                document
+                                    .getElementById('listingTable')
+                                    .querySelector('.rowGroup')
+                                    .querySelectorAll('.row'),
+                            )) {
                                 const alreadySoldIDs = row.getAttribute('data-sold-ids').split(',');
                                 alreadySold +=
                                     alreadySoldIDs.length === 1
@@ -499,6 +500,7 @@ const addRightSideElements = () => {
                     '.showTechnical, .lowerModule, .marketActionInstantSell, .marketActionQuickSell, .copyItemID, .copyItemName, .copyItemLink',
                 )
                 .forEach((element) => {
+                    //@ts-ignore
                     element.removeEventListener('click');
                 });
 
@@ -545,7 +547,7 @@ const addRightSideElements = () => {
                 });
             }
         } else {
-            document.querySelectorAll('.countdown').forEach((countdown) => {
+            document.querySelectorAll<HTMLElement>('.countdown').forEach((countdown) => {
                 countdown.style.display = 'none';
             });
         }
@@ -558,7 +560,7 @@ const addRightSideElements = () => {
             ) {
                 if (activeInventoryAppID === steamApps.CSGO.appID) {
                     // adds the nametag text to nametags
-                    document.querySelectorAll('.nametag').forEach((nametag) => {
+                    document.querySelectorAll<HTMLElement>('.nametag').forEach((nametag) => {
                         if (item.nametag !== undefined) {
                             nametag.innerText = item.nametag;
                             document.querySelectorAll('.fraud_warning').forEach((fraudWarning) => {
@@ -765,8 +767,9 @@ const addRightSideElements = () => {
                     let textOfDescriptors = '';
                     document.querySelectorAll('.descriptor').forEach((descriptor) => {
                         if (
-                            descriptor.parentNode.classList.contains('item_desc_descriptors') &&
-                            descriptor.parentNode.parentNode.parentNode.parentNode.style.display !== 'none'
+                            (descriptor.parentNode as HTMLElement).classList.contains('item_desc_descriptors') &&
+                            (descriptor.parentNode.parentNode.parentNode.parentNode as HTMLElement).style.display !==
+                                'none'
                         ) {
                             textOfDescriptors += descriptor.innerText;
                         }
@@ -1341,7 +1344,7 @@ const addListingRow = (item) => {
         .querySelector('.itemUserPrice')
         .querySelector('input[type=text]')
         .addEventListener('change', (event) => {
-            const target = event.target as HTMLElement
+            const target = event.target as HTMLElement;
             const priceInt = userPriceToProperPrice(target.value);
             target.parentElement.setAttribute('data-price-in-cents', String(priceInt));
             target.parentElement.setAttribute('data-listing-price', String(getPriceAfterFees(priceInt)));
@@ -1357,7 +1360,7 @@ const addListingRow = (item) => {
         .querySelectorAll('.itemExtensionPrice,.itemStartingAt,.itemQuickSell,.itemInstantSell,.itemMidPrice')
         .forEach((priceType) => {
             priceType.addEventListener('click', (event) => {
-                const target = event.target as HTMLElement
+                const target = event.target as HTMLElement;
                 target.classList.add('cstSelected');
                 target.parentNode.querySelectorAll('.cell').forEach((column) => {
                     if (column !== event.target) column.classList.remove('cstSelected');
@@ -1457,8 +1460,8 @@ const addToPriceQueueIfNeeded = (item) => {
 
     // check if price is already set or in progress
     if (
-        startingAtElement.getAttribute('data-price-set') !== "true" &&
-        startingAtElement.getAttribute('data-price-in-progress') !== "true"
+        startingAtElement.getAttribute('data-price-set') !== 'true' &&
+        startingAtElement.getAttribute('data-price-in-progress') !== 'true'
     ) {
         startingAtElement.setAttribute('data-price-in-progress', true.toString());
         priceQueue.jobs.push({
@@ -1475,8 +1478,8 @@ const addToPriceQueueIfNeeded = (item) => {
 
     // check if price is already set or in progress
     if (
-        instantElement.getAttribute('data-price-set') !== "true" &&
-        instantElement.getAttribute('data-price-in-progress') !== "true"
+        instantElement.getAttribute('data-price-set') !== 'true' &&
+        instantElement.getAttribute('data-price-in-progress') !== 'true'
     ) {
         instantElement.setAttribute('data-price-in-progress', true.toString());
 
@@ -1494,8 +1497,8 @@ const addToPriceQueueIfNeeded = (item) => {
 
     // check if price is already set or in progress
     if (
-        midPriceElement.getAttribute('data-price-set') !== "true" &&
-        midPriceElement.getAttribute('data-price-in-progress') !== "true"
+        midPriceElement.getAttribute('data-price-set') !== 'true' &&
+        midPriceElement.getAttribute('data-price-in-progress') !== 'true'
     ) {
         midPriceElement.setAttribute('data-price-in-progress', true.toString());
 
@@ -1595,8 +1598,8 @@ const sortItems = (inventoryItems, method) => {
 const doInitSorting = () => {
     chrome.storage.local.get('inventorySortingMode', (result) => {
         sortItems(items, result.inventorySortingMode);
-        document.querySelector<HTMLInputElement>(`#sortingMethod [value="${result.inventorySortingMode}"]`).select()
-        document.querySelector<HTMLInputElement>(`#generate_sort [value="${result.inventorySortingMode}"]`).select()
+        document.querySelector<HTMLInputElement>(`#sortingMethod [value="${result.inventorySortingMode}"]`).select();
+        document.querySelector<HTMLInputElement>(`#generate_sort [value="${result.inventorySortingMode}"]`).select();
         addFloatIndicatorsToPage();
         addRealTimePricesToQueue();
     });
@@ -1860,7 +1863,7 @@ const addFunctionBar = () => {
             }
         });
 
-        const sortingSelect = document.getElementById('sortingMethod');
+        const sortingSelect = document.getElementById('sortingMethod') as HTMLInputElement;
         const generateSortingSelect = document.getElementById('generate_sort');
 
         const keys = Object.keys(sortingModes);
@@ -1869,14 +1872,17 @@ const addFunctionBar = () => {
             const option = document.createElement('option');
             option.value = sortingModes[key].key;
             option.text = sortingModes[key].name;
+            //@ts-ignore
             sortingSelect.add(option);
+            //@ts-ignore
             generateSortingSelect.add(option.cloneNode(true));
         }
 
         document.getElementById('selectButton').addEventListener('click', (event) => {
             chrome.storage.local.get('showSelectedItemsTable', ({ showSelectedItemsTable }) => {
                 const selectMenu = document.getElementById('functionBarSelectionMenu');
-                if (event.target.classList.contains('selectionActive')) {
+                const target = event.target as HTMLElement
+                if (target.classList.contains('selectionActive')) {
                     // analytics
                     trackEvent({
                         type: 'event',
@@ -1884,7 +1890,7 @@ const addFunctionBar = () => {
                     });
                     unselectAllItems();
                     updateSelectedItemsSummary();
-                    event.target.classList.remove('selectionActive');
+                    target.classList.remove('selectionActive');
                     selectMenu.classList.add('hidden');
                     document.getElementById('massListing').classList.add('hidden');
 
@@ -1907,7 +1913,7 @@ const addFunctionBar = () => {
                     priceQueue.active = false;
 
                     document.body.addEventListener('click', listenSelectClicks, false);
-                    event.target.classList.add('selectionActive');
+                    target.classList.add('selectionActive');
 
                     if (isOwnInventory() || showSelectedItemsTable) {
                         document.getElementById('massListing').classList.remove('hidden');
