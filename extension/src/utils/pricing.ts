@@ -650,6 +650,7 @@ const getPrice = (marketHashName, dopplerInfo, prices, provider, mode, exchangeR
                 if (
                     prices[marketHashName].doppler !== undefined &&
                     prices[marketHashName].doppler !== 'null' &&
+                    prices[marketHashName].doppler[dopplerInfo.name] !== null &&
                     prices[marketHashName].doppler[dopplerInfo.name] !== 'null' &&
                     prices[marketHashName].doppler[dopplerInfo.name] !== undefined
                 ) {
