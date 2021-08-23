@@ -1068,10 +1068,10 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                     </a>
                   </div>
                   <div class="realMoneySite">
-                    <a href="https://pricempire.com/market?name=${fullName}" target="_blank" class="realMoneySiteLink referralLink" data-site="pricempire">
-                        <img alt="Pricempire logo" src="${chrome.runtime.getURL('images/external_logos/pricempire.png')}" data-site="pricempire">
+                    <a href="https://waxpeer.com/r/gery" target="_blank" class="realMoneySiteLink referralLink" data-site="waxpeer">
+                        <img alt="Waxpeer logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/waxpeer.png')}" data-site="waxpeer">
                         <br>
-                        Pricempire.com
+                        Waxpeer.com
                     </a>
                   </div>
                   <div class="realMoneySite">
@@ -1090,7 +1090,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       <a href="https://skinbaron.com/partner/gery" target="_blank" class="referralLink" data-site="skinbaron">Skinbaron</a>,
                       <a href="https://dmarket.com/?ref=hJEDYLBTsV" target="_blank" class="referralLink" data-site="dmarket">DMARKET</a>,
                       <a href="https://itemherald.com/market/csgo?ref=gery" target="_blank" class="referralLink" data-site="itemherald">ItemHerald</a>,
-                      <a href="https://pricempire.com/market" target="_blank" class="referralLink" data-site="pricempire">ItemHerald</a>,
+                      <a href="https://waxpeer.com/r/gery" target="_blank" class="referralLink" data-site="waxpeer">ItemHerald</a>,
                       <a href="bskn.co/?ref_alias=xcW4c_phcUc" target="_blank" class="referralLink" data-site="bitskins">Bitskins</a> and 
                       <a href="https://csgofloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csgofloat">
                       CSGOFloat
