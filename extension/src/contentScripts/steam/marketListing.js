@@ -33,6 +33,7 @@ import {
 } from 'utils/static/simpleStrings';
 import { injectScript, injectStyle } from 'utils/injection';
 import steamApps from 'utils/static/steamApps';
+import capsuleNamesWithNoCapsuleInName from 'utils/static/capsuleNamesWithNoCapsuleInName';
 import { isDopplerInName } from 'utils/simpleUtils';
 
 const inBrowserInspectButtonPopupLink = `
@@ -916,8 +917,8 @@ if (isCommodityItem) {
     showAllOrders('sell');
   });
 
-  // makes container items into market links
-  if (fullName.includes('Case') || fullName.includes('Capsule')) {
+  // makes container items into market search links
+  if (fullName.includes('Case') || fullName.includes('Capsule') || capsuleNamesWithNoCapsuleInName.includes(fullName)) {
     const descriptors = document.getElementById('largeiteminfo_item_descriptors');
     if (descriptors !== null) {
       const qualityRBGS = [
