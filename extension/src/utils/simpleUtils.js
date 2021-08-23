@@ -55,7 +55,24 @@ const isDopplerInName = (name) => {
   return dopplerCheckRegex.test(name);
 };
 
+// tries to parse which collection the item belongs to
+// if it find a collection it return its name as a string
+// otherwise return null
+const getCollection = (descriptions) => {
+  let collectionName = null;
+
+  if (descriptions) {
+    descriptions.forEach((description) => {
+      if (description.value.slice(description.value.length - 11) === ' Collection') {
+        collectionName = description.value;
+      }
+    });
+  }
+  return collectionName;
+};
+
 export {
   getItemMarketLink, getItemInventoryLink, getOfferLink, playAudio,
   getItemByNameAndGame, closeTab, isDopplerInName, getFormattedPLPercentage,
+  getCollection,
 };

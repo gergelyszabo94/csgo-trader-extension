@@ -11,7 +11,7 @@ import {
   parseStickerInfo,
 } from 'utils/utilsModular';
 import steamApps from 'utils/static/steamApps';
-import { getItemMarketLink } from 'utils/simpleUtils';
+import { getItemMarketLink, getCollection } from 'utils/simpleUtils';
 
 const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
   chrome.storage.local.get(
@@ -130,6 +130,7 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
                       type,
                       floatInfo,
                       patternInfo,
+                      collection: getCollection(item.descriptions),
                     });
                   }
                 }

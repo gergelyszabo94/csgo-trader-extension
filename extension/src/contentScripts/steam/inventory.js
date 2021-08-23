@@ -534,6 +534,28 @@ const addRightSideElements = () => {
             });
           }
 
+          // adds csgostash link to collection
+          if (item.collection) {
+            document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
+              .forEach((descriptors) => {
+                descriptors.querySelectorAll('.descriptor').forEach((descriptor) => {
+                  if (descriptor.style.color === 'rgb(157, 161, 169)') {
+                    const collectionName = descriptor.textContent;
+                    descriptor.innerHTML = '';
+                    descriptor.insertAdjacentHTML(
+                      'afterbegin',
+                      DOMPurify.sanitize(
+                        `<a href="https://csgostash.com/collection/${item.collection}?utm_source=csgotrader.app" target="_blank">
+                        ${collectionName}
+                      </a>`,
+                        { ADD_ATTR: ['target'] },
+                      ),
+                    );
+                  }
+                });
+              });
+          }
+
           // adds the in-offer module
           chrome.storage.local.get(['activeOffers', 'itemInOffersInventory', 'showPriceEmpireLinkInInventory', 'showBuffLookupInInventory', 'inventoryShowCopyButtons'], ({
             activeOffers, itemInOffersInventory,
