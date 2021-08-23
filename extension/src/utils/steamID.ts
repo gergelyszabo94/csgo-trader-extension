@@ -1,3 +1,4 @@
+import { SharedFileIDAndOwner } from 'types';
 import { injectScript } from 'utils/injection';
 
 // converts shitty annoying trade offer style SteamID to proper SteamID64
@@ -28,11 +29,6 @@ const getProfileOwnerSteamID = (): string => {
 const getGroupID = (): string => {
     return document.querySelector<HTMLInputElement>('input[name=groupId]').value;
 };
-
-interface SharedFileIDAndOwner {
-    ownerID: string;
-    sharedFileID: string;
-}
 
 const getSharedFileIDAndOwner = (): SharedFileIDAndOwner => {
     const pagingElement = document.querySelector('.commentthread_paging');

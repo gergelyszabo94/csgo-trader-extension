@@ -1,5 +1,5 @@
 export interface Prices {
-    [key: string]: object;
+    [key: string]: object | null | "null";
 }
 
 export interface PriceQueueActivity {

@@ -3,6 +3,4 @@ export interface ExchangeRates {
 }
 
 // is this 0 | 1? not sure
-export interface ExchangeRate {
-    exchangeRate: number;
-}
+export type ExchangeRate = number;

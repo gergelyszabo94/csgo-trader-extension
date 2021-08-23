@@ -1,7 +1,8 @@
+import { FloatInfo } from 'types';
 import { arrayFromArrayOrNotArray } from 'utils/utilsModular';
 
-const addToFloatCache = (assetID, floatInfo) => {
-    chrome.storage.local.set(
+const addToFloatCache = async (assetID: string, floatInfo: FloatInfo) => {
+    await chrome.storage.local.set(
         {
             [`floatCache_${assetID}`]: {
                 floatInfo,
@@ -9,53 +10,50 @@ const addToFloatCache = (assetID, floatInfo) => {
                 lastUsed: Date.now(),
                 used: 0,
             },
-        },
-        () => {},
+        }
     );
 };
 
-const updateFloatCache = (assetIDs) => {
+const updateFloatCache = async (assetIDs: string[] | string[]): Promise<void> => {
     const assetIDsArray = arrayFromArrayOrNotArray(assetIDs);
 
     const floatStorageKeys = assetIDsArray.map((ID) => {
         return `floatCache_${ID}`;
     });
 
-    chrome.storage.local.get(floatStorageKeys, (result) => {
-        const itemFloatInfos = {};
-        for (const [floatKey, itemFloatInfo] of Object.entries(result)) {
-            if (itemFloatInfo) {
-                itemFloatInfo.lastUsed = Date.now();
-                itemFloatInfo.used += 1;
-                itemFloatInfos[floatKey] = itemFloatInfo;
-            }
+    const result = await chrome.storage.local.get(floatStorageKeys);
+    const itemFloatInfos = {};
+    for (const [floatKey, itemFloatInfo] of Object.entries(result)) {
+        if (itemFloatInfo) {
+            itemFloatInfo.lastUsed = Date.now();
+            itemFloatInfo.used += 1;
+            itemFloatInfos[floatKey] = itemFloatInfo;
         }
-        chrome.storage.local.set(itemFloatInfos, () => {});
-    });
+    }
+
+    await chrome.storage.local.set(itemFloatInfos);
 };
 
-const getFloatInfoFromCache = (assetIDs) => {
-    return new Promise((resolve) => {
-        const assetIDsArray = arrayFromArrayOrNotArray(assetIDs);
+const getFloatInfoFromCache = async (assetIDs: string | string[]) => {
+    const assetIDsArray = arrayFromArrayOrNotArray(assetIDs);
 
-        const floatInfoToReturn = {};
-        const floatStorageKeys = assetIDsArray.map((ID) => {
-            return `floatCache_${ID}`;
-        });
-
-        chrome.storage.local.get(floatStorageKeys, (result) => {
-            assetIDsArray.forEach((assetID) => {
-                const itemFloatCache = result[`floatCache_${assetID}`];
-                floatInfoToReturn[assetID] =
-                    itemFloatCache !== undefined && itemFloatCache !== null ? itemFloatCache.floatInfo : null;
-            });
-            updateFloatCache(assetIDsArray);
-            resolve(floatInfoToReturn);
-        });
+    const floatInfoToReturn = {};
+    const floatStorageKeys = assetIDsArray.map((ID) => {
+        return `floatCache_${ID}`;
     });
+
+    const result = await chrome.storage.local.get(floatStorageKeys);
+    assetIDsArray.forEach((assetID) => {
+        const itemFloatCache = result[`floatCache_${assetID}`];
+        if (itemFloatCache) {
+            floatInfoToReturn[assetID] = itemFloatCache.floatInfo;
+        }
+    });
+    await updateFloatCache(assetIDsArray);
+    return floatInfoToReturn;
 };
 
-const extractUsefulFloatInfo = (floatInfo) => {
+const extractUsefulFloatInfo = (floatInfo: FloatInfo) => {
     const {
         // eslint-disable-next-line camelcase
         floatvalue,
@@ -80,23 +78,22 @@ const extractUsefulFloatInfo = (floatInfo) => {
     };
 };
 
-const trimFloatCache = () => {
-    chrome.storage.local.get(null, (result) => {
-        // gets all storage
-        for (const storageKey in result) {
-            if (storageKey.substring(0, 11) === 'floatCache_') {
-                const timeSinceLastUsed = (Date.now() - result[storageKey].lastUsed) / 1000; // in seconds
-                const used = result[storageKey].used;
+const trimFloatCache = async () => {
+    // I believe i need this "null as string" for the overload
+    const result = await chrome.storage.local.get(null as string);
+    for (const [key, asset] of Object.entries(result)) {
+        if (key.startsWith('floatCache_')) {
+            const timeSinceLastUsed = (Date.now() - asset.lastUsed) / 1000; // in seconds
+            const used = asset.used;
 
-                // if unused and in cache for over a day, or used but not for over a week
-                // then this whole thing negated
-                // because the ones that do not fit this wil remain in the cache
-                if ((used === 0 && timeSinceLastUsed > 86400) || (used > 0 && timeSinceLastUsed > 604800)) {
-                    chrome.storage.local.remove([storageKey], () => {});
-                }
+            // if unused and in cache for over a day, or used but not for over a week
+            // then this whole thing negated
+            // because the ones that do not fit this wil remain in the cache
+            if ((used === 0 && timeSinceLastUsed > 86400) || (used > 0 && timeSinceLastUsed > 604800)) {
+                await chrome.storage.local.remove([key]);
             }
         }
-    });
+    }
 };
 
 export { trimFloatCache, getFloatInfoFromCache, extractUsefulFloatInfo, addToFloatCache, updateFloatCache };

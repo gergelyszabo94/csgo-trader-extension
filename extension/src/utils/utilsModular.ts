@@ -133,7 +133,7 @@ const scrapeSteamAPIkey = () => {
         });
 };
 
-const arrayFromArrayOrNotArray = (arrayOrNotArray) => {
+const arrayFromArrayOrNotArray = (arrayOrNotArray: any | any[]): any[] => {
     if (!Array.isArray(arrayOrNotArray)) return [arrayOrNotArray];
     return arrayOrNotArray;
 };

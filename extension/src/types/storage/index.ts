@@ -39,9 +39,7 @@ export interface ColorfulItems {
 export interface CsgotradersAutoLogin {
     csgotradersAutoLogin: boolean;
 }
-export interface FlagScamComments {
-    flagScamComments: boolean;
-}
+export type FlagScamComments = boolean
 export interface HideOtherExtensionPrices {
     hideOtherExtensionPrices: boolean;
 }
@@ -63,9 +61,8 @@ export interface ItemInOffersInventory {
 export interface ItemInOtherOffers {
     itemInOtherOffers: boolean;
 }
-export interface ItemPricing {
-    itemPricing: boolean;
-}
+export type ItemPricing = boolean;
+
 export interface LinkFilterOff {
     linkFilterOff: boolean;
 }

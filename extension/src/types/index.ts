@@ -17,6 +17,11 @@ export interface SmallItem {
     assetid: string;
 }
 
+export interface SharedFileIDAndOwner {
+    ownerID: string;
+    sharedFileID: string;
+}
+
 // shared
 
 export interface Action {
