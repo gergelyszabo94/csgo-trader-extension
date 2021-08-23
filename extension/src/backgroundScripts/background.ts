@@ -15,21 +15,16 @@ import { storageKeys } from 'utils/static/storageKeys';
 import { trimFloatCache } from 'utils/floatCaching';
 
 // handles install and update events
-chrome.runtime.onInstalled.addListener((details) => {
+chrome.runtime.onInstalled.addListener(async (details) => {
     if (details.reason === 'install') {
         // sets the default options for first run
         // (on install from the webstore/amo or when loaded in developer mode)
+        storageKeys['clientID'] = uuidv4();
+        storageKeys['telemetryConsentSubmitted'] = chrome.extension.getURL('/index.html').includes('chrome-extension')
         for (const [key, value] of Object.entries(storageKeys)) {
             // id generated to identify the extension installation
             // a user can use use multiple installations of the extension
-            if (key === 'clientID') chrome.storage.local.set({ [key]: uuidv4() }, () => {});
-            else if (key === 'telemetryConsentSubmitted') {
-                // mozilla addons requires user consent to be given so it's off by default for firefox
-                // but it is on by default on chrome, edge, etc.
-                if (chrome.extension.getURL('/index.html').includes('chrome-extension')) {
-                    chrome.storage.local.set({ [key]: true });
-                } else chrome.storage.local.set({ [key]: false });
-            } else chrome.storage.local.set({ [key]: value }, () => {});
+            await chrome.storage.local.set({ [key]: value });
         }
 
         trackEvent({
