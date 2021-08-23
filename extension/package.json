@@ -8,6 +8,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.27",
     "@fortawesome/free-solid-svg-icons": "^5.12.1",
     "@fortawesome/react-fontawesome": "^0.1.8",
+    "@types/chrome": "0.0.154",
     "@typescript-eslint/eslint-plugin": "^2.10.0",
     "@typescript-eslint/parser": "^2.10.0",
     "axios": "^0.21.1",
@@ -62,7 +63,6 @@
     "build": "src/"
   },
   "devDependencies": {
-    "@types/chrome": "0.0.154",
     "@types/dompurify": "^2.2.3",
     "@types/react": "^17.0.19",
     "@types/react-dom": "^17.0.9",
