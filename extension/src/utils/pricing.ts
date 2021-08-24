@@ -165,56 +165,49 @@ interface MarketAction {
     name: string;
 }
 
-const getLowestListingPrice = (appID: string | number, marketHashName: string): Promise<number> => {
-    return new Promise((resolve, reject) => {
-        chrome.storage.local.get(['currency'], ({ currency }) => {
-            const steamWalletInfo = getSteamWalletInfo();
-            let currencyID: number = 1;
-            if (steamWalletInfo !== null) currencyID = steamWalletInfo.wallet_currency;
-            else {
-                for (const [code, short] of Object.entries(steamCurrencyCodes)) {
-                    if (short === currency) currencyID = Number(code);
+const getLowestListingPrice = async (appID: string, marketHashName: string): Promise<number> => {
+    try {
+        const result = await chromeStorageLocalGet('currency');
+        const currency: Currency = result.currency;
+        const steamWalletInfo = getSteamWalletInfo();
+        let currencyID: number = 1;
+        if (!steamWalletInfo) {
+            currencyID = steamWalletInfo.wallet_currency;
+        } else {
+            currencyID = Number(Object.keys(steamCurrencyCodes).find((key) => steamCurrencyCodes[key] === currency));
+        }
+        const marketLink = getItemMarketLink(appID, marketHashName);
+        const response = await axios.get(`${marketLink}/render/`, {
+            params: {
+                query: '',
+                start: 0,
+                count: 10,
+                country: 'US',
+                language: 'english',
+                currency: currencyID,
+            },
+        });
+
+        if (response.status !== 200) {
+            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+            return;
+        }
+        if (
+            response.data &&
+            response.data.success === true &&
+            response.data.listinginfo &&
+            response.data.listinginfo.length !== 0
+        ) {
+            const listingInfo = Object.values(response.data.listinginfo as ListingInfo);
+            for (const listing of listingInfo) {
+                if (listing.converted_price && listing.converted_fee) {
+                    return listing.converted_price + listing.converted_fee;
                 }
             }
-            const request = new Request(
-                `${getItemMarketLink(
-                    appID,
-                    marketHashName,
-                )}/render/?query=&start=0&count=10&country=US&language=english&currency=${currencyID}`,
-            );
-
-            fetch(request)
-                .then((response) => {
-                    if (!response.ok) {
-                        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-                        reject({ status: response.status, statusText: response.statusText });
-                    }
-                    return response.json();
-                })
-                .then((listingsJSONData) => {
-                    if (listingsJSONData === null) reject('success:false');
-                    else if (listingsJSONData.success === true) {
-                        if (listingsJSONData.listinginfo) {
-                            const listingInfo = Object.values(listingsJSONData.listinginfo as ListingInfo);
-                            if (listingInfo.length !== 0) {
-                                for (const listing of listingInfo) {
-                                    if (listing.converted_price !== undefined && listing.converted_fee !== undefined) {
-                                        resolve(listing.converted_price + listing.converted_fee);
-                                        return;
-                                    }
-                                }
-                                reject('no_prices_on_listings');
-                            } else reject('empty_listings_array'); // no listings at all on the market
-                        } else reject('no listing data');
-                        resolve(listingsJSONData);
-                    } else reject('success:false');
-                })
-                .catch((err) => {
-                    console.log(err);
-                    reject(err);
-                });
-        });
-    });
+        }
+    } catch (err) {
+        console.log(err);
+    }
 };
 
 const getMidPrice = (appID, marketHashName) => {
