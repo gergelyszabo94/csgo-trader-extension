@@ -1575,14 +1575,17 @@ const addFunctionBar = () => {
     );
 
     document.getElementById('selectAllPage').addEventListener('click', () => {
-      document.querySelectorAll('.inventory_page').forEach((page) => {
-        if (page.style.display === 'block') {
-          page.querySelectorAll('.item').forEach((item) => {
-            if (!item.classList.contains('cstSelected')) item.classList.add('cstSelected');
-          });
-        }
-      });
-      updateSelectedItemsSummary();
+      const inventories = document.getElementById('inventories');
+      if (inventories) {
+        inventories.querySelectorAll('.inventory_page').forEach((page) => {
+          if (page.style.display === 'block' || page.style.display === '') {
+            page.querySelectorAll('.item').forEach((item) => {
+              if (!item.classList.contains('cstSelected')) item.classList.add('cstSelected');
+            });
+          }
+        });
+        updateSelectedItemsSummary();
+      }
     });
 
     document.getElementById('selectAllUnder').addEventListener('click', () => {
