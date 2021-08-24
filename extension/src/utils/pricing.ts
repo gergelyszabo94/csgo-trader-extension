@@ -1,11 +1,14 @@
 import { currencies, pricingProviders, realTimePricingModes, steamCurrencyCodes } from 'utils/static/pricing';
 
 import DOMPurify from 'dompurify';
-import { PriceOverview } from 'types';
+import { PriceOverview } from 'types/api';
 import { findElementByIDs } from 'utils/itemsToElementsToItems';
 import { getItemMarketLink } from 'utils/simpleUtils';
 import { injectScript } from 'utils/injection';
 import { storageKeys } from 'utils/static/storageKeys';
+import { chromeRuntimeSendMessage, chromeStorageLocalGet } from './chromeUtils';
+import { Currency, RealTimePricesFreqFailure, RealTimePricesFreqSuccess } from 'types/storage';
+import axios from 'axios';
 
 const priceQueue = {
     active: false,
@@ -42,15 +45,15 @@ const getSteamWalletInfo = (): WalletInfo => {
     return JSON.parse(injectScript(getWalletInfoScript, true, 'steamWalletScript', 'steamWallet'));
 };
 
-const initPriceQueue = (cleanupFunction?) => {
-    chrome.storage.local.get(
-        ['realTimePricesFreqSuccess', 'realTimePricesFreqFailure'],
-        ({ realTimePricesFreqSuccess, realTimePricesFreqFailure }) => {
-            priceQueue.delaySuccess = realTimePricesFreqSuccess;
-            priceQueue.delayFailure = realTimePricesFreqFailure;
-            priceQueue.cleanupFunction = cleanupFunction !== undefined ? cleanupFunction : () => {};
-        },
-    );
+const initPriceQueue = async (cleanupFunction?: () => void) => {
+    const result = await chromeStorageLocalGet(['realTimePricesFreqSuccess', 'realTimePricesFreqFailure']);
+    const realTimePricesFreqSuccess: RealTimePricesFreqSuccess = result.realTimePricesFreqSuccess;
+    const realTimePricesFreqFailure: RealTimePricesFreqFailure = result.realTimePricesFreqFailure;
+    priceQueue.delaySuccess = realTimePricesFreqSuccess;
+    priceQueue.delayFailure = realTimePricesFreqFailure;
+    if (cleanupFunction) {
+        priceQueue.cleanupFunction = cleanupFunction;
+    }
 };
 
 const getSteamWalletCurrency = () => {
@@ -61,10 +64,6 @@ const getSteamWalletCurrency = () => {
   `;
     return injectScript(getCurrencyScript, true, 'steamWalletCurrencyScript', 'steamWalletCurrency');
 };
-
-interface CurrencyProps {
-    currency: string;
-}
 
 interface BuyOrderInfo {
     success: number;
@@ -83,50 +82,48 @@ interface BuyOrderInfo {
     price_suffix: string;
 }
 
-const getHighestBuyOrder = (appID, marketHashName): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        chrome.storage.local.get(['currency'], ({ currency }: CurrencyProps) => {
-            const steamWalletInfo = getSteamWalletInfo();
-            let currencyID = 1;
-            if (steamWalletInfo !== null) currencyID = steamWalletInfo.wallet_currency;
-            else {
-                for (const [code, short] of Object.entries(steamCurrencyCodes)) {
-                    if (short === currency) currencyID = Number(code);
-                }
+const getHighestBuyOrder = async (appID: string, marketHashName: string): Promise<string> => {
+    const result = await chromeStorageLocalGet('currency');
+    const currency: Currency = result.currency;
+    const steamWalletInfo = getSteamWalletInfo();
+    let currencyID = 1;
+    if (steamWalletInfo !== null) {
+        currencyID = steamWalletInfo.wallet_currency;
+    } else {
+        // I think this will work, but waiting to test it
+        // Object.keys(steamCurrencyCodes).find(key => steamCurrencyCodes[key] === currency);
+        for (const [code, short] of Object.entries(steamCurrencyCodes)) {
+            if (short === currency) {
+                currencyID = Number(code);
             }
-            chrome.runtime.sendMessage({ getBuyOrderInfo: { appID, currencyID, marketHashName } }, (response) => {
-                if (response !== 'error') resolve((response.getBuyOrderInfo as BuyOrderInfo).highest_buy_order);
-                else reject('error');
-            });
-        });
-    });
+        }
+    }
+    const response = await chromeRuntimeSendMessage({ getBuyOrderInfo: { appID, currencyID, marketHashName } });
+    if (response !== 'error') {
+        return (response.getBuyOrderInfo as BuyOrderInfo).highest_buy_order;
+    }
 };
 
-const getPriceOverview = (appID: string, marketHashName: string): Promise<PriceOverview> => {
-    return new Promise((resolve, reject) => {
+const getPriceOverview = async (appID: string, marketHashName: string): Promise<PriceOverview> => {
+    try {
         const currencyID = getSteamWalletInfo().wallet_currency;
-        const request = new Request(
-            `https://steamcommunity.com/market/priceoverview/?appid=${appID}&country=US&currency=${currencyID}&market_hash_name=${marketHashName}`,
-        );
-
-        fetch(request)
-            .then((response) => {
-                if (!response.ok) {
-                    console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-                    reject({ status: response.status, statusText: response.statusText });
-                }
-                return response.json();
-            })
-            .then((priceOverviewJSON) => {
-                if (priceOverviewJSON === null) reject('success:false');
-                else if (priceOverviewJSON.success === true) resolve(priceOverviewJSON);
-                else reject('success:false');
-            })
-            .catch((err) => {
-                console.log(err);
-                reject(err);
-            });
-    });
+        const response = await axios.get(`https://steamcommunity.com/market/priceoverview/`, {
+            params: {
+                appid: appID,
+                country: 'US',
+                currency: currencyID,
+                market_hash_name: marketHashName,
+            },
+        });
+        if (response.status !== 200) {
+            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+        }
+        if (response.data && response.data.success === true) {
+            return response.data;
+        }
+    } catch (err) {
+        console.log(err);
+    }
 };
 
 interface ListingInfo {
