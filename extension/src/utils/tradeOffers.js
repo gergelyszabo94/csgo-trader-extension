@@ -21,12 +21,12 @@ import { notifyOnDiscord, playNotificationSound } from 'utils/notifications';
 
 import DOMPurify from 'dompurify';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
-import { getItemByIDs } from './itemsToElementsToItems';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 import { getTradeOffers } from 'utils/IEconService';
 import { prettyPrintPrice } from 'utils/pricing';
 import steamApps from 'utils/static/steamApps';
+import { getItemByIDs } from './itemsToElementsToItems';
 
 const createTradeOfferJSON = (itemsToGive, itemsToReceive) => {
   return {
@@ -491,6 +491,22 @@ const evaluateCondition = (offer, condition) => {
     }
     if (condition.type === conditions.profit_percentage_under.key
       && offer.PLPercentage < (condition.value / 100) + 1) {
+      return true;
+    }
+    if (condition.type === conditions.receiving_value_over.key
+      && offer.theirItemsTotal > condition.value) {
+      return true;
+    }
+    if (condition.type === conditions.receiving_value_under.key
+      && offer.theirItemsTotal < condition.value) {
+      return true;
+    }
+    if (condition.type === conditions.giving_value_over.key
+      && offer.yourItemsTotal > condition.value) {
+      return true;
+    }
+    if (condition.type === conditions.giving_value_under.key
+      && offer.yourItemsTotal < condition.value) {
       return true;
     }
     if (condition.type === conditions.has_message.key && offer.message !== '') {
