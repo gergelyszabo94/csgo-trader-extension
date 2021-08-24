@@ -5,8 +5,7 @@ const sleep = (ms: number): Promise<void> => {
 };
 
 // URL Encodes object. 
-// Can be used when input data is x-www-form-urlencoded,
-// or when query string params need to be passed.
+// Used when input data is x-www-form-urlencoded.
 const encodeObject = (data: object): string => {
     const encoded = new URLSearchParams();
     for (const [key, value] of Object.entries(data)) {

@@ -42,7 +42,7 @@ const injectScript = (scriptString: string, toRemove: boolean, id: string, execu
     return result;
 };
 
-const injectStyle = (styleString, elementID) => {
+const injectStyle = (styleString: string, elementID: string) => {
     const existingStyleElement = document.getElementById(elementID);
     if (existingStyleElement === null) {
         const styleElement = document.createElement('style');

@@ -18,14 +18,14 @@ const buyListing = async (listing, buyerKYC) => {
                 total: listing.converted_fee + listing.converted_price,
                 quantity: 1,
                 first_name: buyerKYC.first_name,
-                last_name:buyerKYC.last_name,
+                last_name: buyerKYC.last_name,
                 billing_address: buyerKYC.billing_address,
                 billing_address_two: buyerKYC.billing_address_two,
                 billing_country: buyerKYC.billing_country,
                 billing_city: buyerKYC.billing_city,
                 billing_state: buyerKYC.billing_state,
                 billing_postal_code: buyerKYC.billing_postal_code,
-                save_my_address: 1
+                save_my_address: 1,
             }),
             credentials: 'include',
         });
@@ -38,79 +38,63 @@ const buyListing = async (listing, buyerKYC) => {
     }
 };
 
-const removeListing = (listingID) => {
-    return new Promise((resolve, reject) => {
-        const myHeaders = new Headers();
-        myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-
-        const request = new Request(`https://steamcommunity.com/market/removelisting/${listingID}`, {
-            method: 'POST',
-            headers: myHeaders,
-            body: `sessionid=${getSessionID()}`,
+const removeListing = async (listingID) => {
+    try {
+        const response = await axios.post(`https://steamcommunity.com/market/removelisting/${listingID}`, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            },
+            body: encodeObject({ sessionid: getSessionID() }),
         });
-
-        //@ts-ignore
-        const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
-
-        fetchFunction(request)
-            .then((response) => {
-                if (!response.ok) {
-                    console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-                    reject({ status: response.status, statusText: response.statusText });
-                } else resolve('success');
-            })
-            .catch((err) => {
-                console.log(err);
-                reject(err);
-            });
-    });
+        if (response.status !== 200) {
+            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+        }
+    } catch (err) {
+        console.log(err);
+    }
 };
 
-const listItem = (appID, contextID, amount, assetID, price) => {
-    return new Promise((resolve, reject) => {
-        const myHeaders = new Headers();
-        myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+// works around the different behavior when fetching from chromium or ff
+// This is accomplished by exposing more privileged XHR and
+// fetch instances in the content script,
+// which has the side-effect of not setting the Origin and
+// Referer headers like a request from the page itself would;
+// this is often preferable to prevent the request from revealing its cross-orign nature.
+// In Firefox, extensions that need to perform requests that behave as if they were
+// sent by the content itself can use  content.XMLHttpRequest and content.fetch() instead.
+// For cross-browser extensions, the presence of these methods must be feature-detected.
+// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Content_scripts#XHR_and_Fetch
 
-        const request = new Request('https://steamcommunity.com/market/sellitem/', {
-            method: 'POST',
-            headers: myHeaders,
-            body: `sessionid=${getSessionID()}&appid=${appID}&contextid=${contextID}&amount=${amount}&assetid=${assetID}&price=${price}`,
+const listItem = async (appID, contextID, amount, assetID, price) => {
+    try {
+        const response = await axios.post('https://steamcommunity.com/market/sellitem/', {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            },
+            body: encodeObject({
+                sessionid: getSessionID(),
+                appid: appID,
+                contextid: contextID,
+                amount: amount,
+                assetid: assetID,
+                price: price,
+            }),
         });
 
-        // works around the different behavior when fetching from chromium or ff
-        // This is accomplished by exposing more privileged XHR and
-        // fetch instances in the content script,
-        // which has the side-effect of not setting the Origin and
-        // Referer headers like a request from the page itself would;
-        // this is often preferable to prevent the request from revealing its cross-orign nature.
-        // In Firefox, extensions that need to perform requests that behave as if they were
-        // sent by the content itself can use  content.XMLHttpRequest and content.fetch() instead.
-        // For cross-browser extensions, the presence of these methods must be feature-detected.
-        // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Content_scripts#XHR_and_Fetch
-        //@ts-ignore
-        const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
-
-        fetchFunction(request)
-            .then((response) => {
-                console.log(response);
-                if (!response.ok) {
-                    console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-                    reject({ status: response.status, statusText: response.statusText });
-                } else return response.json();
-            })
-            .then((body) => {
-                if (body.success) {
-                    resolve(body);
-                } else reject(body);
-            })
-            .catch((err) => {
-                console.log(err);
-                reject(err);
-            });
-    });
+        console.log(response);
+        if (response.status !== 200) {
+            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+            return;
+        }
+        if (response.data.success) {
+            return response.data;
+        }
+    } catch (err) {
+        console.log(err);
+    }
 };
 
-const createOrder = (
+const createOrder = async (
     appID,
     marketHashName,
     price,
@@ -126,74 +110,62 @@ const createOrder = (
         last_name: '',
     },
 ) => {
-    return new Promise((resolve, reject) => {
+    try {
         const currency = getSteamWalletInfo().wallet_currency;
-        const myHeaders = new Headers();
-        myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-
-        const request = new Request('https://steamcommunity.com/market/createbuyorder/', {
-            method: 'POST',
-            headers: myHeaders,
-            body: `sessionid=${getSessionID()}&currency=${currency}&appid=${appID}&market_hash_name=${marketHashName}&price_total=${
-                price * quantity
-            }&quantity=${quantity}&first_name=${buyerKYC.first_name}&last_name=${buyerKYC.last_name}&billing_address=${
-                buyerKYC.billing_address
-            }&billing_address_two=${buyerKYC.billing_address_two}&billing_country=${
-                buyerKYC.billing_country
-            }&billing_city=${buyerKYC.billing_city}&billing_state=${buyerKYC.billing_state}&billing_postal_code=${
-                buyerKYC.billing_postal_code
-            }&save_my_address=1`,
+        const response = await axios.post('https://steamcommunity.com/market/createbuyorder/', {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            },
+            body: encodeObject({
+                sessionid: getSessionID(),
+                currency: currency,
+                appid: appID,
+                market_hash_name: marketHashName,
+                price_total: price * quantity,
+                quantity: quantity,
+                first_name: buyerKYC.first_name,
+                last_name: buyerKYC.last_name,
+                billing_address: buyerKYC.billing_address,
+                billing_address_two: buyerKYC.billing_address_two,
+                billing_country: buyerKYC.billing_country,
+                billing_city: buyerKYC.billing_city,
+                billing_state: buyerKYC.billing_state,
+                billing_postal_code: buyerKYC.billing_postal_code,
+                save_my_address: 1,
+            }),
         });
 
-        //@ts-ignore
-        const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
-
-        fetchFunction(request)
-            .then((response) => {
-                if (!response.ok) {
-                    console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-                    reject({ status: response.status, statusText: response.statusText });
-                }
-                return response.json();
-            })
-            .then((responseJSON) => {
-                if (responseJSON === null) reject('Error placing buy order!');
-                else if (responseJSON.success === 1) resolve(responseJSON);
-                else reject(responseJSON.message);
-            })
-            .catch((err) => {
-                console.log(err);
-                reject(err);
-            });
-    });
+        if (response.status !== 200) {
+            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+            return;
+        }
+        if (response.data.success === 1) {
+            return response.data;
+        }
+    } catch (err) {
+        console.log(err);
+    }
 };
 
-const cancelOrder = (orderID) => {
-    return new Promise((resolve, reject) => {
-        const myHeaders = new Headers();
-        myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-
-        const request = new Request('https://steamcommunity.com/market/cancelbuyorder/', {
-            method: 'POST',
-            headers: myHeaders,
-            body: `sessionid=${getSessionID()}&buy_orderid=${orderID}`,
+const cancelOrder = async (orderID) => {
+    try {
+        const response = await axios.post('https://steamcommunity.com/market/cancelbuyorder/', {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            },
+            body: encodeObject({
+                sessionid: getSessionID(),
+                buy_orderid: orderID,
+            }),
         });
 
-        //@ts-ignore
-        const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
-
-        fetchFunction(request)
-            .then((response) => {
-                if (!response.ok) {
-                    console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-                    reject({ status: response.status, statusText: response.statusText });
-                } else resolve('success');
-            })
-            .catch((err) => {
-                console.log(err);
-                reject(err);
-            });
-    });
+        if (response.status !== 200) {
+            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+            return;
+        }
+    } catch (err) {
+        console.log(err);
+    }
 };
 
 interface MarketHistory {
@@ -257,77 +229,56 @@ interface Description {
     color?: string;
 }
 
-const getMarketHistory = (start: number, count: number): Promise<MarketHistory> => {
-    return new Promise((resolve, reject) => {
-        const myHeaders = new Headers();
-        myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-
-        const request = new Request(`https://steamcommunity.com/market/myhistory/?start=${start}&count=${count}`, {
-            method: 'POST',
-            headers: myHeaders,
-            body: `sessionid=${getSessionID()}`,
+const getMarketHistory = async (start: number, count: number): Promise<MarketHistory> => {
+    try {
+        const response = await axios.post(`https://steamcommunity.com/market/myhistory/`, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            },
+            params: { start, count },
+            body: encodeObject({ sessionid: getSessionID() }),
         });
 
-        //@ts-ignore
-        const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
-
-        fetchFunction(request)
-            .then((response) => {
-                if (!response.ok) {
-                    console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-                    reject({ status: response.status, statusText: response.statusText });
-                }
-                return response.json();
-            })
-            .then((historyJSON) => {
-                if (historyJSON === null) reject('success:false');
-                else if (historyJSON.success === true) resolve(historyJSON as MarketHistory);
-                else reject('success:false');
-            })
-            .catch((err) => {
-                console.log(err);
-                reject(err);
-            });
-    });
+        if (response.status !== 200) {
+            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+            return;
+        }
+        if (response.data && response.data.success) {
+            return response.data as MarketHistory;
+        }
+    } catch (err) {
+        console.log(err);
+    }
 };
 
-const loadItemOrderHistogram = (nameID) => {
-    return new Promise((resolve, reject) => {
-        const myHeaders = new Headers();
-        myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-
+const loadItemOrderHistogram = async (nameID) => {
+    try {
         const steamWalletInfo = getSteamWalletInfo();
         const currencyCode = steamWalletInfo !== null ? steamWalletInfo.wallet_currency : 1;
 
-        const request = new Request(
-            `https://steamcommunity.com/market/itemordershistogram?country=US&language=english&two_factor=0&currency=${currencyCode}&item_nameid=${nameID}`,
-            {
-                method: 'GET',
-                headers: myHeaders,
+        const response = await axios.get(`https://steamcommunity.com/market/itemordershistogram`, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             },
-        );
+            params: {
+                country: 'US',
+                language: 'english',
+                two_factor: 0,
+                currency: currencyCode,
+                item_nameid: nameID,
+            },
+        });
 
-        //@ts-ignore
-        const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
-
-        fetchFunction(request)
-            .then((response) => {
-                if (!response.ok) {
-                    console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-                    reject({ status: response.status, statusText: response.statusText });
-                }
-                return response.json();
-            })
-            .then((historyJSON) => {
-                if (historyJSON === null) reject('success:false');
-                else if (historyJSON.success === 1) resolve(historyJSON);
-                else reject('success:false');
-            })
-            .catch((err) => {
-                console.log(err);
-                reject(err);
-            });
-    });
+        if (response.status !== 200) {
+            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+            return;
+        }
+        if (response.data && response.data.success === 1) {
+            return response.data;
+        }
+    } catch (err) {
+        console.log(err);
+    }
 };
 
 export { removeListing, cancelOrder, getMarketHistory, listItem, buyListing, createOrder, loadItemOrderHistogram };
