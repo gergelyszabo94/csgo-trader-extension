@@ -6,10 +6,10 @@ import { trackEvent } from 'utils/analytics';
 import { SharedFileIDAndOwner } from 'types';
 import { FlagScamComments } from 'types/storage';
 import axios from 'axios';
+import { chromeStorageLocalGet } from './chromeUtils';
 
-const handleReplyToCommentFunctionality = (event) => {
-    // analytics
-    trackEvent({
+const handleReplyToCommentFunctionality = async (event) => {
+    await trackEvent({
         type: 'event',
         action: 'CommentReply',
     });
@@ -42,7 +42,6 @@ const addReplyToCommentsFunctionality = () => {
     document.querySelectorAll('.replybutton').forEach((replyButton) => {
         // if there was one previously added
         replyButton.removeEventListener('click', handleReplyToCommentFunctionality);
-
         replyButton.addEventListener('click', handleReplyToCommentFunctionality);
     });
 };
@@ -106,7 +105,7 @@ const hideAndReport = async (type: string, pageID: SharedFileIDAndOwner, comment
 };
 
 const reportComments = async (type: string, pageID: SharedFileIDAndOwner) => {
-    const result = await chrome.storage.local.get(['flagScamComments', 'customCommentsToReport']);
+    const result = await chromeStorageLocalGet(['flagScamComments', 'customCommentsToReport']);
 
     const flagScamComments: FlagScamComments = result.flagScamComments;
     const customCommentsToReport = result.customCommentsToReport;
@@ -133,28 +132,25 @@ const reportComments = async (type: string, pageID: SharedFileIDAndOwner) => {
     }
 };
 
-const deleteForumComment = (abuseID, gIDForum, gIDTopic, commentID, extendedData) => {
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-    headers.append('accept', 'text/javascript, text/html, application/xml, text/xml, */*');
+const deleteForumComment = async (abuseID, gIDForum, gIDTopic, commentID, extendedData) => {
+    try {
+        const response = await axios.post(
+            `https://steamcommunity.com/comment/ForumTopic/delete/${abuseID}/${gIDForum}/`,
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    Accept: 'text/javascript, text/html, application/xml, text/xml, */*',
+                },
+                body: `sessionid=${getSessionID()}&gidcomment=${commentID}&start=0&count=50&feature2=${gIDTopic}&oldestfirst=true&include_raw=true&extended_data=${extendedData}`,
+            },
+        );
 
-    const request = new Request(`https://steamcommunity.com/comment/ForumTopic/delete/${abuseID}/${gIDForum}/`, {
-        method: 'POST',
-        headers,
-        body: `sessionid=${getSessionID()}&gidcomment=${commentID}&start=0&count=50&feature2=${gIDTopic}&oldestfirst=true&include_raw=true&extended_data=${extendedData}`,
-    });
-
-    fetch(request)
-        .then((response) => {
-            if (!response.ok) {
-                console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-            }
-            return response.json();
-        })
-        .then(() => {})
-        .catch((err) => {
-            console.log(err);
-        });
+        if (response.status !== 200) {
+            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+        }
+    } catch (err) {
+        console.log(err);
+    }
 };
 
 const postForumComment = async (abuseID, gIDForum, gIDTopic, comment, extendedData) => {

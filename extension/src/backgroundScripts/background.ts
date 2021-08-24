@@ -20,7 +20,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
         // sets the default options for first run
         // (on install from the webstore/amo or when loaded in developer mode)
         storageKeys['clientID'] = uuidv4();
-        storageKeys['telemetryConsentSubmitted'] = chrome.extension.getURL('/index.html').includes('chrome-extension')
+        storageKeys['telemetryConsentSubmitted'] = chrome.extension.getURL('/index.html').includes('chrome-extension');
         for (const [key, value] of Object.entries(storageKeys)) {
             // id generated to identify the extension installation
             // a user can use use multiple installations of the extension

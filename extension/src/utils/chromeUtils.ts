@@ -2,15 +2,11 @@
 // some functions already support this with overloading, but often times that overloading
 // becomes tedious whereas a utility function can abstract that hassle away from the developer.
 
-type keys = string | string[] | { [key: string]: any } | null;
-
-export const chromeStorageLocalGet = async (keys?: keys): Promise<{ [key: string]: any }> => {
-    if (keys) {
-        return await chrome.storage.local.get(keys);
-    }
+export const chromeStorageLocalGet = async (keys?: string | string[] | null): Promise<{ [key: string]: any }> => {
+    if (!keys) keys = null;
     // undefined | null
     return new Promise((resolve) => {
-        chrome.storage.local.get(null, resolve);
+        chrome.storage.local.get(keys, resolve);
     });
 };
 
@@ -30,7 +26,7 @@ export const chromeRuntimePlatformInfo = async (): Promise<chrome.runtime.Platfo
     return new Promise((resolve) => {
         chrome.runtime.getPlatformInfo(resolve);
     });
-}
+};
 
 // the next two don't actually do anything.
 // it's here mainly for name consisentcy with the others,

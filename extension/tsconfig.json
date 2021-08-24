@@ -12,10 +12,10 @@
       "esModuleInterop": true,
       "downlevelIteration": true,
       "baseUrl": "./src",
-    },
-    "lib": [
-      "dom",
-      "es5",
-      "es2015.promise"
-  ]
+      "lib": [
+        "dom",
+        "es5",
+        "es2015.promise"
+      ]
+    }
 }

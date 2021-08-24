@@ -49,6 +49,10 @@ export interface FloatInfo {
     stickers: any[];
 }
 
+export interface FloatsInfo {
+    [key: string]: FloatInfo;
+}
+
 export interface Price {
     display: string;
     price: string;

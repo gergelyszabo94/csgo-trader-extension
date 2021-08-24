@@ -2,6 +2,7 @@ import axios from 'axios';
 import { sleep } from './simpleUtils';
 import { AnalyticsEvent, AnalyticsEvents } from 'types/storage';
 import { nonSettingStorageKeys, storageKeys } from 'utils/static/storageKeys';
+import { chromeStorageLocalGet, chromeStorageLocalSet } from './chromeUtils';
 
 interface TrackEventProps {
     type: string;
@@ -15,9 +16,9 @@ const trackEvent = async ({ type, action }: TrackEventProps) => {
         timestamp: Date.now(),
     };
 
-    const analyticsEvents = (await chrome.storage.local.get('analyticsEvents')).analyticsEvents as AnalyticsEvent[];
-    await chrome.storage.local.set({
-        analyticsEvents: [...analyticsEvents, analyticsInfo],
+    const { analyticsEvents } = await chromeStorageLocalGet('analyticsEvents');
+    await chromeStorageLocalSet({
+        analyticsEvents: [...(analyticsEvents as AnalyticsEvent[]), analyticsInfo],
     });
 };
 
@@ -75,13 +76,12 @@ const sendTelemetry = async (retries?: number) => {
     });
 
     // can this be a promise?
-    // looks like it can be for firefox 
+    // looks like it can be for firefox
     // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/getPlatformInfo
     // doesn't look like it can be for chrome
-    
+
     chrome.runtime.getPlatformInfo(async (platformInfo) => {
         try {
-
             const body = {
                 browserLanguage: navigator.language,
                 clientID: result.clientID,

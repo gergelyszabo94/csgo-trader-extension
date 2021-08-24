@@ -1,17 +1,16 @@
-import { FloatInfo } from 'types';
+import { FloatInfo, FloatsInfo } from 'types';
 import { arrayFromArrayOrNotArray } from 'utils/utilsModular';
+import { chromeStorageLocalGet, chromeStorageLocalRemove, chromeStorageLocalSet } from './chromeUtils';
 
 const addToFloatCache = async (assetID: string, floatInfo: FloatInfo) => {
-    await chrome.storage.local.set(
-        {
-            [`floatCache_${assetID}`]: {
-                floatInfo,
-                added: Date.now(),
-                lastUsed: Date.now(),
-                used: 0,
-            },
-        }
-    );
+    await chrome.storage.local.set({
+        [`floatCache_${assetID}`]: {
+            floatInfo,
+            added: Date.now(),
+            lastUsed: Date.now(),
+            used: 0,
+        },
+    });
 };
 
 const updateFloatCache = async (assetIDs: string[] | string[]): Promise<void> => {
@@ -21,7 +20,7 @@ const updateFloatCache = async (assetIDs: string[] | string[]): Promise<void> =>
         return `floatCache_${ID}`;
     });
 
-    const result = await chrome.storage.local.get(floatStorageKeys);
+    const result = await chromeStorageLocalGet(floatStorageKeys);
     const itemFloatInfos = {};
     for (const [floatKey, itemFloatInfo] of Object.entries(result)) {
         if (itemFloatInfo) {
@@ -31,10 +30,10 @@ const updateFloatCache = async (assetIDs: string[] | string[]): Promise<void> =>
         }
     }
 
-    await chrome.storage.local.set(itemFloatInfos);
+    await chromeStorageLocalSet(itemFloatInfos);
 };
 
-const getFloatInfoFromCache = async (assetIDs: string | string[]) => {
+const getFloatInfoFromCache = async (assetIDs: string | string[]): Promise<FloatsInfo> => {
     const assetIDsArray = arrayFromArrayOrNotArray(assetIDs);
 
     const floatInfoToReturn = {};
@@ -42,7 +41,7 @@ const getFloatInfoFromCache = async (assetIDs: string | string[]) => {
         return `floatCache_${ID}`;
     });
 
-    const result = await chrome.storage.local.get(floatStorageKeys);
+    const result = await chromeStorageLocalGet(floatStorageKeys);
     assetIDsArray.forEach((assetID) => {
         const itemFloatCache = result[`floatCache_${assetID}`];
         if (itemFloatCache) {
@@ -79,8 +78,8 @@ const extractUsefulFloatInfo = (floatInfo: FloatInfo) => {
 };
 
 const trimFloatCache = async () => {
-    // I believe i need this "null as string" for the overload
-    const result = await chrome.storage.local.get(null as string);
+    const result = await chromeStorageLocalGet();
+
     for (const [key, asset] of Object.entries(result)) {
         if (key.startsWith('floatCache_')) {
             const timeSinceLastUsed = (Date.now() - asset.lastUsed) / 1000; // in seconds
@@ -90,7 +89,7 @@ const trimFloatCache = async () => {
             // then this whole thing negated
             // because the ones that do not fit this wil remain in the cache
             if ((used === 0 && timeSinceLastUsed > 86400) || (used > 0 && timeSinceLastUsed > 604800)) {
-                await chrome.storage.local.remove([key]);
+                await chromeStorageLocalRemove(key);
             }
         }
     }
