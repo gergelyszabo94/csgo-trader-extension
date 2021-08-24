@@ -82,25 +82,19 @@ interface BuyOrderInfo {
     price_suffix: string;
 }
 
-const getHighestBuyOrder = async (appID: string, marketHashName: string): Promise<string> => {
+const getHighestBuyOrder = async (appID: string, marketHashName: string): Promise<number | undefined> => {
     const result = await chromeStorageLocalGet('currency');
     const currency: Currency = result.currency;
     const steamWalletInfo = getSteamWalletInfo();
     let currencyID = 1;
-    if (steamWalletInfo !== null) {
+    if (steamWalletInfo) {
         currencyID = steamWalletInfo.wallet_currency;
     } else {
-        // I think this will work, but waiting to test it
-        // Object.keys(steamCurrencyCodes).find(key => steamCurrencyCodes[key] === currency);
-        for (const [code, short] of Object.entries(steamCurrencyCodes)) {
-            if (short === currency) {
-                currencyID = Number(code);
-            }
-        }
+        currencyID = Number(Object.keys(steamCurrencyCodes).find((key) => steamCurrencyCodes[key] === currency));
     }
     const response = await chromeRuntimeSendMessage({ getBuyOrderInfo: { appID, currencyID, marketHashName } });
     if (response !== 'error') {
-        return (response.getBuyOrderInfo as BuyOrderInfo).highest_buy_order;
+        return Number((response.getBuyOrderInfo as BuyOrderInfo).highest_buy_order);
     }
 };
 
@@ -165,13 +159,13 @@ interface MarketAction {
     name: string;
 }
 
-const getLowestListingPrice = async (appID: string, marketHashName: string): Promise<number> => {
+const getLowestListingPrice = async (appID: string, marketHashName: string): Promise<number | undefined> => {
     try {
         const result = await chromeStorageLocalGet('currency');
         const currency: Currency = result.currency;
         const steamWalletInfo = getSteamWalletInfo();
         let currencyID: number = 1;
-        if (!steamWalletInfo) {
+        if (steamWalletInfo) {
             currencyID = steamWalletInfo.wallet_currency;
         } else {
             currencyID = Number(Object.keys(steamCurrencyCodes).find((key) => steamCurrencyCodes[key] === currency));
@@ -210,35 +204,16 @@ const getLowestListingPrice = async (appID: string, marketHashName: string): Pro
     }
 };
 
-const getMidPrice = (appID, marketHashName) => {
-    return new Promise((resolve, reject) => {
-        getHighestBuyOrder(appID, marketHashName)
-            .then((highestBuyOrder) => {
-                if (highestBuyOrder !== undefined && highestBuyOrder !== null) {
-                    let highestOrderPrice = 0;
-                    try {
-                        highestOrderPrice = parseFloat(highestBuyOrder);
-                    } catch (e) {
-                        // most likely there aren't any orders
-                        console.log(e);
-                    }
-                    getLowestListingPrice(appID, marketHashName)
-                        .then((lowestListing) => {
-                            if (lowestListing !== undefined) {
-                                resolve((highestOrderPrice + lowestListing) / 2);
-                            }
-                        })
-                        .catch((err) => {
-                            console.log(err);
-                            reject(err);
-                        });
-                } else reject('highest_order_undef_or_null');
-            })
-            .catch((err) => {
-                console.log(err);
-                reject(err);
-            });
-    });
+const getMidPrice = async (appID: string, marketHashName: string) => {
+    try {
+        const highestBuyOrderPrice = await getHighestBuyOrder(appID, marketHashName);
+        const lowestListingPrice = await getLowestListingPrice(appID, marketHashName);
+        if (highestBuyOrderPrice && lowestListingPrice) {
+            return (highestBuyOrderPrice + lowestListingPrice) / 2;
+        }
+    } catch (err) {
+        console.log(err);
+    }
 };
 
 const priceQueueSuccess = () => {
