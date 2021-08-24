@@ -1078,7 +1078,11 @@ chrome.storage.local.get('markScammers', (result) => {
 
 setInterval(() => {
   chrome.storage.local.get('hideOtherExtensionPrices', (result) => {
-    if (result.hideOtherExtensionPrices && !document.hidden) removeSIHStuff();
+    if (result.hideOtherExtensionPrices && !document.hidden) {
+      removeSIHStuff();
+      const waxPeerControls = document.querySelector('.left-side-nav');
+      if (waxPeerControls) waxPeerControls.remove();
+    }
   });
 }, 2000);
 
