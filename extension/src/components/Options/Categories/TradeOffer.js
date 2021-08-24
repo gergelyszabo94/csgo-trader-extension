@@ -117,6 +117,12 @@ const tradeOffer = () => {
         type="flipSwitchStorage"
         description="Adds short exteriors to each item to the top right corner as well as marks them stattrak or souvenir"
       />
+      <Row
+        name="Click 'Change Offer' automatically"
+        id="clickChangeOfferAutomatically"
+        type="flipSwitchStorage"
+        description="Clicks the button 'Change Offer' automatically so you don't have to when trying to add items to the trade for a counter offer"
+      />
     </Category>
   );
 };

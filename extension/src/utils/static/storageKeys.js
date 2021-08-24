@@ -267,6 +267,7 @@ const storageKeys = {
   outBidPercentage: 1,
   showShortExteriorsInventory: true,
   showShortExteriorsOffers: true,
+  clickChangeOfferAutomatically: false,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

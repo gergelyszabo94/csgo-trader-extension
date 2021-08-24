@@ -1142,6 +1142,19 @@ chrome.storage.local.get('tradeOfferHeaderToLeft', (result) => {
   }
 });
 
+chrome.storage.local.get(['clickChangeOfferAutomatically', 'hideOtherExtensionPrices'], ({
+  clickChangeOfferAutomatically, hideOtherExtensionPrices,
+}) => {
+  if (clickChangeOfferAutomatically) {
+    const changeOfferButton = document.querySelector('.readystate.modify_trade_offer');
+    if (changeOfferButton) changeOfferButton.click();
+  }
+  if (hideOtherExtensionPrices) {
+    const waxPeerControls = document.querySelector('.left-side-nav');
+    if (waxPeerControls) waxPeerControls.remove();
+  }
+});
+
 addPageControlEventListeners('offer', () => {
   addFloatIndicatorsToPage('page');
   addRealTimePricesToQueue('page');
