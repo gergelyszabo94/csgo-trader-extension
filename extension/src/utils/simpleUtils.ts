@@ -4,16 +4,6 @@ const sleep = (ms: number): Promise<void> => {
     return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-// URL Encodes object. 
-// Used when input data is x-www-form-urlencoded.
-const encodeObject = (data: object): string => {
-    const encoded = new URLSearchParams();
-    for (const [key, value] of Object.entries(data)) {
-        encoded.append(key, value);
-    }
-    return encoded.toString();
-};
-
 const getItemMarketLink = (appID: string, marketHashName: string) => {
     return `https://steamcommunity.com/market/listings/${appID}/${marketHashName}`;
 };
@@ -70,7 +60,6 @@ const isDopplerInName = (name: string): boolean => {
 
 export {
     sleep,
-    encodeObject,
     getItemMarketLink,
     getItemInventoryLink,
     getOfferLink,
