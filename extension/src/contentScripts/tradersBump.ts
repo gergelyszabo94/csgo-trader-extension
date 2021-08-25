@@ -1,7 +1,7 @@
 import { trackEvent } from 'utils/analytics';
 import { logExtensionPresence } from 'utils/utilsModular';
 
-const bump = () => {
+const bump = async () => {
     document.querySelectorAll('.btn.btn-custom.btn-xs').forEach((button) => {
         const link = button.getAttribute('href');
         const request = new Request(link);
@@ -9,7 +9,7 @@ const bump = () => {
         fetch(request).then(() => {});
     });
 
-    trackEvent({
+    await trackEvent({
         type: 'event',
         action: 'TradersBump',
     });
@@ -17,10 +17,12 @@ const bump = () => {
 
 logExtensionPresence();
 
-trackEvent({
-    type: 'pageview',
-    action: 'TradersTradesView',
-});
+(async () => {
+    await trackEvent({
+        type: 'pageview',
+        action: 'TradersTradesView',
+    });
+})();
 
 chrome.storage.local.get('tradersBump', ({ tradersBump }) => {
     if (tradersBump) {

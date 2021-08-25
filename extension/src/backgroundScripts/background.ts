@@ -10,9 +10,10 @@ import { goToInternalPage, markModMessagesAsRead, scrapeSteamAPIkey, uuidv4 } fr
 import { removeOldOfferEvents, updateTrades } from 'utils/tradeOffers';
 import { sendTelemetry, trackEvent } from 'utils/analytics';
 
-import { ExchangeRates } from 'types';
+import { ExchangeRates } from 'types/storage';
 import { storageKeys } from 'utils/static/storageKeys';
 import { trimFloatCache } from 'utils/floatCaching';
+import { chromeStorageLocalGet, chromeStorageLocalSet } from 'utils/chromeUtils';
 
 // handles install and update events
 chrome.runtime.onInstalled.addListener(async (details) => {
@@ -27,21 +28,20 @@ chrome.runtime.onInstalled.addListener(async (details) => {
             await chrome.storage.local.set({ [key]: value });
         }
 
-        trackEvent({
+        await trackEvent({
             type: 'event',
             action: 'ExtensionInstall',
         });
 
         // sets extension currency to Steam currency when possible
         // the delay is to wait for exchange rates data to be set
-        setTimeout(() => {
-            getUserCurrencyBestGuess().then((currency) => {
-                chrome.storage.local.get(['exchangeRates'], ({ exchangeRates }: ExchangeRates) => {
-                    chrome.storage.local.set({
-                        currency,
-                        exchangeRate: exchangeRates[currency],
-                    });
-                });
+        setTimeout(async () => {
+            const currency = await getUserCurrencyBestGuess();
+            const result = await chromeStorageLocalGet('exchangeRates');
+            const exchangeRates: ExchangeRates = result.exchangeRates;
+            await chromeStorageLocalSet({
+                currency,
+                exchangeRate: exchangeRates[currency],
             });
         }, 20000);
 
@@ -82,7 +82,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
             }
         });
 
-        trackEvent({
+        await trackEvent({
             type: 'event',
             action: 'ExtensionUpdate',
         });
@@ -394,8 +394,8 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     }
 });
 
-setTimeout(() => {
-    trackEvent({
+setTimeout(async () => {
+    await trackEvent({
         type: 'event',
         action: 'ExtensionRun',
     });

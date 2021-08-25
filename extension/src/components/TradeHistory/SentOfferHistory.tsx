@@ -6,9 +6,9 @@ import TradeOfferHistoryHeader from 'components/TradeHistory/TradeOfferHistoryHe
 import { offerStates } from 'utils/static/offers';
 import addItemDetails from './addItemDetails';
 
-const SentOfferHistory = () => {
+const SentOfferHistory = async () => {
     document.title = 'Sent Offer History';
-    trackEvent({
+    await trackEvent({
         type: 'pageview',
         action: 'ExtensionSentOfferHistoryView',
     });

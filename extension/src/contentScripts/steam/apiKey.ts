@@ -1,14 +1,16 @@
 import { logExtensionPresence, updateLoggedInUserInfo } from 'utils/utilsModular';
 
-import { AutoSetSteamAPIKey } from 'types';
 import DOMPurify from 'dompurify';
 import { trackEvent } from 'utils/analytics';
+import { chromeRuntimeSendMessage, chromeStorageLocalGet, chromeStorageLocalSet } from 'utils/chromeUtils';
 
 logExtensionPresence();
 updateLoggedInUserInfo();
 
-chrome.storage.local.get('autoSetSteamAPIKey', ({ autoSetSteamAPIKey }: { autoSetSteamAPIKey: AutoSetSteamAPIKey }) => {
-    trackEvent({
+(async () => {
+    const result = await chromeStorageLocalGet('autoSetSteamAPIKey');
+    const autoSetSteamAPIKey: boolean = result.autoSetSteamAPIKey;
+    await trackEvent({
         type: 'event',
         action: 'apiKeyAutoSet',
     });
@@ -22,29 +24,23 @@ chrome.storage.local.get('autoSetSteamAPIKey', ({ autoSetSteamAPIKey }: { autoSe
         } else {
             // if API key registered, just parse it and add it to extension
             const apiKey = document.getElementById('bodyContents_ex').querySelector('p').innerText.split(': ')[1];
+            const response = await chromeRuntimeSendMessage({ apikeytovalidate: apiKey });
 
-            chrome.runtime.sendMessage({ apikeytovalidate: apiKey }, (response) => {
-                if (response.valid) {
-                    chrome.storage.local.set({ steamAPIKey: apiKey, apiKeyValid: true }, () => {
-                        document.getElementById('editForm').insertAdjacentHTML(
-                            'afterend',
-                            DOMPurify.sanitize(`<div class="apiKeyAdded">
-                        Added API key to CSGOTrader Extension, if you don't like this happening you can go the options and turn Autoset off.
-                    </div>`),
-                        );
-                    });
-                } else {
-                    document.getElementById('editForm').insertAdjacentHTML(
-                        'afterend',
-                        DOMPurify.sanitize(
-                            `<div style="color:red; margin-top: 10px;">
+            let message: string;
+            if (response.valid) {
+                await chromeStorageLocalSet({ steamAPIKey: apiKey, apiKeyValid: true });
+                message = DOMPurify.sanitize(`<div class="apiKeyAdded">
+                Added API key to CSGOTrader Extension, if you don't like this happening you can go the options and turn Autoset off.
+            </div>`);
+            } else {
+                console.log('API key could not be validated');
+                message = DOMPurify.sanitize(
+                    `<div style="color:red; margin-top: 10px;">
                     CSGOTrader Extension could not validate your API key, please try again.
                   </div>`,
-                        ),
-                    );
-                    console.log('API key could not be validated');
-                }
-            });
+                );
+            }
+            document.getElementById('editForm').insertAdjacentHTML('afterend', message);
         }
     }
     // adds
@@ -64,4 +60,4 @@ chrome.storage.local.get('autoSetSteamAPIKey', ({ autoSetSteamAPIKey }: { autoSe
             </div>`,
         ),
     );
-});
+})();

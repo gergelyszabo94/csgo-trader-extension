@@ -6,9 +6,9 @@ import TradeOfferContent from 'components/TradeHistory/TradeOfferContent';
 import TradeSummary from 'components/TradeHistory/TradeSummary';
 import TradeHistoryControls from 'components/TradeHistory/TradeHistoryControls';
 
-const TradeHistoryContent = () => {
+const TradeHistoryContent = async () => {
     document.title = 'Trade History';
-    trackEvent({
+    await trackEvent({
         type: 'pageview',
         action: 'ExtensionTradeHistoryView',
     });
