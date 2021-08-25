@@ -50,7 +50,7 @@ const stickerNames = [
     'Наліпка',
 ];
 
-const toFixedNoRounding = (number, n) => {
+export const toFixedNoRounding = (number, n) => {
     const reg = new RegExp(`^-?\\d+(?:\\.\\d{0,${n}})?`, 'g');
     const a = number.toString().match(reg)[0];
     const dot = a.indexOf('.');
@@ -59,7 +59,7 @@ const toFixedNoRounding = (number, n) => {
     return b > 0 ? a + '0'.repeat(b) : a;
 };
 
-const logExtensionPresence = () => {
+export const logExtensionPresence = () => {
     const { version } = chrome.runtime.getManifest();
     console.log(
         `CSGO Trader - Steam Trading Enhancer ${version} is running on this page. Changelog at: https://csgotrader.app/changelog/`,
@@ -68,7 +68,7 @@ const logExtensionPresence = () => {
     console.log('"DevTools failed to parse SourceMap" is not an error, you can disregard it.');
 };
 
-const validateSteamAPIKey = (apiKey) =>
+export const validateSteamAPIKey = (apiKey) =>
     new Promise((resolve, reject) => {
         const getRequest = new Request(
             `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=76561198036030455`,
@@ -96,7 +96,7 @@ const validateSteamAPIKey = (apiKey) =>
             });
     });
 
-const scrapeSteamAPIkey = () => {
+export const scrapeSteamAPIkey = () => {
     const getRequest = new Request('https://steamcommunity.com/dev/apikey');
 
     fetch(getRequest)
@@ -133,12 +133,12 @@ const scrapeSteamAPIkey = () => {
         });
 };
 
-const arrayFromArrayOrNotArray = (arrayOrNotArray: any | any[]): any[] => {
+export const arrayFromArrayOrNotArray = (arrayOrNotArray: any | any[]): any[] => {
     if (!Array.isArray(arrayOrNotArray)) return [arrayOrNotArray];
     return arrayOrNotArray;
 };
 
-const removeFromArray = (array, arrayIndex) => {
+export const removeFromArray = (array, arrayIndex) => {
     const newArray = [];
 
     array.forEach((element, index) => {
@@ -148,7 +148,7 @@ const removeFromArray = (array, arrayIndex) => {
     return newArray;
 };
 
-const getExteriorFromTags = (tags) => {
+export const getExteriorFromTags = (tags) => {
     if (tags !== undefined) {
         for (const tag of tags) {
             if (tag.category === 'Exterior') {
@@ -164,7 +164,7 @@ const getExteriorFromTags = (tags) => {
     return null;
 };
 
-const getNameTag = (item) => {
+export const getNameTag = (item) => {
     try {
         if (item.fraudwarnings !== undefined || item.fraudwarnings[0] !== undefined) {
             return item.fraudwarnings[0].split("Name Tag: ''")[1].split("''")[0];
@@ -175,7 +175,7 @@ const getNameTag = (item) => {
     }
 };
 
-const getInspectLink = (item, owner?: string, assetID?: string) => {
+export const getInspectLink = (item, owner?: string, assetID?: string) => {
     try {
         if (item.actions !== undefined && item.actions[0] !== undefined) {
             const beggining = item.actions[0].link.split('%20S')[0];
@@ -190,11 +190,11 @@ const getInspectLink = (item, owner?: string, assetID?: string) => {
     }
 };
 
-const getDopplerInfo = (icon: string): DopplerMapping | null => {
+export const getDopplerInfo = (icon: string): DopplerMapping | null => {
     return iconToPhaseMapping[icon] !== undefined ? iconToPhaseMapping[icon] : dopplerPhases.unk;
 };
 
-const getQuality = (tags) => {
+export const getQuality = (tags) => {
     if (tags !== undefined) {
         for (const tag of tags) {
             if (tag.category === 'Rarity') {
@@ -213,7 +213,7 @@ const getQuality = (tags) => {
     return null;
 };
 
-const getType = (tags) => {
+export const getType = (tags) => {
     if (tags !== undefined) {
         for (const tag of tags) {
             if (tag.category === 'Type') {
@@ -230,7 +230,7 @@ const getType = (tags) => {
     return null;
 };
 
-const getPattern = (name, paintSeed) => {
+export const getPattern = (name, paintSeed) => {
     if (name.includes(' Marble Fade ')) {
         let pattern = null;
         if (name.includes('Karambit')) pattern = patterns.marble_fades.karambit[paintSeed];
@@ -300,7 +300,7 @@ const getPattern = (name, paintSeed) => {
     return null;
 };
 
-const handleStickerNamesWithCommas = (names) => {
+export const handleStickerNamesWithCommas = (names) => {
     const namesModified = [];
     let nameWithCommaFound = false;
 
@@ -324,7 +324,7 @@ const getStickerOrPatchLink = (linkType, name, type) => {
 };
 
 // true sticker, false patch
-const isSticker = (description) => {
+export const isSticker = (description) => {
     let matchFound = false;
     stickerNames.forEach((name) => {
         if (description.includes(`title="${name}"`)) {
@@ -334,7 +334,15 @@ const isSticker = (description) => {
     return matchFound;
 };
 
-const parseStickerInfo = (descriptions, linkType, prices, pricingProvider, pricingMode, exchangeRate, currency) => {
+export const parseStickerInfo = (
+    descriptions,
+    linkType,
+    prices,
+    pricingProvider,
+    pricingMode,
+    exchangeRate,
+    currency,
+) => {
     if (descriptions !== undefined && linkType !== undefined) {
         let stickers = [];
 
@@ -375,7 +383,7 @@ const parseStickerInfo = (descriptions, linkType, prices, pricingProvider, prici
     return null;
 };
 
-const goToInternalPage = (targetURL: string) => {
+export const goToInternalPage = (targetURL: string) => {
     chrome.tabs.query({}, (tabs) => {
         for (let i = 0; i < tabs.length; i += 1) {
             const tab = tabs[i];
@@ -390,14 +398,14 @@ const goToInternalPage = (targetURL: string) => {
     });
 };
 
-const uuidv4 = () => {
+export const uuidv4 = () => {
     // eslint-disable-next-line no-bitwise
     return ((1e7).toString() + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
         (Number(c) ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (Number(c) / 4)))).toString(16),
     );
 };
 
-const listenToLocationChange = (callback: () => void) => {
+export const listenToLocationChange = (callback: () => void) => {
     let oldHref = document.location.href;
 
     const locationObserver = new MutationObserver((mutations) => {
@@ -415,10 +423,10 @@ const listenToLocationChange = (callback: () => void) => {
     });
 };
 
-const getAssetIDFromInspectLink = (inspectLink) =>
+export const getAssetIDFromInspectLink = (inspectLink) =>
     inspectLink !== null && inspectLink !== undefined ? inspectLink.split('A')[1].split('D')[0] : null;
 
-const getActivePage = (type?: string, getActiveInventory?: () => any) => {
+export const getActivePage = (type?: string, getActiveInventory?: () => any) => {
     let activePage = null;
     if (type === 'inventory') {
         document.querySelectorAll<HTMLElement>('.inventory_ctn').forEach((inventory) => {
@@ -439,7 +447,10 @@ const getActivePage = (type?: string, getActiveInventory?: () => any) => {
     return activePage;
 };
 
-const addPageControlEventListeners = (type?: string, addFloatIndicatorsFunction?: (a?: Element | string) => void) => {
+export const addPageControlEventListeners = (
+    type?: string,
+    addFloatIndicatorsFunction?: (a?: Element | string) => void,
+) => {
     const pageControls = document.getElementById('inventory_pagecontrols');
     if (pageControls !== null) {
         pageControls.addEventListener('click', () => {
@@ -455,17 +466,17 @@ const addPageControlEventListeners = (type?: string, addFloatIndicatorsFunction?
 };
 
 // gets the details of an item by matching the passed asset id with the ones from the api call
-const getItemByAssetID = (items, assetIDToFind) => {
+export const getItemByAssetID = (items, assetIDToFind) => {
     if (items === undefined || items.length === 0) return null;
     return items.filter((item) => item.assetid === assetIDToFind)[0];
 };
 
-const getAssetIDOfElement = (element) => {
+export const getAssetIDOfElement = (element) => {
     const IDs = getIDsFromElement(element);
     return IDs === null ? null : IDs.assetID;
 };
 
-const addDopplerPhase = (item, dopplerInfo) => {
+export const addDopplerPhase = (item, dopplerInfo) => {
     if (dopplerInfo !== null) {
         const dopplerDiv = document.createElement('div');
         dopplerDiv.classList.add('dopplerPhase');
@@ -491,7 +502,7 @@ const addDopplerPhase = (item, dopplerInfo) => {
     }
 };
 
-const makeItemColorful = (itemElement, item, colorfulItemsEnabled) => {
+export const makeItemColorful = (itemElement, item, colorfulItemsEnabled) => {
     if (colorfulItemsEnabled) {
         if (item.dopplerInfo !== null)
             itemElement.setAttribute('style', `background-image: url(); background-color: #${item.dopplerInfo.color}`);
@@ -504,7 +515,7 @@ const makeItemColorful = (itemElement, item, colorfulItemsEnabled) => {
 };
 
 // adds StatTrak, Souvenir and exterior indicators as well as sticker price when applicable
-const addSSTandExtIndicators = (itemElement, item, showStickerPrice, showExterior) => {
+export const addSSTandExtIndicators = (itemElement, item, showStickerPrice, showExterior) => {
     const stattrak = item.isStatrack ? 'ST' : '';
     const souvenir = item.isSouvenir ? 'S' : '';
     const exterior = item.exterior !== null ? item.exterior.localized_short : '';
@@ -525,7 +536,7 @@ const addSSTandExtIndicators = (itemElement, item, showStickerPrice, showExterio
     );
 };
 
-const addFloatIndicator = (itemElement, floatInfo) => {
+export const addFloatIndicator = (itemElement, floatInfo) => {
     if (
         floatInfo !== null &&
         itemElement !== null &&
@@ -539,7 +550,7 @@ const addFloatIndicator = (itemElement, floatInfo) => {
     }
 };
 
-const addPriceIndicator = (itemElement, priceInfo) => {
+export const addPriceIndicator = (itemElement, priceInfo) => {
     if (priceInfo !== undefined && priceInfo !== 'null' && priceInfo !== null) {
         itemElement.insertAdjacentHTML(
             'beforeend',
@@ -548,7 +559,7 @@ const addPriceIndicator = (itemElement, priceInfo) => {
     }
 };
 
-const getDataFilledFloatTechnical = (floatInfo) => {
+export const getDataFilledFloatTechnical = (floatInfo) => {
     const floatRankLine =
         floatInfo.low_rank !== undefined && floatInfo.low_rank !== null ? `Low Rank: ${floatInfo.low_rank}<br>` : '';
     return `
@@ -564,12 +575,12 @@ const getDataFilledFloatTechnical = (floatInfo) => {
             Float info from <a href="https://csgofloat.com/" target="_blank">csgofloat.com</a>`;
 };
 
-const souvenirExists = (itemInfo) => {
+export const souvenirExists = (itemInfo) => {
     const collectionsWithSouvenirsToCheck = new RegExp(collectionsWithSouvenirs.join('|'), 'i');
     return collectionsWithSouvenirsToCheck.test(itemInfo);
 };
 
-const getFloatBarSkeleton = (type) => {
+export const getFloatBarSkeleton = (type) => {
     const typeClass = type === 'market' ? 'Market' : '';
     return `<div class="floatBar${typeClass}">
     <div class="floatToolTip">
@@ -588,21 +599,21 @@ const getFloatBarSkeleton = (type) => {
     </div>`;
 };
 
-const reloadPageOnExtensionReload = () => {
+export const reloadPageOnExtensionReload = () => {
     // reloads the page on extension update/reload/uninstall
     chrome.runtime.connect().onDisconnect.addListener(() => {
         window.location.reload();
     });
 };
 
-const isSIHActive = () => {
+export const isSIHActive = () => {
     const SIHSwitch = document.getElementById('switchPanel');
     const SIHSwitcherCheckbox = document.getElementById('switcher') as HTMLInputElement;
     return SIHSwitch !== null && SIHSwitcherCheckbox !== null && SIHSwitcherCheckbox.checked;
 };
 
 let searchListenerTimeout = null;
-const addSearchListener = (type, addFloatIndicatorsFunction?) => {
+export const addSearchListener = (type, addFloatIndicatorsFunction?) => {
     let searchElement;
     if (type === 'inventory') searchElement = document.getElementById('filter_control');
     else if (type === 'offer') searchElement = document.querySelector('.filter_search_box');
@@ -623,13 +634,13 @@ const addSearchListener = (type, addFloatIndicatorsFunction?) => {
     }
 };
 
-const getSessionID = () => {
+export const getSessionID = () => {
     const getSessionIDScript = "document.querySelector('body').setAttribute('sessionid', g_sessionID);";
     return injectScript(getSessionIDScript, true, 'getSessionID', 'sessionid');
 };
 
 // updates the SteamID of the extension's user in storage
-const updateLoggedInUserInfo = () => {
+export const updateLoggedInUserInfo = () => {
     const steamID = getUserSteamID();
     if (steamID !== 'false' && steamID !== null) {
         chrome.storage.local.set(
@@ -642,7 +653,7 @@ const updateLoggedInUserInfo = () => {
     }
 };
 
-const warnOfScammer = (steamID, page) => {
+export const warnOfScammer = (steamID, page) => {
     if (steamID) {
         chrome.runtime.sendMessage({ getSteamRepInfo: steamID }, ({ SteamRepInfo }) => {
             if (SteamRepInfo !== 'error') {
@@ -679,7 +690,7 @@ const warnOfScammer = (steamID, page) => {
     }
 };
 
-const repositionNameTagIcons = () => {
+export const repositionNameTagIcons = () => {
     injectStyle(
         `
     .slot_app_fraudwarning {
@@ -690,13 +701,13 @@ const repositionNameTagIcons = () => {
     );
 };
 
-const jumpToAnchor = (anchor) => {
+export const jumpToAnchor = (anchor) => {
     if (anchor !== '') {
         window.location.href = `${window.location.origin}${window.location.pathname}${anchor}`;
     }
 };
 
-const removeOfferFromActiveOffers = (offerID) => {
+export const removeOfferFromActiveOffers = (offerID) => {
     chrome.storage.local.get(['activeOffers'], ({ activeOffers }) => {
         const itemsNotInThisOffer = activeOffers.items.filter((item) => {
             return item.inOffer !== offerID;
@@ -725,7 +736,7 @@ const removeOfferFromActiveOffers = (offerID) => {
     });
 };
 
-const addUpdatedRibbon = () => {
+export const addUpdatedRibbon = () => {
     chrome.storage.local.get(['showUpdatedRibbon'], ({ showUpdatedRibbon }) => {
         if (showUpdatedRibbon) {
             document.querySelector('body').insertAdjacentHTML(
@@ -751,7 +762,7 @@ const addUpdatedRibbon = () => {
     });
 };
 
-const getSteamRepInfo = (steamID) =>
+export const getSteamRepInfo = (steamID) =>
     new Promise((resolve, reject) => {
         const getRequest = new Request(`https://steamrep.com/api/beta4/reputation/${steamID}?json=1`);
 
@@ -771,7 +782,7 @@ const getSteamRepInfo = (steamID) =>
             });
     });
 
-const copyToClipboard = (text) => {
+export const copyToClipboard = (text) => {
     // this is a workaround to only being able to copy text
     // to the clipboard that is selected in a textbox
     document.querySelector('body').insertAdjacentHTML(
@@ -786,7 +797,7 @@ const copyToClipboard = (text) => {
     textAreaElement.remove();
 };
 
-const changePageTitle = (type: string, text?: string) => {
+export const changePageTitle = (type: string, text?: string) => {
     chrome.storage.local.get(['usefulTitles'], ({ usefulTitles }) => {
         if (usefulTitles) {
             let title = document.title.split(':: ')[1];
@@ -820,7 +831,7 @@ const changePageTitle = (type: string, text?: string) => {
     });
 };
 
-const csgoFloatExtPresent = () => {
+export const csgoFloatExtPresent = () => {
     const csgoFloatCheckScript = `
     document.querySelector('body').setAttribute('csgoFloat', window.csgofloat);
   `;
@@ -828,7 +839,7 @@ const csgoFloatExtPresent = () => {
     return fromPage === 'true';
 };
 
-const removeLinkFilterFromLinks = () => {
+export const removeLinkFilterFromLinks = () => {
     chrome.storage.local.get('linkFilterOff', ({ linkFilterOff }: LinkFilterOff) => {
         if (linkFilterOff) {
             document.querySelectorAll('a').forEach((anchor) => {
@@ -842,7 +853,7 @@ const removeLinkFilterFromLinks = () => {
 };
 
 // finds unread moderation messages and loads the page to mark them as read
-const markModMessagesAsRead = () => {
+export const markModMessagesAsRead = () => {
     chrome.storage.local.get('steamIDOfUser', ({ steamIDOfUser }: SteamIDOfUser) => {
         const getRequest = new Request(`https://steamcommunity.com/profiles/${steamIDOfUser}/moderatormessages`);
         fetch(getRequest)
@@ -880,7 +891,7 @@ const markModMessagesAsRead = () => {
 // chrome only allows notification icons locally
 // or from trusted (by manifest) urls
 // this is a workaround to that because Steam's CDN is not in the manifest
-const getRemoteImageAsObjectURL = (imageURL: string): Promise<string> =>
+export const getRemoteImageAsObjectURL = (imageURL: string): Promise<string> =>
     new Promise((resolve, reject) => {
         fetch(new Request(imageURL))
             .then((response) => {
@@ -909,54 +920,3 @@ const getRemoteImageAsObjectURL = (imageURL: string): Promise<string> =>
 //
 //   return text;
 // };
-
-export {
-    logExtensionPresence,
-    scrapeSteamAPIkey,
-    arrayFromArrayOrNotArray,
-    getExteriorFromTags,
-    getDopplerInfo,
-    getQuality,
-    parseStickerInfo,
-    handleStickerNamesWithCommas,
-    removeFromArray,
-    getType,
-    changePageTitle,
-    getPattern,
-    goToInternalPage,
-    jumpToAnchor,
-    copyToClipboard,
-    validateSteamAPIKey,
-    getAssetIDFromInspectLink,
-    uuidv4,
-    updateLoggedInUserInfo,
-    listenToLocationChange,
-    addPageControlEventListeners,
-    getItemByAssetID,
-    getAssetIDOfElement,
-    addDopplerPhase,
-    getActivePage,
-    makeItemColorful,
-    addSSTandExtIndicators,
-    addFloatIndicator,
-    addPriceIndicator,
-    getDataFilledFloatTechnical,
-    souvenirExists,
-    removeLinkFilterFromLinks,
-    getFloatBarSkeleton,
-    getInspectLink,
-    csgoFloatExtPresent,
-    markModMessagesAsRead,
-    reloadPageOnExtensionReload,
-    isSIHActive,
-    addSearchListener,
-    getSessionID,
-    warnOfScammer,
-    toFixedNoRounding,
-    getNameTag,
-    repositionNameTagIcons,
-    removeOfferFromActiveOffers,
-    addUpdatedRibbon,
-    getSteamRepInfo,
-    getRemoteImageAsObjectURL,
-};

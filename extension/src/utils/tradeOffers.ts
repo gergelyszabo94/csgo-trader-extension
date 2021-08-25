@@ -38,7 +38,7 @@ interface TradeOfferJSON {
     them: Side;
 }
 
-const createTradeOfferJSON = (itemsToGive: SmallItem[], itemsToReceive: SmallItem[]): TradeOfferJSON => {
+export const createTradeOfferJSON = (itemsToGive: SmallItem[], itemsToReceive: SmallItem[]): TradeOfferJSON => {
     return {
         newversion: true,
         version: 2,
@@ -62,7 +62,7 @@ interface AcceptedOffer {
 }
 
 // only works in content scripts, not in background
-const acceptOffer = (offerID: string, partnerID: string): Promise<AcceptedOffer> => {
+export const acceptOffer = (offerID: string, partnerID: string): Promise<AcceptedOffer> => {
     return new Promise((resolve, reject) => {
         chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }) => {
             const myHeaders = new Headers();
@@ -127,7 +127,7 @@ const getAcceptScriptAsString = (offerID: string, partnerID: string): Promise<st
 
 // trade offers can't be accepted from background scripts because of CORS
 // this function looks for tab that has Steam open and injects the accept script
-const acceptTradeInBackground = (offerID: string, partnerID: string) => {
+export const acceptTradeInBackground = (offerID: string, partnerID: string) => {
     chrome.permissions.contains({ permissions: ['tabs'] }, (permission) => {
         if (permission) {
             chrome.tabs.query({ url: 'https://steamcommunity.com/*' }, (tabs) => {
@@ -148,7 +148,7 @@ const acceptTradeInBackground = (offerID: string, partnerID: string) => {
 };
 
 // works in background pages as well
-const declineOffer = (offerID: string) => {
+export const declineOffer = (offerID: string) => {
     return new Promise((resolve, reject) => {
         chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }) => {
             const myHeaders = new Headers();
@@ -180,7 +180,7 @@ const declineOffer = (offerID: string) => {
     });
 };
 
-const sendOffer = (partnerID: string, tradeOfferJSON: TradeOfferJSON, token: string, message: string) => {
+export const sendOffer = (partnerID: string, tradeOfferJSON: TradeOfferJSON, token: string, message: string) => {
     return new Promise((resolve, reject) => {
         chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }: SteamSessionID) => {
             const myHeaders = new Headers();
@@ -353,7 +353,7 @@ const notifyAboutOfferOnDiscord = (offer: Offer, items) => {
 // info about the active offers is kept in storage
 // so we can check if an item is present in another offer
 // also to know when offer loading is necessary when monitoring offers
-const updateActiveOffers = (offers, items) => {
+export const updateActiveOffers = (offers, items) => {
     // even though active offers are requested
     // not all of them has the active state (2)
     // we need the actual number of active offers to compare with the notification count
@@ -401,7 +401,7 @@ interface SmartItem extends Item {
     offerOrigin: string;
 }
 
-const extractItemsFromOffers = (offers: TradeOffer[], sentOrReceived: string, userID: string): SmartItem[] => {
+export const extractItemsFromOffers = (offers: TradeOffer[], sentOrReceived: string, userID: string): SmartItem[] => {
     const itemsToReturn = [];
     if (offers) {
         offers.forEach((offer) => {
@@ -495,7 +495,7 @@ const matchItemsWithDescriptions = (items: SmarterItem[]) => {
 
 interface SmarterItem extends SmartItem, SmallerDescription {}
 
-const matchItemsAndAddDetails = (offers: TradeOffers, userID: string) => {
+export const matchItemsAndAddDetails = (offers: TradeOffers, userID: string) => {
     return new Promise((resolve) => {
         let allItemsInOffer = extractItemsFromOffers(offers.trade_offers_sent, 'sent', userID);
         allItemsInOffer = allItemsInOffer.concat(
@@ -742,7 +742,7 @@ interface UpdateTradesProps {
 
 // loads active offers, updates active offers in storage
 // checks for new offers and starts evaluation
-const updateTrades = () => {
+export const updateTrades = () => {
     return new Promise((resolve, reject) => {
         // active offers has the previously loaded active trade offer info
         chrome.storage.local.get(
@@ -796,7 +796,7 @@ const updateTrades = () => {
     });
 };
 
-const removeOldOfferEvents = () => {
+export const removeOldOfferEvents = () => {
     chrome.storage.local.get(['tradeOffersEventLogs'], ({ tradeOffersEventLogs }) => {
         const now = Date.now();
         const recentEvents = tradeOffersEventLogs.filter((event) => {
@@ -811,17 +811,4 @@ const removeOldOfferEvents = () => {
             () => {},
         );
     });
-};
-
-export {
-    acceptOffer,
-    declineOffer,
-    updateActiveOffers,
-    extractItemsFromOffers,
-    sendOffer,
-    matchItemsAndAddDetails,
-    updateTrades,
-    removeOldOfferEvents,
-    acceptTradeInBackground,
-    createTradeOfferJSON,
 };

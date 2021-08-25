@@ -1,7 +1,7 @@
 import { notificationSounds } from 'utils/static/notifications';
 import { playAudio } from 'utils/simpleUtils';
 
-const determineNotificationDate = (tradableDate, minutesOrHours, numberOfMinutesOrHours, beforeOrAfter) => {
+export const determineNotificationDate = (tradableDate, minutesOrHours, numberOfMinutesOrHours, beforeOrAfter) => {
     let baseTimeUnit = 0;
     if (minutesOrHours === 'minutes') baseTimeUnit = 60;
     else if (minutesOrHours === 'hours') baseTimeUnit = 3600;
@@ -11,7 +11,7 @@ const determineNotificationDate = (tradableDate, minutesOrHours, numberOfMinutes
     return new Date((parseInt((new Date(tradableDate).getTime() / 1000).toFixed(0)) + timeDifference) * 1000);
 };
 
-const reverseWhenNotifDetails = (tradability, notifTime) => {
+export const reverseWhenNotifDetails = (tradability, notifTime) => {
     const difference =
         Math.floor(new Date(notifTime).getTime() / 1000) - Math.floor(new Date(tradability).getTime() / 1000);
     const differenceAbs = Math.abs(difference);
@@ -23,7 +23,7 @@ const reverseWhenNotifDetails = (tradability, notifTime) => {
     };
 };
 
-const getSteamNotificationCount = () =>
+export const getSteamNotificationCount = () =>
     new Promise((resolve, reject) => {
         const getRequest = new Request('https://steamcommunity.com/actions/GetNotificationCounts');
 
@@ -63,7 +63,7 @@ const getSteamNotificationCount = () =>
             });
     });
 
-const playNotificationSound = () => {
+export const playNotificationSound = () => {
     chrome.storage.local.get(
         ['notificationSoundOn', 'notificationSoundToPlay', 'notificationVolume', 'customNotificationURL'],
         ({ notificationSoundOn, notificationSoundToPlay, notificationVolume, customNotificationURL }) => {
@@ -79,7 +79,7 @@ const playNotificationSound = () => {
     );
 };
 
-const notifyOnDiscord = (embed) => {
+export const notifyOnDiscord = (embed) => {
     chrome.storage.local.get(
         ['allowDiscordNotification', 'discordNotificationHook'],
         ({ allowDiscordNotification, discordNotificationHook }) => {
@@ -106,12 +106,4 @@ const notifyOnDiscord = (embed) => {
             }
         },
     );
-};
-
-export {
-    reverseWhenNotifDetails,
-    determineNotificationDate,
-    notifyOnDiscord,
-    getSteamNotificationCount,
-    playNotificationSound,
 };

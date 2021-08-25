@@ -15,7 +15,7 @@ interface Inviter {
     avatar: string;
 }
 
-const getFriendRequests = (): Promise<Inviter[]> =>
+export const getFriendRequests = (): Promise<Inviter[]> =>
     new Promise((resolve, reject) => {
         const getRequest = new Request('https://steamcommunity.com/my/friends/pending');
 
@@ -65,7 +65,7 @@ interface GroupInvite {
     name: string;
 }
 
-const getGroupInvites = (): Promise<GroupInvite[]> =>
+export const getGroupInvites = (): Promise<GroupInvite[]> =>
     new Promise((resolve, reject) => {
         const getRequest = new Request('https://steamcommunity.com/my/groups/pending');
 
@@ -144,27 +144,27 @@ const makeFriendActionCall = (targetSteamID, action) => {
     });
 };
 
-const ignoreRequest = (steamIDToIgnore) => {
+export const ignoreRequest = (steamIDToIgnore) => {
     makeFriendActionCall(steamIDToIgnore, 'ignore_invite');
 };
 
-const acceptRequest = (steamIDToAccept) => {
+export const acceptRequest = (steamIDToAccept) => {
     makeFriendActionCall(steamIDToAccept, 'accept');
 };
 
-const blockRequest = (steamIDToBlock) => {
+export const blockRequest = (steamIDToBlock) => {
     makeFriendActionCall(steamIDToBlock, 'block');
 };
 
-const ignoreGroupRequest = (steamIDToIgnore) => {
+export const ignoreGroupRequest = (steamIDToIgnore) => {
     makeFriendActionCall(steamIDToIgnore, 'group_ignore');
 };
 
-const acceptGroupRequest = (steamIDToAccept) => {
+export const acceptGroupRequest = (steamIDToAccept) => {
     makeFriendActionCall(steamIDToAccept, 'group_accept');
 };
 
-const getCommonFriends = (accountID) =>
+export const getCommonFriends = (accountID) =>
     new Promise((resolve, reject) => {
         const request = new Request(
             `https://steamcommunity.com/actions/PlayerList/?type=friendsincommon&target=${accountID}`,
@@ -737,7 +737,7 @@ const evaluateInvites = () => {
     );
 };
 
-const updateFriendRequest = () => {
+export const updateFriendRequest = () => {
     getFriendRequests().then((inviters) => {
         // inviters here is the freshly loaded list
         // it only includes limited details though
@@ -857,7 +857,7 @@ const updateFriendRequest = () => {
     });
 };
 
-const removeOldFriendRequestEvents = () => {
+export const removeOldFriendRequestEvents = () => {
     chrome.storage.local.get(['friendRequestLogs'], ({ friendRequestLogs }) => {
         const now = Date.now();
         const recentEvents = friendRequestLogs.filter((event) => {
@@ -874,7 +874,7 @@ const removeOldFriendRequestEvents = () => {
     });
 };
 
-const getBansSummaryText = (bans, steamRepInfo) => {
+export const getBansSummaryText = (bans, steamRepInfo) => {
     if (bans && steamRepInfo) {
         let bansText = '';
         if (bans.CommunityBanned) bansText += 'Community banned\n';
@@ -888,16 +888,3 @@ const getBansSummaryText = (bans, steamRepInfo) => {
     return 'Could not load ban info';
 };
 
-export {
-    getFriendRequests,
-    ignoreRequest,
-    acceptRequest,
-    blockRequest,
-    getGroupInvites,
-    ignoreGroupRequest,
-    acceptGroupRequest,
-    getCommonFriends,
-    updateFriendRequest,
-    removeOldFriendRequestEvents,
-    getBansSummaryText,
-};

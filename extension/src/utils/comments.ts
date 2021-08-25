@@ -5,10 +5,10 @@ import { goldenCommenters } from 'utils/goldening';
 import { trackEvent } from 'utils/analytics';
 import { SharedFileIDAndOwner } from 'types';
 import { FlagScamComments } from 'types/storage';
-import axios from 'axios';
+import * as fetcher from './requestUtils';
 import { chromeStorageLocalGet } from './chromeUtils';
 
-const handleReplyToCommentFunctionality = async (event) => {
+export const handleReplyToCommentFunctionality = async (event) => {
     await trackEvent({
         type: 'event',
         action: 'CommentReply',
@@ -27,7 +27,7 @@ const handleReplyToCommentFunctionality = async (event) => {
     commentTextarea.focus();
 };
 
-const addReplyToCommentsFunctionality = () => {
+export const addReplyToCommentsFunctionality = () => {
     document.querySelectorAll('.commentthread_comment_actions').forEach((commentThread) => {
         if (commentThread.querySelector('.replybutton') === null) {
             commentThread.insertAdjacentHTML(
@@ -46,7 +46,7 @@ const addReplyToCommentsFunctionality = () => {
     });
 };
 
-const addCommentsMutationObserver = () => {
+export const addCommentsMutationObserver = () => {
     const observer = new MutationObserver(() => {
         addReplyToCommentsFunctionality();
         goldenCommenters();
@@ -78,13 +78,20 @@ const hideAndReport = async (type: string, pageID: SharedFileIDAndOwner, comment
     }
 
     try {
-        const response = await axios.post(URL, {
-            headers: { 'content-type': 'application/x-www-form-urlencoded' },
-            body: `sessionid=${getSessionID()}&gidcomment=${commentID}&hide=1&start=0&count=6&feature2=-1`,
+        const response = await fetcher.post(URL, {
+            form: {
+                sessionid: getSessionID(),
+                gidcomment: commentID,
+                hide: 1,
+                start: 0,
+                count: 6,
+                feature2: -1,
+            },
         });
 
-        if (response.status !== 200) {
+        if (!response.ok) {
             console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+            return;
         }
         const commentContentElement = document.getElementById(`comment_content_${commentID}`);
         const originalCommentText = commentContentElement.innerText;
@@ -104,7 +111,7 @@ const hideAndReport = async (type: string, pageID: SharedFileIDAndOwner, comment
     }
 };
 
-const reportComments = async (type: string, pageID: SharedFileIDAndOwner) => {
+export const reportComments = async (type: string, pageID: SharedFileIDAndOwner) => {
     const result = await chromeStorageLocalGet(['flagScamComments', 'customCommentsToReport']);
 
     const flagScamComments: FlagScamComments = result.flagScamComments;
@@ -126,26 +133,35 @@ const reportComments = async (type: string, pageID: SharedFileIDAndOwner) => {
                 });
 
                 const commentID = comment.id.split('comment_')[1];
-                hideAndReport(type, pageID, commentID);
+                await hideAndReport(type, pageID, commentID);
             }
         }
     }
 };
 
-const deleteForumComment = async (abuseID, gIDForum, gIDTopic, commentID, extendedData) => {
+export const deleteForumComment = async (abuseID, gIDForum, gIDTopic, commentID, extendedData) => {
     try {
-        const response = await axios.post(
+        const response = await fetcher.post(
             `https://steamcommunity.com/comment/ForumTopic/delete/${abuseID}/${gIDForum}/`,
             {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                     Accept: 'text/javascript, text/html, application/xml, text/xml, */*',
                 },
-                body: `sessionid=${getSessionID()}&gidcomment=${commentID}&start=0&count=50&feature2=${gIDTopic}&oldestfirst=true&include_raw=true&extended_data=${extendedData}`,
+                form: {
+                    sessionid: getSessionID(),
+                    gidcomment: commentID,
+                    start: 0,
+                    count: 50,
+                    feature2: gIDTopic,
+                    oldestfirst: true,
+                    include_raw: true,
+                    extended_data: extendedData,
+                },
             },
         );
 
-        if (response.status !== 200) {
+        if (!response.ok) {
             console.log(`Error code: ${response.status} Status: ${response.statusText}`);
         }
     } catch (err) {
@@ -153,16 +169,24 @@ const deleteForumComment = async (abuseID, gIDForum, gIDTopic, commentID, extend
     }
 };
 
-const postForumComment = async (abuseID, gIDForum, gIDTopic, comment, extendedData) => {
+export const postForumComment = async (abuseID, gIDForum, gIDTopic, comment, extendedData) => {
     try {
-        const response = await axios.post(
+        const response = await fetcher.post(
             `https://steamcommunity.com/comment/ForumTopic/post/${abuseID}/${gIDForum}/`,
             {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                     Accept: 'text/javascript, text/html, application/xml, text/xml, */*',
                 },
-                body: `sessionid=${getSessionID()}&comment=${comment}&count=50&feature2=${gIDTopic}&oldestfirst=true&include_raw=true&extended_data=${extendedData}`,
+                form: {
+                    sessionid: getSessionID(),
+                    comment: comment,
+                    count: 50,
+                    feature2: gIDTopic,
+                    oldestfirst: true,
+                    include_raw: true,
+                    extended_data: extendedData,
+                },
             },
         );
         if (response.status !== 200) {
@@ -171,13 +195,4 @@ const postForumComment = async (abuseID, gIDForum, gIDTopic, comment, extendedDa
     } catch (err) {
         console.log(err);
     }
-};
-
-export {
-    addCommentsMutationObserver,
-    handleReplyToCommentFunctionality,
-    postForumComment,
-    addReplyToCommentsFunctionality,
-    reportComments,
-    deleteForumComment,
 };

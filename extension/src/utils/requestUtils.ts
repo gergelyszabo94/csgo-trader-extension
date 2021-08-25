@@ -63,6 +63,7 @@ const request = async (url: string, method: method, options?: requestOptions): P
 // and for parameters.
 const urlEncode = (data: object): string => {
     if (!data) return '';
+    if (typeof data === 'string') return data;
     const encoded = new URLSearchParams();
     for (const [key, value] of Object.entries(data)) {
         encoded.append(key, value);

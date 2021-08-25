@@ -18,7 +18,7 @@ import {
 } from 'types/storage';
 import axios from 'axios';
 
-const priceQueue = {
+export const priceQueue = {
     active: false,
     jobs: [],
     delaySuccess: storageKeys.realTimePricesFreqSuccess,
@@ -47,13 +47,13 @@ interface WalletInfo {
 
 // tested and works in inventories, offers and market pages
 // does not work on profiles and incoming offers page
-const getSteamWalletInfo = (): WalletInfo => {
+export const getSteamWalletInfo = (): WalletInfo => {
     const getWalletInfoScript =
         "document.querySelector('body').setAttribute('steamWallet', JSON.stringify(g_rgWalletInfo));";
     return JSON.parse(injectScript(getWalletInfoScript, true, 'steamWalletScript', 'steamWallet'));
 };
 
-const initPriceQueue = async (cleanupFunction?: () => void) => {
+export const initPriceQueue = async (cleanupFunction?: () => void) => {
     const result = await chromeStorageLocalGet(['realTimePricesFreqSuccess', 'realTimePricesFreqFailure']);
     const realTimePricesFreqSuccess: RealTimePricesFreqSuccess = result.realTimePricesFreqSuccess;
     const realTimePricesFreqFailure: RealTimePricesFreqFailure = result.realTimePricesFreqFailure;
@@ -64,7 +64,7 @@ const initPriceQueue = async (cleanupFunction?: () => void) => {
     }
 };
 
-const getSteamWalletCurrency = () => {
+export const getSteamWalletCurrency = () => {
     const getCurrencyScript = `
   document.querySelector('body').setAttribute('steamWalletCurrency', GetCurrencyCode(${DOMPurify.sanitize(
       String(getSteamWalletInfo().wallet_currency),
@@ -90,7 +90,7 @@ interface BuyOrderInfo {
     price_suffix: string;
 }
 
-const getHighestBuyOrder = async (appID: string, marketHashName: string): Promise<number | undefined> => {
+export const getHighestBuyOrder = async (appID: string, marketHashName: string): Promise<number | undefined> => {
     const result = await chromeStorageLocalGet('currency');
     const currency: Currency = result.currency;
     const steamWalletInfo = getSteamWalletInfo();
@@ -106,7 +106,7 @@ const getHighestBuyOrder = async (appID: string, marketHashName: string): Promis
     }
 };
 
-const getPriceOverview = async (appID: string, marketHashName: string): Promise<PriceOverview> => {
+export const getPriceOverview = async (appID: string, marketHashName: string): Promise<PriceOverview> => {
     try {
         const currencyID = getSteamWalletInfo().wallet_currency;
         const response = await axios.get(`https://steamcommunity.com/market/priceoverview/`, {
@@ -167,7 +167,7 @@ interface MarketAction {
     name: string;
 }
 
-const getLowestListingPrice = async (appID: string, marketHashName: string): Promise<number | undefined> => {
+export const getLowestListingPrice = async (appID: string, marketHashName: string): Promise<number | undefined> => {
     try {
         const result = await chromeStorageLocalGet('currency');
         const currency: Currency = result.currency;
@@ -212,7 +212,7 @@ const getLowestListingPrice = async (appID: string, marketHashName: string): Pro
     }
 };
 
-const getMidPrice = async (appID: string, marketHashName: string) => {
+export const getMidPrice = async (appID: string, marketHashName: string) => {
     try {
         const highestBuyOrderPrice = await getHighestBuyOrder(appID, marketHashName);
         const lowestListingPrice = await getLowestListingPrice(appID, marketHashName);
@@ -257,7 +257,7 @@ const priceQueueCacheHit = async () => {
     await workOnPriceQueue();
 };
 
-const workOnPriceQueue = async () => {
+export const workOnPriceQueue = async () => {
     if (priceQueue.jobs.length === 0) {
         priceQueue.cleanupFunction();
         priceQueue.active = false;
@@ -420,7 +420,7 @@ const workOnPriceQueue = async () => {
     });
 };
 
-const updatePrices = async () => {
+export const updatePrices = async () => {
     const result = chromeStorageLocalGet(['itemPricing', 'pricingProvider', 'pricingMode']);
 
     const item: ItemPricing = result.itemPricing;
@@ -494,7 +494,7 @@ const updatePrices = async () => {
     }
 };
 
-const updateExchangeRates = () => {
+export const updateExchangeRates = () => {
     const request = new Request('https://prices.csgotrader.app/latest/exchange_rates.json');
 
     fetch(request)
@@ -513,7 +513,7 @@ const updateExchangeRates = () => {
         });
 };
 
-const getPrice = (marketHashName, dopplerInfo, prices, provider, mode, exchangeRate, currency) => {
+export const getPrice = (marketHashName, dopplerInfo, prices, provider, mode, exchangeRate, currency) => {
     let price = '0.00';
     if (
         prices[marketHashName] !== undefined &&
@@ -554,7 +554,7 @@ const getPrice = (marketHashName, dopplerInfo, prices, provider, mode, exchangeR
     };
 };
 
-const getStickerPriceTotal = (stickers, currency) => {
+export const getStickerPriceTotal = (stickers, currency) => {
     let total = 0.0;
     if (stickers !== null) {
         stickers.forEach((sticker) => {
@@ -564,14 +564,14 @@ const getStickerPriceTotal = (stickers, currency) => {
     return total === 0 ? null : { price: total, display: currencies[currency].sign + total.toFixed(2) };
 };
 
-const prettyPrintPrice = (currency, price) => {
+export const prettyPrintPrice = (currency, price) => {
     const nf = new Intl.NumberFormat();
     return price >= 0
         ? currencies[currency].sign + nf.format(price)
         : `-${currencies[currency].sign}${nf.format(Math.abs(price))}`;
 };
 
-const getPriceAfterFees = (priceBeforeFees) => {
+export const getPriceAfterFees = (priceBeforeFees) => {
     // TODO get the publisher fee dynamically
     const priceAfterFeesScript = `
         document.querySelector('body').setAttribute(
@@ -582,7 +582,7 @@ const getPriceAfterFees = (priceBeforeFees) => {
     return parseInt(injectScript(priceAfterFeesScript, true, 'priceAfterFeesScript', 'priceAfterFees'));
 };
 
-const userPriceToProperPrice = (userInput) => {
+export const userPriceToProperPrice = (userInput) => {
     const strippedFromExtraChars = userInput.replace(/[^0-9.,]/g, '');
     const splitChar = strippedFromExtraChars.includes('.') ? '.' : strippedFromExtraChars.includes(',') ? ',' : '';
     if (splitChar === '') return parseInt(`${strippedFromExtraChars}00`); // whole number
@@ -598,7 +598,7 @@ const userPriceToProperPrice = (userInput) => {
 };
 
 // converts cent integers to pretty formatted string
-const centsToSteamFormattedPrice = (centsPrice) => {
+export const centsToSteamFormattedPrice = (centsPrice) => {
     const intToFormattedScript = `document.querySelector('body').setAttribute('intToFormatted', v_currencyformat(${DOMPurify.sanitize(
         centsPrice.toString(),
     )}, GetCurrencyCode(g_rgWalletInfo.wallet_currency)));`;
@@ -607,14 +607,14 @@ const centsToSteamFormattedPrice = (centsPrice) => {
 
 // to convert the formatted price string
 // that the price overview api call returns to cent int (for market listing)
-const steamFormattedPriceToCents = (formattedPrice) => {
+export const steamFormattedPriceToCents = (formattedPrice) => {
     const formattedToIntScript = `document.querySelector('body').setAttribute('formattedToInt', GetPriceValueAsInt('${DOMPurify.sanitize(
         formattedPrice,
     ).toString()}'));`;
     return injectScript(formattedToIntScript, true, 'formattedToIntScript', 'formattedToInt');
 };
 
-const getUserCurrencyBestGuess = (): Promise<string> =>
+export const getUserCurrencyBestGuess = (): Promise<string> =>
     new Promise((resolve) => {
         const getRequest = new Request('https://steamcommunity.com/market/');
 
@@ -644,14 +644,14 @@ const getUserCurrencyBestGuess = (): Promise<string> =>
             });
     });
 
-const addRealTimePriceIndicator = (itemElement, price) => {
+export const addRealTimePriceIndicator = (itemElement, price) => {
     itemElement.insertAdjacentHTML(
         'beforeend',
         DOMPurify.sanitize(`<div class="realTimePriceIndicator">${price}</div>`),
     );
 };
 
-const addRealTimePriceToPage = (marketHashName, price, appID, assetID, contextID, type) => {
+export const addRealTimePriceToPage = (marketHashName, price, appID, assetID, contextID, type) => {
     const itemElement = findElementByIDs(appID, contextID, assetID, type);
 
     // the steam wallet global var is not defined in the trade offer page
@@ -669,35 +669,10 @@ const addRealTimePriceToPage = (marketHashName, price, appID, assetID, contextID
     itemElement.setAttribute('data-realtime-price', price !== null ? price.toString() : '0');
 };
 
-const updateWalletCurrency = () => {
+export const updateWalletCurrency = () => {
     const walletCurrency = getSteamWalletCurrency();
     chrome.storage.local.set({
         userSteamWalletCurrency:
             walletCurrency !== 'Unknown' && walletCurrency !== undefined ? walletCurrency : currencies.USD.short,
     });
-};
-
-export {
-    updatePrices,
-    updateExchangeRates,
-    getPrice,
-    getUserCurrencyBestGuess,
-    getStickerPriceTotal,
-    prettyPrintPrice,
-    getPriceOverview,
-    getMidPrice,
-    getPriceAfterFees,
-    userPriceToProperPrice,
-    centsToSteamFormattedPrice,
-    steamFormattedPriceToCents,
-    priceQueue,
-    workOnPriceQueue,
-    getHighestBuyOrder,
-    getSteamWalletCurrency,
-    getSteamWalletInfo,
-    addRealTimePriceIndicator,
-    initPriceQueue,
-    getLowestListingPrice,
-    addRealTimePriceToPage,
-    updateWalletCurrency,
 };

@@ -1,7 +1,7 @@
 import { injectScript } from 'utils/injection';
 
 // makes trade offers open in new tab instead of a separate window
-const overrideShowTradeOffer = () => {
+export const overrideShowTradeOffer = () => {
     const overRideShowTradeOfferScript = `
     function ShowTradeOffer( tradeOfferID, rgParams )
         {
@@ -23,7 +23,7 @@ const overrideShowTradeOffer = () => {
 };
 
 // adds In-browser inspect as action - in trade offers
-const overrideHandleTradeActionMenu = () => {
+export const overrideHandleTradeActionMenu = () => {
     const overrideHandleTradeActionMenuScript = `
         function HandleTradeActionMenu( elActionMenuButton, item, user )
         {
@@ -116,7 +116,7 @@ const overrideHandleTradeActionMenu = () => {
 };
 
 // adds In-browser inspect as action in inventory
-const overridePopulateActions = () => {
+export const overridePopulateActions = () => {
     const overRidePopulateActionsMenuScript = `
         function PopulateActions( prefix, elActions, rgActions, item, owner )
         {
@@ -179,7 +179,7 @@ const overridePopulateActions = () => {
 };
 
 // loads more market history items
-const overrideLoadMarketHistory = () => {
+export const overrideLoadMarketHistory = () => {
     chrome.storage.local.get('marketHistoryEventsToShow', ({ marketHistoryEventsToShow }) => {
         const overrideMarketHistoryScript = `
     function addItemInfoToElement(assets, hovers) {
@@ -250,7 +250,7 @@ const overrideLoadMarketHistory = () => {
 };
 
 // loads csgo inventories from alternative endpoint
-const overRideCSGOInventoryLoading = () => {
+export const overRideCSGOInventoryLoading = () => {
     const overrideMarketHistoryScript = `
    CInventory.prototype.GetInventoryLoadURL = function () {
       if (this.m_appid === 730) {
@@ -462,12 +462,4 @@ const overRideCSGOInventoryLoading = () => {
     this.m_$TagContainer.append(new Element('div', {"style": "clear: left;"}));
   };`;
     injectScript(overrideMarketHistoryScript, false, 'overRideCSGOInventoryLoading', null);
-};
-
-export {
-    overrideShowTradeOffer,
-    overridePopulateActions,
-    overrideHandleTradeActionMenu,
-    overrideLoadMarketHistory,
-    overRideCSGOInventoryLoading,
 };
