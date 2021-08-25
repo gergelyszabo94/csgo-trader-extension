@@ -16,7 +16,7 @@ import {
     RealTimePricesFreqFailure,
     RealTimePricesFreqSuccess,
 } from 'types/storage';
-import axios from 'axios';
+import * as fetcher from 'utils/requestUtils';
 
 export const priceQueue = {
     active: false,
@@ -109,7 +109,7 @@ export const getHighestBuyOrder = async (appID: string, marketHashName: string):
 export const getPriceOverview = async (appID: string, marketHashName: string): Promise<PriceOverview> => {
     try {
         const currencyID = getSteamWalletInfo().wallet_currency;
-        const response = await axios.get(`https://steamcommunity.com/market/priceoverview/`, {
+        const response = await fetcher.get(`https://steamcommunity.com/market/priceoverview/`, {
             params: {
                 appid: appID,
                 country: 'US',
@@ -117,11 +117,12 @@ export const getPriceOverview = async (appID: string, marketHashName: string): P
                 market_hash_name: marketHashName,
             },
         });
-        if (response.status !== 200) {
+        if (!response.ok) {
             console.log(`Error code: ${response.status} Status: ${response.statusText}`);
         }
-        if (response.data && response.data.success === true) {
-            return response.data;
+        const data = await response.json() as PriceOverview;
+        if (data && data.success === true) {
+            return data;
         }
     } catch (err) {
         console.log(err);
@@ -179,7 +180,7 @@ export const getLowestListingPrice = async (appID: string, marketHashName: strin
             currencyID = Number(Object.keys(steamCurrencyCodes).find((key) => steamCurrencyCodes[key] === currency));
         }
         const marketLink = getItemMarketLink(appID, marketHashName);
-        const response = await axios.get(`${marketLink}/render/`, {
+        const response = await fetcher.get(`${marketLink}/render/`, {
             params: {
                 query: '',
                 start: 0,
@@ -190,17 +191,13 @@ export const getLowestListingPrice = async (appID: string, marketHashName: strin
             },
         });
 
-        if (response.status !== 200) {
+        if (!response.ok) {
             console.log(`Error code: ${response.status} Status: ${response.statusText}`);
             return;
         }
-        if (
-            response.data &&
-            response.data.success === true &&
-            response.data.listinginfo &&
-            response.data.listinginfo.length !== 0
-        ) {
-            const listingInfo = Object.values(response.data.listinginfo as ListingInfo);
+        const data = await response.json();
+        if (data && data.success === true && data.listinginfo && data.listinginfo.length !== 0) {
+            const listingInfo = Object.values(data.listinginfo as ListingInfo);
             for (const listing of listingInfo) {
                 if (listing.converted_price && listing.converted_fee) {
                     return listing.converted_price + listing.converted_fee;
@@ -427,18 +424,19 @@ export const updatePrices = async () => {
     const provider: PricingProvider = result.pricingProvider;
     const mode: PricingMode = result.pricingMode;
 
-    const response = await axios.get(`https://prices.csgotrader.app/latest/${provider}.json`, {
+    const response = await fetcher.get(`https://prices.csgotrader.app/latest/${provider}.json`, {
         headers: {
             'Accept-Encoding': 'gzip',
         },
     });
-    if (response.status !== 200) {
+    if (!response.ok) {
         console.log(`Error code: ${response.status} Status: ${response.statusText}`);
         return;
     }
-    if (response.data && item) {
+    const data = await response.json();
+    if (data && item) {
         const prices = {};
-        const keys = Object.keys(response.data);
+        const keys = Object.keys(data);
         switch (provider) {
             case pricingProviders.steam.name:
             case pricingProviders.bitskins.name:
@@ -450,7 +448,7 @@ export const updatePrices = async () => {
                     pricingMode = 'instant_sale_price';
                 }
                 for (const key of keys) {
-                    const price = response.data[key][pricingMode] || null;
+                    const price = data[key][pricingMode] || null;
                     prices[key] = { price: price };
                     if (!price) {
                         console.log(key);
@@ -463,13 +461,13 @@ export const updatePrices = async () => {
             case pricingProviders.csgoexo.name:
             case pricingProviders.skinwallet.name: {
                 for (const key of keys) {
-                    prices[key] = { price: response.data[key] };
+                    prices[key] = { price: data[key] };
                 }
             }
             case pricingProviders.csmoney.name:
             case pricingProviders.csgotrader.name:
                 for (const key of keys) {
-                    const item = response.data[key];
+                    const item = data[key];
                     const itemData = { price: item.price };
 
                     if (item.doppler) {
@@ -479,7 +477,7 @@ export const updatePrices = async () => {
                 }
             case pricingProviders.buff163.name:
                 for (const key of keys) {
-                    const item = response.data[key][mode];
+                    const item = data[key][mode];
                     const itemData = { price: item.price || null };
                     if (item.doppler) {
                         itemData['doppler'] = item.doppler;

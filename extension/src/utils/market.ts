@@ -1,16 +1,15 @@
 import { getSessionID } from 'utils/utilsModular';
 import { getSteamWalletInfo } from 'utils/pricing';
-import axios from 'axios';
-import { encodeObject } from './simpleUtils';
+import * as fetcher from 'utils/requestUtils';
 
 export const buyListing = async (listing, buyerKYC) => {
     try {
         const currencyID = listing.converted_currencyid - 2000;
-        const response = await axios.post(`https://steamcommunity.com/market/buylisting/${listing.listingid}`, {
+        const response = await fetcher.post(`https://steamcommunity.com/market/buylisting/${listing.listingid}`, {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             },
-            body: encodeObject({
+            form: {
                 sessionid: getSessionID(),
                 currency: currencyID,
                 fee: listing.converted_fee,
@@ -26,11 +25,11 @@ export const buyListing = async (listing, buyerKYC) => {
                 billing_state: buyerKYC.billing_state,
                 billing_postal_code: buyerKYC.billing_postal_code,
                 save_my_address: 1,
-            }),
+            },
             credentials: 'include',
         });
 
-        if (response.status !== 200) {
+        if (!response.ok) {
             console.log(`Error code: ${response.status} Status: ${response.statusText}`);
         }
     } catch (err) {
@@ -40,13 +39,10 @@ export const buyListing = async (listing, buyerKYC) => {
 
 export const removeListing = async (listingID) => {
     try {
-        const response = await axios.post(`https://steamcommunity.com/market/removelisting/${listingID}`, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            },
-            body: encodeObject({ sessionid: getSessionID() }),
+        const response = await fetcher.post(`https://steamcommunity.com/market/removelisting/${listingID}`, {
+            form: { sessionid: getSessionID() },
         });
-        if (response.status !== 200) {
+        if (!response.ok) {
             console.log(`Error code: ${response.status} Status: ${response.statusText}`);
         }
     } catch (err) {
@@ -67,27 +63,25 @@ export const removeListing = async (listingID) => {
 
 export const listItem = async (appID, contextID, amount, assetID, price) => {
     try {
-        const response = await axios.post('https://steamcommunity.com/market/sellitem/', {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            },
-            body: encodeObject({
+        const response = await fetcher.post('https://steamcommunity.com/market/sellitem/', {
+            form: {
                 sessionid: getSessionID(),
                 appid: appID,
                 contextid: contextID,
                 amount: amount,
                 assetid: assetID,
                 price: price,
-            }),
+            },
         });
 
         console.log(response);
-        if (response.status !== 200) {
+        if (!response.ok) {
             console.log(`Error code: ${response.status} Status: ${response.statusText}`);
             return;
         }
-        if (response.data.success) {
-            return response.data;
+        const data = await response.json();
+        if (data.success) {
+            return data;
         }
     } catch (err) {
         console.log(err);
@@ -112,13 +106,10 @@ export const createOrder = async (
 ) => {
     try {
         const currency = getSteamWalletInfo().wallet_currency;
-        const response = await axios.post('https://steamcommunity.com/market/createbuyorder/', {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            },
-            body: encodeObject({
+        const response = await fetcher.post('https://steamcommunity.com/market/createbuyorder/', {
+            form: {
                 sessionid: getSessionID(),
-                currency: currency,
+                currency,
                 appid: appID,
                 market_hash_name: marketHashName,
                 price_total: price * quantity,
@@ -132,15 +123,16 @@ export const createOrder = async (
                 billing_state: buyerKYC.billing_state,
                 billing_postal_code: buyerKYC.billing_postal_code,
                 save_my_address: 1,
-            }),
+            },
         });
 
-        if (response.status !== 200) {
+        if (!response.ok) {
             console.log(`Error code: ${response.status} Status: ${response.statusText}`);
             return;
         }
-        if (response.data.success === 1) {
-            return response.data;
+        const data = await response.json();
+        if (data.success === 1) {
+            return data;
         }
     } catch (err) {
         console.log(err);
@@ -149,17 +141,14 @@ export const createOrder = async (
 
 export const cancelOrder = async (orderID) => {
     try {
-        const response = await axios.post('https://steamcommunity.com/market/cancelbuyorder/', {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            },
-            body: encodeObject({
+        const response = await fetcher.post('https://steamcommunity.com/market/cancelbuyorder/', {
+            form: {
                 sessionid: getSessionID(),
                 buy_orderid: orderID,
-            }),
+            },
         });
 
-        if (response.status !== 200) {
+        if (!response.ok) {
             console.log(`Error code: ${response.status} Status: ${response.statusText}`);
             return;
         }
@@ -203,8 +192,8 @@ interface Asset {
     icon_url_large: string;
     descriptions: Description[];
     tradable: number;
-    actions: Owneraction[];
-    owner_actions: Owneraction[];
+    actions: OwnerAction[];
+    owner_actions: OwnerAction[];
     name: string;
     type: string;
     market_name: string;
@@ -218,7 +207,7 @@ interface Asset {
     owner: number;
 }
 
-interface Owneraction {
+interface OwnerAction {
     link: string;
     name: string;
 }
@@ -231,20 +220,18 @@ interface Description {
 
 export const getMarketHistory = async (start: number, count: number): Promise<MarketHistory> => {
     try {
-        const response = await axios.post(`https://steamcommunity.com/market/myhistory/`, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            },
+        const response = await fetcher.post(`https://steamcommunity.com/market/myhistory/`, {
             params: { start, count },
-            body: encodeObject({ sessionid: getSessionID() }),
+            form: { sessionid: getSessionID() },
         });
 
-        if (response.status !== 200) {
+        if (!response.ok) {
             console.log(`Error code: ${response.status} Status: ${response.statusText}`);
             return;
         }
-        if (response.data && response.data.success) {
-            return response.data as MarketHistory;
+        const data = await response.json() as MarketHistory;
+        if (data && data.success) {
+            return data;
         }
     } catch (err) {
         console.log(err);
@@ -256,10 +243,7 @@ export const loadItemOrderHistogram = async (nameID) => {
         const steamWalletInfo = getSteamWalletInfo();
         const currencyCode = steamWalletInfo !== null ? steamWalletInfo.wallet_currency : 1;
 
-        const response = await axios.get(`https://steamcommunity.com/market/itemordershistogram`, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            },
+        const response = await fetcher.get(`https://steamcommunity.com/market/itemordershistogram`, {
             params: {
                 country: 'US',
                 language: 'english',
@@ -269,12 +253,13 @@ export const loadItemOrderHistogram = async (nameID) => {
             },
         });
 
-        if (response.status !== 200) {
+        if (!response.ok) {
             console.log(`Error code: ${response.status} Status: ${response.statusText}`);
             return;
         }
-        if (response.data && response.data.success === 1) {
-            return response.data;
+        const data = await response.json();
+        if (data && data.success === 1) {
+            return data;
         }
     } catch (err) {
         console.log(err);

@@ -189,7 +189,7 @@ export const postForumComment = async (abuseID, gIDForum, gIDTopic, comment, ext
                 },
             },
         );
-        if (response.status !== 200) {
+        if (!response.ok) {
             console.log(`Error code: ${response.status} Status: ${response.statusText}`);
         }
     } catch (err) {
