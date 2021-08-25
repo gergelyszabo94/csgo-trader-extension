@@ -123,6 +123,12 @@ const tradeOffer = () => {
         type="flipSwitchStorage"
         description="Clicks the button 'Change Offer' automatically so you don't have to when trying to add items to the trade for a counter offer"
       />
+      <Row
+        name="Offer message presets"
+        id="offerPresetMessages"
+        type="arrayOfStrings"
+        description="Add your messages to show up as options to select in offers"
+      />
     </Category>
   );
 };
