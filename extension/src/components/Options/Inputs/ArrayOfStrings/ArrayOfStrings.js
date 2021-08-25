@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faExclamationTriangle, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
+import Modal from 'components/Modal/Modal';
 
-const ArrayOfStrings = ({
-  id,
-}) => {
+const ArrayOfStrings = ({ id }) => {
+  const maxMessageLength = 128;
   const [strings, setStrings] = useState([]);
+  const [modalText, setModalText] = useState('');
+  const [inputValid, setInputValid] = useState(true);
+  const [validationError, setValidationError] = useState('');
+
   const setStorage = (thisValue) => {
     chrome.storage.local.set({ [id]: thisValue }, () => {});
   };
@@ -25,6 +29,25 @@ const ArrayOfStrings = ({
     setStorage(newStrings);
   };
 
+  const onChangeHandler = (change) => {
+    setModalText(change.target.value);
+  };
+
+  const inputValidator = (closeModal) => {
+    if (modalText.length <= maxMessageLength) {
+      const newStrings = [...strings, modalText];
+      setStrings(newStrings);
+      setStorage(newStrings);
+      setInputValid(true);
+      setValidationError('');
+      setModalText('');
+      closeModal();
+    } else {
+      setInputValid(false);
+      setValidationError(`Message can't be longer than ${maxMessageLength} characters!`);
+    }
+  };
+
   return (
     <div>
       {strings.map((string, index) => {
@@ -37,6 +60,25 @@ const ArrayOfStrings = ({
           </div>
         );
       })}
+      <Modal
+        modalTitle="Add your own message"
+        opener={<FontAwesomeIcon icon={faEdit} />}
+        validator={inputValidator}
+      >
+        <textarea
+          className="modalTextArea"
+          placeholder="Type your text here"
+          onChange={onChangeHandler}
+          value={modalText}
+        />
+        <div className={`warning ${inputValid ? 'hidden' : null}`}>
+          <FontAwesomeIcon icon={faExclamationTriangle} />
+          <span className="warning">
+            {' '}
+            {validationError}
+          </span>
+        </div>
+      </Modal>
     </div>
   );
 };
