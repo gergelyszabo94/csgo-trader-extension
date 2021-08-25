@@ -13,7 +13,7 @@ import { sendTelemetry, trackEvent } from 'utils/analytics';
 import { ExchangeRates } from 'types/storage';
 import { storageKeys } from 'utils/static/storageKeys';
 import { trimFloatCache } from 'utils/floatCaching';
-import { chromeStorageLocalGet, chromeStorageLocalSet } from 'utils/chromeUtils';
+import { chromeStorageLocalGet, chromeStorageLocalSet } from 'utils/promiseUtils';
 
 // handles install and update events
 chrome.runtime.onInstalled.addListener(async (details) => {

@@ -6,7 +6,7 @@ import { findElementByIDs } from 'utils/itemsToElementsToItems';
 import { getItemMarketLink } from 'utils/simpleUtils';
 import { injectScript } from 'utils/injection';
 import { storageKeys } from 'utils/static/storageKeys';
-import { chromeRuntimeSendMessage, chromeStorageLocalGet, chromeStorageLocalSet } from './chromeUtils';
+import { chromeRuntimeSendMessage, chromeStorageLocalGet, chromeStorageLocalSet } from './promiseUtils';
 import {
     Currency,
     ItemPricing,

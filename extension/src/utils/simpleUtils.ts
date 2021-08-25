@@ -1,9 +1,5 @@
 // this utils module should never have any non-static dependencies
 
-export const sleep = (ms: number): Promise<void> => {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-};
-
 export const getItemMarketLink = (appID: string, marketHashName: string) => {
     return `https://steamcommunity.com/market/listings/${appID}/${marketHashName}`;
 };

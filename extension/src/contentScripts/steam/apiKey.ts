@@ -2,7 +2,7 @@ import { logExtensionPresence, updateLoggedInUserInfo } from 'utils/utilsModular
 
 import DOMPurify from 'dompurify';
 import { trackEvent } from 'utils/analytics';
-import { chromeRuntimeSendMessage, chromeStorageLocalGet, chromeStorageLocalSet } from 'utils/chromeUtils';
+import { chromeRuntimeSendMessage, chromeStorageLocalGet, chromeStorageLocalSet } from 'utils/promiseUtils';
 
 logExtensionPresence();
 updateLoggedInUserInfo();
