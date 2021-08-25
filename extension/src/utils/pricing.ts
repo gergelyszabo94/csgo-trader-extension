@@ -6,8 +6,8 @@ import { findElementByIDs } from 'utils/itemsToElementsToItems';
 import { getItemMarketLink } from 'utils/simpleUtils';
 import { injectScript } from 'utils/injection';
 import { storageKeys } from 'utils/static/storageKeys';
-import { chromeRuntimeSendMessage, chromeStorageLocalGet } from './chromeUtils';
-import { Currency, RealTimePricesFreqFailure, RealTimePricesFreqSuccess } from 'types/storage';
+import { chromeRuntimeSendMessage, chromeStorageLocalGet, chromeStorageLocalSet } from './chromeUtils';
+import { Currency, PriceQueueActivity, RealTimePricesFreqFailure, RealTimePricesFreqSuccess } from 'types/storage';
 import axios from 'axios';
 
 const priceQueue = {
@@ -216,208 +216,200 @@ const getMidPrice = async (appID: string, marketHashName: string) => {
     }
 };
 
-const priceQueueSuccess = () => {
+const priceQueueSuccess = async () => {
     priceQueue.lastJobSuccessful = true;
-    setTimeout(() => {
+    return setTimeout(async () => {
         priceQueue.active = false;
         // eslint-disable-next-line no-use-before-define
-        workOnPriceQueue();
+        await workOnPriceQueue();
     }, priceQueue.delaySuccess);
 };
 
-const priceQueueFailure = (error, job) => {
+const priceQueueFailure = async (error, job) => {
     console.log(error, job);
     priceQueue.lastJobSuccessful = false;
-
-    if (error !== 'empty_listings_array' && error !== 'highest_order_undef_or_null') {
-        priceQueue.jobs.push({ ...job, retries: job.retries + 1 });
-
-        setTimeout(() => {
-            priceQueue.active = false;
-            // eslint-disable-next-line no-use-before-define
-            workOnPriceQueue();
-        }, priceQueue.delayFailure);
-    } else priceQueueSuccess();
+    switch (error) {
+        case 'empty_listings_array':
+        case 'highest_order_undef_or_null':
+            await priceQueueSuccess();
+            return;
+        default:
+            priceQueue.jobs.push({ ...job, retries: job.retries + 1 });
+            setTimeout(async () => {
+                priceQueue.active = false;
+                // eslint-disable-next-line no-use-before-define
+                await workOnPriceQueue();
+            }, priceQueue.delayFailure);
+    }
 };
 
-const priceQueueCacheHit = () => {
+const priceQueueCacheHit = async () => {
     priceQueue.active = false;
     // eslint-disable-next-line no-use-before-define
-    workOnPriceQueue();
+    await workOnPriceQueue();
 };
 
-const workOnPriceQueue = () => {
-    if (priceQueue.jobs.length !== 0) {
-        // if there are no jobs then there is no recursion
-        if (!priceQueue.active) {
-            // only start the work if the queue is inactive at the moment
-            priceQueue.active = true; // marks the queue active
-            chrome.storage.local.get(['priceQueueActivity'], ({ priceQueueActivity }) => {
-                const job = priceQueue.jobs.shift();
-                const secondsFromLastUse = (Date.now() - new Date(priceQueueActivity.lastUsed).getTime()) / 1000;
-
-                // tries to avoid having multiple price queues running concurrently on different pages
-                if (secondsFromLastUse > 10 || priceQueueActivity.usedAt === window.location.pathname) {
-                    if (job.retries < 5) {
-                        // limits the number of retries to avoid infinite loop
-                        if (
-                            job.type === 'my_buy_order' ||
-                            job.type === 'inventory_mass_sell_instant_sell' ||
-                            job.type === `offer_${realTimePricingModes.bid_price.key}` ||
-                            job.type === `offers_${realTimePricingModes.bid_price.key}` ||
-                            job.type === `inventory_${realTimePricingModes.bid_price.key}`
-                        ) {
-                            if (priceQueue.localCache[job.appID + job.market_hash_name + job.type] !== undefined) {
-                                if (job.type === 'my_buy_order')
-                                    job.callBackFunction(
-                                        job,
-                                        priceQueue.localCache[job.appID + job.market_hash_name + job.type],
-                                    );
-                                else if (job.type === 'inventory_mass_sell_instant_sell') {
-                                    job.callBackFunction(
-                                        job.market_hash_name,
-                                        priceQueue.localCache[job.appID + job.market_hash_name + job.type],
-                                        job.appID,
-                                        job.assetID,
-                                        job.contextID,
-                                    );
-                                }
-                                priceQueueCacheHit();
-                            } else {
-                                getHighestBuyOrder(job.appID, job.market_hash_name).then(
-                                    (highestBuyOrder) => {
-                                        if (highestBuyOrder !== undefined) {
-                                            if (job.type === 'my_buy_order') job.callBackFunction(job, highestBuyOrder);
-                                            else if (
-                                                job.type === 'inventory_mass_sell_instant_sell' ||
-                                                job.type === `offer_${realTimePricingModes.bid_price.key}`
-                                            ) {
-                                                job.callBackFunction(
-                                                    job.market_hash_name,
-                                                    highestBuyOrder,
-                                                    job.appID,
-                                                    job.assetID,
-                                                    job.contextID,
-                                                );
-                                            }
-                                            priceQueue.localCache[job.appID + job.market_hash_name + job.type] =
-                                                highestBuyOrder;
-                                            priceQueueSuccess();
-                                        } else priceQueueFailure('highestBuyOrder is undefined', job);
-                                    },
-                                    (error) => {
-                                        priceQueueFailure(error, job);
-                                    },
-                                );
-                            }
-                        } else if (
-                            job.type === 'inventory_mass_sell_starting_at' ||
-                            job.type === `offer_${realTimePricingModes.ask_price.key}` ||
-                            job.type === `offers_${realTimePricingModes.ask_price.key}` ||
-                            job.type === `inventory_${realTimePricingModes.ask_price.key}` ||
-                            job.type === 'my_listing' ||
-                            job.type === 'history_row'
-                        ) {
-                            if (priceQueue.localCache[job.appID + job.market_hash_name + job.type] !== undefined) {
-                                if (job.type === 'my_listing') {
-                                    job.callBackFunction(
-                                        job.listingID,
-                                        priceQueue.localCache[job.appID + job.market_hash_name + job.type],
-                                    );
-                                } else if (job.type === 'history_row') {
-                                    job.callBackFunction(
-                                        job.rowID,
-                                        priceQueue.localCache[job.appID + job.market_hash_name + job.type],
-                                    );
-                                } else {
-                                    job.callBackFunction(
-                                        job.market_hash_name,
-                                        priceQueue.localCache[job.appID + job.market_hash_name + job.type],
-                                        job.appID,
-                                        job.assetID,
-                                        job.contextID,
-                                    );
-                                }
-                                priceQueueCacheHit();
-                            } else {
-                                getLowestListingPrice(job.appID, job.market_hash_name).then(
-                                    (lowestListingPrice) => {
-                                        if (lowestListingPrice !== undefined) {
-                                            if (job.type === 'my_listing') {
-                                                job.callBackFunction(job.listingID, lowestListingPrice);
-                                            } else if (job.type === 'history_row') {
-                                                job.callBackFunction(job.rowID, lowestListingPrice);
-                                            } else {
-                                                job.callBackFunction(
-                                                    job.market_hash_name,
-                                                    lowestListingPrice,
-                                                    job.appID,
-                                                    job.assetID,
-                                                    job.contextID,
-                                                    job.type,
-                                                );
-                                            }
-                                            priceQueue.localCache[job.appID + job.market_hash_name + job.type] =
-                                                lowestListingPrice;
-                                            priceQueueSuccess();
-                                        } else priceQueueFailure('lowest_price is undefined', job);
-                                    },
-                                    (error) => {
-                                        priceQueueFailure(error, job);
-                                    },
-                                );
-                            }
-                        } else if (
-                            job.type === `offer_${realTimePricingModes.mid_price.key}` ||
-                            job.type === `offers_${realTimePricingModes.mid_price.key}` ||
-                            job.type === `inventory_${realTimePricingModes.mid_price.key}` ||
-                            job.type === 'inventory_mass_sell_mid_price'
-                        ) {
-                            if (priceQueue.localCache[job.appID + job.market_hash_name + job.type] !== undefined) {
-                                job.callBackFunction(
-                                    job.market_hash_name,
-                                    priceQueue.localCache[job.appID + job.market_hash_name + job.type],
-                                    job.appID,
-                                    job.assetID,
-                                    job.contextID,
-                                    job.type,
-                                );
-                                priceQueueCacheHit();
-                            } else {
-                                getMidPrice(job.appID, job.market_hash_name).then(
-                                    (midPrice) => {
-                                        job.callBackFunction(
-                                            job.market_hash_name,
-                                            midPrice,
-                                            job.appID,
-                                            job.assetID,
-                                            job.contextID,
-                                            job.type,
-                                        );
-                                        priceQueue.localCache[job.appID + job.market_hash_name + job.type] = midPrice;
-                                        priceQueueSuccess();
-                                    },
-                                    (error) => {
-                                        priceQueueFailure(error, job);
-                                    },
-                                );
-                            }
-                        }
-                        // updates storage to signal that the price queue is being used
-                        chrome.storage.local.set({
-                            priceQueueActivity: {
-                                lastUsed: Date.now(),
-                                usedAt: window.location.pathname,
-                            },
-                        });
-                    } else workOnPriceQueue();
-                } else priceQueueFailure('other_active_pricequeue', job);
-            });
-        }
-    } else {
+const workOnPriceQueue = async () => {
+    if (priceQueue.jobs.length === 0) {
         priceQueue.cleanupFunction();
         priceQueue.active = false;
+        return;
     }
+    // if there are no jobs then there is no recursion
+    if (!priceQueue.active) return;
+
+    // only start the work if the queue is inactive at the moment
+    priceQueue.active = true; // marks the queue active
+    const result = await chromeStorageLocalGet('priceQueueActivity');
+    const priceQueueActivity: PriceQueueActivity = result.priceQueueActivity;
+    const job = priceQueue.jobs.shift();
+    const secondsFromLastUse = (Date.now() - new Date(priceQueueActivity.lastUsed).getTime()) / 1000;
+
+    // tries to avoid having multiple price queues running concurrently on different pages
+    if (!(secondsFromLastUse > 10 || priceQueueActivity.usedAt === window.location.pathname)) {
+        priceQueueFailure('other_active_pricequeue', job);
+    }
+    // limits the number of retries to avoid infinite loop
+    if (job.retries >= 5) {
+        await workOnPriceQueue();
+    }
+
+    const cachedItemKey = `${job.appID}${job.market_hash_name}${job.type}`;
+    const cachedItem = priceQueue.localCache[cachedItemKey];
+
+    switch (job.type) {
+        case 'my_buy_order':
+        case 'inventory_mass_sell_instant_sell':
+        case `offer_${realTimePricingModes.bid_price.key}`:
+        case `offers_${realTimePricingModes.bid_price.key}`:
+        case `inventory_${realTimePricingModes.bid_price.key}`:
+            if (cachedItem) {
+                switch (job.type) {
+                    case 'my_buy_order':
+                        job.callBackFunction(job, cachedItem);
+                        break;
+                    case `inventory_mass_sell_instant_sell`:
+                        job.callBackFunction(
+                            job.market_hash_name,
+                            priceQueue.localCache[job.appID + job.market_hash_name + job.type],
+                            job.appID,
+                            job.assetID,
+                            job.contextID,
+                        );
+                        break;
+                }
+                await priceQueueCacheHit();
+                return;
+            }
+            const highestBuyOrder = await getHighestBuyOrder(job.appID, job.market_hash_name);
+            if (highestBuyOrder) {
+                switch (job.type) {
+                    case 'my_buy_order':
+                        job.callBackFunction(job, highestBuyOrder);
+                        break;
+                    case `inventory_mass_sell_instant_sell`:
+                    case `offer_${realTimePricingModes.bid_price.key}`:
+                        job.callBackFunction(
+                            job.market_hash_name,
+                            highestBuyOrder,
+                            job.appID,
+                            job.assetID,
+                            job.contextID,
+                        );
+                        break;
+                }
+                priceQueue.localCache[cachedItemKey] = highestBuyOrder;
+                await priceQueueSuccess();
+                break;
+            }
+            await priceQueueFailure('highestBuyOrder is falsy', job);
+            break;
+        case 'my_listing':
+        case 'inventory_mass_sell_starting_at':
+        case 'history_row':
+        case `offer_${realTimePricingModes.ask_price.key}`:
+        case `offers_${realTimePricingModes.ask_price.key}`:
+        case `inventory_${realTimePricingModes.ask_price.key}`:
+            if (cachedItem) {
+                switch (job.type) {
+                    case 'my_listing':
+                        job.callBackFunction(job.listingID, cachedItem);
+                        break;
+                    case 'history_row':
+                        job.callBackFunction(job.rowID, cachedItem);
+                        break;
+                    default:
+                        job.callBackFunction(
+                            job.market_hash_name,
+                            priceQueue.localCache[job.appID + job.market_hash_name + job.type],
+                            job.appID,
+                            job.assetID,
+                            job.contextID,
+                        );
+                        break;
+                }
+                await priceQueueCacheHit();
+                break;
+            }
+            const lowestListingPrice = getLowestListingPrice(job.appID, job.market_hash_name);
+            if (lowestListingPrice) {
+                switch (job.type) {
+                    case 'my_listing':
+                        job.callBackFunction(job.listingID, lowestListingPrice);
+                        break;
+                    case 'history_row':
+                        job.callBackFunction(job.rowID, lowestListingPrice);
+                        break;
+                    default:
+                        job.callBackFunction(
+                            job.market_hash_name,
+                            lowestListingPrice,
+                            job.appID,
+                            job.assetID,
+                            job.contextID,
+                            job.type,
+                        );
+                }
+                priceQueue.localCache[cachedItemKey] = lowestListingPrice;
+                await priceQueueSuccess();
+                break;
+            }
+            await priceQueueFailure('lowestListingPrice is falsy', job);
+            break;
+        case 'inventory_mass_sell_mid_price':
+        case `offer_${realTimePricingModes.mid_price.key}`:
+        case `offers_${realTimePricingModes.mid_price.key}`:
+        case `inventory_${realTimePricingModes.mid_price.key}`:
+            if (cachedItem) {
+                job.callBackFunction(
+                    job.market_hash_name,
+                    priceQueue.localCache[job.appID + job.market_hash_name + job.type],
+                    job.appID,
+                    job.assetID,
+                    job.contextID,
+                    job.type,
+                );
+                await priceQueueCacheHit();
+                break;
+            }
+            const midPrice = await getMidPrice(job.appID, job.market_hash_name);
+            if (midPrice) {
+                job.callBackFunction(job.market_hash_name, midPrice, job.appID, job.assetID, job.contextID, job.type);
+                priceQueue.localCache[cachedItemKey] = midPrice;
+                await priceQueueSuccess();
+                break;
+            }
+            await priceQueueFailure('midPrice is falsy', job);
+            break;
+    }
+
+    // updates storage to signal that the price queue is being used
+    await chromeStorageLocalSet({
+        priceQueueActivity: {
+            lastUsed: Date.now(),
+            usedAt: window.location.pathname,
+        },
+    });
 };
 
 const updatePrices = () => {
