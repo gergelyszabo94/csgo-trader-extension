@@ -1,13 +1,13 @@
 import { trackEvent } from 'utils/analytics';
 import { logExtensionPresence } from 'utils/utilsModular';
+import * as fetcher from 'utils/requestUtils';
+import { chromeStorageLocalGet, sleep } from 'utils/promiseUtils';
 
 const bump = async () => {
-    document.querySelectorAll('.btn.btn-custom.btn-xs').forEach((button) => {
+    for (const button of Array.from(document.querySelectorAll('.btn.btn-custom.btn-xs'))) {
         const link = button.getAttribute('href');
-        const request = new Request(link);
-
-        fetch(request).then(() => {});
-    });
+        await fetcher.get(link);
+    }
 
     await trackEvent({
         type: 'event',
@@ -22,24 +22,23 @@ logExtensionPresence();
         type: 'pageview',
         action: 'TradersTradesView',
     });
-})();
 
-chrome.storage.local.get('tradersBump', ({ tradersBump }) => {
+    const result = await chromeStorageLocalGet('tradersBump');
+    const tradersBump: boolean = result.tradersBump;
     if (tradersBump) {
         // redirects form the "The page you were looking for doesn't exist." page
         if (window.location.href.includes('cf_chl_jschl_tk')) {
             window.location.href = 'https://csgotraders.net/mytrades';
         }
-
         // ugly way to wait for the trades to load and become "bumpable"
-        setTimeout(() => {
-            bump();
+        setTimeout(async () => {
+            await bump();
         }, 2000);
 
-        const reloadInterval = Math.floor(Math.random() * 10 + 31);
+        const reloadInterval = Math.floor(Math.random() * 10 + 31) * 60 * 1000;
 
         setTimeout(() => {
             window.location.reload();
-        }, reloadInterval * 60 * 1000);
+        }, reloadInterval);
     }
-});
+})();

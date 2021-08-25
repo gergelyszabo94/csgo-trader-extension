@@ -2,7 +2,7 @@ import { trackEvent } from 'utils/analytics';
 import { logExtensionPresence } from 'utils/utilsModular';
 
 const bump = async () => {
-    document.querySelectorAll('.btn-bump___1-VFc').forEach((bumpButton) => {
+    document.querySelectorAll<HTMLElement>('.btn-bump___1-VFc').forEach((bumpButton) => {
         bumpButton.click();
     });
 
@@ -19,19 +19,20 @@ logExtensionPresence();
         type: 'pageview',
         action: 'LoungeTradesView',
     });
-})();
 
-chrome.storage.local.get('loungeBump', (result) => {
-    if (result.loungeBump) {
+    const result = await chrome.storage.local.get('loungeBump');
+    const loungeBump: boolean = result.loungeBump;
+
+    if (loungeBump) {
         // ugly way to wait for the trades to load and become "bumpable"
         setTimeout(async () => {
             await bump();
         }, 5000);
 
-        const reloadInterval = Math.floor(Math.random() * 10 + 31);
+        const reloadInterval = Math.floor(Math.random() * 10 + 31) * 60 * 1000;
 
         setTimeout(() => {
             window.location.reload();
-        }, reloadInterval * 60 * 1000);
+        }, reloadInterval);
     }
-});
+})();
