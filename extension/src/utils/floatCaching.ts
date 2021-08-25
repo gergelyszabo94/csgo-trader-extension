@@ -2,7 +2,7 @@ import { FloatInfo, FloatsInfo } from 'types';
 import { arrayFromArrayOrNotArray } from 'utils/utilsModular';
 import { chromeStorageLocalGet, chromeStorageLocalRemove, chromeStorageLocalSet } from './chromeUtils';
 
-const addToFloatCache = async (assetID: string, floatInfo: FloatInfo) => {
+export const addToFloatCache = async (assetID: string, floatInfo: FloatInfo) => {
     await chrome.storage.local.set({
         [`floatCache_${assetID}`]: {
             floatInfo,
@@ -13,7 +13,7 @@ const addToFloatCache = async (assetID: string, floatInfo: FloatInfo) => {
     });
 };
 
-const updateFloatCache = async (assetIDs: string[] | string[]): Promise<void> => {
+export const updateFloatCache = async (assetIDs: string[] | string[]): Promise<void> => {
     const assetIDsArray = arrayFromArrayOrNotArray(assetIDs);
 
     const floatStorageKeys = assetIDsArray.map((ID) => {
@@ -33,7 +33,7 @@ const updateFloatCache = async (assetIDs: string[] | string[]): Promise<void> =>
     await chromeStorageLocalSet(itemFloatInfos);
 };
 
-const getFloatInfoFromCache = async (assetIDs: string | string[]): Promise<FloatsInfo> => {
+export const getFloatInfoFromCache = async (assetIDs: string | string[]): Promise<FloatsInfo> => {
     const assetIDsArray = arrayFromArrayOrNotArray(assetIDs);
 
     const floatInfoToReturn = {};
@@ -52,7 +52,7 @@ const getFloatInfoFromCache = async (assetIDs: string | string[]): Promise<Float
     return floatInfoToReturn;
 };
 
-const extractUsefulFloatInfo = (floatInfo: FloatInfo) => {
+export const extractUsefulFloatInfo = (floatInfo: FloatInfo) => {
     const {
         // eslint-disable-next-line camelcase
         floatvalue,
@@ -77,7 +77,7 @@ const extractUsefulFloatInfo = (floatInfo: FloatInfo) => {
     };
 };
 
-const trimFloatCache = async () => {
+export const trimFloatCache = async () => {
     const result = await chromeStorageLocalGet();
 
     for (const [key, asset] of Object.entries(result)) {
@@ -94,5 +94,3 @@ const trimFloatCache = async () => {
         }
     }
 };
-
-export { trimFloatCache, getFloatInfoFromCache, extractUsefulFloatInfo, addToFloatCache, updateFloatCache };

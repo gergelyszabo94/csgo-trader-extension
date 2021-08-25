@@ -1,7 +1,7 @@
 // inject scripts from content scripts the the page context
 // usually to access variables or override functionality
 
-const injectScript = (scriptString: string, toRemove: boolean, id: string, executeAndReturn: string) => {
+export const injectScript = (scriptString: string, toRemove: boolean, id: string, executeAndReturn: string) => {
     // removes previously added instance of the script
     const elementFromBefore = document.getElementById(id);
     if (elementFromBefore !== null) elementFromBefore.remove();
@@ -42,7 +42,7 @@ const injectScript = (scriptString: string, toRemove: boolean, id: string, execu
     return result;
 };
 
-const injectStyle = (styleString: string, elementID: string) => {
+export const injectStyle = (styleString: string, elementID: string) => {
     const existingStyleElement = document.getElementById(elementID);
     if (existingStyleElement === null) {
         const styleElement = document.createElement('style');
@@ -51,5 +51,3 @@ const injectStyle = (styleString: string, elementID: string) => {
         document.querySelector('body').appendChild(styleElement);
     }
 };
-
-export { injectScript, injectStyle };

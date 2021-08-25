@@ -1,4 +1,4 @@
-const conditions = {
+export const conditions = {
     profile_private: {
         key: 'profile_private',
         pretty: 'Private profile',
@@ -125,7 +125,7 @@ const conditions = {
     },
 };
 
-const actions = {
+export const actions = {
     accept: {
         key: 'accept',
         pretty: 'Accept',
@@ -148,7 +148,7 @@ const actions = {
     },
 };
 
-const eventTypes = {
+export const eventTypes = {
     new: {
         key: 'new',
         pretty: 'New Invite',
@@ -180,5 +180,3 @@ const eventTypes = {
         description: 'Automatically blocked by the extension',
     },
 };
-
-export { conditions, actions, eventTypes };

@@ -1,4 +1,4 @@
-const currencies = {
+export const currencies = {
     USD: {
         short: 'USD',
         long: 'United States dollar',
@@ -266,7 +266,7 @@ const currencies = {
     },
 };
 
-const pricingProviders = {
+export const pricingProviders = {
     csgotrader: {
         name: 'csgotrader',
         long: 'CSGO Trader',
@@ -477,7 +477,7 @@ const pricingProviders = {
     },
 };
 
-const realTimePricingModes = {
+export const realTimePricingModes = {
     bid_price: {
         key: 'bid_price',
         name: 'Bid price - Current highest buy order',
@@ -498,7 +498,7 @@ const realTimePricingModes = {
 };
 
 // Steam stores this data in the g_rgCurrencyData var in global.js
-const steamCurrencyCodes = {
+export const steamCurrencyCodes = {
     1: 'USD',
     2: 'GBP',
     3: 'EUR',
@@ -540,5 +540,3 @@ const steamCurrencyCodes = {
     41: 'UYU',
     9000: 'RMB',
 };
-
-export { currencies, pricingProviders, realTimePricingModes, steamCurrencyCodes };

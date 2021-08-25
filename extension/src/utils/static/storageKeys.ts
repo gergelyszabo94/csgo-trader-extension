@@ -5,7 +5,7 @@ import { actions, conditions } from 'utils/static/friendRequests';
 import { actions as offerActions, conditions as offerConditions, operators } from 'utils/static/offers';
 import { notificationSounds } from 'utils/static/notifications';
 
-const storageKeys = {
+export const storageKeys = {
     quickDeclineOffer: true,
     openOfferInTab: true,
     showPlusRepButton: true,
@@ -263,7 +263,7 @@ const storageKeys = {
     showShortExteriorsOffers: true,
 };
 
-const nonSettingStorageKeys = [
+export const nonSettingStorageKeys = [
     'bookmarks',
     'prices',
     'exchangeRates',
@@ -285,5 +285,3 @@ const nonSettingStorageKeys = [
     'numberOfNewItems',
     'numberOfComments',
 ];
-
-export { storageKeys, nonSettingStorageKeys };

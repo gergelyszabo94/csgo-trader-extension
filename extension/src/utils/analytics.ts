@@ -9,7 +9,7 @@ interface TrackEventProps {
     action: string;
 }
 
-const trackEvent = async ({ type, action }: TrackEventProps) => {
+export const trackEvent = async ({ type, action }: TrackEventProps) => {
     const analyticsInfo: AnalyticsEvent = {
         type: type,
         action: action,
@@ -22,7 +22,7 @@ const trackEvent = async ({ type, action }: TrackEventProps) => {
     });
 };
 
-const sendTelemetry = async (retries?: number) => {
+export const sendTelemetry = async (retries?: number) => {
     const settingsStorageKeys: string[] = [];
     const keysNotToGet = nonSettingStorageKeys;
     keysNotToGet.push('steamAPIKey', 'steamIDOfUser');
@@ -118,5 +118,3 @@ const sendTelemetry = async (retries?: number) => {
         console.log(err);
     }
 };
-
-export { trackEvent, sendTelemetry };

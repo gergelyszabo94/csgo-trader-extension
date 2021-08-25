@@ -1,4 +1,4 @@
-const dopplerPhases = {
+export const dopplerPhases = {
     p1: {
         type: 'doppler',
         name: 'Phase 1',
@@ -83,7 +83,7 @@ const dopplerPhases = {
     },
 };
 
-const iconToPhaseMapping = {
+export const iconToPhaseMapping = {
     // guts
     '-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf1ObcTjxP09i5hJCHkuXLI7PQhW4A18l4jeHVu9703Azs-hA_MTuncNWWIVU-aF7Z_1a7k-bo0cW_v8_OyXVqvyAqsy3D30vgdDGy9vw':
         dopplerPhases.p1,
@@ -368,5 +368,3 @@ const iconToPhaseMapping = {
     '-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJfxPrMfipP7dezhr-Kmsj2P7rSnXtU6dd9teTA5475jV2urhcDPzCkfMKLdFQ4NQ2CrAW2xe--hZ-9v56czXUxu3F0sH7UnkHk1BFMb-RshfDMSELeWfKHiE2NFw':
         dopplerPhases.bp,
 };
-
-export { dopplerPhases, iconToPhaseMapping };

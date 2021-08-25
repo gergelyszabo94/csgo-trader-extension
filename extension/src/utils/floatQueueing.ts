@@ -9,7 +9,7 @@ const floatQueue = {
     cleanupFunction: () => {}, // optional function that is executed when all jobs are done
 };
 
-const workOnFloatQueue = async () => {
+export const workOnFloatQueue = async () => {
     if (floatQueue.jobs.length === 0) {
         floatQueue.cleanupFunction();
         floatQueue.active = false;
@@ -59,7 +59,5 @@ const workOnFloatQueue = async () => {
         },
     });
 };
-
-export { workOnFloatQueue };
 
 export default floatQueue;

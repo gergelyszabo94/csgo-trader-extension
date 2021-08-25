@@ -1,6 +1,6 @@
 import { PlayerSummaries } from 'types/api/iSteamUser';
 
-const getPlayerBans = (steamIDs) =>
+export const getPlayerBans = (steamIDs) =>
     new Promise((resolve, reject) => {
         chrome.storage.local.get(['apiKeyValid', 'steamAPIKey'], ({ apiKeyValid, steamAPIKey }) => {
             if (apiKeyValid) {
@@ -37,7 +37,7 @@ const getPlayerBans = (steamIDs) =>
         });
     });
 
-const getPlayerSummaries = (steamIDs: string[]): Promise<PlayerSummaries> =>
+export const getPlayerSummaries = (steamIDs: string[]): Promise<PlayerSummaries> =>
     new Promise((resolve, reject) => {
         chrome.storage.local.get(['apiKeyValid', 'steamAPIKey'], ({ apiKeyValid, steamAPIKey }) => {
             if (apiKeyValid) {
@@ -73,5 +73,3 @@ const getPlayerSummaries = (steamIDs: string[]): Promise<PlayerSummaries> =>
             } else reject('api_key_invalid');
         });
     });
-
-export { getPlayerBans, getPlayerSummaries };

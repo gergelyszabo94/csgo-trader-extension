@@ -1,4 +1,5 @@
-const notificationSounds = {
+// eslint-disable-next-line import/prefer-default-export
+export const notificationSounds = {
     'done-for-you': {
         key: 'done-for-you',
         name: 'Done for you',
@@ -28,6 +29,3 @@ const notificationSounds = {
         name: 'Custom',
     },
 };
-
-// eslint-disable-next-line import/prefer-default-export
-export { notificationSounds };

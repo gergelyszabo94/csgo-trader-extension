@@ -1,11 +1,11 @@
-const dateToISODisplay = (unixTimestamp) => {
+export const dateToISODisplay = (unixTimestamp) => {
     const unformatted = new Date(unixTimestamp * 1000).toISOString();
     const date = unformatted.split('T')[0];
     const time = unformatted.split('T')[1].substr(0, 5);
     return `${date} ${time}`;
 };
 
-const prettyTimeAgo = (unixTimestamp) => {
+export const prettyTimeAgo = (unixTimestamp) => {
     const differenceSeconds = (Date.now() - new Date(unixTimestamp * 1000).getTime()) / 1000;
     let prettyString = '';
 
@@ -30,7 +30,7 @@ const prettyTimeAgo = (unixTimestamp) => {
     return prettyString;
 };
 
-const getShortDate = (tradabibilityDate) => {
+export const getShortDate = (tradabibilityDate) => {
     if (tradabibilityDate === 'Tradable' || tradabibilityDate === '') return 'T';
     const now = new Date().getTime();
     const distance = new Date(tradabibilityDate).getTime() - now;
@@ -52,5 +52,3 @@ const getShortDate = (tradabibilityDate) => {
     }
     return `${days}d`;
 };
-
-export { dateToISODisplay, prettyTimeAgo, getShortDate };

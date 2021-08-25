@@ -82,7 +82,7 @@ interface AppData {
     is_itemset_name: number;
 }
 
-const getUserCSGOInventory = (steamID) =>
+export const getUserCSGOInventory = (steamID) =>
     new Promise((resolve, reject) => {
         chrome.storage.local.get(
             ['itemPricing', 'prices', 'currency', 'exchangeRate', 'pricingProvider', 'pricingMode'],
@@ -248,7 +248,7 @@ const getUserCSGOInventory = (steamID) =>
         );
     });
 
-const getOtherInventory = (appID, steamID) =>
+export const getOtherInventory = (appID, steamID) =>
     new Promise((resolve, reject) => {
         const getRequest = new Request(
             `https://steamcommunity.com/profiles/${steamID}/inventory/json/${appID}/2/?l=english`,
@@ -345,5 +345,3 @@ const getOtherInventory = (appID, steamID) =>
                 reject(err);
             });
     });
-
-export { getUserCSGOInventory, getOtherInventory };

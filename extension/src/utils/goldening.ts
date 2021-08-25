@@ -9,7 +9,7 @@ const goldenMiniprofile = () => {
     return false;
 };
 
-const goldenMiniProfileHandler = () => {
+export const goldenMiniProfileHandler = () => {
     goldenMiniprofile();
 
     const goldenInterval = setInterval(() => {
@@ -17,7 +17,7 @@ const goldenMiniProfileHandler = () => {
     }, 500);
 };
 
-const goldenCommenters = () => {
+export const goldenCommenters = () => {
     document.querySelectorAll<HTMLElement>('.commentthread_author_link').forEach((commenter) => {
         if (commenter.innerText.toLowerCase().includes('csgotrader.app')) {
             commenter.classList.add('golden');
@@ -29,7 +29,7 @@ const goldenCommenters = () => {
     });
 };
 
-const goldenMemberNames = () => {
+export const goldenMemberNames = () => {
     document.querySelectorAll<HTMLElement>('.member_block').forEach((memberBlock) => {
         if (memberBlock.querySelector<HTMLElement>('.linkFriend').innerText.toLowerCase().includes('csgotrader.app')) {
             memberBlock.querySelector('.playerAvatar').classList.add('golden');
@@ -38,5 +38,3 @@ const goldenMemberNames = () => {
         }
     });
 };
-
-export { goldenCommenters, goldenMemberNames, goldenMiniProfileHandler };

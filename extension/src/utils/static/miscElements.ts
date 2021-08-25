@@ -1,6 +1,6 @@
-const listIcon = chrome.runtime.getURL('images/list-solid.svg');
+export const listIcon = chrome.runtime.getURL('images/list-solid.svg');
 
-const inOtherOfferIndicator = `
+export const inOtherOfferIndicator = `
     <img
         class="inOtherOffer clickable"
         title="Item also in other offer, click to see in which one(s)"
@@ -8,11 +8,9 @@ const inOtherOfferIndicator = `
         src="${listIcon}"
     />`;
 
-const friendAndInvitesBanner = `
+export const friendAndInvitesBanner = `
     <div class="friendInvitesBanner">
         <b>CSGO Trader Extension:</b>
          You can set rules to friend requests and check invite history in the <b>Extension Options</b>
          under <b>"Friends and Invites"</b>
     </div>`;
-
-export { listIcon, inOtherOfferIndicator, friendAndInvitesBanner };

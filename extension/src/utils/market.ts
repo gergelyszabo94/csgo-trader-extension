@@ -3,7 +3,7 @@ import { getSteamWalletInfo } from 'utils/pricing';
 import axios from 'axios';
 import { encodeObject } from './simpleUtils';
 
-const buyListing = async (listing, buyerKYC) => {
+export const buyListing = async (listing, buyerKYC) => {
     try {
         const currencyID = listing.converted_currencyid - 2000;
         const response = await axios.post(`https://steamcommunity.com/market/buylisting/${listing.listingid}`, {
@@ -38,7 +38,7 @@ const buyListing = async (listing, buyerKYC) => {
     }
 };
 
-const removeListing = async (listingID) => {
+export const removeListing = async (listingID) => {
     try {
         const response = await axios.post(`https://steamcommunity.com/market/removelisting/${listingID}`, {
             headers: {
@@ -65,7 +65,7 @@ const removeListing = async (listingID) => {
 // For cross-browser extensions, the presence of these methods must be feature-detected.
 // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Content_scripts#XHR_and_Fetch
 
-const listItem = async (appID, contextID, amount, assetID, price) => {
+export const listItem = async (appID, contextID, amount, assetID, price) => {
     try {
         const response = await axios.post('https://steamcommunity.com/market/sellitem/', {
             headers: {
@@ -94,7 +94,7 @@ const listItem = async (appID, contextID, amount, assetID, price) => {
     }
 };
 
-const createOrder = async (
+export const createOrder = async (
     appID,
     marketHashName,
     price,
@@ -147,7 +147,7 @@ const createOrder = async (
     }
 };
 
-const cancelOrder = async (orderID) => {
+export const cancelOrder = async (orderID) => {
     try {
         const response = await axios.post('https://steamcommunity.com/market/cancelbuyorder/', {
             headers: {
@@ -229,7 +229,7 @@ interface Description {
     color?: string;
 }
 
-const getMarketHistory = async (start: number, count: number): Promise<MarketHistory> => {
+export const getMarketHistory = async (start: number, count: number): Promise<MarketHistory> => {
     try {
         const response = await axios.post(`https://steamcommunity.com/market/myhistory/`, {
             headers: {
@@ -251,7 +251,7 @@ const getMarketHistory = async (start: number, count: number): Promise<MarketHis
     }
 };
 
-const loadItemOrderHistogram = async (nameID) => {
+export const loadItemOrderHistogram = async (nameID) => {
     try {
         const steamWalletInfo = getSteamWalletInfo();
         const currencyCode = steamWalletInfo !== null ? steamWalletInfo.wallet_currency : 1;
@@ -280,5 +280,3 @@ const loadItemOrderHistogram = async (nameID) => {
         console.log(err);
     }
 };
-
-export { removeListing, cancelOrder, getMarketHistory, listItem, buyListing, createOrder, loadItemOrderHistogram };

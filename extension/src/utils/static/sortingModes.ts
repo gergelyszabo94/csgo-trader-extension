@@ -1,4 +1,4 @@
-const sortingModes = {
+export const sortingModes = {
     default: {
         key: 'default',
         name: 'Default (position last to first)',
@@ -49,7 +49,7 @@ const sortingModes = {
     },
 };
 
-const offersSortingModes = {
+export const offersSortingModes = {
     default: {
         key: 'default',
         name: 'Default (received last to first)',
@@ -84,7 +84,7 @@ const offersSortingModes = {
     },
 };
 
-const listingsSortingModes = {
+export const listingsSortingModes = {
     default: {
         key: 'default',
         name: 'Default Steam Order',
@@ -112,5 +112,3 @@ const listingsSortingModes = {
         name: 'Paint seed (high to low)',
     },
 };
-
-export { sortingModes, offersSortingModes, listingsSortingModes };

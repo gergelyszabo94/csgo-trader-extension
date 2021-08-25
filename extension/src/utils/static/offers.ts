@@ -1,4 +1,4 @@
-const actions = {
+export const actions = {
     accept: {
         key: 'accept',
         pretty: 'Accept',
@@ -26,7 +26,7 @@ const actions = {
     },
 };
 
-const eventTypes = {
+export const eventTypes = {
     new: {
         key: 'new',
         pretty: 'New Trade Offer',
@@ -54,7 +54,7 @@ const eventTypes = {
     },
 };
 
-const conditions = {
+export const conditions = {
     profit_over: {
         key: 'profit_over',
         pretty: 'Profit over',
@@ -174,7 +174,7 @@ const conditions = {
 };
 
 // from: https://developer.valvesoftware.com/wiki/Steam_Web_API/IEconService
-const offerStates = {
+export const offerStates = {
     1: {
         key: 1,
         short: 'invalid',
@@ -246,7 +246,7 @@ const offerStates = {
     },
 };
 
-const operators = {
+export const operators = {
     or: {
         key: 'or',
         pretty: 'OR',
@@ -258,5 +258,3 @@ const operators = {
         description: 'AND operator',
     },
 };
-
-export { actions, eventTypes, offerStates, conditions, operators };
