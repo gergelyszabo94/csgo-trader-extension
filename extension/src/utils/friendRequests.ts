@@ -1,6 +1,7 @@
 import { actions, conditions, eventTypes } from 'utils/static/friendRequests';
 import { getPlayerBans, getPlayerSummaries } from 'utils/ISteamUser';
 import { getRemoteImageAsObjectURL, getSteamRepInfo } from 'utils/utilsModular';
+import * as fetcher from 'utils/requestUtils';
 
 import DOMPurify from 'dompurify';
 import { getUserCSGOInventory } from 'utils/getUserInventory';
@@ -15,50 +16,38 @@ interface Inviter {
     avatar: string;
 }
 
-export const getFriendRequests = (): Promise<Inviter[]> =>
-    new Promise((resolve, reject) => {
-        const getRequest = new Request('https://steamcommunity.com/my/friends/pending');
+export const getFriendRequests = async (): Promise<Inviter[]> => {
+    try {
+        const response = await fetcher.get('https://steamcommunity.com/my/friends/pending');
+        if (!response.ok) {
+            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+            return null;
+        }
+        const body = await response.text();
+        const html = document.createElement('html');
+        html.innerHTML = DOMPurify.sanitize(body);
+        const receivedInvitesElement = html.querySelector('#search_results');
+        const inviters: Inviter[] = [];
 
-        fetch(getRequest)
-            .then((response) => {
-                if (!response.ok) {
-                    console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-                    reject(response);
-                    return null;
-                }
-                return response.text();
-            })
-            .then((body) => {
-                if (body !== null) {
-                    const html = document.createElement('html');
-                    html.innerHTML = DOMPurify.sanitize(body);
-                    const receivedInvitesElement = html.querySelector('#search_results');
-                    const inviters: Inviter[] = [];
-
-                    if (receivedInvitesElement !== null) {
-                        receivedInvitesElement.querySelectorAll('.invite_row').forEach((inviteRow) => {
-                            inviters.push({
-                                steamID: inviteRow.getAttribute('data-steamid'),
-                                accountID: inviteRow.getAttribute('data-accountid'),
-                                name: (inviteRow.querySelector('.invite_block_name').firstElementChild as HTMLElement)
-                                    .innerText,
-                                level: inviteRow.querySelector<HTMLElement>('.friendPlayerLevelNum').innerText,
-                                evalTries: 0,
-                                avatar: inviteRow.querySelector('.playerAvatar > a > img').getAttribute('src'),
-                            });
-                        });
-                        resolve(inviters);
-                    } else {
-                        console.log('no received invites element');
-                        reject(inviters);
-                    }
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-                reject(err);
+        if (receivedInvitesElement !== null) {
+            receivedInvitesElement.querySelectorAll('.invite_row').forEach((inviteRow) => {
+                inviters.push({
+                    steamID: inviteRow.getAttribute('data-steamid'),
+                    accountID: inviteRow.getAttribute('data-accountid'),
+                    name: (inviteRow.querySelector('.invite_block_name').firstElementChild as HTMLElement).innerText,
+                    level: inviteRow.querySelector<HTMLElement>('.friendPlayerLevelNum').innerText,
+                    evalTries: 0,
+                    avatar: inviteRow.querySelector('.playerAvatar > a > img').getAttribute('src'),
+                });
             });
-    });
+            return inviters;
+        } else {
+            console.log('no received invites element');
+        }
+    } catch (err) {
+        console.log(err);
+    }
+};
 
 interface GroupInvite {
     steamID: string;
@@ -887,4 +876,3 @@ export const getBansSummaryText = (bans, steamRepInfo) => {
     }
     return 'Could not load ban info';
 };
-
