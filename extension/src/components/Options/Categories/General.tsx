@@ -3,14 +3,15 @@ import Category from 'components/Options/Category';
 import NewTabLink from 'components/NewTabLink';
 import React from 'react';
 import Row from 'components/Options/Row';
+import FlipSwitchStorage from '../Inputs/FlipSwitchStorage';
+import ModalTextBox from '../Inputs/ModalTextBox';
+import FlipSwitchPermission from '../Inputs/FlipSwitchPermission';
 
 const general = () => {
     return (
         <Category title='General'>
             <Row
                 name='Auto-set Steam API key'
-                id='autoSetSteamAPIKey'
-                type='flipSwitchStorage'
                 description={
                     <>
                         Automatically generates and adds the Steam API key to the extension when visiting&nbsp;
@@ -19,11 +20,11 @@ const general = () => {
                         </NewTabLink>
                     </>
                 }
-            />
+            >
+                <FlipSwitchStorage id='autoSetSteamAPIKey' />
+            </Row>
             <Row
                 name='Steam API key'
-                id='steamAPIKey'
-                type='modalTextBox'
                 description={
                     <>
                         Allows the extension to make API requests to the&nbsp;
@@ -42,12 +43,11 @@ const general = () => {
                         </NewTabLink>
                     </>
                 }
-                modalTitle='Enter your Steam API key here'
-            />
+            >
+                <ModalTextBox id='steamAPIKey' modalTitle='Enter your Steam API key here' />
+            </Row>
             <Row
                 name='Tabs API access'
-                id='tabsAPI'
-                type='flipSwitchPermission'
                 description={
                     <>
                         Grants the extension access to the&nbsp;
@@ -59,24 +59,23 @@ const general = () => {
                         using it in this mode so it&apos;s also less likely to be buggy as well.
                     </>
                 }
-                permission='tabs'
-            />
+            >
+                <FlipSwitchPermission id='tabsAPI' permission='tabs' />
+            </Row>
             <Row
                 name='Colorful items'
-                id='colorfulItems'
-                type='flipSwitchStorage'
                 description='Makes inventories and offers pretty by changing the background color of items based on rarity or in case of doppler, phase'
-            />
+            >
+                <FlipSwitchStorage id='colorfulItems' />
+            </Row>
             <Row
                 name='Useful titles'
-                id='usefulTitles'
-                type='flipSwitchStorage'
                 description='Changes inventory, profile, offer, market page titles to more apparent and readable ones'
-            />
+            >
+                <FlipSwitchStorage id='usefulTitles' />
+            </Row>
             <Row
                 name='Collect usage data'
-                id='telemetryOn'
-                type='flipSwitchStorage'
                 description={
                     <>
                         Sends anonymous usage data to the developers to help discover problems and better understand how
@@ -85,7 +84,9 @@ const general = () => {
                         page for more information on how your data in handled.
                     </>
                 }
-            />
+            >
+                <FlipSwitchStorage id='telemetryOn' />
+            </Row>
         </Category>
     );
 };

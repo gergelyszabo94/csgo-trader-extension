@@ -4,6 +4,7 @@ import InviteHistory from 'components/Options/Categories/Friends/InviteHistory';
 import InviteRules from 'components/Options/Categories/Friends/InviteRules';
 import React from 'react';
 import Row from 'components/Options/Row';
+import FlipSwitchStorage from 'components/Options/Inputs/FlipSwitchStorage';
 
 export interface Rule {
     action: string;
@@ -31,24 +32,21 @@ export interface HistoryEvents {
 const Friends = () => {
     return (
         <Category title='Friends, Groups and Invites'>
-            <Row
-                name='Ignore group invites'
-                id='ignoreGroupInvites'
-                type='flipSwitchStorage'
-                description='Ignore all Steam group invites automatically'
-            />
+            <Row name='Ignore group invites' description='Ignore all Steam group invites automatically'>
+                <FlipSwitchStorage id='ignoreGroupInvites' />;
+            </Row>
             <Row
                 name='Monitor friend requests'
-                id='monitorFriendRequests'
-                type='flipSwitchStorage'
                 description='If you have the extension installed on multiple computers you might want to turn it off in some of them to save requests to Steam.'
-            />
+            >
+                <FlipSwitchStorage id='monitorFriendRequests' />;
+            </Row>
             <Row
                 name='Notify about friend requests'
-                id='notifyOnFriendRequest'
-                type='flipSwitchStorage'
                 description='You will receive browser notifications about new friend request, friend requests must be monitored for this to work'
-            />
+            >
+                <FlipSwitchStorage id='notifyOnFriendRequest' />;
+            </Row>
             <div className='row'>
                 <InviteRules />
                 <InviteHistory />

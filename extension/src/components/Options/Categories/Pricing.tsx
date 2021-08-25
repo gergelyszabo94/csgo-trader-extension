@@ -4,6 +4,12 @@ import { currencies, pricingProviders, realTimePricingModes } from 'utils/static
 import Category from '../Category';
 import NewTabLink from 'components/NewTabLink';
 import React from 'react';
+import FlipSwitchStorage from '../Inputs/FlipSwitchStorage';
+import Currency from '../Inputs/Currency';
+import PricingProvider from '../Inputs/PricingProvider';
+import Refresh from '../Inputs/Refresh';
+import RealTimePricingMode from '../Inputs/RealTimePricingMode';
+import Number from '../Inputs/Number';
 
 const pricing = () => {
     const transformCurrencies = (): Option[] => {
@@ -42,29 +48,20 @@ const pricing = () => {
                 </>
             }
         >
-            <Row
-                name='Pricing'
-                type='flipSwitchStorage'
-                id='itemPricing'
-                description='Shows item prices in inventories and trade offers'
-            />
+            <Row name='Pricing' description='Shows item prices in inventories and trade offers'>
+                <FlipSwitchStorage id='itemPricing' />;
+            </Row>
             <Row
                 name='Show sticker worth on items'
-                id='showStickerPrice'
-                type='flipSwitchStorage'
                 description='When turned on it puts the total price of the stickers applied on a weapon under the exterior indicator in inventories, trade offers and no the incoming trade offers page.'
-            />
-            <Row
-                name='Currency'
-                type='currency'
-                id='currency'
-                description='The currency you want prices to show in for you'
-                options={transformCurrencies()}
-            />
+            >
+                <FlipSwitchStorage id='showStickerPrice' />;
+            </Row>
+            <Row name='Currency' description='The currency you want prices to show in for you'>
+                <Currency id='currency' options={transformCurrencies()} />;
+            </Row>
             <Row
                 name='Provider'
-                type='pricingProvider'
-                id='pricingProvider'
                 description={
                     <>
                         The pricing provider and pricing mode you want to get your prices from. Learn more about pricing
@@ -72,38 +69,38 @@ const pricing = () => {
                         <NewTabLink to='https://csgotrader.app/prices/'> prices page</NewTabLink>
                     </>
                 }
-                options={pricingProviders}
-            />
+            >
+                <PricingProvider options={pricingProviders} />;
+            </Row>
             <Row
                 name='Refresh Prices'
-                type='refresh'
-                id='refreshPrices'
                 description='Normally prices refresh every 24 hours in the back end and on are also refreshed daily by the client.
                     These two events are not synced so you might have a bit outdated prices.
                     Refreshing the prices makes sure that you have the latest. Refreshing multiple times in a short period of time is pointless.'
-            />
+            >
+                <Refresh />;
+            </Row>
             <Row
                 name='RealTime pricing mode'
-                type='realtimepricingmode'
-                id='realTimePricesMode'
-                options={transformRealTimeModes()}
                 description='The RealTime pricing mode you want the extension to show prices in.'
-            />
+            >
+                <RealTimePricingMode id='realTimePricesMode' options={transformRealTimeModes()} />;
+            </Row>
             <Row
                 name='RealTime price fetching frequency'
-                type='number'
-                id='realTimePricesFreqSuccess'
                 description='The frequency to fetch RealTime prices at from Steam in milliseconds.
                      The default is 3000, which is 3 seconds, if you set it too low then the the requests will start failing often.'
-            />
+            >
+                <Number id='realTimePricesFreqSuccess' />
+            </Row>
             <Row
                 name='RealTime price fetching failure delay'
-                type='number'
-                id='realTimePricesFreqFailure'
                 description="The extension will wait this much to start loading RealTime prices again if it fails once.
                      It's in milliseconds, the default value is 15000, which is 15 seconds.
                      If you set it too low then the extension will keep retrying too often and you risk getting a temporary ip ban from Steam."
-            />
+            >
+                <Number id='realTimePricesFreqFailure' />
+            </Row>
         </Category>
     );
 };

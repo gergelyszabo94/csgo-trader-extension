@@ -4,8 +4,8 @@ import FlipSwitch from 'components/FlipSwitch';
 
 interface FlipSwitchPermissionProps {
     id: string;
-    origins: string[];
     permission: string;
+    origins?: string[];
 }
 
 const FlipSwitchPermission = ({ id, origins, permission }: FlipSwitchPermissionProps) => {

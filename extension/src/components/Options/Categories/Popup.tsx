@@ -3,6 +3,10 @@ import Category from '../Category';
 import React from 'react';
 import Row from '../Row';
 import { currencies } from 'utils/static/pricing';
+import LinksToShow from '../Inputs/LinksToShow';
+import FlipSwitchStorage from '../Inputs/FlipSwitchStorage';
+import DoubleSelect from '../Inputs/DoubleSelect';
+import Number from '../Inputs/Number';
 
 const popup = () => {
     const transformCurrencies = () => {
@@ -20,76 +24,73 @@ const popup = () => {
         <Category title='Popup'>
             <Row
                 name='Links to show'
-                type='linksToShow'
-                id='popupLinks'
                 description="Choose which links you want to see in the popup. 'Options' will always be there so you can come back and see this page. Links to be shown are in gold, links to be hidden are in white. Click it to switch visibility. You can also delete those that you have created before."
-            />
+            >
+                <LinksToShow id='popupLinks' />;
+            </Row>
             <Row
                 name='Show offers on badge'
-                type='flipSwitchStorage'
-                id='showNumberOfOfferOnBadge'
                 description={
                     <>
                         Shows the number of incoming offers you have on the extension badge
                         <ApiKeyIndicator />
                     </>
                 }
-            />
+            >
+                <FlipSwitchStorage id='showNumberOfOfferOnBadge' />;
+            </Row>
             <Row
                 name='Default converter currencies'
-                type='doubleSelect'
-                id={['defaultConverterCurrency1', 'defaultConverterCurrency2']}
                 description='The currencies to be selected by default in the currency converter'
-                options={transformCurrencies()}
-            />
+            >
+                <DoubleSelect
+                    id={['defaultConverterCurrency1', 'defaultConverterCurrency2']}
+                    options={transformCurrencies()}
+                />
+                ;
+            </Row>
             <Row
                 name='Default currency conversion value'
-                type='number'
-                id='calculatorConversionPlaceholder'
                 description='The default placeholder value that appears in the currency conversion input'
-            />
+            >
+                <Number id='calculatorConversionPlaceholder' />;
+            </Row>
             <Row
                 name='Default percentage in the percentage calculator'
-                type='number'
-                id='calculatorPercentagePercentage'
                 description='The default placeholder value that appears as the percentage in the percentage calculator'
-            />
+            >
+                <Number id='calculatorPercentagePercentage' />;
+            </Row>
             <Row
-                name={'Default "percentage of" in the percentage calculator'}
-                type='number'
-                id='calculatorPercentageOf'
-                description={
-                    'The default placeholder value that appears as the "percentage of" in the percentage calculator'
-                }
-            />
+                name='Default "percentage of" in the percentage calculator'
+                description='The default placeholder value that appears as the "percentage of" in the percentage calculator'
+            >
+                <Number id='calculatorPercentageOf' />;
+            </Row>
             <Row
                 name='Default percentage in the reverse percentage calculator'
-                type='number'
-                id='calculatorReversePercentage'
                 description='The default placeholder value that appears as the percentage in the reverse percentage calculator'
-            />
+            >
+                <Number id='calculatorReversePercentage' />;
+            </Row>
             <Row
-                name={'Default "percentage of" in the reverse percentage calculator'}
-                type='number'
-                id='calculatorReverseValue'
-                description={
-                    'The default placeholder value that appears as the "percentage of" in the reverse percentage calculator'
-                }
-            />
+                name='Default "percentage of" in the reverse percentage calculator'
+                description='The default placeholder value that appears as the "percentage of" in the reverse percentage calculator'
+            >
+                <Number id='calculatorReverseValue' />;
+            </Row>
             <Row
                 name='Default percentage in the Increment/Decrement calculator'
-                type='number'
-                id='calculatorIncDecPercentage'
                 description='The default placeholder value that appears as the percentage in the Increment/Decrement calculator'
-            />
+            >
+                <Number id='calculatorIncDecPercentage' />;
+            </Row>
             <Row
-                name={'Default "result" in the Increment/Decrement calculator'}
-                type='number'
-                id='calculatorIncDecResult'
-                description={
-                    'The default placeholder value that appears as the "result" in the Increment/Decrement calculator'
-                }
-            />
+                name='Default "result" in the Increment/Decrement calculator'
+                description='The default placeholder value that appears as the "result" in the Increment/Decrement calculator'
+            >
+                <Number id='calculatorIncDecResult' />;
+            </Row>
         </Category>
     );
 };
