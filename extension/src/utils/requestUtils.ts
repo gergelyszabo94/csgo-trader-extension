@@ -9,17 +9,9 @@ interface requestOptions {
     cache?: RequestCache;
 }
 
-export const get = async (url: string, options?: requestOptions) => {
-    return await request(url, 'GET', options);
-};
-
-export const post = async (url: string, options?: requestOptions) => {
-    return await request(url, 'POST', options);
-};
-
-export const put = async (url: string, options?: requestOptions) => {
-    return await request(url, 'PUT', options);
-};
+export const get = async (url: string, options?: requestOptions) => await request(url, 'GET', options);
+export const post = async (url: string, options?: requestOptions) => await request(url, 'POST', options);
+export const put = async (url: string, options?: requestOptions) => await request(url, 'PUT', options);
 
 // only types being used; can be added to.
 type method = 'GET' | 'POST' | 'PUT';
