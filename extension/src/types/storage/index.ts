@@ -39,7 +39,7 @@ export interface ColorfulItems {
 export interface CsgotradersAutoLogin {
     csgotradersAutoLogin: boolean;
 }
-export type FlagScamComments = boolean
+export type FlagScamComments = boolean;
 export interface HideOtherExtensionPrices {
     hideOtherExtensionPrices: boolean;
 }
@@ -189,9 +189,7 @@ export interface TelemetryConsent {
 export interface TelemetryConsentSubmitted {
     telemetryConsentSubmitted: boolean;
 }
-export interface TelemetryOn {
-    telemetryOn: boolean;
-}
+export type TelemetryOn = boolean;
 export interface TradeHistoryInventory {
     tradeHistoryInventory: boolean;
 }
