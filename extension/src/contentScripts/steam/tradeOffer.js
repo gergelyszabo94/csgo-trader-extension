@@ -1207,6 +1207,27 @@ if (offerID !== 'new') {
   }
 }
 
+// message preset select
+const offerMessageBox = document.querySelector('.log.trade_box');
+if (offerMessageBox) {
+  chrome.storage.local.get(['offerPresetMessages'], ({ offerPresetMessages }) => {
+    const messagePresetSelect = document.createElement('select');
+    messagePresetSelect.id = 'messagePresetSelect';
+    offerPresetMessages.forEach((message, index) => {
+      const option = document.createElement('option');
+      option.value = index;
+      option.text = message;
+      messagePresetSelect.appendChild(option);
+    });
+    offerMessageBox.insertAdjacentElement('beforebegin', messagePresetSelect);
+
+    messagePresetSelect.addEventListener('change', () => {
+      const offerNote = document.getElementById('trade_offer_note');
+      if (offerNote) offerNote.value = offerPresetMessages[messagePresetSelect.selectedIndex];
+    });
+  });
+}
+
 // trade summary
 const filterMenu = document.getElementById('nonresponsivetrade_itemfilters');
 if (filterMenu !== null) {

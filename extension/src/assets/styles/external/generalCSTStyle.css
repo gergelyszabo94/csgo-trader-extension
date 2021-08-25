@@ -560,6 +560,10 @@ progress {
     margin-left: 20px;
 }
 
+#messagePresetSelect {
+    margin-bottom: 10px;
+}
+
 .friendInvitesBanner {
     color: white;
     margin-bottom: 10px;

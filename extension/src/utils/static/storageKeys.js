@@ -268,6 +268,11 @@ const storageKeys = {
   showShortExteriorsInventory: true,
   showShortExteriorsOffers: true,
   clickChangeOfferAutomatically: false,
+  offerPresetMessages: [
+    'Feel free to counter!',
+    'That is the max I can do here, sorry!',
+    'Feel free to add me to discuss this further',
+  ],
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
