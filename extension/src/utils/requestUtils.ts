@@ -23,10 +23,10 @@ const request = async (url: string, method: method, options?: requestOptions): P
         body = options.body;
     } else if (options.form) {
         body = urlEncode(options.form);
-        headers.append('Content-Type', 'application/x-www-form-urlencoded');
+        headers.append('Content-Type', 'application/x-www-form-urlencoded; charset=utf-8');
     } else if (options.json) {
         body = JSON.stringify(options.json);
-        headers.append('Content-Type', 'application/json');
+        headers.append('Content-Type', 'application/json; charset=utf-8');
     }
 
     if (options.headers) {
