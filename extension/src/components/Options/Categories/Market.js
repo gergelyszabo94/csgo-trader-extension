@@ -137,7 +137,7 @@ const market = () => {
         name="Market outbid percentage"
         id="outBidPercentage"
         type="number"
-        description="Set how much you want to outbid market orders by on the market pain page."
+        description="Set how much you want to outbid market orders by on the market main page."
       />
     </Category>
   );
