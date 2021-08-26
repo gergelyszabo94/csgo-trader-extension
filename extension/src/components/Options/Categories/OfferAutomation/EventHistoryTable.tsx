@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 
-import CustomA11yButton from 'components/CustomA11yButton';
-import HistoryEvent from './HistoryEvent';
 import { HistoryEvents } from '.';
+import HistoryEvent from './HistoryEvent';
+
+import CustomA11yButton from 'components/CustomA11yButton';
 import NewTabLink from 'components/NewTabLink';
 
 const EventHistoryTable = ({ events }: HistoryEvents) => {

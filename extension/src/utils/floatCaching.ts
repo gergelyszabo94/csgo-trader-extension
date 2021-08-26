@@ -1,7 +1,9 @@
 import { FloatInfo, FloatsInfo } from 'types';
+
 import { arrayFromArrayOrNotArray } from 'utils/utilsModular';
-import * as runtime from 'utils/helpers/runtime';
+
 import * as localStorage from 'utils/helpers/localStorage';
+import * as runtime from 'utils/helpers/runtime';
 
 export const addToFloatCache = async (assetID: string, floatInfo: FloatInfo) => {
     await chrome.storage.local.set({

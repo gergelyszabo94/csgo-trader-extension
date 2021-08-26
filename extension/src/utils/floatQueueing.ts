@@ -1,8 +1,10 @@
 import { FloatInfo, FloatsInfo } from 'types';
+
 import { getFloatInfoFromCache } from 'utils/floatCaching';
-import * as runtime from 'utils/helpers/runtime';
-import * as localStorage from 'utils/helpers/localStorage';
 import { sleep } from 'utils/simpleUtils';
+
+import * as localStorage from 'utils/helpers/localStorage';
+import * as runtime from 'utils/helpers/runtime';
 
 const floatQueue = {
     active: false,

@@ -1,10 +1,11 @@
-import './PricingProvider.css';
-
 import React, { useState } from 'react';
+
+import { updatePrices } from 'utils/pricing';
+
+import './PricingProvider.css';
 
 import NewTabLink from 'components/NewTabLink';
 import Select from 'components/Select';
-import { updatePrices } from 'utils/pricing';
 
 interface PricingProviderProps {
     options: object;

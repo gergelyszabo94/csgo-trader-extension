@@ -1,15 +1,17 @@
-import Row, { Option } from '../Row';
+import React from 'react';
+
 import { currencies, pricingProviders, realTimePricingModes } from 'utils/static/pricing';
 
 import Category from '../Category';
-import NewTabLink from 'components/NewTabLink';
-import React from 'react';
-import FlipSwitchStorage from '../Inputs/FlipSwitchStorage';
 import Currency from '../Inputs/Currency';
-import PricingProvider from '../Inputs/PricingProvider';
-import Refresh from '../Inputs/Refresh';
-import RealTimePricingMode from '../Inputs/RealTimePricingMode';
+import FlipSwitchStorage from '../Inputs/FlipSwitchStorage';
 import Number from '../Inputs/Number';
+import PricingProvider from '../Inputs/PricingProvider';
+import RealTimePricingMode from '../Inputs/RealTimePricingMode';
+import Refresh from '../Inputs/Refresh';
+import Row, { Option } from '../Row';
+
+import NewTabLink from 'components/NewTabLink';
 
 const pricing = () => {
     const transformCurrencies = (): Option[] => {

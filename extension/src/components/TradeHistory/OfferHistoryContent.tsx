@@ -1,12 +1,14 @@
-import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import NewTabLink from 'components/NewTabLink';
 import React from 'react';
-import TradeOfferHistorySide from 'components/TradeHistory/TradeOfferHistorySide';
-import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons';
-import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
+
+import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import { offerStates } from 'utils/static/offers';
+import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
+
+import NewTabLink from 'components/NewTabLink';
+import TradeOfferHistorySide from 'components/TradeHistory/TradeOfferHistorySide';
+
+import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const OfferHistoryContent = ({ offers }) => {
     const profileIDToURL = (userId) => {

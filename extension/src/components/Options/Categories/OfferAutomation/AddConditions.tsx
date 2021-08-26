@@ -1,12 +1,15 @@
-import { Condition, Operator } from '.';
+import React from 'react';
+
 import { conditions, operators } from 'utils/static/offers';
 
+import { Condition, Operator } from '.';
+
+import CustomA11yButton from 'components/CustomA11yButton';
 import AddCondition from 'components/Options/Categories/OfferAutomation/AddCondition';
 import AddOperator from 'components/Options/Categories/OfferAutomation/AddOperator';
-import CustomA11yButton from 'components/CustomA11yButton';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
+
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 interface AddConditionsProps {
     ruleConditions: Condition[];

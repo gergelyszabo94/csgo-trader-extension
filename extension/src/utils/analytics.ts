@@ -1,9 +1,11 @@
-import * as fetcher from 'utils/helpers/fetcher';
-import { sleep } from 'utils/simpleUtils';
 import { AnalyticsEvent, TelemetryOn } from 'types/storage';
+
+import { sleep } from 'utils/simpleUtils';
 import { nonSettingStorageKeys, storageKeys } from 'utils/static/storageKeys';
-import * as runtime from 'utils/helpers/runtime';
+
+import * as fetcher from 'utils/helpers/fetcher';
 import * as localStorage from 'utils/helpers/localStorage';
+import * as runtime from 'utils/helpers/runtime';
 
 interface TrackEventProps {
     type: string;

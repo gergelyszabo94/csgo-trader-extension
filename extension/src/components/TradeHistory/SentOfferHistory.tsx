@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-import { trackEvent } from 'utils/analytics';
 import { getTradeOffers } from 'utils/IEconService';
-import TradeOfferHistoryHeader from 'components/TradeHistory/TradeOfferHistoryHeader';
+import { trackEvent } from 'utils/analytics';
 import { offerStates } from 'utils/static/offers';
+
 import addItemDetails from './addItemDetails';
+
+import TradeOfferHistoryHeader from 'components/TradeHistory/TradeOfferHistoryHeader';
 
 const SentOfferHistory = async () => {
     document.title = 'Sent Offer History';

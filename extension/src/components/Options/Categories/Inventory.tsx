@@ -1,10 +1,13 @@
-import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
-import Category from '../Category';
 import React from 'react';
-import Row, { Option } from 'components/Options/Row';
+
 import { sortingModes } from 'utils/static/sortingModes';
-import SimpleSelect from '../Inputs/SimpleSelect';
+
+import Category from '../Category';
 import FlipSwitchStorage from '../Inputs/FlipSwitchStorage';
+import SimpleSelect from '../Inputs/SimpleSelect';
+
+import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
+import Row, { Option } from 'components/Options/Row';
 
 const inventory = () => {
     const transformSortingModes = (): Option[] => {

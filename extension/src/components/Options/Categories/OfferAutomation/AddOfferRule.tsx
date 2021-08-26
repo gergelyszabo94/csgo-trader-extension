@@ -1,11 +1,14 @@
-import { Condition, Operator, Rule } from '.';
 import React, { useState } from 'react';
+
 import { actions, conditions } from 'utils/static/offers';
 
-import AddConditions from 'components/Options/Categories/OfferAutomation/AddConditions';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Condition, Operator, Rule } from '.';
+
 import Modal from 'components/Modal';
+import AddConditions from 'components/Options/Categories/OfferAutomation/AddConditions';
+
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const Actions = (): JSX.Element => {
     return (

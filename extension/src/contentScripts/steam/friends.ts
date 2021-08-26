@@ -1,8 +1,8 @@
-import { addUpdatedRibbon, logExtensionPresence, updateLoggedInUserInfo } from 'utils/utilsModular';
-
 import DOMPurify from 'dompurify';
-import { friendAndInvitesBanner } from 'utils/static/miscElements';
+
 import { trackEvent } from 'utils/analytics';
+import { friendAndInvitesBanner } from 'utils/static/miscElements';
+import { addUpdatedRibbon, logExtensionPresence, updateLoggedInUserInfo } from 'utils/utilsModular';
 
 logExtensionPresence();
 updateLoggedInUserInfo();

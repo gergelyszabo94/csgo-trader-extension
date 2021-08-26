@@ -1,18 +1,19 @@
-import { dopplerPhases, iconToPhaseMapping } from 'utils/static/dopplerPhases';
-import { injectScript, injectStyle } from 'utils/injection';
-
 import DOMPurify from 'dompurify';
-import collectionsWithSouvenirs from 'utils/static/collectionsWithSouvenirs';
-import exteriors from 'utils/static/exteriors';
+import { DopplerMapping } from 'types';
+
+import { LinkFilterOff, SteamIDOfUser } from 'types/storage';
+
+import { injectScript, injectStyle } from 'utils/injection';
 import { getIDsFromElement } from 'utils/itemsToElementsToItems';
 import { getPrice } from 'utils/pricing';
-import { getUserSteamID } from 'utils/steamID';
+import collectionsWithSouvenirs from 'utils/static/collectionsWithSouvenirs';
+import { dopplerPhases, iconToPhaseMapping } from 'utils/static/dopplerPhases';
+import exteriors from 'utils/static/exteriors';
 import itemTypes from 'utils/static/itemTypes';
 import patterns from 'utils/static/patterns';
 import qualities from 'utils/static/qualities';
 import rarities from 'utils/static/rarities';
-import { DopplerMapping } from 'types';
-import { LinkFilterOff, SteamIDOfUser } from 'types/storage';
+import { getUserSteamID } from 'utils/steamID';
 
 // "Sticker" in different languages
 // english, simplified chinese, traditional chinese,

@@ -1,12 +1,14 @@
-import Category from '../Category';
-import NewTabLink from 'components/NewTabLink';
 import React from 'react';
-import Row from 'components/Options/Row';
+
+import Category from '../Category';
+import FlipSwitchPermission from '../Inputs/FlipSwitchPermission';
 import FlipSwitchStorage from '../Inputs/FlipSwitchStorage';
+import ModalTextBox from '../Inputs/ModalTextBox';
 import NotificationSound from '../Inputs/NotificationSound';
 import VolumeSlider from '../Inputs/VolumeSlider';
-import FlipSwitchPermission from '../Inputs/FlipSwitchPermission';
-import ModalTextBox from '../Inputs/ModalTextBox';
+
+import NewTabLink from 'components/NewTabLink';
+import Row from 'components/Options/Row';
 
 const Notifications = () => {
     return (

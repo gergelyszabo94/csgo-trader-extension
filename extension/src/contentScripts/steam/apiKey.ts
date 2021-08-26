@@ -1,7 +1,8 @@
+import DOMPurify from 'dompurify';
+
+import { trackEvent } from 'utils/analytics';
 import { logExtensionPresence, updateLoggedInUserInfo } from 'utils/utilsModular';
 
-import DOMPurify from 'dompurify';
-import { trackEvent } from 'utils/analytics';
 import * as localStorage from 'utils/helpers/localStorage';
 import * as runtime from 'utils/helpers/runtime';
 

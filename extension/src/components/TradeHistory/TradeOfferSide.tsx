@@ -1,6 +1,8 @@
-import NewTabLink from 'components/NewTabLink';
 import React from 'react';
+
 import { getItemMarketLink } from 'utils/simpleUtils';
+
+import NewTabLink from 'components/NewTabLink';
 
 const TradeOfferSide = (props) => {
     const urlIconToString = (iconURL) => {

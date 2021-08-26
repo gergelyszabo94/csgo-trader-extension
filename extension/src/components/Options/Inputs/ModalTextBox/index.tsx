@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { faEdit, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'components/Modal';
+
+import { faEdit, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 interface ModalTextBoxProps {
     id: string;

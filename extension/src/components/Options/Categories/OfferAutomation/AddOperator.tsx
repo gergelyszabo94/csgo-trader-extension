@@ -1,6 +1,8 @@
-import { Operator } from '.';
 import React from 'react';
+
 import { operators } from 'utils/static/offers';
+
+import { Operator } from '.';
 
 const Operators = (): JSX.Element => {
     const operatorsArr = [];

@@ -1,5 +1,6 @@
-import Countdown from 'components/Bookmarks/Bookmark/Countdown';
 import React from 'react';
+
+import Countdown from 'components/Bookmarks/Bookmark/Countdown';
 
 interface TradabilityProps {
     tradability: string;

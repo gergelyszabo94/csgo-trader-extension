@@ -1,5 +1,5 @@
-import { logExtensionPresence } from 'utils/utilsModular';
 import { trackEvent } from 'utils/analytics';
+import { logExtensionPresence } from 'utils/utilsModular';
 
 const removeHeader = () => {
     const header = document.querySelector('.main_SteamPageHeader_3EaXO');

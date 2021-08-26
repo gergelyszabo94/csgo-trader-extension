@@ -1,3 +1,7 @@
+import { ExchangeRates } from 'types/storage';
+
+import { sendTelemetry, trackEvent } from 'utils/analytics';
+import { trimFloatCache } from 'utils/floatCaching';
 import {
     getGroupInvites,
     ignoreGroupRequest,
@@ -6,13 +10,10 @@ import {
 } from 'utils/friendRequests';
 import { getSteamNotificationCount, playNotificationSound } from 'utils/notifications';
 import { getUserCurrencyBestGuess, updateExchangeRates, updatePrices } from 'utils/pricing';
-import { goToInternalPage, markModMessagesAsRead, scrapeSteamAPIkey, uuidv4 } from 'utils/utilsModular';
-import { removeOldOfferEvents, updateTrades } from 'utils/tradeOffers';
-import { sendTelemetry, trackEvent } from 'utils/analytics';
-
-import { ExchangeRates } from 'types/storage';
 import { storageKeys } from 'utils/static/storageKeys';
-import { trimFloatCache } from 'utils/floatCaching';
+import { removeOldOfferEvents, updateTrades } from 'utils/tradeOffers';
+import { goToInternalPage, markModMessagesAsRead, scrapeSteamAPIkey, uuidv4 } from 'utils/utilsModular';
+
 import * as localStorage from 'utils/helpers/localStorage';
 
 // handles install and update events

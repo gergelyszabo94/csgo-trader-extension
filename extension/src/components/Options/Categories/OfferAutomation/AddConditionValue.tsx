@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { conditions } from 'utils/static/offers';
 
 interface AddConditionValueProps {

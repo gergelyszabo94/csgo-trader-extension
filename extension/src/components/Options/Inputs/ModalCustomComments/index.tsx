@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
 import CustomA11yButton from 'components/CustomA11yButton';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'components/Modal';
+
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 interface ModalCustomCommentsProps {
     modalTitle: string;

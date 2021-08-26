@@ -1,4 +1,5 @@
 import { SharedFileIDAndOwner } from 'types';
+
 import { injectScript } from 'utils/injection';
 
 // converts shitty annoying trade offer style SteamID to proper SteamID64

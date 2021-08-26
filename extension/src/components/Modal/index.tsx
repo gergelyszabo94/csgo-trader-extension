@@ -1,5 +1,5 @@
-import { Modal as BSModal, Button, ModalTitle } from 'react-bootstrap';
 import React, { useState } from 'react';
+import { Modal as BSModal, Button, ModalTitle } from 'react-bootstrap';
 
 import CustomA11yButton from 'components/CustomA11yButton';
 

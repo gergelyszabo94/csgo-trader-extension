@@ -1,9 +1,9 @@
-import { currencies, pricingProviders, realTimePricingModes } from 'utils/static/pricing';
-import { listingsSortingModes, offersSortingModes, sortingModes } from 'utils/static/sortingModes';
 import defaultPopupLinks from 'utils/static/defaultPopupLinks';
 import { actions, conditions } from 'utils/static/friendRequests';
-import { actions as offerActions, conditions as offerConditions, operators } from 'utils/static/offers';
 import { notificationSounds } from 'utils/static/notifications';
+import { actions as offerActions, conditions as offerConditions, operators } from 'utils/static/offers';
+import { currencies, pricingProviders, realTimePricingModes } from 'utils/static/pricing';
+import { listingsSortingModes, offersSortingModes, sortingModes } from 'utils/static/sortingModes';
 
 export const storageKeys = {
     quickDeclineOffer: true,

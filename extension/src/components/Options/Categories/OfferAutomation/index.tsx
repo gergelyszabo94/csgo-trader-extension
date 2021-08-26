@@ -1,10 +1,12 @@
+import React from 'react';
+
+import OfferHistory from './OfferHistory';
+
+import NewTabLink from 'components/NewTabLink';
 import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
 import Category from 'components/Options/Category';
-import NewTabLink from 'components/NewTabLink';
-import OfferHistory from './OfferHistory';
-import React from 'react';
-import Row from 'components/Options/Row';
 import FlipSwitchStorage from 'components/Options/Inputs/FlipSwitchStorage';
+import Row from 'components/Options/Row';
 
 export interface Rule {
     action: string;

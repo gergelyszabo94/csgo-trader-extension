@@ -1,7 +1,9 @@
-import NewTabLink from 'components/NewTabLink';
 import React from 'react';
-import { eventTypes } from 'utils/static/offers';
+
 import { getOfferLink } from 'utils/simpleUtils';
+import { eventTypes } from 'utils/static/offers';
+
+import NewTabLink from 'components/NewTabLink';
 
 interface HistoryEventProps {
     eventType: string;

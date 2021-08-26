@@ -1,8 +1,10 @@
+import { Bookmark as BookmarkType } from 'types';
+
 import React, { useEffect, useState } from 'react';
 
-import Bookmark from 'components/Bookmarks/Bookmark';
-import { Bookmark as BookmarkType } from 'types';
 import { trackEvent } from 'utils/analytics';
+
+import Bookmark from 'components/Bookmarks/Bookmark';
 
 const Bookmarks = () => {
     trackEvent({

@@ -1,15 +1,17 @@
-import { actions, conditions, eventTypes } from 'utils/static/friendRequests';
-import { getPlayerBans, getPlayerSummaries } from 'utils/ISteamUser';
-import { getRemoteImageAsObjectURL, getSteamRepInfo } from 'utils/utilsModular';
-import * as fetcher from 'utils/helpers/fetcher';
-
 import DOMPurify from 'dompurify';
+
+import { FriendRequestEvalRule } from 'types/storage';
+import { Evaluation, Inviter } from 'types/storage';
+
+import { getPlayerBans, getPlayerSummaries } from 'utils/ISteamUser';
 import { getUserCSGOInventory } from 'utils/getUserInventory';
 import { playNotificationSound } from 'utils/notifications';
-import { FriendRequestEvalRule } from 'types/storage';
-import * as runtime from 'utils/helpers/runtime';
+import { actions, conditions, eventTypes } from 'utils/static/friendRequests';
+import { getRemoteImageAsObjectURL, getSteamRepInfo } from 'utils/utilsModular';
+
+import * as fetcher from 'utils/helpers/fetcher';
 import * as localStorage from 'utils/helpers/localStorage';
-import { Evaluation, Inviter } from 'types/storage';
+import * as runtime from 'utils/helpers/runtime';
 
 interface RawInviter {
     steamID: string;

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
-import { trackEvent } from 'utils/analytics';
 import { getTradeHistory } from 'utils/IEconService';
+import { trackEvent } from 'utils/analytics';
+
+import TradeHistoryControls from 'components/TradeHistory/TradeHistoryControls';
 import TradeOfferContent from 'components/TradeHistory/TradeOfferContent';
 import TradeSummary from 'components/TradeHistory/TradeSummary';
-import TradeHistoryControls from 'components/TradeHistory/TradeHistoryControls';
 
 const TradeHistoryContent = async () => {
     document.title = 'Trade History';

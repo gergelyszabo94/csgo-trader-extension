@@ -1,8 +1,8 @@
-import { Condition as ConditionType, Operator as OperatorType } from '.';
+import React from 'react';
 
+import { Condition as ConditionType, Operator as OperatorType } from '.';
 import Condition from './Condition';
 import Operator from './Operator';
-import React from 'react';
 
 interface ConditionsProps {
     conditions: ConditionType[];

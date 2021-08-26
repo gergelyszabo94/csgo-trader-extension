@@ -1,8 +1,10 @@
-import Category from '../Category';
 import React from 'react';
-import Row from 'components/Options/Row';
-import Restore from '../Inputs/Restore';
+
+import Category from '../Category';
 import Backup from '../Inputs/Backup';
+import Restore from '../Inputs/Restore';
+
+import Row from 'components/Options/Row';
 
 const backupRestore = () => {
     return (

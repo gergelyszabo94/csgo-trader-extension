@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-
-import AddOfferRule from 'components/Options/Categories/OfferAutomation/AddOfferRule';
-import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
 import { Link } from 'react-router-dom';
-import OfferRule from 'components/Options/Categories/OfferAutomation/OfferRule';
+
 import { Rule } from '.';
+
+import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
+import AddOfferRule from 'components/Options/Categories/OfferAutomation/AddOfferRule';
+import OfferRule from 'components/Options/Categories/OfferAutomation/OfferRule';
 
 const OfferRules = () => {
     const [rules, setRules] = useState<Rule[]>([]);

@@ -1,6 +1,6 @@
-import './Row.css';
-
 import React from 'react';
+
+import './Row.css';
 
 export interface Option {
     key: string | number;
@@ -23,9 +23,7 @@ const row = ({ name, description, children }: RowProps) => {
             <div className='col-md-6'>
                 <p className='font-size--s'>{description}</p>
             </div>
-            <div className='col-md-6'>
-                {children}
-            </div>
+            <div className='col-md-6'>{children}</div>
         </div>
     );
 };

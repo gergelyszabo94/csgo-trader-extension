@@ -1,8 +1,8 @@
-import { goldenCommenters } from 'utils/goldening';
-import { logExtensionPresence, updateLoggedInUserInfo, removeLinkFilterFromLinks } from 'utils/utilsModular';
-import { reportComments, addReplyToCommentsFunctionality, addCommentsMutationObserver } from 'utils/comments';
 import { trackEvent } from 'utils/analytics';
+import { reportComments, addReplyToCommentsFunctionality, addCommentsMutationObserver } from 'utils/comments';
+import { goldenCommenters } from 'utils/goldening';
 import { getSharedFileIDAndOwner } from 'utils/steamID';
+import { logExtensionPresence, updateLoggedInUserInfo, removeLinkFilterFromLinks } from 'utils/utilsModular';
 
 logExtensionPresence();
 addReplyToCommentsFunctionality();

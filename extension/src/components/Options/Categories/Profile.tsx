@@ -1,9 +1,11 @@
-import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
-import Category from '../Category';
 import React from 'react';
-import Row from 'components/Options/Row';
+
+import Category from '../Category';
 import FlipSwitchStorage from '../Inputs/FlipSwitchStorage';
 import ModalTextBox from '../Inputs/ModalTextBox';
+
+import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
+import Row from 'components/Options/Row';
 
 const profile = () => {
     return (

@@ -1,5 +1,6 @@
-import { getSessionID } from 'utils/utilsModular';
 import { getSteamWalletInfo } from 'utils/pricing';
+import { getSessionID } from 'utils/utilsModular';
+
 import * as fetcher from 'utils/helpers/fetcher';
 
 export const buyListing = async (listing, buyerKYC) => {

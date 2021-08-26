@@ -1,4 +1,5 @@
 import React from 'react';
+
 import TradeOfferContent from 'components/TradeHistory/TradeOfferContent';
 
 const TradeOfferHistoryHeader = ({ type, totalOffers, error, currentPageOffers, loadNextBatch }) => {

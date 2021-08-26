@@ -1,11 +1,11 @@
-import { extractUsefulFloatInfo, addToFloatCache } from 'utils/floatCaching';
-import { goToInternalPage, validateSteamAPIKey, getAssetIDFromInspectLink, getSteamRepInfo } from 'utils/utilsModular';
-import { getItemMarketLink } from 'utils/simpleUtils';
+import { getTradeOffers } from 'utils/IEconService';
 import { getPlayerSummaries } from 'utils/ISteamUser';
+import { extractUsefulFloatInfo, addToFloatCache } from 'utils/floatCaching';
 import { getUserCSGOInventory, getOtherInventory } from 'utils/getUserInventory';
 import { updateExchangeRates } from 'utils/pricing';
-import { getTradeOffers } from 'utils/IEconService';
+import { getItemMarketLink } from 'utils/simpleUtils';
 import { updateTrades } from 'utils/tradeOffers';
+import { goToInternalPage, validateSteamAPIKey, getAssetIDFromInspectLink, getSteamRepInfo } from 'utils/utilsModular';
 
 // content scripts can't make cross domain requests because of security
 // most of the messaging required is to work around this limitation

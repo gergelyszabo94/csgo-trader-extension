@@ -1,10 +1,12 @@
-import CustomA11yButton from 'components/CustomA11yButton';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import OfferHistoryContent from 'components/TradeHistory/OfferHistoryContent';
 import React from 'react';
+
+import CustomA11yButton from 'components/CustomA11yButton';
 import Spinner from 'components/Spinner';
+import OfferHistoryContent from 'components/TradeHistory/OfferHistoryContent';
 import TradeOffers from 'components/TradeHistory/TradeOffers';
+
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const TradeOfferContent = ({ trades, type, loadNextBatch }) => {
     return trades !== null ? (

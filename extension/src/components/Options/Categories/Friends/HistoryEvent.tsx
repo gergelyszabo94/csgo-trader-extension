@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { eventTypes } from 'utils/static/friendRequests';
 
 interface HistoryEventProps {

@@ -1,6 +1,8 @@
-import { HistoryEvents } from '.';
 import React from 'react';
+
 import { eventTypes } from 'utils/static/offers';
+
+import { HistoryEvents } from '.';
 
 const OfferHistorySummary = ({ events }: HistoryEvents) => {
     let received = 0;

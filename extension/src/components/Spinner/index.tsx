@@ -1,4 +1,5 @@
 import React from 'react';
+
 import SpinnerGif from 'assets/images/spinner.gif';
 
 const Spinner = () => {

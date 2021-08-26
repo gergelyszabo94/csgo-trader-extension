@@ -1,4 +1,7 @@
+import { trackEvent } from 'utils/analytics';
+import { reportComments, addReplyToCommentsFunctionality, addCommentsMutationObserver } from 'utils/comments';
 import { goldenMemberNames, goldenCommenters } from 'utils/goldening';
+import { getGroupID } from 'utils/steamID';
 import {
     logExtensionPresence,
     updateLoggedInUserInfo,
@@ -6,9 +9,6 @@ import {
     addUpdatedRibbon,
     removeLinkFilterFromLinks,
 } from 'utils/utilsModular';
-import { reportComments, addReplyToCommentsFunctionality, addCommentsMutationObserver } from 'utils/comments';
-import { trackEvent } from 'utils/analytics';
-import { getGroupID } from 'utils/steamID';
 
 if (!window.location.href.includes('/discussions')) {
     logExtensionPresence();

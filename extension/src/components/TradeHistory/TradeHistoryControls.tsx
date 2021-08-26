@@ -1,11 +1,11 @@
+import React, { useState } from 'react';
+import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-import React, { useState } from 'react';
-
 import CustomA11yButton from 'components/CustomA11yButton';
-import DatePicker from 'react-datepicker';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import { faSync } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const TradeHistoryControls = ({ historySize, setHistorySize, setExcludeEmpty, setStartTime, updateTrades }) => {
     const [selectState, setSelectState] = useState(historySize);

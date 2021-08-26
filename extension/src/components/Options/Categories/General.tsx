@@ -1,11 +1,13 @@
-import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
-import Category from 'components/Options/Category';
-import NewTabLink from 'components/NewTabLink';
 import React from 'react';
-import Row from 'components/Options/Row';
+
+import FlipSwitchPermission from '../Inputs/FlipSwitchPermission';
 import FlipSwitchStorage from '../Inputs/FlipSwitchStorage';
 import ModalTextBox from '../Inputs/ModalTextBox';
-import FlipSwitchPermission from '../Inputs/FlipSwitchPermission';
+
+import NewTabLink from 'components/NewTabLink';
+import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
+import Category from 'components/Options/Category';
+import Row from 'components/Options/Row';
 
 const general = () => {
     return (

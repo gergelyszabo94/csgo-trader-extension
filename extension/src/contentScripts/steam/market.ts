@@ -1,9 +1,7 @@
-import {
-    addUpdatedRibbon,
-    logExtensionPresence,
-    reloadPageOnExtensionReload,
-    updateLoggedInUserInfo,
-} from 'utils/utilsModular';
+import DOMPurify from 'dompurify';
+
+import { trackEvent } from 'utils/analytics';
+import { injectStyle } from 'utils/injection';
 import { cancelOrder, createOrder, getMarketHistory, removeListing } from 'utils/market';
 import {
     centsToSteamFormattedPrice,
@@ -14,12 +12,14 @@ import {
     updateWalletCurrency,
     workOnPriceQueue,
 } from 'utils/pricing';
-
-import DOMPurify from 'dompurify';
 import { getItemMarketLink } from 'utils/simpleUtils';
-import { injectStyle } from 'utils/injection';
 import { overrideLoadMarketHistory } from 'utils/steamOverriding';
-import { trackEvent } from 'utils/analytics';
+import {
+    addUpdatedRibbon,
+    logExtensionPresence,
+    reloadPageOnExtensionReload,
+    updateLoggedInUserInfo,
+} from 'utils/utilsModular';
 
 const marketHistoryExport = {
     history: [],

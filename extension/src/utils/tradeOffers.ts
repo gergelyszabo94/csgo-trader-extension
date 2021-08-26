@@ -1,6 +1,19 @@
 // only works on steam pages
+import DOMPurify from 'dompurify';
+import { DopplerMapping, SmallItem } from 'types';
 
+import { TradeOffer, TradeOffers } from 'types/api';
+import { ActiveOffers, SmallerDescription, Item, Offer, OfferEvalRule, SteamSessionID, Currency } from 'types/storage';
+
+import { getTradeOffers } from 'utils/IEconService';
+import { getPlayerSummaries } from 'utils/ISteamUser';
+import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
+import { notifyOnDiscord, playNotificationSound } from 'utils/notifications';
+import { prettyPrintPrice } from 'utils/pricing';
+import { getFormattedPLPercentage, getItemMarketLink, isDopplerInName } from 'utils/simpleUtils';
 import { actions, conditions, eventTypes, offerStates, operators } from 'utils/static/offers';
+import steamApps from 'utils/static/steamApps';
+import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 import {
     getDopplerInfo,
     getExteriorFromTags,
@@ -10,20 +23,8 @@ import {
     getRemoteImageAsObjectURL,
     getType,
 } from 'utils/utilsModular';
-import { getFormattedPLPercentage, getItemMarketLink, isDopplerInName } from 'utils/simpleUtils';
-import { notifyOnDiscord, playNotificationSound } from 'utils/notifications';
 
-import DOMPurify from 'dompurify';
-import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
 import { getItemByIDs } from './itemsToElementsToItems';
-import { getPlayerSummaries } from 'utils/ISteamUser';
-import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
-import { getTradeOffers } from 'utils/IEconService';
-import { prettyPrintPrice } from 'utils/pricing';
-import steamApps from 'utils/static/steamApps';
-import { ActiveOffers, SmallerDescription, Item, Offer, OfferEvalRule, SteamSessionID, Currency } from 'types/storage';
-import { DopplerMapping, SmallItem } from 'types';
-import { TradeOffer, TradeOffers } from 'types/api';
 
 interface Side {
     assets: SmallItem[];

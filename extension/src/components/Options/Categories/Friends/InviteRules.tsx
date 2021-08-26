@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
-import AddInviteRule from 'components/Options/Categories/Friends/AddInviteRule';
-import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
-import InviteRule from './InviteRule';
 import { Rule } from '.';
+import InviteRule from './InviteRule';
+
+import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
+import AddInviteRule from 'components/Options/Categories/Friends/AddInviteRule';
 
 const InviteRules = () => {
     const [rules, setRules] = useState<Rule[]>([]);

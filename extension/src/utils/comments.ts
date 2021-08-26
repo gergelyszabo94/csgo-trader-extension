@@ -1,10 +1,13 @@
 import DOMPurify from 'dompurify';
+import { SharedFileIDAndOwner } from 'types';
+
+import { FlagScamComments } from 'types/storage';
+
+import { trackEvent } from 'utils/analytics';
+import { goldenCommenters } from 'utils/goldening';
 import commentPatternsToReport from 'utils/static/commentPatternsToReport';
 import { getSessionID } from 'utils/utilsModular';
-import { goldenCommenters } from 'utils/goldening';
-import { trackEvent } from 'utils/analytics';
-import { SharedFileIDAndOwner } from 'types';
-import { FlagScamComments } from 'types/storage';
+
 import * as fetcher from 'utils/helpers/fetcher';
 import * as localStorage from 'utils/helpers/localStorage';
 

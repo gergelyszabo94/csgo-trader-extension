@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import { prettyPrintPrice } from 'utils/pricing';
 
 const TradeSummary = ({ trades }) => {

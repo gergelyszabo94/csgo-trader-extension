@@ -1,23 +1,24 @@
+import React from 'react';
+import { Nav } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import { NavLinkProps, Route, BrowserRouter as Router, Switch } from 'react-router-dom';
+
+import { trackEvent } from 'utils/analytics';
 
 import BackupRestore from 'components/Options/Categories/BackupRestore';
 import Friends from 'components/Options/Categories/Friends';
 import General from 'components/Options/Categories/General';
 import Inventory from 'components/Options/Categories/Inventory';
-import { LinkContainer } from 'react-router-bootstrap';
 import Market from 'components/Options/Categories/Market';
-import { Nav } from 'react-bootstrap';
 import Notifications from 'components/Options/Categories/Notifications';
 import OfferAutomation from 'components/Options/Categories/OfferAutomation';
 import Other from 'components/Options/Categories/Other';
 import Popup from 'components/Options/Categories/Popup';
 import Pricing from 'components/Options/Categories/Pricing';
 import Profile from 'components/Options/Categories/Profile';
-import React from 'react';
 import Safety from 'components/Options/Categories/Safety';
 import TradeOffer from 'components/Options/Categories/TradeOffer';
 import WebChat from 'components/Options/Categories/WebChat';
-import { trackEvent } from 'utils/analytics';
 
 const routes = [
     {

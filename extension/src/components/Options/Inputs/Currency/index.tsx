@@ -1,6 +1,9 @@
 import { ExchangeRates } from 'types';
-import { Option } from '../../Row';
+
 import React from 'react';
+
+import { Option } from '../../Row';
+
 import Select from 'components/Select';
 
 interface CurrencyProps {

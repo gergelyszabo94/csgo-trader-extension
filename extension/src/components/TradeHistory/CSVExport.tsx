@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { faFileExport, faPlay } from '@fortawesome/free-solid-svg-icons';
+import DatePicker from 'react-datepicker/es';
+
+import { getTradeHistory } from 'utils/IEconService';
 
 import CustomA11yButton from 'components/CustomA11yButton';
-import DatePicker from 'react-datepicker/es';
+
+import { faFileExport, faPlay } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { getTradeHistory } from 'utils/IEconService';
 
 const CSVExport = () => {
     let csvContent = 'Partner SteamID,Partner Name,Time,P/L,Given Total,Received Total,Items Given,Items Taken\n';

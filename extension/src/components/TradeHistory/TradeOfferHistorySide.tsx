@@ -1,7 +1,9 @@
-import MissingItems from 'components/TradeHistory/MissingItems';
-import NewTabLink from 'components/NewTabLink';
 import React from 'react';
+
 import { getItemMarketLink } from 'utils/simpleUtils';
+
+import NewTabLink from 'components/NewTabLink';
+import MissingItems from 'components/TradeHistory/MissingItems';
 
 const TradeOfferHistorySide = (props) => {
     const urlIconToString = (iconURL) => {

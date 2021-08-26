@@ -1,11 +1,12 @@
-import './Navigation.css';
-
-import { Nav, Navbar } from 'react-bootstrap';
-
-import { LinkContainer } from 'react-router-bootstrap';
-import NewTabLink from 'components/NewTabLink';
 import React from 'react';
+import { Nav, Navbar } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
+
+import './Navigation.css';
 import links from './links';
+
+import NewTabLink from 'components/NewTabLink';
+
 import logo from 'assets/images/cstlogo48.png';
 
 const navigation = () => {

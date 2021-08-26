@@ -1,7 +1,10 @@
-import AddConditionValue from 'components/Options/Categories/OfferAutomation/AddConditionValue';
-import { Condition } from '.';
 import React from 'react';
+
 import { conditions } from 'utils/static/offers';
+
+import { Condition } from '.';
+
+import AddConditionValue from 'components/Options/Categories/OfferAutomation/AddConditionValue';
 
 const Options = () => {
     const optionsArr = [];

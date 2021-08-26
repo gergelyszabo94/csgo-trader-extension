@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSync } from '@fortawesome/free-solid-svg-icons';
+
+import { updatePrices } from 'utils/pricing';
 
 import './Refresh.css';
-import { updatePrices } from 'utils/pricing';
+
+import { faSync } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const Refresh = () => {
     const [state, setState] = useState({

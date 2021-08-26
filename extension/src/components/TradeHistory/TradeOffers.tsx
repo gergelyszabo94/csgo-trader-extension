@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import NewTabLink from 'components/NewTabLink';
 import TradeOfferSide from 'components/TradeHistory/TradeOfferSide';
+
 import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const TradeOffers = ({ trades }) => {
     const [steamID, setSteamID] = useState(null);

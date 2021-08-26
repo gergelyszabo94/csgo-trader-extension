@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-import Select from 'components/Select';
-import { notificationSounds } from 'utils/static/notifications';
 import { playAudio } from 'utils/simpleUtils';
+import { notificationSounds } from 'utils/static/notifications';
+
+import Select from 'components/Select';
 
 const transformSounds = () => {
     const transformedSounds = [];

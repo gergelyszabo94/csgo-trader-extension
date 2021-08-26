@@ -1,3 +1,36 @@
+import DOMPurify from 'dompurify';
+
+import { trackEvent } from 'utils/analytics';
+import { dateToISODisplay, getShortDate, prettyTimeAgo } from 'utils/dateTime';
+import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
+import { injectScript } from 'utils/injection';
+import { findElementByIDs, getIDsFromElement, getItemByIDs } from 'utils/itemsToElementsToItems';
+import { listItem } from 'utils/market';
+import {
+    addRealTimePriceToPage,
+    centsToSteamFormattedPrice,
+    getHighestBuyOrder,
+    getLowestListingPrice,
+    getPriceAfterFees,
+    getPriceOverview,
+    getSteamWalletCurrency,
+    initPriceQueue,
+    prettyPrintPrice,
+    priceQueue,
+    updateWalletCurrency,
+    userPriceToProperPrice,
+    workOnPriceQueue,
+} from 'utils/pricing';
+import { getItemMarketLink } from 'utils/simpleUtils';
+import doTheSorting from 'utils/sorting';
+import exteriors from 'utils/static/exteriors';
+import itemTypes from 'utils/static/itemTypes';
+import { inOtherOfferIndicator } from 'utils/static/miscElements';
+import { genericMarketLink, souvenir, starChar, stattrak, stattrakPretty } from 'utils/static/simpleStrings';
+import { sortingModes } from 'utils/static/sortingModes';
+import steamApps from 'utils/static/steamApps';
+import { getUserSteamID } from 'utils/steamID';
+import { overRideCSGOInventoryLoading, overridePopulateActions } from 'utils/steamOverriding';
 import {
     addDopplerPhase,
     addFloatIndicator,
@@ -25,39 +58,6 @@ import {
     toFixedNoRounding,
     updateLoggedInUserInfo,
 } from 'utils/utilsModular';
-import {
-    addRealTimePriceToPage,
-    centsToSteamFormattedPrice,
-    getHighestBuyOrder,
-    getLowestListingPrice,
-    getPriceAfterFees,
-    getPriceOverview,
-    getSteamWalletCurrency,
-    initPriceQueue,
-    prettyPrintPrice,
-    priceQueue,
-    updateWalletCurrency,
-    userPriceToProperPrice,
-    workOnPriceQueue,
-} from 'utils/pricing';
-import { dateToISODisplay, getShortDate, prettyTimeAgo } from 'utils/dateTime';
-import { findElementByIDs, getIDsFromElement, getItemByIDs } from 'utils/itemsToElementsToItems';
-import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
-import { genericMarketLink, souvenir, starChar, stattrak, stattrakPretty } from 'utils/static/simpleStrings';
-import { overRideCSGOInventoryLoading, overridePopulateActions } from 'utils/steamOverriding';
-
-import DOMPurify from 'dompurify';
-import doTheSorting from 'utils/sorting';
-import exteriors from 'utils/static/exteriors';
-import { getItemMarketLink } from 'utils/simpleUtils';
-import { getUserSteamID } from 'utils/steamID';
-import { inOtherOfferIndicator } from 'utils/static/miscElements';
-import { injectScript } from 'utils/injection';
-import itemTypes from 'utils/static/itemTypes';
-import { listItem } from 'utils/market';
-import { sortingModes } from 'utils/static/sortingModes';
-import steamApps from 'utils/static/steamApps';
-import { trackEvent } from 'utils/analytics';
 
 let items = [];
 let inventoryTotal = 0.0;

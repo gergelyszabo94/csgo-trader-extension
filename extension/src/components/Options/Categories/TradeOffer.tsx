@@ -1,11 +1,13 @@
-import Row, { Option } from 'components/Options/Row';
+import React from 'react';
+
 import { offersSortingModes, sortingModes } from 'utils/static/sortingModes';
 
-import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
 import Category from '../Category';
-import React from 'react';
 import FlipSwitchStorage from '../Inputs/FlipSwitchStorage';
 import SimpleSelect from '../Inputs/SimpleSelect';
+
+import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
+import Row, { Option } from 'components/Options/Row';
 
 const tradeOffer = () => {
     const transformSortingModes = (): Option[] => {

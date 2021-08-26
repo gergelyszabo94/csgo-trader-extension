@@ -1,12 +1,15 @@
-import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
-import Category from '../Category';
 import React from 'react';
-import Row from '../Row';
+
 import { currencies } from 'utils/static/pricing';
-import LinksToShow from '../Inputs/LinksToShow';
-import FlipSwitchStorage from '../Inputs/FlipSwitchStorage';
+
+import Category from '../Category';
 import DoubleSelect from '../Inputs/DoubleSelect';
+import FlipSwitchStorage from '../Inputs/FlipSwitchStorage';
+import LinksToShow from '../Inputs/LinksToShow';
 import Number from '../Inputs/Number';
+import Row from '../Row';
+
+import ApiKeyIndicator from 'components/Options/ApiKeyIndicator';
 
 const popup = () => {
     const transformCurrencies = () => {

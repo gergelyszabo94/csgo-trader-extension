@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
-import Invite from 'components/Options/Categories/Friends/Invite';
-import { currencies } from 'utils/static/pricing';
 import { Inviter } from 'types/storage';
+
+import { currencies } from 'utils/static/pricing';
+
+import Invite from 'components/Options/Categories/Friends/Invite';
 
 const IncomingInvites = () => {
     const [invites, setInvites] = useState<Inviter[]>([]);

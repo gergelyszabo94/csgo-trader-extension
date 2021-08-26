@@ -1,5 +1,5 @@
-import { notificationSounds } from 'utils/static/notifications';
 import { playAudio } from 'utils/simpleUtils';
+import { notificationSounds } from 'utils/static/notifications';
 
 export const determineNotificationDate = (tradableDate, minutesOrHours, numberOfMinutesOrHours, beforeOrAfter) => {
     let baseTimeUnit = 0;

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-
 import ReactSlider from 'react-slider';
 
 interface VolumeSliderProps {

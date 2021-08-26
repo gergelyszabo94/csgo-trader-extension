@@ -1,9 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.scss';
 
 import React, { Suspense, lazy } from 'react';
 import { Redirect, Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 
+import './App.scss';
 import Navigation from './components/Navigation';
 
 const Bookmarks = lazy(() => import('./pages/Bookmarks'));

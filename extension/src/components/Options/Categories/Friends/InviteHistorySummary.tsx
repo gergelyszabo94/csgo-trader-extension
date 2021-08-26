@@ -1,6 +1,8 @@
-import { HistoryEvents } from '.';
 import React from 'react';
+
 import { eventTypes } from 'utils/static/friendRequests';
+
+import { HistoryEvents } from '.';
 
 const InviteHistorySummary = ({ events }: HistoryEvents) => {
     let received = 0;

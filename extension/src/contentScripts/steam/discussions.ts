@@ -1,15 +1,16 @@
+import DOMPurify from 'dompurify';
+
+import React from 'react';
+
+import { trackEvent } from 'utils/analytics';
+import { deleteForumComment, postForumComment } from 'utils/comments';
+import { injectScript } from 'utils/injection';
 import {
     addUpdatedRibbon,
     logExtensionPresence,
     removeLinkFilterFromLinks,
     updateLoggedInUserInfo,
 } from 'utils/utilsModular';
-import { deleteForumComment, postForumComment } from 'utils/comments';
-
-import DOMPurify from 'dompurify';
-import React from 'react';
-import { injectScript } from 'utils/injection';
-import { trackEvent } from 'utils/analytics';
 
 logExtensionPresence();
 updateLoggedInUserInfo();

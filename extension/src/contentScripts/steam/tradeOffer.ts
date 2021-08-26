@@ -1,3 +1,33 @@
+import DOMPurify from 'dompurify';
+import { SmallItem } from 'types';
+
+import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
+import { trackEvent } from 'utils/analytics';
+import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
+import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
+import { injectScript, injectStyle } from 'utils/injection';
+import { findElementByIDs, getIDsFromElement, getItemByIDs } from 'utils/itemsToElementsToItems';
+import {
+    addRealTimePriceToPage,
+    initPriceQueue,
+    prettyPrintPrice,
+    priceQueue,
+    updateWalletCurrency,
+    workOnPriceQueue,
+} from 'utils/pricing';
+import {
+    closeTab,
+    getFormattedPLPercentage,
+    getItemByNameAndGame,
+    getItemMarketLink,
+    isDopplerInName,
+} from 'utils/simpleUtils';
+import doTheSorting from 'utils/sorting';
+import itemTypes from 'utils/static/itemTypes';
+import { inOtherOfferIndicator } from 'utils/static/miscElements';
+import { sortingModes } from 'utils/static/sortingModes';
+import steamApps from 'utils/static/steamApps';
+import { overrideHandleTradeActionMenu } from 'utils/steamOverriding';
 import { acceptOffer, createTradeOfferJSON, declineOffer, sendOffer } from 'utils/tradeOffers';
 import {
     addDopplerPhase,
@@ -26,36 +56,6 @@ import {
     updateLoggedInUserInfo,
     warnOfScammer,
 } from 'utils/utilsModular';
-import {
-    addRealTimePriceToPage,
-    initPriceQueue,
-    prettyPrintPrice,
-    priceQueue,
-    updateWalletCurrency,
-    workOnPriceQueue,
-} from 'utils/pricing';
-import {
-    closeTab,
-    getFormattedPLPercentage,
-    getItemByNameAndGame,
-    getItemMarketLink,
-    isDopplerInName,
-} from 'utils/simpleUtils';
-import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
-import { findElementByIDs, getIDsFromElement, getItemByIDs } from 'utils/itemsToElementsToItems';
-import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
-import { injectScript, injectStyle } from 'utils/injection';
-
-import DOMPurify from 'dompurify';
-import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
-import doTheSorting from 'utils/sorting';
-import { inOtherOfferIndicator } from 'utils/static/miscElements';
-import itemTypes from 'utils/static/itemTypes';
-import { overrideHandleTradeActionMenu } from 'utils/steamOverriding';
-import { sortingModes } from 'utils/static/sortingModes';
-import steamApps from 'utils/static/steamApps';
-import { trackEvent } from 'utils/analytics';
-import { SmallItem } from 'types';
 
 let yourInventory = null;
 let theirInventory = null;

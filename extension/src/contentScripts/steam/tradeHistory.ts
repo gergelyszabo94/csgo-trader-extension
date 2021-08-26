@@ -1,6 +1,7 @@
 import DOMPurify from 'dompurify';
-import { logExtensionPresence, updateLoggedInUserInfo, addUpdatedRibbon } from 'utils/utilsModular';
+
 import { trackEvent } from 'utils/analytics';
+import { logExtensionPresence, updateLoggedInUserInfo, addUpdatedRibbon } from 'utils/utilsModular';
 
 logExtensionPresence();
 updateLoggedInUserInfo();

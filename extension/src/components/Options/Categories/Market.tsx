@@ -1,10 +1,13 @@
-import Category from '../Category';
 import React from 'react';
-import Row, { Option } from 'components/Options/Row';
+
 import { listingsSortingModes } from 'utils/static/sortingModes';
-import SimpleSelect from '../Inputs/SimpleSelect';
+
+import Category from '../Category';
 import FlipSwitchStorage from '../Inputs/FlipSwitchStorage';
 import Number from '../Inputs/Number';
+import SimpleSelect from '../Inputs/SimpleSelect';
+
+import Row, { Option } from 'components/Options/Row';
 
 const market = () => {
     const transformSortingModes = (): Option[] => {

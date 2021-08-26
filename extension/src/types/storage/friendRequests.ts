@@ -29,7 +29,7 @@ export interface Summary {
     realname: string;
     steamid: string;
     timecreated: number;
-    loccountrycode?: string
+    loccountrycode?: string;
 }
 
 export interface SteamRepInfo {

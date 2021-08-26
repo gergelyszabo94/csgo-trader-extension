@@ -1,11 +1,13 @@
-import { faChevronDown, faChevronUp, faTrash } from '@fortawesome/free-solid-svg-icons';
+import React from 'react';
 
+import { Rule } from '.';
+
+import CustomA11yButton from 'components/CustomA11yButton';
 import Action from 'components/Options/Categories/Friends/Action';
 import Condition from 'components/Options/Categories/Friends/Condition';
-import CustomA11yButton from 'components/CustomA11yButton';
+
+import { faChevronDown, faChevronUp, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
-import { Rule } from '.';
 
 interface InviteRuleProps {
     details: Rule;

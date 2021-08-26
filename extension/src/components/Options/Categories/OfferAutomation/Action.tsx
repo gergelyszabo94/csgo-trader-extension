@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { actions } from 'utils/static/offers';
 
 interface ActionProps {

@@ -1,13 +1,6 @@
-import { currencies, pricingProviders, realTimePricingModes, steamCurrencyCodes } from 'utils/static/pricing';
-
 import DOMPurify from 'dompurify';
+
 import { PriceOverview } from 'types/api';
-import { findElementByIDs } from 'utils/itemsToElementsToItems';
-import { getItemMarketLink } from 'utils/simpleUtils';
-import { injectScript } from 'utils/injection';
-import { storageKeys } from 'utils/static/storageKeys';
-import * as runtime from 'utils/helpers/runtime';
-import * as localStorage from 'utils/helpers/localStorage';
 import {
     Currency,
     ItemPricing,
@@ -17,7 +10,16 @@ import {
     RealTimePricesFreqFailure,
     RealTimePricesFreqSuccess,
 } from 'types/storage';
+
+import { injectScript } from 'utils/injection';
+import { findElementByIDs } from 'utils/itemsToElementsToItems';
+import { getItemMarketLink } from 'utils/simpleUtils';
+import { currencies, pricingProviders, realTimePricingModes, steamCurrencyCodes } from 'utils/static/pricing';
+import { storageKeys } from 'utils/static/storageKeys';
+
 import * as fetcher from 'utils/helpers/fetcher';
+import * as localStorage from 'utils/helpers/localStorage';
+import * as runtime from 'utils/helpers/runtime';
 
 export const priceQueue = {
     active: false,

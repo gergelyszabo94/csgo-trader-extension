@@ -1,5 +1,6 @@
 import { trackEvent } from 'utils/analytics';
 import { logExtensionPresence } from 'utils/utilsModular';
+
 import * as fetcher from 'utils/helpers/fetcher';
 import * as localStorage from 'utils/helpers/localStorage';
 

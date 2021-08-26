@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
+
 import { actions, conditions } from 'utils/static/friendRequests';
 
-import AddCondition from 'components/Options/Categories/Friends/AddCondition';
-import CustomA11yButton from 'components/CustomA11yButton';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Rule } from '.';
+
+import CustomA11yButton from 'components/CustomA11yButton';
+import AddCondition from 'components/Options/Categories/Friends/AddCondition';
+
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const Options = (): JSX.Element => {
     const optionsArr = [];

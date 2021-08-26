@@ -1,9 +1,11 @@
-import Category from '../Category';
-import NewTabLink from 'components/NewTabLink';
 import React from 'react';
-import Row from '../Row';
+
+import Category from '../Category';
 import FlipSwitchPermission from '../Inputs/FlipSwitchPermission';
 import FlipSwitchStorage from '../Inputs/FlipSwitchStorage';
+import Row from '../Row';
+
+import NewTabLink from 'components/NewTabLink';
 
 const other = () => {
     return (

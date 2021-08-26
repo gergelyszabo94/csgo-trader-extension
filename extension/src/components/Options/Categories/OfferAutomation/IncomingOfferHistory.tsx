@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
-import EventHistoryTable from 'components/Options/Categories/OfferAutomation/EventHistoryTable';
 import { HistoryEvent } from '.';
+
+import EventHistoryTable from 'components/Options/Categories/OfferAutomation/EventHistoryTable';
 import OfferHistorySummary from 'components/Options/Categories/OfferAutomation/OfferHistorySummary';
 
 const IncomingOfferHistory = () => {

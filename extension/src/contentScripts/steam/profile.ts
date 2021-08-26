@@ -1,3 +1,14 @@
+import DOMPurify from 'dompurify';
+
+import { trackEvent } from 'utils/analytics';
+import { addReplyToCommentsFunctionality, addCommentsMutationObserver, reportComments } from 'utils/comments';
+import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
+import { goldenMiniProfileHandler, goldenCommenters } from 'utils/goldening';
+import { injectStyle } from 'utils/injection';
+import steamProfileStatuses from 'utils/static/steamProfileStatuses';
+import steamTextFormattingTags from 'utils/static/steamTextFormatingTags';
+import { getUserSteamID, getProfileOwnerSteamID, getOfferStyleSteamID } from 'utils/steamID';
+import { overrideShowTradeOffer } from 'utils/steamOverriding';
 import {
     logExtensionPresence,
     updateLoggedInUserInfo,
@@ -8,16 +19,6 @@ import {
     copyToClipboard,
     changePageTitle,
 } from 'utils/utilsModular';
-import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
-import { trackEvent } from 'utils/analytics';
-import { addReplyToCommentsFunctionality, addCommentsMutationObserver, reportComments } from 'utils/comments';
-import { goldenMiniProfileHandler, goldenCommenters } from 'utils/goldening';
-import steamTextFormattingTags from 'utils/static/steamTextFormatingTags';
-import { overrideShowTradeOffer } from 'utils/steamOverriding';
-import steamProfileStatuses from 'utils/static/steamProfileStatuses';
-import { injectStyle } from 'utils/injection';
-import { getUserSteamID, getProfileOwnerSteamID, getOfferStyleSteamID } from 'utils/steamID';
-import DOMPurify from 'dompurify';
 
 // ensures that we are on a profile page, it's not possible with simple regex
 if (document.querySelector('body').classList.contains('profile_page')) {

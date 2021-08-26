@@ -1,8 +1,9 @@
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
+
+import { getPrice, prettyPrintPrice } from '../../utils/pricing';
 import { isDopplerInName, getFormattedPLPercentage } from '../../utils/simpleUtils';
 import { getDopplerInfo } from '../../utils/utilsModular';
-import { getPrice, prettyPrintPrice } from '../../utils/pricing';
 
 const addOfferDetails = (offers, descriptions, currentIndex) => {
     const currentBatch = [...offers].splice(currentIndex, 50);

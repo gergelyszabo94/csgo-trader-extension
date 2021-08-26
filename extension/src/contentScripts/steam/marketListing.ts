@@ -1,6 +1,22 @@
 import DOMPurify from 'dompurify';
 
+import { trackEvent } from 'utils/analytics';
+import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
+import { injectScript, injectStyle } from 'utils/injection';
+import { buyListing, createOrder, loadItemOrderHistogram } from 'utils/market';
+import {
+    getHighestBuyOrder,
+    getPrice,
+    getStickerPriceTotal,
+    steamFormattedPriceToCents,
+    updateWalletCurrency,
+} from 'utils/pricing';
+import { isDopplerInName } from 'utils/simpleUtils';
 import { dopplerPhases } from 'utils/static/dopplerPhases';
+import exteriors from 'utils/static/exteriors';
+import { genericMarketLink, souvenir, starChar, stattrak, stattrakPretty } from 'utils/static/simpleStrings';
+import { listingsSortingModes } from 'utils/static/sortingModes';
+import steamApps from 'utils/static/steamApps';
 import {
     addUpdatedRibbon,
     changePageTitle,
@@ -16,22 +32,6 @@ import {
     toFixedNoRounding,
     updateLoggedInUserInfo,
 } from 'utils/utilsModular';
-import { listingsSortingModes } from 'utils/static/sortingModes';
-import { buyListing, createOrder, loadItemOrderHistogram } from 'utils/market';
-import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
-import exteriors from 'utils/static/exteriors';
-import {
-    getHighestBuyOrder,
-    getPrice,
-    getStickerPriceTotal,
-    steamFormattedPriceToCents,
-    updateWalletCurrency,
-} from 'utils/pricing';
-import { trackEvent } from 'utils/analytics';
-import { genericMarketLink, souvenir, starChar, stattrak, stattrakPretty } from 'utils/static/simpleStrings';
-import { injectScript, injectStyle } from 'utils/injection';
-import steamApps from 'utils/static/steamApps';
-import { isDopplerInName } from 'utils/simpleUtils';
 
 const inBrowserInspectButtonPopupLink = `
     <a class="popup_menu_item" id="inbrowser_inspect" href="https://market.swap.gg/screenshot" target="_blank">

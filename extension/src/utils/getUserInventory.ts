@@ -1,3 +1,9 @@
+import { getShortDate } from 'utils/dateTime';
+import { getFloatInfoFromCache } from 'utils/floatCaching';
+import { getPrice, getStickerPriceTotal } from 'utils/pricing';
+import { getItemMarketLink } from 'utils/simpleUtils';
+import itemTypes from 'utils/static/itemTypes';
+import steamApps from 'utils/static/steamApps';
 import {
     getDopplerInfo,
     getExteriorFromTags,
@@ -8,13 +14,6 @@ import {
     getType,
     parseStickerInfo,
 } from 'utils/utilsModular';
-import { getPrice, getStickerPriceTotal } from 'utils/pricing';
-
-import { getFloatInfoFromCache } from 'utils/floatCaching';
-import { getItemMarketLink } from 'utils/simpleUtils';
-import { getShortDate } from 'utils/dateTime';
-import itemTypes from 'utils/static/itemTypes';
-import steamApps from 'utils/static/steamApps';
 
 interface Inventory {
     [key: string]: Item;
