@@ -273,6 +273,11 @@ const storageKeys = {
     'That is the max I can do here, sorry!',
     'Feel free to add me to discuss this further',
   ],
+  showChatPresetMessages: true,
+  chatPresetMessages: [
+    'Hello! How can I help you today?',
+    'Hi! I have seen you added me but you are offline now. Message me later and tell me what I can do for you.',
+  ],
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
