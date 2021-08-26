@@ -113,50 +113,46 @@ export const getGroupInvites = (): Promise<GroupInvite[]> =>
             });
     });
 
-const makeFriendActionCall = (targetSteamID, action) => {
-    chrome.storage.local.get(['steamIDOfUser', 'steamSessionID'], ({ steamIDOfUser, steamSessionID }) => {
-        const myHeaders = new Headers();
-        myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+const makeFriendActionCall = async (targetSteamID: string, action: string) => {
+    const result = await localStorage.get(['steamIDOfUser', 'steamSessionID']);
+    const steamIDOfUser: string = result.steamIDOfUser;
+    const steamSessionID: string = result.steamSessionID;
 
-        const apiRequest = new Request(`https://steamcommunity.com/profiles/${steamIDOfUser}/friends/action`, {
-            method: 'POST',
-            headers: myHeaders,
-            body: `sessionid=${steamSessionID}&steamid=${steamIDOfUser}&ajax=1&action=${action}&steamids%5B%5D=${targetSteamID}`,
-        });
-
-        fetch(apiRequest)
-            .then((response) => {
-                if (!response.ok) {
-                    console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-                } else return response.json();
-            })
-            .then((data) => {
-                if (!data.success) console.log(data);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+    const response = fetcher.post(`https://steamcommunity.com/profiles/${steamIDOfUser}/friends/action`, {
+        form: {
+            sessionid: steamSessionID,
+            steamid: steamIDOfUser,
+            ajax: 1,
+            action,
+            'steamids[]': targetSteamID,
+        },
     });
+    if (!response.ok) {
+        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+        return;
+    }
+    const data = await response.json();
+    if (!data.success) console.log(data);
 };
 
-export const ignoreRequest = (steamIDToIgnore) => {
-    makeFriendActionCall(steamIDToIgnore, 'ignore_invite');
+export const ignoreRequest = async (steamIDToIgnore: string) => {
+    await makeFriendActionCall(steamIDToIgnore, 'ignore_invite');
 };
 
-export const acceptRequest = (steamIDToAccept) => {
-    makeFriendActionCall(steamIDToAccept, 'accept');
+export const acceptRequest = async (steamIDToAccept: string) => {
+    await makeFriendActionCall(steamIDToAccept, 'accept');
 };
 
-export const blockRequest = (steamIDToBlock) => {
-    makeFriendActionCall(steamIDToBlock, 'block');
+export const blockRequest = async (steamIDToBlock: string) => {
+    await makeFriendActionCall(steamIDToBlock, 'block');
 };
 
-export const ignoreGroupRequest = (steamIDToIgnore) => {
-    makeFriendActionCall(steamIDToIgnore, 'group_ignore');
+export const ignoreGroupRequest = async (steamIDToIgnore: string) => {
+    await makeFriendActionCall(steamIDToIgnore, 'group_ignore');
 };
 
-export const acceptGroupRequest = (steamIDToAccept) => {
-    makeFriendActionCall(steamIDToAccept, 'group_accept');
+export const acceptGroupRequest = async (steamIDToAccept: string) => {
+    await makeFriendActionCall(steamIDToAccept, 'group_accept');
 };
 
 export const getCommonFriends = (accountID) =>
