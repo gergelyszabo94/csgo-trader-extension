@@ -4,8 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
 import Modal from 'components/Modal/Modal';
 
-const ArrayOfStrings = ({ id }) => {
-  const maxMessageLength = 128;
+const ArrayOfStrings = ({ id, maxMessageLength }) => {
   const [strings, setStrings] = useState([]);
   const [modalText, setModalText] = useState('');
   const [inputValid, setInputValid] = useState(true);
@@ -52,7 +51,7 @@ const ArrayOfStrings = ({ id }) => {
     <div>
       {strings.map((string, index) => {
         return (
-          <div key={string.trim()}>
+          <div key={string.trim()} className="mb-2">
             <span>{string}</span>
             <CustomA11yButton action={() => { removeString(index); }} title="Remove string">
               <FontAwesomeIcon icon={faTrash} className="delete" />

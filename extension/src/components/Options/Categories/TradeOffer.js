@@ -128,6 +128,7 @@ const tradeOffer = () => {
         id="offerPresetMessages"
         type="arrayOfStrings"
         description="Add your messages to show up as options to select in offers"
+        maxMessageLength={128}
       />
     </Category>
   );

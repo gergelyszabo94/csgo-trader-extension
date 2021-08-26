@@ -20,7 +20,7 @@ import ArrayOfStrings from './Inputs/ArrayOfStrings/ArrayOfStrings';
 
 import './Row.css';
 
-const typeSwitch = (type, key, permission, origins, modalTitle, options) => {
+const typeSwitch = (type, key, permission, origins, modalTitle, options, maxMessageLength) => {
   switch (type) {
     case 'flipSwitchStorage':
       return <FlipSwitchStorage id={key} />;
@@ -61,14 +61,14 @@ const typeSwitch = (type, key, permission, origins, modalTitle, options) => {
     case 'notifSound':
       return <NotificationSound />;
     case 'arrayOfStrings':
-      return <ArrayOfStrings id={key} />;
+      return <ArrayOfStrings id={key} maxMessageLength={maxMessageLength} />;
     default:
       return null;
   }
 };
 
 const row = ({
-  name, description, type, id, permission, origins, modalTitle, options,
+  name, description, type, id, permission, origins, modalTitle, options, maxMessageLength,
 }) => {
   return (
     <div className="row mb-4 pb-4 option-row">
@@ -79,7 +79,7 @@ const row = ({
         <p className="font-size--s">{description}</p>
       </div>
       <div className="col-md-6">
-        {typeSwitch(type, id, permission, origins, modalTitle, options)}
+        {typeSwitch(type, id, permission, origins, modalTitle, options, maxMessageLength)}
       </div>
     </div>
   );
