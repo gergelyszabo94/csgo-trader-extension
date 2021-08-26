@@ -2,79 +2,8 @@ import React, { useEffect, useState } from 'react';
 
 import Invite from 'components/Options/Categories/Friends/Invite';
 import { currencies } from 'utils/static/pricing';
+import { Inviter } from 'types/storage';
 
-interface Inviter {
-    accountID: string;
-    avatar: string;
-    bans: Bans;
-    commonFriends: CommonFriend[];
-    csgoInventoryValue: number;
-    evalTries: number;
-    evaluation: Evaluation;
-    level: string;
-    name: string;
-    pastRequests: number;
-    steamID: string;
-    steamRepInfo: SteamRepInfo;
-    summary: Summary;
-}
-
-interface Summary {
-    avatar: string;
-    avatarfull: string;
-    avatarhash: string;
-    avatarmedium: string;
-    communityvisibilitystate: number;
-    personaname: string;
-    personastate: number;
-    personastateflags: number;
-    primaryclanid: string;
-    profilestate: number;
-    profileurl: string;
-    realname: string;
-    steamid: string;
-    timecreated: number;
-}
-
-interface SteamRepInfo {
-    flags: Flags;
-    reputation: Reputation;
-    steamID32: string;
-    steamID64: string;
-    steamrepurl: string;
-}
-
-interface Reputation {
-    full: string;
-    summary: string;
-}
-
-interface Flags {
-    status: string;
-}
-
-interface Evaluation {
-    action: string;
-    appliedRule: number;
-}
-
-interface CommonFriend {
-    accountID: string;
-    avatar: string;
-    name: string;
-    nickname: string;
-    profileLink: string;
-}
-
-interface Bans {
-    CommunityBanned: boolean;
-    DaysSinceLastBan: number;
-    EconomyBan: string;
-    NumberOfGameBans: number;
-    NumberOfVACBans: number;
-    SteamId: string;
-    VACBanned: boolean;
-}
 const IncomingInvites = () => {
     const [invites, setInvites] = useState<Inviter[]>([]);
     const [curr, setCurr] = useState(currencies.USD);

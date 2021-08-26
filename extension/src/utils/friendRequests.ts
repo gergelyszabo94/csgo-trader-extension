@@ -6,8 +6,11 @@ import * as fetcher from 'utils/requestUtils';
 import DOMPurify from 'dompurify';
 import { getUserCSGOInventory } from 'utils/getUserInventory';
 import { playNotificationSound } from 'utils/notifications';
+import { FriendRequestEvalRule } from 'types/storage';
+import { chromeStorageLocalGet, chromeStorageLocalSet } from './promiseUtils';
+import { Evaluation, Inviter } from 'types/storage';
 
-interface Inviter {
+interface RawInviter {
     steamID: string;
     accountID: string;
     name: string;
@@ -16,7 +19,7 @@ interface Inviter {
     avatar: string;
 }
 
-export const getFriendRequests = async (): Promise<Inviter[]> => {
+export const getFriendRequests = async (): Promise<RawInviter[]> => {
     try {
         const response = await fetcher.get('https://steamcommunity.com/my/friends/pending');
         if (!response.ok) {
@@ -27,7 +30,7 @@ export const getFriendRequests = async (): Promise<Inviter[]> => {
         const html = document.createElement('html');
         html.innerHTML = DOMPurify.sanitize(body);
         const receivedInvitesElement = html.querySelector('#search_results');
-        const inviters: Inviter[] = [];
+        const inviters: RawInviter[] = [];
 
         if (receivedInvitesElement !== null) {
             receivedInvitesElement.querySelectorAll('.invite_row').forEach((inviteRow) => {
@@ -240,37 +243,37 @@ const addSummariesToInvites = () => {
     });
 };
 
-const addBansToInvites = () => {
-    chrome.storage.local.get(['friendRequests'], ({ friendRequests }) => {
-        const invitesWithBans = [];
-        const noBansInvites = [];
-        const noBansInvitesIDs = [];
+const addBansToInvites = async () => {
+    const result = chromeStorageLocalGet('friendRequests');
+    const friendRequests = result.friendRequests;
+    const inviters: Inviter[] = friendRequests.inviters;
 
-        friendRequests.inviters.forEach((invite) => {
-            if (invite.bans === undefined) {
-                noBansInvites.push(invite);
-                noBansInvitesIDs.push(invite.steamID);
-            } else invitesWithBans.push(invite);
-        });
+    const invitesWithBans = [];
+    const noBansInvites = [];
+    const noBansInvitesIDs = [];
 
-        getPlayerBans(noBansInvitesIDs).then((bans) => {
-            const nowWithBans = noBansInvites.map((invite) => {
-                return {
-                    ...invite,
-                    bans: bans[invite.steamID],
-                };
-            });
+    for (const invite of inviters) {
+        if (invite.bans === undefined) {
+            noBansInvites.push(invite);
+            noBansInvitesIDs.push(invite.steamID);
+        } else {
+            invitesWithBans.push(invite);
+        }
+    }
 
-            chrome.storage.local.set(
-                {
-                    friendRequests: {
-                        inviters: [...invitesWithBans, ...nowWithBans],
-                        lastUpdated: Date.now(),
-                    },
-                },
-                () => {},
-            );
-        });
+    const bans = await getPlayerBans(noBansInvitesIDs);
+    const nowWithBans = noBansInvites.map((invite) => {
+        return {
+            ...invite,
+            bans: bans[invite.steamID],
+        };
+    });
+
+    chromeStorageLocalSet({
+        friendRequests: {
+            inviters: [...invitesWithBans, ...nowWithBans],
+            lastUpdated: Date.now(),
+        },
     });
 };
 
@@ -465,8 +468,8 @@ const addPastRequestsInfo = () => {
     });
 };
 
-const createFriendRequestEvent = (invite, type, appliedRule?) => {
-    let eventType;
+const createFriendRequestEvent = (invite: Inviter | RawInviter, type: string, appliedRule?: number) => {
+    let eventType: string;
     switch (type) {
         case actions.accept.key:
             eventType = eventTypes.auto_accepted.key;
@@ -489,7 +492,7 @@ const createFriendRequestEvent = (invite, type, appliedRule?) => {
     };
 };
 
-const evaluateRequest = (invite, rules) => {
+const evaluateRequest = (invite: Inviter, rules: FriendRequestEvalRule[]): Evaluation => {
     if (
         invite.summary &&
         invite.bans &&
@@ -580,7 +583,7 @@ const evaluateRequest = (invite, rules) => {
                 }
                 if (
                     rule.condition.type === conditions.csgo_inventory_value_under.key &&
-                    invite.csgoInventoryValue !== 'inventory_private' &&
+                    String(invite.csgoInventoryValue) !== 'inventory_private' &&
                     invite.csgoInventoryValue <= rule.condition.value
                 ) {
                     return {
@@ -590,7 +593,7 @@ const evaluateRequest = (invite, rules) => {
                 }
                 if (
                     rule.condition.type === conditions.csgo_inventory_value_over.key &&
-                    invite.csgoInventoryValue !== 'inventory_private' &&
+                    String(invite.csgoInventoryValue) !== 'inventory_private' &&
                     invite.csgoInventoryValue > rule.condition.value
                 ) {
                     return {
@@ -600,7 +603,7 @@ const evaluateRequest = (invite, rules) => {
                 }
                 if (
                     rule.condition.type === conditions.inventory_private.key &&
-                    invite.csgoInventoryValue === 'inventory_private'
+                    String(invite.csgoInventoryValue) === 'inventory_private'
                 ) {
                     return {
                         action: rule.action,
@@ -627,7 +630,7 @@ const evaluateRequest = (invite, rules) => {
                 }
                 if (
                     rule.condition.type === conditions.name_includes.key &&
-                    invite.name.toLowerCase().includes(rule.condition.value)
+                    invite.name.toLowerCase().includes(String(rule.condition.value))
                 ) {
                     return {
                         action: rule.action,
@@ -664,7 +667,7 @@ const evaluateRequest = (invite, rules) => {
     return null;
 };
 
-const executeVerdict = (invite, verdict) => {
+const executeVerdict = (invite: Inviter, verdict: string) => {
     switch (verdict) {
         case actions.ignore.key:
             ignoreRequest(invite.steamID);
@@ -675,175 +678,165 @@ const executeVerdict = (invite, verdict) => {
         case actions.accept.key:
             acceptRequest(invite.steamID);
             break;
-        default:
-            break;
     }
 };
 
-const evaluateInvites = () => {
-    chrome.storage.local.get(
-        ['friendRequests', 'friendRequestEvalRules'],
-        ({ friendRequests, friendRequestEvalRules }) => {
-            const alreadyEvaluated = [];
-            const evaluationEvents = [];
-            const evaluatedInvites = [];
-            friendRequests.inviters.forEach((invite) => {
-                if (invite.evaluation === undefined && invite.evalTries < 5) {
-                    const requestVerdict = evaluateRequest(invite, friendRequestEvalRules);
-                    if (requestVerdict !== null) {
-                        executeVerdict(invite, requestVerdict.action);
-                        evaluationEvents.push(
-                            createFriendRequestEvent(invite, requestVerdict.action, requestVerdict.appliedRule),
-                        );
-                        if (requestVerdict.action === actions.no_action.key) {
-                            evaluatedInvites.push({
-                                ...invite,
-                                evalTries: invite.evalTries + 1,
-                                evaluation: requestVerdict,
-                            });
-                        }
-                    } else {
-                        evaluatedInvites.push({
-                            ...invite,
-                            evalTries: invite.evalTries + 1,
-                        });
-                    }
-                } else alreadyEvaluated.push(invite);
+const evaluateInvites = async () => {
+    const result = await chromeStorageLocalGet(['friendRequests', 'friendRequestEvalRules']);
+    const friendRequests = result.friendRequests;
+    const friendRequestEvalRules: FriendRequestEvalRule[] = result.friendRequestEvalRules;
+
+    const inviters: Inviter[] = friendRequests.inviters;
+    const alreadyEvaluated = [];
+    const evaluationEvents = [];
+    const evaluatedInvites = [];
+
+    for (const invite of inviters) {
+        if (invite.evaluation || invite.evalTries >= 5) {
+            alreadyEvaluated.push(invite);
+            continue;
+        }
+
+        const evaluation = evaluateRequest(invite, friendRequestEvalRules);
+        if (evaluation) {
+            executeVerdict(invite, evaluation.action);
+            evaluationEvents.push(createFriendRequestEvent(invite, evaluation.action, evaluation.appliedRule));
+            if (evaluation.action === actions.no_action.key) {
+                evaluatedInvites.push({
+                    ...invite,
+                    evalTries: invite.evalTries + 1,
+                    evaluation,
+                });
+            }
+        } else {
+            evaluatedInvites.push({
+                ...invite,
+                evalTries: invite.evalTries + 1,
             });
+        }
+    }
 
-            chrome.storage.local.set(
-                {
-                    friendRequests: {
-                        inviters: [...alreadyEvaluated, ...evaluatedInvites],
-                        lastUpdated: Date.now(),
-                    },
-                },
-                () => {},
-            );
-
-            logFriendRequestEvents(evaluationEvents);
+    chromeStorageLocalSet({
+        friendRequests: {
+            inviters: [...alreadyEvaluated, ...evaluatedInvites],
+            lastUpdated: Date.now(),
         },
-    );
+    });
+
+    logFriendRequestEvents(evaluationEvents);
 };
 
-export const updateFriendRequest = () => {
-    getFriendRequests().then((inviters) => {
-        // inviters here is the freshly loaded list
-        // it only includes limited details though
-        const upToDateInviterIDs = inviters.map((inviter) => {
+export const updateFriendRequest = async () => {
+    const rawInviters = await getFriendRequests();
+    // inviters here is the freshly loaded list
+    // it only includes limited details though
+    const upToDateInviterIDs = rawInviters.map((inviter) => {
+        return inviter.steamID;
+    });
+
+    // loading previous invite info from storage that could be stale
+
+    const result = chromeStorageLocalGet(['friendRequests', 'apiKeyValid', 'notifyOnFriendRequest']);
+    const friendRequests = result.friendRequests;
+    const inviters: Inviter[] = friendRequests.inviters;
+    const apiKeyValid: boolean = result.apiKeyValid;
+    const notifyOnFriendRequest: boolean = result.notifyOnFriendRequest;
+    const minutesFromLastCheck = (Date.now() - new Date(friendRequests.lastUpdated).getTime()) / 1000 / 60;
+    // safeguarding against an edge case where the invites page loads
+    // but the invites themselves don't, which means
+    // that the extension would falsely update the incoming requests to 0
+    // when on the next update it checks and now correctly finds the invites
+    // it logs the invites as new ones, which is problematic
+    // because if the user uses the "received invite in the past week"
+    // as a condition in the rule, it would match to all invites at this point
+    // this can manifest in pretty ugly ways, for example ignoring all current friend requests
+    // the conditions below try minimize the risk of this happening
+    if (
+        rawInviters.length > 0 ||
+        inviters.length === 0 ||
+        (inviters.length < 2 && minutesFromLastCheck < 31) ||
+        minutesFromLastCheck > 61
+    ) {
+        const staleInviterIDs = inviters.map((inviter) => {
             return inviter.steamID;
         });
 
-        // loading previous invite info from storage that could be stale
-        chrome.storage.local.get(
-            ['friendRequests', 'apiKeyValid', 'notifyOnFriendRequest'],
-            ({ friendRequests, apiKeyValid, notifyOnFriendRequest }) => {
-                const minutesFromLastCheck = (Date.now() - new Date(friendRequests.lastUpdated).getTime()) / 1000 / 60;
-                // safeguarding against an edge case where the invites page loads
-                // but the invites themselves don't, which means
-                // that the extension would falsely update the incoming requests to 0
-                // when on the next update it checks and now correctly finds the invites
-                // it logs the invites as new ones, which is problematic
-                // because if the user uses the "received invite in the past week"
-                // as a condition in the rule, it would match to all invites at this point
-                // this can manifest in pretty ugly ways, for example ignoring all current friend requests
-                // the conditions below try minimize the risk of this happening
-                if (
-                    inviters.length > 0 ||
-                    friendRequests.inviters.length === 0 ||
-                    (friendRequests.inviters.length < 2 && minutesFromLastCheck < 31) ||
-                    minutesFromLastCheck > 61
-                ) {
-                    const staleInviterIDs = friendRequests.inviters.map((inviter) => {
-                        return inviter.steamID;
-                    });
+        // if the invite was canceled by the sender or
+        // accepted, ignored or blocked by the user since the last check
+        const disappearedInvites = inviters.filter((inviter: Inviter) => {
+            return !upToDateInviterIDs.includes(inviter.steamID);
+        });
 
-                    // if the invite was canceled by the sender or
-                    // accepted, ignored or blocked by the user since the last check
-                    const disappearedInvites = friendRequests.inviters.filter((inviter: Inviter) => {
-                        return !upToDateInviterIDs.includes(inviter.steamID);
-                    });
+        const disappearedInviteEvents = disappearedInvites.map((invite) => {
+            return createFriendRequestEvent(invite, eventTypes.disappeared.key);
+        });
 
-                    const disappearedInviteEvents = disappearedInvites.map((invite) => {
-                        return createFriendRequestEvent(invite, eventTypes.disappeared.key);
-                    });
+        const newInvites = rawInviters.filter((inviter) => {
+            return !staleInviterIDs.includes(inviter.steamID);
+        });
 
-                    const newInvites = inviters.filter((inviter) => {
-                        return !staleInviterIDs.includes(inviter.steamID);
-                    });
+        const unChangedInvites = inviters.filter((inviter) => {
+            return upToDateInviterIDs.includes(inviter.steamID);
+        });
 
-                    const unChangedInvites = friendRequests.inviters.filter((inviter) => {
-                        return upToDateInviterIDs.includes(inviter.steamID);
-                    });
+        await chromeStorageLocalSet({
+            friendRequests: {
+                inviters: [...unChangedInvites, ...newInvites],
+                lastUpdated: Date.now(),
+            },
+        });
 
-                    chrome.storage.local.set(
+        if (notifyOnFriendRequest) {
+            for (const invite of newInvites) {
+                let icon = '/images/cstlogo128.png';
+                try {
+                    icon = await getRemoteImageAsObjectURL(invite.avatar);
+                } catch (err) {
+                    console.log(err);
+                } finally {
+                    chrome.notifications.create(
+                        `invite_${invite.steamID}`,
                         {
-                            friendRequests: {
-                                inviters: [...unChangedInvites, ...newInvites],
-                                lastUpdated: Date.now(),
-                            },
+                            type: 'basic',
+                            iconUrl: icon,
+                            title: `Friend request from ${invite.name}`,
+                            message: `You have a new friend request from ${invite.name}!`,
                         },
                         () => {
-                            if (notifyOnFriendRequest) {
-                                newInvites.forEach((invite) => {
-                                    let icon = '/images/cstlogo128.png';
-                                    getRemoteImageAsObjectURL(invite.avatar)
-                                        .then((iconURL) => {
-                                            icon = iconURL;
-                                        })
-                                        .catch((e) => {
-                                            console.log(e);
-                                        })
-                                        .finally(() => {
-                                            chrome.notifications.create(
-                                                `invite_${invite.steamID}`,
-                                                {
-                                                    type: 'basic',
-                                                    iconUrl: icon,
-                                                    title: `Friend request from ${invite.name}`,
-                                                    message: `You have a new friend request from ${invite.name}!`,
-                                                },
-                                                () => {
-                                                    playNotificationSound();
-                                                },
-                                            );
-                                        });
-                                });
-                            }
-
-                            if (apiKeyValid) {
-                                addSummariesToInvites();
-                                setTimeout(() => {
-                                    addBansToInvites();
-                                }, 5000);
-                                setTimeout(() => {
-                                    addSteamRepInfoToInvites();
-                                }, 10000);
-                                setTimeout(() => {
-                                    addInventoryValueInfo();
-                                }, 15000);
-                                setTimeout(() => {
-                                    addCommonFriendsInfo();
-                                }, 20000);
-                                setTimeout(() => {
-                                    addPastRequestsInfo();
-                                }, 25000);
-                                setTimeout(() => {
-                                    evaluateInvites();
-                                }, 26000);
-                            }
+                            playNotificationSound();
                         },
                     );
-
-                    const newInviteEvents = newInvites.map((invite) => {
-                        return createFriendRequestEvent(invite, eventTypes.new.key);
-                    });
-
-                    logFriendRequestEvents([...newInviteEvents, ...disappearedInviteEvents]);
                 }
-            },
-        );
-    });
+            }
+
+            if (apiKeyValid) {
+                addSummariesToInvites();
+                setTimeout(() => {
+                    addBansToInvites();
+                }, 5000);
+                setTimeout(() => {
+                    addSteamRepInfoToInvites();
+                }, 10000);
+                setTimeout(() => {
+                    addInventoryValueInfo();
+                }, 15000);
+                setTimeout(() => {
+                    addCommonFriendsInfo();
+                }, 20000);
+                setTimeout(() => {
+                    addPastRequestsInfo();
+                }, 25000);
+                setTimeout(() => {
+                    evaluateInvites();
+                }, 26000);
+            }
+            const newInviteEvents = newInvites.map((invite) => {
+                return createFriendRequestEvent(invite, eventTypes.new.key);
+            });
+
+            logFriendRequestEvents([...newInviteEvents, ...disappearedInviteEvents]);
+        }
+    }
 };
 
 export const removeOldFriendRequestEvents = () => {
