@@ -1,7 +1,7 @@
 import { trackEvent } from 'utils/analytics';
 import { logExtensionPresence } from 'utils/utilsModular';
-import * as fetcher from 'utils/requestUtils';
-import { chromeStorageLocalGet, sleep } from 'utils/promiseUtils';
+import * as fetcher from 'utils/helpers/fetcher';
+import { chromeStorageLocalGet, sleep } from 'utils/helpers/localStorage';
 
 const bump = async () => {
     for (const button of Array.from(document.querySelectorAll('.btn.btn-custom.btn-xs'))) {

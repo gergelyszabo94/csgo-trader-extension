@@ -1,6 +1,6 @@
 import { getSessionID } from 'utils/utilsModular';
 import { getSteamWalletInfo } from 'utils/pricing';
-import * as fetcher from 'utils/requestUtils';
+import * as fetcher from 'utils/helpers/fetcher';
 
 export const buyListing = async (listing, buyerKYC) => {
     try {
@@ -229,7 +229,7 @@ export const getMarketHistory = async (start: number, count: number): Promise<Ma
             console.log(`Error code: ${response.status} Status: ${response.statusText}`);
             return;
         }
-        const data = await response.json() as MarketHistory;
+        const data = (await response.json()) as MarketHistory;
         if (data && data.success) {
             return data;
         }

@@ -1,4 +1,4 @@
-import { chromeStorageLocalGet } from 'utils/promiseUtils';
+import { chromeStorageLocalGet } from 'utils/helpers/localStorage';
 
 (async () => {
     const result = await chromeStorageLocalGet('csgotradersAutoLogin');

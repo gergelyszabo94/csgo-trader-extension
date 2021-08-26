@@ -1,7 +1,7 @@
 import { FloatInfo, FloatsInfo } from 'types';
 import { getFloatInfoFromCache } from 'utils/floatCaching';
-import { chromeRuntimeSendMessage, chromeStorageLocalGet, chromeStorageLocalSet } from './promiseUtils';
-import { sleep } from './promiseUtils';
+import { chromeRuntimeSendMessage, chromeStorageLocalGet, chromeStorageLocalSet } from './helpers/localStorage';
+import { sleep } from 'utils/simpleUtils';
 
 const floatQueue = {
     active: false,

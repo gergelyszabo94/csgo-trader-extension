@@ -5,8 +5,8 @@ import { goldenCommenters } from 'utils/goldening';
 import { trackEvent } from 'utils/analytics';
 import { SharedFileIDAndOwner } from 'types';
 import { FlagScamComments } from 'types/storage';
-import * as fetcher from './requestUtils';
-import { chromeStorageLocalGet } from './promiseUtils';
+import * as fetcher from 'utils/helpers/fetcher';
+import { chromeStorageLocalGet } from './helpers/localStorage';
 
 export const handleReplyToCommentFunctionality = async (event) => {
     await trackEvent({

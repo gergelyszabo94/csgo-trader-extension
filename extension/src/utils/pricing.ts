@@ -6,7 +6,7 @@ import { findElementByIDs } from 'utils/itemsToElementsToItems';
 import { getItemMarketLink } from 'utils/simpleUtils';
 import { injectScript } from 'utils/injection';
 import { storageKeys } from 'utils/static/storageKeys';
-import { chromeRuntimeSendMessage, chromeStorageLocalGet, chromeStorageLocalSet } from './promiseUtils';
+import { chromeRuntimeSendMessage, chromeStorageLocalGet, chromeStorageLocalSet } from './helpers/localStorage';
 import {
     Currency,
     ItemPricing,
@@ -16,7 +16,7 @@ import {
     RealTimePricesFreqFailure,
     RealTimePricesFreqSuccess,
 } from 'types/storage';
-import * as fetcher from 'utils/requestUtils';
+import * as fetcher from 'utils/helpers/fetcher';
 
 export const priceQueue = {
     active: false,
@@ -120,7 +120,7 @@ export const getPriceOverview = async (appID: string, marketHashName: string): P
         if (!response.ok) {
             console.log(`Error code: ${response.status} Status: ${response.statusText}`);
         }
-        const data = await response.json() as PriceOverview;
+        const data = (await response.json()) as PriceOverview;
         if (data && data.success === true) {
             return data;
         }

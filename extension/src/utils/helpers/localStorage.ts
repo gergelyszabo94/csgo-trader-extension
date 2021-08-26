@@ -39,7 +39,3 @@ export const chromeStorageLocalSet = async (items: { [key: string]: any }): Prom
 export const chromeStorageLocalClear = async (): Promise<void> => {
     await chrome.storage.local.clear();
 };
-
-export const sleep = (ms: number): Promise<void> => {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-};

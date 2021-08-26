@@ -1,8 +1,8 @@
-import * as fetcher from './requestUtils';
-import { sleep } from './promiseUtils';
+import * as fetcher from 'utils/helpers/fetcher';
+import { sleep } from 'utils/simpleUtils';
 import { AnalyticsEvent, TelemetryOn } from 'types/storage';
 import { nonSettingStorageKeys, storageKeys } from 'utils/static/storageKeys';
-import { chromeRuntimePlatformInfo, chromeStorageLocalGet, chromeStorageLocalSet } from './promiseUtils';
+import { chromeRuntimePlatformInfo, chromeStorageLocalGet, chromeStorageLocalSet } from './helpers/localStorage';
 
 interface TrackEventProps {
     type: string;

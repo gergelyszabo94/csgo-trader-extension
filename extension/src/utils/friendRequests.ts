@@ -1,13 +1,13 @@
 import { actions, conditions, eventTypes } from 'utils/static/friendRequests';
 import { getPlayerBans, getPlayerSummaries } from 'utils/ISteamUser';
 import { getRemoteImageAsObjectURL, getSteamRepInfo } from 'utils/utilsModular';
-import * as fetcher from 'utils/requestUtils';
+import * as fetcher from 'utils/helpers/fetcher';
 
 import DOMPurify from 'dompurify';
 import { getUserCSGOInventory } from 'utils/getUserInventory';
 import { playNotificationSound } from 'utils/notifications';
 import { FriendRequestEvalRule } from 'types/storage';
-import { chromeStorageLocalGet, chromeStorageLocalSet } from './promiseUtils';
+import { chromeStorageLocalGet, chromeStorageLocalSet } from './helpers/localStorage';
 import { Evaluation, Inviter } from 'types/storage';
 
 interface RawInviter {
