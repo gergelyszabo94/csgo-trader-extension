@@ -675,6 +675,15 @@ progress {
     font-weight: bold;
 }
 
+.messagePreset {
+    color: #aaa;
+    background-color: #1b1c20;
+    margin-left: 10px;
+    margin-right: 10px;
+    border: 0 solid transparent;
+    box-shadow: inset 0 0 4px #000;
+}
+
 /**
  * Tooltip Styles
  */
