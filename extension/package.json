@@ -62,6 +62,7 @@
     "build": "src/"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^2.0.4",
     "@types/dompurify": "^2.2.3",
     "@types/react": "^17.0.19",
     "@types/react-dom": "^17.0.9",
