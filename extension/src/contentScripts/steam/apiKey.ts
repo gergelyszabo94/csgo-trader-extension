@@ -2,13 +2,14 @@ import { logExtensionPresence, updateLoggedInUserInfo } from 'utils/utilsModular
 
 import DOMPurify from 'dompurify';
 import { trackEvent } from 'utils/analytics';
-import { chromeRuntimeSendMessage, chromeStorageLocalGet, chromeStorageLocalSet } from 'utils/helpers/localStorage';
+import * as localStorage from 'utils/helpers/localStorage';
+import * as runtime from 'utils/helpers/runtime';
 
 logExtensionPresence();
 updateLoggedInUserInfo();
 
 (async () => {
-    const result = await chromeStorageLocalGet('autoSetSteamAPIKey');
+    const result = await localStorage.get('autoSetSteamAPIKey');
     const autoSetSteamAPIKey: boolean = result.autoSetSteamAPIKey;
     await trackEvent({
         type: 'event',
@@ -24,11 +25,11 @@ updateLoggedInUserInfo();
         } else {
             // if API key registered, just parse it and add it to extension
             const apiKey = document.getElementById('bodyContents_ex').querySelector('p').innerText.split(': ')[1];
-            const response = await chromeRuntimeSendMessage({ apikeytovalidate: apiKey });
+            const response = await runtime.sendMessage({ apikeytovalidate: apiKey });
 
             let message: string;
             if (response.valid) {
-                await chromeStorageLocalSet({ steamAPIKey: apiKey, apiKeyValid: true });
+                await localStorage.set({ steamAPIKey: apiKey, apiKeyValid: true });
                 message = DOMPurify.sanitize(`<div class="apiKeyAdded">
                 Added API key to CSGOTrader Extension, if you don't like this happening you can go the options and turn Autoset off.
             </div>`);

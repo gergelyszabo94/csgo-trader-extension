@@ -1,6 +1,7 @@
 import { FloatInfo, FloatsInfo } from 'types';
 import { arrayFromArrayOrNotArray } from 'utils/utilsModular';
-import { chromeStorageLocalGet, chromeStorageLocalRemove, chromeStorageLocalSet } from './helpers/localStorage';
+import * as runtime from 'utils/helpers/runtime';
+import * as localStorage from 'utils/helpers/localStorage';
 
 export const addToFloatCache = async (assetID: string, floatInfo: FloatInfo) => {
     await chrome.storage.local.set({
@@ -20,7 +21,7 @@ export const updateFloatCache = async (assetIDs: string[] | string[]): Promise<v
         return `floatCache_${ID}`;
     });
 
-    const result = await chromeStorageLocalGet(floatStorageKeys);
+    const result = await localStorage.get(floatStorageKeys);
     const itemFloatInfos = {};
     for (const [floatKey, itemFloatInfo] of Object.entries(result)) {
         if (itemFloatInfo) {
@@ -30,7 +31,7 @@ export const updateFloatCache = async (assetIDs: string[] | string[]): Promise<v
         }
     }
 
-    await chromeStorageLocalSet(itemFloatInfos);
+    await localStorage.set(itemFloatInfos);
 };
 
 export const getFloatInfoFromCache = async (assetIDs: string | string[]): Promise<FloatsInfo> => {
@@ -41,7 +42,7 @@ export const getFloatInfoFromCache = async (assetIDs: string | string[]): Promis
         return `floatCache_${ID}`;
     });
 
-    const result = await chromeStorageLocalGet(floatStorageKeys);
+    const result = await localStorage.get(floatStorageKeys);
     assetIDsArray.forEach((assetID) => {
         const itemFloatCache = result[`floatCache_${assetID}`];
         if (itemFloatCache) {
@@ -78,7 +79,7 @@ export const extractUsefulFloatInfo = (floatInfo: FloatInfo) => {
 };
 
 export const trimFloatCache = async () => {
-    const result = await chromeStorageLocalGet();
+    const result = await localStorage.get();
 
     for (const [key, asset] of Object.entries(result)) {
         if (key.startsWith('floatCache_')) {
@@ -89,7 +90,7 @@ export const trimFloatCache = async () => {
             // then this whole thing negated
             // because the ones that do not fit this wil remain in the cache
             if ((used === 0 && timeSinceLastUsed > 86400) || (used > 0 && timeSinceLastUsed > 604800)) {
-                await chromeStorageLocalRemove(key);
+                await localStorage.remove(key);
             }
         }
     }

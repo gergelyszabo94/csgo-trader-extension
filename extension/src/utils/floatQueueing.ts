@@ -1,6 +1,7 @@
 import { FloatInfo, FloatsInfo } from 'types';
 import { getFloatInfoFromCache } from 'utils/floatCaching';
-import { chromeRuntimeSendMessage, chromeStorageLocalGet, chromeStorageLocalSet } from './helpers/localStorage';
+import * as runtime from 'utils/helpers/runtime';
+import * as localStorage from 'utils/helpers/localStorage';
 import { sleep } from 'utils/simpleUtils';
 
 const floatQueue = {
@@ -28,7 +29,7 @@ export const workOnFloatQueue = async () => {
         return;
     }
 
-    const response = await chromeRuntimeSendMessage({
+    const response = await runtime.sendMessage({
         fetchFloatInfo: {
             inspectLink: job.inspectLink,
             price: job.price,
@@ -39,7 +40,7 @@ export const workOnFloatQueue = async () => {
         job.callBackFunction(job, response.floatInfo, floatQueue);
     }
 
-    const floatQueueActivity = (await chromeStorageLocalGet('floatQueueActivity')).floatQueueActivity;
+    const floatQueueActivity = (await localStorage.get('floatQueueActivity')).floatQueueActivity;
     const secondsFromLastUse = (Date.now() - new Date(floatQueueActivity.lastUsed).getTime()) / 1000;
 
     // tries to avoid having multiple float queues running concurrently on different pages
@@ -52,7 +53,7 @@ export const workOnFloatQueue = async () => {
         await sleep(30000);
     }
     await workOnFloatQueue();
-    await chromeStorageLocalSet({
+    await localStorage.set({
         floatQueueActivity: {
             lastUsed: Date.now(),
             usedAt: window.location.href,

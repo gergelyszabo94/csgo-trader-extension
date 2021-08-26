@@ -6,7 +6,8 @@ import { findElementByIDs } from 'utils/itemsToElementsToItems';
 import { getItemMarketLink } from 'utils/simpleUtils';
 import { injectScript } from 'utils/injection';
 import { storageKeys } from 'utils/static/storageKeys';
-import { chromeRuntimeSendMessage, chromeStorageLocalGet, chromeStorageLocalSet } from './helpers/localStorage';
+import * as runtime from 'utils/helpers/runtime';
+import * as localStorage from 'utils/helpers/localStorage';
 import {
     Currency,
     ItemPricing,
@@ -54,7 +55,7 @@ export const getSteamWalletInfo = (): WalletInfo => {
 };
 
 export const initPriceQueue = async (cleanupFunction?: () => void) => {
-    const result = await chromeStorageLocalGet(['realTimePricesFreqSuccess', 'realTimePricesFreqFailure']);
+    const result = await localStorage.get(['realTimePricesFreqSuccess', 'realTimePricesFreqFailure']);
     const realTimePricesFreqSuccess: RealTimePricesFreqSuccess = result.realTimePricesFreqSuccess;
     const realTimePricesFreqFailure: RealTimePricesFreqFailure = result.realTimePricesFreqFailure;
     priceQueue.delaySuccess = realTimePricesFreqSuccess;
@@ -91,7 +92,7 @@ interface BuyOrderInfo {
 }
 
 export const getHighestBuyOrder = async (appID: string, marketHashName: string): Promise<number | undefined> => {
-    const result = await chromeStorageLocalGet('currency');
+    const result = await localStorage.get('currency');
     const currency: Currency = result.currency;
     const steamWalletInfo = getSteamWalletInfo();
     let currencyID = 1;
@@ -100,7 +101,7 @@ export const getHighestBuyOrder = async (appID: string, marketHashName: string):
     } else {
         currencyID = Number(Object.keys(steamCurrencyCodes).find((key) => steamCurrencyCodes[key] === currency));
     }
-    const response = await chromeRuntimeSendMessage({ getBuyOrderInfo: { appID, currencyID, marketHashName } });
+    const response = await runtime.sendMessage({ getBuyOrderInfo: { appID, currencyID, marketHashName } });
     if (response !== 'error') {
         return Number((response.getBuyOrderInfo as BuyOrderInfo).highest_buy_order);
     }
@@ -170,7 +171,7 @@ interface MarketAction {
 
 export const getLowestListingPrice = async (appID: string, marketHashName: string): Promise<number | undefined> => {
     try {
-        const result = await chromeStorageLocalGet('currency');
+        const result = await localStorage.get('currency');
         const currency: Currency = result.currency;
         const steamWalletInfo = getSteamWalletInfo();
         let currencyID: number = 1;
@@ -265,7 +266,7 @@ export const workOnPriceQueue = async () => {
 
     // only start the work if the queue is inactive at the moment
     priceQueue.active = true; // marks the queue active
-    const result = await chromeStorageLocalGet('priceQueueActivity');
+    const result = await localStorage.get('priceQueueActivity');
     const priceQueueActivity: PriceQueueActivity = result.priceQueueActivity;
     const job = priceQueue.jobs.shift();
     const secondsFromLastUse = (Date.now() - new Date(priceQueueActivity.lastUsed).getTime()) / 1000;
@@ -409,7 +410,7 @@ export const workOnPriceQueue = async () => {
     }
 
     // updates storage to signal that the price queue is being used
-    await chromeStorageLocalSet({
+    await localStorage.set({
         priceQueueActivity: {
             lastUsed: Date.now(),
             usedAt: window.location.pathname,
@@ -418,7 +419,7 @@ export const workOnPriceQueue = async () => {
 };
 
 export const updatePrices = async () => {
-    const result = chromeStorageLocalGet(['itemPricing', 'pricingProvider', 'pricingMode']);
+    const result = localStorage.get(['itemPricing', 'pricingProvider', 'pricingMode']);
 
     const item: ItemPricing = result.itemPricing;
     const provider: PricingProvider = result.pricingProvider;
@@ -488,7 +489,7 @@ export const updatePrices = async () => {
                     }
                 }
         }
-        await chromeStorageLocalSet({ prices });
+        await localStorage.set({ prices });
     }
 };
 

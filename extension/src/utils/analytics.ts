@@ -2,7 +2,8 @@ import * as fetcher from 'utils/helpers/fetcher';
 import { sleep } from 'utils/simpleUtils';
 import { AnalyticsEvent, TelemetryOn } from 'types/storage';
 import { nonSettingStorageKeys, storageKeys } from 'utils/static/storageKeys';
-import { chromeRuntimePlatformInfo, chromeStorageLocalGet, chromeStorageLocalSet } from './helpers/localStorage';
+import * as runtime from 'utils/helpers/runtime';
+import * as localStorage from 'utils/helpers/localStorage';
 
 interface TrackEventProps {
     type: string;
@@ -16,8 +17,8 @@ export const trackEvent = async ({ type, action }: TrackEventProps) => {
         timestamp: Date.now(),
     };
 
-    const { analyticsEvents } = await chromeStorageLocalGet('analyticsEvents');
-    await chromeStorageLocalSet({
+    const { analyticsEvents } = await localStorage.get('analyticsEvents');
+    await localStorage.set({
         analyticsEvents: [...(analyticsEvents as AnalyticsEvent[]), analyticsInfo],
     });
 };
@@ -36,12 +37,12 @@ export const sendTelemetry = async (retries?: number) => {
     const storageKeysForTelemetry = [...settingsStorageKeys];
     storageKeysForTelemetry.push('analyticsEvents', 'clientID');
 
-    const result = await chromeStorageLocalGet(storageKeysForTelemetry);
+    const result = await localStorage.get(storageKeysForTelemetry);
     const telemetryOn: TelemetryOn = result.telemetryOn;
     const analyticsEvents: AnalyticsEvent[] = result.analyticsEvents;
 
     if (!telemetryOn) {
-        await chromeStorageLocalSet({ analyticsEvents: [] });
+        await localStorage.set({ analyticsEvents: [] });
         return;
     }
 
@@ -85,7 +86,7 @@ export const sendTelemetry = async (retries?: number) => {
         }
     }
 
-    const platformInfo = await chromeRuntimePlatformInfo();
+    const platformInfo = await runtime.platformInfo();
     try {
         const response = await fetcher.post('https://api.csgotrader.app/analytics/putevents', {
             json: {
@@ -111,7 +112,7 @@ export const sendTelemetry = async (retries?: number) => {
                 const newAnalyticsEvents = analyticsEvents.filter((event) => {
                     return event.timestamp > Date.now() - 1000 * 60 * 60 * 24 * 7;
                 });
-                await chromeStorageLocalSet({ analyticsEvents: newAnalyticsEvents });
+                await localStorage.set({ analyticsEvents: newAnalyticsEvents });
             }
         }
     } catch (err) {

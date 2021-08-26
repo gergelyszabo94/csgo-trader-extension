@@ -7,7 +7,8 @@ import DOMPurify from 'dompurify';
 import { getUserCSGOInventory } from 'utils/getUserInventory';
 import { playNotificationSound } from 'utils/notifications';
 import { FriendRequestEvalRule } from 'types/storage';
-import { chromeStorageLocalGet, chromeStorageLocalSet } from './helpers/localStorage';
+import * as runtime from 'utils/helpers/runtime';
+import * as localStorage from 'utils/helpers/localStorage';
 import { Evaluation, Inviter } from 'types/storage';
 
 interface RawInviter {
@@ -244,7 +245,7 @@ const addSummariesToInvites = () => {
 };
 
 const addBansToInvites = async () => {
-    const result = chromeStorageLocalGet('friendRequests');
+    const result = localStorage.get('friendRequests');
     const friendRequests = result.friendRequests;
     const inviters: Inviter[] = friendRequests.inviters;
 
@@ -269,7 +270,7 @@ const addBansToInvites = async () => {
         };
     });
 
-    chromeStorageLocalSet({
+    localStorage.set({
         friendRequests: {
             inviters: [...invitesWithBans, ...nowWithBans],
             lastUpdated: Date.now(),
@@ -682,7 +683,7 @@ const executeVerdict = (invite: Inviter, verdict: string) => {
 };
 
 const evaluateInvites = async () => {
-    const result = await chromeStorageLocalGet(['friendRequests', 'friendRequestEvalRules']);
+    const result = await localStorage.get(['friendRequests', 'friendRequestEvalRules']);
     const friendRequests = result.friendRequests;
     const friendRequestEvalRules: FriendRequestEvalRule[] = result.friendRequestEvalRules;
 
@@ -716,7 +717,7 @@ const evaluateInvites = async () => {
         }
     }
 
-    chromeStorageLocalSet({
+    localStorage.set({
         friendRequests: {
             inviters: [...alreadyEvaluated, ...evaluatedInvites],
             lastUpdated: Date.now(),
@@ -736,7 +737,7 @@ export const updateFriendRequest = async () => {
 
     // loading previous invite info from storage that could be stale
 
-    const result = chromeStorageLocalGet(['friendRequests', 'apiKeyValid', 'notifyOnFriendRequest']);
+    const result = localStorage.get(['friendRequests', 'apiKeyValid', 'notifyOnFriendRequest']);
     const friendRequests = result.friendRequests;
     const inviters: Inviter[] = friendRequests.inviters;
     const apiKeyValid: boolean = result.apiKeyValid;
@@ -779,7 +780,7 @@ export const updateFriendRequest = async () => {
             return upToDateInviterIDs.includes(inviter.steamID);
         });
 
-        await chromeStorageLocalSet({
+        await localStorage.set({
             friendRequests: {
                 inviters: [...unChangedInvites, ...newInvites],
                 lastUpdated: Date.now(),

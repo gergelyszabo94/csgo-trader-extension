@@ -1,7 +1,7 @@
 import { trackEvent } from 'utils/analytics';
 import { logExtensionPresence } from 'utils/utilsModular';
 import * as fetcher from 'utils/helpers/fetcher';
-import { chromeStorageLocalGet, sleep } from 'utils/helpers/localStorage';
+import * as localStorage from 'utils/helpers/localStorage';
 
 const bump = async () => {
     for (const button of Array.from(document.querySelectorAll('.btn.btn-custom.btn-xs'))) {
@@ -23,7 +23,7 @@ logExtensionPresence();
         action: 'TradersTradesView',
     });
 
-    const result = await chromeStorageLocalGet('tradersBump');
+    const result = await localStorage.get('tradersBump');
     const tradersBump: boolean = result.tradersBump;
     if (tradersBump) {
         // redirects form the "The page you were looking for doesn't exist." page

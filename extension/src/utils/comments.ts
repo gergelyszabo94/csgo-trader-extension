@@ -6,7 +6,7 @@ import { trackEvent } from 'utils/analytics';
 import { SharedFileIDAndOwner } from 'types';
 import { FlagScamComments } from 'types/storage';
 import * as fetcher from 'utils/helpers/fetcher';
-import { chromeStorageLocalGet } from './helpers/localStorage';
+import * as localStorage from 'utils/helpers/localStorage';
 
 export const handleReplyToCommentFunctionality = async (event) => {
     await trackEvent({
@@ -112,7 +112,7 @@ const hideAndReport = async (type: string, pageID: SharedFileIDAndOwner, comment
 };
 
 export const reportComments = async (type: string, pageID: SharedFileIDAndOwner) => {
-    const result = await chromeStorageLocalGet(['flagScamComments', 'customCommentsToReport']);
+    const result = await localStorage.get(['flagScamComments', 'customCommentsToReport']);
 
     const flagScamComments: FlagScamComments = result.flagScamComments;
     const customCommentsToReport = result.customCommentsToReport;

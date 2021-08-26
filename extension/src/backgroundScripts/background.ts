@@ -13,7 +13,7 @@ import { sendTelemetry, trackEvent } from 'utils/analytics';
 import { ExchangeRates } from 'types/storage';
 import { storageKeys } from 'utils/static/storageKeys';
 import { trimFloatCache } from 'utils/floatCaching';
-import { chromeStorageLocalGet, chromeStorageLocalSet } from 'utils/helpers/localStorage';
+import * as localStorage from 'utils/helpers/localStorage';
 
 // handles install and update events
 chrome.runtime.onInstalled.addListener(async (details) => {
@@ -37,9 +37,9 @@ chrome.runtime.onInstalled.addListener(async (details) => {
         // the delay is to wait for exchange rates data to be set
         setTimeout(async () => {
             const currency = await getUserCurrencyBestGuess();
-            const result = await chromeStorageLocalGet('exchangeRates');
+            const result = await localStorage.get('exchangeRates');
             const exchangeRates: ExchangeRates = result.exchangeRates;
-            await chromeStorageLocalSet({
+            await localStorage.set({
                 currency,
                 exchangeRate: exchangeRates[currency],
             });
