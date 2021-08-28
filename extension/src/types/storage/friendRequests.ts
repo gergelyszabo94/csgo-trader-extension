@@ -3,7 +3,7 @@ export interface Inviter {
     avatar: string;
     bans: Bans;
     commonFriends: CommonFriend[];
-    csgoInventoryValue: number;
+    csgoInventoryValue: number | string;
     evalTries: number;
     evaluation: Evaluation;
     level: string;

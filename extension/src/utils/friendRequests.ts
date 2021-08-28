@@ -13,6 +13,8 @@ import * as fetcher from 'utils/helpers/fetcher';
 import * as localStorage from 'utils/helpers/localStorage';
 import * as runtime from 'utils/helpers/runtime';
 
+import { sleep } from './simpleUtils';
+
 interface RawInviter {
     steamID: string;
     accountID: string;
@@ -198,14 +200,10 @@ export const getCommonFriends = (accountID) =>
             });
     });
 
-const logFriendRequestEvents = (events) => {
-    chrome.storage.local.get(['friendRequestLogs'], ({ friendRequestLogs }) => {
-        chrome.storage.local.set(
-            {
-                friendRequestLogs: [...friendRequestLogs, ...events],
-            },
-            () => {},
-        );
+const logFriendRequestEvents = async (events: FriendRequestEvent[]) => {
+    const friendRequestLogs = (await localStorage.get('friendRequestLogs')).friendRequestLogs;
+    await localStorage.set({
+        friendRequestLogs: [...friendRequestLogs, ...events],
     });
 };
 
@@ -276,101 +274,96 @@ const addBansToInvites = async () => {
     });
 };
 
-const addSteamRepInfoToInvites = () => {
-    chrome.storage.local.get(['friendRequests'], ({ friendRequests }) => {
-        const invitesWithSteamRep = [];
-        const noSteamRepInvites = [];
+const addSteamRepInfoToInvites = async () => {
+    const friendRequests = (await localStorage.get('friendRequests')).friendRequests;
+    const inviters: Inviter[] = friendRequests.inviters;
+    const invitesWithSteamRep: Inviter[] = [];
+    const noSteamRepInvites: Inviter[] = [];
 
-        friendRequests.inviters.forEach((invite) => {
-            if (invite.steamRepInfo === undefined) {
-                noSteamRepInvites.push(invite);
-            } else invitesWithSteamRep.push(invite);
-        });
+    inviters.forEach((invite) => {
+        if (invite.steamRepInfo === undefined) {
+            noSteamRepInvites.push(invite);
+        } else {
+            invitesWithSteamRep.push(invite);
+        }
+    });
 
-        const nowWithSteamRepInfo = [];
+    const nowWithSteamRepInfo: Inviter[] = [];
 
-        noSteamRepInvites.forEach((invite) => {
-            getSteamRepInfo(invite.steamID).then((steamRepInfo) => {
-                nowWithSteamRepInfo.push({
-                    ...invite,
-                    steamRepInfo,
-                });
-            });
-        });
+    for (const invite of noSteamRepInvites) {
+        const steamRepInfo = await getSteamRepInfo(invite.steamID);
+        nowWithSteamRepInfo.push({ ...invite, steamRepInfo });
+    }
 
-        setTimeout(() => {
-            const nowWithSteamRepInfoIDs = nowWithSteamRepInfo.map((invite) => {
-                return invite.steamID;
-            });
-            const stillNoSteamRep = noSteamRepInvites.filter((invite) => {
-                return !nowWithSteamRepInfoIDs.includes(invite.steamID);
-            });
+    await sleep(4000);
 
-            chrome.storage.local.set(
-                {
-                    friendRequests: {
-                        inviters: [...invitesWithSteamRep, ...stillNoSteamRep, ...nowWithSteamRepInfo],
-                        lastUpdated: Date.now(),
-                    },
-                },
-                () => {},
-            );
-        }, 4000);
+    const nowWithSteamRepInfoIDs = nowWithSteamRepInfo.map((invite) => {
+        return invite.steamID;
+    });
+    const stillNoSteamRep = noSteamRepInvites.filter((invite) => {
+        return !nowWithSteamRepInfoIDs.includes(invite.steamID);
+    });
+
+    await localStorage.set({
+        friendRequests: {
+            inviters: [...invitesWithSteamRep, ...stillNoSteamRep, ...nowWithSteamRepInfo],
+            lastUpdated: Date.now(),
+        },
     });
 };
 
-const addInventoryValueInfo = () => {
-    chrome.storage.local.get(['friendRequests'], ({ friendRequests }) => {
-        const invitesWithInventoryValue = [];
-        const noInventoryValueInvites = [];
+const addInventoryValueInfo = async () => {
+    const friendRequests = (await localStorage.get('friendRequests')).friendRequests;
+    const inviters: Inviter[] = friendRequests.inviters;
+    const invitesWithInventoryValue: Inviter[] = [];
+    const noInventoryValueInvites: Inviter[] = [];
 
-        friendRequests.inviters.forEach((invite) => {
-            if (invite.csgoInventoryValue === undefined) {
-                noInventoryValueInvites.push(invite);
-            } else invitesWithInventoryValue.push(invite);
+    inviters.forEach((invite) => {
+        if (invite.csgoInventoryValue === undefined) {
+            noInventoryValueInvites.push(invite);
+        } else {
+            invitesWithInventoryValue.push(invite);
+        }
+    });
+
+    const nowWithInventoryValue: Inviter[] = [];
+
+    for (const [index, invite] of noInventoryValueInvites.entries()) {
+        if (index >= 5) break;
+        try {
+            const { total } = await getUserCSGOInventory(invite.steamID);
+            nowWithInventoryValue.push({
+                ...invite,
+                csgoInventoryValue: total,
+            });
+        } catch (err) {
+            if (err === 'inventory_private' || err === 'inventory_private') {
+                nowWithInventoryValue.push({
+                    ...invite,
+                    csgoInventoryValue: 'inventory_private',
+                });
+            }
+        }
+    }
+
+    setTimeout(() => {
+        const nowWithInventoryValueIDs = nowWithInventoryValue.map((invite) => {
+            return invite.steamID;
+        });
+        const stillNoInventoryValue = noInventoryValueInvites.filter((invite) => {
+            return !nowWithInventoryValueIDs.includes(invite.steamID);
         });
 
-        const nowWithInventoryValue = [];
-
-        for (const [index, invite] of noInventoryValueInvites.entries()) {
-            if (index < 5) {
-                getUserCSGOInventory(invite.steamID)
-                    .then(({ total }) => {
-                        nowWithInventoryValue.push({
-                            ...invite,
-                            csgoInventoryValue: total,
-                        });
-                    })
-                    .catch((err) => {
-                        if (err === 'inventory_private' || err === 'inventory_private') {
-                            nowWithInventoryValue.push({
-                                ...invite,
-                                csgoInventoryValue: 'inventory_private',
-                            });
-                        }
-                    });
-            } else break;
-        }
-
-        setTimeout(() => {
-            const nowWithInventoryValueIDs = nowWithInventoryValue.map((invite) => {
-                return invite.steamID;
-            });
-            const stillNoInventoryValue = noInventoryValueInvites.filter((invite) => {
-                return !nowWithInventoryValueIDs.includes(invite.steamID);
-            });
-
-            chrome.storage.local.set(
-                {
-                    friendRequests: {
-                        inviters: [...invitesWithInventoryValue, ...stillNoInventoryValue, ...nowWithInventoryValue],
-                        lastUpdated: Date.now(),
-                    },
+        chrome.storage.local.set(
+            {
+                friendRequests: {
+                    inviters: [...invitesWithInventoryValue, ...stillNoInventoryValue, ...nowWithInventoryValue],
+                    lastUpdated: Date.now(),
                 },
-                () => {},
-            );
-        }, 4000);
-    });
+            },
+            () => {},
+        );
+    }, 4000);
 };
 
 const addCommonFriendsInfo = () => {
@@ -467,7 +460,19 @@ const addPastRequestsInfo = () => {
     });
 };
 
-const createFriendRequestEvent = (invite: Inviter | RawInviter, type: string, appliedRule?: number) => {
+interface FriendRequestEvent {
+    type: string;
+    rule: number;
+    steamID: string;
+    username: string;
+    timestamp: number;
+}
+
+const createFriendRequestEvent = (
+    invite: Inviter | RawInviter,
+    type: string,
+    appliedRule?: number,
+): FriendRequestEvent => {
     let eventType: string;
     switch (type) {
         case actions.accept.key:
@@ -686,9 +691,9 @@ const evaluateInvites = async () => {
     const friendRequestEvalRules: FriendRequestEvalRule[] = result.friendRequestEvalRules;
 
     const inviters: Inviter[] = friendRequests.inviters;
-    const alreadyEvaluated = [];
-    const evaluationEvents = [];
-    const evaluatedInvites = [];
+    const alreadyEvaluated: Inviter[] = [];
+    const evaluationEvents: FriendRequestEvent[] = [];
+    const evaluatedInvites: Inviter[] = [];
 
     for (const invite of inviters) {
         if (invite.evaluation || invite.evalTries >= 5) {
@@ -715,14 +720,14 @@ const evaluateInvites = async () => {
         }
     }
 
-    localStorage.set({
+    await localStorage.set({
         friendRequests: {
             inviters: [...alreadyEvaluated, ...evaluatedInvites],
             lastUpdated: Date.now(),
         },
     });
 
-    logFriendRequestEvents(evaluationEvents);
+    await logFriendRequestEvents(evaluationEvents);
 };
 
 export const updateFriendRequest = async () => {
@@ -810,11 +815,11 @@ export const updateFriendRequest = async () => {
 
             if (apiKeyValid) {
                 addSummariesToInvites();
-                setTimeout(() => {
-                    addBansToInvites();
+                setTimeout(async () => {
+                    await addBansToInvites();
                 }, 5000);
-                setTimeout(() => {
-                    addSteamRepInfoToInvites();
+                setTimeout(async () => {
+                    await addSteamRepInfoToInvites();
                 }, 10000);
                 setTimeout(() => {
                     addInventoryValueInfo();
@@ -833,7 +838,7 @@ export const updateFriendRequest = async () => {
                 return createFriendRequestEvent(invite, eventTypes.new.key);
             });
 
-            logFriendRequestEvents([...newInviteEvents, ...disappearedInviteEvents]);
+            await logFriendRequestEvents([...newInviteEvents, ...disappearedInviteEvents]);
         }
     }
 };

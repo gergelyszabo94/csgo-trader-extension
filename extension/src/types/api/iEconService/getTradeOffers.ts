@@ -1,4 +1,4 @@
-import { Action } from 'types';
+import { Action, Tag } from 'types';
 
 export interface TradeOffers {
     trade_offers_sent: TradeOffer[];
@@ -15,6 +15,7 @@ export interface Description {
     background_color: string;
     icon_url: string;
     icon_url_large: string;
+    icon_drag_url?: string;
     descriptions: SmallDescription[];
     tradable: boolean;
     actions: Action[];
@@ -34,19 +35,17 @@ export interface SmallDescription {
     type: string;
     value: string;
     color?: string;
+    app_data?: AppData;
+}
+
+export interface AppData {
+    def_index: string;
+    is_itemset_name: number;
 }
 
 export interface MarketAction {
     link: string;
     name: string;
-}
-
-export interface Tag {
-    category: string;
-    internal_name: string;
-    localized_category_name: string;
-    localized_tag_name: string;
-    color?: string;
 }
 
 export interface TradeOffer {

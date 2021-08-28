@@ -1,7 +1,7 @@
 import DOMPurify from 'dompurify';
 import { DopplerMapping } from 'types';
 
-import { LinkFilterOff, SteamIDOfUser } from 'types/storage';
+import { LinkFilterOff, SteamIDOfUser, SteamRepInfo } from 'types/storage';
 
 import { injectScript, injectStyle } from 'utils/injection';
 import { getIDsFromElement } from 'utils/itemsToElementsToItems';
@@ -763,7 +763,7 @@ export const addUpdatedRibbon = () => {
     });
 };
 
-export const getSteamRepInfo = (steamID) =>
+export const getSteamRepInfo = (steamID): Promise<SteamRepInfo> =>
     new Promise((resolve, reject) => {
         const getRequest = new Request(`https://steamrep.com/api/beta4/reputation/${steamID}?json=1`);
 
