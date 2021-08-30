@@ -17,6 +17,11 @@ const addChatPresets = () => {
       if (chatEntryDiv) {
         presetMessageSelect = document.createElement('select');
         presetMessageSelect.classList.add('messagePreset');
+        const disabledPlaceHolderOption = document.createElement('option');
+        disabledPlaceHolderOption.setAttribute('disabled', '');
+        disabledPlaceHolderOption.setAttribute('selected', '');
+        disabledPlaceHolderOption.text = 'Select a message to send...';
+        presetMessageSelect.appendChild(disabledPlaceHolderOption);
 
         messagePresets.forEach((message, index) => {
           const option = document.createElement('option');
