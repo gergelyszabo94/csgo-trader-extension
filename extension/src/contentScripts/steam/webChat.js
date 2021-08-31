@@ -2,6 +2,7 @@ import { logExtensionPresence } from 'utils/utilsModular';
 import { trackEvent } from 'utils/analytics';
 
 let messagePresets = [];
+let chatDialogObserverSet = false;
 
 const removeHeader = () => {
   const header = document.querySelector('.main_SteamPageHeader_3EaXO');
@@ -49,6 +50,27 @@ const addChatPresets = () => {
   });
 };
 
+// adds a mutation observer so the message presets are added
+// when new chat dialogs are opened
+const addChatDialogMutationObserver = () => {
+  const chatDialogsEl = document.querySelector('.chatDialogs');
+
+  if (chatDialogsEl) {
+    chatDialogObserverSet = true;
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.addedNodes.length > 0) addChatPresets();
+      });
+    });
+
+    observer.observe(chatDialogsEl, {
+      childList: true,
+      subtree: false,
+      attributes: false,
+    });
+  }
+};
+
 chrome.storage.local.get(['removeWebChatHeader', 'showChatPresetMessages', 'chatPresetMessages'], ({
   removeWebChatHeader, chatPresetMessages, showChatPresetMessages,
 }) => {
@@ -65,8 +87,16 @@ chrome.storage.local.get(['removeWebChatHeader', 'showChatPresetMessages', 'chat
   if (showChatPresetMessages) {
     messagePresets = chatPresetMessages;
     addChatPresets();
-    setTimeout(addChatPresets, 10000);
-    setInterval(addChatPresets, 30000);
+    addChatDialogMutationObserver();
+
+    setTimeout(() => {
+      addChatPresets();
+      if (!chatDialogObserverSet) addChatDialogMutationObserver();
+    }, 10000);
+    setInterval(() => {
+      addChatPresets();
+      if (!chatDialogObserverSet) addChatDialogMutationObserver();
+    }, 30000);
   }
 });
 
