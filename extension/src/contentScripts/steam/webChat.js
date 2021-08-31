@@ -36,7 +36,7 @@ const addChatPresets = () => {
           const submitButton = chatEntryDiv.querySelector('button[type=submit]');
 
           if (messageArea && submitButton) {
-            messageArea.value = messagePresets[presetMessageSelect.selectedIndex];
+            messageArea.value = messagePresets[presetMessageSelect.selectedIndex + -1];
             messageArea.dispatchEvent(new Event('input', {
               bubbles: true,
               cancelable: true,
