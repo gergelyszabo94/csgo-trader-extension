@@ -278,6 +278,8 @@ const storageKeys = {
     'Hello! How can I help you today?',
     'Hi! I have seen you added me but you are offline now. Message me later and tell me what I can do for you.',
   ],
+  notifyAboutBeingLoggedOut: false,
+  notifyAboutBeingLoggedOutOnDiscord: false,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',

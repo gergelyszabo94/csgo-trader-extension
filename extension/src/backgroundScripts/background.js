@@ -9,7 +9,7 @@ import {
   ignoreGroupRequest, removeOldFriendRequestEvents,
 } from 'utils/friendRequests';
 import { trimFloatCache } from 'utils/floatCaching';
-import { getSteamNotificationCount, playNotificationSound } from 'utils/notifications';
+import { getSteamNotificationCount, playNotificationSound, notifyOnDiscord } from 'utils/notifications';
 import { updateTrades, removeOldOfferEvents } from 'utils/tradeOffers';
 
 // handles install and update events
@@ -272,6 +272,40 @@ chrome.alarms.onAlarm.addListener((alarm) => {
       if (error === 401 || error === 403) {
         if (error === 401) { // user not logged in
           console.log('User not logged in, suspending notification checks for an hour.');
+          chrome.storage.local.get(
+            ['notifyAboutBeingLoggedOut', 'notifyAboutBeingLoggedOutOnDiscord'],
+            ({ notifyAboutBeingLoggedOut, notifyAboutBeingLoggedOutOnDiscord }) => {
+              const title = 'You are not signed in on Steam!';
+              const message = 'You set to be notified if the extension detects that you are not logged in.';
+              if (notifyAboutBeingLoggedOut) {
+                chrome.notifications.create(alarm.name, {
+                  type: 'basic',
+                  iconUrl: '/images/cstlogo128.png',
+                  title,
+                  message,
+                }, () => {
+                  playNotificationSound();
+                });
+              }
+
+              if (notifyAboutBeingLoggedOutOnDiscord) {
+                const embed = {
+                  footer: {
+                    text: 'CSGO Trader',
+                    icon_url: 'https://csgotrader.app/cstlogo48.png',
+                  },
+                  title,
+                  description: message,
+                  // #ff8c00 (taken from csgotrader.app text color)
+                  color: 16747520,
+                  fields: [],
+                  timestamp: new Date(Date.now()).toISOString(),
+                  type: 'rich',
+                };
+                notifyOnDiscord(embed);
+              }
+            },
+          );
         } else if (error === 403) { // Steam is temporarily blocking this ip
           console.log('Steam is denying access, suspending notification checks for an hour.');
         }

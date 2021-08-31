@@ -60,6 +60,18 @@ const Notifications = () => {
         )}
         modalTitle="Enter your Discord Webhook URL here"
       />
+      <Row
+        name="Notify about being logged out of Steam"
+        id="notifyAboutBeingLoggedOut"
+        type="flipSwitchStorage"
+        description="Get browser notifications about being logged out of Steam"
+      />
+      <Row
+        name="Notify about being logged out of Steam on Discord"
+        id="notifyAboutBeingLoggedOutOnDiscord"
+        type="flipSwitchStorage"
+        description="Get Discord notifications about being logged out of Steam"
+      />
     </Category>
   );
 };
