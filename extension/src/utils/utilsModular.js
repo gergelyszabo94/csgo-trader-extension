@@ -140,11 +140,11 @@ const getNameTag = (item) => {
 const getInspectLink = (item, owner, assetID) => {
   try {
     if (item.actions !== undefined && item.actions[0] !== undefined) {
-      const beggining = item.actions[0].link.split('%20S')[0];
+      const beginning = item.actions[0].link.split('%20S')[0];
       const end = item.actions[0].link.split('%assetid%')[1];
       return owner !== undefined
-        ? (`${beggining}%20S${owner}A${assetID}${end}`)
-        : (`${beggining}%20S${item.owner}A${item.assetid}${end}`);
+        ? (`${beginning}%20S${owner}A${assetID}${end}`)
+        : (`${beginning}%20S${item.owner}A${item.assetid}${end}`);
     }
     // eslint-disable-next-line no-empty
   } catch (error) { return null; }

@@ -39,7 +39,7 @@ const TwoDotNine = () => {
             The third parameter is the Steam App ID of the game the item belongs to.
           </li>
           <li>
-            The forth paramter is the inventory context id that the item belongs to (almost always 2).
+            The forth parameter is the inventory context id that the item belongs to (almost always 2).
           </li>
           <li>
             The fifth parameter is the name or id.

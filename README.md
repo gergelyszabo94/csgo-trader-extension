@@ -18,7 +18,7 @@ For more information about each part you can read the corresponding .md files.
 Extension Install
 --------------
 Get it from your browser's marketplace:
-- <a target="_blank" href="https://chrome.google.com/webstore/detail/csgo-trader/kaibcgikagnkfgjnibflebpldakfhfih/">Chrome Web Store</a> (for Chromimum based browsers, Chrome, Brave, Opera, etc.)
+- <a target="_blank" href="https://chrome.google.com/webstore/detail/csgo-trader/kaibcgikagnkfgjnibflebpldakfhfih/">Chrome Web Store</a> (for Chromium based browsers, Chrome, Brave, Opera, etc.)
 - <a target="_blank" href="https://addons.mozilla.org/en-US/firefox/addon/csgo-trader-steam-trading/">Firefox Add-ons</a>
 - <a target="_blank" href="https://microsoftedge.microsoft.com/addons/detail/emcdnkamomgiafjejbhdpcfgbeeimpdb">Microsoft Edge Addons</a>
 - To install without a platform or for development, find instructions here: <a target="_blank" href="https://csgotrader.app/faq/#installmanual">csgotrader.app/faq/#installmanual</a>
