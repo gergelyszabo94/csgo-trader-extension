@@ -81,7 +81,7 @@ const trimFloatCache = () => {
 
         // if unused and in cache for over a day, or used but not for over a week
         // then this whole thing negated
-        // because the ones that do not fit this wil remain in the cache
+        // because the ones that do not fit this will remain in the cache
         if ((used === 0 && timeSinceLastUsed > 86400) || (used > 0 && timeSinceLastUsed > 604800)) {
           chrome.storage.local.remove([storageKey], () => {});
         }

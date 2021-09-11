@@ -74,7 +74,7 @@ const faq = (props) => {
                         <ul>
                             <li>Grab the latest <NewTabLink to='https://csgotrader.app/extension/latest/firefox.zip'>firefox.zip</NewTabLink></li>
                             <li>Unpack it in a folder on your computer</li>
-                            <li>Open tha Extensions page ( about:addons )</li>
+                            <li>Open the Extensions page ( about:addons )</li>
                             <li>Click the Gear icon then "Debug Add-ons"</li>
                             <li>The Temporary Extensions menu appears ( about:debugging#/runtime/this-firefox )</li>
                             <li>Click "Load Temporary Add-ons..." and select the folder where you unpacked the contents of the .zip file</li>
