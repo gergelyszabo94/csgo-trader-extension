@@ -211,6 +211,8 @@ const notifyAboutOffer = (offer) => {
 
 const createDiscordSideSummary = (offerSideItems, itemsWithDetails) => {
   const itemNames = {};
+  let summary = '';
+
   if (offerSideItems !== null && offerSideItems !== undefined) {
     offerSideItems.forEach((itemToGive) => {
       const item = getItemByIDs(
@@ -227,19 +229,19 @@ const createDiscordSideSummary = (offerSideItems, itemsWithDetails) => {
         if (item.floatInfo) itemName += ` (${item.floatInfo.floatvalue.toFixed(4)})`;
         
         if (itemName in itemNames) {
-          itemNames[itemName]++;
+          itemNames[itemName] += 1;
         } else {
           itemNames[itemName] = 1;
         }
       }
     });
-    
-    let summary = '';
+
     for (const [name, amount] of Object.entries(itemNames)) {
       summary += amount > 1 ? `${name} (x${amount})\n` : `${name}\n`;
     }
     return summary;
   }
+  
   // 1024 is max size of an embed field
   if (summary.length > 1024) {
     // cut off all chars after 1024
