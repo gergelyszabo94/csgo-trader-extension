@@ -215,7 +215,7 @@ def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices
                 price = own_prices[item]
                 case = "H"
 
-            if "Doppler" in item:
+            if "Doppler" in item and item in csmoney_prices and "doppler" in csmoney_prices[item] and csmoney_prices[item]["doppler"]:
                 doppler = {}
                 for phase in csmoney_prices[item]["doppler"]:
                     doppler[phase] = get_formatted_float(float(csmoney_prices[item]["doppler"][phase]) * st_csm)
