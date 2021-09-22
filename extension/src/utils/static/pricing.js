@@ -378,16 +378,6 @@ const pricingProviders = {
         name: 'suggested_price',
         long: 'Skinport suggested price',
       },
-      steam_price: {
-        description: 'Skinport Steam price',
-        name: 'steam_price',
-        long: 'Skinport Steam price',
-      },
-      instant_price: {
-        description: 'Skinport instant price',
-        name: 'instant_price',
-        long: 'Skinport instant price',
-      },
       starting_at: {
         description: 'Skinport starting at price',
         name: 'starting_at',

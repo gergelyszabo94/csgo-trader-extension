@@ -79,15 +79,17 @@ chrome.runtime.onInstalled.addListener((details) => {
           chrome.storage.local.set({ [storageKey]: storageValue }, () => {});
         }
       }
+
+      // skinport pricing modes have been removed, remove this after a while
+      if (result.pricingProvider === 'skinport' && (result.pricingMode === 'steam_price' || result.pricingMode === 'instant_price')) {
+        chrome.storage.local.set({ pricingMode: 'starting_at' }, () => {});
+      }
     });
 
     trackEvent({
       type: 'event',
       action: 'ExtensionUpdate',
     });
-
-    // remove in next update
-    chrome.storage.local.set({ useAlternativeCSGOInventoryEndpoint: false }, () => {});
 
     chrome.browserAction.setBadgeText({ text: 'U' });
 

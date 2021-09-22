@@ -435,14 +435,10 @@ def fetch_skinport(stage) -> Dict[str, Dict[str, Optional[float]]]:
     for item in items:
         name = item.get('market_hash_name')
         suggested_price = item.get('suggested_price')
-        steam_price = item.get('steam_price')
-        instant_price = item.get('instant_price')
         starting_at = item.get('min_price')
 
         skinport_prices[name] = {
             "suggested_price": suggested_price,
-            "steam_price": steam_price,
-            "instant_price": instant_price,
             "starting_at": starting_at,
         }
         add_to_master_list(name)
