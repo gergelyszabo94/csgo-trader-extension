@@ -110,6 +110,12 @@ const inventory = () => {
         type="flipSwitchStorage"
         description="Adds short exteriors to each item to the top right corner as well as marks them stattrak or souvenir"
       />
+      <Row
+        name="Show trade lock indicators on items"
+        id="showTradeLockIndicatorInInventories"
+        type="flipSwitchStorage"
+        description="Adds small indicators to the top left of inventory items that either show the remaining trade cooldown or a T if the item is tradable."
+      />
     </Category>
   );
 };

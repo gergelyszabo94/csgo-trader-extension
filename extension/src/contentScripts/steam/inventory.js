@@ -970,23 +970,29 @@ const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
 const addPerItemInfo = (appID) => {
   const itemElements = document.querySelectorAll(`.item.app${appID}.context2`);
   if (itemElements.length !== 0) {
-    chrome.storage.local.get(['colorfulItems', 'autoFloatInventory', 'showStickerPrice', 'activeOffers', 'itemInOffersInventory', 'showShortExteriorsInventory'],
-      ({
-        colorfulItems, showStickerPrice, autoFloatInventory,
-        activeOffers, itemInOffersInventory, showShortExteriorsInventory,
-      }) => {
-        itemElements.forEach((itemElement) => {
-          if (itemElement.getAttribute('data-processed') === null
+    chrome.storage.local.get([
+      'colorfulItems', 'autoFloatInventory', 'showStickerPrice', 'activeOffers',
+      'itemInOffersInventory', 'showShortExteriorsInventory', 'showTradeLockIndicatorInInventories',
+    ],
+    ({
+      colorfulItems, showStickerPrice, autoFloatInventory,
+      activeOffers, itemInOffersInventory, showShortExteriorsInventory,
+      showTradeLockIndicatorInInventories,
+    }) => {
+      itemElements.forEach((itemElement) => {
+        if (itemElement.getAttribute('data-processed') === null
             || itemElement.getAttribute('data-processed') === 'false') {
-            // in case the inventory is not loaded yet it retries in a second
-            if (itemElement.id === undefined) {
-              setTimeout(() => {
-                addPerItemInfo(appID);
-              }, 1000);
-              return false;
-            }
-            const IDs = getIDsFromElement(itemElement, 'inventory');
-            const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
+          // in case the inventory is not loaded yet it retries in a second
+          if (itemElement.id === undefined) {
+            setTimeout(() => {
+              addPerItemInfo(appID);
+            }, 1000);
+            return false;
+          }
+          const IDs = getIDsFromElement(itemElement, 'inventory');
+          const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
+
+          if (showTradeLockIndicatorInInventories) {
             // adds tradability indicator
             if (item.tradability === 'Tradable') {
               itemElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize('<div class="perItemDate tradable">T</div>'));
@@ -996,26 +1002,27 @@ const addPerItemInfo = (appID) => {
                 DOMPurify.sanitize(`<div class="perItemDate not_tradable">${item.tradabilityShort}</div>`),
               );
             }
-
-            if (appID === steamApps.CSGO.appID) {
-              addDopplerPhase(itemElement, item.dopplerInfo);
-              makeItemColorful(itemElement, item, colorfulItems);
-              addSSTandExtIndicators(
-                itemElement, item, showStickerPrice,
-                showShortExteriorsInventory,
-              );
-              addPriceIndicator(itemElement, item.price);
-              if (itemInOffersInventory) {
-                addInOtherTradeIndicator(itemElement, item, activeOffers.items);
-              }
-              if (autoFloatInventory) addFloatIndicator(itemElement, item.floatInfo);
-            }
-
-            // marks the item "processed" to avoid additional unnecessary work later
-            itemElement.setAttribute('data-processed', 'true');
           }
-        });
+
+          if (appID === steamApps.CSGO.appID) {
+            addDopplerPhase(itemElement, item.dopplerInfo);
+            makeItemColorful(itemElement, item, colorfulItems);
+            addSSTandExtIndicators(
+              itemElement, item, showStickerPrice,
+              showShortExteriorsInventory,
+            );
+            addPriceIndicator(itemElement, item.price);
+            if (itemInOffersInventory) {
+              addInOtherTradeIndicator(itemElement, item, activeOffers.items);
+            }
+            if (autoFloatInventory) addFloatIndicator(itemElement, item.floatInfo);
+          }
+
+          // marks the item "processed" to avoid additional unnecessary work later
+          itemElement.setAttribute('data-processed', 'true');
+        }
       });
+    });
   } else { // in case the inventory is not loaded yet
     setTimeout(() => {
       addPerItemInfo(appID);
