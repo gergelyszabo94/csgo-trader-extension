@@ -337,7 +337,8 @@ def fetch_priceempire(stage) -> Tuple[dict, dict, dict, dict]:
     try:
         response = requests.get("https://api.pricempire.com/v1/getAllItems", params={
             "token": pricempire_token,
-            "currency": "USD"
+            "currency": "USD",
+            "source": "csgoempire,swapgg,csgoexo,buff,buff163,buff163_quick",
         })
         response.raise_for_status()
         log.info("Received response from pricempire")
