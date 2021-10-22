@@ -637,7 +637,7 @@ const addRightSideElements = () => {
                             <div class="copyItemName clickable" title="Copy the full market name of the item.">
                                 Copy Name
                             </div>
-                            <div class="copyItemLink clickable" title="Cop the item's inventory link.">
+                            <div class="copyItemLink clickable" title="Copy the item's inventory link.">
                                 Copy Link
                             </div>`,
                     ),
