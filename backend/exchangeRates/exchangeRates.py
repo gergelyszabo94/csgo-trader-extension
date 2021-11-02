@@ -33,11 +33,22 @@ def lambda_handler(event, context):
             }
     print("Response from fixer.io")
     try:
-        rates = response.json()['rates']
+        response_json = response.json()
     except Exception as e:
         print(e)
-        error = "Error parsing rates from the request response"
+        error = "Error parsing json from the request response"
         alert_via_sns(f'{error}: {e}')
+        return {
+            'statusCode': 500,
+            'body': error
+        }
+
+    if response_json.get("success"):
+        rates = response_json['rates']
+    else:
+        error = response_json.get("error")
+        print(error)
+        alert_via_sns(error)
         return {
             'statusCode': 500,
             'body': error
