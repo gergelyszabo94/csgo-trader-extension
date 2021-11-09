@@ -1,5 +1,4 @@
 import { logExtensionPresence } from 'utils/utilsModular';
-import { trackEvent } from 'utils/analytics';
 
 let messagePresets = [];
 let chatDialogObserverSet = false;
@@ -101,7 +100,3 @@ chrome.storage.local.get(['removeWebChatHeader', 'showChatPresetMessages', 'chat
 });
 
 logExtensionPresence();
-trackEvent({
-  type: 'pageview',
-  action: 'WebChat',
-});

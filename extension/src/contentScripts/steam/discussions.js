@@ -2,7 +2,6 @@ import {
   addUpdatedRibbon, logExtensionPresence, updateLoggedInUserInfo,
   removeLinkFilterFromLinks,
 } from 'utils/utilsModular';
-import { trackEvent } from 'utils/analytics';
 import DOMPurify from 'dompurify';
 import { deleteForumComment, postForumComment } from 'utils/comments';
 import { injectScript } from 'utils/injection';
@@ -11,10 +10,6 @@ logExtensionPresence();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
 removeLinkFilterFromLinks();
-trackEvent({
-  type: 'pageview',
-  action: 'DiscussionsView',
-});
 
 const nextBump = Math.floor((Math.random() * 10) + 31);
 

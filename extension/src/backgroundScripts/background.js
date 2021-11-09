@@ -1,8 +1,7 @@
 import { storageKeys } from 'utils/static/storageKeys';
-import { trackEvent, sendTelemetry } from 'utils/analytics';
 import { updatePrices, updateExchangeRates, getUserCurrencyBestGuess } from 'utils/pricing';
 import {
-  scrapeSteamAPIkey, goToInternalPage, uuidv4, markModMessagesAsRead,
+  scrapeSteamAPIkey, goToInternalPage, markModMessagesAsRead,
 } from 'utils/utilsModular';
 import {
   getGroupInvites, updateFriendRequest,
@@ -18,22 +17,8 @@ chrome.runtime.onInstalled.addListener((details) => {
     // sets the default options for first run
     // (on install from the webstore/amo or when loaded in developer mode)
     for (const [key, value] of Object.entries(storageKeys)) {
-      // id generated to identify the extension installation
-      // a user can use use multiple installations of the extension
-      if (key === 'clientID') chrome.storage.local.set({ [key]: uuidv4() }, () => {});
-      else if (key === 'telemetryConsentSubmitted') {
-        // mozilla addons requires user consent to be given so it's off by default for firefox
-        // but it is on by default on chrome, edge, etc.
-        if (chrome.extension.getURL('/index.html').includes('chrome-extension')) {
-          chrome.storage.local.set({ [key]: true });
-        } else chrome.storage.local.set({ [key]: false });
-      } else chrome.storage.local.set({ [key]: value }, () => {});
+      chrome.storage.local.set({ [key]: value }, () => {});
     }
-
-    trackEvent({
-      type: 'event',
-      action: 'ExtensionInstall',
-    });
 
     // sets extension currency to Steam currency when possible
     // the delay is to wait for exchange rates data to be set
@@ -61,11 +46,6 @@ chrome.runtime.onInstalled.addListener((details) => {
       playNotificationSound();
     });
   } else if (details.reason === 'update') {
-    const path = chrome.extension.getURL('/index.html');
-    if (path.includes('chrome-extension')) {
-      chrome.storage.local.set({ telemetryConsent: true });
-    }
-
     // sets defaults options for new options that haven't been set yet
     // (for features introduced since the last version)
     // runs when the extension updates or gets reloaded in developer mode
@@ -84,11 +64,6 @@ chrome.runtime.onInstalled.addListener((details) => {
       if (result.pricingProvider === 'skinport' && (result.pricingMode === 'steam_price' || result.pricingMode === 'instant_price')) {
         chrome.storage.local.set({ pricingMode: 'starting_at' }, () => {});
       }
-    });
-
-    trackEvent({
-      type: 'event',
-      action: 'ExtensionUpdate',
     });
 
     chrome.browserAction.setBadgeText({ text: 'U' });
@@ -116,8 +91,6 @@ chrome.runtime.onInstalled.addListener((details) => {
         });
       }
     });
-    // send telemetry on update
-    sendTelemetry();
   }
 
   // updates the prices and exchange rates
@@ -323,7 +296,6 @@ chrome.alarms.onAlarm.addListener((alarm) => {
   } else if (alarm.name === 'restartNotificationChecks') {
     chrome.alarms.create('getSteamNotificationCount', { periodInMinutes: 1 });
   } else if (alarm.name === 'dailyScheduledTasks') {
-    sendTelemetry(0);
     trimFloatCache();
     removeOldFriendRequestEvents();
     removeOldOfferEvents();
@@ -379,10 +351,3 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     });
   }
 });
-
-setTimeout(() => {
-  trackEvent({
-    type: 'event',
-    action: 'ExtensionRun',
-  });
-}, 500);

@@ -1,4 +1,3 @@
-import { trackEvent } from 'utils/analytics';
 import { logExtensionPresence } from 'utils/utilsModular';
 
 const bump = () => {
@@ -8,19 +7,9 @@ const bump = () => {
 
     fetch(request).then(() => {});
   });
-
-  trackEvent({
-    type: 'event',
-    action: 'TradersBump',
-  });
 };
 
 logExtensionPresence();
-
-trackEvent({
-  type: 'pageview',
-  action: 'TradersTradesView',
-});
 
 chrome.storage.local.get('tradersBump', ({ tradersBump }) => {
   if (tradersBump) {

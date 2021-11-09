@@ -346,12 +346,6 @@ const goToInternalPage = (targetURL) => {
   });
 };
 
-const uuidv4 = () => {
-  return (
-    // eslint-disable-next-line no-bitwise
-    [1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) => (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> c / 4))).toString(16));
-};
-
 const listenToLocationChange = (callBackFunction) => {
   let oldHref = document.location.href;
 
@@ -808,7 +802,7 @@ export {
   getExteriorFromTags, getDopplerInfo, getQuality, parseStickerInfo,
   handleStickerNamesWithCommas, removeFromArray, getType, changePageTitle,
   getPattern, goToInternalPage, jumpToAnchor, copyToClipboard,
-  validateSteamAPIKey, getAssetIDFromInspectLink, uuidv4, updateLoggedInUserInfo,
+  validateSteamAPIKey, getAssetIDFromInspectLink, updateLoggedInUserInfo,
   listenToLocationChange, addPageControlEventListeners, getItemByAssetID,
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,

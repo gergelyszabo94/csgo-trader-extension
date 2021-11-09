@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-import { trackEvent } from 'utils/analytics';
 import { getTradeHistory } from 'utils/IEconService';
 import TradeOfferContent from 'components/TradeHistory/TradeOfferContent';
 import TradeSummary from 'components/TradeHistory/TradeSummary';
@@ -8,10 +7,6 @@ import TradeHistoryControls from 'components/TradeHistory/TradeHistoryControls';
 
 const TradeHistoryContent = () => {
   document.title = 'Trade History';
-  trackEvent({
-    type: 'pageview',
-    action: 'ExtensionTradeHistoryView',
-  });
 
   const [trades, setTrades] = useState(null);
   const [totalTrades, setTotalTrades] = useState(0);

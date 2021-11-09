@@ -27,7 +27,6 @@ import {
   steamFormattedPriceToCents,
   updateWalletCurrency,
 } from 'utils/pricing';
-import { trackEvent } from 'utils/analytics';
 import {
   genericMarketLink, souvenir, starChar, stattrak, stattrakPretty,
 } from 'utils/static/simpleStrings';
@@ -84,13 +83,6 @@ if (actions !== null && appID === steamApps.CSGO.appID) {
       'beforeend',
       DOMPurify.sanitize(inBrowserInspectButton, { ADD_ATTR: ['target'] }),
     );
-    document.getElementById('inbrowser_inspect_button').addEventListener('click', () => {
-      // analytics
-      trackEvent({
-        type: 'event',
-        action: 'MarketInspection',
-      });
-    });
   }
 }
 
@@ -739,10 +731,6 @@ logExtensionPresence();
 updateWalletCurrency();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
-trackEvent({
-  type: 'pageview',
-  action: 'ListingView',
-});
 changePageTitle('market_listing', fullName);
 
 if (appID === steamApps.CSGO.appID) {
@@ -775,14 +763,6 @@ if (appID === steamApps.CSGO.appID) {
     const inspectLink = document.getElementById('market_action_popup_itemactions')
       .querySelector('a.popup_menu_item').getAttribute('href');
     event.target.setAttribute('href', `https://market.swap.gg/screenshot?inspectLink=${inspectLink}`);
-  });
-
-  document.getElementById('inbrowser_inspect').addEventListener('click', () => {
-    // analytics
-    trackEvent({
-      type: 'event',
-      action: 'MarketInspection',
-    });
   });
 }
 
@@ -1122,16 +1102,6 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                 </div>
             </div>`,
       );
-
-      document.querySelectorAll('.referralLink').forEach((link) => {
-        link.addEventListener('click', (event) => {
-          const site = event.target.getAttribute('data-site');
-          trackEvent({
-            type: 'event',
-            action: `market${site}LinkClicked`,
-          });
-        });
-      });
 
       document.getElementById('realMoneyExpand').addEventListener('click', () => {
         document.getElementById('realMoneyMoreInfo').classList.remove('hidden');

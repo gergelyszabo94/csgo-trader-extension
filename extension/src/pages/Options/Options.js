@@ -21,7 +21,6 @@ import Friends from 'components/Options/Categories/Friends/Friends';
 import WebChat from 'components/Options/Categories/WebChat';
 import OfferAutomation from 'components/Options/Categories/OfferAutomation/OfferAutomation';
 import Safety from 'components/Options/Categories/Safety';
-import { trackEvent } from 'utils/analytics';
 
 const routes = [
   {
@@ -97,11 +96,6 @@ const routes = [
 ];
 
 const options = ({ match }) => {
-  trackEvent({
-    type: 'pageview',
-    action: 'ExtensionOptionsView',
-  });
-
   return (
     <div className="options">
       <Router>

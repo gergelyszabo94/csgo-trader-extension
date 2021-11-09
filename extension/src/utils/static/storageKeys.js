@@ -41,10 +41,6 @@ const storageKeys = {
   autoFloatMarket: true,
   autoFloatOffer: true,
   autoFloatInventory: true,
-  analyticsEvents: [],
-  clientID: '',
-  telemetryOn: false,
-  telemetryConsentSubmitted: false,
   tradeOffersLargerItems: true,
   tradeOffersSortingMode: offersSortingModes.default.key,
   defaultConverterCurrency1: currencies.USD.short,
@@ -283,7 +279,7 @@ const storageKeys = {
   showTradeLockIndicatorInInventories: true,
 };
 
-const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'analyticsEvents', 'clientID',
+const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'clientID',
   'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID', 'groupInvites',
   'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules', 'floatQueueActivity', 'discussionsToAutoBump',
   'priceQueueActivity', 'userSteamWalletCurrency', 'tradeOffersEventLogs', 'numberOfNewItems', 'numberOfComments'];

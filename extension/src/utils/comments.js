@@ -1,16 +1,9 @@
-import { trackEvent } from 'utils/analytics';
 import { goldenCommenters } from 'utils/goldening';
 import commentPatternsToReport from 'utils/static/commentPatternsToReport';
 import { getSessionID } from 'utils/utilsModular';
 import DOMPurify from 'dompurify';
 
 const handleReplyToCommentFunctionality = (event) => {
-  // analytics
-  trackEvent({
-    type: 'event',
-    action: 'CommentReply',
-  });
-
   const commenterName = event.target.parentNode.parentNode.parentNode.querySelector('.commentthread_author_link')
     .querySelector('bdi').innerHTML.split(' <span class="nickname_block">')[0];
   const commentTextarea = document.querySelector('.commentthread_textarea');
@@ -112,12 +105,6 @@ const reportComments = (type, pageID) => {
       document.querySelectorAll('.commentthread_comment.responsive_body_text').forEach((comment) => {
         if (spamTextCheck.test(comment.querySelector('.commentthread_comment_text').innerText)
             && !comment.classList.contains('hidden_post')) {
-          // analytics
-          trackEvent({
-            type: 'event',
-            action: 'CommentReported',
-          });
-
           const commentID = comment.id.split('comment_')[1];
           hideAndReport(type, pageID, commentID);
         }

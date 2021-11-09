@@ -21,7 +21,6 @@ import {
 import { getItemByIDs, getIDsFromElement, findElementByIDs } from 'utils/itemsToElementsToItems';
 import doTheSorting from 'utils/sorting';
 import { sortingModes } from 'utils/static/sortingModes';
-import { trackEvent } from 'utils/analytics';
 import itemTypes from 'utils/static/itemTypes';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import { overrideHandleTradeActionMenu } from 'utils/steamOverriding';
@@ -898,34 +897,16 @@ const addFunctionBars = () => {
         }
       }
       sortingSelect.addEventListener('change', () => {
-        // analytics
-        trackEvent({
-          type: 'event',
-          action: 'OfferSorting',
-        });
-
         sortItems(sortingSelect.options[sortingSelect.selectedIndex].value, 'offer');
         addFloatIndicatorsToPage('page');
         addRealTimePricesToQueue('page');
       });
       yourSortingSelect.addEventListener('change', () => {
-        // analytics
-        trackEvent({
-          type: 'event',
-          action: 'OfferSorting',
-        });
-
         sortItems(yourSortingSelect.options[yourSortingSelect.selectedIndex].value, 'your');
         addFloatIndicatorsToPage('your');
         addRealTimePricesToQueue('your');
       });
       theirSortingSelect.addEventListener('change', () => {
-        // analytics
-        trackEvent({
-          type: 'event',
-          action: 'OfferSorting',
-        });
-
         sortItems(theirSortingSelect.options[theirSortingSelect.selectedIndex].value, 'their');
         addFloatIndicatorsToPage('their');
         addRealTimePricesToQueue('their');
@@ -1062,10 +1043,6 @@ injectStyle(`
         top: 20px !important;
     }`, 'itemLinkSmaller');
 updateLoggedInUserInfo();
-trackEvent({
-  type: 'pageview',
-  action: 'TradeOfferView',
-});
 
 const getPartnerNameScript = "document.querySelector('body').setAttribute('partnerName', g_strTradePartnerPersonaName)";
 const partnerName = injectScript(getPartnerNameScript, true, 'partnerName', 'partnerName');

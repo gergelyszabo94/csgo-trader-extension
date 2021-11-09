@@ -1,23 +1,12 @@
-import { trackEvent } from 'utils/analytics';
 import { logExtensionPresence } from 'utils/utilsModular';
 
 const bump = () => {
   document.querySelectorAll('.btn-bump___1-VFc').forEach((bumpButton) => {
     bumpButton.click();
   });
-
-  trackEvent({
-    type: 'event',
-    action: 'LoungeBump',
-  });
 };
 
 logExtensionPresence();
-
-trackEvent({
-  type: 'pageview',
-  action: 'LoungeTradesView',
-});
 
 chrome.storage.local.get('loungeBump', (result) => {
   if (result.loungeBump) {

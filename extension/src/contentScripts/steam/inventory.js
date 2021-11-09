@@ -29,7 +29,6 @@ import { listItem } from 'utils/market';
 import { sortingModes } from 'utils/static/sortingModes';
 import doTheSorting from 'utils/sorting';
 import { overridePopulateActions, overRideCSGOInventoryLoading } from 'utils/steamOverriding';
-import { trackEvent } from 'utils/analytics';
 import itemTypes from 'utils/static/itemTypes';
 import exteriors from 'utils/static/exteriors';
 import { injectScript } from 'utils/injection';
@@ -102,12 +101,6 @@ const cleanUpElements = () => {
 };
 
 const addBookmark = (module) => {
-  // analytics
-  trackEvent({
-    type: 'event',
-    action: 'AddBookmark',
-  });
-
   const IDs = getIDsOfActiveItem();
   const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
   const bookmark = {
@@ -1391,12 +1384,6 @@ const doInitSorting = () => {
 };
 
 const generateItemsList = () => {
-  // analytics
-  trackEvent({
-    type: 'event',
-    action: 'GenerateList',
-  });
-
   const generateSorting = document.getElementById('generate_sort');
   const sortingMode = generateSorting.options[generateSorting.selectedIndex].value;
   const sortedItems = doTheSorting(items,
@@ -1655,11 +1642,6 @@ const addFunctionBar = () => {
         chrome.storage.local.get('showSelectedItemsTable', ({ showSelectedItemsTable }) => {
           const selectMenu = document.getElementById('functionBarSelectionMenu');
           if (event.target.classList.contains('selectionActive')) {
-            // analytics
-            trackEvent({
-              type: 'event',
-              action: 'SelectionStopped',
-            });
             unselectAllItems();
             updateSelectedItemsSummary();
             event.target.classList.remove('selectionActive');
@@ -1673,12 +1655,6 @@ const addFunctionBar = () => {
             }
             document.body.removeEventListener('click', listenSelectClicks, false);
           } else {
-            // analytics
-            trackEvent({
-              type: 'event',
-              action: 'SelectionInitiated',
-            });
-
             // clears the price queue so the user does not have to wait for
             // real time prices to load before the listings prices do
             priceQueue.jobs = [];
@@ -1700,12 +1676,6 @@ const addFunctionBar = () => {
       });
 
     sortingSelect.addEventListener('change', () => {
-      // analytics
-      trackEvent({
-        type: 'event',
-        action: 'InventorySorting',
-      });
-
       sortItems(items, sortingSelect.options[sortingSelect.selectedIndex].value);
       addFloatIndicatorsToPage();
       addRealTimePricesToQueue();
@@ -1906,10 +1876,6 @@ addSearchListener('inventory', () => {
 overridePopulateActions();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
-trackEvent({
-  type: 'pageview',
-  action: 'InventoryView',
-});
 
 if (isOwnInventory()) {
   const moreLink = document.getElementById('inventory_more_link');

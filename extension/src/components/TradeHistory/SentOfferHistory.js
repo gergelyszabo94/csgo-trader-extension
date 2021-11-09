@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-import { trackEvent } from 'utils/analytics';
 import { getTradeOffers } from 'utils/IEconService';
 import TradeOfferHistoryHeader from 'components/TradeHistory/TradeOfferHistoryHeader';
 import { offerStates } from 'utils/static/offers';
@@ -8,10 +7,6 @@ import addItemDetails from './addItemDetails';
 
 const SentOfferHistory = () => {
   document.title = 'Sent Offer History';
-  trackEvent({
-    type: 'pageview',
-    action: 'ExtensionSentOfferHistoryView',
-  });
 
   const [offers, setOffers] = useState([]);
   const [descriptions, setDescriptions] = useState([]);

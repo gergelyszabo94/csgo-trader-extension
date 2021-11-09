@@ -78,19 +78,6 @@ const general = () => {
         type="flipSwitchStorage"
         description="Changes inventory, profile, offer, market page titles to more apparent and readable ones"
       />
-      <Row
-        name="Collect usage data"
-        id="telemetryOn"
-        type="flipSwitchStorage"
-        description={(
-          <>
-            Sends anonymous usage data to the developers to help discover
-            problems and better understand how the extension is used. Check the
-            <NewTabLink to="https://csgotrader.app/privacy"> Privacy </NewTabLink>
-            page for more information on how your data in handled.
-          </>
-        )}
-      />
     </Category>
   );
 };

@@ -4,7 +4,6 @@ import {
   listenToLocationChange, addUpdatedRibbon, removeLinkFilterFromLinks,
 } from 'utils/utilsModular';
 import { reportComments, addReplyToCommentsFunctionality, addCommentsMutationObserver } from 'utils/comments';
-import { trackEvent } from 'utils/analytics';
 import { getGroupID } from 'utils/steamID';
 
 if (!window.location.href.includes('/discussions')) {
@@ -17,10 +16,6 @@ if (!window.location.href.includes('/discussions')) {
   addUpdatedRibbon();
   removeLinkFilterFromLinks();
   listenToLocationChange(goldenMemberNames);
-  trackEvent({
-    type: 'pageview',
-    action: 'GroupView',
-  });
 
   if (document.location.href.includes('/members')) goldenMemberNames();
 

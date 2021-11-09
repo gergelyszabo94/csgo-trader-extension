@@ -12,7 +12,6 @@ import {
   addRealTimePriceToPage, prettyPrintPrice, priceQueue, workOnPriceQueue,
 } from 'utils/pricing';
 import { overrideShowTradeOffer } from 'utils/steamOverriding';
-import { trackEvent } from 'utils/analytics';
 import { offersSortingModes } from 'utils/static/sortingModes';
 import { injectStyle } from 'utils/injection';
 import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
@@ -509,10 +508,6 @@ overrideShowTradeOffer();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
 removeLinkFilterFromLinks();
-trackEvent({
-  type: 'pageview',
-  action: 'TradeOffersPageView',
-});
 
 if (activePage === 'incoming_offers') changePageTitle('trade_offers', 'Incoming Trade Offers');
 else if (activePage === 'sent_offers') changePageTitle('trade_offers', 'Sent Trade Offers');
@@ -739,12 +734,6 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
     }
 
     sortingSelect.addEventListener('change', () => {
-      // analytics
-      trackEvent({
-        type: 'event',
-        action: 'TradeOffersPageSorting',
-      });
-
       sortOffers(sortingSelect.options[sortingSelect.selectedIndex].value);
     });
 

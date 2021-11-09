@@ -1,14 +1,6 @@
 # Backend
 The extension's backend so solely consists of Python scripts that are run by AWS Lambda.
 
-## analyticsPutEvents
-When `Collect usage data` is enabled in the extension's options, analytics events are tracked and
-sent to `api.csgotrader.app/analytics/putevents` along with the user's preferences every day.
-API Gateway forwards the POST request to `analyticsPutEvents.py`. 
-This Python script is responsible for putting events (inventory sorted, +rep posted, etc.)
-in the events DynamoDB table. Page views in the `pageviews` table and
-user preferences in `preferences` table.
-
 ## exchangeRates 
 Triggered by CloudWatch Scheduled events to run every 3 hours. 
 It fetches currency exchange rates from `fixer.io`, cryptocurrency rates from `coincap.io`

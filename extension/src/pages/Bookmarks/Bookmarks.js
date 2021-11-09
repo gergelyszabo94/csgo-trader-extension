@@ -1,14 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
 import Bookmark from 'components/Bookmarks/Bookmark/Bookmark';
-import { trackEvent } from 'utils/analytics';
 
 const Bookmarks = () => {
-  trackEvent({
-    type: 'pageview',
-    action: 'ExtensionBookmarksView',
-  });
-
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.alert !== undefined) {
       // eslint-disable-next-line no-alert

@@ -3,36 +3,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalculator, faCog } from '@fortawesome/free-solid-svg-icons';
 
 import NewTabLink from 'components/NewTabLink/NewTabLink';
-import { trackEvent } from 'utils/analytics';
 import Calculator from 'components/Popup/Calculator/Calculator';
 import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
-import TelemetryConsent from 'components/Popup/TelemetryConsent';
 
 const Popup = () => {
   // if there is any badge text it gets removed
   chrome.runtime.sendMessage({ badgetext: '' }, () => {});
-
-  trackEvent({
-    type: 'pageview',
-    action: 'ExtensionPopupView',
-  });
-
-  const [showTelemetryConsent, setShowTelemetryConsent] = useState(false);
   const [links, setLinks] = useState([]);
   const [showCalc, doShowCalc] = useState(false);
 
-  const saveConsentResult = (consented) => {
-    chrome.storage.local.set({
-      telemetryOn: consented,
-      telemetryConsentSubmitted: true,
-    }, () => {
-      setShowTelemetryConsent(false);
-    });
-  };
-
   useEffect(() => {
-    chrome.storage.local.get(['popupLinks', 'telemetryConsentSubmitted'],
-      ({ popupLinks, telemetryConsentSubmitted }) => {
+    chrome.storage.local.get(['popupLinks'],
+      ({ popupLinks }) => {
         const navLinks = popupLinks.map((link) => {
           if (link.active) {
             return (
@@ -44,7 +26,6 @@ const Popup = () => {
           return null;
         });
         setLinks(navLinks);
-        if (!telemetryConsentSubmitted) setShowTelemetryConsent(true);
       });
   }, []);
 
@@ -61,7 +42,7 @@ const Popup = () => {
           </h5>
         </NewTabLink>
         {
-          showTelemetryConsent ? <TelemetryConsent submitConsent={saveConsentResult} /> : links
+          links
         }
       </>
     );

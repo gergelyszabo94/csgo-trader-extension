@@ -4,7 +4,6 @@ import {
   addUpdatedRibbon, copyToClipboard, changePageTitle,
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
-import { trackEvent } from 'utils/analytics';
 import { addReplyToCommentsFunctionality, addCommentsMutationObserver, reportComments } from 'utils/comments';
 import { goldenMiniProfileHandler, goldenCommenters } from 'utils/goldening';
 import steamTextFormattingTags from 'utils/static/steamTextFormatingTags';
@@ -20,10 +19,6 @@ if (document.querySelector('body').classList.contains('profile_page')) {
   updateLoggedInUserInfo();
   addUpdatedRibbon();
   removeLinkFilterFromLinks();
-  trackEvent({
-    type: 'pageview',
-    action: 'ProfileView',
-  });
   const profileOwnerSteamID = getProfileOwnerSteamID();
   const loggedInUserID = getUserSteamID();
 
@@ -75,12 +70,6 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         commentThreadEntryBox.insertAdjacentHTML('afterend', DOMPurify.sanitize(reooccButton));
 
         document.getElementById('reocc').addEventListener('click', () => {
-          // analytics
-          trackEvent({
-            type: 'event',
-            action: 'ReoccuringCommentPosted',
-          });
-
           document.querySelectorAll('.commentthread_comment.responsive_body_text').forEach((commentThread) => {
             // regex: replaces whitespaces and steam text formatting tags
             let toReplace = '';
@@ -137,11 +126,6 @@ if (document.querySelector('body').classList.contains('profile_page')) {
     );
 
     document.getElementById('copy_profile_perma_link').addEventListener('click', () => {
-      // analytics
-      trackEvent({
-        type: 'event',
-        action: 'ProfilePermalinkCopied',
-      });
       copyToClipboard(`https://steamcommunity.com/profiles/${profileOwnerSteamID}`);
 
       // for the context menu to go away
@@ -149,11 +133,6 @@ if (document.querySelector('body').classList.contains('profile_page')) {
     });
 
     document.getElementById('show_offer_history').addEventListener('click', () => {
-      // analytics
-      trackEvent({
-        type: 'event',
-        action: 'ProfileOfferHistoryChecked',
-      });
       // prints trade offer history summary
       chrome.storage.local.get([`offerHistory_${profileOwnerSteamID}`, 'apiKeyValid'], (result) => {
         let offerHistory = result[`offerHistory_${profileOwnerSteamID}`];
@@ -199,12 +178,6 @@ if (document.querySelector('body').classList.contains('profile_page')) {
     });
 
     document.getElementById('copy_trade_link').addEventListener('click', () => {
-      // analytics
-      trackEvent({
-        type: 'event',
-        action: 'TradeLinkCopied',
-      });
-
       let tradeLink = `https://steamcommunity.com/tradeoffer/new/?partner=${getOfferStyleSteamID(profileOwnerSteamID)}`;
       document.querySelectorAll('a').forEach((anchor) => {
         const href = anchor.getAttribute('href');
@@ -235,11 +208,6 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         if (commentThreadEntryBox !== null) {
           commentThreadEntryBox.insertAdjacentHTML('afterend', DOMPurify.sanitize(repButton));
           document.getElementById('repper').addEventListener('click', () => {
-            // analytics
-            trackEvent({
-              type: 'event',
-              action: 'ReputionMessagePosted',
-            });
             document.querySelector('.commentthread_textarea').value = result.reputationMessage;
             setTimeout(() => {
               document.querySelectorAll('.btn_green_white_innerfade.btn_small')[1].click();

@@ -12,8 +12,6 @@ import CSVExport from 'components/TradeHistory/CSVExport';
 import IncomingOfferHistory from 'components/TradeHistory/IncomingOfferHistory';
 import SentOfferHistory from 'components/TradeHistory/SentOfferHistory';
 
-import { trackEvent } from 'utils/analytics';
-
 const routes = [
   {
     to: 'history/',
@@ -38,11 +36,6 @@ const routes = [
 ];
 
 const TradeHistory = ({ match }) => {
-  trackEvent({
-    type: 'pageview',
-    action: 'ExtensionTradeHistoryView',
-  });
-
   return (
     <div className="options">
       <Router>

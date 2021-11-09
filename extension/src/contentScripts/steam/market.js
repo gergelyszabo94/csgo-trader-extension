@@ -8,7 +8,6 @@ import { getItemMarketLink } from 'utils/simpleUtils';
 import {
   removeListing, getMarketHistory, cancelOrder, createOrder,
 } from 'utils/market';
-import { trackEvent } from 'utils/analytics';
 import {
   steamFormattedPriceToCents, centsToSteamFormattedPrice, priceQueue,
   workOnPriceQueue, initPriceQueue, updateWalletCurrency, getHighestBuyOrder,
@@ -278,10 +277,6 @@ updateWalletCurrency();
 initPriceQueue();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
-trackEvent({
-  type: 'pageview',
-  action: 'marketMainPage',
-});
 
 // makes remove/cancel columns narrower
 injectStyle(`
