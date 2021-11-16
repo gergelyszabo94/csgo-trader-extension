@@ -11,7 +11,7 @@ import {
   addSearchListener, getPattern, removeFromArray, toFixedNoRounding,
 }
   from 'utils/utilsModular';
-import { getItemMarketLink } from 'utils/simpleUtils';
+import { getItemMarketLink, generateInspectCommand } from 'utils/simpleUtils';
 import { getShortDate, dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
   stattrak, starChar, souvenir, stattrakPretty, genericMarketLink,
@@ -94,7 +94,7 @@ const getActiveInventoryAppID = () => {
 
 const cleanUpElements = () => {
   document.querySelectorAll(
-    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name,.startingAtVolume, .marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink',
+    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name,.startingAtVolume, .marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer',
   ).forEach((element) => {
     element.remove();
   });
@@ -255,10 +255,25 @@ const setStickerInfo = (stickers) => {
   }
 };
 
+const setGenInspectInfo = (marketHashName, floatInfo) => {
+  const genCommand = generateInspectCommand(
+    marketHashName, floatInfo.floatvalue, floatInfo.paintindex,
+    floatInfo.defindex, floatInfo.paintseed, floatInfo.stickers,
+  );
+
+  document.querySelectorAll('.inspectOnServer').forEach((inspectOnServerDiv) => {
+    const inspectGenCommandEl = inspectOnServerDiv.querySelector('.inspectGenCommand');
+    inspectGenCommandEl.title = 'Click to copy !gen command';
+    inspectGenCommandEl.textContent = genCommand;
+    inspectGenCommandEl.setAttribute('genCommand', genCommand);
+  });
+};
+
 const updateFloatAndPatternElements = (item) => {
   setFloatBarWithData(item.floatInfo);
   setPatternInfo(item.patternInfo);
   setStickerInfo(item.floatInfo.stickers);
+  setGenInspectInfo(item.market_hash_name, item.floatInfo);
 };
 
 const hideFloatBars = () => {
@@ -441,15 +456,45 @@ const addRightSideElements = () => {
         element.removeEventListener('click');
       });
 
+      const inspectServerConnectLink = 'steam://connect/51.75.73.121:27015';
+
       // adds the lower module that includes tradability, countdown  and bookmarking
       document.querySelectorAll('#iteminfo1_item_actions, #iteminfo0_item_actions')
         .forEach((action) => {
-          action.insertAdjacentHTML('afterend', DOMPurify.sanitize(lowerModule));
+          action.insertAdjacentHTML('afterend', DOMPurify.sanitize(`
+            <div class="inspectOnServer hidden">
+                <div>
+                    <a href="${inspectServerConnectLink}" class="connectToInspectServer">connect 51.75.73.121:27015</a>
+                </div>
+                <div class="inspectGenCommand clickable" title="Generating !gen command..." style="margin-top: 5px;">Generating !gen command...</div>
+            </div>
+          ${lowerModule}`));
         });
+
+      // i think dompurify removes the connect link when inserted above
+      // this adds the href afterwards
+      document.querySelectorAll('.connectToInspectServer').forEach((connectLinkEl) => {
+        connectLinkEl.setAttribute('href', inspectServerConnectLink);
+      });
+
+      document.querySelectorAll('.inspectGenCommand').forEach((copyGenCommandEl) => {
+        copyGenCommandEl.addEventListener('click', () => {
+          copyToClipboard(copyGenCommandEl.getAttribute('genCommand'));
+        });
+      });
 
       document.querySelectorAll('.lowerModule').forEach((module) => {
         module.addEventListener('click', (event) => {
           addBookmark(event.target);
+        });
+      });
+
+      document.querySelectorAll('.onServer').forEach((onServerInspectButton) => {
+        onServerInspectButton.addEventListener('click', () => {
+          document.querySelectorAll('.inspectOnServer').forEach((inspectOnServerDiv) => {
+            inspectOnServerDiv.classList.remove('hidden');
+          });
+          onServerInspectButton.removeEventListener('click', this);
         });
       });
 

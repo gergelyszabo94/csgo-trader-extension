@@ -126,10 +126,11 @@ const overridePopulateActions = () => {
                 elActions.hide();
                 return;
             }
-            rgActions=rgActions.filter(element => element.id!=="inbrowser");
+            rgActions=rgActions.filter(element => element.id!=="inbrowser" && element.id!=="onserver");
                 let inspectLink = rgActions[0].link;
                 if(inspectLink.substring(0,20)==="steam://rungame/730/"){ //makes sure it's a csgo inspect button
                     rgActions.push({name: "Inspect in Browser...", link: "https://market.swap.gg/screenshot?inspectLink="+inspectLink, id: "inbrowser"});
+                    rgActions.push({name: "Inspect on Server...", link: "steam://connect/51.75.73.121:27015", id: "onServer"});
                 }
             for ( var i = 0; i < rgActions.length; i++ )
             {
@@ -158,15 +159,24 @@ const overridePopulateActions = () => {
                 if(action.id==="inbrowser"){
                     target = "_blank";
                 }
-        
+                
                 var elAction = new Element(
                     'a',
                     {
-                        'class': 'btn_small btn_grey_white_innerfade',
+                        'class': 'btn_small btn_grey_white_innerfade ' + action.id,
                         href: strLink,
                         target: target
                     }
                 );
+                
+                if (action.id === "onServer") {
+                  elAction = new Element(
+                    'span',
+                    {
+                        'class': 'btn_small btn_grey_white_innerfade ' + action.id
+                    });
+                }
+
                 var elSpan = new Element( 'span' );
                 elSpan.update( action.name );
                 elAction.appendChild( elSpan );

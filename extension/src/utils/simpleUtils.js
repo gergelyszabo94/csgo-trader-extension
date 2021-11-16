@@ -71,8 +71,36 @@ const getCollection = (descriptions) => {
   return collectionName;
 };
 
+const generateInspectCommand = (fullName, fv, paintindex, defindex, paintseed, stickers) => {
+  // glove code starts with different name
+  const isGloves = fullName.includes('Gloves')
+    || fullName.includes('Wrap');
+
+  let stickerInfo = ' ';
+
+  if (stickers && stickers.length > 0) {
+    // parse the sticker array to a string like:
+    // `firstStickerId firstStickerWear secondStickerId secondStickerWear...`
+
+    for (let index = 0; index < 4; index += 1) {
+      const sticker = stickers.filter((stckr) => {
+        return stckr.slot === index;
+      })[0];
+
+      if (sticker) {
+        stickerInfo += `${sticker.stickerId} ${sticker.wear ? parseFloat(sticker.wear) : 0} `;
+      } else stickerInfo += '0 0 ';
+    }
+  }
+
+  // Join all into a string
+  return (
+    `!${isGloves ? 'gengl' : 'gen'} ${defindex} ${paintindex} ${paintseed} ${fv}${stickers ? stickerInfo : ''}`
+  );
+};
+
 export {
   getItemMarketLink, getItemInventoryLink, getOfferLink, playAudio,
   getItemByNameAndGame, closeTab, isDopplerInName, getFormattedPLPercentage,
-  getCollection,
+  getCollection, generateInspectCommand,
 };
