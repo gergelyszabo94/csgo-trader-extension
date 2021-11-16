@@ -35,6 +35,7 @@ import { injectScript } from 'utils/injection';
 import { getUserSteamID } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
 import steamApps from 'utils/static/steamApps';
+import { removeFromFloatCache } from '../../utils/floatCaching';
 
 let items = [];
 let inventoryTotal = 0.0;
@@ -255,16 +256,36 @@ const setStickerInfo = (stickers) => {
   }
 };
 
-const setGenInspectInfo = (marketHashName, floatInfo) => {
+const setGenInspectInfo = (item) => {
   const genCommand = generateInspectCommand(
-    marketHashName, floatInfo.floatvalue, floatInfo.paintindex,
-    floatInfo.defindex, floatInfo.paintseed, floatInfo.stickers,
+    item.market_hash_name, item.floatInfo.floatvalue, item.floatInfo.paintindex,
+    item.floatInfo.defindex, item.floatInfo.paintseed, item.floatInfo.stickers,
   );
 
   document.querySelectorAll('.inspectOnServer').forEach((inspectOnServerDiv) => {
     const inspectGenCommandEl = inspectOnServerDiv.querySelector('.inspectGenCommand');
     inspectGenCommandEl.title = 'Click to copy !gen command';
-    inspectGenCommandEl.textContent = genCommand;
+
+    if (genCommand.includes('undefined')) {
+      // defindex was not used/stored before the inspect on server feature was introduced
+      // and it might not exists in the data stored in the float cache
+      // if that is the case then we clear it from cache
+      removeFromFloatCache(item.assetid);
+
+      // ugly timeout to get around making removeFromFloatCache async
+      setTimeout(() => {
+        floatQueue.jobs.push({
+          type: 'inventory_floatbar',
+          assetID: item.assetid,
+          inspectLink: item.inspectLink,
+          // they call each other and one of them has to be defined first
+          // eslint-disable-next-line no-use-before-define
+          callBackFunction: dealWithNewFloatData,
+        });
+
+        if (!floatQueue.active) workOnFloatQueue();
+      }, 1000);
+    } else inspectGenCommandEl.textContent = genCommand;
     inspectGenCommandEl.setAttribute('genCommand', genCommand);
   });
 };
@@ -273,7 +294,7 @@ const updateFloatAndPatternElements = (item) => {
   setFloatBarWithData(item.floatInfo);
   setPatternInfo(item.patternInfo);
   setStickerInfo(item.floatInfo.stickers);
-  setGenInspectInfo(item.market_hash_name, item.floatInfo);
+  setGenInspectInfo(item, item.market_hash_name, item.floatInfo);
 };
 
 const hideFloatBars = () => {
