@@ -15,6 +15,7 @@ import { getItemMarketLink, generateInspectCommand } from 'utils/simpleUtils';
 import { getShortDate, dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
   stattrak, starChar, souvenir, stattrakPretty, genericMarketLink,
+  inspectServerConnectLink, inspectServerConnectCommand,
 } from 'utils/static/simpleStrings';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import {
@@ -477,15 +478,13 @@ const addRightSideElements = () => {
         element.removeEventListener('click');
       });
 
-      const inspectServerConnectLink = 'steam://connect/51.75.73.121:27015';
-
       // adds the lower module that includes tradability, countdown  and bookmarking
       document.querySelectorAll('#iteminfo1_item_actions, #iteminfo0_item_actions')
         .forEach((action) => {
           action.insertAdjacentHTML('afterend', DOMPurify.sanitize(`
             <div class="inspectOnServer hidden">
                 <div>
-                    <a href="${inspectServerConnectLink}" class="connectToInspectServer">connect 51.75.73.121:27015</a>
+                    <a href="${inspectServerConnectLink}" class="connectToInspectServer">${inspectServerConnectCommand}</a>
                 </div>
                 <div class="inspectGenCommand clickable" title="Generating !gen command..." style="margin-top: 5px;">Generating !gen command...</div>
             </div>
