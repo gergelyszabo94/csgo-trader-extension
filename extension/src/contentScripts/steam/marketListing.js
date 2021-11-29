@@ -3,7 +3,7 @@ import DOMPurify from 'dompurify';
 import { dopplerPhases } from 'utils/static/dopplerPhases';
 import {
   addUpdatedRibbon,
-  changePageTitle,
+  changePageTitle, copyToClipboard,
   csgoFloatExtPresent,
   getDataFilledFloatTechnical,
   getDopplerInfo,
@@ -29,11 +29,13 @@ import {
 } from 'utils/pricing';
 import {
   genericMarketLink, souvenir, starChar, stattrak, stattrakPretty,
+  inspectServerConnectLink, inspectServerConnectCommand,
 } from 'utils/static/simpleStrings';
 import { injectScript, injectStyle } from 'utils/injection';
 import steamApps from 'utils/static/steamApps';
 import capsuleNamesWithNoCapsuleInName from 'utils/static/capsuleNamesWithNoCapsuleInName';
-import { isDopplerInName } from 'utils/simpleUtils';
+import { generateInspectCommand, isDopplerInName } from 'utils/simpleUtils';
+import { removeFromFloatCache } from '../../utils/floatCaching';
 
 const inBrowserInspectButtonPopupLink = `
     <a class="popup_menu_item" id="inbrowser_inspect" href="https://market.swap.gg/screenshot" target="_blank">
@@ -73,16 +75,47 @@ if (actions !== null && appID === steamApps.CSGO.appID) {
   if (originalInspectButton !== null) {
     itemWithInspectLink = true;
     const inspectLink = originalInspectButton.getAttribute('href');
-    const inBrowserInspectButton = `
+    const customInspectButtons = `
     <a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect_button" href="https://market.swap.gg/screenshot?inspectLink=${inspectLink}" target="_blank">
         <span>
             ${chrome.i18n.getMessage('inspect_in_browser')}
         </span>
-    </a>`;
-    document.getElementById('largeiteminfo_item_actions').insertAdjacentHTML(
-      'beforeend',
-      DOMPurify.sanitize(inBrowserInspectButton, { ADD_ATTR: ['target'] }),
-    );
+    </a>
+    <span class="btn_small btn_grey_white_innerfade" id="on_server_inspect_button" class="clickable" style="cursor: pointer">
+        <span>
+            Inspect On Server
+        </span>
+    </span>`;
+
+    const itemActions = document.getElementById('largeiteminfo_item_actions');
+
+    if (itemActions) {
+      itemActions.insertAdjacentHTML(
+        'beforeend',
+        DOMPurify.sanitize(customInspectButtons, { ADD_ATTR: ['target'] }),
+      );
+
+      itemActions.querySelector('#on_server_inspect_button').addEventListener('click', () => {
+        document.querySelector('.inspectOnServer').classList.remove('hidden');
+      });
+
+      itemActions.insertAdjacentHTML(
+        'afterend',
+        DOMPurify.sanitize(`
+        <div class="inspectOnServer hidden">
+                <div>
+                    <a href="${inspectServerConnectLink}" class="connectToInspectServer">${inspectServerConnectCommand}</a>
+                </div>
+                <div class="inspectGenCommand clickable" title="Generating !gen command..." style="margin-top: 5px;">Generating !gen command...</div>
+            </div>`, { ADD_ATTR: ['target'] }),
+      );
+
+      const inspectGenCommandEl = document.querySelector('.inspectGenCommand');
+      inspectGenCommandEl.addEventListener('click', () => {
+        copyToClipboard(inspectGenCommandEl.getAttribute('genCommand'));
+      });
+      document.querySelector('.connectToInspectServer').setAttribute('href', inspectServerConnectLink);
+    }
   }
 }
 
@@ -333,6 +366,39 @@ const addFloatDataToPage = (job, floatInfo) => {
   if (floatInfo !== undefined) {
     setStickerInfo(job.listingID, floatInfo.stickers);
     addPatterns(job.listingID, floatInfo);
+
+    const originalInspectButton = actions.querySelector('.btn_small.btn_grey_white_innerfade');
+
+    if (originalInspectButton && job.inspectLink === originalInspectButton.getAttribute('href')) {
+      const genCommand = generateInspectCommand(
+        fullName, floatInfo.floatvalue, floatInfo.paintindex,
+        floatInfo.defindex, floatInfo.paintseed, floatInfo.stickers,
+      );
+      const inspectGenCommandEl = document.querySelector('.inspectGenCommand');
+      inspectGenCommandEl.title = 'Click to copy !gen command';
+
+      if (genCommand.includes('undefined')) {
+        // defindex was not used/stored before the inspect on server feature was introduced
+        // and it might not exists in the data stored in the float cache
+        // if that is the case then we clear it from cache
+        removeFromFloatCache(job.assetID);
+
+        // ugly timeout to get around making removeFromFloatCache async
+        setTimeout(() => {
+          floatQueue.jobs.push({
+            type: 'market',
+            assetID: job.assetID,
+            inspectLink: job.inspectLink,
+            // they call each other and one of them has to be defined first
+            // eslint-disable-next-line no-use-before-define
+            callBackFunction: dealWithNewFloatData,
+          });
+
+          if (!floatQueue.active) workOnFloatQueue();
+        }, 1000);
+      } else inspectGenCommandEl.textContent = genCommand;
+      inspectGenCommandEl.setAttribute('genCommand', genCommand);
+    }
   }
 };
 
