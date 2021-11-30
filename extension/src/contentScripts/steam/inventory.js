@@ -96,7 +96,7 @@ const getActiveInventoryAppID = () => {
 
 const cleanUpElements = () => {
   document.querySelectorAll(
-    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name,.startingAtVolume, .marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer',
+    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .CSGOSSTASHLink',
   ).forEach((element) => {
     element.remove();
   });
@@ -615,8 +615,9 @@ const addRightSideElements = () => {
           }
 
           // adds the in-offer module
-          chrome.storage.local.get(['activeOffers', 'itemInOffersInventory', 'showPriceEmpireLinkInInventory', 'showBuffLookupInInventory', 'inventoryShowCopyButtons'], ({
-            activeOffers, itemInOffersInventory,
+          chrome.storage.local.get(['activeOffers', 'itemInOffersInventory', 'showPriceEmpireLinkInInventory',
+            'showBuffLookupInInventory', 'inventoryShowCopyButtons', 'showCSGOSTASHLinkInInventory'], ({
+            activeOffers, itemInOffersInventory, showCSGOSTASHLinkInInventory,
             showPriceEmpireLinkInInventory, showBuffLookupInInventory, inventoryShowCopyButtons,
           }) => {
             if (itemInOffersInventory) {
@@ -680,6 +681,21 @@ const addRightSideElements = () => {
               document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
                 .forEach((descriptor) => {
                   descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(buffLink, { ADD_ATTR: ['target'] }));
+                });
+            }
+
+            if (showCSGOSTASHLinkInInventory) {
+              const CSGOSTASHLink = `
+                <div class="descriptor CSGOSSTASHLink">
+                    <a href="https://csgostash.com/markethash/${item.market_hash_name}" target="_blank" style="color: yellow;">
+                        View on CS:GO STASH
+                      </a>
+                </div>
+              `;
+
+              document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
+                .forEach((descriptor) => {
+                  descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(CSGOSTASHLink, { ADD_ATTR: ['target'] }));
                 });
             }
 

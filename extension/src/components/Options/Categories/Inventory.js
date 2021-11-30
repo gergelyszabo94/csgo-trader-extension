@@ -99,6 +99,12 @@ const inventory = () => {
         description="Show lookup on buff link in inventories"
       />
       <Row
+        name="Show View on CS:GO STASH link"
+        id="showCSGOSTASHLinkInInventory"
+        type="flipSwitchStorage"
+        description="Show View on CS:GO STASH link in inventories"
+      />
+      <Row
         name="Use alternative CS:GO inventory endpoint"
         id="useAlternativeCSGOInventoryEndpoint"
         type="flipSwitchStorage"
