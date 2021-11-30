@@ -136,6 +136,10 @@ const getListingIDFromElement = (listingElement) => {
   return listingElement.id.split('listing_')[1];
 };
 
+const getListingIDByInspectLink = (inspectLink) => {
+  return inspectLink.split('M')[1].split('A')[0];
+};
+
 const addPhasesIndicator = () => {
   if (isDopplerInName(fullName)) {
     const listingsTable = document.getElementById('searchResultsTable');
@@ -363,41 +367,74 @@ const addPatterns = (listingID, floatInfo) => {
 
 const addFloatDataToPage = (job, floatInfo) => {
   populateFloatInfo(job.listingID, floatInfo);
+
   if (floatInfo !== undefined) {
     setStickerInfo(job.listingID, floatInfo.stickers);
     addPatterns(job.listingID, floatInfo);
 
-    const originalInspectButton = actions.querySelector('.btn_small.btn_grey_white_innerfade');
+    const genCommand = generateInspectCommand(
+      fullName, floatInfo.floatvalue, floatInfo.paintindex,
+      floatInfo.defindex, floatInfo.paintseed, floatInfo.stickers,
+    );
 
-    if (originalInspectButton && job.inspectLink === originalInspectButton.getAttribute('href')) {
-      const genCommand = generateInspectCommand(
-        fullName, floatInfo.floatvalue, floatInfo.paintindex,
-        floatInfo.defindex, floatInfo.paintseed, floatInfo.stickers,
-      );
-      const inspectGenCommandEl = document.querySelector('.inspectGenCommand');
-      inspectGenCommandEl.title = 'Click to copy !gen command';
+    if (job.type === 'market') {
+      const originalInspectButton = actions.querySelector('.btn_small.btn_grey_white_innerfade');
 
-      if (genCommand.includes('undefined')) {
-        // defindex was not used/stored before the inspect on server feature was introduced
-        // and it might not exists in the data stored in the float cache
-        // if that is the case then we clear it from cache
-        removeFromFloatCache(job.assetID);
+      if (originalInspectButton && job.inspectLink === originalInspectButton.getAttribute('href')) {
+        const inspectGenCommandEl = document.querySelector('.inspectGenCommand');
+        inspectGenCommandEl.title = 'Click to copy !gen command';
 
-        // ugly timeout to get around making removeFromFloatCache async
-        setTimeout(() => {
-          floatQueue.jobs.push({
-            type: 'market',
-            assetID: job.assetID,
-            inspectLink: job.inspectLink,
-            // they call each other and one of them has to be defined first
-            // eslint-disable-next-line no-use-before-define
-            callBackFunction: dealWithNewFloatData,
-          });
+        if (genCommand.includes('undefined')) {
+          // defindex was not used/stored before the inspect on server feature was introduced
+          // and it might not exists in the data stored in the float cache
+          // if that is the case then we clear it from cache
+          removeFromFloatCache(job.assetID);
 
-          if (!floatQueue.active) workOnFloatQueue();
-        }, 1000);
-      } else inspectGenCommandEl.textContent = genCommand;
-      inspectGenCommandEl.setAttribute('genCommand', genCommand);
+          // ugly timeout to get around making removeFromFloatCache async
+          setTimeout(() => {
+            floatQueue.jobs.push({
+              type: 'market',
+              assetID: job.assetID,
+              inspectLink: job.inspectLink,
+              // they call each other and one of them has to be defined first
+              // eslint-disable-next-line no-use-before-define
+              callBackFunction: dealWithNewFloatData,
+            });
+
+            if (!floatQueue.active) workOnFloatQueue();
+          }, 1000);
+        } else inspectGenCommandEl.textContent = genCommand;
+        inspectGenCommandEl.setAttribute('genCommand', genCommand);
+      }
+    } else if (job.type === 'market_per_listing_gencommand') {
+      const listingRow = getElementByListingID(job.listingID);
+
+      if (listingRow) {
+        const inspectGenCommandEl = listingRow.querySelector('.inspectGenCommandListing');
+        inspectGenCommandEl.title = 'Click to copy !gen command';
+
+        if (genCommand.includes('undefined')) {
+          // defindex was not used/stored before the inspect on server feature was introduced
+          // and it might not exists in the data stored in the float cache
+          // if that is the case then we clear it from cache
+          removeFromFloatCache(job.assetID);
+
+          // ugly timeout to get around making removeFromFloatCache async
+          setTimeout(() => {
+            floatQueue.jobs.push({
+              type: 'market_per_listing_gencommand',
+              assetID: job.assetID,
+              inspectLink: job.inspectLink,
+              // they call each other and one of them has to be defined first
+              // eslint-disable-next-line no-use-before-define
+              callBackFunction: dealWithNewFloatData,
+            });
+
+            if (!floatQueue.active) workOnFloatQueue();
+          }, 1000);
+        } else inspectGenCommandEl.textContent = genCommand;
+        inspectGenCommandEl.setAttribute('genCommand', genCommand);
+      }
     }
   }
 };
@@ -821,7 +858,13 @@ if (appID === steamApps.CSGO.appID) {
 
   // adds the in-browser inspect button to the context menu
   document.getElementById('market_action_popup_itemactions')
-    .insertAdjacentHTML('afterend', DOMPurify.sanitize(inBrowserInspectButtonPopupLink, { ADD_ATTR: ['target'] }));
+    .insertAdjacentHTML('afterend', DOMPurify.sanitize(
+      `${inBrowserInspectButtonPopupLink}
+            <span class="popup_menu_item" id="onserver_inspect" style="cursor: pointer">
+                Inspect on Server
+            </span>`,
+      { ADD_ATTR: ['target'] },
+    ));
 
   // adds the proper link to the context menu before it gets clicked
   // needed because the context menu resets when clicked
@@ -829,6 +872,55 @@ if (appID === steamApps.CSGO.appID) {
     const inspectLink = document.getElementById('market_action_popup_itemactions')
       .querySelector('a.popup_menu_item').getAttribute('href');
     event.target.setAttribute('href', `https://market.swap.gg/screenshot?inspectLink=${inspectLink}`);
+  });
+
+  document.getElementById('onserver_inspect').addEventListener('click', () => {
+    const inspectLink = document.getElementById('market_action_popup_itemactions')
+      .querySelector('a.popup_menu_item').getAttribute('href');
+    const listingID = getListingIDByInspectLink(inspectLink);
+    const listingRow = getElementByListingID(listingID);
+    const listings = getListings();
+
+    listingRow.querySelector('.market_listing_game_name').insertAdjacentHTML(
+      'afterend',
+      DOMPurify.sanitize(`
+        <div class="inspectOnServerListing" style="margin-top: 10px">
+                <div>
+                    <a href="${inspectServerConnectLink}" class="connectToInspectServerListing">${inspectServerConnectCommand}</a>
+                </div>
+                <div class="inspectGenCommandListing clickable" title="Generating !gen command..." style="margin-top: 5px;">Generating !gen command...</div>
+            </div>`, { ADD_ATTR: ['target'] }),
+    );
+
+    for (const listing of Object.values(listings)) {
+      if (listing.listingid === listingID) {
+        // csgofloat collects listing prices that are in USD
+        const price = listing.currencyid === 2001
+          ? listing.price + listing.fee
+          : listing.converted_currencyid === 2001
+            ? listing.converted_price + listing.converted_fee
+            : undefined;
+
+        floatQueue.jobs.push({
+          type: 'market_per_listing_gencommand',
+          assetID: listing.asset.id,
+          inspectLink,
+          listingID,
+          price,
+          callBackFunction: dealWithNewFloatData,
+        });
+      }
+    }
+    if (!floatQueue.active) workOnFloatQueue();
+
+    listingRow.querySelector('.connectToInspectServerListing').setAttribute('href', inspectServerConnectLink);
+
+    const inspectGenCommandEl = listingRow.querySelector('.inspectGenCommandListing');
+
+    inspectGenCommandEl.addEventListener('click', () => {
+      copyToClipboard(inspectGenCommandEl.getAttribute('genCommand'));
+    });
+    document.getElementById('market_action_popup').style.display = 'none';
   });
 }
 
