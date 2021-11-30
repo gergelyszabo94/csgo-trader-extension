@@ -839,6 +839,9 @@ changePageTitle('market_listing', fullName);
 if (appID === steamApps.CSGO.appID) {
   const otherExteriors = `
             <div class="descriptor otherExteriors">
+                <a href="https://csgostash.com/markethash/${fullName}">View on CS:GO STASH</a>
+            </div>
+            <div class="descriptor otherExteriors">
                 <span>${chrome.i18n.getMessage('links_to_other_exteriors')}:</span>
                 <ul>
                     <li><a href="${`${genericMarketLink + star + weaponName}%28Factory%20New%29`}" target="_blank">${exteriors.factory_new.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Factory%20New%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.factory_new.localized_name}</span></a></li>
