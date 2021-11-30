@@ -69,55 +69,6 @@ let itemWithInspectLink = false;
 const actions = document.getElementById('largeiteminfo_item_actions');
 // sometimes the page does not load correctly, for example when Steam shows:
 // "There was an error getting listings for this item. Please try again later."
-if (actions !== null && appID === steamApps.CSGO.appID) {
-  const originalInspectButton = actions.querySelector('.btn_small.btn_grey_white_innerfade');
-  // some items don't have inspect buttons (like cases)
-  if (originalInspectButton !== null) {
-    itemWithInspectLink = true;
-    const inspectLink = originalInspectButton.getAttribute('href');
-    const customInspectButtons = `
-    <a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect_button" href="https://market.swap.gg/screenshot?inspectLink=${inspectLink}" target="_blank">
-        <span>
-            ${chrome.i18n.getMessage('inspect_in_browser')}
-        </span>
-    </a>
-    <span class="btn_small btn_grey_white_innerfade" id="on_server_inspect_button" class="clickable" style="cursor: pointer">
-        <span>
-            Inspect On Server
-        </span>
-    </span>`;
-
-    const itemActions = document.getElementById('largeiteminfo_item_actions');
-
-    if (itemActions) {
-      itemActions.insertAdjacentHTML(
-        'beforeend',
-        DOMPurify.sanitize(customInspectButtons, { ADD_ATTR: ['target'] }),
-      );
-
-      itemActions.querySelector('#on_server_inspect_button').addEventListener('click', () => {
-        document.querySelector('.inspectOnServer').classList.remove('hidden');
-      });
-
-      itemActions.insertAdjacentHTML(
-        'afterend',
-        DOMPurify.sanitize(`
-        <div class="inspectOnServer hidden">
-                <div>
-                    <a href="${inspectServerConnectLink}" class="connectToInspectServer">${inspectServerConnectCommand}</a>
-                </div>
-                <div class="inspectGenCommand clickable" title="Generating !gen command..." style="margin-top: 5px;">Generating !gen command...</div>
-            </div>`, { ADD_ATTR: ['target'] }),
-      );
-
-      const inspectGenCommandEl = document.querySelector('.inspectGenCommand');
-      inspectGenCommandEl.addEventListener('click', () => {
-        copyToClipboard(inspectGenCommandEl.getAttribute('genCommand'));
-      });
-      document.querySelector('.connectToInspectServer').setAttribute('href', inspectServerConnectLink);
-    }
-  }
-}
 
 let stOrSv = stattrakPretty;
 let stOrSvClass = 'stattrakOrange';
@@ -837,11 +788,78 @@ addUpdatedRibbon();
 changePageTitle('market_listing', fullName);
 
 if (appID === steamApps.CSGO.appID) {
-  const otherExteriors = `
-            <div class="descriptor otherExteriors">
+  if (actions !== null) {
+    const originalInspectButton = actions.querySelector('.btn_small.btn_grey_white_innerfade');
+    // some items don't have inspect buttons (like cases)
+    if (originalInspectButton !== null) {
+      itemWithInspectLink = true;
+      const inspectLink = originalInspectButton.getAttribute('href');
+      const customInspectButtons = `
+    <a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect_button" href="https://market.swap.gg/screenshot?inspectLink=${inspectLink}" target="_blank">
+        <span>
+            ${chrome.i18n.getMessage('inspect_in_browser')}
+        </span>
+    </a>
+    <span class="btn_small btn_grey_white_innerfade" id="on_server_inspect_button" class="clickable" style="cursor: pointer">
+        <span>
+            Inspect On Server
+        </span>
+    </span>`;
+
+      const itemActions = document.getElementById('largeiteminfo_item_actions');
+
+      if (itemActions) {
+        itemActions.insertAdjacentHTML(
+          'beforeend',
+          DOMPurify.sanitize(customInspectButtons, { ADD_ATTR: ['target'] }),
+        );
+
+        itemActions.querySelector('#on_server_inspect_button').addEventListener('click', () => {
+          document.querySelector('.inspectOnServer').classList.remove('hidden');
+        });
+
+        itemActions.insertAdjacentHTML(
+          'afterend',
+          DOMPurify.sanitize(`
+        <div class="inspectOnServer hidden">
+                <div>
+                    <a href="${inspectServerConnectLink}" class="connectToInspectServer">${inspectServerConnectCommand}</a>
+                </div>
+                <div class="inspectGenCommand clickable" title="Generating !gen command..." style="margin-top: 5px;">Generating !gen command...</div>
+            </div>`, { ADD_ATTR: ['target'] }),
+        );
+
+        const inspectGenCommandEl = document.querySelector('.inspectGenCommand');
+        inspectGenCommandEl.addEventListener('click', () => {
+          copyToClipboard(inspectGenCommandEl.getAttribute('genCommand'));
+        });
+        document.querySelector('.connectToInspectServer').setAttribute('href', inspectServerConnectLink);
+      }
+    }
+  }
+
+  const descriptor = document.getElementById('largeiteminfo_item_descriptors');
+
+  if (descriptor !== null) {
+    descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
+      `<div class="descriptor">
                 <a href="https://csgostash.com/markethash/${fullName}">View on CS:GO STASH</a>
-            </div>
-            <div class="descriptor otherExteriors">
+            </div>`,
+      { ADD_ATTR: ['target'] },
+    ));
+
+    if (isCommodityItem) {
+      descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
+        `<div class="descriptor multiSell">
+                <a href="https://steamcommunity.com/market/multisell?appid=730&contextid=2&items%5B%5D=${fullName}">Open multi-sell page.</a>
+            </div>`,
+        { ADD_ATTR: ['target'] },
+      ));
+    }
+
+    if (fullName.split('(')[1] !== undefined) {
+      descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
+        `<div class="descriptor otherExteriors">
                 <span>${chrome.i18n.getMessage('links_to_other_exteriors')}:</span>
                 <ul>
                     <li><a href="${`${genericMarketLink + star + weaponName}%28Factory%20New%29`}" target="_blank">${exteriors.factory_new.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Factory%20New%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.factory_new.localized_name}</span></a></li>
@@ -851,12 +869,10 @@ if (appID === steamApps.CSGO.appID) {
                     <li><a href="${`${genericMarketLink + star + weaponName}%28Battle-Scarred%29`}"" target="_blank">${exteriors.battle_scarred.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Battle-Scarred%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.battle_scarred.localized_name}</span></a></li>
                 </ul>
                 <span>${chrome.i18n.getMessage('not_every_available')}</span>
-            </div>
-            `;
-
-  const descriptor = document.getElementById('largeiteminfo_item_descriptors');
-  if (fullName.split('(')[1] !== undefined && descriptor !== null) {
-    descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(otherExteriors, { ADD_ATTR: ['target'] }));
+            </div>`,
+        { ADD_ATTR: ['target'] },
+      ));
+    }
   }
 
   // adds the in-browser inspect button to the context menu
