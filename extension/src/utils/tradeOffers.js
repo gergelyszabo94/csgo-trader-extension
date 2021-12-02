@@ -461,16 +461,19 @@ const createTradeOfferEvent = (offer, type, ruleIndex) => {
   };
 };
 
-const executeVerdict = (offer, ruleNumber, verdict, items) => {
+const executeVerdict = (offer, ruleNumber, verdict, items, offersToAcceptCount) => {
   logTradeOfferEvents([createTradeOfferEvent(offer, verdict, ruleNumber)]);
+
   switch (verdict) {
     case actions.notify.key: notifyAboutOffer(offer); break;
     case actions.notify_discord.key: notifyAboutOfferOnDiscord(offer, items); break;
     case actions.decline.key: declineOffer(offer.tradeofferid); break;
-    case actions.accept.key: acceptTradeInBackground(
-      offer.tradeofferid,
-      getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
-    ); break;
+    case actions.accept.key: setTimeout(() => {
+      acceptTradeInBackground(
+        offer.tradeofferid,
+        getProperStyleSteamIDFromOfferStyle(offer.accountid_other),
+      );
+    }, offersToAcceptCount * 2000); break;
     default: break;
   }
 };
@@ -585,11 +588,14 @@ const evaluateRule = (offer, rule) => {
 };
 
 const evaluateOffers = (offers, rules, items) => {
+  let offersToAcceptCount = 0;
+
   offers.forEach((offer) => {
     for (const [index, rule] of rules.entries()) {
       if (rule.active) {
         if (evaluateRule(offer, rule)) {
-          executeVerdict(offer, index, rule.action, items);
+          if (rule.action === actions.accept.key) offersToAcceptCount += 1;
+          executeVerdict(offer, index, rule.action, items, offersToAcceptCount);
           break;
         }
       }
