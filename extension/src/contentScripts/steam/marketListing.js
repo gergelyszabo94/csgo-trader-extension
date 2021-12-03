@@ -777,6 +777,18 @@ const showAllOrders = (type) => {
   });
 };
 
+const getContextIDFromPage = () => {
+  let contextID = 2;
+
+  document.querySelectorAll('script').forEach((scriptEl) => {
+    if (scriptEl.textContent.includes('g_rgAppContextData =')) {
+      contextID = scriptEl.textContent.split('"contextid":"')[1].split('"')[0];
+    }
+  });
+
+  return contextID;
+};
+
 floatQueue.cleanupFunction = () => {
   sortListings(document.getElementById('sortSelect').value);
 };
@@ -786,6 +798,8 @@ updateWalletCurrency();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
 changePageTitle('market_listing', fullName);
+
+const descriptor = document.getElementById('largeiteminfo_item_descriptors');
 
 if (appID === steamApps.CSGO.appID) {
   if (actions !== null) {
@@ -838,8 +852,6 @@ if (appID === steamApps.CSGO.appID) {
     }
   }
 
-  const descriptor = document.getElementById('largeiteminfo_item_descriptors');
-
   if (descriptor !== null) {
     descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
       `<div class="descriptor">
@@ -847,15 +859,6 @@ if (appID === steamApps.CSGO.appID) {
             </div>`,
       { ADD_ATTR: ['target'] },
     ));
-
-    if (isCommodityItem) {
-      descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
-        `<div class="descriptor multiSell">
-                <a href="https://steamcommunity.com/market/multisell?appid=730&contextid=2&items%5B%5D=${fullName}">Open multi-sell page.</a>
-            </div>`,
-        { ADD_ATTR: ['target'] },
-      ));
-    }
 
     if (fullName.split('(')[1] !== undefined) {
       descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
@@ -941,6 +944,16 @@ if (appID === steamApps.CSGO.appID) {
     });
     document.getElementById('market_action_popup').style.display = 'none';
   });
+}
+
+if (isCommodityItem) {
+  const contextID = getContextIDFromPage();
+  descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
+    `<div class="descriptor multiSell">
+                <a href="https://steamcommunity.com/market/multisell?appid=${appID}&contextid=${contextID}&items%5B%5D=${fullName}">Open multi-sell page.</a>
+            </div>`,
+    { ADD_ATTR: ['target'] },
+  ));
 }
 
 // adds sorting menu to market pages with individual listings
@@ -1085,11 +1098,11 @@ if (isCommodityItem) {
         'rgb(235, 75, 75)',
       ];
 
-      descriptors.querySelectorAll('.descriptor').forEach((descriptor) => {
-        if (descriptor.style !== '' && qualityRBGS.includes(descriptor.style.color)) {
-          const itemName = descriptor.innerText;
-          descriptor.innerHTML = DOMPurify.sanitize(
-            `<a href="https://steamcommunity.com/market/search?q=${itemName}&appid=730" style="color: ${descriptor.style.color}">
+      descriptors.querySelectorAll('.descriptor').forEach((descriptorEl) => {
+        if (descriptorEl.style !== '' && qualityRBGS.includes(descriptorEl.style.color)) {
+          const itemName = descriptorEl.innerText;
+          descriptorEl.innerHTML = DOMPurify.sanitize(
+            `<a href="https://steamcommunity.com/market/search?q=${itemName}&appid=730" style="color: ${descriptorEl.style.color}">
                     ${itemName}
                   </a>`,
           );
