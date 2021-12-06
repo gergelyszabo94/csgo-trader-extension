@@ -87,11 +87,15 @@ const getAcceptScriptAsString = (offerID, partnerID) => {
   return new Promise((resolve) => {
     chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }) => {
       resolve(`
-      acceptInterval = setInterval(() => {
+      let acceptTries${offerID} = 1;
+      
+      let acceptInterval${offerID} = setInterval(() => {
          myHeaders = new Headers();
          myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-  
-         request = new Request(\`https://steamcommunity.com/tradeoffer/${offerID}/accept\`,
+         
+         if (acceptTries${offerID} <= 5) {
+            acceptTries${offerID} += 1;
+            request = new Request(\`https://steamcommunity.com/tradeoffer/${offerID}/accept\`,
            {
              method: 'POST',
              headers: myHeaders,
@@ -99,10 +103,13 @@ const getAcceptScriptAsString = (offerID, partnerID) => {
              body: \`sessionid=${steamSessionID}&serverid=1&tradeofferid=${offerID}&partner=${partnerID}&captcha=\`,
            });
     
-         fetch(request).then(() => {
-           clearInterval(acceptInterval);
-         }); 
-      }, 4000);`);
+           fetch(request).then(() => {
+             clearInterval(acceptInterval${offerID});
+           }); 
+         } else {
+            clearInterval(acceptInterval${offerID});
+         }
+      }, acceptTries${offerID} * 5000);`);
     });
   });
 };
