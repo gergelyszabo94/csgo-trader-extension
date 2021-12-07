@@ -3,7 +3,7 @@ import {
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
   removeOfferFromActiveOffers, removeLinkFilterFromLinks,
   logExtensionPresence, updateLoggedInUserInfo, reloadPageOnExtensionReload,
-  repositionNameTagIcons, jumpToAnchor, changePageTitle,
+  repositionNameTagIcons, jumpToAnchor, changePageTitle, isChromium,
 } from 'utils/utilsModular';
 import { prettyTimeAgo } from 'utils/dateTime';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
@@ -561,45 +561,49 @@ if (activePage === 'incoming_offers') {
     rule.style.height = '46px';
   });
 
-  // adds "accept trade" action to offers
-  document.querySelectorAll('.tradeoffer').forEach((offerElement) => {
-    if (isOfferActive(offerElement)) {
-      const offerID = getOfferIDFromElement(offerElement);
-      const partnerID = getProperStyleSteamIDFromOfferStyle(offerElement.querySelector('.playerAvatar').getAttribute('data-miniprofile'));
-      offerElement.querySelector('.tradeoffer_footer_actions').insertAdjacentHTML(
-        'afterbegin',
-        `<span id="accept_${offerID}" class="whiteLink">Accept Trade</span> | `,
-      );
+  // offer accepting does not work in firefox for some reason
+  // and I can't even find a way to debug it...
+  if (isChromium()) {
+    // adds "accept trade" action to offers
+    document.querySelectorAll('.tradeoffer').forEach((offerElement) => {
+      if (isOfferActive(offerElement)) {
+        const offerID = getOfferIDFromElement(offerElement);
+        const partnerID = getProperStyleSteamIDFromOfferStyle(offerElement.querySelector('.playerAvatar').getAttribute('data-miniprofile'));
+        offerElement.querySelector('.tradeoffer_footer_actions').insertAdjacentHTML(
+          'afterbegin',
+          `<span id="accept_${offerID}" class="whiteLink">Accept Trade</span> | `,
+        );
 
-      const acceptButton = document.getElementById(`accept_${offerID}`);
+        const acceptButton = document.getElementById(`accept_${offerID}`);
 
-      acceptButton.addEventListener('click', () => {
-        let message = '';
-        const offerContent = offerElement.querySelector('.tradeoffer_items_ctn');
-        const middleElement = offerContent.querySelector('.tradeoffer_items_rule');
+        acceptButton.addEventListener('click', () => {
+          let message = '';
+          const offerContent = offerElement.querySelector('.tradeoffer_items_ctn');
+          const middleElement = offerContent.querySelector('.tradeoffer_items_rule');
 
-        acceptOffer(offerID, partnerID).then((res) => {
-          if (res.needs_email_confirmation || res.needs_mobile_confirmation) message = 'Accepted - Awaiting Confirmation';
-          else {
-            message = 'Trade Accepted';
-            middleElement.classList.add('accepted');
-          }
-          offerElement.querySelector('.tradeoffer_footer').style.display = 'none';
-        }).catch((err) => {
-          console.log(err);
-          message = 'Could not accept trade offer, most likely Steam is having problems.';
-        }).finally(() => {
-          offerContent.classList.remove('active');
-          offerContent.classList.add('inactive');
+          acceptOffer(offerID, partnerID).then((res) => {
+            if (res.needs_email_confirmation || res.needs_mobile_confirmation) message = 'Accepted - Awaiting Confirmation';
+            else {
+              message = 'Trade Accepted';
+              middleElement.classList.add('accepted');
+            }
+            offerElement.querySelector('.tradeoffer_footer').style.display = 'none';
+          }).catch((err) => {
+            console.log(err);
+            message = 'Could not accept trade offer, most likely Steam is having problems.';
+          }).finally(() => {
+            offerContent.classList.remove('active');
+            offerContent.classList.add('inactive');
 
-          middleElement.classList.remove('tradeoffer_items_rule');
-          middleElement.classList.add('tradeoffer_items_banner');
-          middleElement.style.height = '';
-          middleElement.innerText = message;
+            middleElement.classList.remove('tradeoffer_items_rule');
+            middleElement.classList.add('tradeoffer_items_banner');
+            middleElement.style.height = '';
+            middleElement.innerText = message;
+          });
         });
-      });
-    }
-  });
+      }
+    });
+  }
 
   // overrides steam's trade offer declining logic to skip the confirmation
   // (when set to do so in the options)
