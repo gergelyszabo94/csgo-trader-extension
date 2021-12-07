@@ -96,7 +96,7 @@ const getActiveInventoryAppID = () => {
 
 const cleanUpElements = () => {
   document.querySelectorAll(
-    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .CSGOSSTASHLink',
+    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .CSGOSSTASHLink, .multiSellLink',
   ).forEach((element) => {
     element.remove();
   });
@@ -947,6 +947,21 @@ const addRightSideElements = () => {
             });
           }
         });
+
+        if (item.commodity) {
+          const multiSellLink = `
+                <div class="descriptor multiSellLink">
+                    <a href="https://steamcommunity.com/market/multisell?appid=${item.appid}&contextid=${item.contextid}&items%5B%5D=${item.market_hash_name}" target="_blank">
+                        Open multisell page.
+                      </a>
+                </div>
+              `;
+
+          document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
+            .forEach((descriptor) => {
+              descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(multiSellLink, { ADD_ATTR: ['target'] }));
+            });
+        }
       }
     } else {
       // show the original names if the name can't be changed
