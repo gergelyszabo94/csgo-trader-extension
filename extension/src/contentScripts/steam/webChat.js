@@ -15,35 +15,39 @@ const addChatPresets = () => {
       const chatEntryDiv = chatDialog.querySelector('.chatEntry.Panel.Focusable');
 
       if (chatEntryDiv) {
-        presetMessageSelect = document.createElement('select');
-        presetMessageSelect.classList.add('messagePreset');
-        const disabledPlaceHolderOption = document.createElement('option');
-        disabledPlaceHolderOption.setAttribute('disabled', '');
-        disabledPlaceHolderOption.setAttribute('selected', '');
-        disabledPlaceHolderOption.text = 'Select a message to send...';
-        presetMessageSelect.appendChild(disabledPlaceHolderOption);
+        const entryForm = chatEntryDiv.querySelector('form');
 
-        messagePresets.forEach((message, index) => {
-          const option = document.createElement('option');
-          option.value = index.toString();
-          option.text = `${message.substring(0, 50)}...`;
-          presetMessageSelect.appendChild(option);
-        });
+        if (entryForm) {
+          presetMessageSelect = document.createElement('select');
+          presetMessageSelect.classList.add('messagePreset');
+          const disabledPlaceHolderOption = document.createElement('option');
+          disabledPlaceHolderOption.setAttribute('disabled', '');
+          disabledPlaceHolderOption.setAttribute('selected', '');
+          disabledPlaceHolderOption.text = 'Select a message to send...';
+          presetMessageSelect.appendChild(disabledPlaceHolderOption);
 
-        chatEntryDiv.insertAdjacentElement('afterbegin', presetMessageSelect);
-        presetMessageSelect.addEventListener('change', () => {
-          const messageArea = chatEntryDiv.querySelector('textarea');
-          const submitButton = chatEntryDiv.querySelector('button[type=submit]');
+          messagePresets.forEach((message, index) => {
+            const option = document.createElement('option');
+            option.value = index.toString();
+            option.text = `${message.substring(0, 50)}...`;
+            presetMessageSelect.appendChild(option);
+          });
 
-          if (messageArea && submitButton) {
-            messageArea.value = messagePresets[presetMessageSelect.selectedIndex + -1];
-            messageArea.dispatchEvent(new Event('input', {
-              bubbles: true,
-              cancelable: true,
-            }));
-            submitButton.click();
-          }
-        });
+          entryForm.insertAdjacentElement('afterend', presetMessageSelect);
+          presetMessageSelect.addEventListener('change', () => {
+            const messageArea = chatEntryDiv.querySelector('textarea');
+            const submitButton = chatEntryDiv.querySelector('button[type=submit]');
+
+            if (messageArea && submitButton) {
+              messageArea.value = messagePresets[presetMessageSelect.selectedIndex + -1];
+              messageArea.dispatchEvent(new Event('input', {
+                bubbles: true,
+                cancelable: true,
+              }));
+              submitButton.click();
+            }
+          });
+        }
       }
     }
   });
