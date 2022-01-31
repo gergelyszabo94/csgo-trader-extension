@@ -951,7 +951,7 @@ const addRightSideElements = () => {
         if (item.commodity) {
           const multiSellLink = `
                 <div class="descriptor multiSellLink">
-                    <a href="https://steamcommunity.com/market/multisell?appid=${item.appid}&contextid=${item.contextid}&items%5B%5D=${item.market_hash_name}" target="_blank">
+                    <a href="https://steamcommunity.com/market/multisell?appid=${item.appid}&contextid=${item.contextid}&items%5B%5D=${item.market_hash_name}&qty%5B%5D=250" target="_blank">
                         Open multisell page.
                       </a>
                 </div>
