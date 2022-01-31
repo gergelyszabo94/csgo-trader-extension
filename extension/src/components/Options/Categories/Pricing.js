@@ -53,7 +53,7 @@ const pricing = () => {
         name="Show sticker worth on items"
         id="showStickerPrice"
         type="flipSwitchStorage"
-        description="When turned on it puts the total price of the stickers applied on a weapon under the exterior indicator in inventories, trade offers and no the incoming trade offers page."
+        description="When turned on it puts the total price of the stickers applied on a weapon under the exterior indicator in inventories, trade offers and on the incoming trade offers page."
       />
       <Row
         name="Currency"
@@ -94,7 +94,7 @@ const pricing = () => {
         type="number"
         id="realTimePricesFreqSuccess"
         description="The frequency to fetch RealTime prices at from Steam in milliseconds.
-                     The default is 3000, which is 3 seconds, if you set it too low then the the requests will start failing often."
+                     The default is 3000, which is 3 seconds, if you set it too low then the requests will start failing often."
       />
       <Row
         name="RealTime price fetching failure delay"
