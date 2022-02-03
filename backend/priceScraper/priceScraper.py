@@ -335,7 +335,7 @@ def fetch_priceempire(stage) -> Tuple[dict, dict, dict, dict]:
     log.info("Requesting prices from pricempire")
 
     try:
-        response = requests.get("https://api.pricempire.com/v1/getAllItems", params={
+        response = requests.get("https://api.pricempire.com/v2/getAllItems", params={
             "token": pricempire_token,
             "currency": "USD",
             "source": "csgoempire,swapgg,csgoexo,buff,buff163,buff163_quick",
@@ -353,25 +353,23 @@ def fetch_priceempire(stage) -> Tuple[dict, dict, dict, dict]:
     csgoexo_prices = {}
     buff163_prices = {}
 
-    if not (response.status_code == 200 and len(response_json) != 0 and response_json.get("status")):
+    if not (response.status_code == 200 and len(response_json) != 0):
         handle_invalid_data("priceempire", response.status_code)
         return {}, {}, {}, {}
 
     log.info("Valid response from pricempire")
-    items = response_json.get("items")
     log.info("Extracting pricing information")
 
-    for item in items:
-        name = item.get('name')
-        pricempire_prices = item.get('prices')
+    for name, price in response_json.items():
+        # pricempire_prices = item.get('prices')
 
-        if pricempire_prices is not None:
-            csgoempire_prices[name] = get_formatted_float_divided_by_100(pricempire_prices.get('csgoempire', {}).get('price'))
-            swapgg_prices[name] = get_formatted_float_divided_by_100(pricempire_prices.get('swapgg', {}).get('price'))
-            csgoexo_prices[name] = get_formatted_float_divided_by_100(pricempire_prices.get('csgoexo', {}).get('price'))
+        if price is not None:
+            csgoempire_prices[name] = get_formatted_float_divided_by_100(price.get('csgoempire', {}))
+            swapgg_prices[name] = get_formatted_float_divided_by_100(price.get('swapgg', {}))
+            csgoexo_prices[name] = get_formatted_float_divided_by_100(price.get('csgoexo', {}))
 
-            item_buff163_price = pricempire_prices.get('buff163', {}).get('price')
-            item_buff163_quick_price = pricempire_prices.get('buff163_quick', {}).get('price')
+            item_buff163_price = price.get('buff163', {})
+            item_buff163_quick_price = price.get('buff163_quick', {})
 
             item_buff163_prices = {"starting_at": {}, "highest_order": {}}
             item_buff163_prices["starting_at"]["price"] = get_formatted_float_divided_by_100(item_buff163_price)
@@ -379,24 +377,24 @@ def fetch_priceempire(stage) -> Tuple[dict, dict, dict, dict]:
 
             if "Doppler" in name:
                 item_buff163_prices["starting_at"]["doppler"] = {
-                    "Sapphire": get_formatted_float_divided_by_100(pricempire_prices.get("buff_sapphire", {}).get("price")),
-                    "Ruby": get_formatted_float_divided_by_100(pricempire_prices.get("buff_ruby", {}).get("price")),
-                    "Black Pearl": get_formatted_float_divided_by_100(pricempire_prices.get("buff_bp", {}).get("price")),
-                    "Emerald": get_formatted_float_divided_by_100(pricempire_prices.get("buff_emerald", {}).get("price")),
-                    "Phase 1": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p1", {}).get("price")),
-                    "Phase 2": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p2", {}).get("price")),
-                    "Phase 3": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p3", {}).get("price")),
-                    "Phase 4": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p4", {}).get("price")),
+                    "Sapphire": get_formatted_float_divided_by_100(price.get("buff_sapphire", {})),
+                    "Ruby": get_formatted_float_divided_by_100(price.get("buff_ruby", {})),
+                    "Black Pearl": get_formatted_float_divided_by_100(price.get("buff_bp", {})),
+                    "Emerald": get_formatted_float_divided_by_100(price.get("buff_emerald", {})),
+                    "Phase 1": get_formatted_float_divided_by_100(price.get("buff_p1", {})),
+                    "Phase 2": get_formatted_float_divided_by_100(price.get("buff_p2", {})),
+                    "Phase 3": get_formatted_float_divided_by_100(price.get("buff_p3", {})),
+                    "Phase 4": get_formatted_float_divided_by_100(price.get("buff_p4", {})),
                 }
                 item_buff163_prices["highest_order"]["doppler"] = {
-                    "Sapphire": get_formatted_float_divided_by_100(pricempire_prices.get("buff_sapphire_quick", {}).get("price")),
-                    "Ruby": get_formatted_float_divided_by_100(pricempire_prices.get("buff_ruby_quick", {}).get("price")),
-                    "Black Pearl": get_formatted_float_divided_by_100(pricempire_prices.get("buff_bp_quick", {}).get("price")),
-                    "Emerald": get_formatted_float_divided_by_100(pricempire_prices.get("buff_emerald_quick", {}).get("price")),
-                    "Phase 1": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p1_quick", {}).get("price")),
-                    "Phase 2": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p2_quick", {}).get("price")),
-                    "Phase 3": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p3_quick", {}).get("price")),
-                    "Phase 4": get_formatted_float_divided_by_100(pricempire_prices.get("buff_p4_quick", {}).get("price")),
+                    "Sapphire": get_formatted_float_divided_by_100(price.get("buff_sapphire_quick", {})),
+                    "Ruby": get_formatted_float_divided_by_100(price.get("buff_ruby_quick", {})),
+                    "Black Pearl": get_formatted_float_divided_by_100(price.get("buff_bp_quick", {})),
+                    "Emerald": get_formatted_float_divided_by_100(price.get("buff_emerald_quick", {})),
+                    "Phase 1": get_formatted_float_divided_by_100(price.get("buff_p1_quick", {})),
+                    "Phase 2": get_formatted_float_divided_by_100(price.get("buff_p2_quick", {})),
+                    "Phase 3": get_formatted_float_divided_by_100(price.get("buff_p3_quick", {})),
+                    "Phase 4": get_formatted_float_divided_by_100(price.get("buff_p4_quick", {})),
                 }
             buff163_prices[name] = item_buff163_prices
             add_to_master_list(name)
