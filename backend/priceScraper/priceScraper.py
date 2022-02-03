@@ -339,6 +339,8 @@ def fetch_priceempire(stage) -> Tuple[dict, dict, dict, dict]:
             "token": pricempire_token,
             "currency": "USD",
             "source": "csgoempire,swapgg,csgoexo,buff,buff163,buff163_quick",
+            "inflationThreshold": "1000",
+            "maxAge": "30",
         })
         response.raise_for_status()
         log.info("Received response from pricempire")
