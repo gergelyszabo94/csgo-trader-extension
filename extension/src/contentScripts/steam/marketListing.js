@@ -1246,10 +1246,10 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                     </a>
                   </div>
                   <div class="realMoneySite">
-                    <a href="https://itemherald.com/market/csgo?query=${fullName}&ref=gery" target="_blank" class="realMoneySiteLink referralLink" data-site="itemherald" data-site="skinbaron">
-                        <img alt="Itemherald logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/itemherald.png')}" data-site="itemherald">
+                    <a href="https://gamerpay.gg/partner/okn9go3r" target="_blank" class="realMoneySiteLink referralLink" data-site="gamerpay">
+                        <img alt="GamerPay logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/gamerpay.png')}" data-site="gamerpay">
                         <br>
-                        ItemHerald.com
+                        GamerPay.gg
                     </a>
                   </div>
                 </div>
@@ -1260,8 +1260,8 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       <a href="https://skinport.com/market/730?r=gery" target="_blank" class="referralLink" data-site="skinport">Skinport</a>,
                       <a href="https://skinbaron.com/partner/gery" target="_blank" class="referralLink" data-site="skinbaron">Skinbaron</a>,
                       <a href="https://dmarket.com/?ref=hJEDYLBTsV" target="_blank" class="referralLink" data-site="dmarket">DMARKET</a>,
-                      <a href="https://itemherald.com/market/csgo?ref=gery" target="_blank" class="referralLink" data-site="itemherald">ItemHerald</a>,
-                      <a href="https://waxpeer.com/r/gery" target="_blank" class="referralLink" data-site="waxpeer">ItemHerald</a>,
+                      <a href="https://gamerpay.gg/partner/okn9go3r" target="_blank" class="referralLink" data-site="gamerpay">GamerPay</a>,
+                      <a href="https://waxpeer.com/r/gery" target="_blank" class="referralLink" data-site="waxpeer">Waxpeer</a>,
                       <a href="bskn.co/?ref_alias=xcW4c_phcUc" target="_blank" class="referralLink" data-site="bitskins">Bitskins</a> and 
                       <a href="https://csgofloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csgofloat">
                       CSGOFloat
@@ -1276,7 +1276,8 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       </a>,
                       <a href="https://csgofloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csgofloat">
                       this one and find your desired items on CSGOFloat's peer to peer market
-                      </a>
+                      </a>,
+                      <a href="https://gamerpay.gg/partner/okn9go3r" target="_blank" class="referralLink" data-site="gamerpay"> this one for GamerPay.gg</a>
                       or
                       <a href="https://skinbaron.com/partner/gery" target="_blank" class="referralLink" data-site="skinbaron">this one for Skinbaron</a>
                       You can also buy items for real money on
