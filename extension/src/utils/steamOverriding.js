@@ -17,8 +17,9 @@ const overrideShowTradeOffer = () => {
             winOffer.focus();
         }
 `;
-  chrome.storage.local.get(['openOfferInTab'], (result) => {
-    if (result.openOfferInTab) injectScript(overRideShowTradeOfferScript, false, 'ShowTradeOfferScript', null);
+
+  chrome.storage.local.get(['openOfferInTab'], ({ openOfferInTab }) => {
+    if (openOfferInTab) injectScript(overRideShowTradeOfferScript, false, 'ShowTradeOfferScript', null);
   });
 };
 

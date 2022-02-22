@@ -5,6 +5,7 @@ import {
 import DOMPurify from 'dompurify';
 import { deleteForumComment, postForumComment } from 'utils/comments';
 import { injectScript } from 'utils/injection';
+import { overrideShowTradeOffer } from 'utils/steamOverriding';
 
 logExtensionPresence();
 updateLoggedInUserInfo();
@@ -81,4 +82,6 @@ if (searchElement !== null) {
       });
     });
   });
+
+  overrideShowTradeOffer();
 }
