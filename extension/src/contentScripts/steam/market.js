@@ -552,14 +552,20 @@ if (orders) {
       });
 
       cancelColumnHeader.addEventListener('click', () => {
-        orderRows.forEach((orderRow) => {
-          const orderID = getMyOrderIDFromElement(orderRow);
-          cancelOrder(orderID).then(
-            () => {
-              orderRow.remove();
-            },
-          );
-        });
+        if (!cancelColumnHeader.getAttribute('data-confirm')) {
+          cancelColumnHeader.setAttribute('data-confirm', true);
+          cancelColumnHeader.innerText = 'Click again to remove all!';
+        } else {
+          orderRows.forEach((orderRow, index) => {
+            setTimeout(() => {
+              cancelOrder(getMyOrderIDFromElement(orderRow)).then(
+                () => {
+                  orderRow.remove();
+                },
+              );
+            }, index * 1000);
+          });
+        }
       });
     });
   }
