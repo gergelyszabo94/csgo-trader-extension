@@ -416,7 +416,8 @@ const updatePrices = () => {
             prices[key] = { price: pricesJSON[key] };
           }
         } else if (provider === pricingProviders.csmoney.name
-          || provider === pricingProviders.csgotrader.name) {
+          || provider === pricingProviders.csgotrader.name
+          || provider === pricingProviders.cstrade.name) {
           for (const key of keys) {
             if (pricesJSON[key].doppler !== undefined) {
               prices[key] = {

@@ -60,15 +60,14 @@ def lambda_handler(event, context):
     csgotm_prices = fetch_csgotm(stage)
     csmoney_prices = fetch_csmoney(stage)
     skinport_prices = fetch_skinport(stage)
+    cstrade_prices = fetch_cstrade(stage)
+    skinwallet_prices = fetch_skinwallet(stage)
     (
         buff163_prices,
         csgoempire_prices,
         csgoexo_prices,
         swapgg_prices
     ) = fetch_priceempire(stage)
-
-    # not used apparently
-    skinwallet_prices = fetch_skinwallet(stage)
 
     csgotrader_prices = create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices, own_prices, stage, steam_prices)
 
@@ -87,11 +86,13 @@ def lambda_handler(event, context):
         skinport_prices,
         steam_prices,
         swapgg_prices,
+        cstrade_prices,
+        skinwallet_prices,
     ]
 
     if all(all_prices_list):
         push_final_prices(bitskins_prices, buff163_prices, csgoempire_prices, csgoexo_prices, csgotm_prices, csgotrader_prices, csmoney_prices, lootfarm_prices,
-                          skinport_prices, stage, steam_prices, swapgg_prices)
+                          skinport_prices, stage, steam_prices, swapgg_prices, cstrade_prices, skinwallet_prices)
         return {
             "statusCode": 200,
             "body": "\"Success!\""
@@ -264,7 +265,7 @@ def create_csgotrader_prices(buff163_prices, csgobackpack_prices, csmoney_prices
 
 
 def push_final_prices(bitskins_prices, buff163_prices, csgoempire_prices, csgoexo_prices, csgotm_prices, csgotrader_prices, csmoney_prices, lootfarm_prices,
-                      skinport_prices, stage, steam_prices, swapgg_prices):
+                      skinport_prices, stage, steam_prices, swapgg_prices, cstrade_prices, skinwallet_prices):
     log.info("Putting together the final prices dict")
     extract = {}
     for item in master_list:
@@ -287,12 +288,68 @@ def push_final_prices(bitskins_prices, buff163_prices, csgoempire_prices, csgoex
         extract[item]["csgoempire"] = csgoempire_prices.get(item)
         extract[item]["swapgg"] = swapgg_prices.get(item)
         extract[item]["csgoexo"] = csgoexo_prices.get(item)
+        extract[item]["cstrade"] = cstrade_prices.get(item)
+        extract[item]["skinwallet"] = skinwallet_prices.get(item)
         extract[item]["buff163"] = buff163_prices.get(item, {
             "starting_at": None,
             "highest_order": None,
         })
     push_to_s3(extract, 'prices_v6', stage)
 
+def fetch_cstrade(stage) -> Dict[str, float]:
+    log.info("Requesting prices from cs.trade")
+    try:
+        response = requests.get("https://cdn.cs.trade:2096/api/prices_CSGO")
+        response.raise_for_status()
+        log.info("Received response from cs.trade")
+    except RequestException:
+        handle_exception("Error during cs.trade request")
+        return {}
+
+    log.info("Valid response from cs.trade")
+    log.info("Extracting pricing information")
+
+    cstrade_prices = {}
+    items = response.json()
+
+    for name, item in items.items():
+        if "Doppler" not in name:
+            if name in cstrade_prices:
+                cstrade_prices[name]["price"] = item.get("price")
+            else:
+                cstrade_prices[name] = {
+                    "price": item.get("price"),
+                }
+        else:
+            removed_phase = remove_phase_from_name(name)
+            name_without_phase = removed_phase.get("name")
+            doppler_phase = removed_phase.get("phase")
+
+            if name_without_phase in cstrade_prices:
+                if doppler_phase is not "":
+                    cstrade_prices[name_without_phase]["doppler"][doppler_phase] = item.get("price")
+                else:
+                    cstrade_prices[name_without_phase]["price"] = item.get("price")
+            else:
+                cstrade_prices[name_without_phase] = {}
+
+                if doppler_phase is not "":
+                    cstrade_prices[name_without_phase] = {
+                        "doppler": {
+                            doppler_phase: item.get("price")
+                        },
+                        "price": None,
+                    }
+                else:
+                    cstrade_prices[name_without_phase] = {
+                        "doppler": {},
+                        "price": item.get("price"),
+                    }
+
+    log.info("Pricing information extracted")
+    push_to_s3(cstrade_prices, 'cstrade', stage)
+
+    return cstrade_prices
 
 def fetch_skinwallet(stage) -> Dict[str, float]:
     log.info("Requesting prices from skinwallet.com")
@@ -825,3 +882,27 @@ def handle_invalid_data(name: str, status_code: int):
     error = f"Failed to parse request from {name}."
     alert_via_sns(error)
     log.warning(f"{error} status_code: {status_code}")
+
+def remove_phase_from_name(item_name):
+    name_without_phase = item_name
+    item_phase = ""
+    phases = [
+        "Phase 1",
+        "Phase 2",
+        "Phase 3",
+        "Phase 4",
+        "Sapphire",
+        "Ruby",
+        "Black Pearl",
+        "Emerald",
+    ]
+
+    for phase in phases:
+        if phase in item_name:
+            item_phase = phase
+            name_without_phase = "".join(item_name.split(phase + " "))
+
+    return {
+        "name": name_without_phase,
+        "phase": item_phase,
+    }

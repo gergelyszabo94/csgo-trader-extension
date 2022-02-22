@@ -460,6 +460,20 @@ const pricingProviders = {
       },
     },
   },
+  cstrade: {
+    name: 'cstrade',
+    long: 'CS.TRADE',
+    short: 'CSTR',
+    url: 'https://cs.trade/',
+    description: 'CS.TRADE is a trade is a less-known trade bot site',
+    pricing_modes: {
+      cstrade: {
+        description: 'CS.TRADE price',
+        name: 'cstrade',
+        long: 'CS.TRADE price',
+      },
+    },
+  },
 };
 
 const realTimePricingModes = {
