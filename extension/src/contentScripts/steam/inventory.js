@@ -11,7 +11,7 @@ import {
   addSearchListener, getPattern, removeFromArray, toFixedNoRounding,
 }
   from 'utils/utilsModular';
-import { getItemMarketLink, generateInspectCommand } from 'utils/simpleUtils';
+import { getItemMarketLink, generateInspectCommand, isDopplerInName } from 'utils/simpleUtils';
 import { getShortDate, dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
   stattrak, starChar, souvenir, stattrakPretty, genericMarketLink,
@@ -1511,6 +1511,7 @@ const generateItemsList = () => {
   const includeDupes = document.getElementById('generate_duplicates').checked;
   const includeNonMarketable = document.getElementById('generate_non_market').checked;
   const selectedOnly = document.getElementById('selected_only').checked;
+  const includeItemLinks = document.getElementById('include_inventory_links').checked;
 
   let lineCount = 0;
   let characterCount = 0;
@@ -1523,16 +1524,21 @@ const generateItemsList = () => {
   sortedItems.forEach((itemElement) => {
     const IDs = getIDsFromElement(itemElement, 'inventory');
     const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
+    const customName = isDopplerInName(item.name)
+      ? `${item.name} (${item.dopplerInfo.name})`
+      : item.name;
     const price = (showPrice && item.price !== null) ? ` ${delimiter} ${item.price.display}` : '';
     const priceCSV = (showPrice && item.price !== null) ? `,${item.price.display}` : '';
     const exterior = (item.exterior !== undefined && item.exterior !== null) ? item.exterior[exteriorType] : '';
     const tradableAt = new Date(item.tradability).toString().split('GMT')[0];
+    const inventoryLink = `https://steamcommunity.com/profiles/${item.owner}/inventory/#${item.appid}_${item.contextid}_${item.assetid}`;
+    const itemInventoryLink = includeItemLinks ? `${delimiter} ${inventoryLink}` : '';
     const tradability = (showTradability && tradableAt !== 'Invalid Date') ? `${delimiter} ${tradableAt}` : '';
     const tradabilityCSV = (showTradability && tradableAt !== 'Invalid Date') ? `,${tradableAt}` : '';
     const duplicate = (!includeDupes && item.duplicates.num !== 1) ? `${delimiter} x${item.duplicates.num}` : '';
     const duplicateCSV = (!includeDupes && item.duplicates.num !== 1) ? `,x${item.duplicates.num}` : '';
-    const line = `${item.name} ${delimiter} ${exterior}${price}${tradability} ${duplicate}\n`;
-    const lineCSV = `"${item.name}",${exterior}${priceCSV}${tradabilityCSV}${duplicateCSV}\n`;
+    const line = `${includeDupes ? customName : item.name} ${delimiter} ${exterior}${price}${tradability} ${duplicate} ${itemInventoryLink}\n`;
+    const lineCSV = `"${includeDupes ? customName : item.name}",${exterior}${priceCSV}${tradabilityCSV}${duplicateCSV}\n`;
 
     if (lineCount < limit) {
       if (includeDupes || (!includeDupes && !namesAlreadyInList.includes(item.market_hash_name))) {
@@ -1548,6 +1554,7 @@ const generateItemsList = () => {
       }
     }
   });
+  
   const encodedURI = encodeURI(csvContent);
   const downloadButton = document.getElementById('generate_download');
   downloadButton.setAttribute('href', encodedURI);
@@ -1614,11 +1621,13 @@ const addFunctionBar = () => {
                                 <span> Tradability</span>
                                 <input type="checkbox" id="generate_tradability">
                                 <span><b>Include:</b> Duplicates</span>
-                                <input id="generate_duplicates" type="checkbox">
+                                <input id="generate_duplicates" type="checkbox" checked>
                                 <span>Non-Marketable</span>
                                 <input id="generate_non_market" type="checkbox">
                                 <span>Selected only</span>
-                                <input id="selected_only" type="checkbox">
+                                <input id="selected_only" type="checkbox" checked>
+                                <span title="Only works with copy to clipboard, not .csv download">Links</span>
+                                <input id="include_inventory_links" type="checkbox" checked>
                             </div>
                             
                             <div>
