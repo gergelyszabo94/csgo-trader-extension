@@ -1189,10 +1189,10 @@ const addListingRow = (item) => {
                   >
                   ${item.price ? item.price.display : '0'}
               </div>
-              <div class="cell itemStartingAt clickable">Loading...</div>
-              <div class="cell itemQuickSell clickable">Loading...</div>
-              <div class="cell itemMidPrice clickable">Loading...</div>
-              <div class="cell itemInstantSell clickable">Loading...</div>
+              <div class="cell itemStartingAt clickable">---</div>
+              <div class="cell itemQuickSell clickable">---</div>
+              <div class="cell itemMidPrice clickable">---</div>
+              <div class="cell itemInstantSell clickable">---</div>
               <div class="cell itemUserPrice"><input type="text" class="userPriceInput"></div>
           </div>`;
 
@@ -1338,11 +1338,20 @@ const addToPriceQueueIfNeeded = (item) => {
   const startingAtElement = listingRow.querySelector('.itemStartingAt');
   const instantElement = listingRow.querySelector('.itemInstantSell');
   const midPriceElement = listingRow.querySelector('.itemMidPrice');
+  const quickPriceElement = listingRow.querySelector('.itemQuickSell');
+
+  const priceLoadingCheckBoxes = document.querySelector('.priceLoadingCheckboxes');
+
+  const loadLowestListingPrice = priceLoadingCheckBoxes.querySelector('#lowestListingCheckBox').checked;
+  const loadMidPrice = priceLoadingCheckBoxes.querySelector('#midPriceCheckBox').checked;
+  const loadInstantSellPrice = priceLoadingCheckBoxes.querySelector('#instantSellCheckBox').checked;
 
   // check if price is already set or in progress
-  if (startingAtElement.getAttribute('data-price-set') !== true
+  if (loadLowestListingPrice && startingAtElement.getAttribute('data-price-set') !== true
     && startingAtElement.getAttribute('data-price-in-progress') !== true) {
     startingAtElement.setAttribute('data-price-in-progress', true.toString());
+    startingAtElement.innerText = 'Loading...';
+    quickPriceElement.innerText = 'Loading...';
 
     priceQueue.jobs.push({
       type: 'inventory_mass_sell_starting_at',
@@ -1357,9 +1366,10 @@ const addToPriceQueueIfNeeded = (item) => {
   }
 
   // check if price is already set or in progress
-  if (instantElement.getAttribute('data-price-set') !== true
+  if (loadInstantSellPrice && instantElement.getAttribute('data-price-set') !== true
     && instantElement.getAttribute('data-price-in-progress') !== true) {
     instantElement.setAttribute('data-price-in-progress', true.toString());
+    instantElement.innerText = 'Loading...';
 
     priceQueue.jobs.push({
       type: 'inventory_mass_sell_instant_sell',
@@ -1374,9 +1384,10 @@ const addToPriceQueueIfNeeded = (item) => {
   }
 
   // check if price is already set or in progress
-  if (midPriceElement.getAttribute('data-price-set') !== true
+  if (loadMidPrice && midPriceElement.getAttribute('data-price-set') !== true
     && midPriceElement.getAttribute('data-price-in-progress') !== true) {
     midPriceElement.setAttribute('data-price-in-progress', true.toString());
+    midPriceElement.innerText = 'Loading...';
 
     priceQueue.jobs.push({
       type: 'inventory_mass_sell_mid_price',
@@ -1640,6 +1651,16 @@ const addFunctionBar = () => {
                                 <div class="cell" title="Price specified by you">Your price</div>
                               </div>
                               <div class="rowGroup"></div>
+                              <div class="priceLoadingCheckboxes row">
+                                <div class="cell" title="Tick the boxes where you want prices loaded">Load prices for:</div>
+                                <div class="cell"></div>
+                                <div class="cell"></div>
+                                <div class="cell"><input type="checkbox" id="lowestListingCheckBox" checked/></div>
+                                <div class="cell">Based on startint at</div>
+                                <div class="cell"><input type="checkbox" id="midPriceCheckBox" checked/></div>
+                                <div class="cell"><input type="checkbox" id="instantSellCheckBox" checked/></div>
+                                <div class="cell"></div>
+                              </div>
                           </div>
                           <span class="beforeStart">
                               <span style="font-weight: bold">Total:</span><span id="numberOfItemsToSell">0</span> item(s) selected worth <span id="saleTotal">0</span>
@@ -1695,6 +1716,37 @@ const addFunctionBar = () => {
       () => {
         startMassSelling();
       });
+
+    document.querySelectorAll('#lowestListingCheckBox, #midPriceCheckBox, #instantSellCheckBox').forEach((checkBox) => {
+      checkBox.addEventListener('change', (event) => {
+        if (event.target.checked) {
+          for (const listingRow of document.getElementById('listingTable').querySelector('.rowGroup').querySelectorAll('.row')) {
+            const ID = listingRow.getAttribute('data-ids').split(',')[0];
+  
+            addToPriceQueueIfNeeded({
+              market_hash_name: listingRow.getAttribute('data-item-name').split('_')[2],
+              appid: ID.split('_')[0],
+              contextid: ID.split('_')[1],
+              assetid: ID.split('_')[2],
+            });
+          }
+        } else {
+          let type = '';
+
+          if (event.target.id === 'lowestListingCheckBox') {
+            type = 'inventory_mass_sell_starting_at';
+          } else if (event.target.id === 'midPriceCheckBox') {
+            type = 'inventory_mass_sell_mid_price';
+          } else if (event.target.id === 'instantSellCheckBox') {
+            type = 'inventory_mass_sell_instant_sell';
+          }
+
+          priceQueue.jobs = priceQueue.jobs.filter((job) => {
+            return job.type !== type;
+          });
+        }
+      });
+    });
 
     document.getElementById('stopSale').setAttribute('data-stopped', 'true');
 
