@@ -565,6 +565,15 @@ const updateLoggedInUserInfo = () => {
   }
 };
 
+// updates the nick name (persona name) of the extension's user in storage
+const updateLoggedInUserName = () => {
+  const nickName = document.getElementById('account_pulldown').innerText;
+
+  chrome.storage.local.set({
+    nickNameOfUser: nickName,
+  }, () => {});
+};
+
 const warnOfScammer = (steamID, page) => {
   if (steamID) {
     chrome.runtime.sendMessage({ getSteamRepInfo: steamID }, ({ SteamRepInfo }) => {
@@ -810,7 +819,7 @@ export {
   validateSteamAPIKey, getAssetIDFromInspectLink, updateLoggedInUserInfo,
   listenToLocationChange, addPageControlEventListeners, getItemByAssetID,
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
-  addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
+  addSSTandExtIndicators, addFloatIndicator, addPriceIndicator, updateLoggedInUserName,
   getDataFilledFloatTechnical, souvenirExists, removeLinkFilterFromLinks,
   getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent, markModMessagesAsRead,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,

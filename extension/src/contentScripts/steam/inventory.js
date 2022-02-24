@@ -5,7 +5,7 @@ import {
   getAssetIDOfElement, makeItemColorful, addDopplerPhase,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists, copyToClipboard,
-  getFloatBarSkeleton, addUpdatedRibbon,
+  getFloatBarSkeleton, addUpdatedRibbon, updateLoggedInUserName,
   logExtensionPresence, repositionNameTagIcons, csgoFloatExtPresent,
   updateLoggedInUserInfo, reloadPageOnExtensionReload, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, toFixedNoRounding,
@@ -2032,6 +2032,7 @@ addSearchListener('inventory', () => {
 });
 overridePopulateActions();
 updateLoggedInUserInfo();
+updateLoggedInUserName();
 addUpdatedRibbon();
 
 if (isOwnInventory()) {

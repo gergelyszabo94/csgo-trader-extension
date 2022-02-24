@@ -242,11 +242,13 @@ chrome.alarms.onAlarm.addListener((alarm) => {
       if (error === 401 || error === 403) {
         if (error === 401) { // user not logged in
           console.log('User not logged in, suspending notification checks for an hour.');
+
           chrome.storage.local.get(
-            ['notifyAboutBeingLoggedOut', 'notifyAboutBeingLoggedOutOnDiscord'],
-            ({ notifyAboutBeingLoggedOut, notifyAboutBeingLoggedOutOnDiscord }) => {
+            ['notifyAboutBeingLoggedOut', 'notifyAboutBeingLoggedOutOnDiscord', 'nickNameOfUser'],
+            ({ notifyAboutBeingLoggedOut, notifyAboutBeingLoggedOutOnDiscord, nickNameOfUser }) => {
               const title = 'You are not signed in on Steam!';
-              const message = 'You set to be notified if the extension detects that you are not logged in.';
+              const message = `Hi, ${nickNameOfUser}! You set to be notified if the extension detects that you are not logged in.`;
+
               if (notifyAboutBeingLoggedOut) {
                 chrome.notifications.create(alarm.name, {
                   type: 'basic',
@@ -272,6 +274,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
                   timestamp: new Date(Date.now()).toISOString(),
                   type: 'rich',
                 };
+
                 notifyOnDiscord(embed);
               }
             },

@@ -4,6 +4,7 @@ import {
   removeOfferFromActiveOffers, removeLinkFilterFromLinks,
   logExtensionPresence, updateLoggedInUserInfo, reloadPageOnExtensionReload,
   repositionNameTagIcons, jumpToAnchor, changePageTitle, isChromium,
+  updateLoggedInUserName,
 } from 'utils/utilsModular';
 import { prettyTimeAgo } from 'utils/dateTime';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
@@ -506,6 +507,7 @@ logExtensionPresence();
 repositionNameTagIcons();
 overrideShowTradeOffer();
 updateLoggedInUserInfo();
+updateLoggedInUserName();
 addUpdatedRibbon();
 removeLinkFilterFromLinks();
 

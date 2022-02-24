@@ -2,7 +2,7 @@ import DOMPurify from 'dompurify';
 
 import {
   reloadPageOnExtensionReload, logExtensionPresence,
-  updateLoggedInUserInfo, addUpdatedRibbon,
+  updateLoggedInUserInfo, addUpdatedRibbon, updateLoggedInUserName,
 } from 'utils/utilsModular';
 import { getItemMarketLink } from 'utils/simpleUtils';
 import {
@@ -312,6 +312,7 @@ overrideLoadMarketHistory();
 updateWalletCurrency();
 initPriceQueue();
 updateLoggedInUserInfo();
+updateLoggedInUserName();
 addUpdatedRibbon();
 
 // makes remove/cancel columns narrower

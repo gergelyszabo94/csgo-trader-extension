@@ -15,6 +15,7 @@ import {
   souvenirExists,
   toFixedNoRounding,
   updateLoggedInUserInfo,
+  updateLoggedInUserName,
 } from 'utils/utilsModular';
 import { listingsSortingModes } from 'utils/static/sortingModes';
 import { buyListing, createOrder, loadItemOrderHistogram } from 'utils/market';
@@ -796,6 +797,7 @@ floatQueue.cleanupFunction = () => {
 logExtensionPresence();
 updateWalletCurrency();
 updateLoggedInUserInfo();
+updateLoggedInUserName();
 addUpdatedRibbon();
 changePageTitle('market_listing', fullName);
 

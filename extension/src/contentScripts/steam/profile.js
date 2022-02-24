@@ -1,5 +1,5 @@
 import {
-  logExtensionPresence, updateLoggedInUserInfo,
+  logExtensionPresence, updateLoggedInUserInfo, updateLoggedInUserName,
   warnOfScammer, reloadPageOnExtensionReload, removeLinkFilterFromLinks,
   addUpdatedRibbon, copyToClipboard, changePageTitle,
 } from 'utils/utilsModular';
@@ -17,6 +17,7 @@ import DOMPurify from 'dompurify';
 if (document.querySelector('body').classList.contains('profile_page')) {
   logExtensionPresence();
   updateLoggedInUserInfo();
+  updateLoggedInUserName();
   addUpdatedRibbon();
   removeLinkFilterFromLinks();
   const profileOwnerSteamID = getProfileOwnerSteamID();

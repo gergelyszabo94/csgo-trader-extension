@@ -37,6 +37,7 @@ const storageKeys = {
   switchToOtherInventory: false,
   popupLinks: defaultPopupLinks,
   steamIDOfUser: '',
+  nickNameOfUser: '',
   customCommentsToReport: [],
   autoFloatMarket: true,
   autoFloatOffer: true,
