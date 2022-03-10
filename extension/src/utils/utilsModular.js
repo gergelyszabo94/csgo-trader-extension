@@ -236,7 +236,7 @@ const getPattern = (name, paintSeed) => {
   }
   if (name.includes(' Case Hardened')) {
     let pattern = null;
-    if (name.includes('AK-47'))pattern = patterns.case_hardeneds.ak[paintSeed];
+    if (name.includes('AK-47')) pattern = patterns.case_hardeneds.ak[paintSeed];
     else if (name.includes('Butterfly')) pattern = patterns.case_hardeneds.butterfly[paintSeed];
     else if (name.includes('M9 Bayonet')) pattern = patterns.case_hardeneds.m9[paintSeed];
     else if (name.includes('Bayonet')) pattern = patterns.case_hardeneds.bayonet[paintSeed];
@@ -567,11 +567,15 @@ const updateLoggedInUserInfo = () => {
 
 // updates the nick name (persona name) of the extension's user in storage
 const updateLoggedInUserName = () => {
-  const nickName = document.getElementById('account_pulldown').innerText;
+  const pullDownElement = document.getElementById('account_pulldown');
 
-  chrome.storage.local.set({
-    nickNameOfUser: nickName,
-  }, () => {});
+  if (pullDownElement !== null) { // if it's  null then the user is not logged in
+    const nickName = pullDownElement.innerText;
+
+    chrome.storage.local.set({
+      nickNameOfUser: nickName,
+    }, () => {});
+  }
 };
 
 const warnOfScammer = (steamID, page) => {
