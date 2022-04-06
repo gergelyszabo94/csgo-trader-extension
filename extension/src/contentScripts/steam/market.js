@@ -656,7 +656,7 @@ if (marketHistoryButton !== null) {
             <p>
                 The most recent history event is event 0, the first one is the event with the highest number
                 (<span class="numberOfHistoryEvents">0</span> in your case).
-                Your market history is requested in junks and might take a while if do lots of transactions.
+                Your market history is requested in chunks and might take a while if do lots of transactions.
             </p>
             <p>
                 Range: Events <input type="number" min="0" max="1000000" value="0" id="exportFrom"/> to <input type="number" min="50" max="1000000" value="50" id="exportTo"/> 
