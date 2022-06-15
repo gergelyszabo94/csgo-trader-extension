@@ -266,8 +266,13 @@ const handleStickerNamesWithCommas = (names) => {
 
   for (let i = 0; i < names.length; i += 1) {
     const name = names[i];
+
     if (name === 'Don\'t Worry' && names[i + 1] === 'I\'m Pro') {
       namesModified.push('Don\'t Worry, I\'m Pro');
+      nameWithCommaFound = true;
+      i += 1;
+    } else if (name === 'Hi' && names[i + 1] === 'My Game Is') {
+      namesModified.push('Hi, My Game Is');
       nameWithCommaFound = true;
       i += 1;
     } else namesModified.push(name);
