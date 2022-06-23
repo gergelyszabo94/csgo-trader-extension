@@ -142,8 +142,7 @@ module.exports = (env) => {
           ],
         },
         {
-          // eslint-disable-next-line no-useless-escape
-          test: new RegExp(`\.(${fileExtensions.join('|')})$`),
+          test: new RegExp(`.(${fileExtensions.join('|')})$`),
           loader: 'file-loader?name=[name].[ext]',
           exclude: /node_modules/,
         },
