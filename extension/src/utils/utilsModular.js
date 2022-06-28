@@ -11,6 +11,8 @@ import { getUserSteamID } from 'utils/steamID';
 import DOMPurify from 'dompurify';
 import { getIDsFromElement } from 'utils/itemsToElementsToItems';
 
+const { FadeCalculator } = require('csgo-fade-percentage-calculator');
+
 // "Sticker" in different languages
 // english, simplified chinese, traditional chinese,
 // japanese, korean, bulgarian, thai, czech, danish,
@@ -86,7 +88,7 @@ const scrapeSteamAPIkey = () => {
       (apiKeyValid) => {
         if (apiKeyValid) {
           console.log('api key valid');
-          chrome.storage.local.set({ steamAPIKey: apiKey, apiKeyValid: true }, () => {});
+          chrome.storage.local.set({ steamAPIKey: apiKey, apiKeyValid: true }, () => { });
         }
       }, (error) => {
         console.log(error);
@@ -214,24 +216,38 @@ const getPattern = (name, paintSeed) => {
   }
   if (name.includes(' Fade ')) {
     let percentage = null;
-    if (name.includes('Karambit')) percentage = patterns.fades.karambit[paintSeed];
-    else if (name.includes('Butterfly')) percentage = patterns.fades.butterfly[paintSeed];
-    else if (name.includes('M9 Bayonet')) percentage = patterns.fades.m9[paintSeed];
-    else if (name.includes('Bayonet')) percentage = patterns.fades.bayonet[paintSeed];
-    else if (name.includes('Talon')) percentage = patterns.fades.talon[paintSeed];
-    else if (name.includes('Stiletto')) percentage = patterns.fades.stiletto[paintSeed];
-    else if (name.includes('Navaja')) percentage = patterns.fades.navaja[paintSeed];
-    else if (name.includes('Ursus')) percentage = patterns.fades.ursus[paintSeed];
-    else if (name.includes('Huntsman')) percentage = patterns.fades.huntsman[paintSeed];
-    else if (name.includes('Flip')) percentage = patterns.fades.flip[paintSeed];
-    else if (name.includes('Bowie')) percentage = patterns.fades.bowie[paintSeed];
-    else if (name.includes('Daggers')) percentage = patterns.fades.daggers[paintSeed];
-    else if (name.includes('Gut')) percentage = patterns.fades.gut[paintSeed];
-    else if (name.includes('Falchion')) percentage = patterns.fades.falchion[paintSeed];
-    else if (name.includes('Glock')) percentage = patterns.fades.glock[paintSeed];
-    else return null;
 
-    if (percentage !== null && percentage !== undefined) return { type: 'fade', value: `${percentage}% Fade` };
+    if (typeof (paintSeed) === 'number') {
+      if (name.includes('Karambit')) percentage = FadeCalculator.getFadePercentage('Karambit', paintSeed).percentage;
+      else if (name.includes('Butterfly Knife')) percentage = FadeCalculator.getFadePercentage('Butterfly Knife', paintSeed).percentage;
+      else if (name.includes('M9 Bayonet')) percentage = FadeCalculator.getFadePercentage('M9 Bayonet', paintSeed).percentage;
+      else if (name.includes('Bayonet')) percentage = FadeCalculator.getFadePercentage('Bayonet', paintSeed).percentage;
+      else if (name.includes('Talon Knife')) percentage = FadeCalculator.getFadePercentage('Talon Knife', paintSeed).percentage;
+      else if (name.includes('Stiletto Knife')) percentage = FadeCalculator.getFadePercentage('Stiletto Knife', paintSeed).percentage;
+      else if (name.includes('Navaja Knife')) percentage = FadeCalculator.getFadePercentage('Navaja Knife', paintSeed).percentage;
+      else if (name.includes('Ursus Knife')) percentage = FadeCalculator.getFadePercentage('Ursus Knife', paintSeed).percentage;
+      else if (name.includes('Huntsman Knife')) percentage = FadeCalculator.getFadePercentage('Huntsman Knife', paintSeed).percentage;
+      else if (name.includes('Flip Knife')) percentage = FadeCalculator.getFadePercentage('Flip Knife', paintSeed).percentage;
+      else if (name.includes('Bowie Knife')) percentage = FadeCalculator.getFadePercentage('Bowie Knife', paintSeed).percentage;
+      else if (name.includes('Shadow Daggers')) percentage = FadeCalculator.getFadePercentage('Shadow Daggers', paintSeed).percentage;
+      else if (name.includes('Gut Knife')) percentage = FadeCalculator.getFadePercentage('Gut Knife', paintSeed).percentage;
+      else if (name.includes('Falchion Knife')) percentage = FadeCalculator.getFadePercentage('Falchion Knife', paintSeed).percentage;
+      else if (name.includes('Classic Knife')) percentage = FadeCalculator.getFadePercentage('Classic Knife', paintSeed).percentage;
+      else if (name.includes('Navaja Knife')) percentage = FadeCalculator.getFadePercentage('Navaja Knife', paintSeed).percentage;
+      else if (name.includes('Nomad Knife')) percentage = FadeCalculator.getFadePercentage('Nomad Knife', paintSeed).percentage;
+      else if (name.includes('Paracord Knife')) percentage = FadeCalculator.getFadePercentage('Paracord Knife', paintSeed).percentage;
+      else if (name.includes('Skeleton Knife')) percentage = FadeCalculator.getFadePercentage('Skeleton Knife', paintSeed).percentage;
+      else if (name.includes('Survival Knife')) percentage = FadeCalculator.getFadePercentage('Survival Knife', paintSeed).percentage;
+      else if (name.includes('Glock-18')) percentage = FadeCalculator.getFadePercentage('Glock-18', paintSeed).percentage;
+      else if (name.includes('AWP')) percentage = FadeCalculator.getFadePercentage('AWP', paintSeed).percentage;
+      else if (name.includes('MAC-10')) percentage = FadeCalculator.getFadePercentage('MAC-10', paintSeed).percentage;
+      else if (name.includes('MP7')) percentage = FadeCalculator.getFadePercentage('MP7', paintSeed).percentage;
+      else if (name.includes('R8 Revolver')) percentage = FadeCalculator.getFadePercentage('R8 Revolver', paintSeed).percentage;
+      else if (name.includes('UMP-45')) percentage = FadeCalculator.getFadePercentage('UMP-45', paintSeed).percentage;
+      else return null;
+    }
+
+    if (percentage !== null && percentage !== undefined) return { type: 'fade', value: `${percentage.toFixed(2)}% Fade` };
     return null;
   }
   if (name.includes(' Case Hardened')) {
@@ -342,7 +358,7 @@ const goToInternalPage = (targetURL) => {
     for (let i = 0; i < tabs.length; i += 1) {
       const tab = tabs[i];
       if (tab.url === (`chrome-extension://${chrome.runtime.id}${targetURL}`)) { // TODO make this work in firefox or remove the whole thing
-        chrome.tabs.reload(tab.id, {}, () => {});
+        chrome.tabs.reload(tab.id, {}, () => { });
         chrome.tabs.update(tab.id, { active: true });
         return;
       }
@@ -566,7 +582,7 @@ const updateLoggedInUserInfo = () => {
     chrome.storage.local.set({
       steamIDOfUser: steamID,
       steamSessionID: getSessionID(),
-    }, () => {});
+    }, () => { });
   }
 };
 
@@ -579,7 +595,7 @@ const updateLoggedInUserName = () => {
 
     chrome.storage.local.set({
       nickNameOfUser: nickName,
-    }, () => {});
+    }, () => { });
   }
 };
 
@@ -651,7 +667,7 @@ const removeOfferFromActiveOffers = (offerID) => {
         received: receivedNotThisOffer,
         descriptions: activeOffers.descriptions,
       },
-    }, () => {});
+    }, () => { });
   });
 };
 
@@ -777,7 +793,7 @@ const markModMessagesAsRead = () => {
         });
 
         unreadMessageLinks.forEach((link) => {
-          fetch(new Request(link)).then(() => {});
+          fetch(new Request(link)).then(() => { });
         });
       }
     }).catch((err) => {
