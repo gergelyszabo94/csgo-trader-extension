@@ -141,8 +141,8 @@ const storageKeys = {
   realTimePricesFreqSuccess: 3000,
   realTimePricesFreqFailure: 15000,
   realTimePricesMode: realTimePricingModes.ask_price.key,
-  realTimePricesAutoLoadOffer: true,
-  realTimePricesAutoLoadInventory: true,
+  realTimePricesAutoLoadOffer: false,
+  realTimePricesAutoLoadInventory: false,
   priceQueueActivity: {
     lastUsed: Date.now(),
     usedAt: '',
