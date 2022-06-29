@@ -630,7 +630,7 @@ const addRightSideElements = () => {
             }, 1000);
           }
           if (item.floatInfo === null || item.floatInfo === undefined) {
-            if (item.inspectLink !== null && itemTypes[item.type.key].float) {
+            if (item.inspectLink !== null && item.type && itemTypes[item.type.key].float) {
               floatQueue.jobs.push({
                 type: 'inventory_floatbar',
                 assetID: item.assetid,
