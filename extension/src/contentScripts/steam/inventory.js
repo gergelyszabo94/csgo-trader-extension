@@ -304,14 +304,18 @@ const hideFloatBars = () => {
   });
 };
 
+// also adds pattern
 const addFloatDataToPage = (job, activeFloatQueue, floatInfo) => {
   if (floatInfo !== null && floatInfo !== undefined) {
-    addFloatIndicator(findElementByIDs(steamApps.CSGO.appID, '2', job.assetID, 'inventory'), floatInfo);
+    const itemElement = findElementByIDs(steamApps.CSGO.appID, '2', job.assetID, 'inventory');
 
     // add float and pattern info to page variable
     const item = getItemByAssetID(items, job.assetID);
     item.floatInfo = floatInfo;
     item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
+
+    addFloatIndicator(itemElement, floatInfo);
+    addFadePercentage(itemElement, item.patternInfo);
 
     if (job.type === 'inventory_floatbar') {
       if (getAssetIDofActive() === job.assetID) updateFloatAndPatternElements(item);

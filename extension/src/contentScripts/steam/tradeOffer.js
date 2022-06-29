@@ -460,7 +460,10 @@ const addFloatDataToPage = (job, floatInfo) => {
   item.floatInfo = floatInfo;
   item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
 
-  addFloatIndicator(findElementByIDs(steamApps.CSGO.appID, '2', job.assetID, 'offer'), floatInfo);
+  const itemElement = findElementByIDs(steamApps.CSGO.appID, '2', job.assetID, 'offer');
+
+  addFloatIndicator(itemElement, floatInfo);
+  addFadePercentage(itemElement, item.patternInfo);
 
   const inspectGenCommandEl = document.getElementById('inspectGenCommand');
   if (inspectGenCommandEl) {

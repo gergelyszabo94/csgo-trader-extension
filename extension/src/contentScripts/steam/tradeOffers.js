@@ -4,7 +4,7 @@ import {
   removeOfferFromActiveOffers, removeLinkFilterFromLinks,
   logExtensionPresence, updateLoggedInUserInfo, reloadPageOnExtensionReload,
   repositionNameTagIcons, jumpToAnchor, changePageTitle, isChromium,
-  updateLoggedInUserName, addFadePercentage,
+  updateLoggedInUserName, addFadePercentage, getPattern,
 } from 'utils/utilsModular';
 import { prettyTimeAgo } from 'utils/dateTime';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
@@ -43,7 +43,9 @@ const selectItemElementByIDs = (classid, instanceid) => {
 };
 
 const addFloatDataToPage = (job, floatInfo) => {
-  addFloatIndicator(selectItemElementByIDs(job.classid, job.instanceid), floatInfo);
+  const itemElement = selectItemElementByIDs(job.classid, job.instanceid);
+  addFloatIndicator(itemElement, floatInfo);
+  addFadePercentage(itemElement, getPattern(job.marketName, floatInfo.paintseed));
 };
 
 const getLimitedIDsFromElement = (element) => {
@@ -165,6 +167,7 @@ const addItemInfo = (items) => {
               makeItemColorful(itemElement, item, colorfulItems);
               addSSTandExtIndicators(itemElement, item, showStickerPrice, showShortExteriorsOffers);
               addPriceIndicator(itemElement, item.price);
+
               if (itemInOtherOffers) {
                 addInOtherTradeIndicator(itemElement, item, activeOffers.items);
               }
@@ -177,10 +180,14 @@ const addItemInfo = (items) => {
                     classid: item.classid,
                     instanceid: item.instanceid,
                     inspectLink: item.inspectLink,
+                    marketName: item.market_hash_name,
                     callBackFunction: addFloatDataToPage,
                   });
                   if (!floatQueue.active) workOnFloatQueue();
-                } else addFloatIndicator(itemElement, item.floatInfo);
+                } else {
+                  addFloatIndicator(itemElement, item.floatInfo);
+                  addFadePercentage(itemElement, item.patternInfo);
+                }
               }
             }
             // it gives the element an id and adds the name
