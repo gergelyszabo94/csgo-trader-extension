@@ -123,7 +123,7 @@ const addBookmark = (module) => {
             name: `${bookmark.itemInfo.appid}_${bookmark.itemInfo.contextid}_${bookmark.itemInfo.assetid}_${bookmark.added}`,
             when: bookmark.itemInfo.tradability,
           },
-        }, () => {});
+        }, () => { });
       }
 
       chrome.runtime.sendMessage({
@@ -469,6 +469,7 @@ const addRightSideElements = () => {
     cleanUpElements();
     const item = getItemByIDs(items, activeIDs.appID, activeIDs.contextID, activeIDs.assetID);
     const activeInventoryAppID = getActiveInventoryAppID();
+
     if (activeInventoryAppID === steamApps.CSGO.appID
       || activeInventoryAppID === steamApps.DOTA2.appID
       || activeInventoryAppID === steamApps.TF2.appID
@@ -525,11 +526,6 @@ const addRightSideElements = () => {
             if (!tagsElement.classList.contains('hidden')) tagsElement.classList.add('hidden');
           });
 
-        // adds float bar, sticker info, nametag
-        document.querySelectorAll('.item_desc_icon').forEach((icon) => {
-          icon.insertAdjacentHTML('afterend', DOMPurify.sanitize(upperModule));
-        });
-
         // listens to click on "show technical"
         document.querySelectorAll('.showTechnical').forEach((showTechnical) => {
           showTechnical.addEventListener('click', () => {
@@ -553,6 +549,17 @@ const addRightSideElements = () => {
     }
 
     if (item) {
+      // adds float bar, sticker info, nametag
+      document.querySelectorAll('.item_desc_icon').forEach((icon) => {
+        icon.insertAdjacentHTML('afterend', DOMPurify.sanitize(upperModule));
+      });
+
+      if (activeInventoryAppID !== steamApps.CSGO.appID) {
+        document.querySelectorAll('.floatBar, .duplicate').forEach((unWantedElement) => {
+          unWantedElement.remove();
+        });
+      }
+
       if (activeInventoryAppID === steamApps.CSGO.appID
         || activeInventoryAppID === steamApps.DOTA2.appID
         || activeInventoryAppID === steamApps.TF2.appID) {
@@ -613,130 +620,6 @@ const addRightSideElements = () => {
                 });
               });
           }
-
-          // adds the in-offer module
-          chrome.storage.local.get(['activeOffers', 'itemInOffersInventory', 'showPriceEmpireLinkInInventory',
-            'showBuffLookupInInventory', 'inventoryShowCopyButtons', 'showCSGOSTASHLinkInInventory'], ({
-            activeOffers, itemInOffersInventory, showCSGOSTASHLinkInInventory,
-            showPriceEmpireLinkInInventory, showBuffLookupInInventory, inventoryShowCopyButtons,
-          }) => {
-            if (itemInOffersInventory) {
-              const inOffers = activeOffers.items.filter((offerItem) => {
-                return offerItem.assetid === item.assetid;
-              });
-
-              if (inOffers.length !== 0) {
-                const offerLinks = inOffers.map((offerItem, index) => {
-                  const offerLink = offerItem.offerOrigin === 'sent'
-                    ? `https://steamcommunity.com/profiles/${offerItem.owner}/tradeoffers/sent#tradeofferid_${offerItem.inOffer}`
-                    : `https://steamcommunity.com/tradeoffer/${offerItem.inOffer}/`;
-
-                  const afterLinkChars = index === inOffers.length - 1
-                    ? '' // if it's the last one
-                    : ', ';
-
-                  return `<a href="${offerLink}" target="_blank">
-                        ${offerItem.inOffer}${afterLinkChars}
-                      </a>`;
-                });
-
-                const listString = `<div>${offerLinks.join('')}</div>`;
-                const inTradesInfoModule = `
-                <div class="descriptor inTradesInfoModule">
-                    In offer${inOffers.length > 1 ? 's' : ''}:
-                    ${listString}
-                </div>`;
-
-                document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
-                  .forEach((descriptor) => {
-                    descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(inTradesInfoModule, { ADD_ATTR: ['target'] }));
-                  });
-              }
-            }
-
-            if (showPriceEmpireLinkInInventory) {
-              const priceEmpireLink = `
-                <div class="descriptor pricEmpireLink">
-                    <a href="https://pricempire.com/item/${item.market_hash_name}?utm_source=csgotrader.app" target="_blank" style="color: yellow;">
-                        Check prices on PRICEMPIRE.COM
-                      </a>
-                </div>
-              `;
-
-              document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
-                .forEach((descriptor) => {
-                  descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(priceEmpireLink, { ADD_ATTR: ['target'] }));
-                });
-            }
-
-            if (showBuffLookupInInventory) {
-              const buffLink = `
-                <div class="descriptor buffLink">
-                    <a href="https://api.pricempire.com/v1/redirectBuff/${item.market_hash_name}" target="_blank" style="color: yellow;">
-                        Lookup item on Buff
-                      </a>
-                </div>
-              `;
-
-              document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
-                .forEach((descriptor) => {
-                  descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(buffLink, { ADD_ATTR: ['target'] }));
-                });
-            }
-
-            if (showCSGOSTASHLinkInInventory) {
-              const CSGOSTASHLink = `
-                <div class="descriptor CSGOSSTASHLink">
-                    <a href="https://csgostash.com/markethash/${item.market_hash_name}" target="_blank" style="color: yellow;">
-                        View on CS:GO STASH
-                      </a>
-                </div>
-              `;
-
-              document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
-                .forEach((descriptor) => {
-                  descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(CSGOSTASHLink, { ADD_ATTR: ['target'] }));
-                });
-            }
-
-            if (inventoryShowCopyButtons) {
-              document.querySelectorAll('.copyButtons')
-                .forEach((copyButtons) => {
-                  copyButtons.insertAdjacentHTML(
-                    'afterbegin',
-                    DOMPurify.sanitize(
-                      `<div class="copyItemID clickable" title="Copy the AssetID of the item.">
-                                Copy ID
-                            </div>
-                            <div class="copyItemName clickable" title="Copy the full market name of the item.">
-                                Copy Name
-                            </div>
-                            <div class="copyItemLink clickable" title="Copy the item's inventory link.">
-                                Copy Link
-                            </div>`,
-                    ),
-                  );
-                });
-
-              document.querySelectorAll('.copyItemID').forEach((element) => {
-                element.addEventListener('click', () => {
-                  copyToClipboard(item.assetid);
-                });
-              });
-
-              document.querySelectorAll('.copyItemName').forEach((element) => {
-                element.addEventListener('click', () => {
-                  copyToClipboard(item.market_hash_name);
-                });
-              });
-
-              document.querySelectorAll('.copyItemLink').forEach((element) => {
-                element.addEventListener('click', () => {
-                  copyToClipboard(`https://steamcommunity.com/profiles/${item.owner}/inventory/#${item.appid}_${item.contextid}_${item.assetid}`);
-                });
-              });
-            }
-          });
 
           // removes sih "Get Float" button
           // does not really work since it's loaded after this script..
@@ -963,6 +846,132 @@ const addRightSideElements = () => {
             });
         }
       }
+
+      // adds the in-offer module
+      chrome.storage.local.get(['activeOffers', 'itemInOffersInventory', 'showPriceEmpireLinkInInventory',
+        'showBuffLookupInInventory', 'inventoryShowCopyButtons', 'showCSGOSTASHLinkInInventory'], ({
+        activeOffers, itemInOffersInventory, showCSGOSTASHLinkInInventory,
+        showPriceEmpireLinkInInventory, showBuffLookupInInventory, inventoryShowCopyButtons,
+      }) => {
+        if (itemInOffersInventory) {
+          const inOffers = activeOffers.items.filter((offerItem) => {
+            return offerItem.assetid === item.assetid;
+          });
+
+          if (inOffers.length !== 0) {
+            const offerLinks = inOffers.map((offerItem, index) => {
+              const offerLink = offerItem.offerOrigin === 'sent'
+                ? `https://steamcommunity.com/profiles/${offerItem.owner}/tradeoffers/sent#tradeofferid_${offerItem.inOffer}`
+                : `https://steamcommunity.com/tradeoffer/${offerItem.inOffer}/`;
+
+              const afterLinkChars = index === inOffers.length - 1
+                ? '' // if it's the last one
+                : ', ';
+
+              return `<a href="${offerLink}" target="_blank">
+              ${offerItem.inOffer}${afterLinkChars}
+            </a>`;
+            });
+
+            const listString = `<div>${offerLinks.join('')}</div>`;
+            const inTradesInfoModule = `
+      <div class="descriptor inTradesInfoModule">
+          In offer${inOffers.length > 1 ? 's' : ''}:
+          ${listString}
+      </div>`;
+
+            document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
+              .forEach((descriptor) => {
+                descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(inTradesInfoModule, { ADD_ATTR: ['target'] }));
+              });
+          }
+        }
+
+        if (activeInventoryAppID === steamApps.CSGO.appID) {
+          if (showPriceEmpireLinkInInventory) {
+            const priceEmpireLink = `
+        <div class="descriptor pricEmpireLink">
+            <a href="https://pricempire.com/item/${item.market_hash_name}?utm_source=csgotrader.app" target="_blank" style="color: yellow;">
+                Check prices on PRICEMPIRE.COM
+              </a>
+        </div>
+      `;
+
+            document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
+              .forEach((descriptor) => {
+                descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(priceEmpireLink, { ADD_ATTR: ['target'] }));
+              });
+          }
+
+          if (showBuffLookupInInventory) {
+            const buffLink = `
+        <div class="descriptor buffLink">
+            <a href="https://api.pricempire.com/v1/redirectBuff/${item.market_hash_name}" target="_blank" style="color: yellow;">
+                Lookup item on Buff
+              </a>
+        </div>
+      `;
+
+            document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
+              .forEach((descriptor) => {
+                descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(buffLink, { ADD_ATTR: ['target'] }));
+              });
+          }
+
+          if (showCSGOSTASHLinkInInventory) {
+            const CSGOSTASHLink = `
+        <div class="descriptor CSGOSSTASHLink">
+            <a href="https://csgostash.com/markethash/${item.market_hash_name}" target="_blank" style="color: yellow;">
+                View on CS:GO STASH
+              </a>
+        </div>
+      `;
+
+            document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
+              .forEach((descriptor) => {
+                descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(CSGOSTASHLink, { ADD_ATTR: ['target'] }));
+              });
+          }
+        }
+
+        if (inventoryShowCopyButtons) {
+          document.querySelectorAll('.copyButtons')
+            .forEach((copyButtons) => {
+              copyButtons.insertAdjacentHTML(
+                'afterbegin',
+                DOMPurify.sanitize(
+                  `<div class="copyItemID clickable" title="Copy the AssetID of the item.">
+                      Copy ID
+                  </div>
+                  <div class="copyItemName clickable" title="Copy the full market name of the item.">
+                      Copy Name
+                  </div>
+                  <div class="copyItemLink clickable" title="Copy the item's inventory link.">
+                      Copy Link
+                  </div>`,
+                ),
+              );
+            });
+
+          document.querySelectorAll('.copyItemID').forEach((element) => {
+            element.addEventListener('click', () => {
+              copyToClipboard(item.assetid);
+            });
+          });
+
+          document.querySelectorAll('.copyItemName').forEach((element) => {
+            element.addEventListener('click', () => {
+              copyToClipboard(item.market_hash_name);
+            });
+          });
+
+          document.querySelectorAll('.copyItemLink').forEach((element) => {
+            element.addEventListener('click', () => {
+              copyToClipboard(`https://steamcommunity.com/profiles/${item.owner}/inventory/#${item.appid}_${item.contextid}_${item.assetid}`);
+            });
+          });
+        }
+      });
     } else {
       // show the original names if the name can't be changed
       // because it can't be retrieved from the page
@@ -1081,7 +1090,7 @@ const addPerItemInfo = (appID) => {
           const IDs = getIDsFromElement(itemElement, 'inventory');
           const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
 
-          if (showTradeLockIndicatorInInventories) {
+          if (showTradeLockIndicatorInInventories && item) {
             // adds tradability indicator
             if (item.tradability === 'Tradable') {
               itemElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize('<div class="perItemDate tradable">T</div>'));
@@ -1554,7 +1563,7 @@ const generateItemsList = () => {
       }
     }
   });
-  
+
   const encodedURI = encodeURI(csvContent);
   const downloadButton = document.getElementById('generate_download');
   downloadButton.setAttribute('href', encodedURI);
@@ -1731,7 +1740,7 @@ const addFunctionBar = () => {
         if (event.target.checked) {
           for (const listingRow of document.getElementById('listingTable').querySelector('.rowGroup').querySelectorAll('.row')) {
             const ID = listingRow.getAttribute('data-ids').split(',')[0];
-  
+
             addToPriceQueueIfNeeded({
               market_hash_name: listingRow.getAttribute('data-item-name').split('_')[2],
               appid: ID.split('_')[0],
@@ -2051,7 +2060,7 @@ if (isOwnInventory()) {
               ),
             );
             document.getElementById('viewTradeHistory').addEventListener('mouseup', () => {
-              chrome.runtime.sendMessage({ openInternalPage: 'index.html?page=trade-history' }, () => {});
+              chrome.runtime.sendMessage({ openInternalPage: 'index.html?page=trade-history' }, () => { });
             });
           }
         }
