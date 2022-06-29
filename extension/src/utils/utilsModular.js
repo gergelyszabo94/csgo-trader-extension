@@ -247,7 +247,14 @@ const getPattern = (name, paintSeed) => {
       else return null;
     }
 
-    if (percentage !== null && percentage !== undefined) return { type: 'fade', value: `${percentage.toFixed(2)}% Fade` };
+    if (percentage !== null && percentage !== undefined) {
+      return {
+        type: 'fade',
+        value: `${percentage.toFixed(2)}% Fade`, // value is uniform with other pattern types
+        percentage,
+        short: Math.floor(percentage),
+      };
+    }
     return null;
   }
   if (name.includes(' Case Hardened')) {
@@ -450,6 +457,17 @@ const addDopplerPhase = (item, dopplerInfo) => {
     }
 
     item.appendChild(dopplerDiv);
+  }
+};
+
+const addFadePercentage = (item, patternInfo) => {
+  if (patternInfo !== null && patternInfo !== undefined && patternInfo.type === 'fade') {
+    const fadeDiv = document.createElement('div');
+    fadeDiv.classList.add('fadePercentageIndicator');
+    fadeDiv.classList.add('fadeGradient');
+    fadeDiv.innerText = patternInfo.short;
+
+    item.appendChild(fadeDiv);
   }
 };
 
@@ -854,5 +872,5 @@ export {
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo, getRemoteImageAsObjectURL,
-  isChromium,
+  isChromium, addFadePercentage,
 };

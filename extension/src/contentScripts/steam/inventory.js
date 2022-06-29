@@ -2,7 +2,7 @@ import DOMPurify from 'dompurify';
 
 import {
   addPageControlEventListeners, getItemByAssetID, changePageTitle,
-  getAssetIDOfElement, makeItemColorful, addDopplerPhase,
+  getAssetIDOfElement, makeItemColorful, addDopplerPhase, addFadePercentage,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists, copyToClipboard,
   getFloatBarSkeleton, addUpdatedRibbon, updateLoggedInUserName,
@@ -1104,6 +1104,7 @@ const addPerItemInfo = (appID) => {
 
           if (appID === steamApps.CSGO.appID) {
             addDopplerPhase(itemElement, item.dopplerInfo);
+            addFadePercentage(itemElement, item.patternInfo);
             makeItemColorful(itemElement, item, colorfulItems);
             addSSTandExtIndicators(
               itemElement, item, showStickerPrice,

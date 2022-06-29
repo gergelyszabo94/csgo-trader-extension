@@ -4,7 +4,7 @@ import {
   getItemByAssetID, getAssetIDOfElement, addDopplerPhase,
   makeItemColorful, addSSTandExtIndicators, addPriceIndicator,
   addFloatIndicator, getExteriorFromTags, getQuality,
-  getType, getInspectLink, repositionNameTagIcons,
+  getType, getInspectLink, repositionNameTagIcons, addFadePercentage,
   getDopplerInfo, getActivePage, reloadPageOnExtensionReload, logExtensionPresence,
   updateLoggedInUserInfo, warnOfScammer, addPageControlEventListeners,
   addSearchListener, getPattern, getNameTag, removeLinkFilterFromLinks,
@@ -275,6 +275,7 @@ const addItemInfo = () => {
             }
             const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
             addDopplerPhase(itemElement, item.dopplerInfo);
+            addFadePercentage(itemElement, item.patternInfo);
             makeItemColorful(itemElement, item, colorfulItems);
             addSSTandExtIndicators(itemElement, item, showStickerPrice, showShortExteriorsOffers);
             addPriceIndicator(itemElement, item.price);

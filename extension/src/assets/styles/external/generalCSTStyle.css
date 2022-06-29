@@ -328,6 +328,13 @@ progress {
     font-size: 0.8rem;
 }
 
+.fadePercentageIndicator {
+    position: absolute;
+    left: 42%;
+    top: 5px;
+    font-size: 0.8rem;
+}
+
 .dopplerPhaseMarket {
     color: white;
     position: absolute;

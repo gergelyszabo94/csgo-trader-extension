@@ -4,7 +4,7 @@ import {
   removeOfferFromActiveOffers, removeLinkFilterFromLinks,
   logExtensionPresence, updateLoggedInUserInfo, reloadPageOnExtensionReload,
   repositionNameTagIcons, jumpToAnchor, changePageTitle, isChromium,
-  updateLoggedInUserName,
+  updateLoggedInUserName, addFadePercentage,
 } from 'utils/utilsModular';
 import { prettyTimeAgo } from 'utils/dateTime';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
@@ -161,6 +161,7 @@ const addItemInfo = (items) => {
           if (item) {
             if (item.appid === steamApps.CSGO.appID) {
               addDopplerPhase(itemElement, item.dopplerInfo);
+              addFadePercentage(itemElement, item.patternInfo);
               makeItemColorful(itemElement, item, colorfulItems);
               addSSTandExtIndicators(itemElement, item, showStickerPrice, showShortExteriorsOffers);
               addPriceIndicator(itemElement, item.price);

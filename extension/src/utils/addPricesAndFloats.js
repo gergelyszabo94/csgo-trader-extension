@@ -26,7 +26,7 @@ const addPricesAndFloatsToInventory = (inventory) => new Promise((resolve) => {
               if (floatCache[item.assetid] !== undefined && floatCache[item.assetid] !== null
                 && itemTypes[item.type.key].float) {
                 item.floatInfo = floatCache[item.assetid];
-                item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintSeed);
+                item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
               }
               const stickers = parseStickerInfo(item.descriptions, 'direct', prices,
                 pricingProvider, pricingMode, exchangeRate, currency);
