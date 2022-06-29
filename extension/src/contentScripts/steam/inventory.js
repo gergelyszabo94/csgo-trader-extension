@@ -470,15 +470,26 @@ const addRightSideElements = () => {
     const item = getItemByIDs(items, activeIDs.appID, activeIDs.contextID, activeIDs.assetID);
     const activeInventoryAppID = getActiveInventoryAppID();
 
+    // removes previously added listeners
+    document.querySelectorAll('.showTechnical, .lowerModule, .marketActionInstantSell, .marketActionQuickSell, .copyItemID, .copyItemName, .copyItemLink').forEach((element) => {
+      element.removeEventListener('click');
+    });
+
+    // adds float bar, sticker info, nametag
+    document.querySelectorAll('.item_desc_icon').forEach((icon) => {
+      icon.insertAdjacentHTML('afterend', DOMPurify.sanitize(upperModule));
+    });
+
+    if (activeInventoryAppID !== steamApps.CSGO.appID) {
+      document.querySelectorAll('.floatBar, .duplicate').forEach((unWantedElement) => {
+        unWantedElement.remove();
+      });
+    }
+
     if (activeInventoryAppID === steamApps.CSGO.appID
       || activeInventoryAppID === steamApps.DOTA2.appID
       || activeInventoryAppID === steamApps.TF2.appID
     ) {
-      // removes previously added listeners
-      document.querySelectorAll('.showTechnical, .lowerModule, .marketActionInstantSell, .marketActionQuickSell, .copyItemID, .copyItemName, .copyItemLink').forEach((element) => {
-        element.removeEventListener('click');
-      });
-
       // adds the lower module that includes tradability, countdown  and bookmarking
       document.querySelectorAll('#iteminfo1_item_actions, #iteminfo0_item_actions')
         .forEach((action) => {
@@ -549,17 +560,6 @@ const addRightSideElements = () => {
     }
 
     if (item) {
-      // adds float bar, sticker info, nametag
-      document.querySelectorAll('.item_desc_icon').forEach((icon) => {
-        icon.insertAdjacentHTML('afterend', DOMPurify.sanitize(upperModule));
-      });
-
-      if (activeInventoryAppID !== steamApps.CSGO.appID) {
-        document.querySelectorAll('.floatBar, .duplicate').forEach((unWantedElement) => {
-          unWantedElement.remove();
-        });
-      }
-
       if (activeInventoryAppID === steamApps.CSGO.appID
         || activeInventoryAppID === steamApps.DOTA2.appID
         || activeInventoryAppID === steamApps.TF2.appID) {
