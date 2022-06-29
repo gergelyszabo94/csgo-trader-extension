@@ -315,23 +315,16 @@ progress {
 }
 .perItemDate {
     position: absolute;
-    left: 5px;
-    top: 5px;
+    left: 2px;
+    top: 2px;
     font-size: 0.8rem;
 }
 
-.dopplerPhase {
+.dopplerPhase, .fadePercentageIndicator {
     color: white;
     position: absolute;
     left: 42%;
-    top: 5px;
-    font-size: 0.8rem;
-}
-
-.fadePercentageIndicator {
-    position: absolute;
-    left: 42%;
-    top: 5px;
+    top: 2px;
     font-size: 0.8rem;
 }
 
@@ -403,9 +396,9 @@ progress {
     color: #b3cae8;
     font-size: 0.6rem;
     position: absolute;
-    bottom: 20px;
+    bottom: 17px;
     margin-bottom: 0;
-    margin-left: 5px;
+    margin-left: 2px;
 }
 
 .marketFloatOnly {
@@ -446,16 +439,16 @@ progress {
 
 .exteriorSTInfo {
     position: absolute;
-    top: 5px;
-    right: 5px;
+    top: 2px;
+    right: 2px;
     font-size: 0.8rem;
 }
 
 .priceIndicator {
     color: white;
     position: absolute;
-    bottom: 5px;
-    left: 5px;
+    bottom: 2px;
+    left: 2px;
     font-size: 0.8rem;
 }
 
@@ -611,6 +604,12 @@ progress {
     color: white;
 }
 
+.contrastingBackground {
+    background-color: black;
+    padding: 1px;
+    border-radius: 4px;
+}
+
 .fadeGradient {
     background: linear-gradient(to right, #ffc94b 0%, #ca6390 50%);
     -webkit-background-clip: text;
@@ -631,8 +630,8 @@ progress {
 
 .stickerPrice {
     position: absolute;
-    right: 5px;
-    top: 18px;
+    right: 2px;
+    top: 15px;
     font-size: 0.6rem;
     color: white;
 }

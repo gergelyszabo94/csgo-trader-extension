@@ -453,7 +453,7 @@ const addDopplerPhase = (item, dopplerInfo) => {
       case 'RB': dopplerDiv.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.rb.element)); break;
       case 'EM': dopplerDiv.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.em.element)); break;
       case 'BP': dopplerDiv.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.bp.element)); break;
-      default: dopplerDiv.innerText = dopplerInfo.short;
+      default: dopplerDiv.innerText = dopplerInfo.short; dopplerDiv.classList.add('contrastingBackground');
     }
 
     item.appendChild(dopplerDiv);
@@ -464,7 +464,7 @@ const addFadePercentage = (item, patternInfo) => {
   if (patternInfo !== null && patternInfo !== undefined && patternInfo.type === 'fade') {
     const fadeDiv = document.createElement('div');
     fadeDiv.classList.add('fadePercentageIndicator');
-    fadeDiv.classList.add('fadeGradient');
+    fadeDiv.classList.add('contrastingBackground');
     fadeDiv.innerText = patternInfo.short;
 
     item.appendChild(fadeDiv);
@@ -487,17 +487,19 @@ const addSSTandExtIndicators = (itemElement, item, showStickerPrice, showExterio
   const showStickersClass = showStickerPrice ? '' : 'hidden';
   const showExteriorsClass = showExterior ? '' : 'hidden';
 
-  itemElement.insertAdjacentHTML(
-    'beforeend',
-    DOMPurify.sanitize(
-      `<div class='exteriorSTInfo'>
-              <span class="souvenirYellow ${showExteriorsClass}">${souvenir}</span>
-              <span class="stattrakOrange ${showExteriorsClass}">${stattrak}</span>
-              <span class="exteriorIndicator ${showExteriorsClass}">${exterior}</span>
-             </div>
-             <div class="stickerPrice ${showStickersClass}">${stickerPrice}</div>`,
-    ),
-  );
+  if (item.exterior !== null) {
+    itemElement.insertAdjacentHTML(
+      'beforeend',
+      DOMPurify.sanitize(
+        `<div class='exteriorSTInfo contrastingBackground'>
+                <span class="souvenirYellow ${showExteriorsClass}">${souvenir}</span>
+                <span class="stattrakOrange ${showExteriorsClass}">${stattrak}</span>
+                <span class="exteriorIndicator ${showExteriorsClass}">${exterior}</span>
+               </div>
+               <div class="stickerPrice contrastingBackground ${showStickersClass}">${stickerPrice}</div>`,
+      ),
+    );
+  }
 };
 
 const addFloatIndicator = (itemElement, floatInfo) => {
@@ -505,7 +507,7 @@ const addFloatIndicator = (itemElement, floatInfo) => {
     && itemElement.querySelector('div.floatIndicator') === null) {
     itemElement.insertAdjacentHTML(
       'beforeend',
-      DOMPurify.sanitize(`<div class="floatIndicator">${toFixedNoRounding(floatInfo.floatvalue, 4)}</div>`),
+      DOMPurify.sanitize(`<div class="floatIndicator contrastingBackground">${toFixedNoRounding(floatInfo.floatvalue, 4)}</div>`),
     );
   }
 };
@@ -513,7 +515,7 @@ const addFloatIndicator = (itemElement, floatInfo) => {
 const addPriceIndicator = (itemElement, priceInfo) => {
   if (priceInfo !== undefined && priceInfo !== 'null' && priceInfo !== null) {
     itemElement.insertAdjacentHTML(
-      'beforeend', DOMPurify.sanitize(`<div class='priceIndicator'>${priceInfo.display}</div>`),
+      'beforeend', DOMPurify.sanitize(`<div class='priceIndicator contrastingBackground'>${priceInfo.display}</div>`),
     );
   }
 };

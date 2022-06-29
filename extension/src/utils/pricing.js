@@ -575,7 +575,7 @@ const getUserCurrencyBestGuess = () => new Promise((resolve) => {
 const addRealTimePriceIndicator = (itemElement, price) => {
   itemElement.insertAdjacentHTML(
     'beforeend',
-    DOMPurify.sanitize(`<div class="realTimePriceIndicator">${price}</div>`),
+    DOMPurify.sanitize(`<div class="realTimePriceIndicator contrastingBackground">${price}</div>`),
   );
 };
 

@@ -1096,12 +1096,10 @@ const addPerItemInfo = (appID) => {
 
           if (showTradeLockIndicatorInInventories && item) {
             // adds tradability indicator
-            if (item.tradability === 'Tradable') {
-              itemElement.insertAdjacentHTML('beforeend', DOMPurify.sanitize('<div class="perItemDate tradable">T</div>'));
-            } else if (item.tradability !== 'Not Tradable') {
+            if (item.tradability !== 'Tradable' && item.tradability !== 'Not Tradable') {
               itemElement.insertAdjacentHTML(
                 'beforeend',
-                DOMPurify.sanitize(`<div class="perItemDate not_tradable">${item.tradabilityShort}</div>`),
+                DOMPurify.sanitize(`<div class="perItemDate contrastingBackground not_tradable">${item.tradabilityShort}</div>`),
               );
             }
           }
