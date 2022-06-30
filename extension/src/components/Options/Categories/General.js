@@ -73,6 +73,14 @@ const general = () => {
         description="Makes inventories and offers pretty by changing the background color of items based on rarity or in case of doppler, phase"
       />
       <Row
+        name="Float precision"
+        id="numberOfFloatDigitsToShow"
+        type="number"
+        description="How many digits of precision you want to be displayed for float values on items in offers and inventories, min: 2, max: 16, default: 4"
+        minNum={2}
+        maxNum={16}
+      />
+      <Row
         name="Useful titles"
         id="usefulTitles"
         type="flipSwitchStorage"

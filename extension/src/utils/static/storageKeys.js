@@ -279,6 +279,7 @@ const storageKeys = {
   notifyAboutBeingLoggedOutOnDiscord: false,
   showTradeLockIndicatorInInventories: true,
   showCSGOSTASHLinkInInventory: false,
+  numberOfFloatDigitsToShow: 4,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'clientID',

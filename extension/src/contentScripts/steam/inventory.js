@@ -40,6 +40,7 @@ import { removeFromFloatCache } from '../../utils/floatCaching';
 
 let items = [];
 let inventoryTotal = 0.0;
+let floatDigitsToShow = 4;
 // variables for the countdown recursive logic
 let countingDown = false;
 let countDownID = '';
@@ -314,7 +315,7 @@ const addFloatDataToPage = (job, activeFloatQueue, floatInfo) => {
     item.floatInfo = floatInfo;
     item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
 
-    addFloatIndicator(itemElement, floatInfo);
+    addFloatIndicator(itemElement, floatInfo, floatDigitsToShow);
     addFadePercentage(itemElement, item.patternInfo);
 
     if (job.type === 'inventory_floatbar') {
@@ -645,7 +646,7 @@ const addRightSideElements = () => {
             } else hideFloatBars();
           } else {
             updateFloatAndPatternElements(item);
-            addFloatIndicator(findElementByIDs(steamApps.CSGO.appID, '2', item.assetid, 'inventory'), item.floatInfo);
+            addFloatIndicator(findElementByIDs(steamApps.CSGO.appID, '2', item.assetid, 'inventory'), item.floatInfo, floatDigitsToShow);
           }
 
           // it takes the visible descriptors and checks if the collection includes souvenirs
@@ -1002,7 +1003,7 @@ const addFloatIndicatorsToPage = () => {
                 inspectLink: item.inspectLink,
                 callBackFunction: dealWithNewFloatData,
               });
-            } else addFloatIndicator(itemElement, item.floatInfo);
+            } else addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
           }
         });
         if (!floatQueue.active) workOnFloatQueue();
@@ -1116,7 +1117,9 @@ const addPerItemInfo = (appID) => {
             if (itemInOffersInventory) {
               addInOtherTradeIndicator(itemElement, item, activeOffers.items);
             }
-            if (autoFloatInventory) addFloatIndicator(itemElement, item.floatInfo);
+            if (autoFloatInventory) {
+              addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
+            }
           }
 
           // marks the item "processed" to avoid additional unnecessary work later
@@ -1977,8 +1980,11 @@ const loadInventoryItems = (appID, contextID) => {
 logExtensionPresence();
 updateWalletCurrency();
 initPriceQueue(onListingPricesLoaded);
-chrome.storage.local.get('useAlternativeCSGOInventoryEndpoint', ({ useAlternativeCSGOInventoryEndpoint }) => {
+chrome.storage.local.get(['useAlternativeCSGOInventoryEndpoint', 'numberOfFloatDigitsToShow'], ({
+  useAlternativeCSGOInventoryEndpoint, numberOfFloatDigitsToShow,
+}) => {
   if (useAlternativeCSGOInventoryEndpoint) overRideCSGOInventoryLoading();
+  floatDigitsToShow = numberOfFloatDigitsToShow;
 });
 
 // listens to manual inventory tab/game changes

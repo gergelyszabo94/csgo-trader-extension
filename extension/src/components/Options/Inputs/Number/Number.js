@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
 
-const Number = ({ id }) => {
+const Number = ({ id, min, max }) => {
   const [state, setState] = useState(false);
+  const minSet = min !== undefined;
+  const maxSet = max !== undefined;
 
   const onChangeHandler = (event) => {
     const value = event.target.value;
-    chrome.storage.local.set(
-      { [id]: value },
-      () => {
-        setState(value);
-      },
-    );
+    setState(value);
+
+    if ((minSet && maxSet && value >= min && value <= max)
+      || (minSet && value >= min) || (maxSet && value <= max) || (!minSet && !maxSet)) {
+      chrome.storage.local.set(
+        { [id]: value },
+        () => {},
+      );
+    }
   };
 
   useEffect(() => {

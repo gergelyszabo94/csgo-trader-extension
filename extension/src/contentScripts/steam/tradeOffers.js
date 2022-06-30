@@ -22,6 +22,7 @@ import DOMPurify from 'dompurify';
 import steamApps from 'utils/static/steamApps';
 import { getIDsFromElement } from 'utils/itemsToElementsToItems';
 
+let floatDigitsToShow = 4;
 let activePage = 'incoming_offers';
 if (window.location.href.includes('/tradeoffers/?history=1')) activePage = 'incoming_offers_history';
 else if (window.location.href.includes('/tradeoffers/sent/?history=1')) activePage = 'sent_offers_history';
@@ -44,7 +45,7 @@ const selectItemElementByIDs = (classid, instanceid) => {
 
 const addFloatDataToPage = (job, floatInfo) => {
   const itemElement = selectItemElementByIDs(job.classid, job.instanceid);
-  addFloatIndicator(itemElement, floatInfo);
+  addFloatIndicator(itemElement, floatInfo, floatDigitsToShow);
   addFadePercentage(itemElement, getPattern(job.marketName, floatInfo.paintseed));
 };
 
@@ -185,7 +186,7 @@ const addItemInfo = (items) => {
                   });
                   if (!floatQueue.active) workOnFloatQueue();
                 } else {
-                  addFloatIndicator(itemElement, item.floatInfo);
+                  addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
                   addFadePercentage(itemElement, item.patternInfo);
                 }
               }
@@ -518,6 +519,10 @@ updateLoggedInUserInfo();
 updateLoggedInUserName();
 addUpdatedRibbon();
 removeLinkFilterFromLinks();
+
+chrome.storage.local.get('numberOfFloatDigitsToShow', ({ numberOfFloatDigitsToShow }) => {
+  floatDigitsToShow = numberOfFloatDigitsToShow;
+});
 
 if (activePage === 'incoming_offers') changePageTitle('trade_offers', 'Incoming Trade Offers');
 else if (activePage === 'sent_offers') changePageTitle('trade_offers', 'Sent Trade Offers');

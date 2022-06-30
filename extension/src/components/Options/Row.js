@@ -20,7 +20,8 @@ import ArrayOfStrings from './Inputs/ArrayOfStrings/ArrayOfStrings';
 
 import './Row.css';
 
-const typeSwitch = (type, key, permission, origins, modalTitle, options, maxMessageLength) => {
+const typeSwitch = (type, key, permission, origins,
+  modalTitle, options, maxMessageLength, minNum, maxNum) => {
   switch (type) {
     case 'flipSwitchStorage':
       return <FlipSwitchStorage id={key} />;
@@ -53,7 +54,7 @@ const typeSwitch = (type, key, permission, origins, modalTitle, options, maxMess
     case 'currency':
       return <Currency id={key} options={options} />;
     case 'number':
-      return <Number id={key} />;
+      return <Number id={key} min={minNum} max={maxNum} />;
     case 'realtimepricingmode':
       return <RealTimePricingMode id={key} options={options} />;
     case 'volumeSlider':
@@ -68,7 +69,8 @@ const typeSwitch = (type, key, permission, origins, modalTitle, options, maxMess
 };
 
 const row = ({
-  name, description, type, id, permission, origins, modalTitle, options, maxMessageLength,
+  name, description, type, id, permission, origins,
+  modalTitle, options, maxMessageLength, minNum, maxNum,
 }) => {
   return (
     <div className="row mb-4 pb-4 option-row">
@@ -79,7 +81,8 @@ const row = ({
         <p className="font-size--s">{description}</p>
       </div>
       <div className="col-md-6">
-        {typeSwitch(type, id, permission, origins, modalTitle, options, maxMessageLength)}
+        {typeSwitch(type, id, permission, origins, modalTitle,
+          options, maxMessageLength, minNum, maxNum)}
       </div>
     </div>
   );

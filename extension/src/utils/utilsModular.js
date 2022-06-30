@@ -502,12 +502,12 @@ const addSSTandExtIndicators = (itemElement, item, showStickerPrice, showExterio
   }
 };
 
-const addFloatIndicator = (itemElement, floatInfo) => {
+const addFloatIndicator = (itemElement, floatInfo, digitsToShow) => {
   if (floatInfo !== null && itemElement !== null && floatInfo !== undefined
     && itemElement.querySelector('div.floatIndicator') === null) {
     itemElement.insertAdjacentHTML(
       'beforeend',
-      DOMPurify.sanitize(`<div class="floatIndicator contrastingBackground">${toFixedNoRounding(floatInfo.floatvalue, 4)}</div>`),
+      DOMPurify.sanitize(`<div class="floatIndicator contrastingBackground">${toFixedNoRounding(floatInfo.floatvalue, digitsToShow)}</div>`),
     );
   }
 };

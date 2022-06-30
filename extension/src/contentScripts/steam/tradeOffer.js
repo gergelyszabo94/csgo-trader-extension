@@ -37,6 +37,7 @@ import {
 import steamApps from 'utils/static/steamApps';
 import { removeFromFloatCache } from '../../utils/floatCaching';
 
+let floatDigitsToShow = 4;
 let yourInventory = null;
 let theirInventory = null;
 const combinedInventories = [];
@@ -280,7 +281,7 @@ const addItemInfo = () => {
             addSSTandExtIndicators(itemElement, item, showStickerPrice, showShortExteriorsOffers);
             addPriceIndicator(itemElement, item.price);
             if (itemInOtherOffers) addInOtherTradeIndicator(itemElement, item, activeOffers.items);
-            if (autoFloatOffer) addFloatIndicator(itemElement, item.floatInfo);
+            if (autoFloatOffer) addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
 
             // marks the item "processed" to avoid additional unnecessary work later
             itemElement.setAttribute('data-processed', 'true');
@@ -462,7 +463,7 @@ const addFloatDataToPage = (job, floatInfo) => {
 
   const itemElement = findElementByIDs(steamApps.CSGO.appID, '2', job.assetID, 'offer');
 
-  addFloatIndicator(itemElement, floatInfo);
+  addFloatIndicator(itemElement, floatInfo, floatDigitsToShow);
   addFadePercentage(itemElement, item.patternInfo);
 
   const inspectGenCommandEl = document.getElementById('inspectGenCommand');
@@ -511,7 +512,7 @@ const addFloatIndicatorsToPage = (type) => {
               inspectLink: item.inspectLink,
               callBackFunction: addFloatDataToPage,
             });
-          } else addFloatIndicator(itemElement, item.floatInfo);
+          } else addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
         }
       });
       if (!floatQueue.active) workOnFloatQueue();
@@ -1072,8 +1073,9 @@ const partnerName = injectScript(getPartnerNameScript, true, 'partnerName', 'par
 if (partnerName !== null) changePageTitle('trade_offer', partnerName);
 
 // changes background and adds a banner if steamrep banned scammer detected
-chrome.storage.local.get('markScammers', (result) => {
-  if (result.markScammers) warnOfScammer(getTradePartnerSteamID(), 'offer');
+chrome.storage.local.get(['markScammers', 'numberOfFloatDigitsToShow'], ({ markScammers, numberOfFloatDigitsToShow }) => {
+  if (markScammers) warnOfScammer(getTradePartnerSteamID(), 'offer');
+  floatDigitsToShow = numberOfFloatDigitsToShow;
 });
 
 setInterval(() => {
