@@ -130,6 +130,12 @@ const tradeOffer = () => {
         description="Add your messages to show up as options to select in offers"
         maxMessageLength={128}
       />
+      <Row
+        name="Disable cancel escrowed trades"
+        id="disableCancelEscrowedTrades"
+        type="flipSwitchStorage"
+        description="Removes the CANCELL ALL OUTSTANDING TRADES button from the trade offers page"
+      />
     </Category>
   );
 };

@@ -280,6 +280,7 @@ const storageKeys = {
   showTradeLockIndicatorInInventories: true,
   showCSGOSTASHLinkInInventory: false,
   numberOfFloatDigitsToShow: 4,
+  disableCancelEscrowedTrades: false,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'clientID',

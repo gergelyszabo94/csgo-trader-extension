@@ -520,8 +520,15 @@ updateLoggedInUserName();
 addUpdatedRibbon();
 removeLinkFilterFromLinks();
 
-chrome.storage.local.get('numberOfFloatDigitsToShow', ({ numberOfFloatDigitsToShow }) => {
+chrome.storage.local.get(['numberOfFloatDigitsToShow', 'disableCancelEscrowedTrades'], ({
+  numberOfFloatDigitsToShow, disableCancelEscrowedTrades,
+}) => {
   floatDigitsToShow = numberOfFloatDigitsToShow;
+  if (disableCancelEscrowedTrades) {
+    const cancelTradesButton = document.querySelector('.btn_grey_white_innerfade[onclick="ShowCancelAllTradeOffersDialog();"]');
+
+    if (cancelTradesButton) cancelTradesButton.remove();
+  }
 });
 
 if (activePage === 'incoming_offers') changePageTitle('trade_offers', 'Incoming Trade Offers');
