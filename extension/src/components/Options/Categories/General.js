@@ -81,6 +81,12 @@ const general = () => {
         maxNum={16}
       />
       <Row
+        name="Show Paint Seeds"
+        id="showPaintSeedOnItems"
+        type="flipSwitchStorage"
+        description="Adds the paint seeds to the item icons in inventories and offers"
+      />
+      <Row
         name="Useful titles"
         id="usefulTitles"
         type="flipSwitchStorage"

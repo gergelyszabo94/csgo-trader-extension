@@ -9,6 +9,7 @@ import {
   logExtensionPresence, repositionNameTagIcons, csgoFloatExtPresent,
   updateLoggedInUserInfo, reloadPageOnExtensionReload, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, toFixedNoRounding,
+  addPaintSeedIndicator,
 }
   from 'utils/utilsModular';
 import { getItemMarketLink, generateInspectCommand, isDopplerInName } from 'utils/simpleUtils';
@@ -41,6 +42,7 @@ import { removeFromFloatCache } from '../../utils/floatCaching';
 let items = [];
 let inventoryTotal = 0.0;
 let floatDigitsToShow = 4;
+let showPaintSeeds = false;
 // variables for the countdown recursive logic
 let countingDown = false;
 let countDownID = '';
@@ -319,6 +321,7 @@ const addFloatDataToPage = (job, activeFloatQueue, floatInfo) => {
 
     addFloatIndicator(itemElement, floatInfo, floatDigitsToShow);
     addFadePercentage(itemElement, item.patternInfo);
+    if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo);
 
     if (job.type === 'inventory_floatbar') {
       if (getAssetIDofActive() === job.assetID) updateFloatAndPatternElements(item);
@@ -648,7 +651,9 @@ const addRightSideElements = () => {
             } else hideFloatBars();
           } else {
             updateFloatAndPatternElements(item);
-            addFloatIndicator(findElementByIDs(steamApps.CSGO.appID, '2', item.assetid, 'inventory'), item.floatInfo, floatDigitsToShow);
+            const itemElement = findElementByIDs(steamApps.CSGO.appID, '2', item.assetid, 'inventory');
+            addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
+            if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo);
           }
 
           // it takes the visible descriptors and checks if the collection includes souvenirs
@@ -997,6 +1002,7 @@ const addFloatIndicatorsToPage = () => {
         page.querySelectorAll('.item.app730.context2').forEach((itemElement) => {
           const assetID = getAssetIDOfElement(itemElement);
           const item = getItemByAssetID(items, assetID);
+
           if (item.inspectLink !== null && itemTypes[item.type.key].float) {
             if (item.floatInfo === null) {
               floatQueue.jobs.push({
@@ -1005,7 +1011,10 @@ const addFloatIndicatorsToPage = () => {
                 inspectLink: item.inspectLink,
                 callBackFunction: dealWithNewFloatData,
               });
-            } else addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
+            } else {
+              addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
+              if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo);
+            }
           }
         });
         if (!floatQueue.active) workOnFloatQueue();
@@ -1122,6 +1131,8 @@ const addPerItemInfo = (appID) => {
             if (autoFloatInventory) {
               addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
             }
+
+            if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo);
           }
 
           // marks the item "processed" to avoid additional unnecessary work later
@@ -1986,11 +1997,14 @@ updateWalletCurrency();
 
 if (defaultActiveInventoryAppID !== null) {
   initPriceQueue(onListingPricesLoaded);
-  chrome.storage.local.get(['useAlternativeCSGOInventoryEndpoint', 'numberOfFloatDigitsToShow'], ({
-    useAlternativeCSGOInventoryEndpoint, numberOfFloatDigitsToShow,
+  chrome.storage.local.get([
+    'useAlternativeCSGOInventoryEndpoint', 'numberOfFloatDigitsToShow', 'showPaintSeedOnItems',
+  ], ({
+    useAlternativeCSGOInventoryEndpoint, numberOfFloatDigitsToShow, showPaintSeedOnItems,
   }) => {
     if (useAlternativeCSGOInventoryEndpoint) overRideCSGOInventoryLoading();
     floatDigitsToShow = numberOfFloatDigitsToShow;
+    showPaintSeeds = showPaintSeedOnItems;
   });
 
   // listens to manual inventory tab/game changes

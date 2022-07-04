@@ -281,6 +281,7 @@ const storageKeys = {
   showCSGOSTASHLinkInInventory: false,
   numberOfFloatDigitsToShow: 4,
   disableCancelEscrowedTrades: false,
+  showPaintSeedOnItems: false,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'clientID',

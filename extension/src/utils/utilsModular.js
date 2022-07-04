@@ -512,6 +512,17 @@ const addFloatIndicator = (itemElement, floatInfo, digitsToShow) => {
   }
 };
 
+const addPaintSeedIndicator = (itemElement, floatInfo) => {
+  if (floatInfo !== null && floatInfo !== undefined && itemElement !== null
+    && floatInfo.paintseed !== null && floatInfo.paintseed !== undefined
+    && itemElement.querySelector('div.paintSeedIndicator') === null) {
+    itemElement.insertAdjacentHTML(
+      'beforeend',
+      DOMPurify.sanitize(`<div class="paintSeedIndicator contrastingBackground">${floatInfo.paintseed}</div>`),
+    );
+  }
+};
+
 const addPriceIndicator = (itemElement, priceInfo) => {
   if (priceInfo !== undefined && priceInfo !== 'null' && priceInfo !== null) {
     itemElement.insertAdjacentHTML(
@@ -874,5 +885,5 @@ export {
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo, getRemoteImageAsObjectURL,
-  isChromium, addFadePercentage,
+  isChromium, addFadePercentage, addPaintSeedIndicator,
 };

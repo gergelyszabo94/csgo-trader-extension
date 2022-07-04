@@ -3,7 +3,7 @@ import DOMPurify from 'dompurify';
 import {
   getItemByAssetID, getAssetIDOfElement, addDopplerPhase,
   makeItemColorful, addSSTandExtIndicators, addPriceIndicator,
-  addFloatIndicator, getExteriorFromTags, getQuality,
+  addFloatIndicator, getExteriorFromTags, getQuality, addPaintSeedIndicator,
   getType, getInspectLink, repositionNameTagIcons, addFadePercentage,
   getDopplerInfo, getActivePage, reloadPageOnExtensionReload, logExtensionPresence,
   updateLoggedInUserInfo, warnOfScammer, addPageControlEventListeners,
@@ -37,6 +37,7 @@ import {
 import steamApps from 'utils/static/steamApps';
 import { removeFromFloatCache } from '../../utils/floatCaching';
 
+let showPaintSeeds = false;
 let floatDigitsToShow = 4;
 let yourInventory = null;
 let theirInventory = null;
@@ -282,6 +283,7 @@ const addItemInfo = () => {
             addPriceIndicator(itemElement, item.price);
             if (itemInOtherOffers) addInOtherTradeIndicator(itemElement, item, activeOffers.items);
             if (autoFloatOffer) addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
+            if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo);
 
             // marks the item "processed" to avoid additional unnecessary work later
             itemElement.setAttribute('data-processed', 'true');
@@ -465,6 +467,7 @@ const addFloatDataToPage = (job, floatInfo) => {
 
   addFloatIndicator(itemElement, floatInfo, floatDigitsToShow);
   addFadePercentage(itemElement, item.patternInfo);
+  if (showPaintSeeds) addPaintSeedIndicator(itemElement, floatInfo);
 
   const inspectGenCommandEl = document.getElementById('inspectGenCommand');
   if (inspectGenCommandEl) {
@@ -512,7 +515,10 @@ const addFloatIndicatorsToPage = (type) => {
               inspectLink: item.inspectLink,
               callBackFunction: addFloatDataToPage,
             });
-          } else addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
+          } else {
+            addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
+            if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo);
+          }
         }
       });
       if (!floatQueue.active) workOnFloatQueue();
@@ -1073,9 +1079,12 @@ const partnerName = injectScript(getPartnerNameScript, true, 'partnerName', 'par
 if (partnerName !== null) changePageTitle('trade_offer', partnerName);
 
 // changes background and adds a banner if steamrep banned scammer detected
-chrome.storage.local.get(['markScammers', 'numberOfFloatDigitsToShow'], ({ markScammers, numberOfFloatDigitsToShow }) => {
+chrome.storage.local.get([
+  'markScammers', 'numberOfFloatDigitsToShow', 'showPaintSeedOnItems',
+], ({ markScammers, numberOfFloatDigitsToShow, showPaintSeedOnItems }) => {
   if (markScammers) warnOfScammer(getTradePartnerSteamID(), 'offer');
   floatDigitsToShow = numberOfFloatDigitsToShow;
+  showPaintSeeds = showPaintSeedOnItems;
 });
 
 setInterval(() => {
@@ -1202,7 +1211,7 @@ if (offerID !== 'new') {
       declineButton.addEventListener('click', () => {
         declineOffer(offerID).then(() => {
           removeOfferFromActiveOffers(offerID);
-          closeTab().then(() => {}).catch(() => { window.location.reload(); });
+          closeTab().then(() => { }).catch(() => { window.location.reload(); });
         });
       });
     });

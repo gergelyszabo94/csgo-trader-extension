@@ -401,6 +401,14 @@ progress {
     margin-left: 2px;
 }
 
+.paintSeedIndicator {
+    color: white;
+    position: absolute;
+    bottom: 30px;
+    right: 2px;
+    font-size: 0.7rem;
+}
+
 .marketFloatOnly {
     position: relative;
     left: -65px;
