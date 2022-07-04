@@ -92,7 +92,9 @@ const isOwnInventory = () => {
 };
 
 const getActiveInventoryAppID = () => {
-  return document.querySelector('.games_list_tab.active').getAttribute('href').split('#')[1];
+  const activeTab = document.querySelector('.games_list_tab.active');
+  if (activeTab) return activeTab.getAttribute('href').split('#')[1];
+  return null;
 };
 
 const cleanUpElements = () => {
@@ -1977,131 +1979,135 @@ const loadInventoryItems = (appID, contextID) => {
   }
 };
 
+const defaultActiveInventoryAppID = getActiveInventoryAppID();
+
 logExtensionPresence();
 updateWalletCurrency();
-initPriceQueue(onListingPricesLoaded);
-chrome.storage.local.get(['useAlternativeCSGOInventoryEndpoint', 'numberOfFloatDigitsToShow'], ({
-  useAlternativeCSGOInventoryEndpoint, numberOfFloatDigitsToShow,
-}) => {
-  if (useAlternativeCSGOInventoryEndpoint) overRideCSGOInventoryLoading();
-  floatDigitsToShow = numberOfFloatDigitsToShow;
-});
 
-// listens to manual inventory tab/game changes
-const inventoriesMenu = document.querySelector('.games_list_tabs');
-if (inventoriesMenu !== null) {
-  inventoriesMenu.querySelectorAll('.games_list_tab').forEach((tab) => {
-    tab.addEventListener('click', () => {
-      const appID = getActiveInventoryAppID();
-      const contextID = getDefaultContextID(appID);
-      if (appID === steamApps.CSGO.appID || appID === steamApps.DOTA2.appID
-        || appID === steamApps.TF2.appID) {
-        requestInventory(appID);
-      } else {
-        loadInventoryItems(appID, contextID);
-      }
-    });
+if (defaultActiveInventoryAppID !== null) {
+  initPriceQueue(onListingPricesLoaded);
+  chrome.storage.local.get(['useAlternativeCSGOInventoryEndpoint', 'numberOfFloatDigitsToShow'], ({
+    useAlternativeCSGOInventoryEndpoint, numberOfFloatDigitsToShow,
+  }) => {
+    if (useAlternativeCSGOInventoryEndpoint) overRideCSGOInventoryLoading();
+    floatDigitsToShow = numberOfFloatDigitsToShow;
   });
-}
 
-// mutation observer observes changes on the right side of the inventory interface
-// this is a workaround for waiting for ajax calls to finish when the page changes
-const observer = new MutationObserver(() => {
-  addRightSideElements();
-  addFunctionBar();
-  if (getActiveInventoryAppID() !== steamApps.CSGO.appID) {
-    // unhides "tags" in non-csgo inventories
-    document.querySelectorAll('#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors')
-      .forEach((tagsElement) => {
-        tagsElement.classList.remove('hidden');
+  // listens to manual inventory tab/game changes
+  const inventoriesMenu = document.querySelector('.games_list_tabs');
+  if (inventoriesMenu !== null) {
+    inventoriesMenu.querySelectorAll('.games_list_tab').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const appID = getActiveInventoryAppID();
+        const contextID = getDefaultContextID(appID);
+        if (appID === steamApps.CSGO.appID || appID === steamApps.DOTA2.appID
+          || appID === steamApps.TF2.appID) {
+          requestInventory(appID);
+        } else {
+          loadInventoryItems(appID, contextID);
+        }
       });
-  }
-});
-
-let observer2LastTriggered = Date.now() - 501;
-// the mutation observer is only allowed to trigger the logic twice a second
-// this is to save on cpu cycles
-const observer2 = new MutationObserver(() => {
-  if (Date.now() > observer2LastTriggered + 500) {
-    addPerItemInfo(getActiveInventoryAppID());
-  }
-  observer2LastTriggered = Date.now();
-});
-
-// does not execute if inventory is private or failed to load the page
-// (502 for example, mostly when steam is dead)
-if (document.getElementById('no_inventories') === null
-  && document.getElementById('iteminfo0') !== null) {
-  observer.observe(document.getElementById('iteminfo0'), {
-    subtree: false,
-    attributes: true,
-  });
-
-  observer2.observe(document.getElementById('inventories'), {
-    subtree: false,
-    attributes: true,
-  });
-}
-
-repositionNameTagIcons();
-addSearchListener('inventory', () => {
-  addFloatIndicatorsToPage();
-  addRealTimePricesToQueue();
-});
-overridePopulateActions();
-updateLoggedInUserInfo();
-updateLoggedInUserName();
-addUpdatedRibbon();
-
-if (isOwnInventory()) {
-  const moreLink = document.getElementById('inventory_more_link');
-  if (moreLink !== null) {
-    moreLink.addEventListener('click', () => {
-      chrome.runtime.sendMessage({ hasTabsAccess: 'hasTabsAccess' }, ((response) => {
-        if (response) {
-          const dropDownMenu = document.getElementById('inventory_more_dropdown');
-          const viewTradeHistory = document.getElementById('viewTradeHistory');
-          if (dropDownMenu !== null && viewTradeHistory === null) {
-            dropDownMenu.querySelector('.popup_body.popup_menu').insertAdjacentHTML(
-              'afterbegin',
-              DOMPurify.sanitize(
-                '<a class="popup_menu_item" id="viewTradeHistory">Trade History (CSGO Trader)</a>',
-              ),
-            );
-            document.getElementById('viewTradeHistory').addEventListener('mouseup', () => {
-              chrome.runtime.sendMessage({ openInternalPage: 'index.html?page=trade-history' }, () => { });
-            });
-          }
-        }
-      }));
     });
   }
-  changePageTitle('own_inventory');
-  // injects selling script if own inventory
-} else {
-  changePageTitle('inventory');
-  // shows trade offer history summary
-  chrome.storage.local.get(
-    ['tradeHistoryInventory', `offerHistory_${getInventoryOwnerID()}`, 'apiKeyValid'],
-    (result) => {
-      let offerHistory = result[`offerHistory_${getInventoryOwnerID()}`];
-      const header = document.querySelector('.profile_small_header_text');
 
-      if (result.tradeHistoryInventory) {
-        if (offerHistory === undefined) {
-          offerHistory = {
-            offers_received: 0,
-            offers_sent: 0,
-            last_received: 0,
-            last_sent: 0,
-          };
-        }
+  // mutation observer observes changes on the right side of the inventory interface
+  // this is a workaround for waiting for ajax calls to finish when the page changes
+  const observer = new MutationObserver(() => {
+    addRightSideElements();
+    addFunctionBar();
+    if (getActiveInventoryAppID() !== steamApps.CSGO.appID) {
+      // unhides "tags" in non-csgo inventories
+      document.querySelectorAll('#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors')
+        .forEach((tagsElement) => {
+          tagsElement.classList.remove('hidden');
+        });
+    }
+  });
 
-        if (header !== null) {
-          if (result.apiKeyValid) {
-            header.insertAdjacentHTML('beforeend',
-              DOMPurify.sanitize(
-                `<div class="trade_partner_info_block"> 
+  let observer2LastTriggered = Date.now() - 501;
+  // the mutation observer is only allowed to trigger the logic twice a second
+  // this is to save on cpu cycles
+  const observer2 = new MutationObserver(() => {
+    if (Date.now() > observer2LastTriggered + 500) {
+      addPerItemInfo(getActiveInventoryAppID());
+    }
+    observer2LastTriggered = Date.now();
+  });
+
+  // does not execute if inventory is private or failed to load the page
+  // (502 for example, mostly when steam is dead)
+  if (document.getElementById('no_inventories') === null
+    && document.getElementById('iteminfo0') !== null) {
+    observer.observe(document.getElementById('iteminfo0'), {
+      subtree: false,
+      attributes: true,
+    });
+
+    observer2.observe(document.getElementById('inventories'), {
+      subtree: false,
+      attributes: true,
+    });
+  }
+
+  repositionNameTagIcons();
+  addSearchListener('inventory', () => {
+    addFloatIndicatorsToPage();
+    addRealTimePricesToQueue();
+  });
+  overridePopulateActions();
+  updateLoggedInUserInfo();
+  updateLoggedInUserName();
+  addUpdatedRibbon();
+
+  if (isOwnInventory()) {
+    const moreLink = document.getElementById('inventory_more_link');
+    if (moreLink !== null) {
+      moreLink.addEventListener('click', () => {
+        chrome.runtime.sendMessage({ hasTabsAccess: 'hasTabsAccess' }, ((response) => {
+          if (response) {
+            const dropDownMenu = document.getElementById('inventory_more_dropdown');
+            const viewTradeHistory = document.getElementById('viewTradeHistory');
+            if (dropDownMenu !== null && viewTradeHistory === null) {
+              dropDownMenu.querySelector('.popup_body.popup_menu').insertAdjacentHTML(
+                'afterbegin',
+                DOMPurify.sanitize(
+                  '<a class="popup_menu_item" id="viewTradeHistory">Trade History (CSGO Trader)</a>',
+                ),
+              );
+              document.getElementById('viewTradeHistory').addEventListener('mouseup', () => {
+                chrome.runtime.sendMessage({ openInternalPage: 'index.html?page=trade-history' }, () => { });
+              });
+            }
+          }
+        }));
+      });
+    }
+    changePageTitle('own_inventory');
+    // injects selling script if own inventory
+  } else {
+    changePageTitle('inventory');
+    // shows trade offer history summary
+    chrome.storage.local.get(
+      ['tradeHistoryInventory', `offerHistory_${getInventoryOwnerID()}`, 'apiKeyValid'],
+      (result) => {
+        let offerHistory = result[`offerHistory_${getInventoryOwnerID()}`];
+        const header = document.querySelector('.profile_small_header_text');
+
+        if (result.tradeHistoryInventory) {
+          if (offerHistory === undefined) {
+            offerHistory = {
+              offers_received: 0,
+              offers_sent: 0,
+              last_received: 0,
+              last_sent: 0,
+            };
+          }
+
+          if (header !== null) {
+            if (result.apiKeyValid) {
+              header.insertAdjacentHTML('beforeend',
+                DOMPurify.sanitize(
+                  `<div class="trade_partner_info_block"> 
                         <div title="${dateToISODisplay(offerHistory.last_received)}">
                           Offers Received: ${offerHistory.offers_received} Last:  ${offerHistory.offers_received !== 0 ? prettyTimeAgo(offerHistory.last_received) : '-'}
                         </div>
@@ -2109,11 +2115,11 @@ if (isOwnInventory()) {
                           Offers Sent: ${offerHistory.offers_sent} Last:  ${offerHistory.offers_sent !== 0 ? prettyTimeAgo(offerHistory.last_sent) : '-'}
                         </div>
                      </div>`,
-              ));
-          } else {
-            header.insertAdjacentHTML('beforeend',
-              DOMPurify.sanitize(
-                `<div class="trade_partner_info_block" style="color: lightgray"> 
+                ));
+            } else {
+              header.insertAdjacentHTML('beforeend',
+                DOMPurify.sanitize(
+                  `<div class="trade_partner_info_block" style="color: lightgray"> 
                         <div>
                           <b>CSGOTrader Extension:</b> It looks like you don't have your Steam API Key set yet.
                         </div>
@@ -2121,28 +2127,33 @@ if (isOwnInventory()) {
                           If you had that you would see partner offer history here. Check the <a href="https://csgotrader.app/release-notes#1.23">Release Notes</a> for more info.
                         </div>
                       </div>`,
-              ));
+                ));
+            }
           }
         }
-      }
-    },
-  );
-}
+      },
+    );
+  }
 
-chrome.storage.local.get('hideOtherExtensionPrices', (result) => {
-  if (result.hideOtherExtensionPrices) hideOtherExtensionPrices();
-});
+  chrome.storage.local.get('hideOtherExtensionPrices', (result) => {
+    if (result.hideOtherExtensionPrices) hideOtherExtensionPrices();
+  });
 
-const activeInventoryAppID = getActiveInventoryAppID();
-if (activeInventoryAppID === steamApps.CSGO.appID
-  || activeInventoryAppID === steamApps.DOTA2.appID
-  || activeInventoryAppID === steamApps.TF2.appID) {
-  requestInventory(activeInventoryAppID);
-} else loadInventoryItems(activeInventoryAppID, getDefaultContextID(activeInventoryAppID));
+  if (defaultActiveInventoryAppID === steamApps.CSGO.appID
+    || defaultActiveInventoryAppID === steamApps.DOTA2.appID
+    || defaultActiveInventoryAppID === steamApps.TF2.appID) {
+    requestInventory(defaultActiveInventoryAppID);
+  } else {
+    loadInventoryItems(
+      defaultActiveInventoryAppID,
+      getDefaultContextID(defaultActiveInventoryAppID),
+    );
+  }
 
-// to refresh the trade lock remaining indicators
-setInterval(() => {
-  if (!document.hidden) updateTradabilityIndicators();
-}, 60000);
+  // to refresh the trade lock remaining indicators
+  setInterval(() => {
+    if (!document.hidden) updateTradabilityIndicators();
+  }, 60000);
+} else console.log('Could not get active inventory app ID, private inventory? Functions disabled.');
 
 reloadPageOnExtensionReload();
