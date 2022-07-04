@@ -2012,16 +2012,25 @@ if (defaultActiveInventoryAppID !== null) {
 
   // mutation observer observes changes on the right side of the inventory interface
   // this is a workaround for waiting for ajax calls to finish when the page changes
-  const observer = new MutationObserver(() => {
-    addRightSideElements();
-    addFunctionBar();
-    if (getActiveInventoryAppID() !== steamApps.CSGO.appID) {
-      // unhides "tags" in non-csgo inventories
-      document.querySelectorAll('#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors')
-        .forEach((tagsElement) => {
-          tagsElement.classList.remove('hidden');
-        });
-    }
+  let lastStyle = '';
+
+  const observer = new MutationObserver((mutationRecord) => {
+    mutationRecord.forEach((mutation) => {
+      if ((!lastStyle.includes('display: none;') && mutation.target.getAttribute('style').includes('display: none;'))
+      || (lastStyle.includes('display: none;') && !mutation.target.getAttribute('style').includes('display: none;'))) {
+        lastStyle = mutation.target.getAttribute('style');
+        addRightSideElements();
+        addFunctionBar();
+
+        if (getActiveInventoryAppID() !== steamApps.CSGO.appID) {
+          // unhides "tags" in non-csgo inventories
+          document.querySelectorAll('#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors')
+            .forEach((tagsElement) => {
+              tagsElement.classList.remove('hidden');
+            });
+        }
+      }
+    });
   });
 
   let observer2LastTriggered = Date.now() - 501;
