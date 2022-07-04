@@ -182,7 +182,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
           if (monitorIncomingOffers
             && (tradeOffers !== activeOffers.receivedActiveCount
               || minutesFromLastOfferCheck >= 2)) {
-            updateTrades();
+            updateTrades().then(() => {}).catch((e) => { console.log(e); });
           }
 
           // new items notification
