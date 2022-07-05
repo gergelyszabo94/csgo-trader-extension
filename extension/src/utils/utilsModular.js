@@ -532,7 +532,8 @@ const addPriceIndicator = (itemElement, priceInfo) => {
 };
 
 const getDataFilledFloatTechnical = (floatInfo) => {
-  const floatRankLine = (floatInfo.low_rank !== undefined && floatInfo.low_rank !== null) ? `Low Rank: ${floatInfo.low_rank}<br>` : '';
+  const lowFloatRankLine = (floatInfo.low_rank !== undefined && floatInfo.low_rank !== null) ? `Low Rank: ${floatInfo.low_rank}<br>` : '';
+  const highFloatRankLine = (floatInfo.high_rank !== undefined && floatInfo.high_rank !== null) ? `High Rank: ${floatInfo.high_rank}<br>` : '';
   return `
             Technical:<br>
             Float Value: ${floatInfo.floatvalue}<br>
@@ -541,7 +542,8 @@ const getDataFilledFloatTechnical = (floatInfo) => {
             Origin: ${floatInfo.origin_name}<br>
             Best Possible Float: ${floatInfo.min}<br>
             Worst Possible Float: ${floatInfo.max}<br>
-            ${floatRankLine}
+            ${lowFloatRankLine}
+            ${highFloatRankLine}
             <br>
             Float info from <a href="https://csgofloat.com/" target="_blank">csgofloat.com</a>`;
 };

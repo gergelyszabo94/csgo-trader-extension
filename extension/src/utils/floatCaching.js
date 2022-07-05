@@ -60,8 +60,9 @@ const getFloatInfoFromCache = (assetIDs) => {
 
 const extractUsefulFloatInfo = (floatInfo) => {
   const {
+    floatvalue, paintindex, paintseed, defindex,
     // eslint-disable-next-line camelcase
-    floatvalue, paintindex, paintseed, defindex, origin_name, min, max, stickers, low_rank,
+    origin_name, min, max, stickers, low_rank, high_rank,
   } = { ...floatInfo };
   return {
     floatvalue,
@@ -74,6 +75,8 @@ const extractUsefulFloatInfo = (floatInfo) => {
     stickers: stickers !== undefined ? stickers : null,
     // eslint-disable-next-line camelcase
     low_rank: low_rank !== undefined ? low_rank : null,
+    // eslint-disable-next-line camelcase
+    high_rank: high_rank !== undefined ? high_rank : null,
   };
 };
 
