@@ -409,6 +409,14 @@ progress {
     font-size: 0.7rem;
 }
 
+.floatRankIndicator {
+    color: white;
+    position: absolute;
+    top: 38px;
+    right: 2px;
+    font-size: 0.7rem;
+}
+
 .marketFloatOnly {
     position: relative;
     left: -65px;

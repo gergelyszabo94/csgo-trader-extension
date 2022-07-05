@@ -9,6 +9,7 @@ import {
   updateLoggedInUserInfo, warnOfScammer, addPageControlEventListeners,
   addSearchListener, getPattern, getNameTag, removeLinkFilterFromLinks,
   removeOfferFromActiveOffers, changePageTitle, copyToClipboard,
+  addFloatRankIndicator,
 } from 'utils/utilsModular';
 import {
   getItemMarketLink, getItemByNameAndGame, closeTab, isDopplerInName,
@@ -38,6 +39,7 @@ import steamApps from 'utils/static/steamApps';
 import { removeFromFloatCache } from '../../utils/floatCaching';
 
 let showPaintSeeds = false;
+let showFloatRank = false;
 let floatDigitsToShow = 4;
 let yourInventory = null;
 let theirInventory = null;
@@ -284,6 +286,7 @@ const addItemInfo = () => {
             if (itemInOtherOffers) addInOtherTradeIndicator(itemElement, item, activeOffers.items);
             if (autoFloatOffer) addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
             if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo);
+            if (showFloatRank) addFloatRankIndicator(itemElement, item.floatInfo);
 
             // marks the item "processed" to avoid additional unnecessary work later
             itemElement.setAttribute('data-processed', 'true');
@@ -468,6 +471,7 @@ const addFloatDataToPage = (job, floatInfo) => {
   addFloatIndicator(itemElement, floatInfo, floatDigitsToShow);
   addFadePercentage(itemElement, item.patternInfo);
   if (showPaintSeeds) addPaintSeedIndicator(itemElement, floatInfo);
+  if (showFloatRank) addFloatRankIndicator(itemElement, floatInfo);
 
   const inspectGenCommandEl = document.getElementById('inspectGenCommand');
   if (inspectGenCommandEl) {
@@ -518,6 +522,7 @@ const addFloatIndicatorsToPage = (type) => {
           } else {
             addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
             if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo);
+            if (showFloatRank) addFloatRankIndicator(itemElement, item.floatInfo);
           }
         }
       });
@@ -1080,11 +1085,14 @@ if (partnerName !== null) changePageTitle('trade_offer', partnerName);
 
 // changes background and adds a banner if steamrep banned scammer detected
 chrome.storage.local.get([
-  'markScammers', 'numberOfFloatDigitsToShow', 'showPaintSeedOnItems',
-], ({ markScammers, numberOfFloatDigitsToShow, showPaintSeedOnItems }) => {
+  'markScammers', 'numberOfFloatDigitsToShow', 'showPaintSeedOnItems', 'showFloatRankOnItems',
+], ({
+  markScammers, numberOfFloatDigitsToShow, showPaintSeedOnItems, showFloatRankOnItems,
+}) => {
   if (markScammers) warnOfScammer(getTradePartnerSteamID(), 'offer');
   floatDigitsToShow = numberOfFloatDigitsToShow;
   showPaintSeeds = showPaintSeedOnItems;
+  showFloatRank = showFloatRankOnItems;
 });
 
 setInterval(() => {

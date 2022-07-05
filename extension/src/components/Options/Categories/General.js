@@ -87,6 +87,12 @@ const general = () => {
         description="Adds the paint seeds to the item icons in inventories and offers"
       />
       <Row
+        name="Show Float ranks"
+        id="showFloatRankOnItems"
+        type="flipSwitchStorage"
+        description="Adds the float rank to the item icons in inventories and offers"
+      />
+      <Row
         name="Useful titles"
         id="usefulTitles"
         type="flipSwitchStorage"

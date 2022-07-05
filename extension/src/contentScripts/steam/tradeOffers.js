@@ -1,5 +1,5 @@
 import {
-  addDopplerPhase, makeItemColorful, addUpdatedRibbon,
+  addDopplerPhase, makeItemColorful, addUpdatedRibbon, addFloatRankIndicator,
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
   removeOfferFromActiveOffers, removeLinkFilterFromLinks,
   logExtensionPresence, updateLoggedInUserInfo, reloadPageOnExtensionReload,
@@ -23,6 +23,7 @@ import steamApps from 'utils/static/steamApps';
 import { getIDsFromElement } from 'utils/itemsToElementsToItems';
 
 let showPaintSeeds = false;
+let showFloatRank = false;
 let floatDigitsToShow = 4;
 let activePage = 'incoming_offers';
 if (window.location.href.includes('/tradeoffers/?history=1')) activePage = 'incoming_offers_history';
@@ -48,6 +49,7 @@ const addFloatDataToPage = (job, floatInfo) => {
   const itemElement = selectItemElementByIDs(job.classid, job.instanceid);
   addFloatIndicator(itemElement, floatInfo, floatDigitsToShow);
   if (showPaintSeeds) addPaintSeedIndicator(itemElement, floatInfo);
+  if (showFloatRank) addFloatRankIndicator(itemElement, floatInfo);
   addFadePercentage(itemElement, getPattern(job.marketName, floatInfo.paintseed));
 };
 
@@ -190,6 +192,7 @@ const addItemInfo = (items) => {
                 } else {
                   addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
                   if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo);
+                  if (showFloatRank) addFloatRankIndicator(itemElement, item.floatInfo);
                   addFadePercentage(itemElement, item.patternInfo);
                 }
               }
@@ -524,12 +527,15 @@ addUpdatedRibbon();
 removeLinkFilterFromLinks();
 
 chrome.storage.local.get([
-  'numberOfFloatDigitsToShow', 'disableCancelEscrowedTrades', 'showPaintSeedOnItems',
+  'numberOfFloatDigitsToShow', 'disableCancelEscrowedTrades', 'showPaintSeedOnItems', 'showFloatRankOnItems',
 ], ({
-  numberOfFloatDigitsToShow, disableCancelEscrowedTrades, showPaintSeedOnItems,
+  numberOfFloatDigitsToShow, disableCancelEscrowedTrades,
+  showPaintSeedOnItems, showFloatRankOnItems,
 }) => {
   floatDigitsToShow = numberOfFloatDigitsToShow;
   showPaintSeeds = showPaintSeedOnItems;
+  showFloatRank = showFloatRankOnItems;
+
   if (disableCancelEscrowedTrades) {
     const cancelTradesButton = document.querySelector('.btn_grey_white_innerfade[onclick="ShowCancelAllTradeOffersDialog();"]');
 

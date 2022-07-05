@@ -523,6 +523,25 @@ const addPaintSeedIndicator = (itemElement, floatInfo) => {
   }
 };
 
+const addFloatRankIndicator = (itemElement, floatInfo) => {
+  if (floatInfo !== null && floatInfo !== undefined && itemElement !== null
+    && ((floatInfo.low_rank !== null && floatInfo.low_rank !== undefined)
+    || (floatInfo.high_rank !== null && floatInfo.high_rank !== undefined))
+    && itemElement.querySelector('div.floatRankIndicator') === null) {
+    let rankToShow = floatInfo.low_rank;
+
+    if ((!floatInfo.low_rank && floatInfo.high_rank)
+    || (floatInfo.low_rank && floatInfo.high_rank && floatInfo.wear_name === 'Battle-Scarred')) {
+      rankToShow = floatInfo.high_rank;
+    }
+      
+    itemElement.insertAdjacentHTML(
+      'beforeend',
+      DOMPurify.sanitize(`<div class="floatRankIndicator contrastingBackground">#${rankToShow}</div>`),
+    );
+  }
+};
+
 const addPriceIndicator = (itemElement, priceInfo) => {
   if (priceInfo !== undefined && priceInfo !== 'null' && priceInfo !== null) {
     itemElement.insertAdjacentHTML(
@@ -887,5 +906,5 @@ export {
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo, getRemoteImageAsObjectURL,
-  isChromium, addFadePercentage, addPaintSeedIndicator,
+  isChromium, addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,
 };
