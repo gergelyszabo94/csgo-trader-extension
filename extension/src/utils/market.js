@@ -1,4 +1,4 @@
-import { getSessionID } from 'utils/utilsModular';
+import { getSessionID, getAppropriateFetchFunc } from 'utils/utilsModular';
 import { getSteamWalletInfo } from 'utils/pricing';
 
 const buyListing = (listing, buyerKYC) => {
@@ -15,7 +15,7 @@ const buyListing = (listing, buyerKYC) => {
         credentials: 'include',
       });
 
-    const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
+    const fetchFunction = getAppropriateFetchFunc();
 
     fetchFunction(request).then((response) => {
       if (!response.ok) {
@@ -41,7 +41,7 @@ const removeListing = (listingID) => {
         body: `sessionid=${getSessionID()}`,
       });
 
-    const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
+    const fetchFunction = getAppropriateFetchFunc();
 
     fetchFunction(request).then((response) => {
       if (!response.ok) {
@@ -67,20 +67,9 @@ const listItem = (appID, contextID, amount, assetID, price) => {
         body: `sessionid=${getSessionID()}&appid=${appID}&contextid=${contextID}&amount=${amount}&assetid=${assetID}&price=${price}`,
       });
 
-    // works around the different behavior when fetching from chromium or ff
-    // This is accomplished by exposing more privileged XHR and
-    // fetch instances in the content script,
-    // which has the side-effect of not setting the Origin and
-    // Referer headers like a request from the page itself would;
-    // this is often preferable to prevent the request from revealing its cross-orign nature.
-    // In Firefox, extensions that need to perform requests that behave as if they were
-    // sent by the content itself can use  content.XMLHttpRequest and content.fetch() instead.
-    // For cross-browser extensions, the presence of these methods must be feature-detected.
-    // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Content_scripts#XHR_and_Fetch
-    const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
+    const fetchFunction = getAppropriateFetchFunc();
 
     fetchFunction(request).then((response) => {
-      console.log(response);
       if (!response.ok) {
         console.log(`Error code: ${response.status} Status: ${response.statusText}`);
         reject({ status: response.status, statusText: response.statusText });
@@ -118,7 +107,7 @@ const createOrder = (appID, marketHashName, price, quantity, buyerKYC = {
         body: `sessionid=${getSessionID()}&currency=${currency}&appid=${appID}&market_hash_name=${marketHashName}&price_total=${price * quantity}&quantity=${quantity}&first_name=${buyerKYC.first_name}&last_name=${buyerKYC.last_name}&billing_address=${buyerKYC.billing_address}&billing_address_two=${buyerKYC.billing_address_two}&billing_country=${buyerKYC.billing_country}&billing_city=${buyerKYC.billing_city}&billing_state=${buyerKYC.billing_state}&billing_postal_code=${buyerKYC.billing_postal_code}&save_my_address=1`,
       });
 
-    const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
+    const fetchFunction = getAppropriateFetchFunc();
 
     fetchFunction(request).then((response) => {
       if (!response.ok) {
@@ -149,7 +138,7 @@ const cancelOrder = (orderID) => {
         body: `sessionid=${getSessionID()}&buy_orderid=${orderID}`,
       });
 
-    const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
+    const fetchFunction = getAppropriateFetchFunc();
 
     fetchFunction(request).then((response) => {
       if (!response.ok) {
@@ -175,7 +164,7 @@ const getMarketHistory = (start, count) => {
         body: `sessionid=${getSessionID()}`,
       });
 
-    const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
+    const fetchFunction = getAppropriateFetchFunc();
 
     fetchFunction(request).then((response) => {
       if (!response.ok) {
@@ -208,7 +197,7 @@ const loadItemOrderHistogram = (nameID) => {
         headers: myHeaders,
       });
 
-    const fetchFunction = window.content !== undefined ? window.content.fetch : fetch;
+    const fetchFunction = getAppropriateFetchFunc();
 
     fetchFunction(request).then((response) => {
       if (!response.ok) {

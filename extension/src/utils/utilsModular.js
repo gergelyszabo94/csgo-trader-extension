@@ -44,6 +44,30 @@ const logExtensionPresence = () => {
   console.log('"DevTools failed to parse SourceMap" is not an error, you can disregard it.');
 };
 
+const getAppropriateFetchFunc = () => {
+  // works around the different behavior when fetching from chromium or ff
+  // This is accomplished by exposing more privileged XHR and
+  // fetch instances in the content script,
+  // which has the side-effect of not setting the Origin and
+  // Referer headers like a request from the page itself would;
+  // this is often preferable to prevent the request from revealing its cross-orign nature.
+  // In Firefox, extensions that need to perform requests that behave as if they were
+  // sent by the content itself can use  content.XMLHttpRequest and content.fetch() instead.
+  // For cross-browser extensions, the presence of these methods must be feature-detected.
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Content_scripts#XHR_and_Fetch
+  // const fetchFunction = content !== undefined ? content.fetch : fetch;
+
+  let fetchFunction = fetch;
+
+  try {
+    // eslint-disable-next-line no-undef
+    fetchFunction = content !== undefined ? content.fetch : fetch;
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
+
+  return fetchFunction;
+};
+
 const validateSteamAPIKey = (apiKey) => new Promise((resolve, reject) => {
   const getRequest = new Request(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=76561198036030455`);
 
@@ -907,4 +931,5 @@ export {
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo, getRemoteImageAsObjectURL,
   isChromium, addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,
+  getAppropriateFetchFunc,
 };
