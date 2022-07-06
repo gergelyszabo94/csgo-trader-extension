@@ -1540,6 +1540,7 @@ const generateItemsList = () => {
   const exteriorType = exteriorSelected === 'full' ? 'name' : 'short';
 
   const showPrice = document.getElementById('generate_price').checked;
+  const showStickerPrice = document.getElementById('generate_sticker_price').checked;
   const showTradability = document.getElementById('generate_tradability').checked;
   const includeDupes = document.getElementById('generate_duplicates').checked;
   const includeNonMarketable = document.getElementById('generate_non_market').checked;
@@ -1551,7 +1552,7 @@ const generateItemsList = () => {
   const namesAlreadyInList = [];
 
   let csvContent = 'data:text/csv;charset=utf-8,';
-  const headers = `Name,Exterior${showPrice ? ',Price' : ''}${showTradability ? ',Tradability' : ''}${includeDupes ? '' : ',Duplicates'}\n`;
+  const headers = `Name,Exterior${showPrice ? ',Price' : ''}${showStickerPrice ? ',Sticker Price' : ''}${showTradability ? ',Tradability' : ''}${includeDupes ? '' : ',Duplicates'}\n`;
   csvContent += headers;
 
   sortedItems.forEach((itemElement) => {
@@ -1561,7 +1562,9 @@ const generateItemsList = () => {
       ? `${item.name} (${item.dopplerInfo.name})`
       : item.name;
     const price = (showPrice && item.price !== null) ? ` ${delimiter} ${item.price.display}` : '';
+    const stickerPrice = (showStickerPrice && item.stickerPrice !== null) ? ` ${delimiter} ${item.stickerPrice.display}` : '';
     const priceCSV = (showPrice && item.price !== null) ? `,${item.price.display}` : '';
+    const stickerPriceCSV = (showStickerPrice && item.stickerPrice !== null) ? `,${item.stickerPrice.display}` : '';
     const exterior = (item.exterior !== undefined && item.exterior !== null) ? item.exterior[exteriorType] : '';
     const tradableAt = new Date(item.tradability).toString().split('GMT')[0];
     const inventoryLink = `https://steamcommunity.com/profiles/${item.owner}/inventory/#${item.appid}_${item.contextid}_${item.assetid}`;
@@ -1570,8 +1573,8 @@ const generateItemsList = () => {
     const tradabilityCSV = (showTradability && tradableAt !== 'Invalid Date') ? `,${tradableAt}` : '';
     const duplicate = (!includeDupes && item.duplicates.num !== 1) ? `${delimiter} x${item.duplicates.num}` : '';
     const duplicateCSV = (!includeDupes && item.duplicates.num !== 1) ? `,x${item.duplicates.num}` : '';
-    const line = `${includeDupes ? customName : item.name} ${delimiter} ${exterior}${price}${tradability} ${duplicate} ${itemInventoryLink}\n`;
-    const lineCSV = `"${includeDupes ? customName : item.name}",${exterior}${priceCSV}${tradabilityCSV}${duplicateCSV}\n`;
+    const line = `${includeDupes ? customName : item.name} ${delimiter} ${exterior}${price}${stickerPrice}${tradability} ${duplicate} ${itemInventoryLink}\n`;
+    const lineCSV = `"${includeDupes ? customName : item.name}",${exterior}${priceCSV}${stickerPriceCSV}${tradabilityCSV}${duplicateCSV}\n`;
 
     if (lineCount < limit) {
       if (includeDupes || (!includeDupes && !namesAlreadyInList.includes(item.market_hash_name))) {
@@ -1641,26 +1644,32 @@ const addFunctionBar = () => {
                         </div>
                             
                             <div id="generate_options">
-                                <span>Delimiter</span>
-                                <input id="generate_delimiter" value="-">
-                                <span>Exterior:</span>
-                                <select id="generate_exterior">
-                                    <option value="full">Full length</option>
-                                    <option value="short">Shortened</option>
-                                </select>
-                                
-                                <span><b>Show:</b> Price</span>
-                                <input type="checkbox" id="generate_price">
-                                <span> Tradability</span>
-                                <input type="checkbox" id="generate_tradability">
-                                <span><b>Include:</b> Duplicates</span>
-                                <input id="generate_duplicates" type="checkbox" checked>
-                                <span>Non-Marketable</span>
-                                <input id="generate_non_market" type="checkbox">
-                                <span>Selected only</span>
-                                <input id="selected_only" type="checkbox" checked>
-                                <span title="Only works with copy to clipboard, not .csv download">Links</span>
-                                <input id="include_inventory_links" type="checkbox" checked>
+                                <div>
+                                    <span>Delimiter</span>
+                                    <input id="generate_delimiter" value="-">
+                                    <span>Exterior:</span>
+                                    <select id="generate_exterior">
+                                        <option value="full">Full length</option>
+                                        <option value="short">Shortened</option>
+                                    </select>
+                                    
+                                    <span><b>Show:</b> Price</span>
+                                    <input type="checkbox" id="generate_price">
+                                    <span> Sticker Price</span>
+                                    <input type="checkbox" id="generate_sticker_price">
+                                    <span> Tradability</span>
+                                    <input type="checkbox" id="generate_tradability">
+                                    <span title="Only works with copy to clipboard, not .csv download">Links</span>
+                                    <input id="include_inventory_links" type="checkbox" checked>
+                                </div>
+                                <div>
+                                  <span><b>Include:</b> Duplicates</span>
+                                  <input id="generate_duplicates" type="checkbox" checked>
+                                  <span>Non-Marketable</span>
+                                  <input id="generate_non_market" type="checkbox">
+                                  <span>Selected only</span>
+                                  <input id="selected_only" type="checkbox" checked>
+                                </div>
                             </div>
                             
                             <div>
