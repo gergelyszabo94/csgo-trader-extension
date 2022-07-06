@@ -18,7 +18,9 @@ import {
   updateLoggedInUserName,
 } from 'utils/utilsModular';
 import { listingsSortingModes } from 'utils/static/sortingModes';
-import { buyListing, createOrder, loadItemOrderHistogram } from 'utils/market';
+import {
+  buyListing, createOrder, loadItemOrderHistogram, removeListing,
+} from 'utils/market';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import exteriors from 'utils/static/exteriors';
 import {
@@ -82,6 +84,14 @@ if (isSouvenir || thereSouvenirForThisItem) {
 
 const getElementByListingID = (listingID) => {
   return document.getElementById(`listing_${listingID}`);
+};
+
+const getElementByMyListingID = (listingID) => {
+  return document.getElementById(`mylisting_${listingID}`);
+};
+
+const getMyListingIDFromElement = (listingElement) => {
+  return listingElement.id.split('mylisting_')[1];
 };
 
 const getListingIDFromElement = (listingElement) => {
@@ -730,7 +740,7 @@ const highlightSeen = () => {
           highlighted[listingID] = Date.now();
         });
 
-        chrome.storage.local.set({ [seenStorageKey]: highlighted }, () => {});
+        chrome.storage.local.set({ [seenStorageKey]: highlighted }, () => { });
       }
     }
   });
@@ -1065,6 +1075,34 @@ if (buyOrderInfoEl !== null) {
         `<div class="marketListingBuyOrderError">${err}</div>`,
       );
     });
+  });
+}
+
+// remove all listings button when there are listings
+const myACtiveListingsEl = document.getElementById('tabContentsMyActiveMarketListingsRows');
+if (myACtiveListingsEl) {
+  const removeColumnHeader = document.querySelector('span.market_listing_right_cell.market_listing_edit_buttons.placeholder');
+  removeColumnHeader.classList.add('clickable');
+  removeColumnHeader.textContent = 'REMOVE ALL';
+
+  removeColumnHeader.addEventListener('click', () => {
+    const listingIDsToRemove = [];
+
+    myACtiveListingsEl.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((activeListingRow) => {
+      listingIDsToRemove.push(getMyListingIDFromElement(activeListingRow));
+    });
+    
+    const removeListingsInterval = setInterval(() => {
+      if (listingIDsToRemove.length > 0) {
+        const listingToRemove = listingIDsToRemove.pop();
+
+        removeListing(listingToRemove).then(
+          () => {
+            getElementByMyListingID(listingToRemove).remove();
+          },
+        );
+      } else clearInterval(removeListingsInterval);
+    }, 1000);
   });
 }
 
