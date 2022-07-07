@@ -242,7 +242,7 @@ const storageKeys = {
   ],
   marketShowBuySellNonCommodity: true,
   marketShowRecentActivityNonCommodity: true,
-  notifyAboutNewItems: true,
+  notifyAboutNewItems: false,
   numberOfNewItems: 0,
   notificationSoundOn: true,
   notificationSoundToPlay: notificationSounds['done-for-you'].key,

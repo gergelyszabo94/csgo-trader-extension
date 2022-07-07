@@ -72,6 +72,12 @@ const Notifications = () => {
         type="flipSwitchStorage"
         description="Get Discord notifications about being logged out of Steam"
       />
+      <Row
+        name="Notify me about new items"
+        id="notifyAboutNewItems"
+        type="flipSwitchStorage"
+        description="Send me a browser notification when I receive new inventory items"
+      />
     </Category>
   );
 };

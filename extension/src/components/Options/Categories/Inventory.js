@@ -63,12 +63,6 @@ const inventory = () => {
         )}
       />
       <Row
-        name="Notify me about new items"
-        id="notifyAboutNewItems"
-        type="flipSwitchStorage"
-        description="Send me a browser notification when I receive new inventory items"
-      />
-      <Row
         name="Show Instant and Quick sell buttons"
         id="inventoryInstantQuickButtons"
         type="flipSwitchStorage"
