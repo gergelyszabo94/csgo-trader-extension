@@ -867,8 +867,11 @@ if (appID === steamApps.CSGO.appID) {
   if (descriptor !== null) {
     descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
       `<div class="descriptor">
-                <a href="https://csgostash.com/markethash/${fullName}">View on CS:GO STASH</a>
-            </div>`,
+          <a href="https://csgostash.com/markethash/${fullName}">View on CS:GO STASH</a>
+       </div>
+       <div class="descriptor">
+          <a href="https://api.pricempire.com/v1/redirectBuff/${fullName}">Lookup item on Buff</a>
+       </div>`,
       { ADD_ATTR: ['target'] },
     ));
 
