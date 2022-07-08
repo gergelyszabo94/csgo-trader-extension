@@ -1,4 +1,5 @@
 import exteriors from 'utils/static/exteriors';
+import { currencies } from 'utils/static/pricing';
 import { dopplerPhases, iconToPhaseMapping } from 'utils/static/dopplerPhases';
 import rarities from 'utils/static/rarities';
 import qualities from 'utils/static/qualities';
@@ -566,10 +567,13 @@ const addFloatRankIndicator = (itemElement, floatInfo) => {
   }
 };
 
-const addPriceIndicator = (itemElement, priceInfo) => {
+const addPriceIndicator = (itemElement, priceInfo, pricePercentage = 100, currency) => {
   if (priceInfo !== undefined && priceInfo !== 'null' && priceInfo !== null) {
+    const disPlayPrice = pricePercentage === 100
+      ? priceInfo.display
+      : currencies[currency].sign + (priceInfo.price * (pricePercentage / 100)).toFixed(2);
     itemElement.insertAdjacentHTML(
-      'beforeend', DOMPurify.sanitize(`<div class='priceIndicator contrastingBackground'>${priceInfo.display}</div>`),
+      'beforeend', DOMPurify.sanitize(`<div class='priceIndicator contrastingBackground'>${disPlayPrice}</div>`),
     );
   }
 };

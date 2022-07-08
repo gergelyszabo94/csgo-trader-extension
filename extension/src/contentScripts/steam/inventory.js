@@ -39,6 +39,7 @@ import { inOtherOfferIndicator } from 'utils/static/miscElements';
 import steamApps from 'utils/static/steamApps';
 import { removeFromFloatCache } from '../../utils/floatCaching';
 
+let pricePercentage = 100; // can be changed, for easier discount calculation
 let items = [];
 let inventoryTotal = 0.0;
 let floatDigitsToShow = 4;
@@ -1089,13 +1090,13 @@ const addPerItemInfo = (appID) => {
   const itemElements = document.querySelectorAll(`.item.app${appID}.context2`);
   if (itemElements.length !== 0) {
     chrome.storage.local.get([
-      'colorfulItems', 'autoFloatInventory', 'showStickerPrice', 'activeOffers',
+      'colorfulItems', 'autoFloatInventory', 'showStickerPrice', 'activeOffers', 'currency',
       'itemInOffersInventory', 'showShortExteriorsInventory', 'showTradeLockIndicatorInInventories',
     ],
     ({
       colorfulItems, showStickerPrice, autoFloatInventory,
       activeOffers, itemInOffersInventory, showShortExteriorsInventory,
-      showTradeLockIndicatorInInventories,
+      showTradeLockIndicatorInInventories, currency,
     }) => {
       itemElements.forEach((itemElement) => {
         if (itemElement.getAttribute('data-processed') === null
@@ -1128,7 +1129,7 @@ const addPerItemInfo = (appID) => {
               itemElement, item, showStickerPrice,
               showShortExteriorsInventory,
             );
-            addPriceIndicator(itemElement, item.price);
+            addPriceIndicator(itemElement, item.price, pricePercentage, currency);
             if (itemInOffersInventory) {
               addInOtherTradeIndicator(itemElement, item, activeOffers.items);
             }
@@ -1142,6 +1143,18 @@ const addPerItemInfo = (appID) => {
 
           // marks the item "processed" to avoid additional unnecessary work later
           itemElement.setAttribute('data-processed', 'true');
+          itemElement.setAttribute('data-price-ratio', pricePercentage);
+        } else if (itemElement.getAttribute('data-processed') === 'true'
+        && parseFloat(itemElement.getAttribute('data-price-ratio')) !== pricePercentage) {
+          const currentPriceIndicatorEl = itemElement.querySelector('.priceIndicator');
+          const IDs = getIDsFromElement(itemElement, 'inventory');
+          const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
+
+          if (currentPriceIndicatorEl) {
+            currentPriceIndicatorEl.remove();
+            addPriceIndicator(itemElement, item.price, pricePercentage, currency);
+            itemElement.setAttribute('data-price-ratio', pricePercentage);
+          }
         }
       });
     });
@@ -1155,9 +1168,11 @@ const addPerItemInfo = (appID) => {
 const setInventoryTotal = () => {
   chrome.storage.local.get(['currency'], ({ currency }) => {
     const inventoryTotalValueElement = document.getElementById('inventoryTotalValue');
+    const totalPercentageApplied = inventoryTotal * (pricePercentage / 100);
+
     inventoryTotalValueElement.innerText = prettyPrintPrice(
       currency,
-      (inventoryTotal).toFixed(0),
+      (totalPercentageApplied).toFixed(0),
     );
   });
 };
@@ -1217,10 +1232,10 @@ const addListingRow = (item) => {
               </div>
               <div
                   class="cell itemExtensionPrice cstSelected clickable"
-                  data-price-in-cents="${item.price ? userPriceToProperPrice(item.price.price).toString() : '0'}"
-                  data-listing-price="${item.price ? getPriceAfterFees(userPriceToProperPrice(item.price.price)).toString() : '0'}"
+                  data-price-in-cents="${item.price ? userPriceToProperPrice((item.price.price * (pricePercentage / 100)).toString()).toString() : '0'}"
+                  data-listing-price="${item.price ? getPriceAfterFees(userPriceToProperPrice((item.price.price * (pricePercentage / 100)).toString())).toString() : '0'}"
                   >
-                  ${item.price ? item.price.display : '0'}
+                  ${item.price ? (item.price.price * (pricePercentage / 100)).toFixed(2) : '0'}
               </div>
               <div class="cell itemStartingAt clickable">---</div>
               <div class="cell itemQuickSell clickable">---</div>
@@ -1624,6 +1639,11 @@ const addFunctionBar = () => {
                         <span id="generate_menu">
                             <img id ="generate_list" class="clickable" src="${table}" title="Generate list of inventory items"
                         </span>
+                        <span style="font-size: 0.9rem;">
+                            Price:
+                            <input type="number" id="pricePercentage" min="0" style="width: 40px;" value = ${pricePercentage} title="Show item prices at this ratio">
+                            %
+                        </span>
                         <div id="sortingMenu">
                             <span>Sorting:</span>
                             <select id="sortingMethod">
@@ -1761,6 +1781,12 @@ const addFunctionBar = () => {
         }
       });
       updateSelectedItemsSummary();
+    });
+
+    document.getElementById('pricePercentage').addEventListener('change', (event) => {
+      pricePercentage = event.target.value;
+      setInventoryTotal();
+      addPerItemInfo(getActiveInventoryAppID());
     });
 
     document.getElementById('sellButton').addEventListener('click',
