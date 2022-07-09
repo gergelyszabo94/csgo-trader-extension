@@ -159,6 +159,7 @@ const getListings = () => {
   return listings;
 };
 
+// also adds name tags
 const addStickers = () => {
   if (appID === steamApps.CSGO.appID && !isCommodityItem) {
     // removes sih sticker info
@@ -186,6 +187,9 @@ const addStickers = () => {
         (listingRow) => {
           if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
             const listingID = getListingIDFromElement(listingRow);
+            const nameTag = listings[listingID].asset.fraudwarnings
+              ? listings[listingID].asset.fraudwarnings[0]
+              : '';
 
             if (listingRow.querySelector('.stickerHolderMarket') === null) { // if stickers elements not added already
               const nameBlock = listingRow.querySelector('.market_listing_item_name_block');
@@ -211,6 +215,14 @@ const addStickers = () => {
               });
               listingRow.querySelector('.stickerHolderMarket').insertAdjacentHTML('afterend',
                 DOMPurify.sanitize('<div class="stickersTotal" data-tooltip-market="Total Price of Stickers on this item"></div>'));
+            }
+
+            if (listingRow.querySelector('.customNameTag') === null
+              && nameTag !== '') {
+              listingRow.querySelector('.extension__row').insertAdjacentHTML(
+                'beforeend',
+                DOMPurify.sanitize(`<div class="customNameTag" style="color: var(--steam-nametag-red);" id="customNameTag_${listingID}">${nameTag}</div>`),
+              );
             }
           }
         },
@@ -1094,7 +1106,7 @@ if (myACtiveListingsEl) {
     myACtiveListingsEl.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((activeListingRow) => {
       listingIDsToRemove.push(getMyListingIDFromElement(activeListingRow));
     });
-    
+
     const removeListingsInterval = setInterval(() => {
       if (listingIDsToRemove.length > 0) {
         const listingToRemove = listingIDsToRemove.pop();
