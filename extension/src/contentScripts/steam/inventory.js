@@ -1461,7 +1461,9 @@ const updateSelectedItemsSummary = () => {
     const IDs = getIDsFromElement(itemElement, 'inventory');
     const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
     if (item) {
-      if (item.price) selectedTotal += parseFloat(item.price.price);
+      if (item.price) {
+        selectedTotal += parseFloat((item.price.price * (pricePercentage / 100)).toFixed(2));
+      }
       if (item.marketable === 1) {
         const listingRow = getListingRow(item.appid, item.contextid, item.market_hash_name);
 
