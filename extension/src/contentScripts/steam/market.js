@@ -257,7 +257,8 @@ const createCSV = () => {
 const workOnExport = () => {
   if (marketHistoryExport.inProgress) {
     const delay = marketHistoryExport.lastRequestSuccessful ? 5000 : 30000;
-    getMarketHistory(marketHistoryExport.progress, 50).then(
+
+    getMarketHistory(marketHistoryExport.from + marketHistoryExport.progress, 50).then(
       (history) => {
         marketHistoryExport.lastRequestSuccessful = true;
         marketHistoryExport.progress += 50;
