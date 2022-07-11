@@ -1639,7 +1639,7 @@ const addFunctionBar = () => {
                             <img id ="selectButton" class="clickable" src="${handPointer}" title="Start Selecting Items">
                         </span>
                         <span id="generate_menu">
-                            <img id ="generate_list" class="clickable" src="${table}" title="Generate list of inventory items"/>
+                            <img id ="generate_list" class="clickable" src="${table}" title="Generate list of inventory items">
                         </span>
                         <span style="font-size: 0.9rem;">
                             Price:
