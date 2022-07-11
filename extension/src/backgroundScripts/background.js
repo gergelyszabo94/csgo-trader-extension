@@ -96,6 +96,10 @@ chrome.runtime.onInstalled.addListener((details) => {
   chrome.alarms.create('getSteamNotificationCount', { periodInMinutes: 1 });
   chrome.alarms.create('retryUpdatePricesAndExchangeRates', { periodInMinutes: 1 });
   chrome.alarms.create('dailyScheduledTasks', { periodInMinutes: 1440 });
+  chrome.storage.local.get('priceUpdateFreq', ({ priceUpdateFreq }) => {
+    const tempPriceUpdateFreq = priceUpdateFreq || 24; // remove it in the next update
+    chrome.alarms.create('priceUpdate', { periodInMinutes: tempPriceUpdateFreq * 60 });
+  });
 });
 
 // redirects to feedback survey on uninstall
@@ -293,13 +297,14 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     });
   } else if (alarm.name === 'restartNotificationChecks') {
     chrome.alarms.create('getSteamNotificationCount', { periodInMinutes: 1 });
+  } else if (alarm.name === 'priceUpdate') {
+    chrome.storage.local.get('itemPricing', ({ itemPricing }) => {
+      if (itemPricing) updatePrices();
+    });
   } else if (alarm.name === 'dailyScheduledTasks') {
     trimFloatCache();
     removeOldFriendRequestEvents();
     removeOldOfferEvents();
-    chrome.storage.local.get('itemPricing', ({ itemPricing }) => {
-      if (itemPricing) updatePrices();
-    });
     updateExchangeRates();
   } else {
     // this is when bookmarks notification are handled

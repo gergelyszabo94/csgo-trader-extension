@@ -75,6 +75,14 @@ const pricing = () => {
         options={pricingProviders}
       />
       <Row
+        name="Price update frequency"
+        id="priceUpdateFreq"
+        type="number"
+        description="How often prices should update in the background, in hours, min: 6, max: 138, default: 24"
+        minNum={6}
+        maxNum={168}
+      />
+      <Row
         name="Refresh Prices"
         type="refresh"
         id="refreshPrices"

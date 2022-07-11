@@ -13,7 +13,11 @@ const Number = ({ id, min, max }) => {
       || (minSet && value >= min) || (maxSet && value <= max) || (!minSet && !maxSet)) {
       chrome.storage.local.set(
         { [id]: value },
-        () => {},
+        () => {
+          if (id === 'priceUpdateFreq') {
+            chrome.alarms.create('priceUpdate', { periodInMinutes: value * 60 });
+          }
+        },
       );
     }
   };

@@ -283,6 +283,7 @@ const storageKeys = {
   disableCancelEscrowedTrades: false,
   showPaintSeedOnItems: false,
   showFloatRankOnItems: false,
+  priceUpdateFreq: 24,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'clientID',
