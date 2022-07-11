@@ -1578,9 +1578,9 @@ const generateItemsList = () => {
     const customName = isDopplerInName(item.name)
       ? `${item.name} (${item.dopplerInfo.name})`
       : item.name;
-    const price = (showPrice && item.price !== null) ? ` ${delimiter} ${item.price.display}` : '';
+    const price = (showPrice && item.price !== null) ? ` ${delimiter} ${(item.price.price * (pricePercentage / 100)).toFixed(2)}` : '';
     const stickerPrice = (showStickerPrice && item.stickerPrice !== null) ? ` ${delimiter} ${item.stickerPrice.display}` : '';
-    const priceCSV = (showPrice && item.price !== null) ? `,${item.price.display}` : '';
+    const priceCSV = (showPrice && item.price !== null) ? `,${(item.price.price * (pricePercentage / 100)).toFixed(2)}` : '';
     const stickerPriceCSV = (showStickerPrice && item.stickerPrice !== null) ? `,${item.stickerPrice.display}` : '';
     const exterior = (item.exterior !== undefined && item.exterior !== null) ? item.exterior[exteriorType] : '';
     const tradableAt = new Date(item.tradability).toString().split('GMT')[0];
