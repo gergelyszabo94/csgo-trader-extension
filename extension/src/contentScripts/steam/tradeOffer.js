@@ -1214,6 +1214,14 @@ if (offerID !== 'new') {
     });
 
     document.querySelector('.readystate.modify_trade_offer').addEventListener('click', () => {
+      const oldOfferMessage = document.querySelector('.included_trade_offer_note').textContent.trim();
+      document.getElementById('tradeoffer_addmessage').insertAdjacentHTML(
+        'afterbegin',
+        DOMPurify.sanitize(
+          `<h2>Old offer message:</h2> ${oldOfferMessage}`,
+        ),
+      );
+
       declineButton.setAttribute('onclick', '');
       declineButton.style.display = 'inline-block';
       declineButton.addEventListener('click', () => {
