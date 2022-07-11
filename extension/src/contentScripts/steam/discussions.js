@@ -31,8 +31,12 @@ if (!window.location.href.includes('discussions/search/')) {
       if (commentTextElement !== null && commentTextElement.innerText.includes('Bump')
       && !commentThread.classList.contains('commentthread_deleted_comment')
       && !commentThread.classList.contains('commentthread_deleted_expanded')) {
-        const commentID = commentThread.id.split('comment_')[1];
-        deleteForumComment(abuseID, gIDForum, gIDTopic, commentID, extendedData);
+        const deleteOldBumpComment = !document.getElementById('keepOldBumpComment').checked;
+
+        if (deleteOldBumpComment) {
+          const commentID = commentThread.id.split('comment_')[1];
+          deleteForumComment(abuseID, gIDForum, gIDTopic, commentID, extendedData);
+        }
         commentTextElement.innerText = `CSGO Trader replaced this Bump comment with a new one. The page will refresh and the next bump will happen in ${nextBump} minutes.`;
       }
     });
@@ -51,7 +55,14 @@ if (!window.location.href.includes('discussions/search/')) {
                     type="checkbox"
                     id="autoBumpDiscussion"
                     title="If you tick this checkbox CSGOTrader will periodically (30 mins) post a comment under this discussion on your behalf
-                    making the post appear on top of discussions. The post has to be kept open on a page to be auto-bumped."
+                    making the post appear on top of discussions. The post has to be kept open on a page to be auto-bumped. Bumping is against Steam's
+                    community standards, doing it excessively can lead to account limitations."
+                />
+                Keep old Bump comment:
+                <input
+                    type="checkbox"
+                    id="keepOldBumpComment"
+                    title="It does not delete old Bump comments when auto-bumping."
                 />
             </div>`,
       ),
