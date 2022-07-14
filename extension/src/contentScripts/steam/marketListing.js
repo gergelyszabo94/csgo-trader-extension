@@ -1278,10 +1278,10 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                     </a>
                   </div>
                   <div class="realMoneySite">
-                    <a href="https://affiliate.swap.gg/223.html" target="_blank" class="realMoneySiteLink referralLink" data-site="swapgg">
-                        <img alt="Swapgg logo" src="${chrome.runtime.getURL('images/external_logos/swapgg.png')}" data-site="swapgg">
+                    <a href="https://gamerpay.gg/partner/okn9go3r" target="_blank" class="realMoneySiteLink referralLink" data-site="gamerpay">
+                        <img alt="GamerPay logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/gamerpay.png')}" data-site="gamerpay">
                         <br>
-                        SWAP.GG
+                        GamerPay.gg
                     </a>
                   </div>
                 </div>
@@ -1301,10 +1301,10 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                     </a>
                   </div>
                   <div class="realMoneySite">
-                    <a href="https://gamerpay.gg/partner/okn9go3r" target="_blank" class="realMoneySiteLink referralLink" data-site="gamerpay">
-                        <img alt="GamerPay logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/gamerpay.png')}" data-site="gamerpay">
+                    <a href="https://p2p.bitskins.com/affiliate#gery" target="_blank" class="realMoneySiteLink referralLink" data-site="bitskinsP2P">
+                        <img alt="Bitskins logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/bitskins.png')}" data-site="bitskinsP2P">
                         <br>
-                        GamerPay.gg
+                        p2p.bitskins.com
                     </a>
                   </div>
                 </div>
