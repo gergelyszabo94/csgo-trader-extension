@@ -1286,6 +1286,15 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                   </div>
                 </div>
                 <div class="realMoneySites">
+                <div class="realMoneySite">
+                    <a href="https://tradeit.gg/?aff=gery" target="_blank" class="realMoneySiteLink referralLink" data-site="tradeit">
+                        <img alt="Tradeit logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/tradeit.png')}" data-site="tradeit">
+                        <br>
+                        TRADEIT.GG
+                    </a>
+                  </div>
+                </div>
+                <div class="realMoneySites">
                  <div class="realMoneySite">
                     <a href="https://dmarket.com/?ref=hJEDYLBTsV" target="_blank" class="realMoneySiteLink referralLink" data-site="dmarket">
                         <img alt="Dmarket logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/dmarket.png')}" data-site="dmarket">
@@ -1317,6 +1326,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       <a href="https://dmarket.com/?ref=hJEDYLBTsV" target="_blank" class="referralLink" data-site="dmarket">DMARKET</a>,
                       <a href="https://gamerpay.gg/partner/okn9go3r" target="_blank" class="referralLink" data-site="gamerpay">GamerPay</a>,
                       <a href="https://waxpeer.com/r/gery" target="_blank" class="referralLink" data-site="waxpeer">Waxpeer</a>,
+                      <a href="https://p2p.bitskins.com/affiliate#gery" target="_blank" class="referralLink" data-site="bitskinsP2P">p2p.bitskins.com</a>,
                       <a href="bskn.co/?ref_alias=xcW4c_phcUc" target="_blank" class="referralLink" data-site="bitskins">Bitskins</a> and 
                       <a href="https://csgofloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csgofloat">
                       CSGOFloat
@@ -1338,7 +1348,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       You can also buy items for real money on
                       <a href="https://cs.money/?utm_source=sponsorship&utm_medium=cstrade&utm_campaign=cstrd0920&utm_content=link#skin_name=${fullName}" target="_blank" class="referralLink" data-site="csmoney">Csmoney</a>
                       and
-                      <a href="https://affiliate.swap.gg/223.html" target="_blank" class="referralLink" data-site="swapgg">Swap.gg</a>
+                      <a href="https://tradeit.gg/?aff=gery" target="_blank" class="referralLink" data-site="tradeit">TRADEIT.GG</a>
                       as well as trade for them with your items.
                     </div>
                     <div>
