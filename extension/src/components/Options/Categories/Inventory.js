@@ -114,7 +114,7 @@ const inventory = () => {
         name="Show trade lock indicators on items"
         id="showTradeLockIndicatorInInventories"
         type="flipSwitchStorage"
-        description="Adds small indicators to the top left of inventory items that either show the remaining trade cooldown or a T if the item is tradable."
+        description="Adds small indicators to the top left of inventory items that either show the remaining trade cooldown."
       />
     </Category>
   );
