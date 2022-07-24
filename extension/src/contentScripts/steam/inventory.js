@@ -45,6 +45,7 @@ let inventoryTotal = 0.0;
 let floatDigitsToShow = 4;
 let showPaintSeeds = false;
 let showFloatRank = false;
+let showContrastingLook = true;
 // variables for the countdown recursive logic
 let countingDown = false;
 let countDownID = '';
@@ -321,10 +322,10 @@ const addFloatDataToPage = (job, activeFloatQueue, floatInfo) => {
     item.floatInfo = floatInfo;
     item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
 
-    addFloatIndicator(itemElement, floatInfo, floatDigitsToShow);
-    addFadePercentage(itemElement, item.patternInfo);
-    if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo);
-    if (showFloatRank) addFloatRankIndicator(itemElement, item.floatInfo);
+    addFloatIndicator(itemElement, floatInfo, floatDigitsToShow, showContrastingLook);
+    addFadePercentage(itemElement, item.patternInfo, showContrastingLook);
+    if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo, showContrastingLook);
+    if (showFloatRank) addFloatRankIndicator(itemElement, item.floatInfo, showContrastingLook);
 
     if (job.type === 'inventory_floatbar') {
       if (getAssetIDofActive() === job.assetID) updateFloatAndPatternElements(item);
@@ -655,9 +656,13 @@ const addRightSideElements = () => {
           } else {
             updateFloatAndPatternElements(item);
             const itemElement = findElementByIDs(steamApps.CSGO.appID, '2', item.assetid, 'inventory');
-            addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
-            if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo);
-            if (showFloatRank) addFloatRankIndicator(itemElement, item.floatInfo);
+            addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow, showContrastingLook);
+            if (showPaintSeeds) {
+              addPaintSeedIndicator(itemElement, item.floatInfo, showContrastingLook);
+            }
+            if (showFloatRank) {
+              addFloatRankIndicator(itemElement, item.floatInfo, showContrastingLook);
+            }
           }
 
           // it takes the visible descriptors and checks if the collection includes souvenirs
@@ -1016,9 +1021,15 @@ const addFloatIndicatorsToPage = () => {
                 callBackFunction: dealWithNewFloatData,
               });
             } else {
-              addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
-              if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo);
-              if (showFloatRank) addFloatRankIndicator(itemElement, item.floatInfo);
+              addFloatIndicator(
+                itemElement, item.floatInfo, floatDigitsToShow, showContrastingLook,
+              );
+              if (showPaintSeeds) {
+                addPaintSeedIndicator(itemElement, item.floatInfo, showContrastingLook);
+              }
+              if (showFloatRank) {
+                addFloatRankIndicator(itemElement, item.floatInfo, showContrastingLook);
+              }
             }
           }
         });
@@ -1114,31 +1125,40 @@ const addPerItemInfo = (appID) => {
           if (showTradeLockIndicatorInInventories && item) {
             // adds tradability indicator
             if (item.tradability !== 'Tradable' && item.tradability !== 'Not Tradable') {
+              const contrastingLookClass = showContrastingLook ? 'contrastingBackground' : '';
               itemElement.insertAdjacentHTML(
                 'beforeend',
-                DOMPurify.sanitize(`<div class="perItemDate contrastingBackground not_tradable">${item.tradabilityShort}</div>`),
+                DOMPurify.sanitize(`<div class="perItemDate ${contrastingLookClass} not_tradable">${item.tradabilityShort}</div>`),
               );
             }
           }
 
           if (appID === steamApps.CSGO.appID) {
-            addDopplerPhase(itemElement, item.dopplerInfo);
-            addFadePercentage(itemElement, item.patternInfo);
+            addDopplerPhase(itemElement, item.dopplerInfo, showContrastingLook);
+            addFadePercentage(itemElement, item.patternInfo, showContrastingLook);
             makeItemColorful(itemElement, item, colorfulItems);
             addSSTandExtIndicators(
               itemElement, item, showStickerPrice,
-              showShortExteriorsInventory,
+              showShortExteriorsInventory, showContrastingLook,
             );
-            addPriceIndicator(itemElement, item.price, pricePercentage, currency);
+            addPriceIndicator(
+              itemElement, item.price, pricePercentage, currency, showContrastingLook,
+            );
             if (itemInOffersInventory) {
               addInOtherTradeIndicator(itemElement, item, activeOffers.items);
             }
             if (autoFloatInventory) {
-              addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
+              addFloatIndicator(
+                itemElement, item.floatInfo, floatDigitsToShow, showContrastingLook,
+              );
             }
 
-            if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo);
-            if (showFloatRank) addFloatRankIndicator(itemElement, item.floatInfo);
+            if (showPaintSeeds) {
+              addPaintSeedIndicator(itemElement, item.floatInfo, showContrastingLook);
+            }
+            if (showFloatRank) {
+              addFloatRankIndicator(itemElement, item.floatInfo, showContrastingLook);
+            }
           }
 
           // marks the item "processed" to avoid additional unnecessary work later
@@ -1152,7 +1172,9 @@ const addPerItemInfo = (appID) => {
 
           if (currentPriceIndicatorEl) {
             currentPriceIndicatorEl.remove();
-            addPriceIndicator(itemElement, item.price, pricePercentage, currency);
+            addPriceIndicator(
+              itemElement, item.price, pricePercentage, currency, showContrastingLook,
+            );
             itemElement.setAttribute('data-price-ratio', pricePercentage);
           }
         }
@@ -2041,15 +2063,16 @@ if (defaultActiveInventoryAppID !== null) {
   initPriceQueue(onListingPricesLoaded);
   chrome.storage.local.get([
     'useAlternativeCSGOInventoryEndpoint', 'numberOfFloatDigitsToShow',
-    'showPaintSeedOnItems', 'showFloatRankOnItems',
+    'showPaintSeedOnItems', 'showFloatRankOnItems', 'contrastingLook',
   ], ({
     useAlternativeCSGOInventoryEndpoint, numberOfFloatDigitsToShow,
-    showPaintSeedOnItems, showFloatRankOnItems,
+    showPaintSeedOnItems, showFloatRankOnItems, contrastingLook,
   }) => {
     if (useAlternativeCSGOInventoryEndpoint) overRideCSGOInventoryLoading();
     floatDigitsToShow = numberOfFloatDigitsToShow;
     showPaintSeeds = showPaintSeedOnItems;
     showFloatRank = showFloatRankOnItems;
+    showContrastingLook = contrastingLook;
   });
 
   // listens to manual inventory tab/game changes

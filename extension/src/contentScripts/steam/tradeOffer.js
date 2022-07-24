@@ -41,6 +41,7 @@ import { removeFromFloatCache } from '../../utils/floatCaching';
 let showPaintSeeds = false;
 let showFloatRank = false;
 let floatDigitsToShow = 4;
+let showContrastingLook = true;
 let yourInventory = null;
 let theirInventory = null;
 const combinedInventories = [];
@@ -263,9 +264,11 @@ const addItemInfo = () => {
 
   const itemElements = document.querySelectorAll('.item.app730.context2');
   if (itemElements.length !== 0) {
-    chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice', 'activeOffers', 'itemInOtherOffers', 'showShortExteriorsOffers'],
+    chrome.storage.local.get(
+      ['colorfulItems', 'autoFloatOffer', 'showStickerPrice',
+        'activeOffers', 'itemInOtherOffers', 'showShortExteriorsOffers', 'currency'],
       ({
-        colorfulItems, showStickerPrice, autoFloatOffer,
+        colorfulItems, showStickerPrice, autoFloatOffer, currency,
         activeOffers, itemInOtherOffers, showShortExteriorsOffers,
       }) => {
         itemElements.forEach((itemElement) => {
@@ -278,21 +281,32 @@ const addItemInfo = () => {
               return false;
             }
             const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
-            addDopplerPhase(itemElement, item.dopplerInfo);
-            addFadePercentage(itemElement, item.patternInfo);
+            addDopplerPhase(itemElement, item.dopplerInfo, showContrastingLook);
+            addFadePercentage(itemElement, item.patternInfo, showContrastingLook);
             makeItemColorful(itemElement, item, colorfulItems);
-            addSSTandExtIndicators(itemElement, item, showStickerPrice, showShortExteriorsOffers);
-            addPriceIndicator(itemElement, item.price);
+            addSSTandExtIndicators(
+              itemElement, item, showStickerPrice, showShortExteriorsOffers, showContrastingLook,
+            );
+            addPriceIndicator(itemElement, item.price, 100, currency, showContrastingLook);
             if (itemInOtherOffers) addInOtherTradeIndicator(itemElement, item, activeOffers.items);
-            if (autoFloatOffer) addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
-            if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo);
-            if (showFloatRank) addFloatRankIndicator(itemElement, item.floatInfo);
+            if (autoFloatOffer) {
+              addFloatIndicator(
+                itemElement, item.floatInfo, floatDigitsToShow, showContrastingLook,
+              );
+            }
+            if (showPaintSeeds) {
+              addPaintSeedIndicator(itemElement, item.floatInfo, showContrastingLook);
+            }
+            if (showFloatRank) {
+              addFloatRankIndicator(itemElement, item.floatInfo, showContrastingLook);
+            }
 
             // marks the item "processed" to avoid additional unnecessary work later
             itemElement.setAttribute('data-processed', 'true');
           }
         });
-      });
+      },
+    );
   } else { // in case the inventory is not loaded yet
     setTimeout(() => {
       addItemInfo();
@@ -468,10 +482,10 @@ const addFloatDataToPage = (job, floatInfo) => {
 
   const itemElement = findElementByIDs(steamApps.CSGO.appID, '2', job.assetID, 'offer');
 
-  addFloatIndicator(itemElement, floatInfo, floatDigitsToShow);
-  addFadePercentage(itemElement, item.patternInfo);
-  if (showPaintSeeds) addPaintSeedIndicator(itemElement, floatInfo);
-  if (showFloatRank) addFloatRankIndicator(itemElement, floatInfo);
+  addFloatIndicator(itemElement, floatInfo, floatDigitsToShow, showContrastingLook);
+  addFadePercentage(itemElement, item.patternInfo, showContrastingLook);
+  if (showPaintSeeds) addPaintSeedIndicator(itemElement, floatInfo, showContrastingLook);
+  if (showFloatRank) addFloatRankIndicator(itemElement, floatInfo, showContrastingLook);
 
   const inspectGenCommandEl = document.getElementById('inspectGenCommand');
   if (inspectGenCommandEl) {
@@ -520,9 +534,13 @@ const addFloatIndicatorsToPage = (type) => {
               callBackFunction: addFloatDataToPage,
             });
           } else {
-            addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
-            if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo);
-            if (showFloatRank) addFloatRankIndicator(itemElement, item.floatInfo);
+            addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow, showContrastingLook);
+            if (showPaintSeeds) {
+              addPaintSeedIndicator(itemElement, item.floatInfo, showContrastingLook);
+            }
+            if (showFloatRank) {
+              addFloatRankIndicator(itemElement, item.floatInfo, showContrastingLook);
+            }
           }
         }
       });
@@ -1085,14 +1103,16 @@ if (partnerName !== null) changePageTitle('trade_offer', partnerName);
 
 // changes background and adds a banner if steamrep banned scammer detected
 chrome.storage.local.get([
-  'markScammers', 'numberOfFloatDigitsToShow', 'showPaintSeedOnItems', 'showFloatRankOnItems',
+  'markScammers', 'numberOfFloatDigitsToShow', 'showPaintSeedOnItems', 'showFloatRankOnItems', 'contrastingLook',
 ], ({
-  markScammers, numberOfFloatDigitsToShow, showPaintSeedOnItems, showFloatRankOnItems,
+  markScammers, numberOfFloatDigitsToShow, showPaintSeedOnItems,
+  showFloatRankOnItems, contrastingLook,
 }) => {
   if (markScammers) warnOfScammer(getTradePartnerSteamID(), 'offer');
   floatDigitsToShow = numberOfFloatDigitsToShow;
   showPaintSeeds = showPaintSeedOnItems;
   showFloatRank = showFloatRankOnItems;
+  showContrastingLook = contrastingLook;
 });
 
 setInterval(() => {

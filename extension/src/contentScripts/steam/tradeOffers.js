@@ -25,6 +25,7 @@ import { getIDsFromElement } from 'utils/itemsToElementsToItems';
 let showPaintSeeds = false;
 let showFloatRank = false;
 let floatDigitsToShow = 4;
+let showContrastingLook = true;
 let activePage = 'incoming_offers';
 if (window.location.href.includes('/tradeoffers/?history=1')) activePage = 'incoming_offers_history';
 else if (window.location.href.includes('/tradeoffers/sent/?history=1')) activePage = 'sent_offers_history';
@@ -47,10 +48,12 @@ const selectItemElementByIDs = (classid, instanceid) => {
 
 const addFloatDataToPage = (job, floatInfo) => {
   const itemElement = selectItemElementByIDs(job.classid, job.instanceid);
-  addFloatIndicator(itemElement, floatInfo, floatDigitsToShow);
-  if (showPaintSeeds) addPaintSeedIndicator(itemElement, floatInfo);
-  if (showFloatRank) addFloatRankIndicator(itemElement, floatInfo);
-  addFadePercentage(itemElement, getPattern(job.marketName, floatInfo.paintseed));
+  addFloatIndicator(itemElement, floatInfo, floatDigitsToShow, showContrastingLook);
+  if (showPaintSeeds) addPaintSeedIndicator(itemElement, floatInfo, showContrastingLook);
+  if (showFloatRank) addFloatRankIndicator(itemElement, floatInfo, showContrastingLook);
+  addFadePercentage(
+    itemElement, getPattern(job.marketName, floatInfo.paintseed), showContrastingLook,
+  );
 };
 
 const getLimitedIDsFromElement = (element) => {
@@ -157,58 +160,68 @@ const addItemInfo = (items) => {
     }
   });
 
-  chrome.storage.local.get(['colorfulItems', 'autoFloatOffer', 'showStickerPrice', 'activeOffers', 'itemInOtherOffers', 'showShortExteriorsOffers'],
-    ({
-      colorfulItems, showStickerPrice, autoFloatOffer,
-      activeOffers, itemInOtherOffers, showShortExteriorsOffers,
-    }) => {
-      activeItemElements.forEach(({ itemElement, side, position }) => {
-        if ((itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false')) {
-          const item = findItem(items, getLimitedIDsFromElement(itemElement), side, position);
-          if (item) {
-            if (item.appid === steamApps.CSGO.appID) {
-              addDopplerPhase(itemElement, item.dopplerInfo);
-              addFadePercentage(itemElement, item.patternInfo);
-              makeItemColorful(itemElement, item, colorfulItems);
-              addSSTandExtIndicators(itemElement, item, showStickerPrice, showShortExteriorsOffers);
-              addPriceIndicator(itemElement, item.price);
+  chrome.storage.local.get([
+    'colorfulItems', 'autoFloatOffer', 'showStickerPrice', 'activeOffers',
+    'itemInOtherOffers', 'showShortExteriorsOffers', 'currency'],
+  ({
+    colorfulItems, showStickerPrice, autoFloatOffer, currency,
+    activeOffers, itemInOtherOffers, showShortExteriorsOffers,
+  }) => {
+    activeItemElements.forEach(({ itemElement, side, position }) => {
+      if ((itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false')) {
+        const item = findItem(items, getLimitedIDsFromElement(itemElement), side, position);
+        if (item) {
+          if (item.appid === steamApps.CSGO.appID) {
+            addDopplerPhase(itemElement, item.dopplerInfo, showContrastingLook);
+            addFadePercentage(itemElement, item.patternInfo, showContrastingLook);
+            makeItemColorful(itemElement, item, colorfulItems);
+            addSSTandExtIndicators(
+              itemElement, item, showStickerPrice, showShortExteriorsOffers, showContrastingLook,
+            );
+            addPriceIndicator(itemElement, item.price, 100, currency, showContrastingLook);
 
-              if (itemInOtherOffers) {
-                addInOtherTradeIndicator(itemElement, item, activeOffers.items);
-              }
+            if (itemInOtherOffers) {
+              addInOtherTradeIndicator(itemElement, item, activeOffers.items);
+            }
 
-              if (autoFloatOffer && item.inspectLink !== null) {
-                if (item.floatInfo === null && itemTypes[item.type.key].float) {
-                  floatQueue.jobs.push({
-                    type: 'offersPage',
-                    assetID: item.assetid,
-                    classid: item.classid,
-                    instanceid: item.instanceid,
-                    inspectLink: item.inspectLink,
-                    marketName: item.market_hash_name,
-                    callBackFunction: addFloatDataToPage,
-                  });
-                  if (!floatQueue.active) workOnFloatQueue();
-                } else {
-                  addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow);
-                  if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo);
-                  if (showFloatRank) addFloatRankIndicator(itemElement, item.floatInfo);
-                  addFadePercentage(itemElement, item.patternInfo);
+            if (autoFloatOffer && item.inspectLink !== null) {
+              if (item.floatInfo === null && itemTypes[item.type.key].float) {
+                floatQueue.jobs.push({
+                  type: 'offersPage',
+                  assetID: item.assetid,
+                  classid: item.classid,
+                  instanceid: item.instanceid,
+                  inspectLink: item.inspectLink,
+                  marketName: item.market_hash_name,
+                  callBackFunction: addFloatDataToPage,
+                });
+                if (!floatQueue.active) workOnFloatQueue();
+              } else {
+                addFloatIndicator(
+                  itemElement, item.floatInfo, floatDigitsToShow, showContrastingLook,
+                );
+                if (showPaintSeeds) {
+                  addPaintSeedIndicator(itemElement, item.floatInfo, showContrastingLook);
                 }
+                if (showFloatRank) {
+                  addFloatRankIndicator(itemElement, item.floatInfo, showContrastingLook);
+                }
+                addFadePercentage(itemElement, item.patternInfo, showContrastingLook);
               }
             }
-            // it gives the element an id and adds the name
-            // so the real time prices can be loaded
-            itemElement.id = `item${item.appid}_${item.contextid}_${item.assetid}`;
-            itemElement.setAttribute('data-market-hash-name', item.market_hash_name);
-            itemElement.setAttribute('data-marketable', item.marketable);
           }
-
-          // marks the item "processed" to avoid additional unnecessary work later
-          itemElement.setAttribute('data-processed', 'true');
+          // it gives the element an id and adds the name
+          // so the real time prices can be loaded
+          itemElement.id = `item${item.appid}_${item.contextid}_${item.assetid}`;
+          itemElement.setAttribute('data-market-hash-name', item.market_hash_name);
+          itemElement.setAttribute('data-marketable', item.marketable);
         }
-      });
+
+        // marks the item "processed" to avoid additional unnecessary work later
+        itemElement.setAttribute('data-processed', 'true');
+      }
     });
+  });
 };
 
 // sends a message to the "back end" to request offers (history or active only with descriptions)
@@ -253,7 +266,7 @@ const addTotals = (offers) => {
           'afterbegin',
           DOMPurify.sanitize(
             `<span
-                    class="profitOrLoss ${pLClass}"
+                    class="profitOrLoss contrastingBackground ${pLClass}"
                     data-profit-or-loss="${offer.profitOrLoss}"
                     data-receiving-total="${offer.theirItemsTotal}"
                     data-giving-total="${offer.yourItemsTotal}"
@@ -527,14 +540,15 @@ addUpdatedRibbon();
 removeLinkFilterFromLinks();
 
 chrome.storage.local.get([
-  'numberOfFloatDigitsToShow', 'disableCancelEscrowedTrades', 'showPaintSeedOnItems', 'showFloatRankOnItems',
+  'numberOfFloatDigitsToShow', 'disableCancelEscrowedTrades', 'showPaintSeedOnItems', 'showFloatRankOnItems', 'contrastingLook',
 ], ({
   numberOfFloatDigitsToShow, disableCancelEscrowedTrades,
-  showPaintSeedOnItems, showFloatRankOnItems,
+  showPaintSeedOnItems, showFloatRankOnItems, contrastingLook,
 }) => {
   floatDigitsToShow = numberOfFloatDigitsToShow;
   showPaintSeeds = showPaintSeedOnItems;
   showFloatRank = showFloatRankOnItems;
+  showContrastingLook = contrastingLook;
 
   if (disableCancelEscrowedTrades) {
     const cancelTradesButton = document.querySelector('.btn_grey_white_innerfade[onclick="ShowCancelAllTradeOffersDialog();"]');

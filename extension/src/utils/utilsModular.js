@@ -468,7 +468,7 @@ const getAssetIDOfElement = (element) => {
   return IDs === null ? null : IDs.assetID;
 };
 
-const addDopplerPhase = (item, dopplerInfo) => {
+const addDopplerPhase = (item, dopplerInfo, showContrastingLook) => {
   if (dopplerInfo !== null) {
     const dopplerDiv = document.createElement('div');
     dopplerDiv.classList.add('dopplerPhase');
@@ -478,18 +478,21 @@ const addDopplerPhase = (item, dopplerInfo) => {
       case 'RB': dopplerDiv.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.rb.element)); break;
       case 'EM': dopplerDiv.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.em.element)); break;
       case 'BP': dopplerDiv.insertAdjacentHTML('beforeend', DOMPurify.sanitize(dopplerPhases.bp.element)); break;
-      default: dopplerDiv.innerText = dopplerInfo.short; dopplerDiv.classList.add('contrastingBackground');
+      default: {
+        dopplerDiv.innerText = dopplerInfo.short;
+        if (showContrastingLook) dopplerDiv.classList.add('contrastingBackground');
+      }
     }
 
     item.appendChild(dopplerDiv);
   }
 };
 
-const addFadePercentage = (item, patternInfo) => {
+const addFadePercentage = (item, patternInfo, showContrastingLook) => {
   if (patternInfo !== null && patternInfo !== undefined && patternInfo.type === 'fade') {
     const fadeDiv = document.createElement('div');
     fadeDiv.classList.add('fadePercentageIndicator');
-    fadeDiv.classList.add('contrastingBackground');
+    if (showContrastingLook) fadeDiv.classList.add('contrastingBackground');
     fadeDiv.innerText = patternInfo.short;
 
     item.appendChild(fadeDiv);
@@ -504,51 +507,58 @@ const makeItemColorful = (itemElement, item, colorfulItemsEnabled) => {
 };
 
 // adds StatTrak, Souvenir and exterior indicators as well as sticker price when applicable
-const addSSTandExtIndicators = (itemElement, item, showStickerPrice, showExterior) => {
+const addSSTandExtIndicators = (
+  itemElement, item, showStickerPrice, showExterior, showContrastingLook,
+) => {
   const stattrak = item.isStatrack ? 'ST' : '';
   const souvenir = item.isSouvenir ? 'S' : '';
   const exterior = item.exterior !== null ? item.exterior.localized_short : '';
   const stickerPrice = item.stickerPrice !== null ? item.stickerPrice.display : '';
   const showStickersClass = showStickerPrice ? '' : 'hidden';
   const showExteriorsClass = showExterior ? '' : 'hidden';
+  const contrastingLookClass = showContrastingLook ? 'contrastingBackground' : '';
 
   if (item.exterior !== null) {
     itemElement.insertAdjacentHTML(
       'beforeend',
       DOMPurify.sanitize(
-        `<div class='exteriorSTInfo contrastingBackground'>
+        `<div class='exteriorSTInfo ${contrastingLookClass}'>
                 <span class="souvenirYellow ${showExteriorsClass}">${souvenir}</span>
                 <span class="stattrakOrange ${showExteriorsClass}">${stattrak}</span>
                 <span class="exteriorIndicator ${showExteriorsClass}">${exterior}</span>
                </div>
-               <div class="stickerPrice contrastingBackground ${showStickersClass}">${stickerPrice}</div>`,
+               <div class="stickerPrice ${contrastingLookClass} ${showStickersClass}">${stickerPrice}</div>`,
       ),
     );
   }
 };
 
-const addFloatIndicator = (itemElement, floatInfo, digitsToShow) => {
+const addFloatIndicator = (itemElement, floatInfo, digitsToShow, showContrastingLook) => {
   if (floatInfo !== null && itemElement !== null && floatInfo !== undefined
     && itemElement.querySelector('div.floatIndicator') === null) {
+    const contrastingLookClass = showContrastingLook ? 'contrastingBackground' : '';
+
     itemElement.insertAdjacentHTML(
       'beforeend',
-      DOMPurify.sanitize(`<div class="floatIndicator contrastingBackground">${toFixedNoRounding(floatInfo.floatvalue, digitsToShow)}</div>`),
+      DOMPurify.sanitize(`<div class="floatIndicator ${contrastingLookClass}">${toFixedNoRounding(floatInfo.floatvalue, digitsToShow)}</div>`),
     );
   }
 };
 
-const addPaintSeedIndicator = (itemElement, floatInfo) => {
+const addPaintSeedIndicator = (itemElement, floatInfo, showContrastingLook) => {
   if (floatInfo !== null && floatInfo !== undefined && itemElement !== null
     && floatInfo.paintseed !== null && floatInfo.paintseed !== undefined
     && itemElement.querySelector('div.paintSeedIndicator') === null) {
+    const contrastingLookClass = showContrastingLook ? 'contrastingBackground' : '';
+
     itemElement.insertAdjacentHTML(
       'beforeend',
-      DOMPurify.sanitize(`<div class="paintSeedIndicator contrastingBackground">${floatInfo.paintseed}</div>`),
+      DOMPurify.sanitize(`<div class="paintSeedIndicator ${contrastingLookClass}">${floatInfo.paintseed}</div>`),
     );
   }
 };
 
-const addFloatRankIndicator = (itemElement, floatInfo) => {
+const addFloatRankIndicator = (itemElement, floatInfo, showContrastingLook) => {
   if (floatInfo !== null && floatInfo !== undefined && itemElement !== null
     && ((floatInfo.low_rank !== null && floatInfo.low_rank !== undefined)
     || (floatInfo.high_rank !== null && floatInfo.high_rank !== undefined))
@@ -559,21 +569,26 @@ const addFloatRankIndicator = (itemElement, floatInfo) => {
     || (floatInfo.low_rank && floatInfo.high_rank && floatInfo.wear_name === 'Battle-Scarred')) {
       rankToShow = floatInfo.high_rank;
     }
+
+    const contrastingLookClass = showContrastingLook ? 'contrastingBackground' : '';
       
     itemElement.insertAdjacentHTML(
       'beforeend',
-      DOMPurify.sanitize(`<div class="floatRankIndicator contrastingBackground">#${rankToShow}</div>`),
+      DOMPurify.sanitize(`<div class="floatRankIndicator ${contrastingLookClass}">#${rankToShow}</div>`),
     );
   }
 };
 
-const addPriceIndicator = (itemElement, priceInfo, pricePercentage = 100, currency) => {
+const addPriceIndicator = (
+  itemElement, priceInfo, pricePercentage = 100, currency, showContrastingLook,
+) => {
   if (priceInfo !== undefined && priceInfo !== 'null' && priceInfo !== null) {
     const disPlayPrice = pricePercentage === 100
       ? priceInfo.display
       : currencies[currency].sign + (priceInfo.price * (pricePercentage / 100)).toFixed(2);
+    const contrastingLookClass = showContrastingLook ? 'contrastingBackground' : '';
     itemElement.insertAdjacentHTML(
-      'beforeend', DOMPurify.sanitize(`<div class='priceIndicator contrastingBackground'>${disPlayPrice}</div>`),
+      'beforeend', DOMPurify.sanitize(`<div class='priceIndicator ${contrastingLookClass}'>${disPlayPrice}</div>`),
     );
   }
 };

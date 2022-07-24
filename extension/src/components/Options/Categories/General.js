@@ -67,6 +67,12 @@ const general = () => {
         permission="tabs"
       />
       <Row
+        name="Contrasting look"
+        id="contrastingLook"
+        type="flipSwitchStorage"
+        description="Adds a contrasting background to indicators (price, trade lock, float, etc.) on items in offers and inventories."
+      />
+      <Row
         name="Colorful items"
         id="colorfulItems"
         type="flipSwitchStorage"

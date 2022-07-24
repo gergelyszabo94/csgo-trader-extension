@@ -179,8 +179,6 @@ progress {
 }
 
 .profitOrLoss {
-    background-color: black;
-    padding: 5px;
     position: absolute;
     top: -1px;
     right: -1px;
