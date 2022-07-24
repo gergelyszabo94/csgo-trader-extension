@@ -97,7 +97,7 @@ chrome.runtime.onInstalled.addListener((details) => {
   chrome.alarms.create('retryUpdatePricesAndExchangeRates', { periodInMinutes: 1 });
   chrome.alarms.create('dailyScheduledTasks', { periodInMinutes: 1440 });
   chrome.storage.local.get('priceUpdateFreq', ({ priceUpdateFreq }) => {
-    const tempPriceUpdateFreq = priceUpdateFreq || 24; // remove it in the next update
+    const tempPriceUpdateFreq = priceUpdateFreq;
     chrome.alarms.create('priceUpdate', { periodInMinutes: tempPriceUpdateFreq * 60 });
   });
 });
