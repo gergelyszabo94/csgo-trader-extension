@@ -274,6 +274,8 @@ const workOnPriceQueue = () => {
                     job.appID,
                     job.assetID,
                     job.contextID,
+                    job.type,
+                    job.showContrastingLook,
                   );
                 }
                 priceQueueCacheHit();
@@ -299,6 +301,7 @@ const workOnPriceQueue = () => {
                           job.assetID,
                           job.contextID,
                           job.type,
+                          job.showContrastingLook,
                         );
                       }
                       priceQueue
@@ -326,6 +329,7 @@ const workOnPriceQueue = () => {
                   job.assetID,
                   job.contextID,
                   job.type,
+                  job.showContrastingLook,
                 );
                 priceQueueCacheHit();
               } else {
@@ -337,6 +341,7 @@ const workOnPriceQueue = () => {
                     job.assetID,
                     job.contextID,
                     job.type,
+                    job.showContrastingLook,
                   );
                   priceQueue.localCache[
                     job.appID + job.market_hash_name + job.type
@@ -572,14 +577,18 @@ const getUserCurrencyBestGuess = () => new Promise((resolve) => {
   });
 });
 
-const addRealTimePriceIndicator = (itemElement, price) => {
+const addRealTimePriceIndicator = (itemElement, price, showContrastingLook) => {
+  const contrastingLookClass = showContrastingLook ? 'contrastingBackground' : '';
+
   itemElement.insertAdjacentHTML(
     'beforeend',
-    DOMPurify.sanitize(`<div class="realTimePriceIndicator contrastingBackground">${price}</div>`),
+    DOMPurify.sanitize(`<div class="realTimePriceIndicator ${contrastingLookClass}">${price}</div>`),
   );
 };
 
-const addRealTimePriceToPage = (marketHashName, price, appID, assetID, contextID, type) => {
+const addRealTimePriceToPage = (
+  marketHashName, price, appID, assetID, contextID, type, showContrastingLook,
+) => {
   const itemElement = findElementByIDs(appID, contextID, assetID, type);
 
   // the steam wallet global var is not defined in the trade offer page
@@ -589,12 +598,14 @@ const addRealTimePriceToPage = (marketHashName, price, appID, assetID, contextID
       addRealTimePriceIndicator(
         itemElement,
         price !== null ? prettyPrintPrice(userSteamWalletCurrency, (price / 100).toFixed(2)) : 'No Data',
+        showContrastingLook,
       );
     });
   } else {
     addRealTimePriceIndicator(
       itemElement,
       price !== null ? centsToSteamFormattedPrice(price) : 'No Data',
+      showContrastingLook,
     );
   }
   itemElement.setAttribute(

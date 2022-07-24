@@ -727,6 +727,7 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
                 contextID: IDs.contextID,
                 market_hash_name: marketName,
                 retries: 0,
+                showContrastingLook,
                 callBackFunction: addRealTimePriceToPage,
               });
             }

@@ -1073,6 +1073,7 @@ const addRealTimePricesToQueue = () => {
                     contextID: item.contextid,
                     market_hash_name: item.market_hash_name,
                     retries: 0,
+                    showContrastingLook,
                     callBackFunction: addRealTimePriceToPage,
                   });
                 }
