@@ -4,7 +4,7 @@ let messagePresets = [];
 let chatDialogObserverSet = false;
 
 const removeHeader = () => {
-  const header = document.querySelector('.main_SteamPageHeader_3EaXO');
+  const header = document.querySelector('.main_SteamPageHeader_3NLSM');
   if (header !== null) header.remove();
 };
 
