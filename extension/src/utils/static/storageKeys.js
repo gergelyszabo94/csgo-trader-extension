@@ -285,6 +285,7 @@ const storageKeys = {
   showFloatRankOnItems: false,
   priceUpdateFreq: 24,
   contrastingLook: false,
+  showFloatDBLookupInInventory: false,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'clientID',

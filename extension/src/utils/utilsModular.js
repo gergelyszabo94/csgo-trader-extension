@@ -923,6 +923,17 @@ const isChromium = () => {
   return chrome.extension.getURL('/index.html').includes('chrome-extension');
 };
 
+const getFloatDBLink = (item) => {
+  if (item.floatInfo) {
+    const category = item.name.includes('StatTrak™')
+      ? 2
+      : item.name.includes('Souvenir')
+        ? 3
+        : 1;
+    return `https://csgofloat.com/db?name=${item.name}&defIndex=${item.floatInfo.defindex}&paintIndex=${item.floatInfo.paintindex}&paintSeed=${item.floatInfo.paintseed}&category=${category}&min=${item.floatInfo.floatvalue - 0.00000000000000001}&max=${item.floatInfo.floatvalue + 0.00000000000000001}`;
+  } return 'https://csgofloat.com/db';
+};
+
 //  unused atm
 // const generateRandomString = (length) => {
 //   let text = '';
@@ -950,5 +961,5 @@ export {
   warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo, getRemoteImageAsObjectURL,
   isChromium, addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,
-  getAppropriateFetchFunc,
+  getAppropriateFetchFunc, getFloatDBLink,
 };

@@ -9,7 +9,7 @@ import {
   logExtensionPresence, repositionNameTagIcons, csgoFloatExtPresent,
   updateLoggedInUserInfo, reloadPageOnExtensionReload, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, toFixedNoRounding,
-  addPaintSeedIndicator, addFloatRankIndicator,
+  addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
 }
   from 'utils/utilsModular';
 import { getItemMarketLink, generateInspectCommand, isDopplerInName } from 'utils/simpleUtils';
@@ -104,7 +104,7 @@ const getActiveInventoryAppID = () => {
 
 const cleanUpElements = () => {
   document.querySelectorAll(
-    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .CSGOSSTASHLink, .multiSellLink',
+    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .CSGOSSTASHLink, .multiSellLink, .floatDBLink',
   ).forEach((element) => {
     element.remove();
   });
@@ -299,11 +299,20 @@ const setGenInspectInfo = (item) => {
   });
 };
 
+const setFloatDBLinkURL = (item) => {
+  const floatDBLookupURL = getFloatDBLink(item);
+
+  document.querySelectorAll('.floatDBLink').forEach((floatDBLink) => {
+    floatDBLink.querySelector('a').setAttribute('href', DOMPurify.sanitize(floatDBLookupURL));
+  });
+};
+
 const updateFloatAndPatternElements = (item) => {
   setFloatBarWithData(item.floatInfo);
   setPatternInfo(item.patternInfo);
   setStickerInfo(item.floatInfo.stickers);
   setGenInspectInfo(item, item.market_hash_name, item.floatInfo);
+  setFloatDBLinkURL(item);
 };
 
 const hideFloatBars = () => {
@@ -870,9 +879,10 @@ const addRightSideElements = () => {
 
       // adds the in-offer module
       chrome.storage.local.get(['activeOffers', 'itemInOffersInventory', 'showPriceEmpireLinkInInventory',
-        'showBuffLookupInInventory', 'inventoryShowCopyButtons', 'showCSGOSTASHLinkInInventory'], ({
+        'showBuffLookupInInventory', 'inventoryShowCopyButtons', 'showCSGOSTASHLinkInInventory', 'showFloatDBLookupInInventory'], ({
         activeOffers, itemInOffersInventory, showCSGOSTASHLinkInInventory,
         showPriceEmpireLinkInInventory, showBuffLookupInInventory, inventoryShowCopyButtons,
+        showFloatDBLookupInInventory,
       }) => {
         if (itemInOffersInventory) {
           const inOffers = activeOffers.items.filter((offerItem) => {
@@ -951,6 +961,22 @@ const addRightSideElements = () => {
             document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
               .forEach((descriptor) => {
                 descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(CSGOSTASHLink, { ADD_ATTR: ['target'] }));
+              });
+          }
+
+          if (showFloatDBLookupInInventory) {
+            const floatDBLink = getFloatDBLink(item);
+            const floatDBLinkEL = `
+              <div class="descriptor floatDBLink">
+                  <a href="${floatDBLink}" target="_blank" style="color: yellow;">
+                      Lookup in FloatDB
+                    </a>
+              </div>
+            `;
+
+            document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
+              .forEach((descriptor) => {
+                descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(floatDBLinkEL, { ADD_ATTR: ['target'] }));
               });
           }
         }
