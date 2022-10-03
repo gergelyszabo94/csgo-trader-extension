@@ -323,6 +323,10 @@ const handleStickerNamesWithCommas = (names) => {
       namesModified.push('Hi, My Game Is');
       nameWithCommaFound = true;
       i += 1;
+    } else if (name === 'Run CT' && names[i + 1] === 'Run') {
+      namesModified.push('Run CT, Run');
+      nameWithCommaFound = true;
+      i += 1;
     } else if (names[i + 1] === 'Champion) | Antwerp 2022') {
       namesModified.push(`${name}, Champion) | Antwerp 2022`);
       nameWithCommaFound = true;
