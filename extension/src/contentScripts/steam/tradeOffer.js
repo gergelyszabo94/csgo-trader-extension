@@ -1518,6 +1518,12 @@ if (csgoTraderSendParams !== null || csgoTraderSelectParams !== null) {
   });
 }
 
+if (window.location.search.includes('amp;token')) {
+  chrome.storage.local.get(['fixTradeURLToken'], ({ fixTradeURLToken }) => {
+    if (fixTradeURLToken) window.location.search = window.location.search.replace('amp;token', 'token');
+  });
+}
+
 addFunctionBars();
 addPartnerOfferSummary();
 addFriendRequestInfo();

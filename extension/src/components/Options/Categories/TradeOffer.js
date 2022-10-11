@@ -136,6 +136,12 @@ const tradeOffer = () => {
         type="flipSwitchStorage"
         description="Removes the CANCELL ALL OUTSTANDING TRADES button from the trade offers page"
       />
+      <Row
+        name="Fix trade link tokens"
+        id="fixTradeURLToken"
+        type="flipSwitchStorage"
+        description="Steam trade links are buggy when opened from Steam pages, this feature fixes that."
+      />
     </Category>
   );
 };
