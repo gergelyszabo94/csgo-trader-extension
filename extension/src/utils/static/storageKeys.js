@@ -134,6 +134,7 @@ const storageKeys = {
   },
   removeWebChatHeader: true,
   discussionsToAutoBump: [],
+  discussionsToAutoBumpToDelete: [],
   usefulTitles: false,
   reloadListingOnError: true,
   monitorFriendRequests: true,
@@ -292,6 +293,7 @@ const storageKeys = {
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'clientID',
   'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID', 'groupInvites',
   'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules', 'floatQueueActivity', 'discussionsToAutoBump',
-  'priceQueueActivity', 'userSteamWalletCurrency', 'tradeOffersEventLogs', 'numberOfNewItems', 'numberOfComments'];
+  'priceQueueActivity', 'userSteamWalletCurrency', 'tradeOffersEventLogs', 'numberOfNewItems', 'numberOfComments',
+  'discussionsToAutoBumpToDelete'];
 
 export { storageKeys, nonSettingStorageKeys };

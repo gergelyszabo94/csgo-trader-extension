@@ -29,8 +29,8 @@ if (!window.location.href.includes('discussions/search/')) {
     document.querySelectorAll('.commentthread_comment').forEach((commentThread) => {
       const commentTextElement = commentThread.querySelector('.commentthread_comment_text');
       if (commentTextElement !== null && commentTextElement.innerText.includes('Bump')
-      && !commentThread.classList.contains('commentthread_deleted_comment')
-      && !commentThread.classList.contains('commentthread_deleted_expanded')) {
+        && !commentThread.classList.contains('commentthread_deleted_comment')
+        && !commentThread.classList.contains('commentthread_deleted_expanded')) {
         const deleteOldBumpComment = !document.getElementById('keepOldBumpComment').checked;
 
         if (deleteOldBumpComment) {
@@ -68,8 +68,13 @@ if (!window.location.href.includes('discussions/search/')) {
       ),
     );
     const autoBumpCheckBox = document.getElementById('autoBumpDiscussion');
+    const keepOldBumpCommentkBox = document.getElementById('keepOldBumpComment');
 
-    chrome.storage.local.get(['discussionsToAutoBump'], ({ discussionsToAutoBump }) => {
+    chrome.storage.local.get(['discussionsToAutoBump', 'discussionsToAutoBumpToDelete'], ({ discussionsToAutoBump, discussionsToAutoBumpToDelete }) => {
+      if (discussionsToAutoBumpToDelete.includes(window.location.href)) {
+        keepOldBumpCommentkBox.checked = true;
+      } else keepOldBumpCommentkBox.checked = false;
+
       if (discussionsToAutoBump.includes(window.location.href)) {
         autoBumpCheckBox.checked = true;
         doTheAutoBumping();
@@ -92,6 +97,23 @@ if (!window.location.href.includes('discussions/search/')) {
         } else newDiscussionsToAutoBump = discussionsToAutoBump;
 
         chrome.storage.local.set({ discussionsToAutoBump: newDiscussionsToAutoBump }, () => {
+          window.location.reload();
+        });
+      });
+
+      keepOldBumpCommentkBox.addEventListener('change', (event) => {
+        let newBumpsNotToDelete = [];
+        if (event.target.checked) {
+          if (discussionsToAutoBumpToDelete.includes(window.location.href)) {
+            newBumpsNotToDelete = discussionsToAutoBumpToDelete;
+          } else newBumpsNotToDelete = [...discussionsToAutoBumpToDelete, window.location.href];
+        } else if (discussionsToAutoBumpToDelete.includes(window.location.href)) {
+          newBumpsNotToDelete = discussionsToAutoBumpToDelete.filter((href) => {
+            return href !== window.location.href;
+          });
+        } else newBumpsNotToDelete = discussionsToAutoBumpToDelete;
+
+        chrome.storage.local.set({ discussionsToAutoBumpToDelete: newBumpsNotToDelete }, () => {
           window.location.reload();
         });
       });
