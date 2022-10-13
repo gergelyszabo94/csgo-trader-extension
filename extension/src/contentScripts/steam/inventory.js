@@ -1705,6 +1705,9 @@ const addFunctionBar = () => {
                         <span id="selectAllPage" class="clickable underline" title="Select all the items on the page" style="margin-right: 30px">
                             Select All Page
                         </span>
+                        <span id="selectEverything" class="clickable underline" title="Select every time in this inventoy" style="margin-right: 30px">
+                            Select Everything
+                        </span>
                         <span id="selectAllUnder" class="clickable underline" title="Select all items under this price">Select all under:</span>
                         <input type="number" id="selectUnder" min="0" style="width: 50px" title="The items that are cheaper than this value will be selected, in your currency">
                     </div>
@@ -1816,6 +1819,18 @@ const addFunctionBar = () => {
               if (!item.classList.contains('cstSelected')) item.classList.add('cstSelected');
             });
           }
+        });
+        updateSelectedItemsSummary();
+      }
+    });
+
+    document.getElementById('selectEverything').addEventListener('click', () => {
+      const inventories = document.getElementById('inventories');
+      if (inventories) {
+        inventories.querySelectorAll('.inventory_page').forEach((page) => {
+          page.querySelectorAll('.item').forEach((item) => {
+            if (!item.classList.contains('cstSelected')) item.classList.add('cstSelected');
+          });
         });
         updateSelectedItemsSummary();
       }
