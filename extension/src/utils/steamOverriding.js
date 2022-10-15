@@ -542,7 +542,9 @@ const overrideCreatePriceHistoryGraph = () => {
             const scriptText = scriptEl.innerHTML;
             line1 = JSON.parse(scriptText.split('var line1=')[1].split(']];')[0] + ']]');
             strFormatPrefix = scriptText.split('var strFormatPrefix = "')[1].split('"')[0];
+            strFormatPrefix = decodeURIComponent(JSON.parse('"' + strFormatPrefix.replace(/\"/g, '\\"') + '"'));
             strFormatSuffix = scriptText.split('var strFormatSuffix = "')[1].split('"')[0];
+            strFormatSuffix = decodeURIComponent(JSON.parse('"' + strFormatSuffix.replace(/\"/g, '\\"') + '"'));
             numYAxisTicks = parseInt(scriptText.split('CreatePriceHistoryGraph( line1, ')[1].split(',')[0]);
         }
     });
