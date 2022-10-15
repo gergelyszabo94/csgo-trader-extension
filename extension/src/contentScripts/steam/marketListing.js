@@ -38,6 +38,7 @@ import { injectScript, injectStyle } from 'utils/injection';
 import steamApps from 'utils/static/steamApps';
 import capsuleNamesWithNoCapsuleInName from 'utils/static/capsuleNamesWithNoCapsuleInName';
 import { generateInspectCommand, isDopplerInName } from 'utils/simpleUtils';
+import { overrideCreatePriceHistoryGraph } from 'utils/steamOverriding';
 import { removeFromFloatCache } from '../../utils/floatCaching';
 
 const inBrowserInspectButtonPopupLink = `
@@ -822,6 +823,7 @@ updateLoggedInUserInfo();
 updateLoggedInUserName();
 addUpdatedRibbon();
 changePageTitle('market_listing', fullName);
+overrideCreatePriceHistoryGraph();
 
 const descriptor = document.getElementById('largeiteminfo_item_descriptors');
 
@@ -1127,11 +1129,15 @@ const buyOrdersDiv = document.getElementById('market_commodity_buyreqeusts_table
 const buyOrderShowAll = isCommodityItem
   ? '<div id="show_more_buy" class="btn_grey_black btn_medium"><span>Show All</span></div>'
   : '<div style="text-align: center;"><div id="show_more_buy" class="btn_grey_black btn_medium"><span>Show All</span></div></div>';
-buyOrdersDiv.insertAdjacentHTML('afterend', buyOrderShowAll);
+if (buyOrdersDiv) buyOrdersDiv.insertAdjacentHTML('afterend', buyOrderShowAll);
 
-document.getElementById('show_more_buy').addEventListener('click', () => {
-  showAllOrders('buy');
-});
+const showMoreBuy = document.getElementById('show_more_buy');
+
+if (showMoreBuy) {
+  showMoreBuy.addEventListener('click', () => {
+    showAllOrders('buy');
+  });
+}
 
 // only commodity items have sell orders
 if (isCommodityItem) {

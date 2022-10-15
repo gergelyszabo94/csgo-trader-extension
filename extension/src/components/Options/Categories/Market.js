@@ -139,6 +139,12 @@ const market = () => {
         type="number"
         description="Set how much you want to outbid market orders by on the market main page."
       />
+      <Row
+        name="Show years on market graphs"
+        id="showYearsOnMarketGraphs"
+        type="flipSwitchStorage"
+        description="Shows years on market graphs on market listings"
+      />
     </Category>
   );
 };
