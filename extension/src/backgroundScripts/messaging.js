@@ -19,7 +19,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const inspectLinks = items.map(item => item.inspectLink);
       const pricempireRequest = new Request('https://api.pricempire.com/v2/inspect', { method: 'PUT', body: JSON.stringify(inspectLinks) });
 
-      fetch(request)
+      fetch(pricempireRequest)
         .then((response) => {
           // empty
         }).catch(err => {
