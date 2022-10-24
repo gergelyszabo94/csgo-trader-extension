@@ -16,6 +16,15 @@ import { updateTrades } from 'utils/tradeOffers';
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.inventory !== undefined) {
     getUserCSGOInventory(request.inventory).then(({ items, total }) => {
+      const inspectLinks = items.map(item => item.inspectLink);
+      const pricempireRequest = new Request('https://api.pricempire.com/v2/inspect', { method: 'PUT', body: JSON.stringify(inspectLinks) });
+
+      fetch(request)
+        .then((response) => {
+          // empty
+        }).catch(err => {
+          // empty
+        });
       sendResponse({ items, total });
     }).catch(() => {
       sendResponse('error');
@@ -179,4 +188,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-chrome.runtime.onConnect.addListener(() => {});
+chrome.runtime.onConnect.addListener(() => { });
