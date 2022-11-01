@@ -1208,8 +1208,11 @@ if (isCommodityItem) {
                 </div>`,
           );
         }
-        const startTickerScript = `ItemActivityTicker.Start(${getNameID()});`;
-        injectScript(startTickerScript, false, 'startTicker', false);
+
+        if (marketShowBuySellNonCommodity || marketShowRecentActivityNonCommodity) {
+          const startTickerScript = `ItemActivityTicker.Start(${getNameID()});`;
+          injectScript(startTickerScript, false, 'startTicker', false);
+        }
       }
     },
   );
