@@ -16,15 +16,17 @@ import { updateTrades } from 'utils/tradeOffers';
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.inventory !== undefined) {
     getUserCSGOInventory(request.inventory).then(({ items, total }) => {
-      const inspectLinks = items.map(item => item.inspectLink);
-      const pricempireRequest = new Request('https://api.pricempire.com/v2/inspect', { method: 'PUT', body: JSON.stringify(inspectLinks) });
+      const inspectLinks = items.map((item) => item.inspectLink);
+      const pricempireRequest = new Request('https://api.csgotrader.app/v2/inspect', { method: 'PUT', body: JSON.stringify(inspectLinks) });
 
       fetch(pricempireRequest)
         .then((response) => {
-          // empty
-        }).catch(err => {
-          // empty
-        });
+          if (!response.ok) {
+            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+          } else return response.json();
+        }).then((body) => {
+          if (!body.success) console.log(body);
+        }).catch((err) => { console.log(err); });
       sendResponse({ items, total });
     }).catch(() => {
       sendResponse('error');
