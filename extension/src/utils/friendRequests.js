@@ -294,7 +294,7 @@ const addInventoryValueInfo = () => {
     const nowWithInventoryValue = [];
 
     for (const [index, invite] of noInventoryValueInvites.entries()) {
-      if (index < 5) {
+      if (index < 2) {
         getUserCSGOInventory(invite.steamID).then(({ total }) => {
           nowWithInventoryValue.push({
             ...invite,
