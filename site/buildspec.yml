@@ -2,16 +2,23 @@ version: 0.2
 
 phases:
   install:
+    on-failure: ABORT
     runtime-versions:
-      nodejs: 12
+      nodejs: 16
+    commands:
+      - yum -y install xdg-utils dbus-glib cairo-gobject libatk-bridge2.0-0 java-atk-wrapper at-spi2-atk gtk3
   pre_build:
+    on-failure: ABORT
     commands:
       - cd site
+      - npm install
       - npm ci
   build:
+    on-failure: ABORT
     commands:
       - npm run build
   post_build:
+    on-failure: ABORT
     commands:
       - aws s3 sync ./build $BUCKET
       - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT --paths "/*"
