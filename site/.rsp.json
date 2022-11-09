@@ -1,0 +1,13 @@
+{
+  "port": 3000,
+  "buildDirectory": "./build",
+  "routes": [
+    "/",
+    "/changelog/index.html",
+    "/release-notes/index.html",
+    "/group/index.html",
+    "/prices/index.html",
+    "/privacy/index.html",
+    "/faq/index.html"
+  ]
+}
