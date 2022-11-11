@@ -1,6 +1,5 @@
 import React from 'react'
 import ChangelogInstance from '../ChangelogInstance';
-import NewTabLink from '../../NewTabLink/NewTabLink';
 
 const TwoDotFourteenDotOne = () => {
   return (
