@@ -8,7 +8,9 @@ import {
   ignoreGroupRequest, removeOldFriendRequestEvents,
 } from 'utils/friendRequests';
 import { trimFloatCache } from 'utils/floatCaching';
-import { getSteamNotificationCount, playNotificationSound, notifyOnDiscord } from 'utils/notifications';
+import {
+  getSteamNotificationCount, playNotificationSound, notifyOnDiscord, suspenSteamNotificationChecks,
+} from 'utils/notifications';
 import { updateTrades, removeOldOfferEvents } from 'utils/tradeOffers';
 
 // handles install and update events
@@ -17,7 +19,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     // sets the default options for first run
     // (on install from the webstore/amo or when loaded in developer mode)
     for (const [key, value] of Object.entries(storageKeys)) {
-      chrome.storage.local.set({ [key]: value }, () => {});
+      chrome.storage.local.set({ [key]: value }, () => { });
     }
 
     // sets extension currency to Steam currency when possible
@@ -56,7 +58,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     chrome.storage.local.get(keys, (result) => {
       for (const [storageKey, storageValue] of Object.entries(storageKeys)) {
         if (result[storageKey] === undefined) {
-          chrome.storage.local.set({ [storageKey]: storageValue }, () => {});
+          chrome.storage.local.set({ [storageKey]: storageValue }, () => { });
         }
       }
     });
@@ -64,7 +66,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     chrome.browserAction.setBadgeText({ text: 'U' });
 
     // notifies the user when the extension is updated
-    chrome.storage.local.set({ showUpdatedRibbon: true }, () => {});
+    chrome.storage.local.set({ showUpdatedRibbon: true }, () => { });
     chrome.storage.local.get('notifyOnUpdate', (result) => {
       if (result.notifyOnUpdate) {
         const version = chrome.runtime.getManifest().version;
@@ -103,7 +105,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 });
 
 // redirects to feedback survey on uninstall
-chrome.runtime.setUninstallURL('https://docs.google.com/forms/d/e/1FAIpQLSdGzY8TrSjfZZtfoerFdAna1E79Y13afxNKG1yytjZkypKTpg/viewform?usp=sf_link', () => {});
+chrome.runtime.setUninstallURL('https://docs.google.com/forms/d/e/1FAIpQLSdGzY8TrSjfZZtfoerFdAna1E79Y13afxNKG1yytjZkypKTpg/viewform?usp=sf_link', () => { });
 
 // handles what happens when one of the extension's notification gets clicked
 chrome.notifications.onClicked.addListener((notificationID) => {
@@ -144,7 +146,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'retryUpdatePricesAndExchangeRates') {
     chrome.storage.local.get('prices', (result) => {
       if (result.prices === null) updatePrices();
-      else chrome.alarms.clear('retryUpdatePricesAndExchangeRates', () => {});
+      else chrome.alarms.clear('retryUpdatePricesAndExchangeRates', () => { });
     });
   } else if (alarm.name === 'getSteamNotificationCount') {
     getSteamNotificationCount().then(({
@@ -159,6 +161,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
           markModerationMessagesAsRead, monitorIncomingOffers, activeOffers, notifyAboutNewItems,
           numberOfComments, notifyAboutComments,
         }) => {
+          chrome.storage.local.set({ recent401Detected: false }, () => { });
           // friend request monitoring
           const minutesFromLastFriendCheck = ((Date.now()
             - new Date(friendRequests.lastUpdated)) / 1000) / 60;
@@ -186,7 +189,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
           if (monitorIncomingOffers
             && (tradeOffers !== activeOffers.receivedActiveCount
               || minutesFromLastOfferCheck >= 2)) {
-            updateTrades().then(() => {}).catch((e) => { console.log(e); });
+            updateTrades().then(() => { }).catch((e) => { console.log(e); });
           }
 
           // new items notification
@@ -245,54 +248,69 @@ chrome.alarms.onAlarm.addListener((alarm) => {
       console.log(error);
       if (error === 401 || error === 403) {
         if (error === 401) { // user not logged in
-          console.log('User not logged in, suspending notification checks for an hour.');
+          chrome.storage.local.get(['recent401Detected'], ({ recent401Detected }) => {
+            if (recent401Detected) {
+              console.log('User not logged in, suspending notification checks for an hour.');
+              suspenSteamNotificationChecks();
+              
+              chrome.storage.local.get(
+                ['notifyAboutBeingLoggedOut', 'notifyAboutBeingLoggedOutOnDiscord', 'nickNameOfUser'],
+                ({ notifyAboutBeingLoggedOut, notifyAboutBeingLoggedOutOnDiscord, nickNameOfUser }) => {
+                  const title = 'You are not signed in on Steam!';
+                  const message = `Hi, ${nickNameOfUser}! You set to be notified if the extension detects that you are not logged in.`;
 
-          chrome.storage.local.get(
-            ['notifyAboutBeingLoggedOut', 'notifyAboutBeingLoggedOutOnDiscord', 'nickNameOfUser'],
-            ({ notifyAboutBeingLoggedOut, notifyAboutBeingLoggedOutOnDiscord, nickNameOfUser }) => {
-              const title = 'You are not signed in on Steam!';
-              const message = `Hi, ${nickNameOfUser}! You set to be notified if the extension detects that you are not logged in.`;
+                  if (notifyAboutBeingLoggedOut) {
+                    chrome.notifications.create(alarm.name, {
+                      type: 'basic',
+                      iconUrl: '/images/cstlogo128.png',
+                      title,
+                      message,
+                    }, () => {
+                      playNotificationSound();
+                    });
+                  }
 
-              if (notifyAboutBeingLoggedOut) {
-                chrome.notifications.create(alarm.name, {
-                  type: 'basic',
-                  iconUrl: '/images/cstlogo128.png',
-                  title,
-                  message,
-                }, () => {
-                  playNotificationSound();
-                });
-              }
+                  if (notifyAboutBeingLoggedOutOnDiscord) {
+                    const embed = {
+                      footer: {
+                        text: 'CSGO Trader',
+                        icon_url: 'https://csgotrader.app/cstlogo48.png',
+                      },
+                      title,
+                      description: message,
+                      // #ff8c00 (taken from csgotrader.app text color)
+                      color: 16747520,
+                      fields: [],
+                      timestamp: new Date(Date.now()).toISOString(),
+                      type: 'rich',
+                    };
 
-              if (notifyAboutBeingLoggedOutOnDiscord) {
-                const embed = {
-                  footer: {
-                    text: 'CSGO Trader',
-                    icon_url: 'https://csgotrader.app/cstlogo48.png',
-                  },
-                  title,
-                  description: message,
-                  // #ff8c00 (taken from csgotrader.app text color)
-                  color: 16747520,
-                  fields: [],
-                  timestamp: new Date(Date.now()).toISOString(),
-                  type: 'rich',
-                };
+                    notifyOnDiscord(embed);
+                  }
+                },
+              );
+            } else {
+              chrome.storage.local.set({ recent401Detected: true }, () => { });
+              console.log('Session expired? Attempting to refresh a Steam page or open the Steam profile page to get a new session.');
 
-                notifyOnDiscord(embed);
-              }
-            },
-          );
+              chrome.permissions.contains({ permissions: ['tabs'] }, (permission) => {
+                if (permission) {
+                  chrome.tabs.query({ url: 'https://steamcommunity.com/*' }, (tabs) => {
+                    if (tabs.length !== 0) chrome.tabs.reload(tabs[0].id, {}, () => {});
+                    else {
+                      chrome.tabs.create({
+                        url: 'http://steamcommunity.com/my/profile/',
+                      });
+                    }
+                  });
+                }
+              });
+            }
+          });
         } else if (error === 403) { // Steam is temporarily blocking this ip
           console.log('Steam is denying access, suspending notification checks for an hour.');
+          suspenSteamNotificationChecks();
         }
-        chrome.alarms.clear('getSteamNotificationCount', () => {
-          const now = new Date();
-          now.setHours(now.getHours() + 1);
-          chrome.alarms.create('restartNotificationChecks', {
-            when: (now).valueOf(),
-          });
-        });
       }
     });
   } else if (alarm.name === 'restartNotificationChecks') {

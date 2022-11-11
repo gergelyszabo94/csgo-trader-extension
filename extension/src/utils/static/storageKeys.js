@@ -289,12 +289,13 @@ const storageKeys = {
   showFloatDBLookupInInventory: false,
   fixTradeURLToken: true,
   showYearsOnMarketGraphs: true,
+  recent401Detected: false,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'clientID',
   'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID', 'groupInvites',
   'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules', 'floatQueueActivity', 'discussionsToAutoBump',
   'priceQueueActivity', 'userSteamWalletCurrency', 'tradeOffersEventLogs', 'numberOfNewItems', 'numberOfComments',
-  'discussionsToAutoBumpToDelete'];
+  'discussionsToAutoBumpToDelete', 'recent401Detected'];
 
 export { storageKeys, nonSettingStorageKeys };

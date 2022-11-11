@@ -109,7 +109,17 @@ const notifyOnDiscord = (embed) => {
     });
 };
 
+const suspenSteamNotificationChecks = () => {
+  chrome.alarms.clear('getSteamNotificationCount', () => {
+    const now = new Date();
+    now.setHours(now.getHours() + 1);
+    chrome.alarms.create('restartNotificationChecks', {
+      when: (now).valueOf(),
+    });
+  });
+};
+
 export {
   reverseWhenNotifDetails, determineNotificationDate, notifyOnDiscord,
-  getSteamNotificationCount, playNotificationSound,
+  getSteamNotificationCount, playNotificationSound, suspenSteamNotificationChecks,
 };
