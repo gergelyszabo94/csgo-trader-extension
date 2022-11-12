@@ -1,7 +1,7 @@
 import { getPlayerBans, getPlayerSummaries } from 'utils/ISteamUser';
 import { actions, conditions, eventTypes } from 'utils/static/friendRequests';
 import { getSteamRepInfo, getRemoteImageAsObjectURL } from 'utils/utilsModular';
-import { getUserCSGOInventory } from 'utils/getUserInventory';
+import { getUserCSGOInventoryAlternative } from 'utils/getUserInventory';
 import DOMPurify from 'dompurify';
 import { playNotificationSound } from 'utils/notifications';
 
@@ -295,7 +295,7 @@ const addInventoryValueInfo = () => {
 
     for (const [index, invite] of noInventoryValueInvites.entries()) {
       if (index < 2) {
-        getUserCSGOInventory(invite.steamID).then(({ total }) => {
+        getUserCSGOInventoryAlternative(invite.steamID).then(({ total }) => {
           nowWithInventoryValue.push({
             ...invite,
             csgoInventoryValue: total,
