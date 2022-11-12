@@ -3,9 +3,11 @@ import ChangelogInstance from '../ChangelogInstance';
 import NewTabLink from '../../NewTabLink/NewTabLink';
 import GithubIssueLink from '../GithubIssueLink';
 
+const problem = 'Steam has changed made some changes again as I was about to publish this to webstores, it is not available yet.';
+
 const TwoDotFifteenDotThree = () => {
   return (
-    <ChangelogInstance version="2.15.3" date="2022-11-12">
+    <ChangelogInstance version="2.15.3" date="2022-11-12" disclaimer={problem}>
       <li>
         Added Case Hardened tiers (AK-47) and blue/gold values (knives), thanks <NewTabLink to="https://twitter.com/justBadAntal">Antal</NewTabLink>
       </li>
