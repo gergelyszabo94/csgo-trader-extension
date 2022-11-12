@@ -145,6 +145,12 @@ const market = () => {
         type="flipSwitchStorage"
         description="Shows years on market graphs on market listings"
       />
+      <Row
+        name="Load prices on my listings"
+        id="marketMainPagePricesAutoLoad"
+        type="flipSwitchStorage"
+        description="Load starting at prices of my listing on the market main page"
+      />
     </Category>
   );
 };

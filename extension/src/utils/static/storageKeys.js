@@ -152,6 +152,7 @@ const storageKeys = {
   linkFilterOff: false,
   marketListingsInstantBuy: true,
   inventoryInstantQuickButtons: true,
+  marketMainPagePricesAutoLoad: true,
   marketHistoryEventsToShow: 50,
   marketShowFloatValuesOnly: false,
   marketListingsDefaultSorting: listingsSortingModes.default.key,

@@ -109,60 +109,64 @@ const addHistoryStartingAtPriceInfoToPage = (rowID, lowestPrice) => {
 };
 
 const addListingStartingAtPricesAndTotal = (sellListings) => {
-  let totalPrice = 0;
-  let totalYouReceivePrice = 0;
+  chrome.storage.local.get(['marketMainPagePricesAutoLoad'], ({ marketMainPagePricesAutoLoad }) => {
+    let totalPrice = 0;
+    let totalYouReceivePrice = 0;
 
-  // add starting at prices and total
-  sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row')
-    .forEach((listingRow) => {
-      // adds selection checkboxes
-      const priceElement = listingRow.querySelector('.market_listing_right_cell.market_listing_my_price');
-      if (priceElement !== null) {
-        priceElement.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(`
+    // add starting at prices and total
+    sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row')
+      .forEach((listingRow) => {
+        // adds selection checkboxes
+        const priceElement = listingRow.querySelector('.market_listing_right_cell.market_listing_my_price');
+        if (priceElement !== null) {
+          priceElement.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(`
             <div class="market_listing_right_cell market_listing_edit_buttons">
                 <input type="checkbox">
             </div>`));
-      }
+        }
 
-      const nameElement = listingRow.querySelector('.market_listing_item_name_link');
-      if (nameElement !== null) {
-        const marketLink = nameElement.getAttribute('href');
-        const appID = getAppIDAndItemNameFromLink(marketLink).appID;
-        const marketHashName = getAppIDAndItemNameFromLink(marketLink).marketHashName;
-        const listingID = getMyListingIDFromElement(listingRow);
+        const nameElement = listingRow.querySelector('.market_listing_item_name_link');
+        if (nameElement !== null) {
+          const marketLink = nameElement.getAttribute('href');
+          const appID = getAppIDAndItemNameFromLink(marketLink).appID;
+          const marketHashName = getAppIDAndItemNameFromLink(marketLink).marketHashName;
+          const listingID = getMyListingIDFromElement(listingRow);
 
-        const lisintPriceElement = listingRow.querySelector('.market_listing_price');
-        const listedPrice = lisintPriceElement.querySelectorAll('span')[1].innerText;
-        const youReceivePrice = lisintPriceElement.querySelectorAll('span')[2]
-          .innerText.split('(')[1].split(')')[0];
+          const lisintPriceElement = listingRow.querySelector('.market_listing_price');
+          const listedPrice = lisintPriceElement.querySelectorAll('span')[1].innerText;
+          const youReceivePrice = lisintPriceElement.querySelectorAll('span')[2]
+            .innerText.split('(')[1].split(')')[0];
 
-        totalPrice += parseInt(steamFormattedPriceToCents(listedPrice));
-        totalYouReceivePrice += parseInt(steamFormattedPriceToCents(youReceivePrice));
+          totalPrice += parseInt(steamFormattedPriceToCents(listedPrice));
+          totalYouReceivePrice += parseInt(steamFormattedPriceToCents(youReceivePrice));
 
-        priceQueue.jobs.push({
-          type: 'my_listing',
-          listingID,
-          appID,
-          market_hash_name: marketHashName,
-          retries: 0,
-          callBackFunction: addStartingAtPriceInfoToPage,
-        });
+          if (marketMainPagePricesAutoLoad) {
+            priceQueue.jobs.push({
+              type: 'my_listing',
+              listingID,
+              appID,
+              market_hash_name: marketHashName,
+              retries: 0,
+              callBackFunction: addStartingAtPriceInfoToPage,
+            });
 
-        if (!priceQueue.active) workOnPriceQueue();
-      }
-    });
+            if (!priceQueue.active) workOnPriceQueue();
+          }
+        }
+      });
 
-  const listingsTotal = document.getElementById('listingsTotal');
-  if (listingsTotal !== null) listingsTotal.remove();
+    const listingsTotal = document.getElementById('listingsTotal');
+    if (listingsTotal !== null) listingsTotal.remove();
 
-  sellListings.insertAdjacentHTML(
-    'afterend',
-    DOMPurify.sanitize(
-      `<div id='listingsTotal' style="margin: -15px 0 15px;">
+    sellListings.insertAdjacentHTML(
+      'afterend',
+      DOMPurify.sanitize(
+        `<div id='listingsTotal' style="margin: -15px 0 15px;">
                 Total listed price: ${centsToSteamFormattedPrice(totalPrice)} You will receive: ${centsToSteamFormattedPrice(totalYouReceivePrice)} (on this page)
             </div>`,
-    ),
-  );
+      ),
+    );
+  });
 };
 
 const extractHistoryEvents = (resultHtml, hovers, assets) => {
