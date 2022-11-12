@@ -174,7 +174,7 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
 
 // it's used to load other people's inventories by Steam now
 // unused atm
-const getUserCSGOInventoryAlternativ = (steamID) => new Promise((resolve, reject) => {
+const getUserCSGOInventoryAlternative = (steamID) => new Promise((resolve, reject) => {
   chrome.storage.local.get(
     ['itemPricing', 'prices', 'currency', 'exchangeRate', 'pricingProvider', 'pricingMode'],
     ({
@@ -412,4 +412,4 @@ const getOtherInventory = (appID, steamID) => new Promise((resolve, reject) => {
   });
 });
 
-export { getUserCSGOInventory, getUserCSGOInventoryAlternativ, getOtherInventory };
+export { getUserCSGOInventory, getUserCSGOInventoryAlternative, getOtherInventory };

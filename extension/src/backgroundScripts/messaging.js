@@ -5,7 +5,7 @@ import {
 } from 'utils/utilsModular';
 import { getItemMarketLink } from 'utils/simpleUtils';
 import { getPlayerSummaries } from 'utils/ISteamUser';
-import { getUserCSGOInventory, getOtherInventory } from 'utils/getUserInventory';
+import { getUserCSGOInventory, getUserCSGOInventoryAlternative, getOtherInventory } from 'utils/getUserInventory';
 import { updateExchangeRates } from 'utils/pricing';
 import { getTradeOffers } from 'utils/IEconService';
 import { updateTrades } from 'utils/tradeOffers';
@@ -15,21 +15,26 @@ import { updateTrades } from 'utils/tradeOffers';
 // and make the request from background script context
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.inventory !== undefined) {
-    getUserCSGOInventory(request.inventory).then(({ items, total }) => {
-      const inspectLinks = items.map((item) => item.inspectLink);
-      const pricempireRequest = new Request('https://api.csgotrader.app/v2/inspect', { method: 'PUT', body: JSON.stringify(inspectLinks) });
+    chrome.storage.local.get('steamIDOfUser', ({ steamIDOfUser }) => {
+      const inventoryLoadFunction = steamIDOfUser === request.inventory
+        ? getUserCSGOInventory
+        : getUserCSGOInventoryAlternative;
+      inventoryLoadFunction(request.inventory).then(({ items, total }) => {
+        const inspectLinks = items.map((item) => item.inspectLink);
+        const pricempireRequest = new Request('https://api.csgotrader.app/v2/inspect', { method: 'PUT', body: JSON.stringify(inspectLinks) });
 
-      fetch(pricempireRequest)
-        .then((response) => {
-          if (!response.ok) {
-            console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-          } else return response.json();
-        }).then((body) => {
-          if (!body.success) console.log(body);
-        }).catch((err) => { console.log(err); });
-      sendResponse({ items, total });
-    }).catch(() => {
-      sendResponse('error');
+        fetch(pricempireRequest)
+          .then((response) => {
+            if (!response.ok) {
+              console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+            } else return response.json();
+          }).then((body) => {
+            if (!body.success) console.log(body);
+          }).catch((err) => { console.log(err); });
+        sendResponse({ items, total });
+      }).catch(() => {
+        sendResponse('error');
+      });
     });
     return true; // async return to signal that it will return later
   }
