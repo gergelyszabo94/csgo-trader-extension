@@ -6,11 +6,16 @@ const Tradability = (props) => {
 
   if (tradability === 'Tradable') {
     return (<span>{tradability}</span>);
-  }
-  if (tradability === 'Not Tradable') {
+  } if (tradability === 'Not Tradable') {
     return (
       <div className="countdown">
         Untradable
+      </div>
+    );
+  } if (tradability === 'Tradelocked') {
+    return (
+      <div className="countdown">
+        Tradelocked
       </div>
     );
   }

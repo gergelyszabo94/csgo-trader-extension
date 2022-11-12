@@ -70,6 +70,7 @@ const lowerModule = `<a class="lowerModule">
 
 const tradable = '<span class="tradable">Tradable</span>';
 const notTradable = '<span class="not_tradable">Not Tradable</span>';
+const tradeLocked = '<span class="not_tradable">Tradelocked</span>';
 
 const getInventoryOwnerID = () => {
   const inventoryOwnerIDScript = 'document.querySelector(\'body\').setAttribute(\'inventoryOwnerID\', UserYou.GetSteamId());';
@@ -125,7 +126,7 @@ const addBookmark = (module) => {
 
   chrome.storage.local.get('bookmarks', ({ bookmarks }) => {
     chrome.storage.local.set({ bookmarks: [...bookmarks, bookmark] }, () => {
-      if (bookmark.itemInfo.tradability !== 'Tradable') {
+      if (bookmark.itemInfo.tradability !== 'Tradable' && bookmark.itemInfo.tradability !== 'Tradelocked') {
         chrome.runtime.sendMessage({
           setAlarm: {
             name: `${bookmark.itemInfo.appid}_${bookmark.itemInfo.contextid}_${bookmark.itemInfo.assetid}_${bookmark.added}`,
@@ -735,6 +736,11 @@ const addRightSideElements = () => {
             });
           } else if (item.tradability === 'Not Tradable') {
             tradabilityDiv.innerHTML = DOMPurify.sanitize(notTradable);
+            document.querySelectorAll('.countdown').forEach((countdown) => {
+              countdown.style.display = 'none';
+            });
+          } else if (item.tradability === 'Tradelocked') {
+            tradabilityDiv.innerHTML = DOMPurify.sanitize(tradeLocked);
             document.querySelectorAll('.countdown').forEach((countdown) => {
               countdown.style.display = 'none';
             });
