@@ -170,13 +170,13 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 
           if (invites !== friendAndGroupInviteCount || minutesFromLastFriendCheck >= 30) {
             if (monitorFriendRequests) updateFriendRequest();
-            getGroupInvites().then((inviters) => {
-              if (ignoreGroupInvites) {
+            if (ignoreGroupInvites) {
+              getGroupInvites().then((inviters) => {
                 inviters.forEach((inviter) => {
                   ignoreGroupRequest(inviter.steamID);
                 });
-              }
-            });
+              });
+            }
           }
 
           // moderation messages
