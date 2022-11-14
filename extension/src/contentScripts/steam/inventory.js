@@ -1198,7 +1198,7 @@ const addPerItemInfo = (appID) => {
           itemElement.setAttribute('data-processed', 'true');
           itemElement.setAttribute('data-price-ratio', pricePercentage);
         } else if (itemElement.getAttribute('data-processed') === 'true'
-        && parseFloat(itemElement.getAttribute('data-price-ratio')) !== pricePercentage) {
+            && parseFloat(itemElement.getAttribute('data-price-ratio')) !== pricePercentage) {
           const currentPriceIndicatorEl = itemElement.querySelector('.priceIndicator');
           const IDs = getIDsFromElement(itemElement, 'inventory');
           const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
@@ -2056,12 +2056,14 @@ const updateTradabilityIndicators = () => {
 
       if (itemDateElement !== null) {
         const previText = itemDateElement.innerText;
-        const newText = getShortDate(item.tradability);
-        itemDateElement.innerText = newText;
+        if (previText !== 'L') {
+          const newText = getShortDate(item.tradability);
+          itemDateElement.innerText = newText;
 
-        if (previText !== 'T' && newText === 'T') {
-          itemDateElement.classList.remove('not_tradable');
-          itemDateElement.classList.add('tradable');
+          if (previText !== 'T' && newText === 'T') {
+            itemDateElement.classList.remove('not_tradable');
+            itemDateElement.classList.add('tradable');
+          }
         }
       }
     });
@@ -2147,7 +2149,7 @@ if (defaultActiveInventoryAppID !== null) {
   const observer = new MutationObserver((mutationRecord) => {
     mutationRecord.forEach((mutation) => {
       if ((!lastStyle.includes('display: none;') && mutation.target.getAttribute('style').includes('display: none;'))
-      || (lastStyle.includes('display: none;') && !mutation.target.getAttribute('style').includes('display: none;'))) {
+        || (lastStyle.includes('display: none;') && !mutation.target.getAttribute('style').includes('display: none;'))) {
         lastStyle = mutation.target.getAttribute('style');
         addRightSideElements();
         addFunctionBar();
