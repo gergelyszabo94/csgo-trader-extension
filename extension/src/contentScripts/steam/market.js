@@ -489,16 +489,20 @@ if (orders) {
           totalOrderAmount += parseInt(steamFormattedPriceToCents(orderPrice))
             * parseInt(orderQuantity);
 
-          priceQueue.jobs.push({
-            type: 'my_buy_order',
-            orderID,
-            appID,
-            market_hash_name: marketHashName,
-            retries: 0,
-            callBackFunction: addHighestBuyOrderPrice,
-          });
+          chrome.storage.local.get(['marketMainPagePricesAutoLoad'], ({ marketMainPagePricesAutoLoad }) => {
+            if (marketMainPagePricesAutoLoad) {
+              priceQueue.jobs.push({
+                type: 'my_buy_order',
+                orderID,
+                appID,
+                market_hash_name: marketHashName,
+                retries: 0,
+                callBackFunction: addHighestBuyOrderPrice,
+              });
 
-          if (!priceQueue.active) workOnPriceQueue();
+              if (!priceQueue.active) workOnPriceQueue();
+            }
+          });
         }
       });
 

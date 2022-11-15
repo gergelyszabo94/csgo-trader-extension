@@ -146,10 +146,10 @@ const market = () => {
         description="Shows years on market graphs on market listings"
       />
       <Row
-        name="Load prices on my listings"
+        name="Load prices on my listings and orders"
         id="marketMainPagePricesAutoLoad"
         type="flipSwitchStorage"
-        description="Load starting at prices of my listing on the market main page"
+        description="Load starting at prices of my listing and highest order prices for my orders on the market main page"
       />
     </Category>
   );
