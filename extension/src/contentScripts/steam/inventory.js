@@ -1786,10 +1786,10 @@ const addFunctionBar = () => {
                                 <div class="cell" title="Tick the boxes where you want prices loaded">Load prices for:</div>
                                 <div class="cell"></div>
                                 <div class="cell"></div>
-                                <div class="cell"><input type="checkbox" id="lowestListingCheckBox" checked/></div>
+                                <div class="cell"><input type="checkbox" id="lowestListingCheckBox"/></div>
                                 <div class="cell">Based on startint at</div>
-                                <div class="cell"><input type="checkbox" id="midPriceCheckBox" checked/></div>
-                                <div class="cell"><input type="checkbox" id="instantSellCheckBox" checked/></div>
+                                <div class="cell"><input type="checkbox" id="midPriceCheckBox"/></div>
+                                <div class="cell"><input type="checkbox" id="instantSellCheckBox"/></div>
                                 <div class="cell"></div>
                               </div>
                           </div>
