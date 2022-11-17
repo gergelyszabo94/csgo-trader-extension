@@ -18,13 +18,13 @@ const priceQueue = {
   delayFailure: storageKeys.realTimePricesFreqFailure,
   lastJobSuccessful: true,
   localCache: {},
-  cleanupFunction: () => {}, // optional function that is executed when all jobs are done
+  cleanupFunction: () => { }, // optional function that is executed when all jobs are done
 };
 
 // tested and works in inventories, offers and market pages
 // does not work on profiles and incoming offers page
 const getSteamWalletInfo = () => {
-  const getWalletInfoScript = 'document.querySelector(\'body\').setAttribute(\'steamWallet\', JSON.stringify(g_rgWalletInfo));';
+  const getWalletInfoScript = 'document.querySelector(\'body\').setAttribute(\'steamWallet\', JSON.stringify("g_rgWalletInfo" in window ? g_rgWalletInfo : null));';
   return JSON.parse(injectScript(getWalletInfoScript, true, 'steamWalletScript', 'steamWallet'));
 };
 
@@ -34,16 +34,19 @@ const initPriceQueue = (cleanupFunction) => {
     ({ realTimePricesFreqSuccess, realTimePricesFreqFailure }) => {
       priceQueue.delaySuccess = realTimePricesFreqSuccess;
       priceQueue.delayFailure = realTimePricesFreqFailure;
-      priceQueue.cleanupFunction = cleanupFunction !== undefined ? cleanupFunction : () => {};
+      priceQueue.cleanupFunction = cleanupFunction !== undefined ? cleanupFunction : () => { };
     },
   );
 };
 
 const getSteamWalletCurrency = () => {
-  const getCurrencyScript = `
-  document.querySelector('body').setAttribute('steamWalletCurrency', GetCurrencyCode(${DOMPurify.sanitize(getSteamWalletInfo().wallet_currency)}));
+  const walletInfo = getSteamWalletInfo();
+  if (walletInfo) {
+    const getCurrencyScript = `
+  document.querySelector('body').setAttribute('steamWalletCurrency', GetCurrencyCode(${DOMPurify.sanitize(walletInfo.wallet_currency)}));
   `;
-  return injectScript(getCurrencyScript, true, 'steamWalletCurrencyScript', 'steamWalletCurrency');
+    return injectScript(getCurrencyScript, true, 'steamWalletCurrencyScript', 'steamWalletCurrency');
+  } return null;
 };
 
 const getHighestBuyOrder = (appID, marketHashName) => {
@@ -69,23 +72,27 @@ const getHighestBuyOrder = (appID, marketHashName) => {
 
 const getPriceOverview = (appID, marketHashName) => {
   return new Promise((resolve, reject) => {
-    const currencyID = getSteamWalletInfo().wallet_currency;
-    const request = new Request(`https://steamcommunity.com/market/priceoverview/?appid=${appID}&country=US&currency=${currencyID}&market_hash_name=${marketHashName}`);
+    const walletInfo = getSteamWalletInfo();
 
-    fetch(request).then((response) => {
-      if (!response.ok) {
-        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-        reject({ status: response.status, statusText: response.statusText });
-      }
-      return response.json();
-    }).then((priceOverviewJSON) => {
-      if (priceOverviewJSON === null) reject('success:false');
-      else if (priceOverviewJSON.success === true) resolve(priceOverviewJSON);
-      else reject('success:false');
-    }).catch((err) => {
-      console.log(err);
-      reject(err);
-    });
+    if (walletInfo) {
+      const currencyID = walletInfo.wallet_currency;
+      const request = new Request(`https://steamcommunity.com/market/priceoverview/?appid=${appID}&country=US&currency=${currencyID}&market_hash_name=${marketHashName}`);
+
+      fetch(request).then((response) => {
+        if (!response.ok) {
+          console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+          reject({ status: response.status, statusText: response.statusText });
+        }
+        return response.json();
+      }).then((priceOverviewJSON) => {
+        if (priceOverviewJSON === null) reject('success:false');
+        else if (priceOverviewJSON.success === true) resolve(priceOverviewJSON);
+        else reject('success:false');
+      }).catch((err) => {
+        console.log(err);
+        reject(err);
+      });
+    } else reject('unable to parse steam wallet info');
   });
 };
 
@@ -446,7 +453,7 @@ const updatePrices = () => {
             }
           }
         }
-        chrome.storage.local.set({ prices }, () => {});
+        chrome.storage.local.set({ prices }, () => { });
       }
     }).catch((err) => { console.log(err); });
   });
@@ -459,9 +466,9 @@ const updateExchangeRates = () => {
     if (!response.ok) console.log(`Error code: ${response.status} Status: ${response.statusText}`);
     return response.json();
   }).then((exchangeRatesJSON) => {
-    chrome.storage.local.set({ exchangeRates: exchangeRatesJSON }, () => {});
+    chrome.storage.local.set({ exchangeRates: exchangeRatesJSON }, () => { });
     chrome.storage.local.get('currency', ({ currency }) => {
-      chrome.storage.local.set({ exchangeRate: exchangeRatesJSON[currency] }, () => {});
+      chrome.storage.local.set({ exchangeRate: exchangeRatesJSON[currency] }, () => { });
     });
   }).catch((err) => { console.log(err); });
 };
@@ -473,7 +480,7 @@ const getPrice = (marketHashName, dopplerInfo, prices, provider, mode, exchangeR
     && prices[marketHashName].price !== 'null') {
     // csgotrader, csmoney and buff have doppler phase prices so they are handled differently
     if ((provider === pricingProviders.csgotrader.name || provider === pricingProviders.csmoney.name
-    || provider === pricingProviders.buff163.name)) { // other providers have no doppler info
+      || provider === pricingProviders.buff163.name)) { // other providers have no doppler info
       if (dopplerInfo !== null) {
         // when there is price for the specific doppler phase take that
         if (prices[marketHashName].doppler !== undefined && prices[marketHashName].doppler
@@ -482,7 +489,7 @@ const getPrice = (marketHashName, dopplerInfo, prices, provider, mode, exchangeR
           && prices[marketHashName].doppler[dopplerInfo.name] !== null) {
           price = (prices[marketHashName].doppler[dopplerInfo.name] * exchangeRate).toFixed(2);
         } else if (provider === pricingProviders.buff163.name
-            && mode === pricingProviders.buff163.pricing_modes.starting_at.name) {
+          && mode === pricingProviders.buff163.pricing_modes.starting_at.name) {
           price = 0.0;
         } else price = (prices[marketHashName].price * exchangeRate).toFixed(2);
       } else price = (prices[marketHashName].price * exchangeRate).toFixed(2);
@@ -617,7 +624,7 @@ const addRealTimePriceToPage = (
 const updateWalletCurrency = () => {
   const walletCurrency = getSteamWalletCurrency();
   chrome.storage.local.set({
-    userSteamWalletCurrency: (walletCurrency !== 'Unknown' && walletCurrency !== undefined) ? walletCurrency : currencies.USD.short,
+    userSteamWalletCurrency: (walletCurrency !== 'Unknown' && walletCurrency !== undefined && walletCurrency !== null) ? walletCurrency : currencies.USD.short,
   });
 };
 
