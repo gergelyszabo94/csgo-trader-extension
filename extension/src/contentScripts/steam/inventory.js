@@ -10,9 +10,13 @@ import {
   updateLoggedInUserInfo, reloadPageOnExtensionReload, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, toFixedNoRounding,
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
+  parseStickerInfo, getInspectLink, getExteriorFromTags, getDopplerInfo,
+  getType, getQuality, getNameTag,
 }
   from 'utils/utilsModular';
-import { getItemMarketLink, generateInspectCommand, isDopplerInName } from 'utils/simpleUtils';
+import {
+  getItemMarketLink, generateInspectCommand, isDopplerInName, getCollection,
+} from 'utils/simpleUtils';
 import { getShortDate, dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
   stattrak, starChar, souvenir, stattrakPretty, genericMarketLink,
@@ -24,6 +28,7 @@ import {
   centsToSteamFormattedPrice, prettyPrintPrice, addRealTimePriceToPage,
   priceQueue, workOnPriceQueue, getSteamWalletCurrency, initPriceQueue,
   updateWalletCurrency, getHighestBuyOrder, getLowestListingPrice,
+  getPrice, getStickerPriceTotal,
 }
   from 'utils/pricing';
 import { getItemByIDs, getIDsFromElement, findElementByIDs } from 'utils/itemsToElementsToItems';
@@ -37,7 +42,7 @@ import { injectScript } from 'utils/injection';
 import { getUserSteamID } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
 import steamApps from 'utils/static/steamApps';
-import { removeFromFloatCache } from '../../utils/floatCaching';
+import { removeFromFloatCache, getFloatInfoFromCache } from '../../utils/floatCaching';
 
 let pricePercentage = 100; // can be changed, for easier discount calculation
 let items = [];
@@ -200,6 +205,119 @@ const getItemInfoFromPage = (appID, contextID) => {
         document.querySelector('body').setAttribute('inventoryInfo', JSON.stringify(trimmedAssets));`;
   return JSON.parse(injectScript(getItemsScript, true, 'getInventory', 'inventoryInfo'));
 };
+
+const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
+  chrome.storage.local.get(
+    ['itemPricing', 'prices', 'currency', 'exchangeRate', 'pricingProvider', 'pricingMode'],
+    ({
+      itemPricing, prices, currency, exchangeRate, pricingProvider, pricingMode,
+    }) => {
+      const itemsFromPage = getItemInfoFromPage(steamApps.CSGO.appID, '2');
+      const itemsPropertiesToReturn = [];
+      const duplicates = {};
+      const owner = getInventoryOwnerID();
+      const floatCacheAssetIDs = [];
+
+      // counts duplicates
+      itemsFromPage.forEach((item) => {
+        floatCacheAssetIDs.push(item.assetid);
+
+        const marketHashName = item.description.market_hash_name;
+        if (duplicates[marketHashName] === undefined) {
+          const instances = [item.assetid];
+          duplicates[marketHashName] = {
+            num: 1,
+            instances,
+          };
+        } else {
+          duplicates[marketHashName].num += 1;
+          duplicates[marketHashName].instances.push(item.assetid);
+        }
+      });
+
+      getFloatInfoFromCache(floatCacheAssetIDs).then(
+        (floatCache) => {
+          itemsFromPage.forEach((item) => {
+            const assetID = item.assetid;
+            const name = item.description.name;
+            const marketHashName = item.description.market_hash_name;
+            let tradability = 'Tradable';
+            let tradabilityShort = 'T';
+            const icon = item.description.icon_url;
+            const dopplerInfo = (name.includes('Doppler') || name.includes('doppler')) ? getDopplerInfo(icon) : null;
+            const stickers = parseStickerInfo(item.description.descriptions, 'direct', prices, pricingProvider, pricingMode, exchangeRate, currency);
+            let price = null;
+            const type = getType(item.description.tags);
+            let floatInfo = null;
+
+            if (floatCache[assetID] !== undefined
+              && floatCache[assetID] !== null && itemTypes[type.key].float) {
+              floatInfo = floatCache[assetID];
+            }
+            const patternInfo = (floatInfo !== null)
+              ? getPattern(marketHashName, floatInfo.paintseed)
+              : null;
+
+            if (itemPricing) {
+              price = getPrice(marketHashName, dopplerInfo, prices,
+                pricingProvider, pricingMode, exchangeRate, currency);
+              inventoryTotal += parseFloat(price.price);
+            } else price = { price: '', display: '' };
+
+            if (item.description.tradable === 0) {
+              tradability = 'Tradelocked';
+              tradabilityShort = 'L';
+            }
+            if (item.description.marketable === 0) {
+              tradability = 'Not Tradable';
+              tradabilityShort = '';
+            }
+
+            itemsPropertiesToReturn.push({
+              description: item.description,
+              name,
+              market_hash_name: marketHashName,
+              name_color: item.description.name_color,
+              marketlink: getItemMarketLink(steamApps.CSGO.appID, marketHashName),
+              appid: item.appid.toString(),
+              contextid: '2',
+              classid: item.classid,
+              instanceid: item.instanceid,
+              assetid: assetID,
+              commodity: item.description.commodity,
+              tradability,
+              tradabilityShort,
+              marketable: item.description.marketable,
+              iconURL: icon,
+              dopplerInfo,
+              exterior: getExteriorFromTags(item.description.tags),
+              inspectLink: getInspectLink({
+                actions: item.description.actions,
+                owner,
+                assetid: assetID,
+              }, owner, assetID),
+              quality: getQuality(item.tags),
+              isStatrack: name.includes('StatTrak™'),
+              isSouvenir: name.includes('Souvenir'),
+              starInName: name.includes('★'),
+              stickers,
+              stickerPrice: getStickerPriceTotal(stickers, currency),
+              nametag: getNameTag(item),
+              duplicates: duplicates[marketHashName],
+              owner,
+              price,
+              type,
+              floatInfo,
+              patternInfo,
+              collection: getCollection(item.descriptions),
+            });
+          });
+          resolve(itemsPropertiesToReturn);
+        },
+      );
+    },
+  );
+});
 
 // it hides the original item name element and replaces it with one
 // that is a link to it's market page and adds the doppler phase to the name
@@ -1984,8 +2102,30 @@ const addFunctionBar = () => {
   } else setTimeout(() => { setInventoryTotal(); }, 1000);
 };
 
+const onFullCSGOInventoryLoad = () => {
+  if (steamApps.CSGO.appID === getActiveInventoryAppID()) {
+    if (!isOwnInventory()) {
+      getCSGOInventoryDataFromPage().then((inv) => {
+        items = inv;
+        addRightSideElements();
+        addPerItemInfo(steamApps.CSGO.appID);
+        setInventoryTotal();
+        addFunctionBar();
+        addPageControlEventListeners('inventory', () => {
+          addFloatIndicatorsToPage();
+          addRealTimePricesToQueue();
+        });
+        doInitSorting();
+      }).catch((err) => { console.log(err); });
+    } else doInitSorting();
+  }
+};
+
+// triggers steam's mechanism for loading complete inventories
+// by default only the first 3 pages (75 items) are loaded
 const loadFullInventory = () => {
-  if (!isSIHActive()) {
+  if (!isSIHActive() || !isOwnInventory()) {
+    // basically checking if first call
     if (document.querySelector('body').getAttribute('allItemsLoaded') === null) {
       const loadFullInventoryScript = `
                 g_ActiveInventory.LoadCompleteInventory().done(function () {
@@ -2000,8 +2140,8 @@ const loadFullInventory = () => {
         setTimeout(() => {
           loadFullInventory();
         }, 2000);
-      } else doInitSorting();
-    } else doInitSorting();
+      } else onFullCSGOInventoryLoad();
+    } else onFullCSGOInventoryLoad();
   } else doInitSorting();
 };
 
@@ -2009,21 +2149,27 @@ const loadFullInventory = () => {
 const requestInventory = (appID) => {
   const inventoryOwnerID = getInventoryOwnerID();
   if (appID === steamApps.CSGO.appID) {
-    chrome.runtime.sendMessage({ inventory: inventoryOwnerID }, (response) => {
-      if (response !== 'error') {
-        items = items.concat(response.items);
-        inventoryTotal = response.total;
-        addRightSideElements();
-        addPerItemInfo(appID);
-        setInventoryTotal();
-        addFunctionBar();
-        loadFullInventory();
-        addPageControlEventListeners('inventory', () => {
-          addFloatIndicatorsToPage();
-          addRealTimePricesToQueue();
-        });
-      }
-    });
+    // only use this for loading for own inventory
+    // since the other endpoint does not provide any more details now
+    // this avoids an additional request
+    // hopefully fewer restricitions by steam
+    if (isOwnInventory()) {
+      chrome.runtime.sendMessage({ inventory: inventoryOwnerID }, (response) => {
+        if (response !== 'error') {
+          items = items.concat(response.items);
+          inventoryTotal = response.total;
+          addRightSideElements();
+          addPerItemInfo(appID);
+          setInventoryTotal();
+          addFunctionBar();
+          loadFullInventory();
+          addPageControlEventListeners('inventory', () => {
+            addFloatIndicatorsToPage();
+            addRealTimePricesToQueue();
+          });
+        }
+      });
+    } else loadFullInventory();
   } else if (appID === steamApps.DOTA2.appID || appID === steamApps.TF2.appID) {
     chrome.runtime.sendMessage({
       getOtherInventory: {
