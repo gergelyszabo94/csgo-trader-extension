@@ -255,7 +255,9 @@ chrome.alarms.onAlarm.addListener((alarm) => {
               
               chrome.storage.local.get(
                 ['notifyAboutBeingLoggedOut', 'notifyAboutBeingLoggedOutOnDiscord', 'nickNameOfUser'],
-                ({ notifyAboutBeingLoggedOut, notifyAboutBeingLoggedOutOnDiscord, nickNameOfUser }) => {
+                ({
+                  notifyAboutBeingLoggedOut, notifyAboutBeingLoggedOutOnDiscord, nickNameOfUser,
+                }) => {
                   const title = 'You are not signed in on Steam!';
                   const message = `Hi, ${nickNameOfUser}! You set to be notified if the extension detects that you are not logged in.`;
 

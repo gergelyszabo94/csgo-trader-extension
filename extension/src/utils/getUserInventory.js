@@ -199,8 +199,11 @@ const getUserCSGOInventoryAlternative = (steamID) => new Promise((resolve, rejec
           // counts duplicates
           assets.forEach((asset) => {
             floatCacheAssetIDs.push(asset.assetid);
+            // eslint-disable-array-callback-return
             const description = descriptions.filter((desc) => {
-              if (asset.classid === desc.classid && asset.instanceid === desc.instanceid) return desc;
+              if (asset.classid === desc.classid && asset.instanceid === desc.instanceid) {
+                return desc;
+              }
             })[0];
 
             const marketHashName = description.market_hash_name;
@@ -220,7 +223,9 @@ const getUserCSGOInventoryAlternative = (steamID) => new Promise((resolve, rejec
             (floatCache) => {
               assets.forEach((asset) => {
                 const item = descriptions.filter((desc) => {
-                  if (asset.classid === desc.classid && asset.instanceid === desc.instanceid) return desc;
+                  if (asset.classid === desc.classid && asset.instanceid === desc.instanceid) {
+                    return desc;
+                  }
                 })[0];
                 if (item) {
                   const assetID = asset.assetid;
@@ -294,7 +299,7 @@ const getUserCSGOInventoryAlternative = (steamID) => new Promise((resolve, rejec
                     collection: getCollection(item.descriptions),
                   });
                 } else {
-                  logging.logWithTimeStamp('Description not found for asset:');
+                  console.log('Description not found for asset:');
                   console.log(asset);
                 }
               });
