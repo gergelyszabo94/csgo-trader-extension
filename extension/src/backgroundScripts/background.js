@@ -301,7 +301,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
                     if (tabs.length !== 0) chrome.tabs.reload(tabs[0].id, {}, () => {});
                     else {
                       chrome.tabs.create({
-                        url: 'http://steamcommunity.com/my/profile/',
+                        url: 'https://steamcommunity.com/my/tradeoffers?csgotrader_close=true',
                       });
                     }
                   });

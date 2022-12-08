@@ -1,3 +1,4 @@
+import { closeTab } from 'utils/simpleUtils';
 import {
   addDopplerPhase, makeItemColorful, addUpdatedRibbon, addFloatRankIndicator,
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
@@ -460,7 +461,7 @@ const updateOfferHistoryData = () => {
                   last_received: lastReceived,
                   last_sent: lastSent,
                 },
-              }, () => {});
+              }, () => { });
             } else {
               chrome.storage.local.set({
                 [storageKey]: {
@@ -473,12 +474,12 @@ const updateOfferHistoryData = () => {
                     ? lastSent
                     : offerSummaryFromStorage.last_sent,
                 },
-              }, () => {});
+              }, () => { });
             }
           });
         }
         chrome.storage.local.set(
-          { tradeHistoryLastUpdate: Math.floor(Date.now() / 1000) }, () => {},
+          { tradeHistoryLastUpdate: Math.floor(Date.now() / 1000) }, () => { },
         );
       });
     }, (error) => {
@@ -603,6 +604,15 @@ document.querySelectorAll('.playerAvatar').forEach((avatarDiv) => {
 });
 
 if (activePage === 'incoming_offers') {
+  // if this query param is present then
+  // the page was opened by the extension
+  // to get up-to-date session cookies
+  // and should be closed here
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('csgotrader_close') === 'true') {
+    closeTab();
+  }
+
   // makes the middle of the active trade offers a bit bigger
   // making it the same size as a declined offer so it does not jerk the page when declining
   document.querySelectorAll('.tradeoffer_items_rule').forEach((rule) => {
