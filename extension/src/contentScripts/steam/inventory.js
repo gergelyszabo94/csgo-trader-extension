@@ -237,6 +237,7 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
 
       getFloatInfoFromCache(floatCacheAssetIDs).then(
         (floatCache) => {
+          inventoryTotal = 0;
           itemsFromPage.forEach((item) => {
             const assetID = item.assetid;
             const name = item.description.name;
