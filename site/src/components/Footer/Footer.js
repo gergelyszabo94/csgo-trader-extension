@@ -21,6 +21,7 @@ const footer = () => {
                 <BrandIcon link='https://microsoftedge.microsoft.com/addons/detail/emcdnkamomgiafjejbhdpcfgbeeimpdb' brand='edge'/>
                 <BrandIcon link='https://www.youtube.com/channel/UCkDNavvHkCFHFCZ2bmG4zzw' brand='youtube'/>
                 <BrandIcon link='https://twitter.com/gergelyszabo94' brand='twitter'/>
+                <BrandIcon link='https://mstdn.gergely-szabo.com/@gery' brand='mastodon'/>
             </div>
             <span className='footerNavLink'>
                 <Link to='/privacy/'>Privacy</Link>
