@@ -105,11 +105,10 @@ const prices = (props) => {
                 <p>
                     It all happens on AWS. There is a python script that is responsible for price scraping and another one that updates exchange rates.
                     The <NewTabLink to='https://github.com/gergelyszabo94/csgo-trader-extension/blob/master/backend/priceScraper/priceScraper.py'> price scrapper script </NewTabLink>
-                    runs daily at 3AM UTC.
-                    The <NewTabLink to='https://github.com/gergelyszabo94/csgo-trader-extension/blob/master/backend/exchangeRates/exchangeRates.py'> exchange rates </NewTabLink>
+                    runs every 8 hours, the <NewTabLink to='https://github.com/gergelyszabo94/csgo-trader-extension/blob/master/backend/exchangeRates/exchangeRates.py'> exchange rates </NewTabLink>
                     update every 3 hours.
                     Both of these Lambda functions are triggered by CloudWatch events and are executed in a Python 3.7 environment.
-                    The pricing script scrapes prices from steamapis.com, CS.MONEY, BITSKINS.COM, LOOT.FARM and CSGO.TM then the extension calculates it's own pricing with the algorithm described above.
+                    The pricing script scrapes prices from steamapis.com, CS.MONEY, BITSKINS.COM, LOOT.FARM, CSGO.TM and pricempire.com then the extension calculates its own pricing with the algorithm described above.
                     The pricing data is stored in an S3 Bucket and made available and distributed around the world under the prices.csgotrader.app domain by Cloudfront.
                 </p>
                 <p>
@@ -118,7 +117,7 @@ const prices = (props) => {
                     <br/>
                     and each days pricing is archived in a path like:<br/>
                     prices.csgotrader.app/YYYY/MM/DD/prices_v6.json. <br/>
-                    For example:
+                    For example:&nbsp;
                     <NewTabLink to='https://prices.csgotrader.app/2020/11/03/prices_v6.json'>prices.csgotrader.app/2020/05/17/prices_v6.json</NewTabLink>.
                     If you can't find it for your date then try, v4, 3, etc. instead.
                 </p>
