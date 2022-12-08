@@ -158,24 +158,24 @@ const featureList = [
 
 const featureShowcase = [
   {
-    title: 'Inventory features',
-    imgSrc: '/img/features/cstdopplers.jpg'
+    title: 'Inventories',
+    imgSrc: '/img/features/inventory.png'
   },
   {
-    title: 'Bookmark and notify menu',
-    imgSrc: '/img/features/bookmarks.png'
+    title: 'Profiles',
+    imgSrc: '/img/features/profile.png'
   },
   {
-    title: 'Trade offer',
+    title: 'Trade offers',
     imgSrc: '/img/features/tradeoffer.png'
   },
   {
-    title: 'Options menu',
-    imgSrc: '/img/features/options_pricing.png'
+    title: 'Inspection',
+    imgSrc: '/img/features/inspect.png'
   },
   {
-    title: 'Other features',
-    imgSrc: '/img/features/featureshowcase.png'
+    title: 'Bookmarks',
+    imgSrc: '/img/features/bookmarks.png'
   },
   {
     title: 'NSFW mode',
