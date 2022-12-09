@@ -22,27 +22,13 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
       const getRequest = new Request(`https://steamcommunity.com/profiles/${steamID}/inventory/json/${steamApps.CSGO.appID}/2/?l=english`);
       fetch(getRequest).then((response) => {
         if (!response.ok) {
-          if (response.status === 403) { // returns a response regardless
-            return response.text();
-          }
           reject(response.statusText);
           console.log(`Error code: ${response.status} Status: ${response.statusText}`);
         } else return response.json();
       }).then((body) => {
-        let correctBody = body;
-        
-        if (typeof (body) === 'string') {
-          // invalid JSON, this is prepended to the valid respose:
-          // {
-          //   "success": false,
-          //   "Error": "Unsupported request"
-          // }
-          // removing it:
-          correctBody = JSON.parse((body).replace('{"success":false,"Error":"Unsupported request"}', ''));
-        }
-        if (correctBody.success) {
-          const items = correctBody.rgDescriptions;
-          const ids = correctBody.rgInventory;
+        if (body.success) {
+          const items = body.rgDescriptions;
+          const ids = body.rgInventory;
 
           const itemsPropertiesToReturn = [];
           let inventoryTotal = 0.0;
@@ -159,10 +145,10 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
               });
             },
           );
-        } else if (correctBody.Error === 'This profile is private.') {
+        } else if (body.Error === 'This profile is private.') {
           reject('inventory_private');
         } else {
-          reject(correctBody.Error);
+          reject(body.Error);
         }
       }).catch((err) => {
         console.log(err);
@@ -304,8 +290,19 @@ const getUserCSGOInventoryAlternative = (steamID) => new Promise((resolve, rejec
                 }
               });
 
+              const sortedItems = itemsPropertiesToReturn.sort((a, b) => {
+                return parseInt(b.assetid) - parseInt(a.assetid);
+              });
+
+              const itemsWithPosition = sortedItems.map((item, index) => {
+                return {
+                  ...item,
+                  position: index,
+                };
+              });
+
               resolve({
-                items: itemsPropertiesToReturn,
+                items: itemsWithPosition,
                 total: inventoryTotal,
               });
             },
