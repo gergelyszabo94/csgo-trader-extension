@@ -212,7 +212,9 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
     ({
       itemPricing, prices, currency, exchangeRate, pricingProvider, pricingMode,
     }) => {
-      const itemsFromPage = getItemInfoFromPage(steamApps.CSGO.appID, '2');
+      const itemsFromPage = getItemInfoFromPage(steamApps.CSGO.appID, '2').sort((a, b) => {
+        return parseInt(b.assetid) - parseInt(a.assetid);
+      });
       const itemsPropertiesToReturn = [];
       const duplicates = {};
       const owner = getInventoryOwnerID();
@@ -238,7 +240,7 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
       getFloatInfoFromCache(floatCacheAssetIDs).then(
         (floatCache) => {
           inventoryTotal = 0;
-          itemsFromPage.forEach((item) => {
+          itemsFromPage.forEach((item, index) => {
             const assetID = item.assetid;
             const name = item.description.name;
             const marketHashName = item.description.market_hash_name;
@@ -311,6 +313,7 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
               floatInfo,
               patternInfo,
               collection: getCollection(item.descriptions),
+              position: index,
             });
           });
           resolve(itemsPropertiesToReturn);
