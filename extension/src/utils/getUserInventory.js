@@ -30,7 +30,7 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
         } else return response.json();
       }).then((body) => {
         let correctBody = body;
-        
+
         if (typeof (body) === 'string') {
           // invalid JSON, this is prepended to the valid respose:
           // {
@@ -304,8 +304,19 @@ const getUserCSGOInventoryAlternative = (steamID) => new Promise((resolve, rejec
                 }
               });
 
+              const sortedItems = itemsPropertiesToReturn.sort((a, b) => {
+                return parseInt(b.assetid) - parseInt(a.assetid);
+              });
+
+              const itemsWithPosition = sortedItems.map((item, index) => {
+                return {
+                  ...item,
+                  position: index,
+                };
+              });
+
               resolve({
-                items: itemsPropertiesToReturn,
+                items: itemsWithPosition,
                 total: inventoryTotal,
               });
             },
