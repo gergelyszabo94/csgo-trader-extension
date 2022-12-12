@@ -1303,6 +1303,13 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                     </a>
                   </div>
                   <div class="realMoneySite">
+                    <a href="https://cs.trade/ref/CSGOTRADERAPP" target="_blank" class="realMoneySiteLink referralLink" data-site="cstrade">
+                        <img alt="CS.TRADE logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/cstrade.png')}" data-site="cstrade">
+                        <br>
+                        CS.TRADE
+                    </a>
+                  </div>
+                  <div class="realMoneySite">
                     <a href="https://cs.money/market/buy/?utm_source=mediabuy&utm_medium=cstrade&utm_campaign=market&utm_content=link&search=${weaponName}&isStatTrak=${isStattrak}&isSouvenir=${isSouvenir}" target="_blank" class="realMoneySiteLink referralLink" data-site="csmoney">
                         <img alt="Csmoney P2P logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csmoneyp2p.png')}" data-site="csmoney">
                         <br>
