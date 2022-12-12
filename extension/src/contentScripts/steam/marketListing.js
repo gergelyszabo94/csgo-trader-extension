@@ -1257,7 +1257,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                     </a>
                   </div>
                   <div class="realMoneySite">
-                    <a href="https://csgofloat.com?ref=gerytrading" target="_blank" class="realMoneySiteLink referralLink" data-site="csgofloat">
+                    <a href="https://csgofloat.com/search?market_hash_name=${fullName}&ref=gerytrading" target="_blank" class="realMoneySiteLink referralLink" data-site="csgofloat">
                         <img alt="CSGOFloat logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csgofloat.png')}" data-site="csgofloat">
                         <br>
                         CSGOFloat Market
