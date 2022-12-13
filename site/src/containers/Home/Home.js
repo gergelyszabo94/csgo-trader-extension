@@ -101,6 +101,9 @@ const home = (props) => {
             );
           })
         }
+        <Container className='center'>
+          Showcase images created by <a href="https://steamcommunity.com/profiles/76561198273736958">Janissary</a>, thank you!
+        </Container>
       </Container>
     </Fragment>
   );
