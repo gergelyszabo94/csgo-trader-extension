@@ -852,10 +852,10 @@ const changePageTitle = (type, text) => {
 
 const csgoFloatExtPresent = () => {
   const csgoFloatCheckScript = `
-    document.querySelector('body').setAttribute('csgoFloat', window.csgofloat);
+    document.querySelector('body').setAttribute('csgoFloat', window.CSGOFLOAT_EXTENSION_ID);
   `;
   const fromPage = injectScript(csgoFloatCheckScript, true, 'csgoFloatCheckScript', 'csgoFloat');
-  return fromPage === 'true';
+  return fromPage !== 'undefined';
 };
 
 const removeLinkFilterFromLinks = () => {
