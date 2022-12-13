@@ -522,7 +522,7 @@ const addSSTandExtIndicators = (
   const showExteriorsClass = showExterior ? '' : 'hidden';
   const contrastingLookClass = showContrastingLook ? 'contrastingBackground' : '';
 
-  if (item.exterior !== null) {
+  if (item.exterior !== null || item.isStatrack) {
     itemElement.insertAdjacentHTML(
       'beforeend',
       DOMPurify.sanitize(
