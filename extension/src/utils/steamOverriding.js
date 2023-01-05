@@ -492,7 +492,7 @@ const overrideCreatePriceHistoryGraph = () => {
             axes:{
                 xaxis:{
                     renderer:$J.jqplot.DateAxisRenderer,
-                    tickOptions:{formatString:'%b %#d %Y<span class="priceHistoryTime"> %#I%p<span>'},
+                    tickOptions:{formatString:'%d/%m/%y<span class="priceHistoryTime"> %#I%p<span>'},
                     pad: 1
                 },
                 yaxis: {
