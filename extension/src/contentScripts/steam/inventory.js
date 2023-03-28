@@ -1759,20 +1759,60 @@ const generateItemsList = () => {
     const customName = isDopplerInName(item.name)
       ? `${item.name} (${item.dopplerInfo.name})`
       : item.name;
-    const price = (showPrice && item.price !== null) ? ` ${delimiter} ${(item.price.price * (pricePercentage / 100)).toFixed(2)}` : '';
-    const stickerPrice = (showStickerPrice && item.stickerPrice !== null) ? ` ${delimiter} ${item.stickerPrice.display}` : '';
-    const priceCSV = (showPrice && item.price !== null) ? `,${(item.price.price * (pricePercentage / 100)).toFixed(2)}` : '';
-    const float = (showFloat && includeDupes && item.floatInfo !== null) ? ` ${delimiter} ${item.floatInfo.floatvalue}` : '';
-    const floatCSV = (showFloat && includeDupes && item.floatInfo !== null) ? `,${item.floatInfo.floatvalue}` : '';
-    const stickerPriceCSV = (showStickerPrice && item.stickerPrice !== null) ? `,${item.stickerPrice.display}` : '';
+    const price = (showPrice && item.price !== null)
+      ? ` ${delimiter} ${(item.price.price * (pricePercentage / 100)).toFixed(2)}`
+      : showPrice
+        ? ` ${delimiter}`
+        : '';
+    const priceCSV = (showPrice && item.price !== null)
+      ? `,${(item.price.price * (pricePercentage / 100)).toFixed(2)}`
+      : showPrice
+        ? ','
+        : '';
+    const stickerPrice = (showStickerPrice && item.stickerPrice !== null)
+      ? ` ${delimiter} ${item.stickerPrice.display}`
+      : showStickerPrice
+        ? ` ${delimiter}`
+        : '';
+    const stickerPriceCSV = (showStickerPrice && item.stickerPrice !== null)
+      ? `,${item.stickerPrice.display}`
+      : showStickerPrice
+        ? ','
+        : '';
+    const float = (showFloat && includeDupes && item.floatInfo !== null)
+      ? ` ${delimiter} ${item.floatInfo.floatvalue}`
+      : showFloat
+        ? ` ${delimiter}`
+        : '';
+    const floatCSV = (showFloat && includeDupes && item.floatInfo !== null)
+      ? `,${item.floatInfo.floatvalue}`
+      : showFloat
+        ? ','
+        : '';
     const exterior = (item.exterior !== undefined && item.exterior !== null) ? item.exterior[exteriorType] : '';
     const tradableAt = new Date(item.tradability).toString().split('GMT')[0];
     const inventoryLink = `https://steamcommunity.com/profiles/${item.owner}/inventory/#${item.appid}_${item.contextid}_${item.assetid}`;
     const itemInventoryLink = includeItemLinks ? `${delimiter} ${inventoryLink}` : '';
-    const tradability = (showTradability && tradableAt !== 'Invalid Date') ? `${delimiter} ${tradableAt}` : '';
-    const tradabilityCSV = (showTradability && tradableAt !== 'Invalid Date') ? `,${tradableAt}` : '';
-    const duplicate = (!includeDupes && item.duplicates.num !== 1) ? `${delimiter} x${item.duplicates.num}` : '';
-    const duplicateCSV = (!includeDupes && item.duplicates.num !== 1) ? `,x${item.duplicates.num}` : '';
+    const tradability = (showTradability && tradableAt !== 'Invalid Date')
+      ? `${delimiter} ${tradableAt}`
+      : showTradability
+        ? ` ${delimiter}`
+        : '';
+    const tradabilityCSV = (showTradability && tradableAt !== 'Invalid Date')
+      ? `,${tradableAt}`
+      : showTradability
+        ? ','
+        : '';
+    const duplicate = (!includeDupes && item.duplicates.num !== 1)
+      ? `${delimiter} x${item.duplicates.num}`
+      : includeDupes
+        ? ` ${delimiter}`
+        : '';
+    const duplicateCSV = (!includeDupes && item.duplicates.num !== 1)
+      ? `,x${item.duplicates.num}`
+      : includeDupes
+        ? ','
+        : '';
     const line = `${includeDupes ? customName : item.name} ${delimiter} ${exterior}${price}${float}${stickerPrice}${tradability} ${duplicate} ${itemInventoryLink}\n`;
     const lineCSV = `"${includeDupes ? customName : item.name}",${exterior}${priceCSV}${floatCSV}${stickerPriceCSV}${tradabilityCSV}${duplicateCSV}\n`;
 
