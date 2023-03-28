@@ -1808,11 +1808,7 @@ const generateItemsList = () => {
       : includeDupes
         ? ` ${delimiter}`
         : '';
-    const duplicateCSV = (!includeDupes && item.duplicates.num !== 1)
-      ? `,x${item.duplicates.num}`
-      : includeDupes
-        ? ','
-        : '';
+    const duplicateCSV = (!includeDupes && item.duplicates.num !== 1) ? `,x${item.duplicates.num}` : '';
     const line = `${includeDupes ? customName : item.name} ${delimiter} ${exterior}${price}${float}${stickerPrice}${tradability} ${duplicate} ${itemInventoryLink}\n`;
     const lineCSV = `"${includeDupes ? customName : item.name}",${exterior}${priceCSV}${floatCSV}${stickerPriceCSV}${tradabilityCSV}${duplicateCSV}\n`;
 
