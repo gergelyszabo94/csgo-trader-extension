@@ -24,6 +24,8 @@ const marketHistoryExport = {
   lastRequestSuccessful: true,
 };
 
+let autoLoadPrices = false;
+
 const getWalletAmount = () => {
   return steamFormattedPriceToCents(document.getElementById('header_wallet_balance').innerText);
 };
@@ -109,64 +111,62 @@ const addHistoryStartingAtPriceInfoToPage = (rowID, lowestPrice) => {
 };
 
 const addListingStartingAtPricesAndTotal = (sellListings) => {
-  chrome.storage.local.get(['marketMainPagePricesAutoLoad'], ({ marketMainPagePricesAutoLoad }) => {
-    let totalPrice = 0;
-    let totalYouReceivePrice = 0;
+  let totalPrice = 0;
+  let totalYouReceivePrice = 0;
 
-    // add starting at prices and total
-    sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row')
-      .forEach((listingRow) => {
-        // adds selection checkboxes
-        const priceElement = listingRow.querySelector('.market_listing_right_cell.market_listing_my_price');
-        if (priceElement !== null) {
-          priceElement.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(`
+  // add starting at prices and total
+  sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row')
+    .forEach((listingRow) => {
+      // adds selection checkboxes
+      const priceElement = listingRow.querySelector('.market_listing_right_cell.market_listing_my_price');
+      if (priceElement !== null) {
+        priceElement.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(`
             <div class="market_listing_right_cell market_listing_edit_buttons">
                 <input type="checkbox">
             </div>`));
+      }
+
+      const nameElement = listingRow.querySelector('.market_listing_item_name_link');
+      if (nameElement !== null) {
+        const marketLink = nameElement.getAttribute('href');
+        const appID = getAppIDAndItemNameFromLink(marketLink).appID;
+        const marketHashName = getAppIDAndItemNameFromLink(marketLink).marketHashName;
+        const listingID = getMyListingIDFromElement(listingRow);
+
+        const lisintPriceElement = listingRow.querySelector('.market_listing_price');
+        const listedPrice = lisintPriceElement.querySelectorAll('span')[1].innerText;
+        const youReceivePrice = lisintPriceElement.querySelectorAll('span')[2]
+          .innerText.split('(')[1].split(')')[0];
+
+        totalPrice += parseInt(steamFormattedPriceToCents(listedPrice));
+        totalYouReceivePrice += parseInt(steamFormattedPriceToCents(youReceivePrice));
+
+        if (autoLoadPrices) {
+          priceQueue.jobs.push({
+            type: 'my_listing',
+            listingID,
+            appID,
+            market_hash_name: marketHashName,
+            retries: 0,
+            callBackFunction: addStartingAtPriceInfoToPage,
+          });
+
+          if (!priceQueue.active) workOnPriceQueue();
         }
+      }
+    });
 
-        const nameElement = listingRow.querySelector('.market_listing_item_name_link');
-        if (nameElement !== null) {
-          const marketLink = nameElement.getAttribute('href');
-          const appID = getAppIDAndItemNameFromLink(marketLink).appID;
-          const marketHashName = getAppIDAndItemNameFromLink(marketLink).marketHashName;
-          const listingID = getMyListingIDFromElement(listingRow);
+  const listingsTotal = document.getElementById('listingsTotal');
+  if (listingsTotal !== null) listingsTotal.remove();
 
-          const lisintPriceElement = listingRow.querySelector('.market_listing_price');
-          const listedPrice = lisintPriceElement.querySelectorAll('span')[1].innerText;
-          const youReceivePrice = lisintPriceElement.querySelectorAll('span')[2]
-            .innerText.split('(')[1].split(')')[0];
-
-          totalPrice += parseInt(steamFormattedPriceToCents(listedPrice));
-          totalYouReceivePrice += parseInt(steamFormattedPriceToCents(youReceivePrice));
-
-          if (marketMainPagePricesAutoLoad) {
-            priceQueue.jobs.push({
-              type: 'my_listing',
-              listingID,
-              appID,
-              market_hash_name: marketHashName,
-              retries: 0,
-              callBackFunction: addStartingAtPriceInfoToPage,
-            });
-
-            if (!priceQueue.active) workOnPriceQueue();
-          }
-        }
-      });
-
-    const listingsTotal = document.getElementById('listingsTotal');
-    if (listingsTotal !== null) listingsTotal.remove();
-
-    sellListings.insertAdjacentHTML(
-      'afterend',
-      DOMPurify.sanitize(
-        `<div id='listingsTotal' style="margin: -15px 0 15px;">
+  sellListings.insertAdjacentHTML(
+    'afterend',
+    DOMPurify.sanitize(
+      `<div id='listingsTotal' style="margin: -15px 0 15px;">
                 Total listed price: ${centsToSteamFormattedPrice(totalPrice)} You will receive: ${centsToSteamFormattedPrice(totalYouReceivePrice)} (on this page)
             </div>`,
-      ),
-    );
-  });
+    ),
+  );
 };
 
 const extractHistoryEvents = (resultHtml, hovers, assets) => {
@@ -312,10 +312,15 @@ const addHighestBuyOrderPrice = (job, highestBuyOrder) => {
   }
 };
 
+// initializing 
+chrome.storage.local.get(['marketMainPagePricesAutoLoad'], ({ marketMainPagePricesAutoLoad }) => {
+  autoLoadPrices = marketMainPagePricesAutoLoad;
+  initPriceQueue();
+});
+
 logExtensionPresence();
 overrideLoadMarketHistory();
 updateWalletCurrency();
-initPriceQueue();
 updateLoggedInUserInfo();
 updateLoggedInUserName();
 addUpdatedRibbon();
@@ -388,7 +393,9 @@ if (sellListings !== null) {
       });
     });
 
-    addListingStartingAtPricesAndTotal(sellListings);
+    setTimeout(() => {
+      addListingStartingAtPricesAndTotal(sellListings);
+    }, 1000);
   }
 }
 
@@ -489,20 +496,18 @@ if (orders) {
           totalOrderAmount += parseInt(steamFormattedPriceToCents(orderPrice))
             * parseInt(orderQuantity);
 
-          chrome.storage.local.get(['marketMainPagePricesAutoLoad'], ({ marketMainPagePricesAutoLoad }) => {
-            if (marketMainPagePricesAutoLoad) {
-              priceQueue.jobs.push({
-                type: 'my_buy_order',
-                orderID,
-                appID,
-                market_hash_name: marketHashName,
-                retries: 0,
-                callBackFunction: addHighestBuyOrderPrice,
-              });
+          if (autoLoadPrices) {
+            priceQueue.jobs.push({
+              type: 'my_buy_order',
+              orderID,
+              appID,
+              market_hash_name: marketHashName,
+              retries: 0,
+              callBackFunction: addHighestBuyOrderPrice,
+            });
 
-              if (!priceQueue.active) workOnPriceQueue();
-            }
-          });
+            if (!priceQueue.active) workOnPriceQueue();
+          }
         }
       });
 
@@ -604,14 +609,16 @@ if (marketHistoryTab !== null) {
                 { ADD_ATTR: ['target'] },
               );
 
-              priceQueue.jobs.push({
-                type: 'history_row',
-                rowID: historyRow.id,
-                appID,
-                market_hash_name: itemName,
-                retries: 0,
-                callBackFunction: addHistoryStartingAtPriceInfoToPage,
-              });
+              if (autoLoadPrices) {
+                priceQueue.jobs.push({
+                  type: 'history_row',
+                  rowID: historyRow.id,
+                  appID,
+                  market_hash_name: itemName,
+                  retries: 0,
+                  callBackFunction: addHistoryStartingAtPriceInfoToPage,
+                });
+              }
             }
             const historyType = getHistoryType(historyRow);
             historyRow.classList.add(historyType);
