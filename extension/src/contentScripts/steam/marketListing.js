@@ -13,7 +13,7 @@ import {
   parseStickerInfo,
   reloadPageOnExtensionReload,
   souvenirExists,
-  toFixedNoRounding,
+  getFloatAsFormattedString,
   updateLoggedInUserInfo,
   updateLoggedInUserName,
 } from 'utils/utilsModular';
@@ -247,9 +247,9 @@ const populateFloatInfo = (listingID, floatInfo) => {
               listingElement.querySelector('.floatBarMarket').remove();
             } else {
               floatTechnical.innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo), { ADD_ATTR: ['target'] });
-              const position = ((toFixedNoRounding(floatInfo.floatvalue, 2) * 100) - 2);
+              const position = (parseFloat(getFloatAsFormattedString(floatInfo.floatvalue, 2)) * 100) - 2;
               listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
-              listingElement.querySelector('.floatDropTarget').innerText = toFixedNoRounding(floatInfo.floatvalue, 4);
+              listingElement.querySelector('.floatDropTarget').innerText = getFloatAsFormattedString(floatInfo.floatvalue, 4);
 
               if (marketAlwaysShowFloatTechnical) floatTechnical.classList.remove('hidden');
             }
@@ -261,7 +261,7 @@ const populateFloatInfo = (listingID, floatInfo) => {
               'afterend',
               DOMPurify.sanitize(
                 `<span class="marketFloatOnly">
-                        ${toFixedNoRounding(floatInfo.floatvalue, 6)}
+                        ${getFloatAsFormattedString(floatInfo.floatvalue, 6)}
                    </span>`,
               ),
             );

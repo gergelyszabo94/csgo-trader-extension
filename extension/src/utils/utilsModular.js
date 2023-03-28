@@ -29,13 +29,25 @@ const stickerNames = [
   'Abțibild', 'Наклейка', 'Tarra', 'Klistermärke', 'Çıkartma',
   'Hình dán', 'Наліпка'];
 
-const toFixedNoRounding = (number, n) => {
-  const reg = new RegExp(`^-?\\d+(?:\\.\\d{0,${n}})?`, 'g');
-  const a = number.toString().match(reg)[0];
-  const dot = a.indexOf('.');
-  if (dot === -1) return `${a}.${'0'.repeat(n)}`; // integer, insert decimal dot and pad up zeros
-  const b = n - (a.length - dot) + 1;
-  return b > 0 ? (a + '0'.repeat(b)) : a;
+// prints all kinds of numbers without using scientific notation, etc.
+// no idea how this works, from:
+// https://stackoverflow.com/a/61281355/3862289
+const toPlainString = (num) => {
+  return (`${+num}`).replace(/(-?)(\d*)\.?(\d*)e([+-]\d+)/,
+    (a, b, c, d, e) => {
+      return e < 0
+        ? `${b}0.${Array(1 - e - c.length).join(0)}${c}${d}`
+        : b + c + d + Array(e - d.length + 1).join(0);
+    });
+};
+
+// only use it with csgo item float values
+const getFloatAsFormattedString = (float, decimals) => {
+  const decimalsInt = parseInt(decimals);
+  if (float > 0 && float < 1) {
+    const plainFloatString = toPlainString(float);
+    return plainFloatString.substring(0, decimalsInt + 2);
+  } return null;
 };
 
 const logExtensionPresence = () => {
@@ -64,7 +76,7 @@ const getAppropriateFetchFunc = () => {
     // eslint-disable-next-line no-undef
     fetchFunction = content !== undefined ? content.fetch : fetch;
     // eslint-disable-next-line no-empty
-  } catch (e) {}
+  } catch (e) { }
 
   return fetchFunction;
 };
@@ -545,10 +557,9 @@ const addFloatIndicator = (itemElement, floatInfo, digitsToShow, showContrasting
   if (floatInfo !== null && itemElement !== null && floatInfo !== undefined
     && itemElement.querySelector('div.floatIndicator') === null) {
     const contrastingLookClass = showContrastingLook ? 'contrastingBackground' : '';
-
     itemElement.insertAdjacentHTML(
       'beforeend',
-      DOMPurify.sanitize(`<div class="floatIndicator ${contrastingLookClass}">${toFixedNoRounding(floatInfo.floatvalue, digitsToShow)}</div>`),
+      DOMPurify.sanitize(`<div class="floatIndicator ${contrastingLookClass}">${getFloatAsFormattedString(floatInfo.floatvalue, digitsToShow)}</div>`),
     );
   }
 };
@@ -569,17 +580,17 @@ const addPaintSeedIndicator = (itemElement, floatInfo, showContrastingLook) => {
 const addFloatRankIndicator = (itemElement, floatInfo, showContrastingLook) => {
   if (floatInfo !== null && floatInfo !== undefined && itemElement !== null
     && ((floatInfo.low_rank !== null && floatInfo.low_rank !== undefined)
-    || (floatInfo.high_rank !== null && floatInfo.high_rank !== undefined))
+      || (floatInfo.high_rank !== null && floatInfo.high_rank !== undefined))
     && itemElement.querySelector('div.floatRankIndicator') === null) {
     let rankToShow = floatInfo.low_rank;
 
     if ((!floatInfo.low_rank && floatInfo.high_rank)
-    || (floatInfo.low_rank && floatInfo.high_rank && floatInfo.wear_name === 'Battle-Scarred')) {
+      || (floatInfo.low_rank && floatInfo.high_rank && floatInfo.wear_name === 'Battle-Scarred')) {
       rankToShow = floatInfo.high_rank;
     }
 
     const contrastingLookClass = showContrastingLook ? 'contrastingBackground' : '';
-      
+
     itemElement.insertAdjacentHTML(
       'beforeend',
       DOMPurify.sanitize(`<div class="floatRankIndicator ${contrastingLookClass}">#${rankToShow}</div>`),
@@ -606,7 +617,7 @@ const getDataFilledFloatTechnical = (floatInfo) => {
   const highFloatRankLine = (floatInfo.high_rank !== undefined && floatInfo.high_rank !== null) ? `High Rank: ${floatInfo.high_rank}<br>` : '';
   return `
             Technical:<br>
-            Float Value: ${floatInfo.floatvalue}<br>
+            Float Value: ${toPlainString(floatInfo.floatvalue)}<br>
             Paint Index: ${floatInfo.paintindex}<br>
             Paint Seed: ${floatInfo.paintseed}<br>
             Origin: ${floatInfo.origin_name}<br>
@@ -966,7 +977,7 @@ export {
   getDataFilledFloatTechnical, souvenirExists, removeLinkFilterFromLinks,
   getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent, markModMessagesAsRead,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
-  warnOfScammer, toFixedNoRounding, getNameTag, repositionNameTagIcons,
+  warnOfScammer, getFloatAsFormattedString, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo, getRemoteImageAsObjectURL,
   isChromium, addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,
   getAppropriateFetchFunc, getFloatDBLink,

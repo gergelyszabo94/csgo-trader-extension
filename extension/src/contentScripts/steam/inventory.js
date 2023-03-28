@@ -8,7 +8,7 @@ import {
   getFloatBarSkeleton, addUpdatedRibbon, updateLoggedInUserName,
   logExtensionPresence, repositionNameTagIcons, csgoFloatExtPresent,
   updateLoggedInUserInfo, reloadPageOnExtensionReload, isSIHActive, getActivePage,
-  addSearchListener, getPattern, removeFromArray, toFixedNoRounding,
+  addSearchListener, getPattern, removeFromArray, getFloatAsFormattedString,
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
   parseStickerInfo, getInspectLink, getExteriorFromTags, getDopplerInfo,
   getType, getQuality, getNameTag,
@@ -344,12 +344,13 @@ const setFloatBarWithData = (floatInfo) => {
     floatTechnical.innerHTML = DOMPurify.sanitize(floatTechnicalElement, { ADD_ATTR: ['target'] });
   });
 
-  const position = (toFixedNoRounding(floatInfo.floatvalue, 2) * 100) - 2;
+  const position = (parseFloat(getFloatAsFormattedString(floatInfo.floatvalue, 2)) * 100) - 2;
+
   document.querySelectorAll('.floatToolTip').forEach((floatToolTip) => {
     floatToolTip.setAttribute('style', `left: ${position}%`);
   });
   document.querySelectorAll('.floatDropTarget').forEach((floatDropTarget) => {
-    floatDropTarget.innerText = toFixedNoRounding(floatInfo.floatvalue, 4);
+    floatDropTarget.innerText = getFloatAsFormattedString(floatInfo.floatvalue, 4);
   });
 };
 
