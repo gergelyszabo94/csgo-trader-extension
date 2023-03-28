@@ -51,6 +51,7 @@ let floatDigitsToShow = 4;
 let showPaintSeeds = false;
 let showFloatRank = false;
 let showContrastingLook = true;
+let showDuplicates = true;
 // variables for the countdown recursive logic
 let countingDown = false;
 let countDownID = '';
@@ -60,7 +61,7 @@ const upperModule = `
 <div class="upperModule">
     <div class="nametag"></div>
     <div class="descriptor customStickers"></div>
-    <div class="duplicate">x1</div>
+    <div class="duplicate"></div>
     <div class="copyButtons"></div>
     ${floatBar}
     <div class="patternInfo"></div>
@@ -878,11 +879,12 @@ const addRightSideElements = () => {
         });
       }
 
-      if (item.duplicates !== undefined) {
-        // adds duplicates counts
+      if (showDuplicates) {
         document.querySelectorAll('.duplicate').forEach((duplicate) => {
-          duplicate.style.display = 'block';
-          duplicate.innerText = `x${item.duplicates.num}`;
+          if (item.duplicates !== undefined) {
+            duplicate.style.display = 'block';
+            duplicate.innerText = `x${item.duplicates.num}`;
+          } else duplicate.style.display = 'none';
         });
       }
 
@@ -2265,15 +2267,18 @@ if (defaultActiveInventoryAppID !== null) {
   chrome.storage.local.get([
     'useAlternativeCSGOInventoryEndpoint', 'numberOfFloatDigitsToShow',
     'showPaintSeedOnItems', 'showFloatRankOnItems', 'contrastingLook',
+    'inventoryShowDuplicateCount',
   ], ({
     useAlternativeCSGOInventoryEndpoint, numberOfFloatDigitsToShow,
     showPaintSeedOnItems, showFloatRankOnItems, contrastingLook,
+    inventoryShowDuplicateCount,
   }) => {
     if (useAlternativeCSGOInventoryEndpoint) overRideCSGOInventoryLoading();
     floatDigitsToShow = numberOfFloatDigitsToShow;
     showPaintSeeds = showPaintSeedOnItems;
     showFloatRank = showFloatRankOnItems;
     showContrastingLook = contrastingLook;
+    showDuplicates = inventoryShowDuplicateCount;
   });
 
   // listens to manual inventory tab/game changes

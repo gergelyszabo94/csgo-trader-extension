@@ -291,6 +291,7 @@ const storageKeys = {
   fixTradeURLToken: true,
   showYearsOnMarketGraphs: true,
   recent401Detected: false,
+  inventoryShowDuplicateCount: true,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'clientID',

@@ -69,6 +69,12 @@ const inventory = () => {
         description="Adds Instant Sell and Quick Sell buttons by the normal Sell button for the active inventory item"
       />
       <Row
+        name="Show duplicate count"
+        id="inventoryShowDuplicateCount"
+        type="flipSwitchStorage"
+        description="Shows the number of duplicates on the selected item (same market name)"
+      />
+      <Row
         name="Show Selected items table"
         id="showSelectedItemsTable"
         type="flipSwitchStorage"
