@@ -1739,6 +1739,7 @@ const generateItemsList = () => {
   const showPrice = document.getElementById('generate_price').checked;
   const showStickerPrice = document.getElementById('generate_sticker_price').checked;
   const showTradability = document.getElementById('generate_tradability').checked;
+  const showFloat = document.getElementById('generate_float').checked;
   const includeDupes = document.getElementById('generate_duplicates').checked;
   const includeNonMarketable = document.getElementById('generate_non_market').checked;
   const selectedOnly = document.getElementById('selected_only').checked;
@@ -1749,7 +1750,7 @@ const generateItemsList = () => {
   const namesAlreadyInList = [];
 
   let csvContent = 'data:text/csv;charset=utf-8,';
-  const headers = `Name,Exterior${showPrice ? ',Price' : ''}${showStickerPrice ? ',Sticker Price' : ''}${showTradability ? ',Tradability' : ''}${includeDupes ? '' : ',Duplicates'}\n`;
+  const headers = `Name,Exterior${showPrice ? ',Price' : ''}${showFloat && includeDupes ? ',Float value' : ''}${showStickerPrice ? ',Sticker Price' : ''}${showTradability ? ',Tradability' : ''}${includeDupes ? '' : ',Duplicates'}\n`;
   csvContent += headers;
 
   sortedItems.forEach((itemElement) => {
@@ -1761,6 +1762,8 @@ const generateItemsList = () => {
     const price = (showPrice && item.price !== null) ? ` ${delimiter} ${(item.price.price * (pricePercentage / 100)).toFixed(2)}` : '';
     const stickerPrice = (showStickerPrice && item.stickerPrice !== null) ? ` ${delimiter} ${item.stickerPrice.display}` : '';
     const priceCSV = (showPrice && item.price !== null) ? `,${(item.price.price * (pricePercentage / 100)).toFixed(2)}` : '';
+    const float = (showFloat && includeDupes && item.floatInfo !== null) ? ` ${delimiter} ${item.floatInfo.floatvalue}` : '';
+    const floatCSV = (showFloat && includeDupes && item.floatInfo !== null) ? `,${item.floatInfo.floatvalue}` : '';
     const stickerPriceCSV = (showStickerPrice && item.stickerPrice !== null) ? `,${item.stickerPrice.display}` : '';
     const exterior = (item.exterior !== undefined && item.exterior !== null) ? item.exterior[exteriorType] : '';
     const tradableAt = new Date(item.tradability).toString().split('GMT')[0];
@@ -1770,8 +1773,8 @@ const generateItemsList = () => {
     const tradabilityCSV = (showTradability && tradableAt !== 'Invalid Date') ? `,${tradableAt}` : '';
     const duplicate = (!includeDupes && item.duplicates.num !== 1) ? `${delimiter} x${item.duplicates.num}` : '';
     const duplicateCSV = (!includeDupes && item.duplicates.num !== 1) ? `,x${item.duplicates.num}` : '';
-    const line = `${includeDupes ? customName : item.name} ${delimiter} ${exterior}${price}${stickerPrice}${tradability} ${duplicate} ${itemInventoryLink}\n`;
-    const lineCSV = `"${includeDupes ? customName : item.name}",${exterior}${priceCSV}${stickerPriceCSV}${tradabilityCSV}${duplicateCSV}\n`;
+    const line = `${includeDupes ? customName : item.name} ${delimiter} ${exterior}${price}${float}${stickerPrice}${tradability} ${duplicate} ${itemInventoryLink}\n`;
+    const lineCSV = `"${includeDupes ? customName : item.name}",${exterior}${priceCSV}${floatCSV}${stickerPriceCSV}${tradabilityCSV}${duplicateCSV}\n`;
 
     if (lineCount < limit) {
       if (includeDupes || (!includeDupes && !namesAlreadyInList.includes(item.market_hash_name))) {
@@ -1866,6 +1869,8 @@ const addFunctionBar = () => {
                                     <input type="checkbox" id="generate_tradability">
                                     <span title="Only works with copy to clipboard, not .csv download">Links</span>
                                     <input id="include_inventory_links" type="checkbox" checked>
+                                    <span> Float</span>
+                                    <input type="checkbox" id="generate_float" title="Only works when Include: Duplicates is enabled">
                                 </div>
                                 <div>
                                   <span><b>Include:</b> Duplicates</span>
