@@ -38,7 +38,7 @@ const profile = () => {
         name="NSFW"
         id="nsfwFilter"
         type="flipSwitchStorage"
-        description="When enabled, it removes profile backgrounds and artwork from profiles. Ideal for work and school environment -
+        description="When enabled, it removes pretty much all images on profiles. Ideal for work and school environment -
                 when you want to avoid anime boobs showing on your screen."
       />
       <Row

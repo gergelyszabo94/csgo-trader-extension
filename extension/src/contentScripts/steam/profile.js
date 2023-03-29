@@ -232,13 +232,11 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         element.classList.remove('has_profile_background');
       });
 
-      // removes artwork, screenshot showcases
-      document.querySelectorAll('.profile_background_holder_content, .screenshot_showcase, .profile_animated_background').forEach((element) => {
-        element.remove();
-      });
-
-      // changes avatar to the default one
-      document.querySelector('.playerAvatarAutoSizeInner').querySelector('img').setAttribute('src', 'https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg');
+      // basically removes all iamges, artwork and screenshot showcases
+      document.querySelectorAll('.profile_background_holder_content, .screenshot_showcase, .profile_animated_background, .award_icon, .badge_icon, .dynamiclink_preview, .item_image, .workshop_showcase_item_image, .guide_showcase_image, .showcase_award_icon, .game_capsule, .achievement_icon, .playerAvatarAutoSizeInner img, .playerAvatar img, .playerAvatarAutoSizeInner img, .profile_group_avatar a img, .favoritegroup_avatar a img, .favorite_game_cap a img')
+        .forEach((element) => {
+          element.remove();
+        });
 
       // removes holiday cheer
       if (document.querySelector('.golden_profile') !== null) {
