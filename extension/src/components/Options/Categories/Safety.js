@@ -7,10 +7,10 @@ const Safety = () => {
   return (
     <Category title="Safety">
       <Row
-        name="Mark scammers"
+        name="Mark profiles"
         id="markScammers"
         type="flipSwitchStorage"
-        description={'Changes background and adds warning ribbon to steamrep.com banned scammers\' profile and trade offers they send.'}
+        description={'Changes background and adds warning ribbon to steamrep.com banned scammers\' profile and trade offers they send. Also marks legit trade site bots that are in the appropriate group.'}
       />
       <Row
         name="Flag scam comments"

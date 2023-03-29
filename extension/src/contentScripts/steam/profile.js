@@ -30,8 +30,35 @@ if (document.querySelector('body').classList.contains('profile_page')) {
   addCommentsMutationObserver();
 
   // changes background and adds a banner if steamrep banned scammer detected
-  chrome.storage.local.get('markScammers', (result) => {
-    if (result.markScammers) warnOfScammer(profileOwnerSteamID, 'profile');
+  chrome.storage.local.get(['markScammers', 'legitSiteBotGroup'], ({ markScammers, legitSiteBotGroup }) => {
+    if (markScammers) {
+      warnOfScammer(profileOwnerSteamID, 'profile');
+
+      document.querySelectorAll('.profile_group_avatar a').forEach((groupAvatar) => {
+        const groupName = groupAvatar.getAttribute('href').split('https://steamcommunity.com/groups/')[1];
+
+        if (legitSiteBotGroup.includes(groupName)) {
+          const backgroundURL = chrome.runtime.getURL('images/verifiedBotAccount.jpg');
+          document.querySelector('body').insertAdjacentHTML(
+            'afterbegin',
+            DOMPurify.sanitize(
+              `<div style="background-color: green; color: white; padding: 5px; text-align: center;" class="legitSiteBot">
+                  <span>
+                      This profile belongs to a legit trade site, they are in the appropriate 
+                      <a style="color: black; font-weight: bold" href='https://steamcommunity.com/groups/${groupName}'>Steam group.</a>
+                  </span>
+              </div>`,
+            ),
+          );
+
+          document.querySelector('.no_header.profile_page').setAttribute('style', `background-image: url('${backgroundURL}')`);
+          const animatedBackground = document.querySelector(
+            '.no_header.profile_page.has_profile_background',
+          ).querySelector('video');
+          if (animatedBackground !== null) animatedBackground.remove();
+        }
+      });
+    }
   });
 
   // resizes the elements where the rep or reoccuring buttons will be inserted

@@ -292,6 +292,11 @@ const storageKeys = {
   showYearsOnMarketGraphs: true,
   recent401Detected: false,
   inventoryShowDuplicateCount: true,
+  legitSiteBotGroup: [
+    'bitskinsbots',
+    'skinportbots',
+    'tradeitggbots',
+  ],
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'clientID',

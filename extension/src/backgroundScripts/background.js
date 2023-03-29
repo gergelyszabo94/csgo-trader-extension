@@ -57,7 +57,8 @@ chrome.runtime.onInstalled.addListener((details) => {
 
     chrome.storage.local.get(keys, (result) => {
       for (const [storageKey, storageValue] of Object.entries(storageKeys)) {
-        if (result[storageKey] === undefined) {
+        // so the site bot list gets updated
+        if (result[storageKey] === undefined || storageKey === 'legitSiteBotGroup') {
           chrome.storage.local.set({ [storageKey]: storageValue }, () => { });
         }
       }
