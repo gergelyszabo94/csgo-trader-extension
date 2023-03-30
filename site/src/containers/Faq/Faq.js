@@ -18,6 +18,44 @@ const faq = (props) => {
 
             <h1>Frequently Asked Questions</h1>
             <Container className='buildingBlock'>
+            <Question title='I am shown errors when opening inventories, market prices do not awlays load. Is it because of the extension?'>
+                    <p>
+                        Could be, a few months ago Steam limited the number of requests you can make to certain endpoints.
+                        If you reach the limit you get limited in certain actions for a few hours, like loading inventories.
+                        Certain extension features make additional requests towards Steam.
+                        If you want to minimize your chance of getting limited I recommend tuning the extension option like this:
+                    </p>
+                    <ul>
+                        <li>
+                            Turn off: Friends, Groups and Invites - Monitor friend requests
+                        </li>
+                        <li>
+                            Turn off: Trade Offer - Load RealTime prices
+                        </li>
+                        <li>
+                            Turn off: Inventory - Load RealTime prices
+                        </li>
+                        <li>
+                            Turn off: Trade Offer - Load prices on my listings and orders
+                        </li>
+                        <li>
+                            Set to 10: Market - Listings per page
+                        </li>
+                        <li>
+                            Set to 10: Market - Market history events to show
+                        </li>
+                        <li>
+                            Turn off: Market - Show "Buy and Sell Orders (cumulative)"
+                        </li>
+                        <li>
+                            Turn off: Market - Recent activity on non-commmodity"
+                        </li>
+                    </ul>
+                    <p>
+                        Additionally I recommend opening as few inventories as possible.
+                        Open the trade offer window and check the items that way if you can.
+                    </p>
+                </Question>
                 <Question title='Is it free?'>
                     <p>
                         Yes, the extension is free to install and use with all its features included. Some future features that requires servers might be paid/premium.
