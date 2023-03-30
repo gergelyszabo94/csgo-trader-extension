@@ -36,7 +36,7 @@ const faq = (props) => {
                             Turn off: Inventory - Load RealTime prices
                         </li>
                         <li>
-                            Turn off: Trade Offer - Load prices on my listings and orders
+                            Turn off: Market - Load prices on my listings and orders
                         </li>
                         <li>
                             Set to 10: Market - Listings per page
