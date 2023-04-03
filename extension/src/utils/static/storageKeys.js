@@ -257,7 +257,6 @@ const storageKeys = {
   discordNotificationHook: '',
   allowDiscordNotification: false,
   showBuffLookupInInventory: false,
-  useAlternativeCSGOInventoryEndpoint: false,
   removeAnimatedProfileBackgrounds: false,
   inventoryShowCopyButtons: true,
   outBidPercentage: 1,

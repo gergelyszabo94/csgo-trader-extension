@@ -4,7 +4,7 @@ import {
   addUpdatedRibbon, copyToClipboard, changePageTitle,
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
-import { addReplyToCommentsFunctionality, addCommentsMutationObserver, reportComments } from 'utils/comments';
+import { addReplyToCommentsFunctionality, addCommentsMutationObserver } from 'utils/comments';
 import { goldenMiniProfileHandler, goldenCommenters } from 'utils/goldening';
 import steamTextFormattingTags from 'utils/static/steamTextFormatingTags';
 import { overrideShowTradeOffer } from 'utils/steamOverriding';
@@ -245,7 +245,6 @@ if (document.querySelector('body').classList.contains('profile_page')) {
       }
     });
 
-    reportComments('profile', profileOwnerSteamID);
     changePageTitle('profile');
   }
 
