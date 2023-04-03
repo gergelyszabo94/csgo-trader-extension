@@ -35,7 +35,7 @@ import { getItemByIDs, getIDsFromElement, findElementByIDs } from 'utils/itemsTo
 import { listItem } from 'utils/market';
 import { sortingModes } from 'utils/static/sortingModes';
 import doTheSorting from 'utils/sorting';
-import { overridePopulateActions, overRideCSGOInventoryLoading } from 'utils/steamOverriding';
+import { overridePopulateActions } from 'utils/steamOverriding';
 import itemTypes from 'utils/static/itemTypes';
 import exteriors from 'utils/static/exteriors';
 import { injectScript } from 'utils/injection';
@@ -2306,15 +2306,12 @@ updateWalletCurrency();
 if (defaultActiveInventoryAppID !== null) {
   initPriceQueue(onListingPricesLoaded);
   chrome.storage.local.get([
-    'useAlternativeCSGOInventoryEndpoint', 'numberOfFloatDigitsToShow',
+    'numberOfFloatDigitsToShow', 'inventoryShowDuplicateCount',
     'showPaintSeedOnItems', 'showFloatRankOnItems', 'contrastingLook',
-    'inventoryShowDuplicateCount',
   ], ({
-    useAlternativeCSGOInventoryEndpoint, numberOfFloatDigitsToShow,
+    numberOfFloatDigitsToShow, inventoryShowDuplicateCount,
     showPaintSeedOnItems, showFloatRankOnItems, contrastingLook,
-    inventoryShowDuplicateCount,
   }) => {
-    if (useAlternativeCSGOInventoryEndpoint) overRideCSGOInventoryLoading();
     floatDigitsToShow = numberOfFloatDigitsToShow;
     showPaintSeeds = showPaintSeedOnItems;
     showFloatRank = showFloatRankOnItems;

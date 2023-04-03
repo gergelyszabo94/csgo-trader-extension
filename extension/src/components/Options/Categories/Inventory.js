@@ -111,12 +111,6 @@ const inventory = () => {
         description="Show View on CS:GO STASH link in inventories"
       />
       <Row
-        name="Use alternative CS:GO inventory endpoint"
-        id="useAlternativeCSGOInventoryEndpoint"
-        type="flipSwitchStorage"
-        description="CS:GO inventories often don't load at all, when this setting is on the extension forces Steam to load the inventory from a more reliable endpoint."
-      />
-      <Row
         name="Show exteriors on items"
         id="showShortExteriorsInventory"
         type="flipSwitchStorage"
