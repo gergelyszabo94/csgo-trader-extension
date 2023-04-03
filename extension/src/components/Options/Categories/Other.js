@@ -8,23 +8,6 @@ const other = () => {
   return (
     <Category title="Other">
       <Row
-        name="Lounge auto-bump"
-        type="flipSwitchPermission"
-        id="loungeBump"
-        description={(
-          <>
-            Automatically bumps your trades every 30-40 minutes on csgolounge.com
-            if you have the page
-            <NewTabLink to="https://csgolounge.com/mytrades"> https://csgolounge.com/mytrades </NewTabLink>
-            open.
-            Note: Lounge is broken and it never disables the bump button,
-            regardless trades do get bumped.
-          </>
-        )}
-        permission="tabs"
-        origins={['*://csgolounge.com/*', '*://old.csgolounge.com/*']}
-      />
-      <Row
         name="CSGOTraders.net auto-bump"
         type="flipSwitchPermission"
         id="tradersBump"

@@ -18,8 +18,6 @@
     "*://steamrep.com/api/*"],
   "optional_permissions": [
     "tabs",
-    "*://csgolounge.com/*",
-    "*://old.csgolounge.com/*",
     "*://csgotraders.net/*",
     "*://discord.com/*"],
   "background": {
@@ -144,14 +142,6 @@
       "run_at" : "document_idle",
       "js": ["js/contentScripts/steam/tradeHistory.bundle.js"],
       "css": ["/css/generalCSTStyle.css"]
-    },
-    {
-      "matches": [
-        "*://csgolounge.com/mytrades/*",
-        "*://old.csgolounge.com/mytrades/*"
-      ],
-      "run_at" : "document_idle",
-      "js": ["js/contentScripts/loungeBump.bundle.js"]
     },
     {
       "matches": ["*://csgotraders.net/mytrades*"],

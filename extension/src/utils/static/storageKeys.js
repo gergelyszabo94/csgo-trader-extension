@@ -18,7 +18,6 @@ const storageKeys = {
   apiKeyValid: false,
   showRealStatus: true,
   colorfulItems: true,
-  loungeBump: false,
   tradersBump: false,
   markScammers: true,
   numberOfListings: 10,

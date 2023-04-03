@@ -92,7 +92,6 @@ module.exports = (env) => {
       'js/backgroundScripts/messaging': path.join(__dirname, 'src', 'backgroundScripts', 'messaging.js'),
 
       // content scripts that don't run on Steam
-      'js/contentScripts/loungeBump': path.join(__dirname, 'src', 'contentScripts', 'loungeBump.js'),
       'js/contentScripts/tradersBump': path.join(__dirname, 'src', 'contentScripts', 'tradersBump.js'),
       'js/contentScripts/tradersAutoLogin': path.join(__dirname, 'src', 'contentScripts', 'tradersAutoLogin.js'),
 
