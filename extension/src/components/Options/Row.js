@@ -4,7 +4,6 @@ import Currency from 'components/Options/Inputs/Currency/Currency';
 import FlipSwitchStorage from './Inputs/FlipSwitchStorage/FlipSwitchStorage';
 import FlipSwitchPermission from './Inputs/FlipSwitchPermission/FlipSwitchPermission';
 import ModalTextBox from './Inputs/ModalTextBox/ModalTextBox';
-import ModalCustomComments from './Inputs/ModalCustomComments/ModalCustomComments';
 import SimpleSelect from './Inputs/SimpleSelect/SimpleSelect';
 import DoubleSelect from './Inputs/DoubleSelect/DoubleSelect';
 import PricingProvider from './Inputs/PricingProvider/PricingProvider';
@@ -27,8 +26,6 @@ const typeSwitch = (type, key, permission, origins,
       return <FlipSwitchStorage id={key} />;
     case 'modalTextBox':
       return <ModalTextBox id={key} modalTitle={modalTitle} />;
-    case 'modalCustomComments':
-      return <ModalCustomComments id={key} modalTitle={modalTitle} />;
     case 'flipSwitchPermission':
       return (
         <FlipSwitchPermission

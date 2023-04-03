@@ -1,7 +1,5 @@
 import { goldenCommenters } from 'utils/goldening';
-import commentPatternsToReport from 'utils/static/commentPatternsToReport';
 import { getSessionID } from 'utils/utilsModular';
-import DOMPurify from 'dompurify';
 
 const handleReplyToCommentFunctionality = (event) => {
   const commenterName = event.target.parentNode.parentNode.parentNode.querySelector('.commentthread_author_link')
@@ -50,67 +48,6 @@ const addCommentsMutationObserver = () => {
       childList: true,
     });
   }
-};
-
-const hideAndReport = (type, pageID, commentID) => {
-  const headers = new Headers();
-  headers.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-
-  let URL = '';
-  if (type === 'profile') {
-    URL = `https://steamcommunity.com/comment/Profile/hideandreport/${pageID}/-1/?`;
-  } else if (type === 'group') {
-    URL = `https://steamcommunity.com/comment/Clan/hideandreport/${pageID}/-1/?`;
-  } else if (type === 'shared_file') {
-    URL = `https://steamcommunity.com/comment/PublishedFile_Public/hideandreport/${pageID.ownerID}/${pageID.sharedFileID}/-1/?`;
-  }
-
-  const request = new Request(URL,
-    {
-      method: 'POST',
-      headers,
-      body: `sessionid=${getSessionID()}&gidcomment=${commentID}&hide=1&start=0&count=6&feature2=-1`,
-    });
-
-  fetch(request).then((response) => {
-    if (!response.ok) {
-      console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-    }
-    return response.json();
-  }).then(() => {
-    const commentContentElement = document.getElementById(`comment_content_${commentID}`);
-    const originalCommentText = commentContentElement.innerText;
-    commentContentElement.innerHTML = DOMPurify.sanitize(
-      `<p>This comment was <b>automatically reported to Steam by CSGO Trader Extension</b> for being scam/spam.</p>
-            <p>If you think it was misidentified please contact: <a href"=https://csgotrader.app/" target="_blank">support@csgotrader.app</a>.</p>
-            <p>To set your own reporting rules or turn this feature off go to the options and look for
-            <b>"Flag scam comments"</b> and <b>"Your strings to report"</b> under General.
-            The comment said: </p>
-            <div>
-                <span class="bb_spoiler">${originalCommentText}</span>
-            </div>`,
-      { ADD_ATTR: ['target'] },
-    );
-  }).catch((err) => {
-    console.log(err);
-  });
-};
-
-const reportComments = (type, pageID) => {
-  chrome.storage.local.get(['flagScamComments', 'customCommentsToReport'], (result) => {
-    if (result.flagScamComments) {
-      const mergedStringToReport = result.customCommentsToReport.concat(commentPatternsToReport);
-      const spamTextCheck = new RegExp(mergedStringToReport.join('|'), 'i');
-
-      document.querySelectorAll('.commentthread_comment.responsive_body_text').forEach((comment) => {
-        if (spamTextCheck.test(comment.querySelector('.commentthread_comment_text').innerText)
-            && !comment.classList.contains('hidden_post')) {
-          const commentID = comment.id.split('comment_')[1];
-          hideAndReport(type, pageID, commentID);
-        }
-      });
-    }
-  });
 };
 
 const deleteForumComment = (abuseID, gIDForum, gIDTopic, commentID, extendedData) => {
@@ -163,5 +100,5 @@ const postForumComment = (abuseID, gIDForum, gIDTopic, comment, extendedData) =>
 
 export {
   addCommentsMutationObserver, handleReplyToCommentFunctionality, postForumComment,
-  addReplyToCommentsFunctionality, reportComments, deleteForumComment,
+  addReplyToCommentsFunctionality, deleteForumComment,
 };

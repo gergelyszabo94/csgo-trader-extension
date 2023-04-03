@@ -13,23 +13,10 @@ const Safety = () => {
         description={'Changes background and adds warning ribbon to steamrep.com banned scammers\' profile and trade offers they send. Also marks legit trade site bots that are in the appropriate group.'}
       />
       <Row
-        name="Flag scam comments"
-        id="flagScamComments"
-        type="flipSwitchStorage"
-        description='Reports obvious scam and spam comments like "I will give my knife for all of your csgo graffitties" and others. Helps to keep steamcommunity cleaner and safer.'
-      />
-      <Row
-        name="Your strings to report"
-        id="customCommentsToReport"
-        type="modalCustomComments"
-        description="Make the extension report comments that includes one of the the strings you add here. These are additional to the built-in ones."
-        modalTitle="Add or remove your strings to report"
-      />
-      <Row
         name="Mark moderation messages as read"
         id="markModerationMessagesAsRead"
         type="flipSwitchStorage"
-        description="If you use the report spam comments feature or report comments yourself then you often receive these messages from Steam. If you turn this on you won't."
+        description="If you turn this on you won't see moderation messages from Steam, they will be marked as read."
       />
       <Row
         name="Turn off Steam link filter"

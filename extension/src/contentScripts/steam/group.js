@@ -3,14 +3,12 @@ import {
   logExtensionPresence, updateLoggedInUserInfo, updateLoggedInUserName,
   listenToLocationChange, addUpdatedRibbon, removeLinkFilterFromLinks,
 } from 'utils/utilsModular';
-import { reportComments, addReplyToCommentsFunctionality, addCommentsMutationObserver } from 'utils/comments';
-import { getGroupID } from 'utils/steamID';
+import { addReplyToCommentsFunctionality, addCommentsMutationObserver } from 'utils/comments';
 
 if (!window.location.href.includes('/discussions')) {
   logExtensionPresence();
   addReplyToCommentsFunctionality();
   addCommentsMutationObserver();
-  if (!window.location.href.includes('/announcements/')) reportComments('group', getGroupID());
   goldenCommenters();
   updateLoggedInUserInfo();
   addUpdatedRibbon();

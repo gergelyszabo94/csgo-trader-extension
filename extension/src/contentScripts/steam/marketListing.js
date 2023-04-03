@@ -247,7 +247,9 @@ const populateFloatInfo = (listingID, floatInfo) => {
               listingElement.querySelector('.floatBarMarket').remove();
             } else {
               floatTechnical.innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo), { ADD_ATTR: ['target'] });
-              const position = (parseFloat(getFloatAsFormattedString(floatInfo.floatvalue, 2)) * 100) - 2;
+              const position = (parseFloat(
+                getFloatAsFormattedString(floatInfo.floatvalue, 2),
+              ) * 100) - 2;
               listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
               listingElement.querySelector('.floatDropTarget').innerText = getFloatAsFormattedString(floatInfo.floatvalue, 4);
 
