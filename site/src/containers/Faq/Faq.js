@@ -18,7 +18,7 @@ const faq = (props) => {
 
             <h1>Frequently Asked Questions</h1>
             <Container className='buildingBlock'>
-            <Question title='I am shown errors when opening inventories, market prices do not awlays load. Is it because of the extension?'>
+            <Question title='I am shown errors when opening inventories, market prices do not always load. Is it because of the extension?'>
                     <p>
                         Could be, a few months ago Steam limited the number of requests you can make to certain endpoints.
                         If you reach the limit you get limited in certain actions for a few hours, like loading inventories.
