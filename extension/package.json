@@ -57,5 +57,8 @@
   ],
   "watch": {
     "build": "src/"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.233"
   }
 }
