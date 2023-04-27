@@ -81,14 +81,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   } else if (request.fetchFloatInfo !== undefined) {
     const inspectLink = request.fetchFloatInfo.inspectLink;
     if (inspectLink !== null) {
-      const price = (request.fetchFloatInfo.price !== undefined
-        && request.fetchFloatInfo.price !== null)
-        ? `&price=${request.fetchFloatInfo.price}`
-        : '';
-      const assetID = getAssetIDFromInspectLink(inspectLink);
-      const getRequest = new Request(`https://api.csgofloat.com/?url=${inspectLink}${price}`);
+      const bodyToSend = {
+        url: inspectLink,
+      };
 
-      fetch(getRequest).then((response) => {
+      if (request.fetchFloatInfo.price !== undefined
+        && request.fetchFloatInfo.price !== null) bodyToSend.price = request.fetchFloatInfo.price;
+
+      const assetID = getAssetIDFromInspectLink(inspectLink);
+      const floatRequest = new Request(
+        'https://api.csgotrader.app/float',
+        {
+          method: 'POST',
+          body: JSON.stringify(body),
+        },
+      );
+
+      fetch(floatRequest).then((response) => {
         if (!response.ok) {
           console.log(`Error code: ${response.status} Status: ${response.statusText}`);
           if (response.status === 500) sendResponse(response.status);

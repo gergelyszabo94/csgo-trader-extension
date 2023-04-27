@@ -6,7 +6,7 @@ import {
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists, copyToClipboard,
   getFloatBarSkeleton, addUpdatedRibbon, updateLoggedInUserName,
-  logExtensionPresence, repositionNameTagIcons, csgoFloatExtPresent,
+  logExtensionPresence, repositionNameTagIcons,
   updateLoggedInUserInfo, reloadPageOnExtensionReload, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, getFloatAsFormattedString,
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
@@ -1162,7 +1162,7 @@ const addRightSideElements = () => {
 
 const addFloatIndicatorsToPage = () => {
   chrome.storage.local.get('autoFloatInventory', (autoFloatInventory) => {
-    if (autoFloatInventory && !csgoFloatExtPresent()) {
+    if (autoFloatInventory) {
       const page = getActivePage('inventory');
       if (page !== null) {
         page.querySelectorAll('.item.app730.context2').forEach((itemElement) => {

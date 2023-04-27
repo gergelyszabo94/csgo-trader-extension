@@ -441,7 +441,7 @@ const addListingsToFloatQueue = () => {
               listingRow.setAttribute('data-float', '1.0');
               const assetID = listing.asset.id;
 
-              // csgofloat collects listing prices that are in USD
+              // collecting listing prices that are in USD
               const price = listing.currencyid === 2001
                 ? listing.price + listing.fee
                 : listing.converted_currencyid === 2001
@@ -947,7 +947,7 @@ if (appID === steamApps.CSGO.appID) {
 
     for (const listing of Object.values(listings)) {
       if (listing.listingid === listingID) {
-        // csgofloat collects listing prices that are in USD
+        // collecting listing prices that are in USD
         const price = listing.currencyid === 2001
           ? listing.price + listing.fee
           : listing.converted_currencyid === 2001
