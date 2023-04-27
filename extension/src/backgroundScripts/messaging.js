@@ -93,7 +93,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         'https://api.csgotrader.app/float',
         {
           method: 'POST',
-          body: JSON.stringify(body),
+          body: JSON.stringify(bodyToSend),
         },
       );
 
