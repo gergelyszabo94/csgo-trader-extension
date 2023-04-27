@@ -33,7 +33,7 @@ const TwoDotSixteen = () => {
         Changed market chart date formatting.
       </li>
       <li>
-        Removed alternative iventory option since it no longer worked.
+        Removed alternative inventory option since it no longer worked.
       </li>
       <li>
         Removed scam comment flagging since it's no longer needed.
