@@ -1416,6 +1416,7 @@ chrome.storage.local.get('numberOfListings', ({ numberOfListings }) => {
     addInstantBuyButtons();
     highlightSeen();
   }
+
   let observerLastTriggered = Date.now() - 1001;
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
@@ -1435,6 +1436,7 @@ chrome.storage.local.get('numberOfListings', ({ numberOfListings }) => {
       }
     }
   });
+
   const searchResultsRows = document.getElementById('searchResultsRows');
   if (searchResultsRows !== null) {
     observer.observe(searchResultsRows, {
@@ -1442,6 +1444,19 @@ chrome.storage.local.get('numberOfListings', ({ numberOfListings }) => {
       attributes: false,
       childList: true,
     });
+  }
+
+  // the csgofloat extension breaks seen listings highlighting,
+  // this is a workaround to fix it with more retries
+  if (csgoFloatExtPresent()) {
+    let counter = 0;
+
+    const overwriteFloatExtensionInterval = setInterval(() => {
+      if (counter < 10) {
+        counter += 1;
+        highlightSeen();
+      } else clearInterval(overwriteFloatExtensionInterval);
+    }, 2000);
   }
 });
 
