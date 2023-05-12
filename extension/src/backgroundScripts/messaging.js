@@ -81,19 +81,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   } else if (request.fetchFloatInfo !== undefined) {
     const inspectLink = request.fetchFloatInfo.inspectLink;
     if (inspectLink !== null) {
-      const bodyToSend = {
-        url: inspectLink,
-      };
-
-      if (request.fetchFloatInfo.price !== undefined
-        && request.fetchFloatInfo.price !== null) bodyToSend.price = request.fetchFloatInfo.price;
-
       const assetID = getAssetIDFromInspectLink(inspectLink);
       const floatRequest = new Request(
-        'https://api.csgotrader.app/float',
+        `https://api.csgotrader.app/float?url=${encodeURIComponent(inspectLink)}`,
         {
-          method: 'POST',
-          body: JSON.stringify(bodyToSend),
+          method: 'GET',
         },
       );
 
