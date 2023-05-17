@@ -76,6 +76,12 @@
     margin-right: 20px;
 }
 
+#multiSellLink {
+    float: right;
+    margin-right: 15px;
+    margin-top: 2px;
+}
+
 #retryStartingAt {
     font-weight: bold;
     float: right;

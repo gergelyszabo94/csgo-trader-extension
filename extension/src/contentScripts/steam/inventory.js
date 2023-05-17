@@ -1637,6 +1637,11 @@ const updateSelectedItemsSummary = () => {
 
   document.getElementById('numberOfItemsToSell').innerText = numberOfSelectedItems.toString();
 
+  // update multisell link
+  const appID = getActiveInventoryAppID();
+  const contextID = getDefaultContextID(appID);
+  let multisellLink = `https://steamcommunity.com/market/multisell?appid=${appID}&contextid=${contextID}`;
+
   selectedItems.forEach((itemElement) => {
     const IDs = getIDsFromElement(itemElement, 'inventory');
     const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
@@ -1646,6 +1651,7 @@ const updateSelectedItemsSummary = () => {
       }
       if (item.marketable === 1) {
         const listingRow = getListingRow(item.appid, item.contextid, item.market_hash_name);
+        if (item.commodity) multisellLink += `&items%5B%5D=${item.market_hash_name}`;
 
         if (listingRow === null) {
           addListingRow(item);
@@ -1665,6 +1671,9 @@ const updateSelectedItemsSummary = () => {
       }
     }
   });
+
+  multisellLink += '&qty%5B%5D=250';
+  document.getElementById('multiSellLink').setAttribute('href', multisellLink);
 
   removeUnselectedItemsFromTable();
   updateMassSaleTotal();
@@ -1970,6 +1979,7 @@ const addFunctionBar = () => {
                                   </span>
                                   <input type="checkbox" id="startListingOnPriceLoad">
                                 </span>
+                                <a href="" id="multiSellLink" title="Sell commodity items in bulk">MultiSell</a>
                               </span>
                           </span>
                           <span class="inProgress hidden">
