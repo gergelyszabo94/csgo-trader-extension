@@ -117,7 +117,7 @@ const addListingStartingAtPricesAndTotal = (sellListings) => {
   // add starting at prices and total
   sellListings.querySelectorAll('.market_listing_row.market_recent_listing_row')
     .forEach((listingRow) => {
-      if (listingRow.getAttribute('csgotrader_processed') !== null) {
+      if (listingRow.getAttribute('csgotrader_processed') !== 'true') {
         // adds selection checkboxes
         const priceElement = listingRow.querySelector('.market_listing_right_cell.market_listing_my_price');
         if (priceElement !== null) {
@@ -156,7 +156,7 @@ const addListingStartingAtPricesAndTotal = (sellListings) => {
           }
         }
 
-        listingRow.setAttribute('csgotrader_processed', true);
+        listingRow.setAttribute('csgotrader_processed', 'true');
       }
     });
 
