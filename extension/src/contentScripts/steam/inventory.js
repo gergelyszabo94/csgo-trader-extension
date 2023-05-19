@@ -109,6 +109,16 @@ const getActiveInventoryAppID = () => {
   return null;
 };
 
+const gotToNextInventoryPage = () => {
+  const nextPageButton = document.getElementById('pagebtn_next');
+  if (nextPageButton !== null && !nextPageButton.classList.contains('disabled')) nextPageButton.click();
+};
+
+const goToPreviousInventoryPage = () => {
+  const previPageButton = document.getElementById('pagebtn_previous');
+  if (previPageButton !== null && !previPageButton.classList.contains('disabled')) previPageButton.click();
+};
+
 const cleanUpElements = () => {
   document.querySelectorAll(
     '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .CSGOSSTASHLink, .multiSellLink, .floatDBLink',
@@ -2480,8 +2490,69 @@ if (defaultActiveInventoryAppID !== null) {
     );
   }
 
-  chrome.storage.local.get('hideOtherExtensionPrices', (result) => {
-    if (result.hideOtherExtensionPrices) hideOtherExtensionPrices();
+  chrome.storage.local.get(['hideOtherExtensionPrices', 'moveWithArrowKeysInventory'], (results) => {
+    if (results.hideOtherExtensionPrices) hideOtherExtensionPrices();
+    if (results.moveWithArrowKeysInventory) {
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+          event.preventDefault();
+
+          const activePage = getActivePage('inventory');
+          let activePageActiveItem = null;
+          let activeItemIndex = -1;
+
+          if (activePage !== null) {
+            activePage.querySelectorAll('.item.app730.context2').forEach((itemElement, index) => {
+              if (itemElement.classList.contains('activeInfo')) {
+                activePageActiveItem = itemElement;
+                activeItemIndex = index;
+              }
+            });
+          }
+
+          // when the active item is not on the active page
+          if (!event.ctrlKey && activePageActiveItem === null) {
+            const currentActivePage = getActivePage('inventory');
+            currentActivePage.querySelectorAll('.item')[0].querySelector('a').click();
+          }
+
+          // inventory page are 5 items per row, 5 rows per page = 25 items per page
+          switch (event.key) {
+            case 'ArrowLeft':
+              if (event.ctrlKey) goToPreviousInventoryPage();
+              else if (activeItemIndex === 0) { // when it's the first item on the page
+                goToPreviousInventoryPage();
+              } else if (activeItemIndex > 0) {
+                activePage.querySelectorAll('.item')[activeItemIndex - 1].querySelector('a').click();
+              }
+              break;
+            case 'ArrowRight':
+              if (event.ctrlKey) gotToNextInventoryPage();
+              else if (activeItemIndex >= 0 && activeItemIndex < 24) {
+                activePage.querySelectorAll('.item')[activeItemIndex + 1].querySelector('a').click();
+              } else if (activeItemIndex === 24) { // when it's the last item on the page
+                gotToNextInventoryPage();
+              }
+              break;
+            case 'ArrowUp':
+              if (activeItemIndex >= 0 && activeItemIndex < 5) {
+                activePage.querySelectorAll('.item')[activeItemIndex + 20].querySelector('a').click();
+              } else if (activeItemIndex >= 5 && activeItemIndex < 20) {
+                activePage.querySelectorAll('.item')[activeItemIndex - 5].querySelector('a').click();
+              }
+              break;
+            case 'ArrowDown':
+              if (activeItemIndex >= 0 && activeItemIndex < 20) {
+                activePage.querySelectorAll('.item')[activeItemIndex + 5].querySelector('a').click();
+              } else if (activeItemIndex >= 20) {
+                activePage.querySelectorAll('.item')[activeItemIndex - 20].querySelector('a').click();
+              }
+              break;
+            default: break;
+          }
+        }
+      });
+    }
   });
 
   if (defaultActiveInventoryAppID === steamApps.CSGO.appID

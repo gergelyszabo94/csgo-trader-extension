@@ -293,6 +293,7 @@ const storageKeys = {
     'skinportbots',
     'tradeitggbots',
   ],
+  moveWithArrowKeysInventory: true,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'clientID',
