@@ -321,7 +321,10 @@ const addInventoryTotals = (yourInventoryTotal, theirInventoryTotal) => {
       currency,
       (yourInventoryTotal).toFixed(0),
     );
-    yourInventoryTitleDiv.innerText = `${yourInventoryTitleDiv.innerText} (${yourPrettyPrice})`;
+    const yourInventoryTitleWithPrice = `${yourInventoryTitleDiv.innerText} (${yourPrettyPrice})`;
+    yourInventoryTitleDiv.innerText = yourInventoryTitleWithPrice.length < 30
+      ? yourInventoryTitleWithPrice
+      : `${yourInventoryTitleWithPrice.substring(0, 30)}`;
     yourInventoryTitleDiv.style.fontSize = yourPrettyPrice.length <= 7
       ? '16px'
       : yourPrettyPrice.length <= 9
@@ -333,7 +336,10 @@ const addInventoryTotals = (yourInventoryTotal, theirInventoryTotal) => {
       currency,
       (theirInventoryTotal).toFixed(0),
     );
-    theirInventoryTitleDiv.innerText = `${theirInventoryTitleDiv.innerText} (${theirPrettyPrice})`;
+    const theirInventoryTitleWithPrice = `${theirInventoryTitleDiv.innerText} (${theirPrettyPrice})`;
+    theirInventoryTitleDiv.innerText = theirInventoryTitleWithPrice.length < 30
+      ? theirInventoryTitleWithPrice
+      : `${theirInventoryTitleWithPrice.substring(0, 30)}`;
     theirInventoryTitleDiv.style.fontSize = theirPrettyPrice.length <= 7
       ? '16px'
       : theirInventoryTitleDiv.length <= 9
