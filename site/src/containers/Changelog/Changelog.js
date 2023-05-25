@@ -3,6 +3,7 @@ import { Container } from 'react-bootstrap';
 
 import Head from '../../components/Head/Head';
 
+import TwoDotSixteenDotTwo from '../../components/Changelog/Content/TwoDotSixteenDotTwo.js';
 import TwoDotSixteenDotOne from '../../components/Changelog/Content/TwoDotSixteenDotOne.js';
 import TwoDotSixteen from '../../components/Changelog/Content/TwoDotSixteen.js';
 import TwoDotFifteenDotSix from '../../components/Changelog/Content/TwoDotFifteenDotSix.js';
@@ -94,6 +95,7 @@ const changelog = (props) => {
                 The platforms (Chrome Web Store, Mozilla Addons, Edge Add-ons) review submissions before they are available for download.
                 This means that the latest version might not have rolled out to your platform yet when you are reading this.
             </Container>
+            <TwoDotSixteenDotTwo />
             <TwoDotSixteenDotOne />
             <TwoDotSixteen />
             <TwoDotFifteenDotSix />
