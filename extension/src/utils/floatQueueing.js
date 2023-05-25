@@ -21,6 +21,7 @@ const workOnFloatQueue = () => {
             fetchFloatInfo: {
               inspectLink: job.inspectLink,
               price: job.price,
+              currencyid: job.currencyid,
             },
           }, (response) => {
             if (response !== 'error' && response !== 500) {

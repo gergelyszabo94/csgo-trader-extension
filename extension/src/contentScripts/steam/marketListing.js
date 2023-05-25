@@ -441,12 +441,7 @@ const addListingsToFloatQueue = () => {
               listingRow.setAttribute('data-float', '1.0');
               const assetID = listing.asset.id;
 
-              // collecting listing prices that are in USD
-              const price = listing.currencyid === 2001
-                ? listing.price + listing.fee
-                : listing.converted_currencyid === 2001
-                  ? listing.converted_price + listing.converted_fee
-                  : undefined;
+              const price = listing.converted_price + listing.converted_fee;
 
               floatQueue.jobs.push({
                 type: 'market',
@@ -454,6 +449,7 @@ const addListingsToFloatQueue = () => {
                 inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
                 listingID: listing.listingid,
                 price,
+                currencyid: listing.currencyid,
                 callBackFunction: dealWithNewFloatData,
               });
             }
