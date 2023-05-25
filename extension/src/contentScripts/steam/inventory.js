@@ -361,7 +361,7 @@ const setFloatBarWithData = (floatInfo) => {
     floatToolTip.setAttribute('style', `left: ${position}%`);
   });
   document.querySelectorAll('.floatDropTarget').forEach((floatDropTarget) => {
-    floatDropTarget.innerText = getFloatAsFormattedString(floatInfo.floatvalue, 4);
+    floatDropTarget.innerText = getFloatAsFormattedString(floatInfo.floatvalue, floatDigitsToShow);
   });
 };
 
