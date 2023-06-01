@@ -123,7 +123,7 @@ const inventory = () => {
         description="Adds small indicators to the top left of inventory items that either show the remaining trade cooldown."
       />
       <Row
-        name="Move the with arrow keys"
+        name="Move with arrow keys"
         id="moveWithArrowKeysInventory"
         type="flipSwitchStorage"
         description="Move the currently selected item with the arrow keys, or with CTRL + arrow keys to move the page instead"
