@@ -8,6 +8,7 @@
     --steam-knife-purple: rgb(134, 80, 172);
     --steam-souvenir-yellow: rgb(255, 215, 0);
     --steam-sale-golden: #e4ca63;
+    --steam-old-font: Arial, Helvetica, Verdana, sans-serif;
 }
 
 #inventory_function_bar {
@@ -318,6 +319,7 @@ progress {
     left: 42%;
     top: 2px;
     font-size: 0.8rem;
+    font-family: var(--steam-old-font);
 }
 
 .dopplerPhaseMarket {
@@ -391,6 +393,7 @@ progress {
     bottom: 17px;
     margin-bottom: 0;
     margin-left: 2px;
+    font-family: var(--steam-old-font);
 }
 
 .paintSeedIndicator {
@@ -399,6 +402,7 @@ progress {
     bottom: 30px;
     right: 2px;
     font-size: 0.7rem;
+    font-family: var(--steam-old-font);
 }
 
 .floatRankIndicator {
@@ -407,6 +411,7 @@ progress {
     top: 38px;
     right: 2px;
     font-size: 0.7rem;
+    font-family: var(--steam-old-font);
 }
 
 .marketFloatOnly {
@@ -450,6 +455,7 @@ progress {
     top: 2px;
     right: 2px;
     font-size: 0.8rem;
+    font-family: var(--steam-old-font);
 }
 
 .priceIndicator {
@@ -458,6 +464,7 @@ progress {
     bottom: 2px;
     left: 2px;
     font-size: 0.8rem;
+    font-family: var(--steam-old-font);
 }
 
 .realTimePriceIndicator {
@@ -466,6 +473,7 @@ progress {
     right: 2px;
     font-size: 0.7rem;
     color: #f9f96d;
+    font-family: var(--steam-old-font);
 }
 
 .realTimePriceTradeTotal {
@@ -485,12 +493,14 @@ progress {
 
 .exteriorIndicator {
     color: var(--steam-note-blue);
+    font-family: var(--steam-old-font);
 }
 
 .otherExteriors {
     color: var(--steam-note-blue);
     margin-top: 0.5rem;
     margin-bottom: 1rem;
+    font-family: var(--steam-old-font);
 }
 
 .inOtherOffer {
@@ -642,6 +652,7 @@ progress {
     top: 15px;
     font-size: 0.6rem;
     color: white;
+    font-family: var(--steam-old-font);
 }
 
 .stickersTotal {
