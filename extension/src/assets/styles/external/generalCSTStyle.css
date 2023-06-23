@@ -14,10 +14,6 @@
     margin: 0 15px 2px 15px;
 }
 
-#functionBarValues {
-    font-size: 1.5rem;
-}
-
 #functionBarActions {
     font-size: 1.2rem;
 }
@@ -33,14 +29,6 @@
 #offer_function_bar {
     margin-top: -18px;
     margin-bottom: 2px;
-}
-
-#selectedTotal {
-    float: left;
-}
-
-#sortingMethod {
-    font-size: 1.2rem;
 }
 
 #sortingMenu {
