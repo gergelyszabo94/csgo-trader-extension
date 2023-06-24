@@ -11,6 +11,10 @@
     --steam-old-font: Arial, Helvetica, Verdana, sans-serif;
 }
 
+div.item_actions {
+    margin-top: 10px;
+}
+
 #inventory_function_bar {
     margin: 0 15px 2px 15px;
 }

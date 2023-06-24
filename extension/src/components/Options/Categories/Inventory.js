@@ -128,6 +128,12 @@ const inventory = () => {
         type="flipSwitchStorage"
         description="Move the currently selected item with the arrow keys, or with CTRL + arrow keys to move the page instead"
       />
+      <Row
+        name="Show all exteriors"
+        id="showAllExteriorsInventory"
+        type="flipSwitchStorage"
+        description="Show links to all exteriors on the selected item"
+      />
     </Category>
   );
 };

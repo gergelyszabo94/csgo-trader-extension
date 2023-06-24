@@ -839,7 +839,8 @@ const addRightSideElements = () => {
             linkMidPart = souvenir;
           }
 
-          const otherExteriors = `
+          chrome.storage.local.get(['showAllExteriorsInventory'], ({ showAllExteriorsInventory }) => {
+            const otherExteriors = `
                     <div class="descriptor otherExteriors">
                         <span>${chrome.i18n.getMessage('links_to_other_exteriors')}:</span>
                         <ul>
@@ -853,12 +854,13 @@ const addRightSideElements = () => {
                     </div>
                     `;
 
-          if (item.exterior !== undefined) {
-            document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
-              .forEach((descriptor) => {
-                descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(otherExteriors, { ADD_ATTR: ['target'] }));
-              });
-          }
+            if (item.exterior !== undefined && showAllExteriorsInventory) {
+              document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
+                .forEach((descriptor) => {
+                  descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(otherExteriors, { ADD_ATTR: ['target'] }));
+                });
+            }
+          });
         }
 
         // sets the tradability info

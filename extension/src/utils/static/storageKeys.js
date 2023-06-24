@@ -295,6 +295,7 @@ const storageKeys = {
     'SkinwalletBotsOfficial',
   ],
   moveWithArrowKeysInventory: true,
+  showAllExteriorsInventory: false,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'clientID',
