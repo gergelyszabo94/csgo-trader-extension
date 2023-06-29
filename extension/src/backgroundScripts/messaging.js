@@ -29,7 +29,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
               console.log(`Error code: ${response.status} Status: ${response.statusText}`);
             } else return response.json();
           }).then((body) => {
-            if (!body.success) console.log(body);
+            if (!body.status) console.log(body);
           }).catch((err) => { console.log(err); });
         sendResponse({ items, total });
       }).catch(() => {
