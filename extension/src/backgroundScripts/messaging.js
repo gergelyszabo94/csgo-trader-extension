@@ -81,7 +81,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   } else if (request.fetchFloatInfo !== undefined) {
     const inspectLink = request.fetchFloatInfo.inspectLink;
     if (inspectLink !== null) {
-      console.log(request.fetchFloatInfo);
       const price = (request.fetchFloatInfo.price !== undefined
         && request.fetchFloatInfo.price !== null)
         ? `&price=${request.fetchFloatInfo.price}`
