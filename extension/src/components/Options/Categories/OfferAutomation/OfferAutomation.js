@@ -14,7 +14,8 @@ const OfferAutomation = () => {
         type="flipSwitchStorage"
         description={(
           <>
-            Monitors incoming offers and evaluates the automation rules
+            Monitors incoming offers and evaluates the automation rules.
+            The offers are checked every 2 minutes.
             <ApiKeyIndicator />
           </>
         )}

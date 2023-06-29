@@ -33,41 +33,6 @@ const reverseWhenNotifDetails = (tradability, notifTime) => {
   };
 };
 
-const getSteamNotificationCount = () => new Promise((resolve, reject) => {
-  const getRequest = new Request('https://steamcommunity.com/actions/GetNotificationCounts');
-
-  fetch(getRequest).then((response) => {
-    if (!response.ok) {
-      console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-      reject(response.status);
-      return null;
-    } return response.json();
-  }).then((body) => {
-    if (body !== null) {
-      const { notifications } = body;
-
-      // notification types from:
-      // https://github.com/WebVRRocks/moonrise/blob/c555aac08dd7f59ebd2dbe7607255cb003703410/src/plugins/notifications/index.js
-      resolve({
-        tradeOffers: notifications[1],
-        gameTurns: notifications[2],
-        moderatorMessages: notifications[3],
-        comments: notifications[4],
-        items: notifications[5],
-        invites: notifications[6],
-        // 7 is not known
-        gifts: notifications[8],
-        messages: notifications[9],
-        helpRequestReplies: notifications[10],
-        accountAlerts: notifications[11],
-      });
-    }
-  }).catch((err) => {
-    console.log(err);
-    reject(err);
-  });
-});
-
 const playNotificationSound = () => {
   chrome.storage.local.get(
     ['notificationSoundOn', 'notificationSoundToPlay', 'notificationVolume', 'customNotificationURL'],
@@ -109,17 +74,79 @@ const notifyOnDiscord = (embed) => {
     });
 };
 
-const suspenSteamNotificationChecks = () => {
-  chrome.alarms.clear('getSteamNotificationCount', () => {
-    const now = new Date();
-    now.setHours(now.getHours() + 1);
-    chrome.alarms.create('restartNotificationChecks', {
-      when: (now).valueOf(),
-    });
-  });
+const loggedOutNotification = (loggedOut) => {
+  if (loggedOut) {
+    chrome.storage.local.get(
+      [
+        'logOutDetected', 'lastLogoutNotified', 'notifyAboutBeingLoggedOut',
+        'notifyAboutBeingLoggedOutOnDiscord', 'nickNameOfUser',
+      ],
+      ({
+        logOutDetected, lastLogoutNotified, notifyAboutBeingLoggedOut,
+        notifyAboutBeingLoggedOutOnDiscord, nickNameOfUser,
+      }) => {
+        chrome.storage.local.set({ logOutDetected: true }, () => { });
+
+        if (!logOutDetected) {
+          // first attempt to get a new session
+        // if it fails, then we end up here in the next interval and notify the user
+          console.log('Session expired? Attempting to refresh a Steam page or open the Steam trade offers page to get a new session.');
+
+          chrome.permissions.contains({ permissions: ['tabs'] }, (permission) => {
+            if (permission) {
+              chrome.tabs.query({ url: 'https://steamcommunity.com/*' }, (tabs) => {
+                if (tabs.length !== 0) chrome.tabs.reload(tabs[0].id, {}, () => {});
+                else {
+                  chrome.tabs.create({
+                    url: 'https://steamcommunity.com/my/tradeoffers?csgotrader_close=true',
+                  });
+                }
+              });
+            }
+          });
+        }
+
+        if (logOutDetected && (Date.now() - lastLogoutNotified) > 60 * 60 * 1000) {
+          // should only send notification once per hour
+          chrome.storage.local.set({ lastLogoutNotified: Date.now() }, () => { });
+          const title = 'You are not signed in on Steam!';
+          const message = `Hi, ${nickNameOfUser}! You set to be notified if the extension detects that you are not logged in.`;
+
+          if (notifyAboutBeingLoggedOut) {
+            chrome.notifications.create('loggedOutOfSteam', {
+              type: 'basic',
+              iconUrl: '/images/cstlogo128.png',
+              title,
+              message,
+            }, () => {
+              playNotificationSound();
+            });
+          }
+
+          if (notifyAboutBeingLoggedOutOnDiscord) {
+            const embed = {
+              footer: {
+                text: 'CSGO Trader',
+                icon_url: 'https://csgotrader.app/cstlogo48.png',
+              },
+              title,
+              description: message,
+              // #ff8c00 (taken from csgotrader.app text color)
+              color: 16747520,
+              fields: [],
+              timestamp: new Date(Date.now()).toISOString(),
+              type: 'rich',
+            };
+
+            notifyOnDiscord(embed);
+          }
+        }
+      },
+    );
+  } else chrome.storage.local.set({ logOutDetected: false }, () => { });
 };
 
 export {
   reverseWhenNotifDetails, determineNotificationDate, notifyOnDiscord,
-  getSteamNotificationCount, playNotificationSound, suspenSteamNotificationChecks,
+  playNotificationSound, loggedOutNotification,
 };

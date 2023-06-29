@@ -19,7 +19,7 @@ const Friends = () => {
         name="Monitor friend requests"
         id="monitorFriendRequests"
         type="flipSwitchStorage"
-        description="If you have the extension installed on multiple computers you might want to turn it off in some of them to save requests to Steam."
+        description="Incoming friend requests are checked every 5 minutes. If you have the extension installed on multiple computers you might want to turn it off in some of them to save requests to Steam."
       />
       <Row
         name="Notify about friend requests"

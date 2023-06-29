@@ -1,7 +1,7 @@
 import { storageKeys } from 'utils/static/storageKeys';
 import { updatePrices, updateExchangeRates, getUserCurrencyBestGuess } from 'utils/pricing';
 import {
-  scrapeSteamAPIkey, goToInternalPage, markModMessagesAsRead,
+  scrapeSteamAPIkey, goToInternalPage,
 } from 'utils/utilsModular';
 import {
   getGroupInvites, updateFriendRequest,
@@ -9,7 +9,7 @@ import {
 } from 'utils/friendRequests';
 import { trimFloatCache } from 'utils/floatCaching';
 import {
-  getSteamNotificationCount, playNotificationSound, notifyOnDiscord, suspenSteamNotificationChecks,
+  playNotificationSound,
 } from 'utils/notifications';
 import { updateTrades, removeOldOfferEvents } from 'utils/tradeOffers';
 
@@ -96,7 +96,8 @@ chrome.runtime.onInstalled.addListener((details) => {
   // and it fails to update prices/exchange rates
   updatePrices();
   updateExchangeRates();
-  chrome.alarms.create('getSteamNotificationCount', { periodInMinutes: 1 });
+  chrome.alarms.create('offerMonitoring', { periodInMinutes: 2 });
+  chrome.alarms.create('friendRequestMonitoring', { periodInMinutes: 5 });
   chrome.alarms.create('retryUpdatePricesAndExchangeRates', { periodInMinutes: 1 });
   chrome.alarms.create('dailyScheduledTasks', { periodInMinutes: 1440 });
   chrome.storage.local.get('priceUpdateFreq', ({ priceUpdateFreq }) => {
@@ -149,175 +150,29 @@ chrome.alarms.onAlarm.addListener((alarm) => {
       if (result.prices === null) updatePrices();
       else chrome.alarms.clear('retryUpdatePricesAndExchangeRates', () => { });
     });
-  } else if (alarm.name === 'getSteamNotificationCount') {
-    getSteamNotificationCount().then(({
-      invites, moderatorMessages, tradeOffers, items, comments,
-    }) => {
-      chrome.storage.local.get(
-        ['friendRequests', 'groupInvites', 'ignoreGroupInvites', 'monitorFriendRequests', 'numberOfNewItems',
-          'markModerationMessagesAsRead', 'monitorIncomingOffers', 'activeOffers', 'notifyAboutNewItems',
-          'numberOfComments', 'notifyAboutComments'],
-        ({
-          friendRequests, groupInvites, ignoreGroupInvites, monitorFriendRequests, numberOfNewItems,
-          markModerationMessagesAsRead, monitorIncomingOffers, activeOffers, notifyAboutNewItems,
-          numberOfComments, notifyAboutComments,
-        }) => {
-          chrome.storage.local.set({ recent401Detected: false }, () => { });
-          // friend request monitoring
-          const minutesFromLastFriendCheck = ((Date.now()
-            - new Date(friendRequests.lastUpdated)) / 1000) / 60;
-          const friendAndGroupInviteCount = friendRequests.inviters.length
-            + groupInvites.invitedTo.length;
-
-          if (invites !== friendAndGroupInviteCount || minutesFromLastFriendCheck >= 30) {
-            if (monitorFriendRequests) updateFriendRequest();
-            if (ignoreGroupInvites) {
-              getGroupInvites().then((inviters) => {
-                inviters.forEach((inviter) => {
-                  ignoreGroupRequest(inviter.steamID);
-                });
-              });
-            }
-          }
-
-          // moderation messages
-          if (markModerationMessagesAsRead && moderatorMessages > 0) markModMessagesAsRead();
-
-          // trade offers monitoring
-          const minutesFromLastOfferCheck = ((Date.now()
-            - (new Date(activeOffers.lastFullUpdate) * 1000)) / 1000) / 60;
-
-          if (monitorIncomingOffers
-            && (tradeOffers !== activeOffers.receivedActiveCount
-              || minutesFromLastOfferCheck >= 2)) {
-            updateTrades().then(() => { }).catch((e) => { console.log(e); });
-          }
-
-          // new items notification
-          if (notifyAboutNewItems && items !== numberOfNewItems) {
-            const numberOfJustNoticedNewItems = items > numberOfNewItems
-              ? items - numberOfNewItems
-              : 0;
-            if (numberOfJustNoticedNewItems > 0) {
-              const title = numberOfJustNoticedNewItems === 1
-                ? `${numberOfJustNoticedNewItems} new item!`
-                : `${numberOfJustNoticedNewItems} new items!`;
-              const message = numberOfJustNoticedNewItems === 1
-                ? `You have ${numberOfJustNoticedNewItems} item in your inventory!`
-                : `You have ${numberOfJustNoticedNewItems} items in your inventory!`;
-
-              chrome.notifications.create(`new_inventory_items_${Date.now()}`, {
-                type: 'basic',
-                iconUrl: '/images/cstlogo128.png',
-                title,
-                message,
-              }, () => {
-                playNotificationSound();
-              });
-            }
-            chrome.storage.local.set({
-              numberOfNewItems: items,
-            });
-          }
-
-          // comment notification
-          if (notifyAboutComments) {
-            const newComments = comments - numberOfComments;
-            if (newComments > 0) {
-              const title = newComments === 1
-                ? `${newComments} new comment!`
-                : `${newComments} new comments!`;
-              const message = newComments === 1
-                ? `You have ${newComments} new comment!`
-                : `You have ${newComments} new comments!`;
-              chrome.notifications.create('new_comment', {
-                type: 'basic',
-                iconUrl: '/images/cstlogo128.png',
-                title,
-                message,
-              }, () => {
-                playNotificationSound();
-              });
-            }
-            chrome.storage.local.set({
-              numberOfComments: comments,
-            });
-          }
-        },
-      );
-    }, (error) => {
-      console.log(error);
-      if (error === 401 || error === 403) {
-        if (error === 401) { // user not logged in
-          chrome.storage.local.get(['recent401Detected'], ({ recent401Detected }) => {
-            if (recent401Detected) {
-              console.log('User not logged in, suspending notification checks for an hour.');
-              suspenSteamNotificationChecks();
-              
-              chrome.storage.local.get(
-                ['notifyAboutBeingLoggedOut', 'notifyAboutBeingLoggedOutOnDiscord', 'nickNameOfUser'],
-                ({
-                  notifyAboutBeingLoggedOut, notifyAboutBeingLoggedOutOnDiscord, nickNameOfUser,
-                }) => {
-                  const title = 'You are not signed in on Steam!';
-                  const message = `Hi, ${nickNameOfUser}! You set to be notified if the extension detects that you are not logged in.`;
-
-                  if (notifyAboutBeingLoggedOut) {
-                    chrome.notifications.create(alarm.name, {
-                      type: 'basic',
-                      iconUrl: '/images/cstlogo128.png',
-                      title,
-                      message,
-                    }, () => {
-                      playNotificationSound();
-                    });
-                  }
-
-                  if (notifyAboutBeingLoggedOutOnDiscord) {
-                    const embed = {
-                      footer: {
-                        text: 'CSGO Trader',
-                        icon_url: 'https://csgotrader.app/cstlogo48.png',
-                      },
-                      title,
-                      description: message,
-                      // #ff8c00 (taken from csgotrader.app text color)
-                      color: 16747520,
-                      fields: [],
-                      timestamp: new Date(Date.now()).toISOString(),
-                      type: 'rich',
-                    };
-
-                    notifyOnDiscord(embed);
-                  }
-                },
-              );
-            } else {
-              chrome.storage.local.set({ recent401Detected: true }, () => { });
-              console.log('Session expired? Attempting to refresh a Steam page or open the Steam profile page to get a new session.');
-
-              chrome.permissions.contains({ permissions: ['tabs'] }, (permission) => {
-                if (permission) {
-                  chrome.tabs.query({ url: 'https://steamcommunity.com/*' }, (tabs) => {
-                    if (tabs.length !== 0) chrome.tabs.reload(tabs[0].id, {}, () => {});
-                    else {
-                      chrome.tabs.create({
-                        url: 'https://steamcommunity.com/my/tradeoffers?csgotrader_close=true',
-                      });
-                    }
-                  });
-                }
-              });
-            }
-          });
-        } else if (error === 403) { // Steam is temporarily blocking this ip
-          console.log('Steam is denying access, suspending notification checks for an hour.');
-          suspenSteamNotificationChecks();
-        }
+  } else if (alarm.name === 'offerMonitoring') {
+    chrome.storage.local.get(['monitorIncomingOffers'], ({ monitorIncomingOffers }) => {
+      if (monitorIncomingOffers) {
+        updateTrades().then(() => { }).catch((e) => { console.log(e); });
       }
     });
-  } else if (alarm.name === 'restartNotificationChecks') {
-    chrome.alarms.create('getSteamNotificationCount', { periodInMinutes: 1 });
+  } else if (alarm.name === 'friendRequestMonitoring') { // also handles group invites and notification about being logged out
+    chrome.storage.local.get([
+      'monitorFriendRequests', 'ignoreGroupInvites', 'notifyAboutBeingLoggedOut', 'notifyAboutBeingLoggedOutOnDiscord',
+    ], ({
+      monitorFriendRequests, ignoreGroupInvites,
+      notifyAboutBeingLoggedOut, notifyAboutBeingLoggedOutOnDiscord,
+    }) => {
+      if (monitorFriendRequests || notifyAboutBeingLoggedOut
+        || notifyAboutBeingLoggedOutOnDiscord) updateFriendRequest();
+      if (ignoreGroupInvites) {
+        getGroupInvites().then((inviters) => {
+          inviters.forEach((inviter) => {
+            ignoreGroupRequest(inviter.steamID);
+          });
+        });
+      }
+    });
   } else if (alarm.name === 'priceUpdate') {
     chrome.storage.local.get('itemPricing', ({ itemPricing }) => {
       if (itemPricing) updatePrices();
