@@ -917,7 +917,7 @@ const addRightSideElements = () => {
       // adds "starting at" and sales volume to everyone's inventory
       if (!isOwnInventory()) addStartingAtPrice(item.appid, item.market_hash_name);
       else if (item.marketable) { // adds quick and instant sell buttons
-        chrome.storage.local.get(['inventoryInstantQuickButtons'], ({ inventoryInstantQuickButtons }) => {
+        chrome.storage.local.get(['inventoryInstantQuickButtons', 'safeInstantQuickSell'], ({ inventoryInstantQuickButtons, safeInstantQuickSell }) => {
           if (inventoryInstantQuickButtons) {
             document.querySelectorAll('.item_market_actions').forEach((marketActions) => {
               marketActions.insertAdjacentHTML(
@@ -938,6 +938,8 @@ const addRightSideElements = () => {
 
               marketActions.querySelectorAll('.marketActionInstantSell').forEach((instantSellButton) => {
                 instantSellButton.addEventListener('click', () => {
+                  if (safeInstantQuickSell && !window.confirm('Are you sure you want to Instant Sell this item?')) return; // eslint-disable-line no-alert
+
                   getHighestBuyOrder(
                     item.appid,
                     item.market_hash_name,
@@ -973,6 +975,8 @@ const addRightSideElements = () => {
 
               marketActions.querySelectorAll('.marketActionQuickSell').forEach((quickSellButton) => {
                 quickSellButton.addEventListener('click', () => {
+                  if (safeInstantQuickSell && !window.confirm('Are you sure you want to Quick Sell this item?')) return; // eslint-disable-line no-alert
+
                   getLowestListingPrice(
                     item.appid,
                     item.market_hash_name,

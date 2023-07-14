@@ -69,6 +69,12 @@ const inventory = () => {
         description="Adds Instant Sell and Quick Sell buttons by the normal Sell button for the active inventory item"
       />
       <Row
+        name="Safe Instant and Quick sell"
+        id="safeInstantQuickSell"
+        type="flipSwitchStorage"
+        description="Instant and Quick sell actions require another layer of confirmation via a popup (to prevent misclicks)"
+      />
+      <Row
         name="Show duplicate count"
         id="inventoryShowDuplicateCount"
         type="flipSwitchStorage"
