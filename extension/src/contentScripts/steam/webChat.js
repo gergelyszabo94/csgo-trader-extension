@@ -12,7 +12,7 @@ const addChatPresets = () => {
   document.querySelectorAll('.DropTarget.chatWindow.MultiUserChat').forEach((chatDialog) => {
     let presetMessageSelect = chatDialog.querySelector('.messagePreset');
     if (!presetMessageSelect) {
-      const chatEntryDiv = chatDialog.querySelector('.chatEntry.Panel.Focusable');
+      const chatEntryDiv = chatDialog.querySelector('.chatEntry.Panel');
 
       if (chatEntryDiv) {
         const entryForm = chatEntryDiv.querySelector('form');
