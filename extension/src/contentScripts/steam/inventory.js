@@ -938,7 +938,7 @@ const addRightSideElements = () => {
 
               marketActions.querySelectorAll('.marketActionInstantSell').forEach((instantSellButton) => {
                 instantSellButton.addEventListener('click', () => {
-                  if (safeInstantQuickSell && !confirm('Are you sure you want to Instant Sell this item?')) return;
+                  if (safeInstantQuickSell && !window.confirm('Are you sure you want to Instant Sell this item?')) return; // eslint-disable-line no-alert
 
                   getHighestBuyOrder(
                     item.appid,
@@ -975,7 +975,7 @@ const addRightSideElements = () => {
 
               marketActions.querySelectorAll('.marketActionQuickSell').forEach((quickSellButton) => {
                 quickSellButton.addEventListener('click', () => {
-                  if (safeInstantQuickSell && !confirm('Are you sure you want to Quick Sell this item?')) return;
+                  if (safeInstantQuickSell && !window.confirm('Are you sure you want to Quick Sell this item?')) return; // eslint-disable-line no-alert
 
                   getLowestListingPrice(
                     item.appid,
