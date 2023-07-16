@@ -3,12 +3,12 @@ const path = require('path');
 const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const WriteFilePlugin = require('write-file-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
-module.exports = (env) => {
+module.exports = (env, argv) => {
   const fileExtensions = ['jpg', 'jpeg', 'png', 'gif', 'eot', 'otf', 'svg', 'ttf', 'woff', 'woff2'];
-  const mode = env.mode || 'development';
+  const mode = argv.mode || 'development';
 
   // requited for the chrome manifest.json so the development version gets the same id as the prod
   const chromeExtKey = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAycJXpmt94FIYH7+OVQswE8ZLWTqmNt3VePgk3IkOVP9QtEvXAcSNvtldqWCH3kFikAJzyeXdUM/puDOwZ4yM0KMgDbhfragLcB9j14VP2i3f3F98utOrRrl0eUAHFJ2fP2yCFbPqOiRZA9JK2jotpHhHib+lO2hLEtAbpnvMhD+TdIuPr33QEJcLkAfqCLZKrFGzqsOV+5NCkLQYfptA9v1KersX8FfFSDRmuzWipfo8EEwJDTcImau4v0YB+lZulHodxv5INt4Xp0Iq/lOgdm/6xUVdhZ3ISyjSvjLWVwstd1UMlLNxyBA9ibpc5UpkXDuPmkd77S2qVyMgsGtEPQIDAQAB';
@@ -71,7 +71,6 @@ module.exports = (env) => {
       filename: 'index.html',
       chunks: ['index'],
     }),
-    new WriteFilePlugin(),
     new MiniCssExtractPlugin({
       // Options similar to the same options in webpackOptions.output
       // both options are optional
@@ -116,6 +115,7 @@ module.exports = (env) => {
       publicPath: '/',
       path: path.join(__dirname, 'build'),
       filename: '[name].bundle.js',
+      //assetModuleFilename: '[name].[ext]',
     },
     module: {
       rules: [
@@ -142,12 +142,15 @@ module.exports = (env) => {
         },
         {
           test: new RegExp(`.(${fileExtensions.join('|')})$`),
-          loader: 'file-loader?name=[name].[ext]',
+          type: 'asset/resource',
           exclude: /node_modules/,
         },
         {
           test: /\.html$/,
           loader: 'html-loader',
+          options: {
+            sources: false,
+          },
           exclude: /node_modules/,
         },
         {
@@ -161,12 +164,22 @@ module.exports = (env) => {
       modules: [path.resolve(__dirname, './src'), 'node_modules'],
       extensions: fileExtensions.map((extension) => (`.${extension}`)).concat(['.jsx', '.js', '.css']),
     },
-    devtool: '',
+    optimization: {
+      minimizer: [new TerserPlugin({ // used to avoid the creation of commments/license txt files
+        extractComments: false,
+      })],
+    },
+    // devtool: 'inline-nosources-cheap-source-map',
+    devtool: mode ==='production' ? 'source-map' : 'cheap-module-source-map',
     plugins:
       (mode === 'production') ? [...pluginsToAlwaysUse, new CleanWebpackPlugin()] : pluginsToAlwaysUse, // CleanWebpackPlugin only needs to run when it's a production build
     devServer: {
-      writeToDisk: true,
-      contentBase: path.join(__dirname, '../build'),
+      devMiddleware: {
+        writeToDisk: true,
+      },
+      static: {
+        directory: path.join(__dirname, "../build")
+      },
     },
   };
 };

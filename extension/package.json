@@ -14,10 +14,10 @@
     "babel-jest": "^26.0.0",
     "babel-loader": "8.1.0",
     "bootstrap": "^4.4.1",
-    "clean-webpack-plugin": "3.0.0",
-    "copy-webpack-plugin": "6.0.2",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^11.0.0",
     "csgo-fade-percentage-calculator": "^0.1.13",
-    "css-loader": "3.6.0",
+    "css-loader": "^6.8.1",
     "dompurify": "^2.1.1",
     "eslint": "^6.6.0",
     "eslint-config-airbnb": "^18.0.1",
@@ -28,11 +28,10 @@
     "eslint-plugin-jsx-a11y": "6.3.1",
     "eslint-plugin-react": "7.20.0",
     "eslint-plugin-react-hooks": "^2.5.1",
-    "file-loader": "6.0.0",
-    "html-loader": "1.1.0",
-    "html-webpack-plugin": "4.3.0",
+    "html-loader": "^4.2.0",
+    "html-webpack-plugin": "^5.5.3",
     "identity-obj-proxy": "3.0.0",
-    "mini-css-extract-plugin": "^0.9.0",
+    "mini-css-extract-plugin": "^2.7.6",
     "react": "^17.0.2",
     "react-bootstrap": "^2.0.3",
     "react-datepicker": "^3.0.0",
@@ -40,16 +39,15 @@
     "react-router-bootstrap": "^0.25.0",
     "react-router-dom": "^5.1.2",
     "react-slider": "^1.0.8",
-    "sass": "^1.44.0",
-    "sass-loader": "8.0.2",
-    "webpack": "4.43.0",
-    "webpack-cli": "3.3.12",
-    "webpack-dev-server": "4.11.1",
-    "write-file-webpack-plugin": "4.5.1"
+    "sass": "^1.63.6",
+    "sass-loader": "^13.3.2",
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.11.1"
   },
   "scripts": {
-    "build": "webpack --progress --colors --env.mode='production'",
-    "start": "webpack --env.mode='development' --watch & webpack-dev-server --inline --progress --colors"
+    "build": "webpack --progress --mode production",
+    "start": "webpack --mode development --watch & webpack-dev-server --progress"
   },
   "browserslist": [
     "last 2 chrome version",
@@ -59,6 +57,7 @@
     "build": "src/"
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.233"
+    "@types/chrome": "^0.0.233",
+    "@webpack-cli/serve": "^2.0.5"
   }
 }
