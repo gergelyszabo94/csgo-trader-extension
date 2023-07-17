@@ -12,7 +12,7 @@
     "bootstrap": "^4.6.2",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
-    "csgo-fade-percentage-calculator": "^0.1.13",
+    "csgo-fade-percentage-calculator": "^1.1.2",
     "css-loader": "^6.8.1",
     "dompurify": "^2.1.1",
     "eslint": "^8.45.0",
