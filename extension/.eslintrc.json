@@ -10,11 +10,32 @@
   "settings": {
     "import/resolver": {
       "node": {
-        "moduleDirectory": ["node_modules", "src/"]
+        "moduleDirectory": [
+          "node_modules",
+          "src/"
+        ]
       }
     }
   },
   "rules": {
+    "max-len": [
+      "warn",
+      {
+        "code": 140,
+        "ignoreStrings": true,
+        "ignoreTemplateLiterals": true,
+        "ignoreRegExpLiterals": true
+      }
+    ],
+    "camelcase": "warn",
+    "func-style": "off",
+    "function-paren-newline": "off",
+    "react/function-component-definition": ["warn", {
+      "namedComponents": "arrow-function",
+      "unnamedComponents": "arrow-function"
+    }],
+    "function-call-argument-newline": "off",
+    "array-callback-return": "off", // not recommended anymore: https://github.com/eslint/eslint/issues/8428
     "react-hooks/rules-of-hooks": "error", // checks rules of Hooks
     "react-hooks/exhaustive-deps": "off", // checks effect dependencies
     "react/jsx-no-target-blank": [ // referrers are important to keep for analytics
@@ -31,7 +52,8 @@
           ".js",
           ".jsx"
         ]
-      }],
+      }
+    ],
     "react/prop-types": "off", // could be a good thing but seems to be a lot of work
     "react/jsx-props-no-spreading": "off", // might be worthy for a revisit
     "no-console": "off", // there are plenty of places where logging to console is used and is valid
@@ -42,9 +64,12 @@
     "radix": "off",
     "prefer-promise-reject-errors": "off", // reconsider later, would require quite some work https://eslint.org/docs/rules/prefer-promise-reject-errors
     "no-nested-ternary": "off", // well-formatted nested trinaries are much cleaner than the alternatives
-    "no-param-reassign": [2, { // pretty anoying when manipulating the DOM
-      "props": false
-    }],
+    "no-param-reassign": [
+      2,
+      { // pretty anoying when manipulating the DOM
+        "props": false
+      }
+    ],
     "linebreak-style": "off", // git should handle this
     "jsx-a11y/label-has-associated-control": "off", // does not allow the span that we use for the flip switch inside the label
     "no-trailing-spaces": [

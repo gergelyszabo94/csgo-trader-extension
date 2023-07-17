@@ -69,6 +69,7 @@ const extractUsefulFloatInfo = (floatInfo) => {
     paintindex,
     paintseed,
     defindex,
+    // eslint-disable-next-line camelcase
     origin_name,
     min,
     max,

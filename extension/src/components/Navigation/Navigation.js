@@ -8,45 +8,43 @@ import links from './links';
 
 const navigation = () => {
   return (
-    <>
-      <Navbar
-        expand="lg"
-        variant="dark"
-        className="sticky-top nav--shadow nav--dark"
-      >
-        <Navbar.Brand href="https://csgotrader.app">
-          <img
-            src={logo}
-            className="d-inline-block navlogo"
-            alt="CSGO Trader Extension logo"
-          />
-          CSGO Trader Extension
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav className="mr-auto">
-            {links.map((link) => {
-              return !link.isExternal ? (
-                <RouterNavLink
-                  to={link.path}
-                  exact={false}
-                  activeClassName="active"
-                  key={link.id}
-                >
-                  {link.title}
-                </RouterNavLink>
-              ) : (
-                <NewTabLink to={link.path} className="nav-link" key={link.id}>
-                  {' '}
-                  {link.title}
-                  {' '}
-                </NewTabLink>
-              );
-            })}
-          </Nav>
-        </Navbar.Collapse>
-      </Navbar>
-    </>
+    <Navbar
+      expand="lg"
+      variant="dark"
+      className="sticky-top nav--shadow nav--dark"
+    >
+      <Navbar.Brand href="https://csgotrader.app">
+        <img
+          src={logo}
+          className="d-inline-block navlogo"
+          alt="CSGO Trader Extension logo"
+        />
+        CSGO Trader Extension
+      </Navbar.Brand>
+      <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+      <Navbar.Collapse id="responsive-navbar-nav">
+        <Nav className="mr-auto">
+          {links.map((link) => {
+            return !link.isExternal ? (
+              <RouterNavLink
+                to={link.path}
+                exact={false}
+                activeClassName="active"
+                key={link.id}
+              >
+                {link.title}
+              </RouterNavLink>
+            ) : (
+              <NewTabLink to={link.path} className="nav-link" key={link.id}>
+                {' '}
+                {link.title}
+                {' '}
+              </NewTabLink>
+            );
+          })}
+        </Nav>
+      </Navbar.Collapse>
+    </Navbar>
   );
 };
 

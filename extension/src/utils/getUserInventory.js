@@ -185,7 +185,6 @@ const getUserCSGOInventoryAlternative = (steamID) => new Promise((resolve, rejec
           // counts duplicates
           assets.forEach((asset) => {
             floatCacheAssetIDs.push(asset.assetid);
-            // eslint-disable-array-callback-return
             const description = descriptions.filter((desc) => {
               if (asset.classid === desc.classid && asset.instanceid === desc.instanceid) {
                 return desc;

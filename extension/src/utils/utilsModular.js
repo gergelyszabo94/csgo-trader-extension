@@ -270,7 +270,6 @@ const getPattern = (name, paintSeed) => {
       else if (name.includes('Gut Knife')) percentage = FadeCalculator.getFadePercentage('Gut Knife', paintSeed).percentage;
       else if (name.includes('Falchion Knife')) percentage = FadeCalculator.getFadePercentage('Falchion Knife', paintSeed).percentage;
       else if (name.includes('Classic Knife')) percentage = FadeCalculator.getFadePercentage('Classic Knife', paintSeed).percentage;
-      else if (name.includes('Navaja Knife')) percentage = FadeCalculator.getFadePercentage('Navaja Knife', paintSeed).percentage;
       else if (name.includes('Nomad Knife')) percentage = FadeCalculator.getFadePercentage('Nomad Knife', paintSeed).percentage;
       else if (name.includes('Paracord Knife')) percentage = FadeCalculator.getFadePercentage('Paracord Knife', paintSeed).percentage;
       else if (name.includes('Skeleton Knife')) percentage = FadeCalculator.getFadePercentage('Skeleton Knife', paintSeed).percentage;
@@ -599,7 +598,7 @@ const addFloatRankIndicator = (itemElement, floatInfo, showContrastingLook) => {
 };
 
 const addPriceIndicator = (
-  itemElement, priceInfo, pricePercentage = 100, currency, showContrastingLook,
+  itemElement, priceInfo, currency, showContrastingLook, pricePercentage = 100,
 ) => {
   if (priceInfo !== undefined && priceInfo !== 'null' && priceInfo !== null) {
     const disPlayPrice = pricePercentage === 100

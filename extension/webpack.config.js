@@ -5,6 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 module.exports = (env, argv) => {
   const fileExtensions = ['jpg', 'jpeg', 'png', 'gif', 'eot', 'otf', 'svg', 'ttf', 'woff', 'woff2'];
@@ -77,6 +78,11 @@ module.exports = (env, argv) => {
       filename: '[name].css',
       chunkFilename: '[id].css',
     }),
+    new ESLintPlugin({
+      cache: false,
+      emitWarning: true,
+      fix: false,
+    }),
   ];
 
   return {
@@ -115,21 +121,9 @@ module.exports = (env, argv) => {
       publicPath: '/',
       path: path.join(__dirname, 'build'),
       filename: '[name].bundle.js',
-      //assetModuleFilename: '[name].[ext]',
     },
     module: {
       rules: [
-        {
-          enforce: 'pre',
-          test: /\.js$/,
-          exclude: /node_modules/,
-          loader: 'eslint-loader',
-          options: {
-            cache: false,
-            emitWarning: true,
-            fix: true,
-          },
-        },
         {
           test: /\.(sa|sc|c)ss$/,
           use: [

@@ -179,7 +179,7 @@ const addItemInfo = (items) => {
             addSSTandExtIndicators(
               itemElement, item, showStickerPrice, showShortExteriorsOffers, showContrastingLook,
             );
-            addPriceIndicator(itemElement, item.price, 100, currency, showContrastingLook);
+            addPriceIndicator(itemElement, item.price, currency, showContrastingLook);
 
             if (itemInOtherOffers) {
               addInOtherTradeIndicator(itemElement, item, activeOffers.items);

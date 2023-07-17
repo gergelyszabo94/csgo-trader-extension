@@ -16,7 +16,7 @@ const Popup = lazy(() => import('./pages/Popup/Popup'));
 const Options = lazy(() => import('./pages/Options/Options'));
 const TradeHistory = lazy(() => import('./pages/TradeHistory/TradeHistory'));
 
-function App() {
+const App = () => {
   if (window.location.search === '?page=popup') {
     return (
       <Suspense fallback={<div>Loading...</div>}>
@@ -51,6 +51,6 @@ function App() {
       ) : null}
     </Router>
   );
-}
+};
 
 export default App;

@@ -1316,7 +1316,7 @@ const addPerItemInfo = (appID) => {
               showShortExteriorsInventory, showContrastingLook,
             );
             addPriceIndicator(
-              itemElement, item.price, pricePercentage, currency, showContrastingLook,
+              itemElement, item.price, currency, showContrastingLook, pricePercentage,
             );
             if (itemInOffersInventory) {
               addInOtherTradeIndicator(itemElement, item, activeOffers.items);
@@ -1347,7 +1347,7 @@ const addPerItemInfo = (appID) => {
           if (currentPriceIndicatorEl) {
             currentPriceIndicatorEl.remove();
             addPriceIndicator(
-              itemElement, item.price, pricePercentage, currency, showContrastingLook,
+              itemElement, item.price, currency, showContrastingLook, pricePercentage,
             );
             itemElement.setAttribute('data-price-ratio', pricePercentage);
           }

@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import { injectScript } from 'utils/injection';
 
 // makes trade offers open in new tab instead of a separate window
