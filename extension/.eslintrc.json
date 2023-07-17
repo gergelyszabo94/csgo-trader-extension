@@ -78,6 +78,7 @@
         "skipBlankLines": true,
         "ignoreComments": true
       }
-    ]
+    ],
+    "spaced-comment": "warn"
   }
 }
