@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExport, faPlay } from '@fortawesome/free-solid-svg-icons';
-import DatePicker from 'react-datepicker/es';
+import DatePicker from 'react-datepicker';
 
 import CustomA11yButton from 'components/CustomA11yButton/CustomA11yButton';
 import { getTradeHistory } from 'utils/IEconService';
