@@ -36,9 +36,9 @@
     "react-slider": "^2.0.6",
     "sass": "^1.63.6",
     "sass-loader": "^13.3.2",
-    "webpack": "^5.88.1",
+    "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.11.1"
+    "webpack-dev-server": "^4.15.1"
   },
   "scripts": {
     "build": "webpack --progress --mode production",
@@ -53,7 +53,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@types/chrome": "^0.0.233",
+    "@types/chrome": "^0.0.241",
     "@webpack-cli/serve": "^2.0.5"
   }
 }
