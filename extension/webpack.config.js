@@ -81,7 +81,7 @@ module.exports = (env, argv) => {
     new ESLintPlugin({
       cache: false,
       emitWarning: true,
-      fix: false,
+      fix: true,
     }),
   ];
 
@@ -163,7 +163,6 @@ module.exports = (env, argv) => {
         extractComments: false,
       })],
     },
-    // devtool: 'inline-nosources-cheap-source-map',
     devtool: mode ==='production' ? 'source-map' : 'cheap-module-source-map',
     plugins:
       (mode === 'production') ? [...pluginsToAlwaysUse, new CleanWebpackPlugin()] : pluginsToAlwaysUse, // CleanWebpackPlugin only needs to run when it's a production build

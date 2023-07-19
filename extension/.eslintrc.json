@@ -27,6 +27,11 @@
         "ignoreRegExpLiterals": true
       }
     ],
+    "no-unused-vars": "warn",
+    "react/jsx-tag-spacing": "warn",
+    "react/jsx-indent": "warn",
+    "react/jsx-indent-props": "warn",
+    "quotes": "warn",
     "camelcase": "warn",
     "func-style": "off",
     "function-paren-newline": "off",
