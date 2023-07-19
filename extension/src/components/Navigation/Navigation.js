@@ -1,12 +1,12 @@
 import React from 'react';
 import { Navbar, Nav } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
 import logo from 'assets/images/cstlogo48.png';
 import './Navigation.css';
 import NewTabLink from 'components/NewTabLink/NewTabLink';
 import links from './links';
+import CustomNavLink from './CustomNavLink';
 
-const navigation = () => {
+const Navigation = () => {
   return (
     <Navbar
       expand="lg"
@@ -25,22 +25,14 @@ const navigation = () => {
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="mr-auto">
           {links.map((link) => {
-            return !link.isExternal ? (
-              <RouterNavLink
-                to={link.path}
-                exact={false}
-                activeClassName="active"
-                key={link.id}
-              >
-                {link.title}
-              </RouterNavLink>
-            ) : (
-              <NewTabLink to={link.path} className="nav-link" key={link.id}>
-                {' '}
-                {link.title}
-                {' '}
-              </NewTabLink>
-            );
+            return !link.isExternal ? <CustomNavLink to={link.path} key={link.id} title={link.title} activeClassName="active" />
+              : (
+                <NewTabLink to={link.path} className="nav-link" key={link.id}>
+                  {' '}
+                  {link.title}
+                  {' '}
+                </NewTabLink>
+              );
           })}
         </Nav>
       </Navbar.Collapse>
@@ -48,11 +40,4 @@ const navigation = () => {
   );
 };
 
-// workaround from here: https://github.com/react-bootstrap/react-linkr-bootstrap/issues/242#issuecomment-480330910
-const RouterNavLink = ({ children, ...props }) => (
-  <LinkContainer {...props}>
-    <Nav.Link active={false}>{children}</Nav.Link>
-  </LinkContainer>
-);
-
-export default navigation;
+export default Navigation;

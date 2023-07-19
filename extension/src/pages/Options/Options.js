@@ -1,11 +1,11 @@
 import React from 'react';
 import {
-  BrowserRouter as Router,
-  Switch,
+  Routes,
   Route,
+  Navigate,
 } from 'react-router-dom';
 import { Nav } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
+import CustomNavLink from 'components/Navigation/CustomNavLink';
 
 import Notifications from 'components/Options/Categories/Notifications';
 import General from 'components/Options/Categories/General';
@@ -95,55 +95,45 @@ const routes = [
   },
 ];
 
-const options = ({ match }) => {
+const Options = () => {
   return (
     <div className="options">
-      <Router>
-        <div className="container-fluid full-height">
-          <div className="row">
-            <div className="col-md-2 d-none d-md-block nav__sidebar">
-              <div className="sidebar-sticky">
-                <Nav
-                  defaultActiveKey="/options/general/"
-                  className="flex-column"
-                >
-                  {routes.map((route) => (
-                    <RouterNavLink
-                      to={match.path + route.to}
-                      exact={false}
-                      activeClassName="sideNavActive"
-                      key={route.to}
-                      className="px-4 py-3"
-                    >
-                      {route.name}
-                    </RouterNavLink>
-                  ))}
-                </Nav>
-              </div>
-            </div>
-            <div className="col-md-10 ml-sm-auto col-lg-10 pt-3 px-4 options__content">
-              <Switch>
+      <div className="container-fluid full-height">
+        <div className="row">
+          <div className="col-md-2 d-none d-md-block nav__sidebar">
+            <div className="sidebar-sticky">
+              <Nav
+                defaultActiveKey="/options/general/"
+                className="flex-column"
+              >
                 {routes.map((route) => (
-                  <Route
-                    path={match.path + route.to}
-                    component={route.component}
+                  <CustomNavLink
+                    to={route.to}
                     key={route.to}
+                    title={route.name}
+                    activeClassName="sideNavActive"
+                    className="px-4 py-3"
                   />
                 ))}
-              </Switch>
+              </Nav>
             </div>
           </div>
+          <div className="col-md-10 ml-sm-auto col-lg-10 pt-3 px-4 options__content">
+            <Routes>
+              {routes.map((route) => (
+                <Route
+                  path={route.to}
+                  element={<route.component />}
+                  key={route.to}
+                />
+              ))}
+              <Route path="*" element={<Navigate to="general/" replace />} />
+            </Routes>
+          </div>
         </div>
-      </Router>
+      </div>
     </div>
   );
 };
 
-// workaround from here: https://github.com/react-bootstrap/react-linkr-bootstrap/issues/242#issuecomment-480330910
-const RouterNavLink = ({ children, ...props }) => (
-  <LinkContainer {...props}>
-    <Nav.Link active={false}>{children}</Nav.Link>
-  </LinkContainer>
-);
-
-export default options;
+export default Options;

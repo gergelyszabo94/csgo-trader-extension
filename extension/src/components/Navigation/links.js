@@ -2,7 +2,7 @@ const links = [
   {
     title: 'Options',
     id: 'options',
-    path: '/options/general/',
+    path: '/options/',
     isExternal: false,
   },
   {
@@ -14,7 +14,7 @@ const links = [
   {
     title: 'Trade History',
     id: 'tradehistory',
-    path: '/trade-history/history',
+    path: '/trade-history/',
     isExternal: false,
   },
   {
