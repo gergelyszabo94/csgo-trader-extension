@@ -82,35 +82,18 @@ const openAndAcceptOffer = (offerID, partnerID) => {
   });
 };
 
-// this gets injected to the page page context from the background script
-const getAcceptScriptAsString = (offerID, partnerID) => {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }) => {
-      resolve(`
-      let acceptTries${offerID} = 1;
-      
-      let acceptInterval${offerID} = setInterval(() => {
-         myHeaders = new Headers();
-         myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-         
-         if (acceptTries${offerID} <= 5) {
-            acceptTries${offerID} += 1;
-            request = new Request(\`https://steamcommunity.com/tradeoffer/${offerID}/accept\`,
-           {
-             method: 'POST',
-             headers: myHeaders,
-             referrer: \`https://steamcommunity.com/tradeoffer/${offerID}/\`,
-             body: \`sessionid=${steamSessionID}&serverid=1&tradeofferid=${offerID}&partner=${partnerID}&captcha=\`,
-           });
-    
-           fetch(request).then(() => {
-             clearInterval(acceptInterval${offerID});
-           }); 
-         } else {
-            clearInterval(acceptInterval${offerID});
-         }
-      }, acceptTries${offerID} * 5000);`);
-    });
+const acceptTradeWithRetryInject = (offerID, partnerID) => {
+  window[`acceptTries${offerID}`] = 1;
+
+  window[`acceptInterval$${offerID}`] = setInterval(() => {
+    if (window[`acceptTries${offerID}`] <= 5) {
+      window[`acceptTries${offerID}`] += 1;
+      acceptOffer(offerID, partnerID).then(() => {
+        clearInterval(window[`acceptInterval$${offerID}`]);
+      }).catch((e) => {
+        console.log(e);
+      });
+    } else clearInterval(window[`acceptInterval$${offerID}`]);
   });
 };
 
@@ -121,11 +104,13 @@ const acceptTradeInBackground = (offerID, partnerID) => {
     if (permission) {
       chrome.tabs.query({ url: 'https://steamcommunity.com/*' }, (tabs) => {
         if (tabs.length !== 0) {
-          getAcceptScriptAsString(offerID, partnerID).then((scriptString) => {
-            chrome.tabs.executeScript(tabs[0].id, {
-              code: scriptString,
-            }, () => {});
-          });
+          chrome.scripting.executeScript({
+            target: {
+              tabId: tabs[0].id,
+            },
+            func: acceptTradeWithRetryInject,
+            args: [offerID, partnerID],
+          }, () => {});
         } else openAndAcceptOffer(offerID, partnerID);
       });
     }

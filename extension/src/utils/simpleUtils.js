@@ -12,13 +12,23 @@ const getOfferLink = (offerID) => {
   return `https://steamcommunity.com/tradeoffer/${offerID}`;
 };
 
-const playAudio = (source, sourceType, volume) => {
+// Create the offscreen document if it doesn't already exist
+const createOffscreen = async () => {
+  if (await chrome.offscreen.hasDocument()) return;
+  await chrome.offscreen.createDocument({
+    url: '/offScreen/offscreen.html',
+    reasons: [chrome.offscreen.Reason.AUDIO_PLAYBACK],
+    justification: 'to play notification sound in the background',
+  });
+};
+
+// https://stackoverflow.com/questions/67437180/play-audio-from-background-script-in-chrome-extention-manifest-v3
+const playAudio = async (source, sourceType, volume) => {
   const sourceURL = sourceType === 'local'
     ? chrome.runtime.getURL(source)
     : source;
-  const audio = new Audio(sourceURL);
-  audio.volume = volume;
-  audio.play();
+  await createOffscreen();
+  await chrome.runtime.sendMessage({ playAudio: { sourceURL, volume } });
 };
 
 const getItemByNameAndGame = (inventory, appID, contextID, itemName) => {

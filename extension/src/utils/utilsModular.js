@@ -938,7 +938,7 @@ const getRemoteImageAsObjectURL = (imageURL) => new Promise((resolve, reject) =>
 
 // true when chrome or edge, false on ff
 const isChromium = () => {
-  return chrome.extension.getURL('/index.html').includes('chrome-extension');
+  return chrome.runtime.getURL('/index.html').includes('chrome-extension');
 };
 
 const getFloatDBLink = (item) => {

@@ -20,7 +20,6 @@ module.exports = (env, argv) => {
     const manifest = JSON.parse(buffer.toString());
 
     manifest.options_page = 'index.html';
-    manifest.background.persistent = false;
 
     if (mode === 'development') {
       manifest.key = chromeExtKey;
@@ -65,6 +64,10 @@ module.exports = (env, argv) => {
           from: 'src/assets/sounds',
           to: 'sounds/',
         },
+        {
+          from: 'src/offScreen/offscreen.html',
+          to: 'offScreen/offscreen.html',
+        },
       ],
     }),
     new HtmlWebpackPlugin({
@@ -92,9 +95,11 @@ module.exports = (env, argv) => {
       // that is used for the popup, options and bookmarks
       index: path.join(__dirname, 'src', '', 'index.js'),
 
-      // background scripts
+      // background script
       'js/backgroundScripts/background': path.join(__dirname, 'src', 'backgroundScripts', 'background.js'),
-      'js/backgroundScripts/messaging': path.join(__dirname, 'src', 'backgroundScripts', 'messaging.js'),
+
+      // offscreen script
+      'js/offScreen/offscreen': path.join(__dirname, 'src', 'offScreen', 'offscreen.js'),
 
       // content scripts that don't run on Steam
       'js/contentScripts/tradersBump': path.join(__dirname, 'src', 'contentScripts', 'tradersBump.js'),
