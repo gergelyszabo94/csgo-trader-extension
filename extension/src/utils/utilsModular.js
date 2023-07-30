@@ -11,6 +11,7 @@ import { injectScript, injectStyle } from 'utils/injection';
 import { getUserSteamID } from 'utils/steamID';
 import DOMPurify from 'dompurify';
 import { getIDsFromElement } from 'utils/itemsToElementsToItems';
+import { createOffscreen } from 'utils/simpleUtils';
 
 const { FadeCalculator } = require('csgo-fade-percentage-calculator');
 
@@ -103,36 +104,22 @@ const validateSteamAPIKey = (apiKey) => new Promise((resolve, reject) => {
   });
 });
 
-const scrapeSteamAPIkey = () => {
-  const getRequest = new Request('https://steamcommunity.com/dev/apikey');
-
-  fetch(getRequest).then((response) => {
-    if (!response.ok) console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-    else return response.text();
-  }).then((body) => {
-    const html = document.createElement('html');
-    html.innerHTML = DOMPurify.sanitize(body);
-    let apiKey = null;
-
-    try {
-      apiKey = html.querySelector('#bodyContents_ex').querySelector('p').innerText.split(': ')[1];
-    } catch (e) {
-      console.log(e);
-      console.log(body);
-    }
-
-    validateSteamAPIKey(apiKey).then(
-      (apiKeyValid) => {
-        if (apiKeyValid) {
-          console.log('api key valid');
-          chrome.storage.local.set({ steamAPIKey: apiKey, apiKeyValid: true }, () => { });
-        }
-      }, (error) => {
-        console.log(error);
-      },
-    );
-  }).catch((err) => {
-    console.log(err);
+const setAPIKeyFirstTime = async () => {
+  await createOffscreen([chrome.offscreen.Reason.DOM_PARSER], 'dom parsing');
+  chrome.runtime.sendMessage({ scrapeAPIKey: 'scrapeAPIKey' }, (apiKey) => {
+    if (apiKey !== null) {
+      console.log(apiKey);
+      validateSteamAPIKey(apiKey).then(
+        (apiKeyValid) => {
+          if (apiKeyValid) {
+            console.log('api key valid');
+            chrome.storage.local.set({ steamAPIKey: apiKey, apiKeyValid: true }, () => { });
+          } else console.log('api key invalid');
+        },
+      ).catch((err) => {
+        console.log(err);
+      });
+    } else console.log('Was not able to scrape API key, probably not logged in?');
   });
 };
 
@@ -965,7 +952,7 @@ const getFloatDBLink = (item) => {
 // };
 
 export {
-  logExtensionPresence, scrapeSteamAPIkey, arrayFromArrayOrNotArray,
+  logExtensionPresence, setAPIKeyFirstTime, arrayFromArrayOrNotArray,
   getExteriorFromTags, getDopplerInfo, getQuality, parseStickerInfo,
   handleStickerNamesWithCommas, removeFromArray, getType, changePageTitle,
   getPattern, goToInternalPage, jumpToAnchor, copyToClipboard,

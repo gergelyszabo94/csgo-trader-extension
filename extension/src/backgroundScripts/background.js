@@ -1,7 +1,7 @@
 import { storageKeys } from 'utils/static/storageKeys';
 import { updatePrices, updateExchangeRates, getUserCurrencyBestGuess } from 'utils/pricing';
 import {
-  scrapeSteamAPIkey, goToInternalPage,
+  setAPIKeyFirstTime, goToInternalPage,
 } from 'utils/utilsModular';
 import {
   getGroupInvites, updateFriendRequest,
@@ -37,7 +37,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     }, 20000);
 
     // tries to set the api key - only works if the user has already generated one before
-    scrapeSteamAPIkey();
+    setAPIKeyFirstTime();
 
     chrome.action.setBadgeText({ text: 'I' });
     chrome.notifications.create('installed', {

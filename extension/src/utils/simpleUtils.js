@@ -13,12 +13,12 @@ const getOfferLink = (offerID) => {
 };
 
 // Create the offscreen document if it doesn't already exist
-const createOffscreen = async () => {
+const createOffscreen = async (reasons, justification) => {
   if (await chrome.offscreen.hasDocument()) return;
   await chrome.offscreen.createDocument({
     url: '/offScreen/offscreen.html',
-    reasons: [chrome.offscreen.Reason.AUDIO_PLAYBACK],
-    justification: 'to play notification sound in the background',
+    reasons,
+    justification,
   });
 };
 
@@ -27,7 +27,7 @@ const playAudio = async (source, sourceType, volume) => {
   const sourceURL = sourceType === 'local'
     ? chrome.runtime.getURL(source)
     : source;
-  await createOffscreen();
+  await createOffscreen([chrome.offscreen.Reason.AUDIO_PLAYBACK], 'to play notification sound in the background');
   await chrome.runtime.sendMessage({ playAudio: { sourceURL, volume } });
 };
 
@@ -112,5 +112,5 @@ const generateInspectCommand = (fullName, fv, paintindex, defindex, paintseed, s
 export {
   getItemMarketLink, getItemInventoryLink, getOfferLink, playAudio,
   getItemByNameAndGame, closeTab, isDopplerInName, getFormattedPLPercentage,
-  getCollection, generateInspectCommand,
+  getCollection, generateInspectCommand, createOffscreen,
 };
