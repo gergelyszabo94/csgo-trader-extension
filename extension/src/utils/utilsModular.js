@@ -875,37 +875,6 @@ const removeLinkFilterFromLinks = () => {
   });
 };
 
-// finds unread moderation messages and loads the page to mark them as read
-const markModMessagesAsRead = () => {
-  chrome.storage.local.get('steamIDOfUser', ({ steamIDOfUser }) => {
-    const getRequest = new Request(`https://steamcommunity.com/profiles/${steamIDOfUser}/moderatormessages`);
-    fetch(getRequest).then((response) => {
-      if (!response.ok) {
-        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-        return null;
-      }
-      return response.text();
-    }).then((body) => {
-      if (body !== null) {
-        const html = document.createElement('html');
-        html.innerHTML = DOMPurify.sanitize(body);
-
-        const unreadMessageLinks = [];
-        const unreadMessagesElements = html.querySelectorAll('div.commentnotification.moderatormessage.unread');
-        unreadMessagesElements.forEach((unread) => {
-          unreadMessageLinks.push(unread.querySelector('a').getAttribute('href'));
-        });
-
-        unreadMessageLinks.forEach((link) => {
-          fetch(new Request(link)).then(() => { });
-        });
-      }
-    }).catch((err) => {
-      console.log(err);
-    });
-  });
-};
-
 // chrome only allows notification icons locally
 // or from trusted (by manifest) urls
 // this is a workaround to that because Steam's CDN is not in the manifest
@@ -961,7 +930,7 @@ export {
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator, updateLoggedInUserName,
   getDataFilledFloatTechnical, souvenirExists, removeLinkFilterFromLinks,
-  getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent, markModMessagesAsRead,
+  getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent,
   reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, getFloatAsFormattedString, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo, getRemoteImageAsObjectURL,
