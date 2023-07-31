@@ -365,7 +365,7 @@ const sortOffers = (sortingMode) => {
 // also adds "incoming friend request from" message
 const addPartnerOfferSummary = (offers) => {
   chrome.storage.local.get(['tradeHistoryOffers', 'friendRequests'], ({ tradeHistoryOffers, friendRequests }) => {
-    if (tradeHistoryOffers) {
+    if (tradeHistoryOffers && offers) {
       offers.forEach((offer) => {
         const partnerID = getProperStyleSteamIDFromOfferStyle(offer.accountid_other);
         const offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
