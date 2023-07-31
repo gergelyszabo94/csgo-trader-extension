@@ -1,58 +1,23 @@
 import { getPlayerBans, getPlayerSummaries } from 'utils/ISteamUser';
 import { actions, conditions, eventTypes } from 'utils/static/friendRequests';
 import { getSteamRepInfo, getRemoteImageAsObjectURL } from 'utils/utilsModular';
+import { createOffscreen } from 'utils/simpleUtils';
 import { getUserCSGOInventoryAlternative } from 'utils/getUserInventory';
-import DOMPurify from 'dompurify';
 import { playNotificationSound, loggedOutNotification } from 'utils/notifications';
 
 const getFriendRequests = () => new Promise((resolve, reject) => {
-  const getRequest = new Request('https://steamcommunity.com/my/friends/pending');
-
-  fetch(getRequest).then((response) => {
-    if (!response.ok) {
-      console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-      reject(response);
-      return null;
-    }
-    return response.text();
-  }).then((body) => {
-    if (body !== null) {
-      const html = document.createElement('html');
-      html.innerHTML = DOMPurify.sanitize(body);
-
-      let loggedOut = false;
-      html.querySelectorAll('a.global_action_link').forEach((link) => {
-        if (link.getAttribute('href').includes('https://steamcommunity.com/login/home/')) {
-          loggedOut = true;
-        }
-      });
-
-      loggedOutNotification(loggedOut);
-
-      const receivedInvitesElement = html.querySelector('#search_results');
-      const inviters = [];
-
-      if (receivedInvitesElement !== null) {
-        receivedInvitesElement.querySelectorAll('.invite_row').forEach((inviteRow) => {
-          inviters.push({
-            steamID: inviteRow.getAttribute('data-steamid'),
-            accountID: inviteRow.getAttribute('data-accountid'),
-            name: inviteRow.querySelector('.invite_block_name').firstElementChild.innerText,
-            level: inviteRow.querySelector('.friendPlayerLevelNum').innerText,
-            evalTries: 0,
-            avatar: inviteRow.querySelector('.playerAvatar > a > img').getAttribute('src'),
-          });
-        });
-        resolve(inviters);
+  (async () => {
+    await createOffscreen([chrome.offscreen.Reason.DOM_PARSER], 'dom parsing');
+    chrome.runtime.sendMessage({ scrapeFriendRequests: 'scrapeFriendRequests' }, (reply) => {
+      if (reply.success) {
+        loggedOutNotification(false);
+        resolve(reply.invites);
       } else {
-        console.log('no received invites element');
-        reject(inviters);
+        if (reply.error === 'loggedOut') loggedOutNotification(true);
+        reject(reply.error);
       }
-    }
-  }).catch((err) => {
-    console.log(err);
-    reject(err);
-  });
+    });
+  })();
 });
 
 const getGroupInvites = () => new Promise((resolve, reject) => {
@@ -145,47 +110,21 @@ const acceptGroupRequest = (steamIDToAccept) => {
 };
 
 const getCommonFriends = (accountID) => new Promise((resolve, reject) => {
-  const request = new Request(`https://steamcommunity.com/actions/PlayerList/?type=friendsincommon&target=${accountID}`,
-    {
-      method: 'GET',
+  (async () => {
+    await createOffscreen([chrome.offscreen.Reason.DOM_PARSER], 'dom parsing');
+    chrome.runtime.sendMessage({ scrapeCommonFriends: accountID }, (reply) => {
+      if (reply.success) {
+        resolve(reply.commonFriends);
+      } else reject(reply.error);
     });
-
-  fetch(request).then((response) => {
-    if (!response.ok) {
-      console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-      reject(response);
-      return null;
-    }
-    return response.text();
-  }).then((body) => {
-    if (body !== null) {
-      const html = document.createElement('html');
-      html.innerHTML = DOMPurify.sanitize(body);
-      const friends = [];
-      html.querySelectorAll('.friendBlock.persona').forEach((friendBlock) => {
-        const nickNameBlock = friendBlock.querySelector('.nickname_block');
-
-        friends.push({
-          profileLink: friendBlock.querySelector('.friendBlockLinkOverlay').getAttribute('href'),
-          accountID: friendBlock.getAttribute('data-miniprofile'),
-          name: friendBlock.querySelector('.friendBlockContent').firstChild.nodeValue.trim(),
-          avatar: friendBlock.querySelector('.playerAvatar').firstElementChild.getAttribute('src'),
-          nickname: nickNameBlock !== null ? nickNameBlock.innerText : '',
-        });
-      });
-      resolve(friends);
-    }
-  }).catch((err) => {
-    console.log(err);
-    reject(err);
-  });
+  })();
 });
 
 const logFriendRequestEvents = (events) => {
   chrome.storage.local.get(['friendRequestLogs'], ({ friendRequestLogs }) => {
     chrome.storage.local.set({
       friendRequestLogs: [...friendRequestLogs, ...events],
-    }, () => {});
+    }, () => { });
   });
 };
 
@@ -214,7 +153,7 @@ const addSummariesToInvites = () => {
           inviters: [...invitesWithSummaries, ...nowWithSummaries],
           lastUpdated: Date.now(),
         },
-      }, () => {});
+      }, () => { });
     });
   });
 };
@@ -245,7 +184,7 @@ const addBansToInvites = () => {
           inviters: [...invitesWithBans, ...nowWithBans],
           lastUpdated: Date.now(),
         },
-      }, () => {});
+      }, () => { });
     });
   });
 };
@@ -285,7 +224,7 @@ const addSteamRepInfoToInvites = () => {
           inviters: [...invitesWithSteamRep, ...stillNoSteamRep, ...nowWithSteamRepInfo],
           lastUpdated: Date.now(),
         },
-      }, () => {});
+      }, () => { });
     }, 4000);
   });
 };
@@ -335,7 +274,7 @@ const addInventoryValueInfo = () => {
             [...invitesWithInventoryValue, ...stillNoInventoryValue, ...nowWithInventoryValue],
           lastUpdated: Date.now(),
         },
-      }, () => {});
+      }, () => { });
     }, 4000);
   });
 };
@@ -387,7 +326,7 @@ const addCommonFriendsInfo = () => {
             ],
           lastUpdated: Date.now(),
         },
-      }, () => {});
+      }, () => { });
     }, 4000);
   });
 };
@@ -427,7 +366,7 @@ const addPastRequestsInfo = () => {
           ],
         lastUpdated: Date.now(),
       },
-    }, () => {});
+    }, () => { });
   });
 };
 
@@ -633,7 +572,7 @@ const evaluateInvites = () => {
         inviters: [...alreadyEvaluated, ...evaluatedInvites],
         lastUpdated: Date.now(),
       },
-    }, () => {});
+    }, () => { });
 
     logFriendRequestEvents(evaluationEvents);
   });
@@ -655,7 +594,7 @@ const updateFriendRequest = () => {
       }) => {
         if (monitorFriendRequests) {
           const minutesFromLastCheck = ((Date.now()
-          - new Date(friendRequests.lastUpdated)) / 1000) / 60;
+            - new Date(friendRequests.lastUpdated)) / 1000) / 60;
           // safeguarding against an edge case where the invites page loads
           // but the invites themselves don't, which means
           // that the extension would falsely update the incoming requests to 0
@@ -666,8 +605,8 @@ const updateFriendRequest = () => {
           // this can manifest in pretty ugly ways, for example ignoring all current friend requests
           // the conditions below try minimize the risk of this happening
           if (inviters.length > 0 || friendRequests.inviters.length === 0
-          || (friendRequests.inviters.length < 2 && minutesFromLastCheck < 31)
-          || minutesFromLastCheck > 61) {
+            || (friendRequests.inviters.length < 2 && minutesFromLastCheck < 31)
+            || minutesFromLastCheck > 61) {
             const staleInviterIDs = friendRequests.inviters.map((inviter) => {
               return inviter.steamID;
             });
@@ -748,6 +687,8 @@ const updateFriendRequest = () => {
         }
       },
     );
+  }).catch((error) => {
+    console.log(error);
   });
 };
 
@@ -761,7 +702,7 @@ const removeOldFriendRequestEvents = () => {
 
     chrome.storage.local.set({
       friendRequestLogs: recentEvents,
-    }, () => {});
+    }, () => { });
   });
 };
 
