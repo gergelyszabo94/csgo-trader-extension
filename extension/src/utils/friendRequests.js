@@ -140,21 +140,23 @@ const addSummariesToInvites = () => {
       } else invitesWithSummaries.push(invite);
     });
 
-    getPlayerSummaries(noSummaryInvitesIDs).then((summaries) => {
-      const nowWithSummaries = noSummaryInvites.map((invite) => {
-        return {
-          ...invite,
-          summary: summaries[invite.steamID],
-        };
+    if (noSummaryInvitesIDs.length > 0) {
+      getPlayerSummaries(noSummaryInvitesIDs).then((summaries) => {
+        const nowWithSummaries = noSummaryInvites.map((invite) => {
+          return {
+            ...invite,
+            summary: summaries[invite.steamID],
+          };
+        });
+  
+        chrome.storage.local.set({
+          friendRequests: {
+            inviters: [...invitesWithSummaries, ...nowWithSummaries],
+            lastUpdated: Date.now(),
+          },
+        }, () => { });
       });
-
-      chrome.storage.local.set({
-        friendRequests: {
-          inviters: [...invitesWithSummaries, ...nowWithSummaries],
-          lastUpdated: Date.now(),
-        },
-      }, () => { });
-    });
+    }
   });
 };
 
@@ -171,21 +173,23 @@ const addBansToInvites = () => {
       } else invitesWithBans.push(invite);
     });
 
-    getPlayerBans(noBansInvitesIDs).then((bans) => {
-      const nowWithBans = noBansInvites.map((invite) => {
-        return {
-          ...invite,
-          bans: bans[invite.steamID],
-        };
+    if (noBansInvitesIDs.length > 0) {
+      getPlayerBans(noBansInvitesIDs).then((bans) => {
+        const nowWithBans = noBansInvites.map((invite) => {
+          return {
+            ...invite,
+            bans: bans[invite.steamID],
+          };
+        });
+  
+        chrome.storage.local.set({
+          friendRequests: {
+            inviters: [...invitesWithBans, ...nowWithBans],
+            lastUpdated: Date.now(),
+          },
+        }, () => { });
       });
-
-      chrome.storage.local.set({
-        friendRequests: {
-          inviters: [...invitesWithBans, ...nowWithBans],
-          lastUpdated: Date.now(),
-        },
-      }, () => { });
-    });
+    }
   });
 };
 
