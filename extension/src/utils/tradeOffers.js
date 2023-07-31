@@ -308,7 +308,7 @@ const updateActiveOffers = (offers, items) => {
 
   chrome.storage.local.get('showNumberOfOfferOnBadge', ({ showNumberOfOfferOnBadge }) => {
     if (showNumberOfOfferOnBadge) {
-      chrome.browserAction.setBadgeText({ text: receivedActiveCount.toString() });
+      chrome.action.setBadgeText({ text: receivedActiveCount.toString() });
     }
   });
 
