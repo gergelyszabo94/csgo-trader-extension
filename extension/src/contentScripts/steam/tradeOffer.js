@@ -463,7 +463,8 @@ const loadAllItemsProperly = () => {
 };
 
 const sortItems = (method, type) => {
-  if (getActiveInventoryIDs().appID === steamApps.CSGO.appID) {
+  const activeInventoryIDs = getActiveInventoryIDs();
+  if (activeInventoryIDs && activeInventoryIDs.appID === steamApps.CSGO.appID) {
     if (type === 'offer') {
       const activeInventory = getActiveInventory();
       const items = activeInventory.querySelectorAll('.item.app730.context2');
