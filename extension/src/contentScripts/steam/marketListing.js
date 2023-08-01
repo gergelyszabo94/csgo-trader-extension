@@ -247,7 +247,7 @@ const populateFloatInfo = (listingID, floatInfo) => {
           if (floatInfo === undefined || floatInfo.floatvalue === 0) {
             // agents don't have float values yet they sometimes return float info, weird
             listingElement.querySelector('.floatBarMarket').remove();
-          } else {
+          } else if (floatInfo) {
             floatTechnical.innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo), { ADD_ATTR: ['target'] });
             const position = (parseFloat(
               getFloatAsFormattedString(floatInfo.floatvalue, 2),
@@ -258,7 +258,7 @@ const populateFloatInfo = (listingID, floatInfo) => {
             if (marketAlwaysShowFloatTechnical) floatTechnical.classList.remove('hidden');
           }
         }
-      } else {
+      } else if (floatInfo) {
         const itemImageDiv = listingElement.querySelector('.market_listing_item_img_container');
         if (itemImageDiv !== null) {
           itemImageDiv.querySelector('img').insertAdjacentHTML(
@@ -271,9 +271,12 @@ const populateFloatInfo = (listingID, floatInfo) => {
           );
         }
       }
-      listingElement.setAttribute('data-float', floatInfo.floatvalue);
-      listingElement.setAttribute('data-paintindex', floatInfo.paintindex);
-      listingElement.setAttribute('data-paintseed', floatInfo.paintseed);
+
+      if (floatInfo) {
+        listingElement.setAttribute('data-float', floatInfo.floatvalue);
+        listingElement.setAttribute('data-paintindex', floatInfo.paintindex);
+        listingElement.setAttribute('data-paintseed', floatInfo.paintseed);
+      }
     });
   }
 };
