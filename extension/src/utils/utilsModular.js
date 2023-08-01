@@ -639,13 +639,6 @@ const getFloatBarSkeleton = (type) => {
     </div>`;
 };
 
-const reloadPageOnExtensionReload = () => {
-  // reloads the page on extension update/reload/uninstall
-  chrome.runtime.connect().onDisconnect.addListener(() => {
-    window.location.reload();
-  });
-};
-
 const isSIHActive = () => {
   const SIHSwitch = document.getElementById('switchPanel');
   const SIHSwitcherCheckbox = document.getElementById('switcher');
@@ -931,7 +924,7 @@ export {
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator, updateLoggedInUserName,
   getDataFilledFloatTechnical, souvenirExists, removeLinkFilterFromLinks,
   getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent,
-  reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
+  isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, getFloatAsFormattedString, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo, getRemoteImageAsObjectURL,
   isChromium, addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,

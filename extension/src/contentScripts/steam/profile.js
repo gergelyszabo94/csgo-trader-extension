@@ -1,6 +1,6 @@
 import {
   logExtensionPresence, updateLoggedInUserInfo, updateLoggedInUserName,
-  warnOfScammer, reloadPageOnExtensionReload, removeLinkFilterFromLinks,
+  warnOfScammer, removeLinkFilterFromLinks,
   addUpdatedRibbon, copyToClipboard, changePageTitle,
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
@@ -304,5 +304,4 @@ if (document.querySelector('body').classList.contains('profile_page')) {
   });
 
   overrideShowTradeOffer();
-  reloadPageOnExtensionReload();
 }

@@ -1,7 +1,7 @@
 import DOMPurify from 'dompurify';
 
 import {
-  reloadPageOnExtensionReload, logExtensionPresence,
+  logExtensionPresence,
   updateLoggedInUserInfo, addUpdatedRibbon, updateLoggedInUserName,
 } from 'utils/utilsModular';
 import { getItemMarketLink } from 'utils/simpleUtils';
@@ -767,5 +767,3 @@ if (marketHistoryButton !== null) {
     );
   });
 }
-
-reloadPageOnExtensionReload();

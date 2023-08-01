@@ -7,7 +7,7 @@ import {
   getDataFilledFloatTechnical, souvenirExists, copyToClipboard,
   getFloatBarSkeleton, addUpdatedRibbon, updateLoggedInUserName,
   logExtensionPresence, repositionNameTagIcons,
-  updateLoggedInUserInfo, reloadPageOnExtensionReload, isSIHActive, getActivePage,
+  updateLoggedInUserInfo, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, getFloatAsFormattedString,
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
   parseStickerInfo, getInspectLink, getExteriorFromTags, getDopplerInfo,
@@ -2577,5 +2577,3 @@ if (defaultActiveInventoryAppID !== null) {
     if (!document.hidden) updateTradabilityIndicators();
   }, 60000);
 } else console.log('Could not get active inventory app ID, private inventory? Functions disabled.');
-
-reloadPageOnExtensionReload();

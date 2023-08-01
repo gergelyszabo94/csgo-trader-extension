@@ -11,7 +11,6 @@ import {
   getPattern,
   logExtensionPresence,
   parseStickerInfo,
-  reloadPageOnExtensionReload,
   souvenirExists,
   getFloatAsFormattedString,
   updateLoggedInUserInfo,
@@ -1468,5 +1467,3 @@ chrome.storage.local.get('numberOfListings', ({ numberOfListings }) => {
     }, 2000);
   }
 });
-
-reloadPageOnExtensionReload();

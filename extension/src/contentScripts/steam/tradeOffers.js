@@ -3,7 +3,7 @@ import {
   addDopplerPhase, makeItemColorful, addUpdatedRibbon, addFloatRankIndicator,
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
   removeOfferFromActiveOffers, removeLinkFilterFromLinks,
-  logExtensionPresence, updateLoggedInUserInfo, reloadPageOnExtensionReload,
+  logExtensionPresence, updateLoggedInUserInfo,
   repositionNameTagIcons, jumpToAnchor, changePageTitle, isChromium,
   updateLoggedInUserName, addFadePercentage, getPattern, addPaintSeedIndicator,
 } from 'utils/utilsModular';
@@ -834,5 +834,3 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
     );
   }
 }
-
-reloadPageOnExtensionReload();

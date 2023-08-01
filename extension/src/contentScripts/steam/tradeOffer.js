@@ -5,7 +5,7 @@ import {
   makeItemColorful, addSSTandExtIndicators, addPriceIndicator,
   addFloatIndicator, getExteriorFromTags, getQuality, addPaintSeedIndicator,
   getType, getInspectLink, repositionNameTagIcons, addFadePercentage,
-  getDopplerInfo, getActivePage, reloadPageOnExtensionReload, logExtensionPresence,
+  getDopplerInfo, getActivePage, logExtensionPresence,
   updateLoggedInUserInfo, warnOfScammer, addPageControlEventListeners,
   addSearchListener, getPattern, getNameTag, removeLinkFilterFromLinks,
   removeOfferFromActiveOffers, changePageTitle, copyToClipboard,
@@ -1533,5 +1533,3 @@ if (window.location.search.includes('amp;token')) {
 addFunctionBars();
 addPartnerOfferSummary();
 addFriendRequestInfo();
-
-reloadPageOnExtensionReload();
