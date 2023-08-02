@@ -297,8 +297,8 @@ const storageKeys = {
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'clientID',
   'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID', 'groupInvites',
-  'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules', 'floatQueueActivity', 'discussionsToAutoBump',
+  'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules', 'floatQueueActivity',
   'priceQueueActivity', 'userSteamWalletCurrency', 'tradeOffersEventLogs', 'numberOfNewItems', 'numberOfComments',
-  'discussionsToAutoBumpToDelete', 'recent401Detected'];
+  'recent401Detected'];
 
 export { storageKeys, nonSettingStorageKeys };
