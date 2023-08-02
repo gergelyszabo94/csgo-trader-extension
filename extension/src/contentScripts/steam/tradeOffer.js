@@ -1392,6 +1392,16 @@ if (filterMenu !== null) {
     document.getElementById('summary').classList.remove('hidden');
   });
 
+  // dismisses the "welcome to steam trade offers" popup
+  // because it breaks the layout
+  const welcomePopup = document.querySelector('.welcome_dismiss');
+  if (welcomePopup) {
+    welcomePopup.click();
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+  }
+
   // i think dompurify removes the connect link when inserted above
   // this adds the href afterwards
   document.getElementById('connectToInspectServer').setAttribute('href', inspectServerConnectLink);
