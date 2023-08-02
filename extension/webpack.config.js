@@ -65,6 +65,10 @@ module.exports = (env, argv) => {
           to: 'sounds/',
         },
         {
+          from: 'src/injectToPage',
+          to: 'js/injectToPage',
+        },
+        {
           from: 'src/offScreen/offscreen.html',
           to: 'offScreen/offscreen.html',
         },

@@ -259,7 +259,8 @@
     },
     {
       "resources": [
-        "sound/notification/*"
+        "sound/notification/*",
+        "js/injectToPage/*"
       ],
       "matches": [
         "<all_urls>"
