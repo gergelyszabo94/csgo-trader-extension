@@ -979,7 +979,7 @@ if (isCommodityItem) {
   const contextID = getContextIDFromPage();
   descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
     `<div class="descriptor multiSell">
-                <a href="https://steamcommunity.com/market/multisell?appid=${appID}&contextid=${contextID}&items%5B%5D=${fullName}&qty%5B%5D=250">Open multi-sell page.</a>
+                <a href="https://steamcommunity.com/market/multisell?appid=${appID}&contextid=${contextID}&items%5B%5D=${encodeURIComponent(fullName)}&qty%5B%5D=250">Open multi-sell page.</a>
             </div>`,
     { ADD_ATTR: ['target'] },
   ));
