@@ -1,8 +1,10 @@
 import { logExtensionPresence, updateLoggedInUserInfo } from 'utils/utilsModular';
+import { listenToAcceptTrade } from 'utils/tradeOffers';
 import DOMPurify from 'dompurify';
 
 logExtensionPresence();
 updateLoggedInUserInfo();
+listenToAcceptTrade();
 
 chrome.storage.local.get('autoSetSteamAPIKey', ({ autoSetSteamAPIKey }) => {
   if (autoSetSteamAPIKey) {

@@ -3,10 +3,12 @@ import {
   logExtensionPresence, updateLoggedInUserInfo,
   addUpdatedRibbon,
 } from 'utils/utilsModular';
+import { listenToAcceptTrade } from 'utils/tradeOffers';
 
 logExtensionPresence();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
+listenToAcceptTrade();
 
 const bgBottom = document.getElementById('BG_bottom');
 if (bgBottom !== null) {

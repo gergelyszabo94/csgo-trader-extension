@@ -33,7 +33,7 @@ import { injectScript, injectStyle } from 'utils/injection';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
 import {
-  acceptOffer, declineOffer, sendOffer, createTradeOfferJSON,
+  acceptOffer, declineOffer, sendOffer, createTradeOfferJSON, listenToAcceptTrade,
 } from 'utils/tradeOffers';
 import steamApps from 'utils/static/steamApps';
 import { removeFromFloatCache } from '../../utils/floatCaching';
@@ -1084,6 +1084,7 @@ const sendQueryParamOffer = (urlParams, whose, items, message) => {
 logExtensionPresence();
 removeLinkFilterFromLinks();
 initPriceQueue();
+listenToAcceptTrade();
 
 // initiates all logic that needs access to item info
 getInventories(true);

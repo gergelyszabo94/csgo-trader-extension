@@ -38,6 +38,7 @@ import steamApps from 'utils/static/steamApps';
 import capsuleNamesWithNoCapsuleInName from 'utils/static/capsuleNamesWithNoCapsuleInName';
 import { generateInspectCommand, isDopplerInName } from 'utils/simpleUtils';
 import { overrideCreatePriceHistoryGraph } from 'utils/steamOverriding';
+import { listenToAcceptTrade } from 'utils/tradeOffers';
 import { removeFromFloatCache } from '../../utils/floatCaching';
 
 const inBrowserInspectButtonPopupLink = `
@@ -826,6 +827,7 @@ updateLoggedInUserName();
 addUpdatedRibbon();
 changePageTitle('market_listing', fullName);
 overrideCreatePriceHistoryGraph();
+listenToAcceptTrade();
 
 const descriptor = document.getElementById('largeiteminfo_item_descriptors');
 

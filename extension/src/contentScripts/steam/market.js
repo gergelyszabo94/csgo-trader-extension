@@ -14,6 +14,7 @@ import {
 } from 'utils/pricing';
 import { injectStyle } from 'utils/injection';
 import { overrideLoadMarketHistory } from 'utils/steamOverriding';
+import { listenToAcceptTrade } from 'utils/tradeOffers';
 
 const marketHistoryExport = {
   history: [],
@@ -328,6 +329,7 @@ updateWalletCurrency();
 updateLoggedInUserInfo();
 updateLoggedInUserName();
 addUpdatedRibbon();
+listenToAcceptTrade();
 
 // makes remove/cancel columns narrower
 injectStyle(`

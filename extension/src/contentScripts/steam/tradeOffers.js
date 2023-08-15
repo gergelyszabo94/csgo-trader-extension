@@ -18,7 +18,7 @@ import { offersSortingModes } from 'utils/static/sortingModes';
 import { injectStyle } from 'utils/injection';
 import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
-import { acceptOffer, declineOffer } from 'utils/tradeOffers';
+import { acceptOffer, declineOffer, listenToAcceptTrade } from 'utils/tradeOffers';
 import DOMPurify from 'dompurify';
 import steamApps from 'utils/static/steamApps';
 import { getIDsFromElement } from 'utils/itemsToElementsToItems';
@@ -539,6 +539,7 @@ updateLoggedInUserInfo();
 updateLoggedInUserName();
 addUpdatedRibbon();
 removeLinkFilterFromLinks();
+listenToAcceptTrade();
 
 chrome.storage.local.get([
   'numberOfFloatDigitsToShow', 'disableCancelEscrowedTrades', 'showPaintSeedOnItems', 'showFloatRankOnItems', 'contrastingLook',

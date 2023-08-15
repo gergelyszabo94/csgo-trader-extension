@@ -82,18 +82,27 @@ const openAndAcceptOffer = (offerID, partnerID) => {
   });
 };
 
-const acceptTradeWithRetryInject = (offerID, partnerID) => {
-  window[`acceptTries${offerID}`] = 1;
+// listen to accept trade instruction from background script
+// accept trade offer with retry
+const listenToAcceptTrade = () => {
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.acceptOffer) {
+      let acceptTries = 1;
 
-  window[`acceptInterval$${offerID}`] = setInterval(() => {
-    if (window[`acceptTries${offerID}`] <= 5) {
-      window[`acceptTries${offerID}`] += 1;
-      acceptOffer(offerID, partnerID).then(() => {
-        clearInterval(window[`acceptInterval$${offerID}`]);
-      }).catch((e) => {
-        console.log(e);
-      });
-    } else clearInterval(window[`acceptInterval$${offerID}`]);
+      const acceptInterval = setInterval(() => {
+        if (acceptTries <= 5) {
+          acceptTries += 1;
+          acceptOffer(request.acceptOffer.offerID, request.acceptOffer.partnerID).then(() => {
+            clearInterval(acceptInterval);
+            sendResponse({ success: true });
+          }).catch((err) => {
+            console.log(err);
+            sendResponse({ success: false });
+          });
+        } clearInterval(acceptInterval);
+      }, 5000);
+    }
+    return true; // needed to make the response async
   });
 };
 
@@ -104,12 +113,11 @@ const acceptTradeInBackground = (offerID, partnerID) => {
     if (permission) {
       chrome.tabs.query({ url: 'https://steamcommunity.com/*' }, (tabs) => {
         if (tabs.length !== 0) {
-          chrome.scripting.executeScript({
-            target: {
-              tabId: tabs[0].id,
+          chrome.tabs.sendMessage(tabs[0].id, {
+            acceptOffer: {
+              offerID,
+              partnerID,
             },
-            func: acceptTradeWithRetryInject,
-            args: [offerID, partnerID],
           }, () => {});
         } else openAndAcceptOffer(offerID, partnerID);
       });
@@ -729,5 +737,5 @@ const removeOldOfferEvents = () => {
 export {
   acceptOffer, declineOffer, updateActiveOffers, extractItemsFromOffers, sendOffer,
   matchItemsAndAddDetails, updateTrades, removeOldOfferEvents, acceptTradeInBackground,
-  createTradeOfferJSON,
+  createTradeOfferJSON, listenToAcceptTrade,
 };

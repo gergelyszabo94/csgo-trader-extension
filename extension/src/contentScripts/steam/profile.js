@@ -11,6 +11,7 @@ import { overrideShowTradeOffer } from 'utils/steamOverriding';
 import steamProfileStatuses from 'utils/static/steamProfileStatuses';
 import { injectStyle } from 'utils/injection';
 import { getUserSteamID, getProfileOwnerSteamID, getOfferStyleSteamID } from 'utils/steamID';
+import { listenToAcceptTrade } from 'utils/tradeOffers';
 import DOMPurify from 'dompurify';
 
 // ensures that we are on a profile page, it's not possible with simple regex
@@ -20,6 +21,7 @@ if (document.querySelector('body').classList.contains('profile_page')) {
   updateLoggedInUserName();
   addUpdatedRibbon();
   removeLinkFilterFromLinks();
+  listenToAcceptTrade();
   const profileOwnerSteamID = getProfileOwnerSteamID();
   const loggedInUserID = getUserSteamID();
 

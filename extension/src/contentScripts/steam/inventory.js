@@ -42,6 +42,7 @@ import { injectScript } from 'utils/injection';
 import { getUserSteamID } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
 import steamApps from 'utils/static/steamApps';
+import { listenToAcceptTrade } from 'utils/tradeOffers';
 import { removeFromFloatCache, getFloatInfoFromCache } from '../../utils/floatCaching';
 
 let pricePercentage = 100; // can be changed, for easier discount calculation
@@ -2328,6 +2329,7 @@ const defaultActiveInventoryAppID = getActiveInventoryAppID();
 
 logExtensionPresence();
 updateWalletCurrency();
+listenToAcceptTrade();
 
 if (defaultActiveInventoryAppID !== null) {
   initPriceQueue(onListingPricesLoaded);

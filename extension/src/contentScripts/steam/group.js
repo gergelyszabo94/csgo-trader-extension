@@ -4,6 +4,7 @@ import {
   listenToLocationChange, addUpdatedRibbon, removeLinkFilterFromLinks,
 } from 'utils/utilsModular';
 import { addReplyToCommentsFunctionality, addCommentsMutationObserver } from 'utils/comments';
+import { listenToAcceptTrade } from 'utils/tradeOffers';
 
 if (!window.location.href.includes('/discussions')) {
   logExtensionPresence();
@@ -15,6 +16,7 @@ if (!window.location.href.includes('/discussions')) {
   removeLinkFilterFromLinks();
   updateLoggedInUserName();
   listenToLocationChange(goldenMemberNames);
+  listenToAcceptTrade();
 
   if (document.location.href.includes('/members')) goldenMemberNames();
 
