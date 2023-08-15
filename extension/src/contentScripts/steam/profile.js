@@ -5,7 +5,6 @@ import {
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import { addReplyToCommentsFunctionality, addCommentsMutationObserver } from 'utils/comments';
-import { goldenMiniProfileHandler, goldenCommenters } from 'utils/goldening';
 import steamTextFormattingTags from 'utils/static/steamTextFormatingTags';
 import { overrideShowTradeOffer } from 'utils/steamOverriding';
 import steamProfileStatuses from 'utils/static/steamProfileStatuses';
@@ -69,31 +68,6 @@ if (document.querySelector('body').classList.contains('profile_page')) {
   // resizes the elements where the rep or reoccuring buttons will be inserted
   const commentThreadEntryBox = document.querySelector('.commentthread_entry_quotebox');
   if (commentThreadEntryBox !== null) commentThreadEntryBox.setAttribute('style', 'width: 83%; display: inline-block;');
-
-  // makes profiles with csgotrader.app in their name gold
-  // top friends:
-  const topFriends = document.querySelector('.profile_friend_links');
-  if (topFriends !== null) {
-    topFriends.querySelectorAll('.friendBlock').forEach((friendBlock) => {
-      if (friendBlock.innerText.toLowerCase().includes('csgotrader.app')) {
-        friendBlock.classList.add('golden');
-        friendBlock.querySelector('.playerAvatar').classList.add('golden');
-        friendBlock.addEventListener('mouseover', goldenMiniProfileHandler);
-      }
-    });
-  }
-
-  // profile name, level, avatar:
-  const personaName = document.querySelector('.actual_persona_name');
-  if (personaName !== null && personaName.innerText.toLowerCase().includes('csgotrader.app')) {
-    personaName.classList.add('golden');
-    const level = document.querySelector('.persona_level');
-    if (level !== null) level.classList.add('golden');
-    const avatar = document.querySelector('.profile_header').querySelector('.playerAvatar');
-    if (avatar !== null) avatar.classList.add('golden');
-  }
-
-  goldenCommenters();
 
   if (loggedInUserID === profileOwnerSteamID) { // when on the logged in user's own profile
     chrome.storage.local.get(['reoccuringMessage', 'showReoccButton'], ({ reoccuringMessage, showReoccButton }) => {
