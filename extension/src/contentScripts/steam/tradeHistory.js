@@ -4,11 +4,13 @@ import {
   addUpdatedRibbon,
 } from 'utils/utilsModular';
 import { listenToAcceptTrade } from 'utils/tradeOffers';
+import { reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 
 logExtensionPresence();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
 listenToAcceptTrade();
+reloadPageOnExtensionUpdate();
 
 const bgBottom = document.getElementById('BG_bottom');
 if (bgBottom !== null) {

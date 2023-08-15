@@ -1,4 +1,4 @@
-import { closeTab } from 'utils/simpleUtils';
+import { closeTab, reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 import {
   addDopplerPhase, makeItemColorful, addUpdatedRibbon, addFloatRankIndicator,
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
@@ -540,6 +540,7 @@ updateLoggedInUserName();
 addUpdatedRibbon();
 removeLinkFilterFromLinks();
 listenToAcceptTrade();
+reloadPageOnExtensionUpdate();
 
 chrome.storage.local.get([
   'numberOfFloatDigitsToShow', 'disableCancelEscrowedTrades', 'showPaintSeedOnItems', 'showFloatRankOnItems', 'contrastingLook',

@@ -1,5 +1,6 @@
 import { logExtensionPresence } from 'utils/utilsModular';
 import { listenToAcceptTrade } from 'utils/tradeOffers';
+import { reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 
 let messagePresets = [];
 let chatDialogObserverSet = false;
@@ -106,3 +107,4 @@ chrome.storage.local.get(['removeWebChatHeader', 'showChatPresetMessages', 'chat
 
 logExtensionPresence();
 listenToAcceptTrade();
+reloadPageOnExtensionUpdate();

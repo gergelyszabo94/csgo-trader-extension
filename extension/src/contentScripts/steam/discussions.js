@@ -4,12 +4,14 @@ import {
 } from 'utils/utilsModular';
 import { overrideShowTradeOffer } from 'utils/steamOverriding';
 import { listenToAcceptTrade } from 'utils/tradeOffers';
+import { reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 
 logExtensionPresence();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
 removeLinkFilterFromLinks();
 listenToAcceptTrade();
+reloadPageOnExtensionUpdate();
 
 // when searching with keyword  in the topic
 // it's a different kind of page where this is not applicable

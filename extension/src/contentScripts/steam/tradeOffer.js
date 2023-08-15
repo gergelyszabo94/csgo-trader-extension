@@ -13,7 +13,7 @@ import {
 } from 'utils/utilsModular';
 import {
   getItemMarketLink, getItemByNameAndGame, closeTab, isDopplerInName,
-  getFormattedPLPercentage, generateInspectCommand,
+  getFormattedPLPercentage, generateInspectCommand, reloadPageOnExtensionUpdate,
 } from 'utils/simpleUtils';
 import {
   inspectServerConnectLink, inspectServerConnectCommand,
@@ -1085,6 +1085,7 @@ logExtensionPresence();
 removeLinkFilterFromLinks();
 initPriceQueue();
 listenToAcceptTrade();
+reloadPageOnExtensionUpdate();
 
 // initiates all logic that needs access to item info
 getInventories(true);

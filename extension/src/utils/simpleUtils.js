@@ -109,8 +109,17 @@ const generateInspectCommand = (fullName, fv, paintindex, defindex, paintseed, s
   );
 };
 
+// when the extension is updated or reloaded
+// the content scrips lose the ability to comminicate with the background script
+// this function reloads the page to fix that
+const reloadPageOnExtensionUpdate = () => {
+  setInterval(() => {
+    if (!chrome.runtime?.id) window.location.reload();
+  }, 5000);
+};
+
 export {
   getItemMarketLink, getItemInventoryLink, getOfferLink, playAudio,
   getItemByNameAndGame, closeTab, isDopplerInName, getFormattedPLPercentage,
-  getCollection, generateInspectCommand, createOffscreen,
+  getCollection, generateInspectCommand, createOffscreen, reloadPageOnExtensionUpdate,
 };

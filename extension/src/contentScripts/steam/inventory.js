@@ -16,6 +16,7 @@ import {
   from 'utils/utilsModular';
 import {
   getItemMarketLink, generateInspectCommand, isDopplerInName, getCollection,
+  reloadPageOnExtensionUpdate,
 } from 'utils/simpleUtils';
 import { getShortDate, dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
@@ -2330,6 +2331,7 @@ const defaultActiveInventoryAppID = getActiveInventoryAppID();
 logExtensionPresence();
 updateWalletCurrency();
 listenToAcceptTrade();
+reloadPageOnExtensionUpdate();
 
 if (defaultActiveInventoryAppID !== null) {
   initPriceQueue(onListingPricesLoaded);

@@ -5,6 +5,7 @@ import {
 } from 'utils/utilsModular';
 import { addReplyToCommentsFunctionality, addCommentsMutationObserver } from 'utils/comments';
 import { listenToAcceptTrade } from 'utils/tradeOffers';
+import { reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 
 if (!window.location.href.includes('/discussions')) {
   logExtensionPresence();
@@ -17,6 +18,7 @@ if (!window.location.href.includes('/discussions')) {
   updateLoggedInUserName();
   listenToLocationChange(goldenMemberNames);
   listenToAcceptTrade();
+  reloadPageOnExtensionUpdate();
 
   if (document.location.href.includes('/members')) goldenMemberNames();
 

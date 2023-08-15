@@ -4,7 +4,7 @@ import {
   logExtensionPresence,
   updateLoggedInUserInfo, addUpdatedRibbon, updateLoggedInUserName,
 } from 'utils/utilsModular';
-import { getItemMarketLink } from 'utils/simpleUtils';
+import { getItemMarketLink, reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 import {
   removeListing, getMarketHistory, cancelOrder, createOrder,
 } from 'utils/market';
@@ -330,6 +330,7 @@ updateLoggedInUserInfo();
 updateLoggedInUserName();
 addUpdatedRibbon();
 listenToAcceptTrade();
+reloadPageOnExtensionUpdate();
 
 // makes remove/cancel columns narrower
 injectStyle(`

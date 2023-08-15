@@ -36,7 +36,7 @@ import {
 import { injectScript, injectStyle } from 'utils/injection';
 import steamApps from 'utils/static/steamApps';
 import capsuleNamesWithNoCapsuleInName from 'utils/static/capsuleNamesWithNoCapsuleInName';
-import { generateInspectCommand, isDopplerInName } from 'utils/simpleUtils';
+import { generateInspectCommand, isDopplerInName, reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 import { overrideCreatePriceHistoryGraph } from 'utils/steamOverriding';
 import { listenToAcceptTrade } from 'utils/tradeOffers';
 import { removeFromFloatCache } from '../../utils/floatCaching';
@@ -828,6 +828,7 @@ addUpdatedRibbon();
 changePageTitle('market_listing', fullName);
 overrideCreatePriceHistoryGraph();
 listenToAcceptTrade();
+reloadPageOnExtensionUpdate();
 
 const descriptor = document.getElementById('largeiteminfo_item_descriptors');
 
