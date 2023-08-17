@@ -11,6 +11,7 @@ import { injectScript, injectStyle } from 'utils/injection';
 import { getUserSteamID } from 'utils/steamID';
 import DOMPurify from 'dompurify';
 import { getIDsFromElement } from 'utils/itemsToElementsToItems';
+import { createOffscreen } from 'utils/simpleUtils';
 
 const { FadeCalculator } = require('csgo-fade-percentage-calculator');
 
@@ -54,7 +55,6 @@ const logExtensionPresence = () => {
   const { version } = chrome.runtime.getManifest();
   console.log(`CSGO Trader - Steam Trading Enhancer ${version} is running on this page. Changelog at: https://csgotrader.app/changelog/`);
   console.log('If you see any errors that seem related to the extension please email support@csgotrader.app.');
-  console.log('"DevTools failed to parse SourceMap" is not an error, you can disregard it.');
 };
 
 const getAppropriateFetchFunc = () => {
@@ -103,36 +103,22 @@ const validateSteamAPIKey = (apiKey) => new Promise((resolve, reject) => {
   });
 });
 
-const scrapeSteamAPIkey = () => {
-  const getRequest = new Request('https://steamcommunity.com/dev/apikey');
-
-  fetch(getRequest).then((response) => {
-    if (!response.ok) console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-    else return response.text();
-  }).then((body) => {
-    const html = document.createElement('html');
-    html.innerHTML = DOMPurify.sanitize(body);
-    let apiKey = null;
-
-    try {
-      apiKey = html.querySelector('#bodyContents_ex').querySelector('p').innerText.split(': ')[1];
-    } catch (e) {
-      console.log(e);
-      console.log(body);
-    }
-
-    validateSteamAPIKey(apiKey).then(
-      (apiKeyValid) => {
-        if (apiKeyValid) {
-          console.log('api key valid');
-          chrome.storage.local.set({ steamAPIKey: apiKey, apiKeyValid: true }, () => { });
-        }
-      }, (error) => {
-        console.log(error);
-      },
-    );
-  }).catch((err) => {
-    console.log(err);
+const setAPIKeyFirstTime = async () => {
+  await createOffscreen([chrome.offscreen.Reason.DOM_PARSER], 'dom parsing');
+  chrome.runtime.sendMessage({ scrapeAPIKey: 'scrapeAPIKey' }, (apiKey) => {
+    if (apiKey !== null) {
+      console.log(apiKey);
+      validateSteamAPIKey(apiKey).then(
+        (apiKeyValid) => {
+          if (apiKeyValid) {
+            console.log('api key valid');
+            chrome.storage.local.set({ steamAPIKey: apiKey, apiKeyValid: true }, () => { });
+          } else console.log('api key invalid');
+        },
+      ).catch((err) => {
+        console.log(err);
+      });
+    } else console.log('Was not able to scrape API key, probably not logged in?');
   });
 };
 
@@ -652,13 +638,6 @@ const getFloatBarSkeleton = (type) => {
     </div>`;
 };
 
-const reloadPageOnExtensionReload = () => {
-  // reloads the page on extension update/reload/uninstall
-  chrome.runtime.connect().onDisconnect.addListener(() => {
-    window.location.reload();
-  });
-};
-
 const isSIHActive = () => {
   const SIHSwitch = document.getElementById('switchPanel');
   const SIHSwitcherCheckbox = document.getElementById('switcher');
@@ -888,37 +867,6 @@ const removeLinkFilterFromLinks = () => {
   });
 };
 
-// finds unread moderation messages and loads the page to mark them as read
-const markModMessagesAsRead = () => {
-  chrome.storage.local.get('steamIDOfUser', ({ steamIDOfUser }) => {
-    const getRequest = new Request(`https://steamcommunity.com/profiles/${steamIDOfUser}/moderatormessages`);
-    fetch(getRequest).then((response) => {
-      if (!response.ok) {
-        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-        return null;
-      }
-      return response.text();
-    }).then((body) => {
-      if (body !== null) {
-        const html = document.createElement('html');
-        html.innerHTML = DOMPurify.sanitize(body);
-
-        const unreadMessageLinks = [];
-        const unreadMessagesElements = html.querySelectorAll('div.commentnotification.moderatormessage.unread');
-        unreadMessagesElements.forEach((unread) => {
-          unreadMessageLinks.push(unread.querySelector('a').getAttribute('href'));
-        });
-
-        unreadMessageLinks.forEach((link) => {
-          fetch(new Request(link)).then(() => { });
-        });
-      }
-    }).catch((err) => {
-      console.log(err);
-    });
-  });
-};
-
 // chrome only allows notification icons locally
 // or from trusted (by manifest) urls
 // this is a workaround to that because Steam's CDN is not in the manifest
@@ -938,7 +886,7 @@ const getRemoteImageAsObjectURL = (imageURL) => new Promise((resolve, reject) =>
 
 // true when chrome or edge, false on ff
 const isChromium = () => {
-  return chrome.extension.getURL('/index.html').includes('chrome-extension');
+  return chrome.runtime.getURL('/index.html').includes('chrome-extension');
 };
 
 const getFloatDBLink = (item) => {
@@ -965,7 +913,7 @@ const getFloatDBLink = (item) => {
 // };
 
 export {
-  logExtensionPresence, scrapeSteamAPIkey, arrayFromArrayOrNotArray,
+  logExtensionPresence, setAPIKeyFirstTime, arrayFromArrayOrNotArray,
   getExteriorFromTags, getDopplerInfo, getQuality, parseStickerInfo,
   handleStickerNamesWithCommas, removeFromArray, getType, changePageTitle,
   getPattern, goToInternalPage, jumpToAnchor, copyToClipboard,
@@ -974,8 +922,8 @@ export {
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator, updateLoggedInUserName,
   getDataFilledFloatTechnical, souvenirExists, removeLinkFilterFromLinks,
-  getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent, markModMessagesAsRead,
-  reloadPageOnExtensionReload, isSIHActive, addSearchListener, getSessionID,
+  getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent,
+  isSIHActive, addSearchListener, getSessionID,
   warnOfScammer, getFloatAsFormattedString, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo, getRemoteImageAsObjectURL,
   isChromium, addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,

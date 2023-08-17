@@ -1,4 +1,3 @@
-import { goldenCommenters } from 'utils/goldening';
 import { getSessionID } from 'utils/utilsModular';
 
 const handleReplyToCommentFunctionality = (event) => {
@@ -36,7 +35,6 @@ const addReplyToCommentsFunctionality = () => {
 const addCommentsMutationObserver = () => {
   const observer = new MutationObserver(() => {
     addReplyToCommentsFunctionality();
-    goldenCommenters();
   });
 
   const commentThread = document.querySelector('.commentthread_comments');

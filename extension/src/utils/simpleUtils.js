@@ -12,13 +12,23 @@ const getOfferLink = (offerID) => {
   return `https://steamcommunity.com/tradeoffer/${offerID}`;
 };
 
-const playAudio = (source, sourceType, volume) => {
+// Create the offscreen document if it doesn't already exist
+const createOffscreen = async (reasons, justification) => {
+  if (await chrome.offscreen.hasDocument()) return;
+  await chrome.offscreen.createDocument({
+    url: '/offScreen/offscreen.html',
+    reasons,
+    justification,
+  });
+};
+
+// https://stackoverflow.com/questions/67437180/play-audio-from-background-script-in-chrome-extention-manifest-v3
+const playAudio = async (source, sourceType, volume) => {
   const sourceURL = sourceType === 'local'
     ? chrome.runtime.getURL(source)
     : source;
-  const audio = new Audio(sourceURL);
-  audio.volume = volume;
-  audio.play();
+  await createOffscreen([chrome.offscreen.Reason.AUDIO_PLAYBACK], 'to play notification sound in the background');
+  await chrome.runtime.sendMessage({ playAudio: { sourceURL, volume } });
 };
 
 const getItemByNameAndGame = (inventory, appID, contextID, itemName) => {
@@ -99,8 +109,17 @@ const generateInspectCommand = (fullName, fv, paintindex, defindex, paintseed, s
   );
 };
 
+// when the extension is updated or reloaded
+// the content scrips lose the ability to comminicate with the background script
+// this function reloads the page to fix that
+const reloadPageOnExtensionUpdate = () => {
+  setInterval(() => {
+    if (!chrome.runtime?.id) window.location.reload();
+  }, 5000);
+};
+
 export {
   getItemMarketLink, getItemInventoryLink, getOfferLink, playAudio,
   getItemByNameAndGame, closeTab, isDopplerInName, getFormattedPLPercentage,
-  getCollection, generateInspectCommand,
+  getCollection, generateInspectCommand, createOffscreen, reloadPageOnExtensionUpdate,
 };

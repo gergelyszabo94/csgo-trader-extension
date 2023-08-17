@@ -5,7 +5,7 @@ import {
   makeItemColorful, addSSTandExtIndicators, addPriceIndicator,
   addFloatIndicator, getExteriorFromTags, getQuality, addPaintSeedIndicator,
   getType, getInspectLink, repositionNameTagIcons, addFadePercentage,
-  getDopplerInfo, getActivePage, reloadPageOnExtensionReload, logExtensionPresence,
+  getDopplerInfo, getActivePage, logExtensionPresence,
   updateLoggedInUserInfo, warnOfScammer, addPageControlEventListeners,
   addSearchListener, getPattern, getNameTag, removeLinkFilterFromLinks,
   removeOfferFromActiveOffers, changePageTitle, copyToClipboard,
@@ -13,7 +13,7 @@ import {
 } from 'utils/utilsModular';
 import {
   getItemMarketLink, getItemByNameAndGame, closeTab, isDopplerInName,
-  getFormattedPLPercentage, generateInspectCommand,
+  getFormattedPLPercentage, generateInspectCommand, reloadPageOnExtensionUpdate,
 } from 'utils/simpleUtils';
 import {
   inspectServerConnectLink, inspectServerConnectCommand,
@@ -33,7 +33,7 @@ import { injectScript, injectStyle } from 'utils/injection';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
 import {
-  acceptOffer, declineOffer, sendOffer, createTradeOfferJSON,
+  acceptOffer, declineOffer, sendOffer, createTradeOfferJSON, listenToAcceptTrade,
 } from 'utils/tradeOffers';
 import steamApps from 'utils/static/steamApps';
 import { removeFromFloatCache } from '../../utils/floatCaching';
@@ -463,7 +463,8 @@ const loadAllItemsProperly = () => {
 };
 
 const sortItems = (method, type) => {
-  if (getActiveInventoryIDs().appID === steamApps.CSGO.appID) {
+  const activeInventoryIDs = getActiveInventoryIDs();
+  if (activeInventoryIDs && activeInventoryIDs.appID === steamApps.CSGO.appID) {
     if (type === 'offer') {
       const activeInventory = getActiveInventory();
       const items = activeInventory.querySelectorAll('.item.app730.context2');
@@ -1083,6 +1084,8 @@ const sendQueryParamOffer = (urlParams, whose, items, message) => {
 logExtensionPresence();
 removeLinkFilterFromLinks();
 initPriceQueue();
+listenToAcceptTrade();
+reloadPageOnExtensionUpdate();
 
 // initiates all logic that needs access to item info
 getInventories(true);
@@ -1391,6 +1394,16 @@ if (filterMenu !== null) {
     document.getElementById('summary').classList.remove('hidden');
   });
 
+  // dismisses the "welcome to steam trade offers" popup
+  // because it breaks the layout
+  const welcomePopup = document.querySelector('.welcome_dismiss');
+  if (welcomePopup) {
+    welcomePopup.click();
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+  }
+
   // i think dompurify removes the connect link when inserted above
   // this adds the href afterwards
   document.getElementById('connectToInspectServer').setAttribute('href', inspectServerConnectLink);
@@ -1533,5 +1546,3 @@ if (window.location.search.includes('amp;token')) {
 addFunctionBars();
 addPartnerOfferSummary();
 addFriendRequestInfo();
-
-reloadPageOnExtensionReload();

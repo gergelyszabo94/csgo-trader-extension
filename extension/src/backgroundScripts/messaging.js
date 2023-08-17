@@ -39,7 +39,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true; // async return to signal that it will return later
   }
   if (request.badgetext !== undefined) {
-    chrome.browserAction.setBadgeText({ text: request.badgetext });
+    chrome.action.setBadgeText({ text: request.badgetext });
     sendResponse({ badgetext: request.badgetext });
   } else if (request.openInternalPage !== undefined) {
     chrome.permissions.contains({ permissions: ['tabs'] }, (result) => {
