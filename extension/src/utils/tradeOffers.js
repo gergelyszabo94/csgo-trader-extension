@@ -82,35 +82,27 @@ const openAndAcceptOffer = (offerID, partnerID) => {
   });
 };
 
-// this gets injected to the page page context from the background script
-const getAcceptScriptAsString = (offerID, partnerID) => {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }) => {
-      resolve(`
-      let acceptTries${offerID} = 1;
-      
-      let acceptInterval${offerID} = setInterval(() => {
-         myHeaders = new Headers();
-         myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-         
-         if (acceptTries${offerID} <= 5) {
-            acceptTries${offerID} += 1;
-            request = new Request(\`https://steamcommunity.com/tradeoffer/${offerID}/accept\`,
-           {
-             method: 'POST',
-             headers: myHeaders,
-             referrer: \`https://steamcommunity.com/tradeoffer/${offerID}/\`,
-             body: \`sessionid=${steamSessionID}&serverid=1&tradeofferid=${offerID}&partner=${partnerID}&captcha=\`,
-           });
-    
-           fetch(request).then(() => {
-             clearInterval(acceptInterval${offerID});
-           }); 
-         } else {
-            clearInterval(acceptInterval${offerID});
-         }
-      }, acceptTries${offerID} * 5000);`);
-    });
+// listen to accept trade instruction from background script
+// accept trade offer with retry
+const listenToAcceptTrade = () => {
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.acceptOffer) {
+      let acceptTries = 1;
+
+      const acceptInterval = setInterval(() => {
+        if (acceptTries <= 5) {
+          acceptTries += 1;
+          acceptOffer(request.acceptOffer.offerID, request.acceptOffer.partnerID).then(() => {
+            clearInterval(acceptInterval);
+            sendResponse({ success: true });
+          }).catch((err) => {
+            console.log(err);
+            sendResponse({ success: false });
+          });
+        } clearInterval(acceptInterval);
+      }, 5000);
+    }
+    return true; // needed to make the response async
   });
 };
 
@@ -121,11 +113,12 @@ const acceptTradeInBackground = (offerID, partnerID) => {
     if (permission) {
       chrome.tabs.query({ url: 'https://steamcommunity.com/*' }, (tabs) => {
         if (tabs.length !== 0) {
-          getAcceptScriptAsString(offerID, partnerID).then((scriptString) => {
-            chrome.tabs.executeScript(tabs[0].id, {
-              code: scriptString,
-            }, () => {});
-          });
+          chrome.tabs.sendMessage(tabs[0].id, {
+            acceptOffer: {
+              offerID,
+              partnerID,
+            },
+          }, () => {});
         } else openAndAcceptOffer(offerID, partnerID);
       });
     }
@@ -323,7 +316,7 @@ const updateActiveOffers = (offers, items) => {
 
   chrome.storage.local.get('showNumberOfOfferOnBadge', ({ showNumberOfOfferOnBadge }) => {
     if (showNumberOfOfferOnBadge) {
-      chrome.browserAction.setBadgeText({ text: receivedActiveCount.toString() });
+      chrome.action.setBadgeText({ text: receivedActiveCount.toString() });
     }
   });
 
@@ -744,5 +737,5 @@ const removeOldOfferEvents = () => {
 export {
   acceptOffer, declineOffer, updateActiveOffers, extractItemsFromOffers, sendOffer,
   matchItemsAndAddDetails, updateTrades, removeOldOfferEvents, acceptTradeInBackground,
-  createTradeOfferJSON,
+  createTradeOfferJSON, listenToAcceptTrade,
 };

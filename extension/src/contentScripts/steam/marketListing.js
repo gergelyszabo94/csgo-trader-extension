@@ -11,7 +11,6 @@ import {
   getPattern,
   logExtensionPresence,
   parseStickerInfo,
-  reloadPageOnExtensionReload,
   souvenirExists,
   getFloatAsFormattedString,
   updateLoggedInUserInfo,
@@ -37,8 +36,9 @@ import {
 import { injectScript, injectStyle } from 'utils/injection';
 import steamApps from 'utils/static/steamApps';
 import capsuleNamesWithNoCapsuleInName from 'utils/static/capsuleNamesWithNoCapsuleInName';
-import { generateInspectCommand, isDopplerInName } from 'utils/simpleUtils';
+import { generateInspectCommand, isDopplerInName, reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 import { overrideCreatePriceHistoryGraph } from 'utils/steamOverriding';
+import { listenToAcceptTrade } from 'utils/tradeOffers';
 import { removeFromFloatCache } from '../../utils/floatCaching';
 
 const inBrowserInspectButtonPopupLink = `
@@ -247,7 +247,7 @@ const populateFloatInfo = (listingID, floatInfo) => {
           if (floatInfo === undefined || floatInfo.floatvalue === 0) {
             // agents don't have float values yet they sometimes return float info, weird
             listingElement.querySelector('.floatBarMarket').remove();
-          } else {
+          } else if (floatInfo) {
             floatTechnical.innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo), { ADD_ATTR: ['target'] });
             const position = (parseFloat(
               getFloatAsFormattedString(floatInfo.floatvalue, 2),
@@ -258,7 +258,7 @@ const populateFloatInfo = (listingID, floatInfo) => {
             if (marketAlwaysShowFloatTechnical) floatTechnical.classList.remove('hidden');
           }
         }
-      } else {
+      } else if (floatInfo) {
         const itemImageDiv = listingElement.querySelector('.market_listing_item_img_container');
         if (itemImageDiv !== null) {
           itemImageDiv.querySelector('img').insertAdjacentHTML(
@@ -271,9 +271,12 @@ const populateFloatInfo = (listingID, floatInfo) => {
           );
         }
       }
-      listingElement.setAttribute('data-float', floatInfo.floatvalue);
-      listingElement.setAttribute('data-paintindex', floatInfo.paintindex);
-      listingElement.setAttribute('data-paintseed', floatInfo.paintseed);
+
+      if (floatInfo) {
+        listingElement.setAttribute('data-float', floatInfo.floatvalue);
+        listingElement.setAttribute('data-paintindex', floatInfo.paintindex);
+        listingElement.setAttribute('data-paintseed', floatInfo.paintseed);
+      }
     });
   }
 };
@@ -824,6 +827,8 @@ updateLoggedInUserName();
 addUpdatedRibbon();
 changePageTitle('market_listing', fullName);
 overrideCreatePriceHistoryGraph();
+listenToAcceptTrade();
+reloadPageOnExtensionUpdate();
 
 const descriptor = document.getElementById('largeiteminfo_item_descriptors');
 
@@ -1465,5 +1470,3 @@ chrome.storage.local.get('numberOfListings', ({ numberOfListings }) => {
     }, 2000);
   }
 });
-
-reloadPageOnExtensionReload();

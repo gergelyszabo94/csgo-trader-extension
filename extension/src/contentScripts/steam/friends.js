@@ -1,10 +1,14 @@
 import { logExtensionPresence, updateLoggedInUserInfo, addUpdatedRibbon } from 'utils/utilsModular';
 import { friendAndInvitesBanner } from 'utils/static/miscElements';
+import { listenToAcceptTrade } from 'utils/tradeOffers';
+import { reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 import DOMPurify from 'dompurify';
 
 logExtensionPresence();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
+listenToAcceptTrade();
+reloadPageOnExtensionUpdate();
 
 // highlights profiles with "csgotrader.app" in their name with gold colors
 document.querySelectorAll('.selectable.friend_block_v2.persona').forEach((friendBlock) => {

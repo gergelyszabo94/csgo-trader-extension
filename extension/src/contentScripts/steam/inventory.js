@@ -7,7 +7,7 @@ import {
   getDataFilledFloatTechnical, souvenirExists, copyToClipboard,
   getFloatBarSkeleton, addUpdatedRibbon, updateLoggedInUserName,
   logExtensionPresence, repositionNameTagIcons,
-  updateLoggedInUserInfo, reloadPageOnExtensionReload, isSIHActive, getActivePage,
+  updateLoggedInUserInfo, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, getFloatAsFormattedString,
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
   parseStickerInfo, getInspectLink, getExteriorFromTags, getDopplerInfo,
@@ -16,6 +16,7 @@ import {
   from 'utils/utilsModular';
 import {
   getItemMarketLink, generateInspectCommand, isDopplerInName, getCollection,
+  reloadPageOnExtensionUpdate,
 } from 'utils/simpleUtils';
 import { getShortDate, dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
@@ -42,6 +43,7 @@ import { injectScript } from 'utils/injection';
 import { getUserSteamID } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
 import steamApps from 'utils/static/steamApps';
+import { listenToAcceptTrade } from 'utils/tradeOffers';
 import { removeFromFloatCache, getFloatInfoFromCache } from '../../utils/floatCaching';
 
 let pricePercentage = 100; // can be changed, for easier discount calculation
@@ -1177,7 +1179,7 @@ const addRightSideElements = () => {
 };
 
 const addFloatIndicatorsToPage = () => {
-  chrome.storage.local.get('autoFloatInventory', (autoFloatInventory) => {
+  chrome.storage.local.get('autoFloatInventory', ({ autoFloatInventory }) => {
     if (autoFloatInventory) {
       const page = getActivePage('inventory');
       if (page !== null) {
@@ -2328,6 +2330,8 @@ const defaultActiveInventoryAppID = getActiveInventoryAppID();
 
 logExtensionPresence();
 updateWalletCurrency();
+listenToAcceptTrade();
+reloadPageOnExtensionUpdate();
 
 if (defaultActiveInventoryAppID !== null) {
   initPriceQueue(onListingPricesLoaded);
@@ -2577,5 +2581,3 @@ if (defaultActiveInventoryAppID !== null) {
     if (!document.hidden) updateTradabilityIndicators();
   }, 60000);
 } else console.log('Could not get active inventory app ID, private inventory? Functions disabled.');
-
-reloadPageOnExtensionReload();

@@ -134,7 +134,7 @@ const storageKeys = {
   discussionsToAutoBumpToDelete: [],
   usefulTitles: false,
   reloadListingOnError: true,
-  monitorFriendRequests: true,
+  monitorFriendRequests: false,
   showRealMoneySiteLinks: true,
   realTimePricesFreqSuccess: 3000,
   realTimePricesFreqFailure: 15000,
@@ -246,7 +246,7 @@ const storageKeys = {
   notificationVolume: 50,
   customNotificationURL: 'https://csgotrader.app/extension/sound/notification/glitch-in-the-matrix.ogg',
   showNumberOfOfferOnBadge: true,
-  notifyOnFriendRequest: true,
+  notifyOnFriendRequest: false,
   sendOfferBasedOnQueryParams: false,
   showPriceEmpireLinkInInventory: true,
   selectItemsBasedOnQueryParams: true,
@@ -297,8 +297,8 @@ const storageKeys = {
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'clientID',
   'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID', 'groupInvites',
-  'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules', 'floatQueueActivity', 'discussionsToAutoBump',
+  'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules', 'floatQueueActivity',
   'priceQueueActivity', 'userSteamWalletCurrency', 'tradeOffersEventLogs', 'numberOfNewItems', 'numberOfComments',
-  'discussionsToAutoBumpToDelete', 'recent401Detected'];
+  'recent401Detected'];
 
 export { storageKeys, nonSettingStorageKeys };

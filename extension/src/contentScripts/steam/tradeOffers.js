@@ -1,9 +1,9 @@
-import { closeTab } from 'utils/simpleUtils';
+import { closeTab, reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 import {
   addDopplerPhase, makeItemColorful, addUpdatedRibbon, addFloatRankIndicator,
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
   removeOfferFromActiveOffers, removeLinkFilterFromLinks,
-  logExtensionPresence, updateLoggedInUserInfo, reloadPageOnExtensionReload,
+  logExtensionPresence, updateLoggedInUserInfo,
   repositionNameTagIcons, jumpToAnchor, changePageTitle, isChromium,
   updateLoggedInUserName, addFadePercentage, getPattern, addPaintSeedIndicator,
 } from 'utils/utilsModular';
@@ -18,7 +18,7 @@ import { offersSortingModes } from 'utils/static/sortingModes';
 import { injectStyle } from 'utils/injection';
 import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
-import { acceptOffer, declineOffer } from 'utils/tradeOffers';
+import { acceptOffer, declineOffer, listenToAcceptTrade } from 'utils/tradeOffers';
 import DOMPurify from 'dompurify';
 import steamApps from 'utils/static/steamApps';
 import { getIDsFromElement } from 'utils/itemsToElementsToItems';
@@ -365,7 +365,7 @@ const sortOffers = (sortingMode) => {
 // also adds "incoming friend request from" message
 const addPartnerOfferSummary = (offers) => {
   chrome.storage.local.get(['tradeHistoryOffers', 'friendRequests'], ({ tradeHistoryOffers, friendRequests }) => {
-    if (tradeHistoryOffers) {
+    if (tradeHistoryOffers && offers) {
       offers.forEach((offer) => {
         const partnerID = getProperStyleSteamIDFromOfferStyle(offer.accountid_other);
         const offerElement = document.getElementById(`tradeofferid_${offer.tradeofferid}`);
@@ -539,6 +539,8 @@ updateLoggedInUserInfo();
 updateLoggedInUserName();
 addUpdatedRibbon();
 removeLinkFilterFromLinks();
+listenToAcceptTrade();
+reloadPageOnExtensionUpdate();
 
 chrome.storage.local.get([
   'numberOfFloatDigitsToShow', 'disableCancelEscrowedTrades', 'showPaintSeedOnItems', 'showFloatRankOnItems', 'contrastingLook',
@@ -834,5 +836,3 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
     );
   }
 }
-
-reloadPageOnExtensionReload();

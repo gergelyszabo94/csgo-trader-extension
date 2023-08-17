@@ -1,7 +1,7 @@
 import { storageKeys } from 'utils/static/storageKeys';
 import { updatePrices, updateExchangeRates, getUserCurrencyBestGuess } from 'utils/pricing';
 import {
-  scrapeSteamAPIkey, goToInternalPage,
+  setAPIKeyFirstTime, goToInternalPage,
 } from 'utils/utilsModular';
 import {
   getGroupInvites, updateFriendRequest,
@@ -12,6 +12,7 @@ import {
   playNotificationSound,
 } from 'utils/notifications';
 import { updateTrades, removeOldOfferEvents } from 'utils/tradeOffers';
+import './messaging';
 
 // handles install and update events
 chrome.runtime.onInstalled.addListener((details) => {
@@ -36,9 +37,9 @@ chrome.runtime.onInstalled.addListener((details) => {
     }, 20000);
 
     // tries to set the api key - only works if the user has already generated one before
-    scrapeSteamAPIkey();
+    setAPIKeyFirstTime();
 
-    chrome.browserAction.setBadgeText({ text: 'I' });
+    chrome.action.setBadgeText({ text: 'I' });
     chrome.notifications.create('installed', {
       type: 'basic',
       iconUrl: '/images/cstlogo128.png',
@@ -64,7 +65,7 @@ chrome.runtime.onInstalled.addListener((details) => {
       }
     });
 
-    chrome.browserAction.setBadgeText({ text: 'U' });
+    chrome.action.setBadgeText({ text: 'U' });
 
     // notifies the user when the extension is updated
     chrome.storage.local.set({ showUpdatedRibbon: true }, () => { });
@@ -111,7 +112,7 @@ chrome.runtime.setUninstallURL('https://docs.google.com/forms/d/e/1FAIpQLSdGzY8T
 
 // handles what happens when one of the extension's notification gets clicked
 chrome.notifications.onClicked.addListener((notificationID) => {
-  chrome.browserAction.setBadgeText({ text: '' });
+  chrome.action.setBadgeText({ text: '' });
   chrome.permissions.contains({
     permissions: ['tabs'],
   }, (granted) => {
@@ -184,9 +185,9 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     updateExchangeRates();
   } else {
     // this is when bookmarks notification are handled
-    chrome.browserAction.getBadgeText({}, (result) => {
-      if (result === '' || result === 'U' || result === 'I') chrome.browserAction.setBadgeText({ text: '1' });
-      else chrome.browserAction.setBadgeText({ text: (parseInt(result) + 1).toString() });
+    chrome.action.getBadgeText({}, (result) => {
+      if (result === '' || result === 'U' || result === 'I') chrome.action.setBadgeText({ text: '1' });
+      else chrome.action.setBadgeText({ text: (parseInt(result) + 1).toString() });
     });
     chrome.storage.local.get('bookmarks', (result) => {
       const item = result.bookmarks.find((element) => {

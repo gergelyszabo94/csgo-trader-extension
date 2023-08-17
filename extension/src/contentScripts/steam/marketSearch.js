@@ -4,10 +4,14 @@ import {
   logExtensionPresence,
   updateLoggedInUserInfo, addUpdatedRibbon,
 } from 'utils/utilsModular';
+import { listenToAcceptTrade } from 'utils/tradeOffers';
+import { reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 
 logExtensionPresence();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
+listenToAcceptTrade();
+reloadPageOnExtensionUpdate();
 
 const searchResultControls = document.getElementById('searchResults_controls');
 if (searchResultControls !== null) {

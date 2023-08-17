@@ -1,10 +1,10 @@
 import DOMPurify from 'dompurify';
 
 import {
-  reloadPageOnExtensionReload, logExtensionPresence,
+  logExtensionPresence,
   updateLoggedInUserInfo, addUpdatedRibbon, updateLoggedInUserName,
 } from 'utils/utilsModular';
-import { getItemMarketLink } from 'utils/simpleUtils';
+import { getItemMarketLink, reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 import {
   removeListing, getMarketHistory, cancelOrder, createOrder,
 } from 'utils/market';
@@ -14,6 +14,7 @@ import {
 } from 'utils/pricing';
 import { injectStyle } from 'utils/injection';
 import { overrideLoadMarketHistory } from 'utils/steamOverriding';
+import { listenToAcceptTrade } from 'utils/tradeOffers';
 
 const marketHistoryExport = {
   history: [],
@@ -328,6 +329,8 @@ updateWalletCurrency();
 updateLoggedInUserInfo();
 updateLoggedInUserName();
 addUpdatedRibbon();
+listenToAcceptTrade();
+reloadPageOnExtensionUpdate();
 
 // makes remove/cancel columns narrower
 injectStyle(`
@@ -767,5 +770,3 @@ if (marketHistoryButton !== null) {
     );
   });
 }
-
-reloadPageOnExtensionReload();
