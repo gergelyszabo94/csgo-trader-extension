@@ -1013,7 +1013,7 @@ const addRightSideElements = () => {
         if (item.commodity) {
           const multiSellLink = `
                 <div class="descriptor multiSellLink">
-                    <a href="https://steamcommunity.com/market/multisell?appid=${item.appid}&contextid=${item.contextid}&items%5B%5D=${item.market_hash_name}&qty%5B%5D=250" target="_blank">
+                    <a href="https://steamcommunity.com/market/multisell?appid=${item.appid}&contextid=${item.contextid}&items%5B%5D=${encodeURIComponent(item.market_hash_name)}&qty%5B%5D=250" target="_blank">
                         Open multisell page.
                       </a>
                 </div>
@@ -1669,7 +1669,7 @@ const updateSelectedItemsSummary = () => {
       }
       if (item.marketable === 1) {
         const listingRow = getListingRow(item.appid, item.contextid, item.market_hash_name);
-        if (item.commodity) multisellLink += `&items%5B%5D=${item.market_hash_name}`;
+        if (item.commodity) multisellLink += `&items%5B%5D=${encodeURIComponent(item.market_hash_name)}`;
 
         if (listingRow === null) {
           addListingRow(item);
