@@ -1179,7 +1179,7 @@ const addRightSideElements = () => {
 };
 
 const addFloatIndicatorsToPage = () => {
-  chrome.storage.local.get('autoFloatInventory', (autoFloatInventory) => {
+  chrome.storage.local.get('autoFloatInventory', ({ autoFloatInventory }) => {
     if (autoFloatInventory) {
       const page = getActivePage('inventory');
       if (page !== null) {
