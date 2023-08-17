@@ -8,7 +8,6 @@
   "description": "__MSG_application_description__",
   "homepage_url": "https://csgotrader.app/",
   "permissions": [
-    "offscreen",
     "scripting",
     "storage",
     "notifications",
@@ -25,14 +24,6 @@
     "*://prices.csgotrader.app/*",
     "*://steamrep.com/api/*"
   ],
-  "optional_host_permissions": [
-    "*://csgotraders.net/*",
-    "*://discord.com/*"
-  ],
-  "background": {
-    "service_worker": "js/backgroundScripts/background.bundle.js",
-    "type": "module"
-  },
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
   },

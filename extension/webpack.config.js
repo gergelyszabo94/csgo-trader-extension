@@ -14,16 +14,45 @@ module.exports = (env, argv) => {
   // requited for the chrome manifest.json so the development version gets the same id as the prod
   const chromeExtKey = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAycJXpmt94FIYH7+OVQswE8ZLWTqmNt3VePgk3IkOVP9QtEvXAcSNvtldqWCH3kFikAJzyeXdUM/puDOwZ4yM0KMgDbhfragLcB9j14VP2i3f3F98utOrRrl0eUAHFJ2fP2yCFbPqOiRZA9JK2jotpHhHib+lO2hLEtAbpnvMhD+TdIuPr33QEJcLkAfqCLZKrFGzqsOV+5NCkLQYfptA9v1KersX8FfFSDRmuzWipfo8EEwJDTcImau4v0YB+lZulHodxv5INt4Xp0Iq/lOgdm/6xUVdhZ3ISyjSvjLWVwstd1UMlLNxyBA9ibpc5UpkXDuPmkd77S2qVyMgsGtEPQIDAQAB';
 
-  // adds extra fields to the chrome and edge versions of the manifest
-  const modifyManifest = (buffer) => {
+  // chrome and edge are the same
+  const modifyManifestToChrome = (buffer) => {
     // copy-webpack-plugin passes a buffer
     const manifest = JSON.parse(buffer.toString());
 
     manifest.options_page = 'index.html';
+    manifest.background = {
+      "service_worker": "js/backgroundScripts/background.bundle.js",
+      "type": "module"
+    };
+    manifest.permissions = [...manifest.permissions, "offscreen"];
+    manifest.optional_host_permissions = [
+      "*://csgotraders.net/*",
+      "*://discord.com/*"
+    ];
 
     if (mode === 'development') {
       manifest.key = chromeExtKey;
     }
+    
+    // pretty print to JSON with two spaces
+    return JSON.stringify(manifest, null, 2);
+  }
+
+  const modifyManifestToFirefox = (buffer) => {
+    // copy-webpack-plugin passes a buffer
+    const manifest = JSON.parse(buffer.toString());
+
+    manifest.background = {
+      "scripts": ["js/backgroundScripts/background.bundle.js"]
+    };
+
+    // maybe fixed in the future, review later:
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1766026
+    manifest.optional_permissions = [
+      ...manifest.optional_permissions,
+      "*://csgotraders.net/*",
+      "*://discord.com/*"
+    ];
 
     // pretty print to JSON with two spaces
     return JSON.stringify(manifest, null, 2);
@@ -40,12 +69,15 @@ module.exports = (env, argv) => {
         {
           from: 'src/manifest.json',
           to: 'manifest_ff.json',
+          transform(content) {
+            return modifyManifestToFirefox(content);
+          },
         },
         {
           from: 'src/manifest.json',
           to: 'manifest.json',
           transform(content) {
-            return modifyManifest(content);
+            return modifyManifestToChrome(content);
           },
         },
         {
@@ -172,7 +204,7 @@ module.exports = (env, argv) => {
         extractComments: false,
       })],
     },
-    devtool: mode ==='production' ? 'source-map' : 'cheap-module-source-map',
+    devtool: mode === 'production' ? 'source-map' : 'cheap-module-source-map',
     plugins:
       (mode === 'production') ? [...pluginsToAlwaysUse, new CleanWebpackPlugin()] : pluginsToAlwaysUse, // CleanWebpackPlugin only needs to run when it's a production build
     devServer: {
