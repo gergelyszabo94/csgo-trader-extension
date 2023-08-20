@@ -1275,6 +1275,13 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                         BUFF.MARKET
                     </a>
                   </div>
+                  <div class="realMoneySite">
+                    <a href="https://gg.skin/" target="_blank" class="realMoneySiteLink referralLink" data-site="ggskin">
+                        <img alt="GG.SKIN logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/ggskin.png')}" data-site="ggskin">
+                        <br>
+                        GG.SKIN
+                    </a>
+                  </div>
                 </div>
                 <div class="realMoneySites">
                  <div class="realMoneySite">
@@ -1370,6 +1377,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       <a href="https://gamerpay.gg/partner/okn9go3r" target="_blank" class="referralLink" data-site="gamerpay">GamerPay</a>,
                       <a href="https://waxpeer.com/r/gery" target="_blank" class="referralLink" data-site="waxpeer">Waxpeer</a>,
                       <a href="https://buff.market/r/U1093423730" target="_blank" class="referralLink" data-site="buffmarket">BUFF.MARKET</a>,
+                      <a href="https://gg.skin/" target="_blank" class="referralLink" data-site="ggskin">GG.SKIN</a>,
                       <a href="https://p2p.bitskins.com/affiliate#gery" target="_blank" class="referralLink" data-site="bitskinsP2P">p2p.bitskins.com</a>,
                       <a href="bskn.co/?ref_alias=xcW4c_phcUc" target="_blank" class="referralLink" data-site="bitskins">Bitskins</a> and 
                       <a href="https://csfloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csfloat">
