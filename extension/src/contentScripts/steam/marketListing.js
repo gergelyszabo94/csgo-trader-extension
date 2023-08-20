@@ -1262,10 +1262,10 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                     </a>
                   </div>
                   <div class="realMoneySite">
-                    <a href="https://csgofloat.com/search?market_hash_name=${fullName}&ref=gerytrading" target="_blank" class="realMoneySiteLink referralLink" data-site="csgofloat">
-                        <img alt="CSGOFloat logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csgofloat.png')}" data-site="csgofloat">
+                    <a href="https://csfloat.com/search?market_hash_name=${fullName}&ref=gerytrading" target="_blank" class="realMoneySiteLink referralLink" data-site="csfloat">
+                        <img alt="CSFloat logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csgofloat.png')}" data-site="csfloat">
                         <br>
-                        CSGOFloat Market
+                        CSFloat Market
                     </a>
                   </div>
                   <div class="realMoneySite">
@@ -1285,7 +1285,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                     </a>
                   </div>
                   <div class="realMoneySite">
-                    <a href="https://skinbaron.com/partner/gery" target="_blank" class="realMoneySiteLink referralLink" data-site="csgofloat" data-site="skinbaron">
+                    <a href="https://skinbaron.com/partner/gery" target="_blank" class="realMoneySiteLink referralLink" data-site="skinbaron">
                         <img alt="Skinbaron logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinbaron.png')}" data-site="skinbaron">
                         <br>
                         Skinbaron.com
@@ -1372,8 +1372,8 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       <a href="https://buff.market/r/U1093423730" target="_blank" class="referralLink" data-site="buffmarket">BUFF.MARKET</a>,
                       <a href="https://p2p.bitskins.com/affiliate#gery" target="_blank" class="referralLink" data-site="bitskinsP2P">p2p.bitskins.com</a>,
                       <a href="bskn.co/?ref_alias=xcW4c_phcUc" target="_blank" class="referralLink" data-site="bitskins">Bitskins</a> and 
-                      <a href="https://csgofloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csgofloat">
-                      CSGOFloat
+                      <a href="https://csfloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csfloat">
+                      CSFloat
                       </a>
                       are real money marketplaces where you can buy and sell skins. <br>
                       You can save money by buying items there instead of the market. <br>
@@ -1383,8 +1383,8 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       <a href="https://bitskins.com/market/csgo?ref_alias=csgotrader" target="_blank" class="referralLink" data-site="bitskins">
                           this one for Bitskins.com
                       </a>,
-                      <a href="https://csgofloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csgofloat">
-                      this one and find your desired items on CSGOFloat's peer to peer market
+                      <a href="https://csfloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csfloat">
+                      this one and find your desired items on CSFloat's peer to peer market
                       </a>,
                       <a href="https://buff.market/r/U1093423730" target="_blank" class="referralLink" data-site="buffmarket">this one for BUFF.MARKET</a>,
                       <a href="https://gamerpay.gg/partner/okn9go3r" target="_blank" class="referralLink" data-site="gamerpay"> this one for GamerPay.gg</a>
