@@ -1270,7 +1270,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                   </div>
                   <div class="realMoneySite">
                     <a href="https://buff.market/r/U1093423730" target="_blank" class="realMoneySiteLink referralLink" data-site="buffmarket">
-                        <img alt="Bitskins logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/buffmarket.png')}" data-site="buffmarket">
+                        <img alt="Buff Market logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/buffmarket.png')}" data-site="buffmarket">
                         <br>
                         BUFF.MARKET
                     </a>
@@ -1324,7 +1324,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                 </div>
                 <div class="realMoneySites">
                 <div class="realMoneySite">
-                    <a href="https://bskn.co/?market_hash_name=${fullName}&appid=${appID}&sort_by=price&order=asc&ref_alias=xcW4c_phcUc" target="_blank" class="realMoneySiteLink referralLink" data-site="bitskins">
+                    <a href="https://bitskins.com/market/csgo?ref_alias=csgotrader" target="_blank" class="realMoneySiteLink referralLink" data-site="bitskins">
                         <img alt="Bitskins logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/bitskins.png')}" data-site="bitskins">
                         <br>
                         Bitskins.com
@@ -1380,7 +1380,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       <a href="https://skinport.com/market/${appID}?search=${fullName}&r=gery" target="_blank" class="referralLink" data-site="skinport">
                           Follow this link to check listings for his item on Skinport.com
                       </a>,
-                      <a href="https://bskn.co/?market_hash_name=${fullName}&appid=${appID}&sort_by=price&order=asc&ref_alias=xcW4c_phcUc" target="_blank" class="referralLink" data-site="bitskins">
+                      <a href="https://bitskins.com/market/csgo?ref_alias=csgotrader" target="_blank" class="referralLink" data-site="bitskins">
                           this one for Bitskins.com
                       </a>,
                       <a href="https://csgofloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csgofloat">
