@@ -645,7 +645,7 @@ if (activePage === 'incoming_offers') {
             if (res.needs_email_confirmation || res.needs_mobile_confirmation) message = 'Accepted - Awaiting Confirmation';
             else {
               message = 'Trade Accepted';
-              middleElement.classList.add('accepted');
+              if (middleElement) middleElement.classList.add('accepted');
             }
             offerElement.querySelector('.tradeoffer_footer').style.display = 'none';
           }).catch((err) => {
@@ -655,10 +655,12 @@ if (activePage === 'incoming_offers') {
             offerContent.classList.remove('active');
             offerContent.classList.add('inactive');
 
-            middleElement.classList.remove('tradeoffer_items_rule');
-            middleElement.classList.add('tradeoffer_items_banner');
-            middleElement.style.height = '';
-            middleElement.innerText = message;
+            if (middleElement) {
+              middleElement.classList.remove('tradeoffer_items_rule');
+              middleElement.classList.add('tradeoffer_items_banner');
+              middleElement.style.height = '';
+              middleElement.innerText = message;
+            }
           });
         });
       }
@@ -700,10 +702,12 @@ if (activePage === 'incoming_offers') {
             offerContent.classList.add('inactive');
 
             const middleElement = offerContent.querySelector('.tradeoffer_items_rule');
-            middleElement.classList.remove('tradeoffer_items_rule');
-            middleElement.classList.add('tradeoffer_items_banner');
-            middleElement.style.height = '';
-            middleElement.innerText = message;
+            if (middleElement) {
+              middleElement.classList.remove('tradeoffer_items_rule');
+              middleElement.classList.add('tradeoffer_items_banner');
+              middleElement.style.height = '';
+              middleElement.innerText = message;
+            }
           });
         });
       });
