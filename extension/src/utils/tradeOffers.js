@@ -18,8 +18,6 @@ import {
 } from 'utils/utilsModular';
 import { getFormattedPLPercentage, getItemMarketLink, isDopplerInName } from 'utils/simpleUtils';
 import { notifyOnDiscord, playNotificationSound } from 'utils/notifications';
-
-import DOMPurify from 'dompurify';
 import addPricesAndFloatsToInventory from 'utils/addPricesAndFloats';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
@@ -264,7 +262,7 @@ const notifyAboutOfferOnDiscord = (offer, items) => {
       const userDetails = summary[steamIDOfPartner];
 
       const title = `Trade Offer (${prettyPrintPrice(currency, offer.profitOrLoss.toFixed(2))} ${offer.PLPercentageFormatted})`;
-      const description = offer.message !== '' ? `*${DOMPurify.sanitize(offer.message)}*` : '';
+      const description = offer.message !== '' ? `*${offer.message}*` : '';
       
       const giving = createDiscordSideSummary(offer.items_to_give, items);
       const receiving = createDiscordSideSummary(offer.items_to_receive, items);
