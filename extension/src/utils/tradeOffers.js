@@ -426,11 +426,13 @@ const matchItemsAndAddDetails = (offers, userID) => {
     const itemsWithMoreInfo = [];
     if (allItemsInOffer) {
       allItemsInOffer.forEach((item) => {
-        const itemDescription = offers.descriptions.find((description) => {
-          return description.classid === item.classid
-            && description.instanceid === item.instanceid;
-        });
-        itemsWithMoreInfo.push({ ...item, ...itemDescription });
+        if (offers.descriptions) {
+          const itemDescription = offers.descriptions.find((description) => {
+            return description.classid === item.classid
+              && description.instanceid === item.instanceid;
+          });
+          itemsWithMoreInfo.push({ ...item, ...itemDescription });
+        }
       });
     }
 
