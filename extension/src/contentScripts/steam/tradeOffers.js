@@ -570,10 +570,13 @@ else if (activePage === 'sent_offers_history') changePageTitle('trade_offers', '
 // this only happens when the tab is opened in the background, https://www.chromestatus.com/feature/5527160148197376
 // this is a dirty but working fix for that
 let thisManyTimes = 15;
-const intervalID = setInterval(() => {
+const reinjectInterval = setInterval(() => {
   if (thisManyTimes > 0) {
-    overrideShowTradeOffer();
-  } else clearInterval(intervalID);
+    const injectedScript = document.getElementById('ShowTradeOfferScript');
+
+    if (injectedScript === null) overrideShowTradeOffer();
+    else clearInterval(reinjectInterval);
+  } else clearInterval(reinjectInterval);
   thisManyTimes -= 1;
 }, 1000);
 
