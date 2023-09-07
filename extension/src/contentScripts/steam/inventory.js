@@ -1215,7 +1215,8 @@ const addFloatIndicatorsToPage = () => {
 };
 
 const addRealTimePricesToQueue = () => {
-  if (!document.getElementById('selectButton').classList.contains('selectionActive')) {
+  const selectButton = document.getElementById('selectButton');
+  if (selectButton !== null && !selectButton.classList.contains('selectionActive')) {
     chrome.storage.local.get(
       ['realTimePricesAutoLoadInventory', 'realTimePricesMode'],
       ({ realTimePricesAutoLoadInventory, realTimePricesMode }) => {
