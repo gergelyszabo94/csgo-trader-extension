@@ -174,11 +174,6 @@ const currencies = {
     long: 'Bitcoin',
     sign: '₿',
   },
-  MBC: {
-    short: 'MBC',
-    long: 'μBTC (you-bit or 0.000001 of a Bitcoin)',
-    sign: 'μ₿',
-  },
   ETH: {
     short: 'ETH',
     long: 'Ethereum',
