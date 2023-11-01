@@ -200,12 +200,6 @@ const faq = (props) => {
                         BUFF163.com, CSGOEmpire, swap.gg, CSGOEXO.COM.
                     </p>
                 </Question>
-                <Question title='How are CSGO Trader prices calculated?'>
-                    <p>
-                        You can read about this in detail in
-                        <Link to='/prices/'> its own dedicated page. </Link>
-                    </p>
-                </Question>
                 <Question title='What are the supported currencies?'>
                     <p2>
                         United States dollar, Euro, Pound sterling, Renminbi, Japanese yen, Canadian dollar, Australian dollar, Hong Kong dollar, Icelandic króna,

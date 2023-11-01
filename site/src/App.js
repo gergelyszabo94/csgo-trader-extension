@@ -13,7 +13,6 @@ import Home from './containers/Home/Home';
 import Changelog from './containers/Changelog/Changelog';
 import ReleaseNotes from './containers/ReleaseNotes/ReleaseNotes';
 import SteamGroup from './containers/SteamGroup/SteamGroup';
-import Prices from './containers/Prices/Prices';
 import Privacy from './containers/Privacy/Privacy';
 import Faq from './containers/Faq/Faq';
 
@@ -45,11 +44,6 @@ const App = () => {
                         </Route>
                         <Route path='/group'>
                             <SteamGroup
-                                gAnalytic={ReactGA}
-                            />
-                        </Route>
-                        <Route path='/prices'>
-                            <Prices
                                 gAnalytic={ReactGA}
                             />
                         </Route>

@@ -9,7 +9,6 @@ Check out <a target="_blank" href="https://csgotrader.app/">csgotrader.app</a> f
 Repo Structure
 --------------
 - <a href="/extension">/extension</a> - contains the browser extension's source code
-- <a href="/backend">/backend</a> - contains the server(less) side things,  Python scrips that are responsible for pricing, analytics, etc.
 - <a href="/site">/site</a> - contains the csgotrader.app React site's source code
 - <a href="/publishing">/publishing</a> - contains marketing material
 

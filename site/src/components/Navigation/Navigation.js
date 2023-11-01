@@ -19,10 +19,6 @@ const navigation = () => {
             name: 'Steam Group'
         },
         {
-            path: '/prices/',
-            name: 'Prices'
-        },
-        {
             path: '/faq/',
             name: 'FAQ'
         }
