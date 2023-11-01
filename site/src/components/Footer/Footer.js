@@ -11,8 +11,6 @@ const footer = () => {
             <p>
                 A
                 <NewTabLink to='https://www.gergely-szabo.com/'> Gergely Szabo </NewTabLink>
-                and
-                <NewTabLink to='https://steamcommunity.com/profiles/76561198013607021'> Oliver Madani </NewTabLink>
                 project © {new Date().getFullYear()}
             </p>
             <div>
