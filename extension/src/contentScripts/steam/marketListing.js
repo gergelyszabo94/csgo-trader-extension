@@ -42,7 +42,7 @@ import { listenToAcceptTrade } from 'utils/tradeOffers';
 import { removeFromFloatCache } from '../../utils/floatCaching';
 
 const inBrowserInspectButtonPopupLink = `
-    <a class="popup_menu_item" id="inbrowser_inspect" href="https://market.swap.gg/screenshot" target="_blank">
+    <a class="popup_menu_item" id="inbrowser_inspect" href="https://swap.gg/screenshot" target="_blank">
         ${chrome.i18n.getMessage('inspect_in_browser')}
     </a>`;
 const dopplerPhase = '<div class="dopplerPhaseMarket"><span></span></div>';
@@ -840,7 +840,7 @@ if (appID === steamApps.CSGO.appID) {
       itemWithInspectLink = true;
       const inspectLink = originalInspectButton.getAttribute('href');
       const customInspectButtons = `
-    <a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect_button" href="https://market.swap.gg/screenshot?inspectLink=${inspectLink}" target="_blank">
+    <a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect_button" href="https://swap.gg/screenshot?inspectLink=${inspectLink}" target="_blank">
         <span>
             ${chrome.i18n.getMessage('inspect_in_browser')}
         </span>
@@ -927,7 +927,7 @@ if (appID === steamApps.CSGO.appID) {
   document.getElementById('inbrowser_inspect').addEventListener('mouseenter', (event) => {
     const inspectLink = document.getElementById('market_action_popup_itemactions')
       .querySelector('a.popup_menu_item').getAttribute('href');
-    event.target.setAttribute('href', `https://market.swap.gg/screenshot?inspectLink=${inspectLink}`);
+    event.target.setAttribute('href', `https://swap.gg/screenshot?inspectLink=${inspectLink}`);
   });
 
   document.getElementById('onserver_inspect').addEventListener('click', () => {

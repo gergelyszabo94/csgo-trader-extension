@@ -45,7 +45,7 @@ function HandleTradeActionMenu( elActionMenuButton, item, user )
                 if (item.actions !== '') {
                   item.actions=item.actions.filter(element => element.id!=="inbrowser" && element.id!=="buffLookup" && element.id!=="onserver");
                   let inspectLink = item.actions[0].link;
-                  item.actions.push({name: "Inspect in Browser...", link: "https://market.swap.gg/screenshot?inspectLink="+inspectLink, id: "inbrowser"});
+                  item.actions.push({name: "Inspect in Browser...", link: "https://swap.gg/screenshot?inspectLink="+inspectLink, id: "inbrowser"});
                   item.actions.push({name: "Inspect on Server...", link: inspectLink, id: "onserver"});
                   item.actions.push({name: "Lookup on BUFF", link: "https://api.pricempire.com/v1/redirectBuff/"+item.market_hash_name, id: "buffLookup"});
                 }
