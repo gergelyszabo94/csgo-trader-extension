@@ -151,6 +151,12 @@ const market = () => {
         type="flipSwitchStorage"
         description="Load starting at prices of my listing and highest order prices for my orders on the market main page"
       />
+      <Row
+        name="Enchance stickers on market listings"
+        id="marketEnchanceStickers"
+        type="flipSwitchStorage"
+        description="Show nametags, stickers, sticker wear and sticker value below the on market listings"
+      />
     </Category>
   );
 };

@@ -1411,7 +1411,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
   }
 });
 
-chrome.storage.local.get('numberOfListings', ({ numberOfListings }) => {
+chrome.storage.local.get(['numberOfListings', 'marketEnchanceStickers'], ({ numberOfListings, marketEnchanceStickers }) => {
   const numberOfListingsInt = parseInt(numberOfListings);
   // eslint-disable-next-line no-restricted-globals
   if (!isNaN(numberOfListingsInt) && numberOfListingsInt !== 10) {
@@ -1420,7 +1420,7 @@ chrome.storage.local.get('numberOfListings', ({ numberOfListings }) => {
   } else {
     addPhasesIndicator();
     addFloatBarSkeletons();
-    addStickers();
+    if (marketEnchanceStickers) addStickers();
 
     addListingsToFloatQueue();
     addPricesInOtherCurrencies();
@@ -1437,7 +1437,7 @@ chrome.storage.local.get('numberOfListings', ({ numberOfListings }) => {
         if (Date.now() > observerLastTriggered + 1000) {
           addPhasesIndicator();
           addFloatBarSkeletons();
-          addStickers();
+          if (marketEnchanceStickers) addStickers();
           addListingsToFloatQueue();
           addPricesInOtherCurrencies();
           addInstantBuyButtons();
