@@ -53,7 +53,7 @@ const getFloatAsFormattedString = (float, decimals) => {
 
 const logExtensionPresence = () => {
   const { version } = chrome.runtime.getManifest();
-  console.log(`CSGO Trader - Steam Trading Enhancer ${version} is running on this page. Changelog at: https://csgotrader.app/changelog/`);
+  console.log(`CS2 Trader - Steam Trading Enhancer ${version} is running on this page. Changelog at: https://csgotrader.app/changelog/`);
   console.log('If you see any errors that seem related to the extension please email support@csgotrader.app.');
 };
 
@@ -774,8 +774,8 @@ const addUpdatedRibbon = () => {
         'afterbegin',
         DOMPurify.sanitize(
           `<div id="extensionUpdatedRibbon">
-                       CSGO Trader Extension was updated to ${chrome.runtime.getManifest().version}. Check out the 
-                      <a href="https://csgotrader.app/changelog/" target="_blank" title="Open CSGOTrader Changelog">
+                       CS2 Trader Extension was updated to ${chrome.runtime.getManifest().version}. Check out the 
+                      <a href="https://csgotrader.app/changelog/" target="_blank" title="Open CS2Trader Changelog">
                           Changelog
                       </a>
                       for details
@@ -896,8 +896,8 @@ const getFloatDBLink = (item) => {
       : item.name.includes('Souvenir')
         ? 3
         : 1;
-    return `https://csgofloat.com/db?name=${item.name}&defIndex=${item.floatInfo.defindex}&paintIndex=${item.floatInfo.paintindex}&paintSeed=${item.floatInfo.paintseed}&category=${category}&min=${item.floatInfo.floatvalue - 0.00000000000000001}&max=${item.floatInfo.floatvalue + 0.00000000000000001}`;
-  } return 'https://csgofloat.com/db';
+    return `https://csfloat.com/db?name=${item.name}&defIndex=${item.floatInfo.defindex}&paintIndex=${item.floatInfo.paintindex}&paintSeed=${item.floatInfo.paintseed}&category=${category}&min=${item.floatInfo.floatvalue - 0.00000000000000001}&max=${item.floatInfo.floatvalue + 0.00000000000000001}`;
+  } return 'https://csfloat.com/db';
 };
 
 //  unused atm

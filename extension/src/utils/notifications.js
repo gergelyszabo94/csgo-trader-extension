@@ -59,7 +59,7 @@ const notifyOnDiscord = (embed) => {
           method: 'POST',
           body: JSON.stringify({
             embeds: [embed],
-            username: 'CSGOTRADER.APP',
+            username: 'CS2TRADER.APP',
             avatar_url: 'https://csgotrader.app/cstlogo48.png',
           }),
           headers: {
@@ -126,7 +126,7 @@ const loggedOutNotification = (loggedOut) => {
           if (notifyAboutBeingLoggedOutOnDiscord) {
             const embed = {
               footer: {
-                text: 'CSGO Trader',
+                text: 'CS2 Trader',
                 icon_url: 'https://csgotrader.app/cstlogo48.png',
               },
               title,

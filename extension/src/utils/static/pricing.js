@@ -264,15 +264,15 @@ const currencies = {
 const pricingProviders = {
   csgotrader: {
     name: 'csgotrader',
-    long: 'CSGO Trader',
+    long: 'CS2 Trader',
     short: 'CS',
     url: 'http://csgotrader.app/prices/',
     description: 'The extension\'s own pricing, aims to be accurate and to provide some kind of price for every item.',
     pricing_modes: {
       csgotrader: {
-        description: 'CSGO Trader price',
+        description: 'CS2 Trader price',
         name: 'csgotrader',
-        long: 'CSGO Trader price',
+        long: 'CS2 Trader price',
       },
     },
   },

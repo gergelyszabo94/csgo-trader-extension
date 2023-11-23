@@ -40,7 +40,7 @@ const other = () => {
         name="Hide other extensions"
         id="hideOtherExtensionPrices"
         type="flipSwitchStorage"
-        description="Hides elements from other extensions that overlap with CSGO Trader's"
+        description="Hides elements from other extensions that overlap with CS2 Trader's"
       />
     </Category>
   );

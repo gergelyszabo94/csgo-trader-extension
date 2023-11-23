@@ -770,7 +770,7 @@ const addRightSideElements = () => {
                     descriptor.insertAdjacentHTML(
                       'afterbegin',
                       DOMPurify.sanitize(
-                        `<a href="https://csgostash.com/collection/${item.collection}?utm_source=csgotrader.app" target="_blank">
+                        `<a href="https://cs2stash.com/collection/${item.collection}?utm_source=csgotrader.app" target="_blank">
                         ${collectionName}
                       </a>`,
                         { ADD_ATTR: ['target'] },
@@ -1101,8 +1101,8 @@ const addRightSideElements = () => {
           if (showCSGOSTASHLinkInInventory) {
             const CSGOSTASHLink = `
         <div class="descriptor CSGOSSTASHLink">
-            <a href="https://csgostash.com/markethash/${item.market_hash_name}" target="_blank" style="color: yellow;">
-                View on CS:GO STASH
+            <a href="https://cs2stash.com/markethash/${item.market_hash_name}" target="_blank" style="color: yellow;">
+                View on CS2 STASH
               </a>
         </div>
       `;
@@ -1960,7 +1960,7 @@ const addFunctionBar = () => {
                     <div id="massListing" class="hidden">
                       <h2 id="massListingTitle" class="hidden">Market Mass Listing</h2>
                       <div class="hidden not_tradable" id="currency_mismatch_warning">
-                      Warning: Your Steam Wallet currency and CSGO Trader currency are not the same.
+                      Warning: Your Steam Wallet currency and CS2 Trader currency are not the same.
                       This is an untested scenario that is not recommended. 
                       Make sure you double check the listing prices when confirming the sales on your phone if you use it like this.
                       <span class="underline clickable" id="changeCurrency">Click here to fix this</span></div>
@@ -2437,7 +2437,7 @@ if (defaultActiveInventoryAppID !== null) {
               dropDownMenu.querySelector('.popup_body.popup_menu').insertAdjacentHTML(
                 'afterbegin',
                 DOMPurify.sanitize(
-                  '<a class="popup_menu_item" id="viewTradeHistory">Trade History (CSGO Trader)</a>',
+                  '<a class="popup_menu_item" id="viewTradeHistory">Trade History (CS2 Trader)</a>',
                 ),
               );
               document.getElementById('viewTradeHistory').addEventListener('mouseup', () => {
@@ -2487,7 +2487,7 @@ if (defaultActiveInventoryAppID !== null) {
                 DOMPurify.sanitize(
                   `<div class="trade_partner_info_block" style="color: lightgray"> 
                         <div>
-                          <b>CSGOTrader Extension:</b> It looks like you don't have your Steam API Key set yet.
+                          <b>CS2Trader Extension:</b> It looks like you don't have your Steam API Key set yet.
                         </div>
                         <div>
                           If you had that you would see partner offer history here. Check the <a href="https://csgotrader.app/release-notes#1.23">Release Notes</a> for more info.

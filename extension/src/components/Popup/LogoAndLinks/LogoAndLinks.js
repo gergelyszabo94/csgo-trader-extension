@@ -24,10 +24,10 @@ const LogoAndLinks = () => {
 
   return (
     <>
-      <NewTabLink to="https://csgotrader.app" key="home">
-        <img src="/images/cstlogo48.png" alt="CSGO Trader Logo" />
+      <NewTabLink to="https://cs2trader.app" key="home">
+        <img src="/images/cstlogo48.png" alt="CS2 Trader Logo" />
         <h5>
-          <span className="orange">CSGO Trader </span>
+          <span className="orange">CS2 Trader </span>
           <span>
             {chrome.runtime.getManifest().version}
           </span>

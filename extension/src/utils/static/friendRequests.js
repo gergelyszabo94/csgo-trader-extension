@@ -42,7 +42,7 @@ const conditions = {
   game_banned: {
     key: 'game_banned',
     pretty: 'Game banned',
-    description: 'The user is banned in some games (for example CS:GO Overwatch banned)',
+    description: 'The user is banned in some games (for example CS2 Overwatch banned)',
     with_value: false,
   },
   trade_banned: {
@@ -59,7 +59,7 @@ const conditions = {
   },
   csgo_inventory_value_over: {
     key: 'csgo_inventory_value_over',
-    pretty: 'CS:GO Inventory value over',
+    pretty: 'CS2 Inventory value over',
     description: 'The user\'s inventory value is over',
     with_value: true,
     value_type: 'number',
@@ -67,7 +67,7 @@ const conditions = {
   },
   csgo_inventory_value_under: {
     key: 'csgo_inventory_value_under',
-    pretty: 'CS:GO Inventory value under',
+    pretty: 'CS2 Inventory value under',
     description: 'The user\'s inventory value is under or the equal to',
     with_value: true,
     value_type: 'number',

@@ -181,14 +181,14 @@ const conditions = {
   },
   receiving_non_csgo_items: {
     key: 'receiving_non_csgo_items',
-    pretty: 'Receiving non-csgo items',
-    description: 'The list of items to receive includes one or more non-csgo items',
+    pretty: 'Receiving non-cs2 items',
+    description: 'The list of items to receive includes one or more non-cs2 items',
     with_value: false,
   },
   giving_non_csgo_items: {
     key: 'giving_non_csgo_items',
-    pretty: 'Giving non-csgo items',
-    description: 'The list of items to give includes one or more non-csgo items',
+    pretty: 'Giving non-cs2 items',
+    description: 'The list of items to give includes one or more non-cs2 items',
     with_value: false,
   },
   receiving_no_price_items: {

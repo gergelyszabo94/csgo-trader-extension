@@ -13,13 +13,13 @@ const Navigation = () => {
       variant="dark"
       className="sticky-top nav--shadow nav--dark"
     >
-      <Navbar.Brand href="https://csgotrader.app">
+      <Navbar.Brand href="https://cs2trader.app">
         <img
           src={logo}
           className="d-inline-block navlogo"
-          alt="CSGO Trader Extension logo"
+          alt="CS2 Trader Extension logo"
         />
-        CSGO Trader Extension
+        CS2 Trader Extension
       </Navbar.Brand>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
       <Navbar.Collapse id="responsive-navbar-nav">

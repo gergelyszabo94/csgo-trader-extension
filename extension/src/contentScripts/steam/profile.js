@@ -166,7 +166,7 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         } else {
           offerSummaryElement = `
                         <div class="trade_partner_info_block" style="color: lightgray"> 
-                            <div><b>CSGOTrader Extension:</b> It looks like you don't have your Steam API Key set yet.</div>
+                            <div><b>CS2Trader Extension:</b> It looks like you don't have your Steam API Key set yet.</div>
                             <div>If you had that you would see partner offer history here. Check the 
                                 <a href="https://csgotrader.app/release-notes#1.23">Release Notes</a> 
                                 for more info.

@@ -886,7 +886,7 @@ if (appID === steamApps.CSGO.appID) {
   if (descriptor !== null) {
     descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
       `<div class="descriptor">
-          <a href="https://csgostash.com/markethash/${fullName}">View on CS:GO STASH</a>
+          <a href="https://cs2stash.com/markethash/${fullName}">View on CS2 STASH</a>
        </div>
        <div class="descriptor">
           <a href="https://api.pricempire.com/v1/redirectBuff/${fullName}">Lookup item on Buff</a>
@@ -1397,7 +1397,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       as well as trade for them with your items.
                     </div>
                     <div>
-                      This message was added by the CSGO Trader extension. using the above link to purchase something helps the development of the extension.
+                      This message was added by the CS2 Trader extension. using the above link to purchase something helps the development of the extension.
                       If you don't wish to see this message in the future you can go the options and turn the feature off.
                     </div>
                 </div>

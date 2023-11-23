@@ -22,7 +22,7 @@ chrome.storage.local.get('autoSetSteamAPIKey', ({ autoSetSteamAPIKey }) => {
               'afterend',
               DOMPurify.sanitize(
                 `<div class="apiKeyAdded" ">
-                        Added API key to CSGOTrader Extension, if you don't like this happening you can go the options and turn Autoset off.
+                        Added API key to CS2Trader Extension, if you don't like this happening you can go the options and turn Autoset off.
                     </div>`,
               ),
             );
@@ -32,7 +32,7 @@ chrome.storage.local.get('autoSetSteamAPIKey', ({ autoSetSteamAPIKey }) => {
             'afterend',
             DOMPurify.sanitize(
               `<div style="color:red; margin-top: 10px;">
-                    CSGOTrader Extension could not validate your API key, please try again.
+                    CS2Trader Extension could not validate your API key, please try again.
                   </div>`,
             ),
           );
@@ -47,7 +47,7 @@ chrome.storage.local.get('autoSetSteamAPIKey', ({ autoSetSteamAPIKey }) => {
     'beforeend',
     DOMPurify.sanitize(
       `<div class="apiKeyMessage">
-                <b>CSGO Trader:</b>
+                <b>CS2 Trader:</b>
                 The Steam API allows you and others to access your Steam account programmatically.
                 You should not give it to people/services that you don't trust.
                 <div style="color:red">

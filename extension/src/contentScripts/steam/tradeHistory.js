@@ -18,7 +18,7 @@ if (bgBottom !== null) {
     'afterbegin',
     DOMPurify.sanitize(
       `<div class="tradeHistoryRibbon">
-               <b>CSGO Trader:</b>
+               <b>CS2 Trader:</b>
                You can check your trade history in much easier to navigate way in the extension's "Trade History" menu
             </div>`,
     ),
@@ -32,7 +32,7 @@ chrome.runtime.sendMessage({ hasTabsAccess: 'hasTabsAccess' }, ((response) => {
       tradeHistoryRibbon.insertAdjacentHTML(
         'beforeend',
         DOMPurify.sanitize(
-          '<div><a id="viewTradeHistory">Trade History (CSGO Trader)</a></div>',
+          '<div><a id="viewTradeHistory">Trade History (CS2 Trader)</a></div>',
         ),
       );
       document.getElementById('viewTradeHistory').addEventListener('click', () => {

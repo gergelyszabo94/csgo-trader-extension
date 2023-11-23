@@ -275,7 +275,7 @@ const notifyAboutOfferOnDiscord = (offer, items) => {
 
       const embed = {
         footer: {
-          text: 'CSGO Trader',
+          text: 'CS2 Trader',
           icon_url: 'https://csgotrader.app/cstlogo48.png',
         },
         author: {

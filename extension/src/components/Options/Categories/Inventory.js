@@ -111,10 +111,10 @@ const inventory = () => {
         description="Show lookup on FloatDB link in inventories"
       />
       <Row
-        name="Show View on CS:GO STASH link"
+        name="Show View on CS2 STASH link"
         id="showCSGOSTASHLinkInInventory"
         type="flipSwitchStorage"
-        description="Show View on CS:GO STASH link in inventories"
+        description="Show View on CS2 STASH link in inventories"
       />
       <Row
         name="Show exteriors on items"

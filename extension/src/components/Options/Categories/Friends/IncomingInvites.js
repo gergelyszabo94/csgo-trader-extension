@@ -125,7 +125,7 @@ const IncomingInvites = () => {
                   </th>
                   <th title="The user's Steam community profile's privacy state">Profile</th>
                   <th
-                    title="Sort by the user's CS:GO inventory value"
+                    title="Sort by the user's CS2 inventory value"
                     className="clickAbleColumnHeader"
                     onClick={() => {
                       if (sortingMode !== 'invent_value_desc') sortInvites('invent_value_desc');
