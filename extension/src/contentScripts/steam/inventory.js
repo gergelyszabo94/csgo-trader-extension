@@ -15,7 +15,7 @@ import {
 }
   from 'utils/utilsModular';
 import {
-  getItemMarketLink, generateInspectCommand, isDopplerInName, getCollection,
+  getItemMarketLink, isDopplerInName, getCollection,
   reloadPageOnExtensionUpdate,
 } from 'utils/simpleUtils';
 import { getShortDate, dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
@@ -44,7 +44,7 @@ import { getUserSteamID } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
 import steamApps from 'utils/static/steamApps';
 import { listenToAcceptTrade } from 'utils/tradeOffers';
-import { removeFromFloatCache, getFloatInfoFromCache } from '../../utils/floatCaching';
+import { getFloatInfoFromCache } from '../../utils/floatCaching';
 
 let pricePercentage = 100; // can be changed, for easier discount calculation
 let items = [];
@@ -402,39 +402,40 @@ const setStickerInfo = (stickers) => {
   }
 };
 
-const setGenInspectInfo = (item) => {
-  const genCommand = generateInspectCommand(
-    item.market_hash_name, item.floatInfo.floatvalue, item.floatInfo.paintindex,
-    item.floatInfo.defindex, item.floatInfo.paintseed, item.floatInfo.stickers,
-  );
+// not used right now, inspecton server is a link now
+// const setGenInspectInfo = (item) => {
+//   const genCommand = generateInspectCommand(
+//     item.market_hash_name, item.floatInfo.floatvalue, item.floatInfo.paintindex,
+//     item.floatInfo.defindex, item.floatInfo.paintseed, item.floatInfo.stickers,
+//   );
 
-  document.querySelectorAll('.inspectOnServer').forEach((inspectOnServerDiv) => {
-    const inspectGenCommandEl = inspectOnServerDiv.querySelector('.inspectGenCommand');
-    inspectGenCommandEl.title = 'Click to copy !gen command';
+//   document.querySelectorAll('.inspectOnServer').forEach((inspectOnServerDiv) => {
+//     const inspectGenCommandEl = inspectOnServerDiv.querySelector('.inspectGenCommand');
+//     inspectGenCommandEl.title = 'Click to copy !gen command';
 
-    if (genCommand.includes('undefined')) {
-      // defindex was not used/stored before the inspect on server feature was introduced
-      // and it might not exists in the data stored in the float cache
-      // if that is the case then we clear it from cache
-      removeFromFloatCache(item.assetid);
+//     if (genCommand.includes('undefined')) {
+//       // defindex was not used/stored before the inspect on server feature was introduced
+//       // and it might not exists in the data stored in the float cache
+//       // if that is the case then we clear it from cache
+//       removeFromFloatCache(item.assetid);
 
-      // ugly timeout to get around making removeFromFloatCache async
-      setTimeout(() => {
-        floatQueue.jobs.push({
-          type: 'inventory_floatbar',
-          assetID: item.assetid,
-          inspectLink: item.inspectLink,
-          // they call each other and one of them has to be defined first
-          // eslint-disable-next-line no-use-before-define
-          callBackFunction: dealWithNewFloatData,
-        });
+//       // ugly timeout to get around making removeFromFloatCache async
+//       setTimeout(() => {
+//         floatQueue.jobs.push({
+//           type: 'inventory_floatbar',
+//           assetID: item.assetid,
+//           inspectLink: item.inspectLink,
+//           // they call each other and one of them has to be defined first
+//           // eslint-disable-next-line no-use-before-define
+//           callBackFunction: dealWithNewFloatData,
+//         });
 
-        if (!floatQueue.active) workOnFloatQueue();
-      }, 1000);
-    } else inspectGenCommandEl.textContent = genCommand;
-    inspectGenCommandEl.setAttribute('genCommand', genCommand);
-  });
-};
+//         if (!floatQueue.active) workOnFloatQueue();
+//       }, 1000);
+//     } else inspectGenCommandEl.textContent = genCommand;
+//     inspectGenCommandEl.setAttribute('genCommand', genCommand);
+//   });
+// };
 
 const setFloatDBLinkURL = (item) => {
   const floatDBLookupURL = getFloatDBLink(item);
@@ -448,7 +449,6 @@ const updateFloatAndPatternElements = (item) => {
   setFloatBarWithData(item.floatInfo);
   setPatternInfo(item.patternInfo);
   setStickerInfo(item.floatInfo.stickers);
-  setGenInspectInfo(item, item.market_hash_name, item.floatInfo);
   setFloatDBLinkURL(item);
 };
 

@@ -3,7 +3,7 @@ import DOMPurify from 'dompurify';
 import { dopplerPhases } from 'utils/static/dopplerPhases';
 import {
   addUpdatedRibbon,
-  changePageTitle, copyToClipboard,
+  changePageTitle,
   csgoFloatExtPresent,
   getDataFilledFloatTechnical,
   getDopplerInfo,
@@ -31,7 +31,6 @@ import {
 } from 'utils/pricing';
 import {
   genericMarketLink, souvenir, starChar, stattrak, stattrakPretty,
-  inspectServerConnectLink, inspectServerConnectCommand,
 } from 'utils/static/simpleStrings';
 import { injectScript, injectStyle } from 'utils/injection';
 import steamApps from 'utils/static/steamApps';
@@ -44,6 +43,11 @@ import { removeFromFloatCache } from '../../utils/floatCaching';
 const inBrowserInspectButtonPopupLink = `
     <a class="popup_menu_item" id="inbrowser_inspect" href="https://swap.gg/screenshot" target="_blank">
         ${chrome.i18n.getMessage('inspect_in_browser')}
+    </a>`;
+
+const onServerInspectButtonPopupLink = `
+    <a class="popup_menu_item" id="onserver_inspect" href="https://www.cs2inspects.com/" target="_blank">
+        Inspect on Server...
     </a>`;
 const dopplerPhase = '<div class="dopplerPhaseMarket"><span></span></div>';
 
@@ -99,9 +103,9 @@ const getListingIDFromElement = (listingElement) => {
   return listingElement.id.split('listing_')[1];
 };
 
-const getListingIDByInspectLink = (inspectLink) => {
-  return inspectLink.split('M')[1].split('A')[0];
-};
+// const getListingIDByInspectLink = (inspectLink) => {
+//   return inspectLink.split('M')[1].split('A')[0];
+// };
 
 const addPhasesIndicator = () => {
   if (isDopplerInName(fullName)) {
@@ -845,11 +849,11 @@ if (appID === steamApps.CSGO.appID) {
             ${chrome.i18n.getMessage('inspect_in_browser')}
         </span>
     </a>
-    <span class="btn_small btn_grey_white_innerfade" id="on_server_inspect_button" class="clickable" style="cursor: pointer">
+    <a class="btn_small btn_grey_white_innerfade" id="on_server_inspect_button" href="https://www.cs2inspects.com/?apply=${inspectLink}" target="_blank">
         <span>
             Inspect On Server
         </span>
-    </span>`;
+    </a>`;
 
       const itemActions = document.getElementById('largeiteminfo_item_actions');
 
@@ -859,26 +863,31 @@ if (appID === steamApps.CSGO.appID) {
           DOMPurify.sanitize(customInspectButtons, { ADD_ATTR: ['target'] }),
         );
 
-        itemActions.querySelector('#on_server_inspect_button').addEventListener('click', () => {
-          document.querySelector('.inspectOnServer').classList.remove('hidden');
-        });
+        //   itemActions.querySelector('#on_server_inspect_button').addEventListener('click', () => {
+        //     document.querySelector('.inspectOnServer').classList.remove('hidden');
+        //   });
 
-        itemActions.insertAdjacentHTML(
-          'afterend',
-          DOMPurify.sanitize(`
-        <div class="inspectOnServer hidden">
-                <div>
-                    <a href="${inspectServerConnectLink}" class="connectToInspectServer">${inspectServerConnectCommand}</a>
-                </div>
-                <div class="inspectGenCommand clickable" title="Generating !gen command..." style="margin-top: 5px;">Generating !gen command...</div>
-            </div>`, { ADD_ATTR: ['target'] }),
-        );
+        //   itemActions.insertAdjacentHTML(
+        //     'afterend',
+        //     DOMPurify.sanitize(`
+        //   <div class="inspectOnServer hidden">
+        //           <div>
+        //               <a href="${inspectServerConnectLink}" class="connectToInspectServer">${inspectServerConnectCommand}</a>
+        //           </div>
+        //           <div
+        //             class="inspectGenCommand clickable"
+        //             title="Generating !gen command..."
+        //             style="margin-top: 5px;">
+        //               Generating !gen command...
+        //           </div>
+        //       </div>`, { ADD_ATTR: ['target'] }),
+        //   );
 
-        const inspectGenCommandEl = document.querySelector('.inspectGenCommand');
-        inspectGenCommandEl.addEventListener('click', () => {
-          copyToClipboard(inspectGenCommandEl.getAttribute('genCommand'));
-        });
-        document.querySelector('.connectToInspectServer').setAttribute('href', inspectServerConnectLink);
+      //   const inspectGenCommandEl = document.querySelector('.inspectGenCommand');
+      //   inspectGenCommandEl.addEventListener('click', () => {
+      //     copyToClipboard(inspectGenCommandEl.getAttribute('genCommand'));
+      //   });
+      //   document.querySelector('.connectToInspectServer').setAttribute('href', inspectServerConnectLink);
       }
     }
   }
@@ -916,9 +925,7 @@ if (appID === steamApps.CSGO.appID) {
   document.getElementById('market_action_popup_itemactions')
     .insertAdjacentHTML('afterend', DOMPurify.sanitize(
       `${inBrowserInspectButtonPopupLink}
-            <span class="popup_menu_item" id="onserver_inspect" style="cursor: pointer">
-                Inspect on Server
-            </span>`,
+      ${onServerInspectButtonPopupLink}`,
       { ADD_ATTR: ['target'] },
     ));
 
@@ -930,54 +937,64 @@ if (appID === steamApps.CSGO.appID) {
     event.target.setAttribute('href', `https://swap.gg/screenshot?inspectLink=${inspectLink}`);
   });
 
-  document.getElementById('onserver_inspect').addEventListener('click', () => {
+  document.getElementById('onserver_inspect').addEventListener('mouseenter', (event) => {
     const inspectLink = document.getElementById('market_action_popup_itemactions')
       .querySelector('a.popup_menu_item').getAttribute('href');
-    const listingID = getListingIDByInspectLink(inspectLink);
-    const listingRow = getElementByListingID(listingID);
-    const listings = getListings();
-
-    listingRow.querySelector('.market_listing_game_name').insertAdjacentHTML(
-      'afterend',
-      DOMPurify.sanitize(`
-        <div class="inspectOnServerListing" style="margin-top: 10px">
-                <div>
-                    <a href="${inspectServerConnectLink}" class="connectToInspectServerListing">${inspectServerConnectCommand}</a>
-                </div>
-                <div class="inspectGenCommandListing clickable" title="Generating !gen command..." style="margin-top: 5px;">Generating !gen command...</div>
-            </div>`, { ADD_ATTR: ['target'] }),
-    );
-
-    for (const listing of Object.values(listings)) {
-      if (listing.listingid === listingID) {
-        // collecting listing prices that are in USD
-        const price = listing.currencyid === 2001
-          ? listing.price + listing.fee
-          : listing.converted_currencyid === 2001
-            ? listing.converted_price + listing.converted_fee
-            : undefined;
-
-        floatQueue.jobs.push({
-          type: 'market_per_listing_gencommand',
-          assetID: listing.asset.id,
-          inspectLink,
-          listingID,
-          price,
-          callBackFunction: dealWithNewFloatData,
-        });
-      }
-    }
-    if (!floatQueue.active) workOnFloatQueue();
-
-    listingRow.querySelector('.connectToInspectServerListing').setAttribute('href', inspectServerConnectLink);
-
-    const inspectGenCommandEl = listingRow.querySelector('.inspectGenCommandListing');
-
-    inspectGenCommandEl.addEventListener('click', () => {
-      copyToClipboard(inspectGenCommandEl.getAttribute('genCommand'));
-    });
-    document.getElementById('market_action_popup').style.display = 'none';
+    event.target.setAttribute('href', `https://www.cs2inspects.com/?apply=${inspectLink}`);
   });
+
+  // document.getElementById('onserver_inspect').addEventListener('click', () => {
+  //   const inspectLink = document.getElementById('market_action_popup_itemactions')
+  //     .querySelector('a.popup_menu_item').getAttribute('href');
+  //   const listingID = getListingIDByInspectLink(inspectLink);
+  //   const listingRow = getElementByListingID(listingID);
+  //   const listings = getListings();
+
+  //   listingRow.querySelector('.market_listing_game_name').insertAdjacentHTML(
+  //     'afterend',
+  //     DOMPurify.sanitize(`
+  //       <div class="inspectOnServerListing" style="margin-top: 10px">
+  //               <div>
+  //                   <a href="${inspectServerConnectLink}" class="connectToInspectServerListing">${inspectServerConnectCommand}</a>
+  //               </div>
+  //               <div
+  //                 class="inspectGenCommandListing clickable"
+  //                 title="Generating !gen command..."
+  //                 style="margin-top: 5px;">Generating !gen command...
+  //               </div>
+  //           </div>`, { ADD_ATTR: ['target'] }),
+  //   );
+
+  //   for (const listing of Object.values(listings)) {
+  //     if (listing.listingid === listingID) {
+  //       // collecting listing prices that are in USD
+  //       const price = listing.currencyid === 2001
+  //         ? listing.price + listing.fee
+  //         : listing.converted_currencyid === 2001
+  //           ? listing.converted_price + listing.converted_fee
+  //           : undefined;
+
+  //       floatQueue.jobs.push({
+  //         type: 'market_per_listing_gencommand',
+  //         assetID: listing.asset.id,
+  //         inspectLink,
+  //         listingID,
+  //         price,
+  //         callBackFunction: dealWithNewFloatData,
+  //       });
+  //     }
+  //   }
+  //   if (!floatQueue.active) workOnFloatQueue();
+
+  //   listingRow.querySelector('.connectToInspectServerListing').setAttribute('href', inspectServerConnectLink);
+
+  //   const inspectGenCommandEl = listingRow.querySelector('.inspectGenCommandListing');
+
+  //   inspectGenCommandEl.addEventListener('click', () => {
+  //     copyToClipboard(inspectGenCommandEl.getAttribute('genCommand'));
+  //   });
+  //   document.getElementById('market_action_popup').style.display = 'none';
+  // });
 }
 
 if (isCommodityItem) {

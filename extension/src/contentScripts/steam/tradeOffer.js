@@ -8,16 +8,13 @@ import {
   getDopplerInfo, getActivePage, logExtensionPresence,
   updateLoggedInUserInfo, warnOfScammer, addPageControlEventListeners,
   addSearchListener, getPattern, getNameTag, removeLinkFilterFromLinks,
-  removeOfferFromActiveOffers, changePageTitle, copyToClipboard,
+  removeOfferFromActiveOffers, changePageTitle,
   addFloatRankIndicator,
 } from 'utils/utilsModular';
 import {
   getItemMarketLink, getItemByNameAndGame, closeTab, isDopplerInName,
-  getFormattedPLPercentage, generateInspectCommand, reloadPageOnExtensionUpdate,
+  getFormattedPLPercentage, reloadPageOnExtensionUpdate,
 } from 'utils/simpleUtils';
-import {
-  inspectServerConnectLink, inspectServerConnectCommand,
-} from 'utils/static/simpleStrings';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
   priceQueue, workOnPriceQueue, prettyPrintPrice, initPriceQueue,
@@ -36,7 +33,6 @@ import {
   acceptOffer, declineOffer, sendOffer, createTradeOfferJSON, listenToAcceptTrade,
 } from 'utils/tradeOffers';
 import steamApps from 'utils/static/steamApps';
-import { removeFromFloatCache } from '../../utils/floatCaching';
 
 let showPaintSeeds = false;
 let showFloatRank = false;
@@ -494,19 +490,19 @@ const addFloatDataToPage = (job, floatInfo) => {
   if (showPaintSeeds) addPaintSeedIndicator(itemElement, floatInfo, showContrastingLook);
   if (showFloatRank) addFloatRankIndicator(itemElement, floatInfo, showContrastingLook);
 
-  const inspectGenCommandEl = document.getElementById('inspectGenCommand');
-  if (inspectGenCommandEl) {
-    const assetIDOfItemWaitingForFloatData = inspectGenCommandEl.getAttribute('data-assetid');
-    if (job.assetID === assetIDOfItemWaitingForFloatData) {
-      const actionItem = getItemByAssetID(combinedInventories, assetIDOfItemWaitingForFloatData);
+  // const inspectGenCommandEl = document.getElementById('inspectGenCommand');
+  // if (inspectGenCommandEl) {
+  //   const assetIDOfItemWaitingForFloatData = inspectGenCommandEl.getAttribute('data-assetid');
+  //   if (job.assetID === assetIDOfItemWaitingForFloatData) {
+  //     const actionItem = getItemByAssetID(combinedInventories, assetIDOfItemWaitingForFloatData);
 
-      inspectGenCommandEl.textContent = generateInspectCommand(
-        actionItem.market_hash_name, actionItem.floatInfo.floatvalue,
-        actionItem.floatInfo.paintindex, actionItem.floatInfo.defindex,
-        actionItem.floatInfo.paintseed, actionItem.floatInfo.stickers,
-      );
-    }
-  }
+  //     inspectGenCommandEl.textContent = generateInspectCommand(
+  //       actionItem.market_hash_name, actionItem.floatInfo.floatvalue,
+  //       actionItem.floatInfo.paintindex, actionItem.floatInfo.defindex,
+  //       actionItem.floatInfo.paintseed, actionItem.floatInfo.stickers,
+  //     );
+  //   }
+  // }
 };
 
 const addFloatIndicatorsToPage = (type) => {
@@ -1287,71 +1283,68 @@ if (offerMessageBox) {
 
 // trade action popup mutation observer
 // to add inspect on server listener
-const tradeActionPopup = document.getElementById('trade_action_popup');
-if (tradeActionPopup) {
-  const observer = new MutationObserver((mutationRecord) => {
-    mutationRecord.forEach((mutation) => {
-      if (mutation.addedNodes.length > 0) {
-        const inspectOnServerButton = mutation.addedNodes[0].classList.contains('inspectOnServer')
-          ? mutation.addedNodes[0]
-          : null;
+// const tradeActionPopup = document.getElementById('trade_action_popup');
+// if (tradeActionPopup) {
+//   const observer = new MutationObserver((mutationRecord) => {
+//     mutationRecord.forEach((mutation) => {
+//       if (mutation.addedNodes.length > 0) {
+//         const inspectOnServerButton = mutation.addedNodes[0].classList.contains('inspectOnServer')
+//           ? mutation.addedNodes[0]
+//           : null;
 
-        if (inspectOnServerButton) {
-          inspectOnServerButton.addEventListener('click', (event) => {
-            const assetID = event.target.getAttribute('data-assetid');
-            const actionItem = getItemByAssetID(combinedInventories, assetID);
-            document.getElementById('inspectOnServerMenu').classList.remove('hidden');
+//         if (inspectOnServerButton) {
+//           inspectOnServerButton.addEventListener('click', (event) => {
+//             const assetID = event.target.getAttribute('data-assetid');
+//             const actionItem = getItemByAssetID(combinedInventories, assetID);
+//             document.getElementById('inspectOnServerMenu').classList.remove('hidden');
 
-            if (actionItem.floatInfo) {
-              const inspectGenCommandEl = document.getElementById('inspectGenCommand');
-              const genCommand = generateInspectCommand(
-                actionItem.market_hash_name, actionItem.floatInfo.floatvalue,
-                actionItem.floatInfo.paintindex, actionItem.floatInfo.defindex,
-                actionItem.floatInfo.paintseed, actionItem.floatInfo.stickers,
-              );
+//             if (actionItem.floatInfo) {
+//               const inspectGenCommandEl = document.getElementById('inspectGenCommand');
+//               const genCommand = generateInspectCommand(
+//                 actionItem.market_hash_name, actionItem.floatInfo.floatvalue,
+//                 actionItem.floatInfo.paintindex, actionItem.floatInfo.defindex,
+//                 actionItem.floatInfo.paintseed, actionItem.floatInfo.stickers,
+//               );
 
-              inspectGenCommandEl.title = 'Click to copy !gen command';
+//               inspectGenCommandEl.title = 'Click to copy !gen command';
 
-              if (genCommand.includes('undefined')) {
-                // defindex was not used/stored before the inspect on server feature was introduced
-                // and it might not exists in the data stored in the float cache
-                // if that is the case then we clear it from cache
-                removeFromFloatCache(actionItem.assetid);
-                inspectGenCommandEl.setAttribute('data-assetid', assetID);
+//               if (genCommand.includes('undefined')) {
+//                 // defindex was not used/stored before the inspect on server feature was introduced
+//                 // and it might not exists in the data stored in the float cache
+//                 // if that is the case then we clear it from cache
+//                 removeFromFloatCache(actionItem.assetid);
+//                 inspectGenCommandEl.setAttribute('data-assetid', assetID);
 
-                // ugly timeout to get around making removeFromFloatCache async
-                setTimeout(() => {
-                  floatQueue.jobs.push({
-                    type: 'offer',
-                    assetID: actionItem.assetid,
-                    inspectLink: actionItem.inspectLink,
-                    callBackFunction: addFloatDataToPage,
-                  });
+//                 // ugly timeout to get around making removeFromFloatCache async
+//                 setTimeout(() => {
+//                   floatQueue.jobs.push({
+//                     type: 'offer',
+//                     assetID: actionItem.assetid,
+//                     inspectLink: actionItem.inspectLink,
+//                     callBackFunction: addFloatDataToPage,
+//                   });
 
-                  if (!floatQueue.active) workOnFloatQueue();
-                }, 1000);
-              } else inspectGenCommandEl.textContent = genCommand;
+//                   if (!floatQueue.active) workOnFloatQueue();
+//                 }, 1000);
+//               } else inspectGenCommandEl.textContent = genCommand;
 
-              inspectGenCommandEl.setAttribute('genCommand', genCommand);
-            }
-          });
-        }
-      }
-    });
-  });
+//               inspectGenCommandEl.setAttribute('genCommand', genCommand);
+//             }
+//           });
+//         }
+//       }
+//     });
+//   });
 
-  observer.observe(tradeActionPopup, {
-    subtree: true,
-    childList: true,
-    attributes: false,
-  });
-}
+//   observer.observe(tradeActionPopup, {
+//     subtree: true,
+//     childList: true,
+//     attributes: false,
+//   });
+// }
 
 // trade summary, inspect on server
-const filterMenu = document.getElementById('nonresponsivetrade_itemfilters');
-if (filterMenu !== null) {
-  filterMenu.insertAdjacentHTML('beforebegin',
-    `<div id="inspectOnServerMenu" class="hidden">
+/* <div id="inspectOnServerMenu" class="hidden">
             <div class="bold">Inspect On Server</div>
             <div>
               <a href="${inspectServerConnectLink}" id="connectToInspectServer" style="margin-top: 5px;">
@@ -1361,8 +1354,11 @@ if (filterMenu !== null) {
             <div class="clickable" id="inspectGenCommand" title="Generating !gen command..." style="margin-top: 5px;">
                 Generating !gen command...
             </div>
-          </div>
-          <div id="offerSummary">
+          </div> */
+const filterMenu = document.getElementById('nonresponsivetrade_itemfilters');
+if (filterMenu !== null) {
+  filterMenu.insertAdjacentHTML('beforebegin',
+    `<div id="offerSummary">
             <div>
                 <span class="clickable bold" id="showSummary">
                     Show trade summary
@@ -1406,10 +1402,10 @@ if (filterMenu !== null) {
 
   // i think dompurify removes the connect link when inserted above
   // this adds the href afterwards
-  document.getElementById('connectToInspectServer').setAttribute('href', inspectServerConnectLink);
-  document.getElementById('inspectGenCommand').addEventListener('click', (event) => {
-    copyToClipboard(event.target.getAttribute('genCommand'));
-  });
+  // document.getElementById('connectToInspectServer').setAttribute('href', inspectServerConnectLink);
+  // document.getElementById('inspectGenCommand').addEventListener('click', (event) => {
+  //   copyToClipboard(event.target.getAttribute('genCommand'));
+  // });
 }
 
 // accept trade by if instructed by background script

@@ -81,6 +81,7 @@ const getCollection = (descriptions) => {
   return collectionName;
 };
 
+// not used atm
 const generateInspectCommand = (fullName, fv, paintindex, defindex, paintseed, stickers) => {
   // glove code starts with different name
   const isGloves = fullName.includes('Gloves')
