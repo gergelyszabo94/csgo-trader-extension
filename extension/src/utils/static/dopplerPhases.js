@@ -28,21 +28,21 @@ const dopplerPhases = {
     name: 'Sapphire',
     short: 'SH',
     color: '0000ff',
-    element: '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/bluejewel" class="gemIcon">',
+    element: '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/:bluejewel:" class="gemIcon">',
   },
   rb: {
     type: 'doppler',
     name: 'Ruby',
     short: 'RB',
     color: 'ff0000',
-    element: '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/redjewel" class="gemIcon">',
+    element: '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/:redjewel:" class="gemIcon">',
   },
   bp: {
     type: 'doppler',
     name: 'Black Pearl',
     short: 'BP',
     color: '000000',
-    element: '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/lltqjewel" class="gemIcon">',
+    element: '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/:lltqjewel:" class="gemIcon">',
   },
   gp1: {
     type: 'gamma',
@@ -73,7 +73,7 @@ const dopplerPhases = {
     name: 'Emerald',
     short: 'EM',
     color: '00ff00',
-    element: '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/greenjewel" class="gemIcon">',
+    element: '<img src="https://steamcommunity-a.akamaihd.net/economy/emoticon/:greenjewel:" class="gemIcon">',
   },
   unk: {
     type: 'unknown',
