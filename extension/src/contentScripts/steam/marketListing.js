@@ -35,10 +35,9 @@ import {
 import { injectScript, injectStyle } from 'utils/injection';
 import steamApps from 'utils/static/steamApps';
 import capsuleNamesWithNoCapsuleInName from 'utils/static/capsuleNamesWithNoCapsuleInName';
-import { generateInspectCommand, isDopplerInName, reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
+import { isDopplerInName, reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 import { overrideCreatePriceHistoryGraph } from 'utils/steamOverriding';
 import { listenToAcceptTrade } from 'utils/tradeOffers';
-import { removeFromFloatCache } from '../../utils/floatCaching';
 
 const inBrowserInspectButtonPopupLink = `
     <a class="popup_menu_item" id="inbrowser_inspect" href="https://swap.gg/screenshot" target="_blank">
@@ -311,14 +310,16 @@ const setStickerInfo = (listingID, stickers) => {
             );
 
             stickerInfo.price = stickerPrice;
-            currentSticker.setAttribute(
-              'data-tooltip-market',
-              `${stickerInfo.name} (${stickerPrice.display}) - Condition: ${wear}%`,
-            );
-            currentSticker.querySelector('img').setAttribute(
-              'style',
-              `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`,
-            );
+            if (currentSticker) {
+              currentSticker.setAttribute(
+                'data-tooltip-market',
+                `${stickerInfo.name} (${stickerPrice.display}) - Condition: ${wear}%`,
+              );
+              currentSticker.querySelector('img').setAttribute(
+                'style',
+                `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`,
+              );
+            }
           });
 
           const stickersTotalPrice = getStickerPriceTotal(stickers, currency);
@@ -330,7 +331,9 @@ const setStickerInfo = (listingID, stickers) => {
           );
 
           const stickersTotalElement = listingElement.querySelector('.stickersTotal');
-          stickersTotalElement.innerText = stickersTotalPrice === null ? '' : stickersTotalPrice.display;
+          if (stickersTotalElement !== null) {
+            stickersTotalElement.innerText = stickersTotalPrice === null ? '' : stickersTotalPrice.display;
+          }
         }
       });
   }
@@ -358,70 +361,71 @@ const addFloatDataToPage = (job, floatInfo) => {
     setStickerInfo(job.listingID, floatInfo.stickers);
     addPatterns(job.listingID, floatInfo);
 
-    const genCommand = generateInspectCommand(
-      fullName, floatInfo.floatvalue, floatInfo.paintindex,
-      floatInfo.defindex, floatInfo.paintseed, floatInfo.stickers,
-    );
+    // const genCommand = generateInspectCommand(
+    //   fullName, floatInfo.floatvalue, floatInfo.paintindex,
+    //   floatInfo.defindex, floatInfo.paintseed, floatInfo.stickers,
+    // );
 
-    if (job.type === 'market') {
-      const originalInspectButton = actions.querySelector('.btn_small.btn_grey_white_innerfade');
+    // if (job.type === 'market') {
+    //   const originalInspectButton = actions.querySelector('.btn_small.btn_grey_white_innerfade');
 
-      if (originalInspectButton && job.inspectLink === originalInspectButton.getAttribute('href')) {
-        const inspectGenCommandEl = document.querySelector('.inspectGenCommand');
-        inspectGenCommandEl.title = 'Click to copy !gen command';
+    //   if (originalInspectButton && job.inspectLink === originalInspectButton.getAttribute('href')) {
+    //     const inspectGenCommandEl = document.querySelector('.inspectGenCommand');
+    //     inspectGenCommandEl.title = 'Click to copy !gen command';
 
-        if (genCommand.includes('undefined')) {
-          // defindex was not used/stored before the inspect on server feature was introduced
-          // and it might not exists in the data stored in the float cache
-          // if that is the case then we clear it from cache
-          removeFromFloatCache(job.assetID);
+    //     if (genCommand.includes('undefined')) {
+    //       // defindex was not used/stored before the inspect on server feature was introduced
+    //       // and it might not exists in the data stored in the float cache
+    //       // if that is the case then we clear it from cache
+    //       removeFromFloatCache(job.assetID);
 
-          // ugly timeout to get around making removeFromFloatCache async
-          setTimeout(() => {
-            floatQueue.jobs.push({
-              type: 'market',
-              assetID: job.assetID,
-              inspectLink: job.inspectLink,
-              // they call each other and one of them has to be defined first
-              // eslint-disable-next-line no-use-before-define
-              callBackFunction: dealWithNewFloatData,
-            });
+    //       // ugly timeout to get around making removeFromFloatCache async
+    //       setTimeout(() => {
+    //         floatQueue.jobs.push({
+    //           type: 'market',
+    //           assetID: job.assetID,
+    //           inspectLink: job.inspectLink,
+    //           // they call each other and one of them has to be defined first
+    //           // eslint-disable-next-line no-use-before-define
+    //           callBackFunction: dealWithNewFloatData,
+    //         });
 
-            if (!floatQueue.active) workOnFloatQueue();
-          }, 1000);
-        } else inspectGenCommandEl.textContent = genCommand;
-        inspectGenCommandEl.setAttribute('genCommand', genCommand);
-      }
-    } else if (job.type === 'market_per_listing_gencommand') {
-      const listingRow = getElementByListingID(job.listingID);
+    //         if (!floatQueue.active) workOnFloatQueue();
+    //       }, 1000);
+    //     } else inspectGenCommandEl.textContent = genCommand;
+    //     inspectGenCommandEl.setAttribute('genCommand', genCommand);
+    //   }
+    // }
+    // else if (job.type === 'market_per_listing_gencommand') {
+    //   const listingRow = getElementByListingID(job.listingID);
 
-      if (listingRow) {
-        const inspectGenCommandEl = listingRow.querySelector('.inspectGenCommandListing');
-        inspectGenCommandEl.title = 'Click to copy !gen command';
+    //   if (listingRow) {
+    //     const inspectGenCommandEl = listingRow.querySelector('.inspectGenCommandListing');
+    //     inspectGenCommandEl.title = 'Click to copy !gen command';
 
-        if (genCommand.includes('undefined')) {
-          // defindex was not used/stored before the inspect on server feature was introduced
-          // and it might not exists in the data stored in the float cache
-          // if that is the case then we clear it from cache
-          removeFromFloatCache(job.assetID);
+    //     if (genCommand.includes('undefined')) {
+    //       // defindex was not used/stored before the inspect on server feature was introduced
+    //       // and it might not exists in the data stored in the float cache
+    //       // if that is the case then we clear it from cache
+    //       removeFromFloatCache(job.assetID);
 
-          // ugly timeout to get around making removeFromFloatCache async
-          setTimeout(() => {
-            floatQueue.jobs.push({
-              type: 'market_per_listing_gencommand',
-              assetID: job.assetID,
-              inspectLink: job.inspectLink,
-              // they call each other and one of them has to be defined first
-              // eslint-disable-next-line no-use-before-define
-              callBackFunction: dealWithNewFloatData,
-            });
+    //       // ugly timeout to get around making removeFromFloatCache async
+    //       setTimeout(() => {
+    //         floatQueue.jobs.push({
+    //           type: 'market_per_listing_gencommand',
+    //           assetID: job.assetID,
+    //           inspectLink: job.inspectLink,
+    //           // they call each other and one of them has to be defined first
+    //           // eslint-disable-next-line no-use-before-define
+    //           callBackFunction: dealWithNewFloatData,
+    //         });
 
-            if (!floatQueue.active) workOnFloatQueue();
-          }, 1000);
-        } else inspectGenCommandEl.textContent = genCommand;
-        inspectGenCommandEl.setAttribute('genCommand', genCommand);
-      }
-    }
+    //         if (!floatQueue.active) workOnFloatQueue();
+    //       }, 1000);
+    //     } else inspectGenCommandEl.textContent = genCommand;
+    //     inspectGenCommandEl.setAttribute('genCommand', genCommand);
+    //   }
+    // }
   }
 };
 
@@ -635,7 +639,7 @@ const addPricesInOtherCurrencies = () => {
                     document.getElementById('searchResultsRows').querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(listing_row => {
                         const originalPriceElement = listing_row.querySelector('.originalPrice');
                         
-                        if (originalPriceElement.getAttribute('data-converted') === 'false') {
+                        if (originalPriceElement !== null && originalPriceElement.getAttribute('data-converted') === 'false') {
                             const currencyCode = GetCurrencyCode(parseInt(originalPriceElement.getAttribute('data-currency-id')));
                             const priceWithoutFeesElement = listing_row.querySelector('.market_listing_price_original_before_fees');
                             const priceWithoutFees = parseInt(priceWithoutFeesElement.innerText);
@@ -820,6 +824,16 @@ const getContextIDFromPage = () => {
   return contextID;
 };
 
+const addPerListingStuff = (marketEnchanceStickers) => {
+  addPhasesIndicator();
+  addFloatBarSkeletons();
+  if (marketEnchanceStickers) addStickers();
+  addListingsToFloatQueue();
+  addPricesInOtherCurrencies();
+  addInstantBuyButtons();
+  highlightSeen();
+};
+
 floatQueue.cleanupFunction = () => {
   sortListings(document.getElementById('sortSelect').value);
 };
@@ -883,11 +897,11 @@ if (appID === steamApps.CSGO.appID) {
         //       </div>`, { ADD_ATTR: ['target'] }),
         //   );
 
-      //   const inspectGenCommandEl = document.querySelector('.inspectGenCommand');
-      //   inspectGenCommandEl.addEventListener('click', () => {
-      //     copyToClipboard(inspectGenCommandEl.getAttribute('genCommand'));
-      //   });
-      //   document.querySelector('.connectToInspectServer').setAttribute('href', inspectServerConnectLink);
+        //   const inspectGenCommandEl = document.querySelector('.inspectGenCommand');
+        //   inspectGenCommandEl.addEventListener('click', () => {
+        //     copyToClipboard(inspectGenCommandEl.getAttribute('genCommand'));
+        //   });
+        //   document.querySelector('.connectToInspectServer').setAttribute('href', inspectServerConnectLink);
       }
     }
   }
@@ -1434,31 +1448,18 @@ chrome.storage.local.get(['numberOfListings', 'marketEnchanceStickers'], ({ numb
   if (!isNaN(numberOfListingsInt) && numberOfListingsInt !== 10) {
     const loadMoreMarketAssets = `g_oSearchResults.m_cPageSize = ${numberOfListingsInt}; g_oSearchResults.GoToPage(0, true);`;
     injectScript(loadMoreMarketAssets, true, 'loadMoreMarketAssets', null);
-  } else {
-    addPhasesIndicator();
-    addFloatBarSkeletons();
-    if (marketEnchanceStickers) addStickers();
-
-    addListingsToFloatQueue();
-    addPricesInOtherCurrencies();
-    addInstantBuyButtons();
-    highlightSeen();
-  }
+    // setInterval(addPerListingStuff, 20000);
+  } else addPerListingStuff(marketEnchanceStickers);
 
   let observerLastTriggered = Date.now() - 1001;
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
-      if (mutation.target.id === 'searchResultsRows') {
+      if (mutation.target.id === 'searchResultsRows'
+      && mutation.addedNodes.length > 0) {
         // to avoid executing this lots of times
         // at least a second has to pass since the last one
         if (Date.now() > observerLastTriggered + 1000) {
-          addPhasesIndicator();
-          addFloatBarSkeletons();
-          if (marketEnchanceStickers) addStickers();
-          addListingsToFloatQueue();
-          addPricesInOtherCurrencies();
-          addInstantBuyButtons();
-          highlightSeen();
+          addPerListingStuff(marketEnchanceStickers);
         }
         observerLastTriggered = Date.now();
       }
@@ -1468,7 +1469,7 @@ chrome.storage.local.get(['numberOfListings', 'marketEnchanceStickers'], ({ numb
   const searchResultsRows = document.getElementById('searchResultsRows');
   if (searchResultsRows !== null) {
     observer.observe(searchResultsRows, {
-      subtree: true,
+      subtree: false,
       attributes: false,
       childList: true,
     });
