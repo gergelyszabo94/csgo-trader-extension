@@ -293,7 +293,7 @@ const storageKeys = {
   ],
   moveWithArrowKeysInventory: true,
   showAllExteriorsInventory: false,
-  marketEnchanceStickers: true,
+  marketEnhanceStickers: true,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'clientID',

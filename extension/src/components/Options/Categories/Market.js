@@ -153,7 +153,7 @@ const market = () => {
       />
       <Row
         name="Enchance stickers on market listings"
-        id="marketEnchanceStickers"
+        id="marketEnhanceStickers"
         type="flipSwitchStorage"
         description="Show nametags, stickers, sticker wear and sticker value below the on market listings"
       />

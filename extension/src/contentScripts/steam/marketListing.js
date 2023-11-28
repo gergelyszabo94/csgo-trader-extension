@@ -824,10 +824,10 @@ const getContextIDFromPage = () => {
   return contextID;
 };
 
-const addPerListingStuff = (marketEnchanceStickers) => {
+const addPerListingStuff = (marketEnhanceStickers) => {
   addPhasesIndicator();
   addFloatBarSkeletons();
-  if (marketEnchanceStickers) addStickers();
+  if (marketEnhanceStickers) addStickers();
   addListingsToFloatQueue();
   addPricesInOtherCurrencies();
   addInstantBuyButtons();
@@ -1442,14 +1442,14 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
   }
 });
 
-chrome.storage.local.get(['numberOfListings', 'marketEnchanceStickers'], ({ numberOfListings, marketEnchanceStickers }) => {
+chrome.storage.local.get(['numberOfListings', 'marketEnhanceStickers'], ({ numberOfListings, marketEnhanceStickers }) => {
   const numberOfListingsInt = parseInt(numberOfListings);
   // eslint-disable-next-line no-restricted-globals
   if (!isNaN(numberOfListingsInt) && numberOfListingsInt !== 10) {
     const loadMoreMarketAssets = `g_oSearchResults.m_cPageSize = ${numberOfListingsInt}; g_oSearchResults.GoToPage(0, true);`;
     injectScript(loadMoreMarketAssets, true, 'loadMoreMarketAssets', null);
     // setInterval(addPerListingStuff, 20000);
-  } else addPerListingStuff(marketEnchanceStickers);
+  } else addPerListingStuff(marketEnhanceStickers);
 
   let observerLastTriggered = Date.now() - 1001;
   const observer = new MutationObserver((mutations) => {
@@ -1459,7 +1459,7 @@ chrome.storage.local.get(['numberOfListings', 'marketEnchanceStickers'], ({ numb
         // to avoid executing this lots of times
         // at least a second has to pass since the last one
         if (Date.now() > observerLastTriggered + 1000) {
-          addPerListingStuff(marketEnchanceStickers);
+          addPerListingStuff(marketEnhanceStickers);
         }
         observerLastTriggered = Date.now();
       }
