@@ -32,7 +32,7 @@ import {
 import {
   genericMarketLink, souvenir, starChar, stattrak, stattrakPretty,
 } from 'utils/static/simpleStrings';
-import { injectScript, injectStyle } from 'utils/injection';
+import { injectScript, injectScriptAsFile, injectStyle } from 'utils/injection';
 import steamApps from 'utils/static/steamApps';
 import capsuleNamesWithNoCapsuleInName from 'utils/static/capsuleNamesWithNoCapsuleInName';
 import { isDopplerInName, reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
@@ -1446,9 +1446,7 @@ chrome.storage.local.get(['numberOfListings', 'marketEnhanceStickers'], ({ numbe
   const numberOfListingsInt = parseInt(numberOfListings);
   // eslint-disable-next-line no-restricted-globals
   if (!isNaN(numberOfListingsInt) && numberOfListingsInt !== 10) {
-    const loadMoreMarketAssets = `g_oSearchResults.m_cPageSize = ${numberOfListingsInt}; g_oSearchResults.GoToPage(0, true);`;
-    injectScript(loadMoreMarketAssets, true, 'loadMoreMarketAssets', null);
-    // setInterval(addPerListingStuff, 20000);
+    injectScriptAsFile('MarketPageSizeGoToPage', 'MarketPageSizeGoToPageScript', { numberOfListingsInt });
   } else addPerListingStuff(marketEnhanceStickers);
 
   let observerLastTriggered = Date.now() - 1001;
