@@ -18,6 +18,10 @@ const injectScript = (scriptString, toRemove, id, executeAndReturn) => {
   return result;
 };
 
+// it appears that this method is asynchronous
+// retrieving on-page data does not work, because the injected script
+// is executed after the code that calls this function
+// working around this would be very ugly, avoid if possible
 const injectScriptAsFile = (scriptName, id, params) => {
   // removes previously added instance of the script
   const elementFromBefore = document.getElementById(id);
@@ -42,4 +46,6 @@ const injectStyle = (styleString, elementID) => {
   }
 };
 
-export { injectScript, injectStyle, injectScriptAsFile };
+export {
+  injectScript, injectStyle, injectScriptAsFile,
+};
