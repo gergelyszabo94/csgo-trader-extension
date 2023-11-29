@@ -3,9 +3,11 @@
 // using method 1 and 3 from https://stackoverflow.com/a/9517879/3862289
 
 const injectScript = (scriptString, toRemove, id, executeAndReturn) => {
-  document.documentElement.setAttribute('onreset', scriptString);
-  document.documentElement.dispatchEvent(new CustomEvent('reset'));
-  document.documentElement.removeAttribute('onreset');
+  const tempEl = document.createElement('div');
+  tempEl.setAttribute('onreset', `${scriptString}; console.log('${id}')`);
+  tempEl.dispatchEvent(new CustomEvent('reset'));
+  tempEl.removeAttribute('onreset');
+  tempEl.remove();
 
   const simpleAttributeParsing = ['steamidOfLoggedinUser', 'steamidOfProfileOwner', 'tradePartnerSteamID', 'inventoryOwnerID', 'listingsInfo',
     'inventoryInfo', 'allItemsLoaded', 'offerInventoryInfo', 'steamWalletCurrency', 'steamWallet', 'formattedToInt', 'intToFormatted',
