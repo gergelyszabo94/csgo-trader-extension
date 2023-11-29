@@ -100,9 +100,12 @@ const getDefaultContextID = (appID) => {
   return appID === steamApps.STEAM.appID ? '6' : '2';
 };
 
+const inventoryOwnerID = getInventoryOwnerID();
+const loggedInUserID = getUserSteamID();
+
 // works in inventory and profile pages
 const isOwnInventory = () => {
-  return getUserSteamID() === getInventoryOwnerID();
+  return loggedInUserID === inventoryOwnerID;
 };
 
 const getActiveInventoryAppID = () => {
@@ -135,7 +138,7 @@ const addBookmark = (module) => {
   const bookmark = {
     added: Date.now(),
     itemInfo: item,
-    owner: getInventoryOwnerID(),
+    owner: inventoryOwnerID,
     comment: '',
     notify: true,
     notifTime: item.tradability.toString(),
@@ -230,7 +233,7 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
       });
       const itemsPropertiesToReturn = [];
       const duplicates = {};
-      const owner = getInventoryOwnerID();
+      const owner = inventoryOwnerID;
       const floatCacheAssetIDs = [];
 
       // counts duplicates
@@ -1732,7 +1735,7 @@ const sortItems = (inventoryItems, method) => {
   const activeAppID = getActiveInventoryAppID();
   if (activeAppID === steamApps.CSGO.appID) {
     const itemElements = document.querySelectorAll('.item.app730.context2');
-    const inventoryPages = document.getElementById(`inventory_${getInventoryOwnerID()}_730_2`).querySelectorAll('.inventory_page');
+    const inventoryPages = document.getElementById(`inventory_${inventoryOwnerID}_730_2`).querySelectorAll('.inventory_page');
     doTheSorting(inventoryItems, Array.from(itemElements), method, Array.from(inventoryPages), 'inventory');
     addPerItemInfo(activeAppID);
   }
@@ -1859,7 +1862,7 @@ const generateItemsList = () => {
   const downloadButton = document.getElementById('generate_download');
   downloadButton.setAttribute('href', encodedURI);
   downloadButton.classList.remove('hidden');
-  downloadButton.setAttribute('download', `${getInventoryOwnerID()}_csgo_items.csv`);
+  downloadButton.setAttribute('download', `${inventoryOwnerID}_csgo_items.csv`);
 
   copyToClipboard(copyText);
 
@@ -2224,7 +2227,6 @@ const loadFullInventory = () => {
 
 // sends a message to the "back end" to request inventory contents
 const requestInventory = (appID) => {
-  const inventoryOwnerID = getInventoryOwnerID();
   if (appID === steamApps.CSGO.appID) {
     // only use this for loading for own inventory
     // since the other endpoint does not provide any more details now
@@ -2454,9 +2456,9 @@ if (defaultActiveInventoryAppID !== null) {
     changePageTitle('inventory');
     // shows trade offer history summary
     chrome.storage.local.get(
-      ['tradeHistoryInventory', `offerHistory_${getInventoryOwnerID()}`, 'apiKeyValid'],
+      ['tradeHistoryInventory', `offerHistory_${inventoryOwnerID}`, 'apiKeyValid'],
       (result) => {
-        let offerHistory = result[`offerHistory_${getInventoryOwnerID()}`];
+        let offerHistory = result[`offerHistory_${inventoryOwnerID}`];
         const header = document.querySelector('.profile_small_header_text');
 
         if (result.tradeHistoryInventory) {
