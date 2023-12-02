@@ -2,6 +2,7 @@ import React, {Fragment} from 'react';
 import {Container} from 'react-bootstrap';
 
 import Head from '../../components/Head/Head';
+import Three from '../../components/ReleaseNotes/Content/Three';
 import TwoDotTen from '../../components/ReleaseNotes/Content/TwoDotTen';
 import TwoDotNine from '../../components/ReleaseNotes/Content/TwoDotNine';
 import TwoDotSeven from '../../components/ReleaseNotes/Content/TwoDotSeven';
@@ -37,6 +38,7 @@ const releaseNotes = (props) => {
               The platforms (Chrome Web Store, MozilLa Addons) review submissions before they are available for download.
               This means that the latest version might not have rolled out to your platform yet when you are reading this.
           </Container>
+          <Three />
           <TwoDotTen />
           <TwoDotNine />
           <TwoDotSeven />
