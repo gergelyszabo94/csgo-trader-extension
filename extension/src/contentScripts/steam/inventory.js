@@ -21,7 +21,7 @@ import {
 import { getShortDate, dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
   stattrak, starChar, souvenir, stattrakPretty, genericMarketLink,
-  inspectServerConnectLink, inspectServerConnectCommand,
+  inspectServerConnectLink,
 } from 'utils/static/simpleStrings';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import {
