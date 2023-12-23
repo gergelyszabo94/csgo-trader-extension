@@ -8,7 +8,6 @@
   "description": "__MSG_application_description__",
   "homepage_url": "https://cs2trader.app/",
   "permissions": [
-    "scripting",
     "storage",
     "notifications",
     "alarms",
