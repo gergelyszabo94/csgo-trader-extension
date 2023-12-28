@@ -4,7 +4,7 @@
 
 const injectScript = (scriptString, toRemove, id, executeAndReturn) => {
   const tempEl = document.createElement('div');
-  tempEl.setAttribute('onreset', `${scriptString}; console.log('${id}')`);
+  tempEl.setAttribute('onreset', `${scriptString};`);
   tempEl.dispatchEvent(new CustomEvent('reset'));
   tempEl.removeAttribute('onreset');
   tempEl.remove();
