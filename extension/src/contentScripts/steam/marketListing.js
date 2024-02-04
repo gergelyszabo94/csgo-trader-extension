@@ -1339,7 +1339,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                     </a>
                   </div>
                   <div class="realMoneySite">
-                    <a href="https://cs.trade/ref/CSGOTRADERAPP" target="_blank" class="realMoneySiteLink referralLink" data-site="cstrade">
+                    <a href="https://cs.trade/trade/ref/CSGOTRADERAPP" target="_blank" class="realMoneySiteLink referralLink" data-site="cstrade">
                         <img alt="CS.TRADE logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/cstrade.png')}" data-site="cstrade">
                         <br>
                         CS.TRADE
