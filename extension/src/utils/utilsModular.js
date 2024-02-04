@@ -320,6 +320,10 @@ const handleStickerNamesWithCommas = (names) => {
       namesModified.push('Hi, My Game Is');
       nameWithCommaFound = true;
       i += 1;
+    } else if (name === 'Run T' && names[i + 1] === 'Run') {
+      namesModified.push('Run T, Run');
+      nameWithCommaFound = true;
+      i += 1;
     } else if (name === 'Run CT' && names[i + 1] === 'Run') {
       namesModified.push('Run CT, Run');
       nameWithCommaFound = true;
