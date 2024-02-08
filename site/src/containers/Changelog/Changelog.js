@@ -4,6 +4,7 @@ import { Container } from 'react-bootstrap';
 import Head from '../../components/Head/Head';
 
 import ThreeDotOne from '../../components/Changelog/Content/ThreeDotOne.js';
+import ThreeDotZeroDotOne from '../../components/Changelog/Content/ThreeDotZeroDotOne.js';
 import Three from '../../components/Changelog/Content/Three.js';
 import TwoDotSixteenDotFour from '../../components/Changelog/Content/TwoDotSixteenDotFour.js';
 import TwoDotSixteenDotThree from '../../components/Changelog/Content/TwoDotSixteenDotThree.js';
@@ -100,6 +101,7 @@ const changelog = (props) => {
                 This means that the latest version might not have rolled out to your platform yet when you are reading this.
             </Container>
             <ThreeDotOne />
+            <ThreeDotZeroDotOne />
             <Three />
             <TwoDotSixteenDotFour />
             <TwoDotSixteenDotThree />
