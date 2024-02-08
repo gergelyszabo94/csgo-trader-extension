@@ -13,6 +13,7 @@ import DOMPurify from 'dompurify';
 import { getIDsFromElement } from 'utils/itemsToElementsToItems';
 import { createOffscreen } from 'utils/simpleUtils';
 import buffIds from 'utils/static/buffIds.json';
+import bluePercentage from 'utils/static/bluepercent.json';
 
 const { FadeCalculator } = require('csgo-fade-percentage-calculator');
 
@@ -30,6 +31,29 @@ const stickerNames = [
   'Matrica', 'Klistremerke', 'Naklejka', 'Autocolante', 'Adesivo',
   'Abțibild', 'Наклейка', 'Tarra', 'Klistermärke', 'Çıkartma',
   'Hình dán', 'Наліпка'];
+
+const chKnifeNames = [
+  ['M9 Bayonet', 'M9_Bayonet'], // important to put it before normal bayo
+  ['Bayonet', 'Bayonet'],
+  ['Bowie Knife', 'Bowie_Knife'],
+  ['Butterfly Knife', 'Butterfly_Knife'],
+  ['Classic Knife', 'Classic_Knife'],
+  ['Falchion Knife', 'Falchion_Knife'],
+  ['Flip Knife', 'Flip_Knife'],
+  ['Gut Knife', 'Gut_Knife'],
+  ['Huntsman Knife', 'Huntsman_Knife'],
+  ['Karambit', 'Karambit'],
+  ['Kukri Knife', 'Kukri_Knife'],
+  ['Navaja Knife', 'Navaja_Knife'],
+  ['Nomad Knife', 'Nomad_Knife'],
+  ['Paracord Knife', 'Paracord_Knife'],
+  ['Shadow Daggers', 'Shadow_Daggers'],
+  ['Skeleton Knife', 'Skeleton_Knife'],
+  ['Stiletto Knife', 'Stiletto_Knife'],
+  ['Survival Knife', 'Survival_Knife'],
+  ['Talon Knife', 'Talon_Knife'],
+  ['Ursus Knife', 'Ursus_Knife'],
+];
 
 // prints all kinds of numbers without using scientific notation, etc.
 // no idea how this works, from:
@@ -280,25 +304,24 @@ const getPattern = (name, paintSeed) => {
     }
     return null;
   }
+  // ch blue percentage from
+  // https://csbluegem.com/bluepercentraw
   if (name.includes(' Case Hardened')) {
     let pattern = null;
+
+    chKnifeNames.forEach((chName) => {
+      const knifeName = chName[0];
+
+      if (name.includes(knifeName)) {
+        const key = chName[1];
+        const playside = bluePercentage[key].playside[paintSeed];
+        const backside = bluePercentage[key].backside[paintSeed];
+        pattern = `${playside}%/${backside}%`;
+        // some knives have doublesided properties, handle that?
+      }
+    });
     if (name.includes('AK-47')) pattern = patterns.case_hardeneds.ak[paintSeed];
-    else if (name.includes('Butterfly')) pattern = patterns.case_hardeneds.butterfly[paintSeed];
-    else if (name.includes('M9 Bayonet')) pattern = patterns.case_hardeneds.m9[paintSeed];
-    else if (name.includes('Bayonet')) pattern = patterns.case_hardeneds.bayonet[paintSeed];
-    else if (name.includes('Talon')) pattern = patterns.case_hardeneds.talon[paintSeed];
-    else if (name.includes('Stiletto')) pattern = patterns.case_hardeneds.stiletto[paintSeed];
-    else if (name.includes('Navaja')) pattern = patterns.case_hardeneds.navaja[paintSeed];
-    else if (name.includes('Ursus')) pattern = patterns.case_hardeneds.ursus[paintSeed];
-    else if (name.includes('Huntsman')) pattern = patterns.case_hardeneds.huntsman[paintSeed];
-    else if (name.includes('Flip')) pattern = patterns.case_hardeneds.flip[paintSeed];
-    else if (name.includes('Bowie')) pattern = patterns.case_hardeneds.bowie[paintSeed];
-    else if (name.includes('Daggers')) pattern = patterns.case_hardeneds.daggers[paintSeed];
-    else if (name.includes('Gut')) pattern = patterns.case_hardeneds.gut[paintSeed];
-    else if (name.includes('Falchion')) pattern = patterns.case_hardeneds.falchion[paintSeed];
-    else if (name.includes('Karambit')) pattern = patterns.case_hardeneds.karambit[paintSeed];
     else if (name.includes('/Five-SeveN')) pattern = patterns.case_hardeneds.five_seven[paintSeed];
-    else return null;
 
     if (pattern !== null && pattern !== undefined) return { type: 'case_hardened', value: pattern };
     return null; // return {type: 'case_hardened', value: 'Not special or not found'};
