@@ -1097,7 +1097,7 @@ const addRightSideElements = () => {
           if (showCSGOSTASHLinkInInventory) {
             const CSGOSTASHLink = `
         <div class="descriptor CSGOSSTASHLink">
-            <a href="https://cs2stash.com/markethash/${item.market_hash_name}" target="_blank" style="color: yellow;">
+            <a href="https://csgostash.com/markethash/${item.market_hash_name}" target="_blank" style="color: yellow;">
                 View on CS2 STASH
               </a>
         </div>

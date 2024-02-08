@@ -910,7 +910,7 @@ if (appID === steamApps.CSGO.appID) {
   if (descriptor !== null) {
     descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
       `<div class="descriptor">
-          <a href="https://cs2stash.com/markethash/${fullName}">View on CS2 STASH</a>
+          <a href="https://csgostash.com/markethash/${fullName}">View on CS2 STASH</a>
        </div>
        <div class="descriptor">
           <a href="${getBuffLink(fullName)}">Lookup item on Buff</a>
