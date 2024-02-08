@@ -1,3 +1,11 @@
+const params = JSON.parse(document.currentScript.dataset.params);
+
+function getBuffLink (marketHashName) {
+    const buffId = params.buffIds[marketHashName];
+    if (buffId) return `https://buff.163.com/goods/${buffId}`;
+    return `https://api.pricempire.com/v1/redirectBuff/${marketHashName}`;
+};
+
 function HandleTradeActionMenu( elActionMenuButton, item, user )
         {
             HideMenuFast( elActionMenuButton, 'trade_action_popup' );
@@ -47,7 +55,7 @@ function HandleTradeActionMenu( elActionMenuButton, item, user )
                   let inspectLink = item.actions[0].link;
                   item.actions.push({name: "Inspect in Browser...", link: "https://swap.gg/screenshot?inspectLink="+inspectLink, id: "inbrowser"});
                   item.actions.push({name: "Inspect on Server...", link: "https://www.cs2inspects.com/?apply="+inspectLink, id: "onserver"});
-                  item.actions.push({name: "Lookup on BUFF", link: "https://api.pricempire.com/v1/redirectBuff/"+item.market_hash_name, id: "buffLookup"});
+                  item.actions.push({name: "Lookup on BUFF", link: getBuffLink(item.market_hash_name), id: "buffLookup"});
                 }
                 for ( var action = 0; action < item.actions.length; action++ )
                 {

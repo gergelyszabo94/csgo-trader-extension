@@ -11,7 +11,7 @@ import {
   addSearchListener, getPattern, removeFromArray, getFloatAsFormattedString,
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
   parseStickerInfo, getInspectLink, getExteriorFromTags, getDopplerInfo,
-  getType, getQuality, getNameTag,
+  getType, getQuality, getNameTag, getBuffLink,
 }
   from 'utils/utilsModular';
 import {
@@ -1082,7 +1082,7 @@ const addRightSideElements = () => {
           if (showBuffLookupInInventory) {
             const buffLink = `
         <div class="descriptor buffLink">
-            <a href="https://api.pricempire.com/v1/redirectBuff/${item.market_hash_name}" target="_blank" style="color: yellow;">
+            <a href="${getBuffLink(item.market_hash_name)}" target="_blank" style="color: yellow;">
                 Lookup item on Buff
               </a>
         </div>

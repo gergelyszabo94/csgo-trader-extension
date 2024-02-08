@@ -8,8 +8,8 @@ const overrideShowTradeOffer = () => {
 };
 
 // adds In-browser inspect as action - in trade offers
-const overrideHandleTradeActionMenu = () => {
-  injectScriptAsFile('HandleTradeActionMenu', 'HandleTradeActionMenuScript');
+const overrideHandleTradeActionMenu = (buffIds) => {
+  injectScriptAsFile('HandleTradeActionMenu', 'HandleTradeActionMenuScript', { buffIds });
 };
 
 // adds In-browser inspect as action in inventory

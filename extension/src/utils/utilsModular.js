@@ -12,6 +12,7 @@ import { getUserSteamID } from 'utils/steamID';
 import DOMPurify from 'dompurify';
 import { getIDsFromElement } from 'utils/itemsToElementsToItems';
 import { createOffscreen } from 'utils/simpleUtils';
+import buffIds from 'utils/static/buffIds.json';
 
 const { FadeCalculator } = require('csgo-fade-percentage-calculator');
 
@@ -904,6 +905,12 @@ const getFloatDBLink = (item) => {
   } return 'https://csfloat.com/db';
 };
 
+const getBuffLink = (marketHashName) => {
+  const buffId = buffIds[marketHashName];
+  if (buffId) return `https://buff.163.com/goods/${buffId}`;
+  return `https://api.pricempire.com/v1/redirectBuff/${marketHashName}`;
+};
+
 //  unused atm
 // const generateRandomString = (length) => {
 //   let text = '';
@@ -931,5 +938,5 @@ export {
   warnOfScammer, getFloatAsFormattedString, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo, getRemoteImageAsObjectURL,
   isChromium, addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,
-  getAppropriateFetchFunc, getFloatDBLink,
+  getAppropriateFetchFunc, getFloatDBLink, getBuffLink,
 };

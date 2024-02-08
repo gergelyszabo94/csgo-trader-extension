@@ -33,6 +33,7 @@ import {
   acceptOffer, declineOffer, sendOffer, createTradeOfferJSON, listenToAcceptTrade,
 } from 'utils/tradeOffers';
 import steamApps from 'utils/static/steamApps';
+import buffIds from 'utils/static/buffIds.json';
 
 let showPaintSeeds = false;
 let showFloatRank = false;
@@ -1085,7 +1086,7 @@ reloadPageOnExtensionUpdate();
 
 // initiates all logic that needs access to item info
 getInventories(true);
-overrideHandleTradeActionMenu();
+overrideHandleTradeActionMenu(buffIds);
 repositionNameTagIcons();
 
 const errorMSGEl = document.getElementById('error_msg');

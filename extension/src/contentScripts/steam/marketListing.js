@@ -15,6 +15,7 @@ import {
   getFloatAsFormattedString,
   updateLoggedInUserInfo,
   updateLoggedInUserName,
+  getBuffLink,
 } from 'utils/utilsModular';
 import { listingsSortingModes } from 'utils/static/sortingModes';
 import {
@@ -912,7 +913,7 @@ if (appID === steamApps.CSGO.appID) {
           <a href="https://cs2stash.com/markethash/${fullName}">View on CS2 STASH</a>
        </div>
        <div class="descriptor">
-          <a href="https://api.pricempire.com/v1/redirectBuff/${fullName}">Lookup item on Buff</a>
+          <a href="${getBuffLink(fullName)}">Lookup item on Buff</a>
        </div>`,
       { ADD_ATTR: ['target'] },
     ));
