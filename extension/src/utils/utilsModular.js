@@ -324,7 +324,7 @@ const getPattern = (name, paintSeed) => {
         break;
         // some knives have doublesided properties, handle that?
       }
-    });
+    }
     if (name.includes('AK-47')) pattern = patterns.case_hardeneds.ak[paintSeed];
     else if (name.includes('/Five-SeveN')) pattern = patterns.case_hardeneds.five_seven[paintSeed];
 
