@@ -309,14 +309,18 @@ const getPattern = (name, paintSeed) => {
   if (name.includes(' Case Hardened')) {
     let pattern = null;
 
-    chKnifeNames.forEach((chName) => {
+    // exits early if match
+    for (const chName of chKnifeNames) {
       const knifeName = chName[0];
 
-      if (name.includes(knifeName)) {
+      // Check if the name starts with the knife name
+      // This will match "M9 Bayonet" before it matches "Bayonet"
+      if (name.startsWith(`${knifeName} `) || name === knifeName) {
         const key = chName[1];
         const playside = bluePercentage[key].playside[paintSeed];
         const backside = bluePercentage[key].backside[paintSeed];
         pattern = `${playside}%/${backside}%`;
+        break;
         // some knives have doublesided properties, handle that?
       }
     });
