@@ -315,7 +315,7 @@ const getPattern = (name, paintSeed) => {
 
       // Check if the name starts with the knife name
       // This will match "M9 Bayonet" before it matches "Bayonet"
-      if (name.startsWith(`${knifeName} `) || name === knifeName) {
+      if (name.startsWith(`★ ${knifeName} `) || name === knifeName) {
         const key = chName[1];
         const playside = bluePercentage[key].playside[paintSeed];
         const backside = bluePercentage[key].backside[paintSeed];
