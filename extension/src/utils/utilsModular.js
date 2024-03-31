@@ -285,6 +285,7 @@ const getPattern = (name, paintSeed) => {
       else if (name.includes('Paracord Knife')) percentage = FadeCalculator.getFadePercentage('Paracord Knife', paintSeed).percentage;
       else if (name.includes('Skeleton Knife')) percentage = FadeCalculator.getFadePercentage('Skeleton Knife', paintSeed).percentage;
       else if (name.includes('Survival Knife')) percentage = FadeCalculator.getFadePercentage('Survival Knife', paintSeed).percentage;
+      else if (name.includes('Kukri Knife')) percentage = FadeCalculator.getFadePercentage('Kukri Knife', paintSeed).percentage;
       else if (name.includes('Glock-18')) percentage = FadeCalculator.getFadePercentage('Glock-18', paintSeed).percentage;
       else if (name.includes('AWP')) percentage = FadeCalculator.getFadePercentage('AWP', paintSeed).percentage;
       else if (name.includes('MAC-10')) percentage = FadeCalculator.getFadePercentage('MAC-10', paintSeed).percentage;
