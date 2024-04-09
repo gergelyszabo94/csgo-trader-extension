@@ -33,6 +33,30 @@ const scrapeAPIKey = () => new Promise((resolve, reject) => {
   });
 });
 
+const scrapeAccessToken = () => new Promise((resolve, reject) => {
+  const getRequest = new Request('https://steamcommunity.com/');
+
+  fetch(getRequest).then((response) => {
+    if (!response.ok) {
+      console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+      reject(response.statusText);
+    } else return response.text();
+  }).then((body) => {
+    let accessToken = null;
+
+    try {
+      accessToken = body.split('data-loyalty_webapi_token="&quot;')[1].split('&quot;"')[0];
+      resolve(accessToken);
+    } catch (e) {
+      console.log(e);
+      console.log(body);
+      reject(e);
+    }
+  }).catch((err) => {
+    console.log(err);
+  });
+});
+
 const scrapeFriendRequests = () => new Promise((resolve, reject) => {
   const getRequest = new Request('https://steamcommunity.com/my/friends/pending');
 
@@ -127,6 +151,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   } else if ('scrapeAPIKey' in message) {
     scrapeAPIKey().then((apiKey) => {
       sendResponse(apiKey);
+    }).catch((err) => {
+      console.log(err);
+      sendResponse(null);
+    });
+    return true; // async return to signal that it will return later
+  } else if ('scrapeAccessToken' in message) {
+    scrapeAccessToken().then((accessToken) => {
+      sendResponse(accessToken);
     }).catch((err) => {
       console.log(err);
       sendResponse(null);

@@ -147,6 +147,47 @@ const setAPIKeyFirstTime = async () => {
   });
 };
 
+const validateSteamAccessToken = (accessToken) => new Promise((resolve, reject) => {
+  const getRequest = new Request(`https://api.steampowered.com/ISteamEconomy/GetAssetClassInfo/v1/?appid=730&class_count=1&classid0=3608123907&access_token=${accessToken}`);
+
+  fetch(getRequest).then((response) => {
+    if (!response.ok) {
+      console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+      reject(response.status);
+    } else return response.json();
+  }).then((body) => {
+    try {
+      if (body.result.success) resolve(true);
+      else resolve(false);
+    } catch (e) {
+      console.log(e);
+      reject(e);
+    }
+  }).catch((err) => {
+    console.log(err);
+    reject(err);
+  });
+});
+
+const setAccessTokenFirstTime = async () => {
+  await createOffscreen([chrome.offscreen.Reason.DOM_PARSER], 'dom parsing');
+  chrome.runtime.sendMessage({ scrapeAccessToken: 'scrapeAccessToken' }, (accessToken) => {
+    if (accessToken !== null) {
+      console.log(accessToken);
+      validateSteamAccessToken(accessToken).then(
+        (accessTokenValid) => {
+          if (accessTokenValid) {
+            console.log('access token valid');
+            chrome.storage.local.set({ steamAcessToken: accessToken, steamAcessTokenValid: true }, () => { });
+          } else console.log('access token invalid');
+        },
+      ).catch((err) => {
+        console.log(err);
+      });
+    } else console.log('Was not able to scrape access token, probably not logged in?');
+  });
+};
+
 const arrayFromArrayOrNotArray = (arrayOrNotArray) => {
   if (!Array.isArray(arrayOrNotArray)) return [arrayOrNotArray];
   return arrayOrNotArray;
@@ -962,8 +1003,8 @@ export {
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator, updateLoggedInUserName,
   getDataFilledFloatTechnical, souvenirExists, removeLinkFilterFromLinks,
-  getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent,
-  isSIHActive, addSearchListener, getSessionID,
+  getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent, setAccessTokenFirstTime,
+  isSIHActive, addSearchListener, getSessionID, validateSteamAccessToken,
   warnOfScammer, getFloatAsFormattedString, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo, getRemoteImageAsObjectURL,
   isChromium, addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,

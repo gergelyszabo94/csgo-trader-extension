@@ -1,7 +1,7 @@
 import { storageKeys } from 'utils/static/storageKeys';
 import { updatePrices, updateExchangeRates, getUserCurrencyBestGuess } from 'utils/pricing';
 import {
-  setAPIKeyFirstTime, goToInternalPage,
+  setAPIKeyFirstTime, setAccessTokenFirstTime, goToInternalPage,
 } from 'utils/utilsModular';
 import {
   getGroupInvites, updateFriendRequest,
@@ -36,6 +36,8 @@ chrome.runtime.onInstalled.addListener((details) => {
       });
     }, 20000);
 
+    // tries to set the steam access token, the user must be logged in for this
+    setAccessTokenFirstTime();
     // tries to set the api key - only works if the user has already generated one before
     setAPIKeyFirstTime();
 
