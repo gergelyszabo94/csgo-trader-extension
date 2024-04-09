@@ -17,7 +17,7 @@ const addOfferDetails = (offers, descriptions, currentIndex) => {
   const uniquePartnerIDs = [...new Set(partnerIDs)];
 
   return new Promise((resolve, reject) => {
-    chrome.storage.local.get(['apiKeyValid', 'steamAPIKey', 'prices', 'pricingProvider', 'currency', 'exchangeRate'],
+    chrome.storage.local.get(['prices', 'pricingProvider', 'currency', 'exchangeRate'],
       ({
         prices, pricingProvider, pricingMode, currency, exchangeRate,
       }) => {
