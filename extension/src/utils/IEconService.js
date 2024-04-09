@@ -6,13 +6,13 @@ import { isDopplerInName, getFormattedPLPercentage } from './simpleUtils';
 const getTradeHistory = (
   maxTrades, startTime = 0, afterTrade = 0,
 ) => new Promise((resolve, reject) => {
-  chrome.storage.local.get(['apiKeyValid', 'steamAPIKey', 'prices', 'pricingProvider', 'currency', 'exchangeRate'],
+  chrome.storage.local.get(['steamAcessTokenValid', 'steamAcessToken', 'prices', 'pricingProvider', 'currency', 'exchangeRate'],
     ({
-      apiKeyValid, steamAPIKey, prices, pricingProvider, pricingMode, currency, exchangeRate,
+      steamAcessTokenValid, steamAcessToken, prices, pricingProvider, pricingMode, currency, exchangeRate,
     }) => {
-      if (apiKeyValid) {
+      if (steamAcessTokenValid) {
         const getRequest = new Request(
-          `https://api.steampowered.com/IEconService/GetTradeHistory/v1/?max_trades=${maxTrades}&start_after_time=${startTime}&start_after_tradeid=${afterTrade}&get_descriptions=1&include_total=1language=english&key=${steamAPIKey}`,
+          `https://api.steampowered.com/IEconService/GetTradeHistory/v1/?max_trades=${maxTrades}&start_after_time=${startTime}&start_after_tradeid=${afterTrade}&get_descriptions=1&include_total=1language=english&access_token=${steamAcessToken}`,
         );
 
         fetch(getRequest).then((response) => {
@@ -147,9 +147,9 @@ const getTradeHistory = (
 const getTradeOffers = (
   activesOnly, historicalOnly, includeDescriptions, sent, received,
 ) => new Promise((resolve, reject) => {
-  chrome.storage.local.get(['apiKeyValid', 'steamAPIKey'], ({ apiKeyValid, steamAPIKey }) => {
-    if (apiKeyValid) {
-      const getRequest = new Request(`https://api.steampowered.com/IEconService/GetTradeOffers/v1/?get_received_offers=${received}&get_sent_offers=${sent}&active_only=${activesOnly}&historical_only${historicalOnly}&get_descriptions=${includeDescriptions}&language=english&key=${steamAPIKey}`);
+  chrome.storage.local.get(['steamAcessTokenValid', 'steamAcessToken'], ({ steamAcessTokenValid, steamAcessToken }) => {
+    if (steamAcessTokenValid) {
+      const getRequest = new Request(`https://api.steampowered.com/IEconService/GetTradeOffers/v1/?get_received_offers=${received}&get_sent_offers=${sent}&active_only=${activesOnly}&historical_only${historicalOnly}&get_descriptions=${includeDescriptions}&language=english&access_token=${steamAcessToken}`);
 
       fetch(getRequest).then((response) => {
         if (!response.ok) {

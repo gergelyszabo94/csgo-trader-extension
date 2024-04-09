@@ -16,6 +16,8 @@ const storageKeys = {
   bookmarks: [],
   steamAPIKey: '',
   apiKeyValid: false,
+  steamAcessToken: '',
+  steamAcessTokenValid: false,
   showRealStatus: true,
   colorfulItems: true,
   tradersBump: false,
