@@ -1,10 +1,14 @@
-import { logExtensionPresence, updateLoggedInUserInfo, addUpdatedRibbon } from 'utils/utilsModular';
+import {
+  logExtensionPresence, updateLoggedInUserInfo,
+  addUpdatedRibbon, refreshSteamAccessToken,
+} from 'utils/utilsModular';
 import { friendAndInvitesBanner } from 'utils/static/miscElements';
 import { listenToAcceptTrade } from 'utils/tradeOffers';
 import { reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 import DOMPurify from 'dompurify';
 
 logExtensionPresence();
+refreshSteamAccessToken();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
 listenToAcceptTrade();

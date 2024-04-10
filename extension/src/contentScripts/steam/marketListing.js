@@ -16,6 +16,7 @@ import {
   updateLoggedInUserInfo,
   updateLoggedInUserName,
   getBuffLink,
+  refreshSteamAccessToken,
 } from 'utils/utilsModular';
 import { listingsSortingModes } from 'utils/static/sortingModes';
 import {
@@ -840,6 +841,7 @@ floatQueue.cleanupFunction = () => {
 };
 
 logExtensionPresence();
+refreshSteamAccessToken();
 updateWalletCurrency();
 updateLoggedInUserInfo();
 updateLoggedInUserName();

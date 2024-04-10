@@ -3,7 +3,7 @@ import {
   addDopplerPhase, makeItemColorful, addUpdatedRibbon, addFloatRankIndicator,
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
   removeOfferFromActiveOffers, removeLinkFilterFromLinks,
-  logExtensionPresence, updateLoggedInUserInfo,
+  logExtensionPresence, updateLoggedInUserInfo, refreshSteamAccessToken,
   repositionNameTagIcons, jumpToAnchor, changePageTitle, isChromium,
   updateLoggedInUserName, addFadePercentage, getPattern, addPaintSeedIndicator,
 } from 'utils/utilsModular';
@@ -540,6 +540,7 @@ updateLoggedInUserName();
 addUpdatedRibbon();
 removeLinkFilterFromLinks();
 listenToAcceptTrade();
+refreshSteamAccessToken();
 reloadPageOnExtensionUpdate();
 
 chrome.storage.local.get([

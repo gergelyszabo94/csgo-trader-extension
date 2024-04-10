@@ -6,7 +6,7 @@ import {
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists, copyToClipboard,
   getFloatBarSkeleton, addUpdatedRibbon, updateLoggedInUserName,
-  logExtensionPresence, repositionNameTagIcons,
+  logExtensionPresence, repositionNameTagIcons, refreshSteamAccessToken,
   updateLoggedInUserInfo, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, getFloatAsFormattedString,
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
@@ -2327,6 +2327,7 @@ const defaultActiveInventoryAppID = getActiveInventoryAppID();
 logExtensionPresence();
 updateWalletCurrency();
 listenToAcceptTrade();
+refreshSteamAccessToken();
 reloadPageOnExtensionUpdate();
 
 if (defaultActiveInventoryAppID !== null) {

@@ -1,7 +1,7 @@
 import DOMPurify from 'dompurify';
 
 import {
-  logExtensionPresence,
+  logExtensionPresence, refreshSteamAccessToken,
   updateLoggedInUserInfo, addUpdatedRibbon, updateLoggedInUserName,
 } from 'utils/utilsModular';
 import { getItemMarketLink, reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
@@ -324,6 +324,7 @@ chrome.storage.local.get(['marketMainPagePricesAutoLoad'], ({ marketMainPagePric
 });
 
 logExtensionPresence();
+refreshSteamAccessToken();
 overrideLoadMarketHistory();
 updateWalletCurrency();
 updateLoggedInUserInfo();

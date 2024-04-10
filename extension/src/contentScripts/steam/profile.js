@@ -1,6 +1,6 @@
 import {
   logExtensionPresence, updateLoggedInUserInfo, updateLoggedInUserName,
-  warnOfScammer, removeLinkFilterFromLinks,
+  warnOfScammer, removeLinkFilterFromLinks, refreshSteamAccessToken,
   addUpdatedRibbon, copyToClipboard, changePageTitle,
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
@@ -17,6 +17,7 @@ import DOMPurify from 'dompurify';
 // ensures that we are on a profile page, it's not possible with simple regex
 if (document.querySelector('body').classList.contains('profile_page')) {
   logExtensionPresence();
+  refreshSteamAccessToken();
   updateLoggedInUserInfo();
   updateLoggedInUserName();
   addUpdatedRibbon();

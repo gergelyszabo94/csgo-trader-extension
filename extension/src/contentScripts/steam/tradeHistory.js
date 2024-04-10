@@ -1,12 +1,13 @@
 import DOMPurify from 'dompurify';
 import {
   logExtensionPresence, updateLoggedInUserInfo,
-  addUpdatedRibbon,
+  addUpdatedRibbon, refreshSteamAccessToken,
 } from 'utils/utilsModular';
 import { listenToAcceptTrade } from 'utils/tradeOffers';
 import { reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 
 logExtensionPresence();
+refreshSteamAccessToken();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
 listenToAcceptTrade();

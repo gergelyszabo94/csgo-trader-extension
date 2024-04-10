@@ -981,6 +981,27 @@ const getBuffLink = (marketHashName) => {
   return `https://api.pricempire.com/v1/redirectBuff/${marketHashName}`;
 };
 
+// runs in content scripts when steam pages are loaded
+const refreshSteamAccessToken = () => {
+  chrome.storage.local.get(['steamAcessToken', 'steamAcessTokenValid'], ({ steamAcessToken, steamAcessTokenValid }) => {
+    const token = document.getElementById('application_config')
+      ?.getAttribute('data-loyalty_webapi_token')
+      ?.replace('"', '')
+      .replace('"', '');
+
+    if (!steamAcessTokenValid || (steamAcessTokenValid && steamAcessToken !== token)) {
+      // validate the token
+      chrome.runtime.sendMessage({ accessTokenToValidate: token }, (response) => {
+        if (response.valid) {
+          chrome.storage.local.set({ steamAcessToken: token, steamAcessTokenValid: true }, () => {
+            console.log('Steam access token updated');
+          });
+        } else console.log('Steam access token could not be validated');
+      });
+    } else console.log('Access token not changed');
+  });
+};
+
 //  unused atm
 // const generateRandomString = (length) => {
 //   let text = '';
@@ -1008,5 +1029,5 @@ export {
   warnOfScammer, getFloatAsFormattedString, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo, getRemoteImageAsObjectURL,
   isChromium, addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,
-  getAppropriateFetchFunc, getFloatDBLink, getBuffLink,
+  getAppropriateFetchFunc, getFloatDBLink, getBuffLink, refreshSteamAccessToken,
 };

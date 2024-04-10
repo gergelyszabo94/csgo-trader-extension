@@ -1,12 +1,13 @@
 import {
   addUpdatedRibbon, logExtensionPresence, updateLoggedInUserInfo,
-  removeLinkFilterFromLinks,
+  removeLinkFilterFromLinks, refreshSteamAccessToken,
 } from 'utils/utilsModular';
 import { overrideShowTradeOffer } from 'utils/steamOverriding';
 import { listenToAcceptTrade } from 'utils/tradeOffers';
 import { reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 
 logExtensionPresence();
+refreshSteamAccessToken();
 updateLoggedInUserInfo();
 addUpdatedRibbon();
 removeLinkFilterFromLinks();

@@ -9,7 +9,7 @@ import {
   updateLoggedInUserInfo, warnOfScammer, addPageControlEventListeners,
   addSearchListener, getPattern, getNameTag, removeLinkFilterFromLinks,
   removeOfferFromActiveOffers, changePageTitle,
-  addFloatRankIndicator,
+  addFloatRankIndicator, refreshSteamAccessToken,
 } from 'utils/utilsModular';
 import {
   getItemMarketLink, getItemByNameAndGame, closeTab, isDopplerInName,
@@ -1079,6 +1079,7 @@ const sendQueryParamOffer = (urlParams, whose, items, message) => {
 };
 
 logExtensionPresence();
+refreshSteamAccessToken();
 removeLinkFilterFromLinks();
 initPriceQueue();
 listenToAcceptTrade();

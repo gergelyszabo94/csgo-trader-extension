@@ -1,6 +1,6 @@
 import { extractUsefulFloatInfo, addToFloatCache } from 'utils/floatCaching';
 import {
-  goToInternalPage, validateSteamAPIKey,
+  goToInternalPage, validateSteamAPIKey, validateSteamAccessToken,
   getAssetIDFromInspectLink, getSteamRepInfo,
 } from 'utils/utilsModular';
 import { getItemMarketLink } from 'utils/simpleUtils';
@@ -59,6 +59,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     validateSteamAPIKey(request.apikeytovalidate).then(
       (apiKeyValid) => {
         sendResponse({ valid: apiKeyValid });
+      }, (error) => {
+        console.log(error);
+        sendResponse('error');
+      },
+    );
+    return true; // async return to signal that it will return later
+  } else if (request.accessTokenToValidate !== undefined) {
+    validateSteamAccessToken(request.accessTokenToValidate).then(
+      (accessTokenValid) => {
+        sendResponse({ valid: accessTokenValid });
       }, (error) => {
         console.log(error);
         sendResponse('error');

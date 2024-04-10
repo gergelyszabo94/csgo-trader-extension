@@ -1,5 +1,5 @@
 import { getPrice, prettyPrintPrice } from 'utils/pricing';
-import { getDopplerInfo } from 'utils/utilsModular';
+import { getDopplerInfo, setAccessTokenFirstTime } from 'utils/utilsModular';
 import { getPlayerSummaries } from 'utils/ISteamUser';
 import { isDopplerInName, getFormattedPLPercentage } from './simpleUtils';
 
@@ -18,7 +18,10 @@ const getTradeHistory = (
         fetch(getRequest).then((response) => {
           if (!response.ok) {
             console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-            reject(response.statusText);
+            if (response.status === 403) {
+              setAccessTokenFirstTime();
+              reject('access_token_invalid');
+            } else reject(response.statusText);
           } else return response.json();
         }).then((body) => {
           try {
@@ -140,7 +143,10 @@ const getTradeHistory = (
           console.log(err);
           reject(err);
         });
-      } else reject('api_key_invalid');
+      } else {
+        setAccessTokenFirstTime();
+        reject('access_token_invalid');
+      }
     });
 });
 
@@ -154,7 +160,10 @@ const getTradeOffers = (
       fetch(getRequest).then((response) => {
         if (!response.ok) {
           console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-          reject(response.statusText);
+          if (response.status === 403) {
+            setAccessTokenFirstTime();
+            reject('access_token_invalid');
+          } else reject(response.statusText);
         } else return response.json();
       }).then((body) => {
         try { resolve(body.response); } catch (e) {
@@ -165,7 +174,10 @@ const getTradeOffers = (
         console.log(err);
         reject(err);
       });
-    } else reject('api_key_invalid');
+    } else {
+      setAccessTokenFirstTime();
+      reject('access_token_invalid');
+    }
   });
 });
 
