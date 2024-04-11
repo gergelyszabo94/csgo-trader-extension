@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import TradeOfferSide from 'components/TradeHistory/TradeOfferSide';
+import TradeHistoryDetailsPrint from 'components/TradeHistory/TradeHistoryDetailsPrint';
 import NewTabLink from 'components/NewTabLink/NewTabLink';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -34,12 +35,18 @@ const TradeOffers = ({ trades }) => {
             </NewTabLink>
             .
           </h4>
-          <span
-            className="trade-history__date-of-trade"
-            title={dateToISODisplay(trade.time_init)}
-          >
-            {prettyTimeAgo(trade.time_init)}
-          </span>
+          <div className="row" style={{ marginBottom: '20px' }}>
+            <div
+              className="trade-history__date-of-trade col-md-6"
+              title={dateToISODisplay(trade.time_init)}
+            >
+              {prettyTimeAgo(trade.time_init)}
+            </div>
+
+            <div className="col-md-6" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+              <TradeHistoryDetailsPrint trade={trade} />
+            </div>
+          </div>
         </div>
         {TradeOfferSide({
           assets: trade.assets_given_desc,
@@ -55,10 +62,9 @@ const TradeOffers = ({ trades }) => {
               {trade.givenTotalFormatted}
             </span>
             <span className="trade-history__third trade-history__third--narrower">
-                      &nbsp;
+              &nbsp;
               <FontAwesomeIcon
-                className={`trade-history__icon trade-history__icon--${
-                  trade.profitLoss >= 0 ? 'profit' : 'loss'
+                className={`trade-history__icon trade-history__icon--${trade.profitLoss >= 0 ? 'profit' : 'loss'
                 }`}
                 icon={faExchangeAlt}
               />
@@ -70,8 +76,7 @@ const TradeOffers = ({ trades }) => {
               {trade.receivedTotalFormatted}
             </span>
             <span
-              className={`trade-history__profit trade-history__profit--${
-                trade.profitLoss >= 0 ? 'profit' : 'loss'
+              className={`trade-history__profit trade-history__profit--${trade.profitLoss >= 0 ? 'profit' : 'loss'
               }`}
               title="Profit/Loss made"
             >
