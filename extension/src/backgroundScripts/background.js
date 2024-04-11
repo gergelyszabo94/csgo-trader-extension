@@ -92,6 +92,11 @@ chrome.runtime.onInstalled.addListener((details) => {
         });
       }
     });
+
+    // temporary, remove after 3.1.1
+    setTimeout(() => {
+      setAccessTokenFirstTime();
+    }, 20000);
   }
 
   // updates the prices and exchange rates
