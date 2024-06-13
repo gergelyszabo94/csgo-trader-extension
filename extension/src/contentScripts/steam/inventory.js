@@ -2290,9 +2290,15 @@ const updateTradabilityIndicators = () => {
 
 const hideOtherExtensionPrices = () => {
   // sih
-  if (!document.hidden && isSIHActive()) {
-    document.querySelectorAll('.price_flag').forEach((price) => {
-      price.remove();
+  if (!document.hidden) {
+    if (isSIHActive()) {
+      document.querySelectorAll('.price_flag, .item-info, .sih_item_sticker, .trade-lock-badge').forEach((sihElement) => {
+        sihElement.remove();
+      });
+    }
+
+    document.querySelectorAll('csfloat-inventory-item-holder-metadata').forEach((csfloatElement) => {
+      csfloatElement.style.display = 'none';
     });
   }
 
