@@ -714,9 +714,10 @@ const getFloatBarSkeleton = (type) => {
 };
 
 const isSIHActive = () => {
-  const SIHSwitch = document.getElementById('switchPanel');
-  const SIHSwitcherCheckbox = document.getElementById('switcher');
-  return (SIHSwitch !== null && SIHSwitcherCheckbox !== null && SIHSwitcherCheckbox.checked);
+  const SIHSwitch = document.querySelector('.sih_status_container');
+  const SIHSwitchOffers = document.querySelector('.sih_panel_mode');
+  const SIHSwitchPanel = document.getElementById('switchPanel');
+  return (SIHSwitch !== null || SIHSwitchPanel !== null || SIHSwitchOffers !== null);
 };
 
 let searchListenerTimeout = null;
