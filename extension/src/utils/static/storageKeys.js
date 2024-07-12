@@ -292,6 +292,7 @@ const storageKeys = {
     'skinportbots',
     'tradeitggbots',
     'SkinwalletBotsOfficial',
+    'skinswapbots',
   ],
   moveWithArrowKeysInventory: true,
   showAllExteriorsInventory: false,
