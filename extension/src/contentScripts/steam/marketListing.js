@@ -1392,6 +1392,13 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                         SkinVault
                     </a>
                   </div>
+                  <div class="realMoneySite">
+                    <a href="https://skinswap.com/r/gery" target="_blank" class="realMoneySiteLink referralLink" data-site="skinswap">
+                        <img alt="Skinswap logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinswap.png')}" data-site="skinswap">
+                        <br>
+                        SKINSWAP
+                    </a>
+                  </div>
                 </div>
                 
                 <div id="realMoneyExpand" class="clickable" title="Click to learn more about what this is">What is this?</div>
