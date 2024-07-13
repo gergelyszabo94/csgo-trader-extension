@@ -1,6 +1,6 @@
 import {
   logExtensionPresence, updateLoggedInUserInfo, updateLoggedInUserName,
-  warnOfScammer, removeLinkFilterFromLinks, refreshSteamAccessToken,
+  removeLinkFilterFromLinks, refreshSteamAccessToken,
   addUpdatedRibbon, copyToClipboard, changePageTitle,
 } from 'utils/utilsModular';
 import { dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
@@ -34,11 +34,9 @@ if (document.querySelector('body').classList.contains('profile_page')) {
   addReplyToCommentsFunctionality();
   addCommentsMutationObserver();
 
-  // changes background and adds a banner if steamrep banned scammer detected
+  // changes background and adds a banner if the profile belongs to a legit
   chrome.storage.local.get(['markScammers', 'legitSiteBotGroup'], ({ markScammers, legitSiteBotGroup }) => {
     if (markScammers) {
-      warnOfScammer(profileOwnerSteamID, 'profile');
-
       document.querySelectorAll('.profile_group_avatar a').forEach((groupAvatar) => {
         const groupName = groupAvatar.getAttribute('href').split('https://steamcommunity.com/groups/')[1];
 
@@ -117,11 +115,6 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         <img style="width: 16px; height: 16px" src="${chrome.runtime.getURL('images/paperclip.png')}">
             &nbsp; Copy Trade Link
       </a>`;
-    const openSteamRepProfile = `
-      <a class="popup_menu_item" href="https://steamrep.com/profiles/${profileOwnerSteamID}">
-        <img style="width: 16px; height: 16px" src="${chrome.runtime.getURL('images/plus.png')}">
-            &nbsp; Open SteamRep Profile
-      </a>`;
     const openCSGORepProfile = `
       <a class="popup_menu_item" href="https://csgo-rep.com/profile/${profileOwnerSteamID}">
         <img style="width: 16px; height: 16px" src="${chrome.runtime.getURL('images/growth.png')}">
@@ -129,7 +122,7 @@ if (document.querySelector('body').classList.contains('profile_page')) {
       </a>`;
     profileActionPopup.querySelector('.popup_body.popup_menu.shadow_content').insertAdjacentHTML(
       'beforeend',
-      copyPermalink + showOfferSummary + copyTradeLink + openSteamRepProfile + openCSGORepProfile,
+      copyPermalink + showOfferSummary + copyTradeLink + openCSGORepProfile,
       // not sanitized because it breaks the images and it's static anyways
     );
 

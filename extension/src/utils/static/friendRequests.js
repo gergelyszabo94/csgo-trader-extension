@@ -51,12 +51,6 @@ const conditions = {
     description: 'The user is trade banned or on trade ban probation',
     with_value: false,
   },
-  streamrep_banned: {
-    key: 'streamrep_banned',
-    pretty: 'SteamRep banned',
-    description: 'The user is a convicted scammer on steamrep.com',
-    with_value: false,
-  },
   csgo_inventory_value_over: {
     key: 'csgo_inventory_value_over',
     pretty: 'CS2 Inventory value over',

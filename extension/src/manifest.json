@@ -20,8 +20,7 @@
     "*://steamcommunity.com/*",
     "*://api.steampowered.com/*",
     "*://api.csgotrader.app/*",
-    "*://prices.csgotrader.app/*",
-    "*://steamrep.com/api/*"
+    "*://prices.csgotrader.app/*"
   ],
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"

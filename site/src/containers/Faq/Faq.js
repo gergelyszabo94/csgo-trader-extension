@@ -276,7 +276,7 @@ const faq = (props) => {
                             First party: prices.csgotrader.app, api.csgotrader.app
                         </li>
                         <li>
-                            Third party: steamrep.com, api.csgofloat.com
+                            Third party: api.csgofloat.com
                         </li>
                         <li>
                             Optional: csgolounge.com, csgotraders.net

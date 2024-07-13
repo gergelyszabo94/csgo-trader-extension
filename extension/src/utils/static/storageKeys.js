@@ -114,13 +114,6 @@ const storageKeys = {
     {
       active: false,
       condition: {
-        type: conditions.streamrep_banned.key,
-      },
-      action: actions.ignore.key,
-    },
-    {
-      active: false,
-      condition: {
         type: conditions.inventory_private.key,
       },
       action: actions.ignore.key,

@@ -110,7 +110,7 @@ const Invite = ({
         </span>
       </td>
       <td>
-        {getBansSummaryText(details.bans, details.steamRepInfo)}
+        {getBansSummaryText(details.bans)}
       </td>
       <td>
         <CustomA11yButton action={onAcceptFriend} title="Accept friend request" className="mx-1">

@@ -132,7 +132,6 @@ const featureList = [
   'Bookmark an item and get a notification when it is ready to trade',
   'Real chat status on profiles (away, busy, snooze instead of just online)',
   'Colorful inventories, changes each items\' background based on its rarity',
-  'Scammers are market on their profile and in trade offers (if they are SteamRep banned)',
   'CSGOLounge.com auto-bumping, make your trades more popular by keeping them on top',
   'CSGOTraders.net auto-bumping, make your trades more popular by keeping them on top',
   'Add or remove similar items from a trade, add whole page, add all similar items',

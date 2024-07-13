@@ -771,38 +771,6 @@ const updateLoggedInUserName = () => {
   }
 };
 
-const warnOfScammer = (steamID, page) => {
-  if (steamID) {
-    chrome.runtime.sendMessage({ getSteamRepInfo: steamID }, ({ SteamRepInfo }) => {
-      if (SteamRepInfo !== 'error') {
-        if (SteamRepInfo.reputation.summary === 'SCAMMER') {
-          const backgroundURL = chrome.runtime.getURL('images/scammerbackground.jpg');
-          document.querySelector('body').insertAdjacentHTML(
-            'afterbegin',
-            DOMPurify.sanitize(
-              `<div style="background-color: red; color: white; padding: 5px; text-align: center;" class="scammerWarning">
-                        <span>
-                            Watch out, this user was banned on SteamRep for scamming! You can check the details of what they did on 
-                            <a style="color: black; font-weight: bold" href='https://steamrep.com/profiles/${steamID}'>steamrep.com</a>
-                        </span>
-                     </div>`,
-            ),
-          );
-
-          if (page === 'offer') document.querySelector('body').setAttribute('style', `background-image: url('${backgroundURL}')`);
-          else if (page === 'profile') {
-            document.querySelector('.no_header.profile_page').setAttribute('style', `background-image: url('${backgroundURL}')`);
-            const animatedBackground = document.querySelector(
-              '.no_header.profile_page.has_profile_background',
-            ).querySelector('video');
-            if (animatedBackground !== null) animatedBackground.remove();
-          }
-        }
-      } else console.log('Could not get SteamRep info');
-    });
-  }
-};
-
 const repositionNameTagIcons = () => {
   injectStyle(`
     .slot_app_fraudwarning {
@@ -868,22 +836,6 @@ const addUpdatedRibbon = () => {
     }
   });
 };
-
-const getSteamRepInfo = (steamID) => new Promise((resolve, reject) => {
-  const getRequest = new Request(`https://steamrep.com/api/beta4/reputation/${steamID}?json=1`);
-
-  fetch(getRequest).then((response) => {
-    if (!response.ok) {
-      reject(response);
-      console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-    } else return response.json();
-  }).then((body) => {
-    resolve(body.steamrep);
-  }).catch((err) => {
-    console.log(err);
-    reject(err);
-  });
-});
 
 const copyToClipboard = (text) => {
   // this is a workaround to only being able to copy text
@@ -1027,8 +979,8 @@ export {
   getDataFilledFloatTechnical, souvenirExists, removeLinkFilterFromLinks,
   getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent, setAccessTokenFirstTime,
   isSIHActive, addSearchListener, getSessionID, validateSteamAccessToken,
-  warnOfScammer, getFloatAsFormattedString, getNameTag, repositionNameTagIcons,
-  removeOfferFromActiveOffers, addUpdatedRibbon, getSteamRepInfo, getRemoteImageAsObjectURL,
+  getFloatAsFormattedString, getNameTag, repositionNameTagIcons,
+  removeOfferFromActiveOffers, addUpdatedRibbon, getRemoteImageAsObjectURL,
   isChromium, addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,
   getAppropriateFetchFunc, getFloatDBLink, getBuffLink, refreshSteamAccessToken,
 };

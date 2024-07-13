@@ -1,7 +1,7 @@
 import { extractUsefulFloatInfo, addToFloatCache } from 'utils/floatCaching';
 import {
   goToInternalPage, validateSteamAPIKey, validateSteamAccessToken,
-  getAssetIDFromInspectLink, getSteamRepInfo,
+  getAssetIDFromInspectLink,
 } from 'utils/utilsModular';
 import { getItemMarketLink } from 'utils/simpleUtils';
 import { getPlayerSummaries } from 'utils/ISteamUser';
@@ -125,13 +125,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse('error');
       });
     } else sendResponse('nofloat');
-    return true; // async return to signal that it will return later
-  } else if (request.getSteamRepInfo !== undefined) {
-    getSteamRepInfo(request.getSteamRepInfo).then((steamRepInfo) => {
-      sendResponse({ SteamRepInfo: steamRepInfo });
-    }).catch(() => {
-      sendResponse({ SteamRepInfo: 'error' });
-    });
     return true; // async return to signal that it will return later
   } else if (request.getTradeOffers !== undefined) {
     if (request.getTradeOffers === 'historical') {

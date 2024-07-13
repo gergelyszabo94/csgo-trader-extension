@@ -1,6 +1,6 @@
 import { getPlayerBans, getPlayerSummaries } from 'utils/ISteamUser';
 import { actions, conditions, eventTypes } from 'utils/static/friendRequests';
-import { getSteamRepInfo, getRemoteImageAsObjectURL } from 'utils/utilsModular';
+import { getRemoteImageAsObjectURL } from 'utils/utilsModular';
 import { createOffscreen } from 'utils/simpleUtils';
 import { getUserCSGOInventoryAlternative } from 'utils/getUserInventory';
 import { playNotificationSound, loggedOutNotification } from 'utils/notifications';
@@ -193,46 +193,6 @@ const addBansToInvites = () => {
   });
 };
 
-const addSteamRepInfoToInvites = () => {
-  chrome.storage.local.get(['friendRequests'], ({ friendRequests }) => {
-    const invitesWithSteamRep = [];
-    const noSteamRepInvites = [];
-
-    friendRequests.inviters.forEach((invite) => {
-      if (invite.steamRepInfo === undefined) {
-        noSteamRepInvites.push(invite);
-      } else invitesWithSteamRep.push(invite);
-    });
-
-    const nowWithSteamRepInfo = [];
-
-    noSteamRepInvites.forEach((invite) => {
-      getSteamRepInfo(invite.steamID).then((steamRepInfo) => {
-        nowWithSteamRepInfo.push({
-          ...invite,
-          steamRepInfo,
-        });
-      });
-    });
-
-    setTimeout(() => {
-      const nowWithSteamRepInfoIDs = nowWithSteamRepInfo.map((invite) => {
-        return invite.steamID;
-      });
-      const stillNoSteamRep = noSteamRepInvites.filter((invite) => {
-        return !nowWithSteamRepInfoIDs.includes(invite.steamID);
-      });
-
-      chrome.storage.local.set({
-        friendRequests: {
-          inviters: [...invitesWithSteamRep, ...stillNoSteamRep, ...nowWithSteamRepInfo],
-          lastUpdated: Date.now(),
-        },
-      }, () => { });
-    }, 4000);
-  });
-};
-
 const addInventoryValueInfo = () => {
   chrome.storage.local.get(['friendRequests'], ({ friendRequests }) => {
     const invitesWithInventoryValue = [];
@@ -392,7 +352,7 @@ const createFriendRequestEvent = (invite, type, appliedRule) => {
 };
 
 const evaluateRequest = (invite, rules) => {
-  if (invite.summary && invite.bans && invite.steamRepInfo && invite.commonFriends
+  if (invite.summary && invite.bans && invite.commonFriends
     && (invite.csgoInventoryValue !== undefined) && invite.pastRequests) {
     for (const [index, rule] of rules.entries()) {
       if (rule.active) {
@@ -452,13 +412,6 @@ const evaluateRequest = (invite, rules) => {
         }
         if (rule.condition.type === conditions.trade_banned.key
           && (invite.bans.EconomyBan === 'banned' || invite.bans.EconomyBan === 'probation')) {
-          return {
-            action: rule.action,
-            appliedRule: index + 1,
-          };
-        }
-        if (rule.condition.type === conditions.streamrep_banned.key
-          && invite.steamRepInfo.reputation.summary === 'SCAMMER') {
           return {
             action: rule.action,
             appliedRule: index + 1,
@@ -665,9 +618,6 @@ const updateFriendRequest = () => {
                   addBansToInvites();
                 }, 5000);
                 setTimeout(() => {
-                  addSteamRepInfoToInvites();
-                }, 10000);
-                setTimeout(() => {
                   addInventoryValueInfo();
                 }, 15000);
                 setTimeout(() => {
@@ -710,14 +660,13 @@ const removeOldFriendRequestEvents = () => {
   });
 };
 
-const getBansSummaryText = (bans, steamRepInfo) => {
-  if (bans && steamRepInfo) {
+const getBansSummaryText = (bans) => {
+  if (bans) {
     let bansText = '';
     if (bans.CommunityBanned) bansText += 'Community banned\n';
     if (bans.EconomyBan === 'banned' || bans.EconomyBan === 'probation') bansText += 'Trade banned\n';
     if (bans.NumberOfGameBans !== 0) bansText += 'Game banned\n';
     if (bans.VACBanned) bansText += 'VAC banned\n';
-    if (steamRepInfo.reputation.summary === 'SCAMMER') bansText += 'SteamRep banned scammer';
     if (bansText === '') bansText = 'No bans';
     return bansText;
   }

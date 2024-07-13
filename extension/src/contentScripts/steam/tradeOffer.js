@@ -6,7 +6,7 @@ import {
   addFloatIndicator, getExteriorFromTags, getQuality, addPaintSeedIndicator,
   getType, getInspectLink, repositionNameTagIcons, addFadePercentage,
   getDopplerInfo, getActivePage, logExtensionPresence,
-  updateLoggedInUserInfo, warnOfScammer, addPageControlEventListeners,
+  updateLoggedInUserInfo, addPageControlEventListeners,
   addSearchListener, getPattern, getNameTag, removeLinkFilterFromLinks,
   removeOfferFromActiveOffers, changePageTitle,
   addFloatRankIndicator, refreshSteamAccessToken,
@@ -1109,14 +1109,12 @@ const getPartnerNameScript = "document.querySelector('body').setAttribute('partn
 const partnerName = injectScript(getPartnerNameScript, true, 'partnerName', 'partnerName');
 if (partnerName !== null) changePageTitle('trade_offer', partnerName);
 
-// changes background and adds a banner if steamrep banned scammer detected
 chrome.storage.local.get([
-  'markScammers', 'numberOfFloatDigitsToShow', 'showPaintSeedOnItems', 'showFloatRankOnItems', 'contrastingLook',
+  'numberOfFloatDigitsToShow', 'showPaintSeedOnItems', 'showFloatRankOnItems', 'contrastingLook',
 ], ({
-  markScammers, numberOfFloatDigitsToShow, showPaintSeedOnItems,
+  numberOfFloatDigitsToShow, showPaintSeedOnItems,
   showFloatRankOnItems, contrastingLook,
 }) => {
-  if (markScammers) warnOfScammer(getTradePartnerSteamID(), 'offer');
   floatDigitsToShow = numberOfFloatDigitsToShow;
   showPaintSeeds = showPaintSeedOnItems;
   showFloatRank = showFloatRankOnItems;
