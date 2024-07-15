@@ -469,6 +469,34 @@ const pricingProviders = {
       },
     },
   },
+  csfloat: {
+    name: 'csfloat',
+    long: 'CSFloat.com',
+    short: 'CSFL',
+    url: 'https://csfloat.com/',
+    description: 'CSFloat Database amd p2p market',
+    pricing_modes: {
+      csfloat: {
+        description: 'CSFloat market price',
+        name: 'csfloat',
+        long: 'CSFloat price',
+      },
+    },
+  },
+  youpin: {
+    name: 'youpin',
+    long: 'YOUPIN898',
+    short: 'YP',
+    url: 'https://youpin898.com/',
+    description: 'New, emerging, china focused Buff alternative',
+    pricing_modes: {
+      youpin: {
+        description: 'YOUPIN898 market price',
+        name: 'youpin',
+        long: 'YOUPIN898 price',
+      },
+    },
+  },
 };
 
 const realTimePricingModes = {
