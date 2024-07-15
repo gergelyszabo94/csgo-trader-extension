@@ -173,13 +173,11 @@ const setAccessTokenFirstTime = async () => {
   await createOffscreen([chrome.offscreen.Reason.DOM_PARSER], 'dom parsing');
   chrome.runtime.sendMessage({ scrapeAccessToken: 'scrapeAccessToken' }, (accessToken) => {
     if (accessToken !== null) {
-      console.log(accessToken);
       validateSteamAccessToken(accessToken).then(
         (accessTokenValid) => {
           if (accessTokenValid) {
-            console.log('access token valid');
             chrome.storage.local.set({ steamAcessToken: accessToken, steamAcessTokenValid: true }, () => { });
-          } else console.log('access token invalid');
+          }
         },
       ).catch((err) => {
         console.log(err);
