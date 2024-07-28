@@ -187,9 +187,7 @@ const extractHistoryEvents = (resultHtml, hovers, assets) => {
     const actedOn = historyRow.querySelectorAll('.market_listing_listed_date')[0].innerText.trim();
     const displayPrice = historyRow.querySelector('.market_listing_price').innerText.trim();
     const priceInCents = steamFormattedPriceToCents(displayPrice);
-    const partnerElement = historyRow.querySelector('.market_listing_whoactedwith');
     const type = getHistoryType(historyRow);
-    let partner = null;
     let appID = null;
     let contextID = null;
     let assetID = null;
@@ -198,13 +196,11 @@ const extractHistoryEvents = (resultHtml, hovers, assets) => {
     let unOwnedContextID = null;
     let unOwnedID = null;
     let marketName = null;
+    let detailedRow = false;
 
     // non-transactional (listing creation or cancellation) history events don't have partners
     // and you can't hover on them, so the asset data is missing
     if (type === 'sale' || type === 'purchase') {
-      const partnerName = partnerElement.querySelector('img').title;
-      const partnerLink = partnerElement.querySelector('a').getAttribute('href');
-      partner = { partnerName, partnerLink };
       const rowID = historyRow.id;
       const hoverDataSplit = hovers.split(`${rowID}_name`)[1].split(');')[0].split(',');
       appID = parseInt(hoverDataSplit[1]);
@@ -217,6 +213,7 @@ const extractHistoryEvents = (resultHtml, hovers, assets) => {
       unOwnedContextID = asset.unowned_contextid;
       unOwnedID = asset.unowned_id;
       marketName = asset.market_hash_name;
+      detailedRow = true;
     }
 
     eventsToReturn.push({
@@ -226,7 +223,6 @@ const extractHistoryEvents = (resultHtml, hovers, assets) => {
       actedOn,
       displayPrice,
       priceInCents,
-      partner,
       type,
       marketName,
       appID,
@@ -236,6 +232,7 @@ const extractHistoryEvents = (resultHtml, hovers, assets) => {
       instanceID,
       unOwnedContextID,
       unOwnedID,
+      detailedRow,
     });
   });
 
@@ -245,14 +242,14 @@ const extractHistoryEvents = (resultHtml, hovers, assets) => {
 
 const createCSV = () => {
   const excludeNonTransaction = document.getElementById('excludeNonTransaction').checked;
-  let csvContent = 'Item Name,Game Name,Listed On,Acted On, Display Price, Price in Cents, Type, Market Name, App Id, Context Id, Asset Id, Instance Id, Class Id, Unowned Context Id, Unowned Id, Partner Name, Partner Link\n';
+  let csvContent = 'Item Name,Game Name,Listed On,Acted On, Display Price, Price in Cents, Type, Market Name, App Id, Context Id, Asset Id, Instance Id, Class Id, Unowned Context Id, Unowned Id\n';
 
   for (let i = 0; i < marketHistoryExport.to - marketHistoryExport.from; i += 1) {
     const historyEvent = marketHistoryExport.history[i];
     if (!(excludeNonTransaction && historyEvent.type !== 'purchase' && historyEvent.type !== 'sale')) {
-      const lineCSV = historyEvent.partner !== null
-        ? `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}","${historyEvent.marketName}","${historyEvent.appID}","${historyEvent.contextID}","${historyEvent.assetID}","${historyEvent.instanceID}","${historyEvent.classID}","${historyEvent.unOwnedContextID}","${historyEvent.unOwnedID}","${historyEvent.partner.partnerName}","${historyEvent.partner.partnerLink}"\n`
-        : `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}",,,,,,,,,,,\n`;
+      const lineCSV = historyEvent.detailedRow
+        ? `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}","${historyEvent.marketName}","${historyEvent.appID}","${historyEvent.contextID}","${historyEvent.assetID}","${historyEvent.instanceID}","${historyEvent.classID}","${historyEvent.unOwnedContextID}","${historyEvent.unOwnedID}"\n`
+        : `"${historyEvent.itemName}","${historyEvent.gameName}","${historyEvent.listedOn}","${historyEvent.actedOn}","${historyEvent.displayPrice}","${historyEvent.priceInCents}","${historyEvent.type}",,,,,,,,,\n`;
       csvContent += lineCSV;
     }
   }
