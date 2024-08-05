@@ -64,6 +64,8 @@ const fullName = decodeURIComponent(window.location.pathname).split('/listings/'
 let star = '';
 const isStattrak = /StatTrak™/.test(fullName);
 const isSouvenir = /Souvenir/.test(fullName);
+const knifeNames = ['Knife', 'Bayonet', 'Karambit', 'M9 Bayonet'];
+const isVanillaKnife = !fullName.includes('(') && knifeNames.includes('Knife');
 
 if (fullName.includes('★')) star = starChar;
 if (isStattrak) weaponName = fullName.split('StatTrak™ ')[1].split('(')[0];
@@ -1312,7 +1314,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                 </div>
                 <div class="realMoneySites">
                  <div class="realMoneySite">
-                    <a href="https://cs.money/csgo/trade/?utm_source=mediabuy&utm_medium=cstrade&utm_campaign=cstrd0920&utm_content=link&search=${weaponName}&sort=price&order=asc&isStatTrak=${isStattrak}&isSouvenir=${isSouvenir}" target="_blank" class="realMoneySiteLink referralLink" data-site="csmoney">
+                    <a href="https://cs.money/csgo/trade/?utm_source=mediabuy&utm_medium=cstrade&utm_campaign=cstrd0920&utm_content=link&search=${weaponName}${isVanillaKnife ? ' vanilla' : ''}&sort=price&order=asc&isStatTrak=${isStattrak}&isSouvenir=${isSouvenir}" target="_blank" class="realMoneySiteLink referralLink" data-site="csmoney">
                         <img alt="Csmoney logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csmoney.png')}" data-site="csmoney">
                         <br>
                         CS.MONEY
@@ -1349,7 +1351,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                     </a>
                   </div>
                   <div class="realMoneySite">
-                    <a href="https://cs.money/market/buy/?utm_source=mediabuy&utm_medium=cstrade&utm_campaign=market&utm_content=link&search=${weaponName}&isStatTrak=${isStattrak}&isSouvenir=${isSouvenir}" target="_blank" class="realMoneySiteLink referralLink" data-site="csmoney">
+                    <a href="https://cs.money/market/buy/?utm_source=mediabuy&utm_medium=cstrade&utm_campaign=market&utm_content=link&search=${weaponName}${isVanillaKnife ? ' vanilla' : ''}&isStatTrak=${isStattrak}&isSouvenir=${isSouvenir}&sort=price&order=asc" target="_blank" class="realMoneySiteLink referralLink" data-site="csmoney">
                         <img alt="Csmoney P2P logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csmoneyp2p.png')}" data-site="csmoney">
                         <br>
                         CS.MONEY P2P
@@ -1432,7 +1434,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       or
                       <a href="https://skinbaron.com/partner/gery" target="_blank" class="referralLink" data-site="skinbaron">this one for Skinbaron</a>
                       You can also buy items for real money on
-                      <a href="https://cs.money/csgo/trade/?utm_source=mediabuy&utm_medium=cstrade&utm_campaign=cstrd0920&utm_content=link&search=${weaponName}&sort=price&order=asc&isStatTrak=${isStattrak}&isSouvenir=${isSouvenir}" target="_blank" class="referralLink" data-site="csmoney">Csmoney</a>
+                      <a href="https://cs.money/csgo/trade/?utm_source=mediabuy&utm_medium=cstrade&utm_campaign=cstrd0920&utm_content=link&search=${weaponName}${isVanillaKnife ? ' vanilla' : ''}&sort=price&order=asc&isStatTrak=${isStattrak}&isSouvenir=${isSouvenir}&sort=price&order=asc" target="_blank" class="referralLink" data-site="csmoney">Csmoney</a>
                       and
                       <a href="https://tradeit.gg/?aff=gery" target="_blank" class="referralLink" data-site="tradeit">TRADEIT.GG</a>
                       as well as trade for them with your items.
