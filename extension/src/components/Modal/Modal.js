@@ -19,9 +19,12 @@ const Modal = ({
         <BSModal.Header closeButton>
           <BSModal.Title>{modalTitle}</BSModal.Title>
         </BSModal.Header>
-        <BSModal.Body>
-          {children}
-        </BSModal.Body>
+        {children
+          && (
+          <BSModal.Body>
+            {children}
+          </BSModal.Body>
+          )}
         <BSModal.Footer>
           <Button className="button button__cancel" onClick={handleClose}>
             Close
