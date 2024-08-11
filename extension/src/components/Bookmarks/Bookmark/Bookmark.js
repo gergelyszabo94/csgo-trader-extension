@@ -81,8 +81,9 @@ const Bookmark = ({
     }
   };
 
-  const removeBookmarkFunction = () => {
+  const removeBookmarkFunction = (closeModal) => {
     removeBookmark(itemInfo.appid, itemInfo.contextid, itemInfo.assetid, added);
+    closeModal();
   };
 
   const qualityClass = (itemInfo.quality !== undefined && itemInfo.quality !== null)
@@ -153,7 +154,7 @@ const Bookmark = ({
           </Modal>
         </Action>
         <Action title="Delete bookmark">
-          <FontAwesomeIcon icon={faTrash} onClick={removeBookmarkFunction} />
+          <Modal modalTitle="Are you sure?" opener={<FontAwesomeIcon icon={faTrash} />} validator={removeBookmarkFunction} />
         </Action>
       </div>
       <div className="actions">
