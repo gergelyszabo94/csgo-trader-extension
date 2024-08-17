@@ -51,11 +51,12 @@ function HandleTradeActionMenu( elActionMenuButton, item, user )
                 var elItemActions = $J('#trade_action_popup_itemactions');
                 elItemActions.empty();
                 if (item.actions !== '') {
-                  item.actions=item.actions.filter(element => element.id!=="inbrowser" && element.id!=="buffLookup" && element.id!=="onserver");
+                  item.actions=item.actions.filter(element => element.id!=="inbrowser" && element.id!=="buffLookup" && element.id!=="onserver" && element.id!=="pricempireLookup");
                   let inspectLink = item.actions[0].link;
                   item.actions.push({name: "Inspect in Browser...", link: "https://swap.gg/screenshot?inspectLink="+inspectLink, id: "inbrowser"});
                   item.actions.push({name: "Inspect on Server...", link: "https://www.cs2inspects.com/?apply="+inspectLink, id: "onserver"});
                   item.actions.push({name: "Lookup on BUFF", link: getBuffLink(item.market_hash_name), id: "buffLookup"});
+                  item.actions.push({name: "Lookup on Pricempire", link: "https://pricempire.com/item/" + item.market_hash_name + "?utm_source=csgotrader.app&r=76561198036030455", id: "pricempireLookup"});
                 }
                 for ( var action = 0; action < item.actions.length; action++ )
                 {
