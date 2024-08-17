@@ -429,6 +429,7 @@ const isSticker = (description) => {
   return matchFound;
 };
 
+// also pathces for agents
 const parseStickerInfo = (
   descriptions,
   linkType,
@@ -596,19 +597,17 @@ const addSSTandExtIndicators = (
   const showExteriorsClass = showExterior ? '' : 'hidden';
   const contrastingLookClass = showContrastingLook ? 'contrastingBackground' : '';
 
-  if (item.exterior !== null || item.isStatrack) {
-    itemElement.insertAdjacentHTML(
-      'beforeend',
-      DOMPurify.sanitize(
-        `<div class='exteriorSTInfo ${contrastingLookClass}'>
+  itemElement.insertAdjacentHTML(
+    'beforeend',
+    DOMPurify.sanitize(
+      `<div class='exteriorSTInfo ${contrastingLookClass}'>
                 <span class="souvenirYellow ${showExteriorsClass}">${souvenir}</span>
                 <span class="stattrakOrange ${showExteriorsClass}">${stattrak}</span>
                 <span class="exteriorIndicator ${showExteriorsClass}">${exterior}</span>
                </div>
                <div class="stickerPrice ${contrastingLookClass} ${showStickersClass}">${stickerPrice}</div>`,
-      ),
-    );
-  }
+    ),
+  );
 };
 
 const addFloatIndicator = (itemElement, floatInfo, digitsToShow, showContrastingLook) => {
