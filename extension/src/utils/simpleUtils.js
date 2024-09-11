@@ -74,10 +74,7 @@ const getCollection = (descriptions) => {
   if (descriptions) {
     descriptions.forEach((description) => {
       if (description.value.slice(description.value.length - 11) === ' Collection') {
-        // TODO: for some reason there are 2 different spaces in string. 
-        // Since item.collection is not used anywhere else, I changed the string here. 
-        // If it's reused somewhere else, the string needs to be adjusted in inventory.js.
-        collectionName = description.value.replace(' ', '-').replace(' ', '-').toLowerCase();
+        collectionName = description.value;
       }
     });
   }
