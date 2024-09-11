@@ -762,12 +762,12 @@ const addRightSideElements = () => {
                 descriptors.querySelectorAll('.descriptor').forEach((descriptor) => {
                   if (descriptor.style.color === 'rgb(157, 161, 169)') {
                     const collectionName = descriptor.textContent;
-                    const parsedCollection = collectionName.replace(' ', '-').replace(' ', '-').toLowerCase();
+                    const parsedCollection = collectionName.replaceAll(' ', '-').toLowerCase();
                     descriptor.innerHTML = '';
                     descriptor.insertAdjacentHTML(
                       'afterbegin',
                       DOMPurify.sanitize(
-                        `<a href="https://csgoskins.gg/collections/${parsedCollection}?utm_source=csgotrader.app" target="_blank">
+                        `<a href="https://pricempire.com/cs2-skin-search/cs2-skin-collections/${parsedCollection}-cs2-skins?utm_source=csgotrader.app" target="_blank">
                         ${collectionName}
                       </a>`,
                         { ADD_ATTR: ['target'] },
