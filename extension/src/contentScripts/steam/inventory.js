@@ -755,7 +755,7 @@ const addRightSideElements = () => {
             });
           }
 
-          // adds csgostash link to collection
+          // adds csgoskins link to collection
           if (item.collection) {
             document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
               .forEach((descriptors) => {
@@ -766,7 +766,7 @@ const addRightSideElements = () => {
                     descriptor.insertAdjacentHTML(
                       'afterbegin',
                       DOMPurify.sanitize(
-                        `<a href="https://cs2stash.com/collection/${item.collection}?utm_source=csgotrader.app" target="_blank">
+                        `<a href="https://csgoskins.gg/collections/${item.collection}?utm_source=csgotrader.app" target="_blank">
                         ${collectionName}
                       </a>`,
                         { ADD_ATTR: ['target'] },
