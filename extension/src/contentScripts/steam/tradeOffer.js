@@ -188,7 +188,7 @@ const getItemInfoFromPage = (who) => {
 };
 
 const removeSIHStuff = () => {
-  document.querySelectorAll('.des-tag, .p-price, .price-tag').forEach((element) => {
+  document.querySelectorAll('.des-tag, .p-price, .price-tag, .item-info, .sih_item_sticker').forEach((element) => {
     element.remove();
   });
 };
@@ -1127,6 +1127,10 @@ setInterval(() => {
       removeSIHStuff();
       const waxPeerControls = document.querySelector('.left-side-nav');
       if (waxPeerControls) waxPeerControls.remove();
+
+      document.querySelectorAll('csfloat-trade-item-holder-metadata').forEach((csfloatElement) => {
+        csfloatElement.style.display = 'none';
+      });
     }
   });
 }, 2000);
