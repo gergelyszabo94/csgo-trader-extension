@@ -75,6 +75,8 @@ const getCollection = (descriptions) => {
     descriptions.forEach((description) => {
       if (description.value.slice(description.value.length - 11) === ' Collection') {
         collectionName = description.value;
+      } else if (description.value.slice(description.value.length - 7) === ' Agents') {
+        collectionName = description.value;
       }
     });
   }
