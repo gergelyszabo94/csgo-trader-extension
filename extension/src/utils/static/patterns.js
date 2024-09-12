@@ -5004,6 +5004,7 @@ const patterns = {
       97: 'tier-4',
       98: 'tier-4',
       99: 'tier-4',
+      750: 'tier-2',
     },
     karambit: {
       2: '2-1/45-20',
