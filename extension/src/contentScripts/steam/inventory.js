@@ -126,7 +126,7 @@ const goToPreviousInventoryPage = () => {
 
 const cleanUpElements = () => {
   document.querySelectorAll(
-    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .CSGOSSTASHLink, .multiSellLink, .floatDBLink',
+    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .multiSellLink, .floatDBLink',
   ).forEach((element) => {
     element.remove();
   });
@@ -767,7 +767,7 @@ const addRightSideElements = () => {
                     descriptor.insertAdjacentHTML(
                       'afterbegin',
                       DOMPurify.sanitize(
-                        `<a href="https://pricempire.com/cs2-skin-search/cs2-skin-collections/${parsedCollection}-cs2-skins?utm_source=csgotrader.app" target="_blank">
+                        `<a href="https://pricempire.com/cs2-skin-search/skin-collections/${parsedCollection}?utm_source=csgotrader.app" target="_blank">
                         ${collectionName}
                       </a>`,
                         { ADD_ATTR: ['target'] },
@@ -1025,8 +1025,8 @@ const addRightSideElements = () => {
 
       // adds the in-offer module
       chrome.storage.local.get(['activeOffers', 'itemInOffersInventory', 'showPriceEmpireLinkInInventory',
-        'showBuffLookupInInventory', 'inventoryShowCopyButtons', 'showCSGOSTASHLinkInInventory', 'showFloatDBLookupInInventory'], ({
-        activeOffers, itemInOffersInventory, showCSGOSTASHLinkInInventory,
+        'showBuffLookupInInventory', 'inventoryShowCopyButtons', 'showFloatDBLookupInInventory'], ({
+        activeOffers, itemInOffersInventory,
         showPriceEmpireLinkInInventory, showBuffLookupInInventory, inventoryShowCopyButtons,
         showFloatDBLookupInInventory,
       }) => {
@@ -1094,22 +1094,6 @@ const addRightSideElements = () => {
                 descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(buffLink, { ADD_ATTR: ['target'] }));
               });
           }
-
-          if (showCSGOSTASHLinkInInventory) {
-            const CSGOSTASHLink = `
-        <div class="descriptor CSGOSSTASHLink">
-            <a href="https://csgostash.com/markethash/${item.market_hash_name}" target="_blank" style="color: yellow;">
-                View on CS2 STASH
-              </a>
-        </div>
-      `;
-
-            document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
-              .forEach((descriptor) => {
-                descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(CSGOSTASHLink, { ADD_ATTR: ['target'] }));
-              });
-          }
-
           if (showFloatDBLookupInInventory) {
             const floatDBLink = getFloatDBLink(item);
             const floatDBLinkEL = `

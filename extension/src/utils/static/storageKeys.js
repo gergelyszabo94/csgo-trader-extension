@@ -267,7 +267,6 @@ const storageKeys = {
   notifyAboutBeingLoggedOut: false,
   notifyAboutBeingLoggedOutOnDiscord: false,
   showTradeLockIndicatorInInventories: true,
-  showCSGOSTASHLinkInInventory: false,
   numberOfFloatDigitsToShow: 4,
   disableCancelEscrowedTrades: false,
   showPaintSeedOnItems: false,
