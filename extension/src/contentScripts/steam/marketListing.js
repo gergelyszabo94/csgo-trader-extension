@@ -804,15 +804,14 @@ const showAllOrders = (type) => {
         </tr>`;
     });
 
-    document.getElementById(`show_more_${type}`).insertAdjacentHTML(
-      'afterend',
-      DOMPurify.sanitize(
-        `
-               <table class="market_commodity_orders_table">
-                    ${tableRows}
-               </table>`,
-      ),
+    document.getElementById(`show_more_${type}`).outerHTML = DOMPurify.sanitize(
+      `
+              <table class="market_commodity_orders_table">
+                  ${tableRows}
+              </table>`,
     );
+
+    document.getElementById('market_commodity_buyreqeusts_table').remove();
   });
 };
 
