@@ -931,6 +931,20 @@ const getBuffLink = (marketHashName) => {
   return `https://api.pricempire.com/v1/redirectBuff/${marketHashName}`;
 };
 
+const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
+  return (itemType !== 'gloves' ? 'skin/' : 'glove/')
+    + itemName.replace('StatTrak™', '')
+      .replace('★ ', '')
+      .trim()
+      .replace(/\s*\|\s*/g, '-')
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      + dopplerType.toLowerCase().replace(' ', '-')
+      + (itemName.includes('StatTrak') ? '/stattrak-' : '/')
+      + condition
+        .replace(' ', '-');
+};
+
 // runs in content scripts when steam pages are loaded
 const refreshSteamAccessToken = () => {
   chrome.storage.local.get(['steamAcessToken', 'steamAcessTokenValid'], ({ steamAcessToken, steamAcessTokenValid }) => {
@@ -979,5 +993,5 @@ export {
   getFloatAsFormattedString, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getRemoteImageAsObjectURL,
   isChromium, addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,
-  getAppropriateFetchFunc, getFloatDBLink, getBuffLink, refreshSteamAccessToken,
+  getAppropriateFetchFunc, getFloatDBLink, getBuffLink, refreshSteamAccessToken, getPricempireLink,
 };

@@ -11,7 +11,7 @@ import {
   addSearchListener, getPattern, removeFromArray, getFloatAsFormattedString,
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
   parseStickerInfo, getInspectLink, getExteriorFromTags, getDopplerInfo,
-  getType, getQuality, getNameTag, getBuffLink,
+  getType, getQuality, getNameTag, getBuffLink, getPricempireLink,
 }
   from 'utils/utilsModular';
 import {
@@ -1068,7 +1068,7 @@ const addRightSideElements = () => {
           if (showPriceEmpireLinkInInventory) {
             const priceEmpireLink = `
         <div class="descriptor pricEmpireLink">
-            <a href="https://pricempire.com/item/${item.market_hash_name}?utm_source=csgotrader.app&r=76561198036030455" target="_blank" style="color: yellow;">
+            <a href="https://pricempire.com/cs2-items/${getPricempireLink(item.type.key, item.name, (item.dopplerInfo && item.dopplerInfo.name) ? `-${item.dopplerInfo.name}` : '', item.exterior.name.toLowerCase())}?utm_source=csgotrader.app&r=76561198036030455" target="_blank" style="color: yellow;">
                 Check prices on PRICEMPIRE.COM
               </a>
         </div>
