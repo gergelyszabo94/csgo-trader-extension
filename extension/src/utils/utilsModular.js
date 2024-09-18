@@ -932,17 +932,61 @@ const getBuffLink = (marketHashName) => {
 };
 
 const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
-  return (itemType !== 'gloves' ? 'skin/' : 'glove/')
-    + itemName.replace('StatTrak™', '')
-      .replace('★ ', '')
-      .trim()
-      .replace(/\s*\|\s*/g, '-')
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      + dopplerType.toLowerCase().replace(' ', '-')
-      + (itemName.includes('StatTrak') ? '/stattrak-' : '/')
-      + condition
-        .replace(' ', '-');
+  console.log('TYPE:', itemType, 'NAME:', itemName, 'DOPPLER:', dopplerType, 'CONDITION:', condition);
+  switch (itemType) {
+    case 'gloves':
+      return `glove/${
+        itemName.replace('StatTrak™', '')
+          .replace('★ ', '')
+          .trim()
+          .replace(/\s*\|\s*/g, '-')
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+      }${dopplerType.toLowerCase().replace(' ', '-')
+      }${itemName.includes('StatTrak') ? '/stattrak-' : '/'
+      }${condition
+        .replace(' ', '-')}`;
+    case 'sticker':
+      // Last 4 characters of string are a number -> tournament year -> use tournament-sticker
+      if (/\d{4}$/.test(itemName)) {
+        return `tournament-sticker/sticker-${
+          itemName
+            .replace('Sticker | ', '')
+            .replace(/\s*\(\w+\)\s*\|\s*/g, '-')
+            .replace(/\s*\|\s*/g, '-')
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+        }/${
+          (itemName.match(/\(\w+\)/) || [''])[0].replace(/[()]/g, '').toLowerCase()}`;
+      }
+      // Last 4 characters of string are not numbers -> not tournament year -> use sticker
+      return `sticker/sticker-${
+        itemName
+          .replace('Sticker | ', '')
+          .replace(/\s*\(\w+\)\s*/g, '-')
+          .replace(/\s*\|\s*/g, '-')
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/-+$/, '')
+      }${
+        (itemName.match(/\(\w+\)/) ? `/${itemName.match(/\(\w+\)/)[0].replace(/[()]/g, '').toLowerCase()}` : '')
+      }`;
+    case 'container':
+      return '';
+    default:
+      return `skin/${
+        itemName.replace('StatTrak™', '')
+          .replace('★ ', '')
+          .trim()
+          .replace(/\s*\|\s*/g, '-')
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+      }${dopplerType.toLowerCase().replace(' ', '-')
+      }${itemName.includes('StatTrak') ? '/stattrak-' : '/'
+      }${condition
+        .replace(' ', '-')}`;
+  }
 };
 
 // runs in content scripts when steam pages are loaded

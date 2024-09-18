@@ -1066,9 +1066,10 @@ const addRightSideElements = () => {
 
         if (activeInventoryAppID === steamApps.CSGO.appID) {
           if (showPriceEmpireLinkInInventory) {
+            console.log('ITEM:', item);
             const priceEmpireLink = `
         <div class="descriptor pricEmpireLink">
-            <a href="https://pricempire.com/cs2-items/${getPricempireLink(item.type.key, item.name, (item.dopplerInfo && item.dopplerInfo.name) ? `-${item.dopplerInfo.name}` : '', item.exterior.name.toLowerCase())}?utm_source=csgotrader.app&r=76561198036030455" target="_blank" style="color: yellow;">
+            <a href="https://pricempire.com/cs2-items/${getPricempireLink(item.type.key, item.name, (item.dopplerInfo && item.dopplerInfo.name) ? `-${item.dopplerInfo.name}` : '', item.exterior?.name.toLowerCase())}?utm_source=csgotrader.app&r=76561198036030455" target="_blank" style="color: yellow;">
                 Check prices on PRICEMPIRE.COM
               </a>
         </div>
