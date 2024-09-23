@@ -46,7 +46,7 @@ const home = (props) => {
         <h2>Install</h2>
         <p>
           The extension is available in the
-          <NewTabLink to='https://chrome.google.com/webstore/detail/csgo-trader/kaibcgikagnkfgjnibflebpldakfhfih/'> Chrome Web Store </NewTabLink>
+          <NewTabLink to='https://chromewebstore.google.com/detail/cs2-trader-steam-trading/kaibcgikagnkfgjnibflebpldakfhfih'> Chrome Web Store </NewTabLink>
           at
           <NewTabLink to='https://microsoftedge.microsoft.com/addons/detail/emcdnkamomgiafjejbhdpcfgbeeimpdb'> Microsoft Edge Addons </NewTabLink>
           and at
@@ -60,7 +60,7 @@ const home = (props) => {
         Get it from your browser's marketplace:
         <p align='center'>
           <PlatformIcon
-            link='https://chrome.google.com/webstore/detail/csgo-trader/kaibcgikagnkfgjnibflebpldakfhfih/'
+            link='https://chromewebstore.google.com/detail/cs2-trader-steam-trading/kaibcgikagnkfgjnibflebpldakfhfih'
             img='/img/chrome.png'
             title='Get it for Chrome from Chrome Web Store'
           />
