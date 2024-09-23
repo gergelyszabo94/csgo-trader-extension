@@ -66,7 +66,7 @@ const faq = (props) => {
                     <p>
                         Installing from a distribution platform is the recommended way of installing the extension as it's the easiest way and guarantees that you will receive updates automatically.
                         The extension is available in the
-                        <NewTabLink to='https://chrome.google.com/webstore/detail/csgo-trader-steam-trading/kaibcgikagnkfgjnibflebpldakfhfih'> Chrome Web Store </NewTabLink>
+                        <NewTabLink to='https://chromewebstore.google.com/detail/cs2-trader-steam-trading/kaibcgikagnkfgjnibflebpldakfhfih'> Chrome Web Store </NewTabLink>
                         at
                         <NewTabLink to='https://microsoftedge.microsoft.com/addons/detail/emcdnkamomgiafjejbhdpcfgbeeimpdb'> Microsoft Edge Addons </NewTabLink>
                         and at
@@ -167,7 +167,7 @@ const faq = (props) => {
                 <Question title='How can I support it?'>
                     <p>
                         Leaving a positive review or rating in the
-                        <NewTabLink to='https://chrome.google.com/webstore/detail/csgo-trader-steam-trading/kaibcgikagnkfgjnibflebpldakfhfih'> Chrome Web Store </NewTabLink>
+                        <NewTabLink to='https://chromewebstore.google.com/detail/cs2-trader-steam-trading/kaibcgikagnkfgjnibflebpldakfhfih'> Chrome Web Store </NewTabLink>
                         or at
                         <NewTabLink to='https://addons.mozilla.org/en-US/firefox/addon/csgo-trader-steam-trading/'> Mozilla Addons </NewTabLink>
                         helps others find it and motivates me to keep working on it.
