@@ -932,11 +932,10 @@ const getBuffLink = (marketHashName) => {
 };
 
 const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
-  console.log('TYPE:', itemType, 'NAME:', itemName, 'DOPPLER:', dopplerType, 'CONDITION:', condition);
   switch (itemType) {
     case 'gloves':
       return `glove/${
-        itemName.replace('StatTrak™', '')
+        itemName
           .replace('★ ', '')
           .trim()
           .replace(/\s*\|\s*/g, '-')
@@ -973,10 +972,22 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
         (itemName.match(/\(\w+\)/) ? `/${itemName.match(/\(\w+\)/)[0].replace(/[()]/g, '').toLowerCase()}` : '')
       }`;
     case 'container':
-      return '';
+      return `container/${
+        itemName
+          .replace(/\s+/g, '-')
+          .toLowerCase()}`;
     default:
+      if (itemName.includes('★') && !itemName.includes('|')) {
+        return `skin/${
+          itemName
+            .replace('★ ', '')
+            .replace(/\s+/g, '-')
+            .toLowerCase()
+        }`;
+      }
       return `skin/${
-        itemName.replace('StatTrak™', '')
+        itemName
+          .replace('StatTrak™', '')
           .replace('★ ', '')
           .trim()
           .replace(/\s*\|\s*/g, '-')
