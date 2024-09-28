@@ -972,6 +972,20 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
         (itemName.match(/\(\w+\)/) ? `/${itemName.match(/\(\w+\)/)[0].replace(/[()]/g, '').toLowerCase()}` : '')
       }`;
     case 'container':
+      // this checks if there are 4 digits again -> year -> tournament
+      if (/\d{4}/.test(itemName)) {
+        // For autograph capsules I would check if 'autograph' is in itemName here and handle that differently
+        const type = itemName.match(/(\b\w+\b)\s*\(/);
+        return `tournament-team-sticker-capsule/${itemName
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/(\d{4})-/, '$1/')
+          // no (holo/foil) in itemName still needs to be handled
+          .replace(/\(([^/]+)\/([^/]+)\)/, '$1$2')}`
+          + `-${
+            type[1].toLowerCase()}`;
+      }
+      // This is for cases. Should work
       return `container/${
         itemName
           .replace(/\s+/g, '-')
