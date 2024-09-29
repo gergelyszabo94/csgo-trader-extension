@@ -932,104 +932,108 @@ const getBuffLink = (marketHashName) => {
 };
 
 const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
-  console.log(itemName);
-  switch (itemType) {
-    case 'gloves':
-      return `glove/${
-        itemName
-          .replace('★ ', '')
-          .trim()
-          .replace(/\s*\|\s*/g, '-')
-          .toLowerCase()
-          .replace(/\s+/g, '-')
-      }${condition
-        .replace(' ', '-')}`;
-    case 'sticker':
-      // Last 4 characters of string are a number -> tournament year -> use tournament-sticker
-      if (/\d{4}$/.test(itemName)) {
-        return `tournament-sticker/sticker-${
-          itemName
-            .replace('Sticker | ', '')
-            .replace(/\s*\(\w+\)\s*\|\s*/g, '-')
-            .replace(/\s*\|\s*/g, '-')
-            .toLowerCase()
-            .replace(/\s+/g, '-')
-        }/${
-          (itemName.match(/\(\w+\)/) || [''])[0].replace(/[()]/g, '').toLowerCase()}`;
-      }
-      // Last 4 characters of string are not numbers -> not tournament year -> use sticker
-      return `sticker/sticker-${
-        itemName
-          .replace('Sticker | ', '')
-          .replace(/\s*\(\w+\)\s*/g, '-')
-          .replace(/\s*\|\s*/g, '-')
-          .trim()
-          .toLowerCase()
-          .replace(/\s+/g, '-')
-          .replace(/-+$/, '')
-      }${
-        (itemName.match(/\(\w+\)/) ? `/${itemName.match(/\(\w+\)/)[0].replace(/[()]/g, '').toLowerCase()}` : '')
-      }`;
-    case 'container':
-      // this checks if there are 4 digits again -> year -> tournament
-      if (/\d{4}/.test(itemName)) {
-        // For autograph capsules I would check if 'autograph' is in itemName here and handle that differently
-        const type = itemName.match(/(\b\w+\b)\s*\(/);
-        return `tournament-team-sticker-capsule/${itemName
-          .toLowerCase()
-          .replace(/\s+/g, '-')
-          .replace(/(\d{4})-/, '$1/')
-          // no (holo/foil) in itemName still needs to be handled
-          .replace(/\(([^/]+)\/([^/]+)\)/, '$1$2')}`
-          + `-${
-            type[1].toLowerCase()}`;
-      }
-      // This is for cases. Should work
-      return `container/${
-        itemName
-          .replace(/\s+/g, '-')
-          .toLowerCase()}`;
-    case 'custom_player':
-      return `agent/${
-        itemName.toLowerCase()
-          .replace(/\s*\|\s*/g, '-')
-          .replace(/\s+/g, '-')
-          .replaceAll('\'', '')
-      }`;
-        
-    default:
-      if (itemName.includes('★') && !itemName.includes('|')) {
-        return `skin/${
+  try {
+    switch (itemType) {
+      case 'gloves':
+        return `cs2-items/glove/${
           itemName
             .replace('★ ', '')
-            .replace(/\s+/g, '-')
-            .toLowerCase()
-        }`;
-      }
-      if (itemName.includes('Souvenir')) {
-        return `skin/${
-          itemName
-            .replace('Souvenir', '')
             .trim()
             .replace(/\s*\|\s*/g, '-')
             .toLowerCase()
             .replace(/\s+/g, '-')
-        }/souvenir-${condition
+        }${condition
           .replace(' ', '-')}`;
-      }
-      return `skin/${
-        itemName
-          .replace('StatTrak™', '')
-          .replace('★ ', '')
-          .trim()
-          .replace(/\s*\|\s*/g, '-')
-          .toLowerCase()
-          .replace(/\s+/g, '-')
-      }${dopplerType.toLowerCase().replace(' ', '-')
-      }${itemName.includes('StatTrak') ? '/stattrak-' : '/'
-      }${condition
-        .replace(' ', '-')}`;
+      case 'sticker':
+        // Last 4 characters of string are a number -> tournament year -> use tournament-sticker
+        if (/\d{4}$/.test(itemName)) {
+          return `cs2-items/tournament-sticker/sticker-${
+            itemName
+              .replace('Sticker | ', '')
+              .replace(/\s*\(\w+\)\s*\|\s*/g, '-')
+              .replace(/\s*\|\s*/g, '-')
+              .toLowerCase()
+              .replace(/\s+/g, '-')
+          }/${
+            (itemName.match(/\(\w+\)/) || [''])[0].replace(/[()]/g, '').toLowerCase()}`;
+        }
+        // Last 4 characters of string are not numbers -> not tournament year -> use sticker
+        return `cs2-items/sticker/sticker-${
+          itemName
+            .replace('Sticker | ', '')
+            .replace(/\s*\(\w+\)\s*/g, '-')
+            .replace(/\s*\|\s*/g, '-')
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/-+$/, '')
+        }${
+          (itemName.match(/\(\w+\)/) ? `/${itemName.match(/\(\w+\)/)[0].replace(/[()]/g, '').toLowerCase()}` : '')
+        }`;
+      case 'container':
+        // this checks if there are 4 digits again -> year -> tournament
+        if (/\d{4}/.test(itemName)) {
+          // For autograph capsules I would check if 'autograph' is in itemName here and handle that differently
+          const type = itemName.match(/(\b\w+\b)\s*\(/);
+          return `cs2-items/tournament-team-sticker-capsule/${itemName
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/(\d{4})-/, '$1/')
+            // no (holo/foil) in itemName still needs to be handled
+            .replace(/\(([^/]+)\/([^/]+)\)/, '$1$2')}`
+            + `-${
+              type[1].toLowerCase()}`;
+        }
+        // This is for cases. Should work
+        return `cs2-items/container/${
+          itemName
+            .replace(/\s+/g, '-')
+            .toLowerCase()}`;
+      case 'custom_player':
+        return `cs2-items/agent/${
+          itemName.toLowerCase()
+            .replace(/\s*\|\s*/g, '-')
+            .replace(/\s+/g, '-')
+            .replaceAll('\'', '')
+        }`;
+          
+      default:
+        if (itemName.includes('★') && !itemName.includes('|')) {
+          return `cs2-items/skin/${
+            itemName
+              .replace('★ ', '')
+              .replace(/\s+/g, '-')
+              .toLowerCase()
+          }`;
+        }
+        if (itemName.includes('Souvenir')) {
+          return `cs2-items/skin/${
+            itemName
+              .replace('Souvenir', '')
+              .trim()
+              .replace(/\s*\|\s*/g, '-')
+              .toLowerCase()
+              .replace(/\s+/g, '-')
+          }/souvenir-${condition
+            .replace(' ', '-')}`;
+        }
+        return `cs2-items/skin/${
+          itemName
+            .replace('StatTrak™', '')
+            .replace('★ ', '')
+            .trim()
+            .replace(/\s*\|\s*/g, '-')
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+        }${dopplerType.toLowerCase().replace(' ', '-')
+        }${itemName.includes('StatTrak') ? '/stattrak-' : '/'
+        }${condition
+          .replace(' ', '-')}`;
+    }
+  } catch (error) {
+    console.error('An error occurred:', error.message);
   }
+  return '';
 };
 
 // runs in content scripts when steam pages are loaded
