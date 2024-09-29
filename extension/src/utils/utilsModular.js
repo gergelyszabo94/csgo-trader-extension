@@ -935,7 +935,6 @@ const getBuffLink = (marketHashName) => {
 };
 
 const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
-  console.log(itemType);
   try {
     switch (itemType) {
       case 'gloves':
