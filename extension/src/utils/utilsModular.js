@@ -946,7 +946,7 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
           .replace(' ', '-')}`;
       case 'sticker':
         // Last 4 characters of string are a number -> tournament year -> use tournament-sticker
-        if (/\d{4}$/.test(itemName)) {
+        if (/\d{4}/.test(itemName)) {
           return `cs2-items/tournament-sticker/sticker-${
             itemName
               .replace('Sticker | ', '')
