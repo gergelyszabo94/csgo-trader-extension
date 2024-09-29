@@ -932,6 +932,7 @@ const getBuffLink = (marketHashName) => {
 };
 
 const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
+  console.log(itemName);
   switch (itemType) {
     case 'gloves':
       return `glove/${
@@ -988,6 +989,14 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
         itemName
           .replace(/\s+/g, '-')
           .toLowerCase()}`;
+    case 'custom_player':
+      return `agent/${
+        itemName.toLowerCase()
+          .replace(/\s*\|\s*/g, '-')
+          .replace(/\s+/g, '-')
+          .replaceAll('\'', '')
+      }`;
+        
     default:
       if (itemName.includes('★') && !itemName.includes('|')) {
         return `skin/${
