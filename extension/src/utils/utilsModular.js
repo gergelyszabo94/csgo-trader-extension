@@ -941,8 +941,6 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
           .replace(/\s*\|\s*/g, '-')
           .toLowerCase()
           .replace(/\s+/g, '-')
-      }${dopplerType.toLowerCase().replace(' ', '-')
-      }${itemName.includes('StatTrak') ? '/stattrak-' : '/'
       }${condition
         .replace(' ', '-')}`;
     case 'sticker':
@@ -998,6 +996,17 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
             .replace(/\s+/g, '-')
             .toLowerCase()
         }`;
+      }
+      if (itemName.includes('Souvenir')) {
+        return `skin/${
+          itemName
+            .replace('Souvenir', '')
+            .trim()
+            .replace(/\s*\|\s*/g, '-')
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+        }/souvenir-${condition
+          .replace(' ', '-')}`;
       }
       return `skin/${
         itemName
