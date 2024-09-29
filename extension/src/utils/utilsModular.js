@@ -998,9 +998,6 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
             .replaceAll('\'', '')
         }`;
       case 'music_kit':
-        if (itemName === 'Music Kit | Valve, CS:GO') {
-          return '';
-        }
         return `cs2-items/music-kit/${
           itemName
             .replace('StatTrak™ ', '')
@@ -1009,6 +1006,13 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
             .replace(/\s+/g, '-')
             .toLowerCase()
         }${itemName.includes('StatTrak') ? '/stattrak' : ''}`;
+      case 'graffiti':
+        return `cs2-items/graffiti/${
+          itemName
+            .replace(/\s*\|\s*/g, '-')
+            .toLowerCase()
+            .replace(/ \(([^)]+)\)/g, '/$1')
+            .replace(/\s+/g, '-')}`;
       default:
         if (itemName.includes('★') && !itemName.includes('|')) {
           return `cs2-items/skin/${
