@@ -219,10 +219,13 @@ const getExteriorFromTags = (tags) => {
 
 const getNameTag = (item) => {
   try {
-    if (item.fraudwarnings !== undefined || item.fraudwarnings[0] !== undefined) {
-      return item.fraudwarnings[0].split('Name Tag: \'\'')[1].split('\'\'')[0];
+    if (item.descriptions !== undefined) {
+      for (const description of item.descriptions) {
+        if (description.value.includes('Name Tag:')) {
+          return description.value.split('Name Tag: \'\'')[1].split('\'\'')[0];
+        }
+      }
     }
-    // eslint-disable-next-line no-empty
   } catch (error) { return null; }
 };
 
