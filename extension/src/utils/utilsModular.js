@@ -932,6 +932,7 @@ const getBuffLink = (marketHashName) => {
 };
 
 const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
+  console.log(itemType);
   try {
     switch (itemType) {
       case 'gloves':
@@ -996,7 +997,18 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
             .replace(/\s+/g, '-')
             .replaceAll('\'', '')
         }`;
-          
+      case 'music_kit':
+        if (itemName === 'Music Kit | Valve, CS:GO') {
+          return '';
+        }
+        return `cs2-items/music-kit/${
+          itemName
+            .replace('StatTrak™ ', '')
+            .replace(',', '')
+            .replace(/\s*\|\s*/g, '-')
+            .replace(/\s+/g, '-')
+            .toLowerCase()
+        }${itemName.includes('StatTrak') ? '/stattrak' : ''}`;
       default:
         if (itemName.includes('★') && !itemName.includes('|')) {
           return `cs2-items/skin/${
