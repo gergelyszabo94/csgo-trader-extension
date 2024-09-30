@@ -762,7 +762,14 @@ const addRightSideElements = () => {
                 descriptors.querySelectorAll('.descriptor').forEach((descriptor) => {
                   if (descriptor.style.color === 'rgb(157, 161, 169)') {
                     const collectionName = descriptor.textContent;
-                    const parsedCollection = collectionName.replaceAll(' ', '-').toLowerCase();
+                    const parsedCollection = collectionName
+                      .toString()
+                      .toLowerCase()
+                      .replace(/\s+/g, '-')
+                      .replace(/[^\w-]+/g, '')
+                      .replace(/--+/g, '-')
+                      .replace(/^-+/, '')
+                      .replace(/-+$/, '');
                     descriptor.innerHTML = '';
                     descriptor.insertAdjacentHTML(
                       'afterbegin',
