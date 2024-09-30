@@ -6,7 +6,7 @@ const Backup = ({
   const [href, setHref] = useState('');
 
   useEffect(() => {
-    const storageKeysToExclude = ['prices', 'exchangeRates', 'analyticsEvents'];
+    const storageKeysToExclude = ['prices', 'exchangeRates', 'activeOffers'];
 
     chrome.storage.local.get(null, (result) => { // gets all storage
       let JSONContent = 'data:application/json,';
