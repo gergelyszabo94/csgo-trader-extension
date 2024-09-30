@@ -1087,8 +1087,10 @@ reloadPageOnExtensionUpdate();
 
 // initiates all logic that needs access to item info
 getInventories(true);
-overrideHandleTradeActionMenu(buffIds);
 repositionNameTagIcons();
+chrome.storage.local.get(['tradeOfferPricEmpireAction'], ({ tradeOfferPricEmpireAction }) => {
+  overrideHandleTradeActionMenu(buffIds, tradeOfferPricEmpireAction);
+});
 
 const errorMSGEl = document.getElementById('error_msg');
 if (errorMSGEl === null) {
