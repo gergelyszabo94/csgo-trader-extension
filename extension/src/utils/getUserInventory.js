@@ -90,15 +90,16 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
                       inventoryTotal += parseFloat(price.price);
                     } else price = { price: '', display: '' };
 
-                    if (item.tradable === 0) {
-                      tradability = item.cache_expiration;
-                      tradabilityShort = getShortDate(tradability);
+                    if (item.tradable === 0 && item.marketable === 0) {
+                      if (item.owner_descriptions[1]?.value) {
+                        tradability = item.owner_descriptions[1].value;
+                        tradabilityShort = getShortDate(tradability);
+                      } else {
+                        tradability = 'Not Tradable';
+                        tradabilityShort = '';
+                      }
                     }
-                    if (item.marketable === 0) {
-                      tradability = 'Not Tradable';
-                      tradabilityShort = '';
-                    }
-
+                    
                     itemsPropertiesToReturn.push({
                       name,
                       market_hash_name: marketHashName,
@@ -241,13 +242,14 @@ const getUserCSGOInventoryAlternative = (steamID) => new Promise((resolve, rejec
                     inventoryTotal += parseFloat(price.price);
                   } else price = { price: '', display: '' };
 
-                  if (item.tradable === 0) {
-                    tradability = 'Tradelocked';
-                    tradabilityShort = 'L';
-                  }
-                  if (item.marketable === 0) {
-                    tradability = 'Not Tradable';
-                    tradabilityShort = '';
+                  if (item.tradable === 0 && item.marketable === 0) {
+                    if (item.owner_descriptions[1]?.value) {
+                      tradability = 'Tradelocked';
+                      tradabilityShort = 'L';
+                    } else {
+                      tradability = 'Not Tradable';
+                      tradabilityShort = '';
+                    }
                   }
 
                   itemsPropertiesToReturn.push({
@@ -367,15 +369,16 @@ const getOtherInventory = (appID, steamID) => new Promise((resolve, reject) => {
             const icon = item.icon_url;
             const owner = steamID;
 
-            if (item.tradable === 0) {
-              tradability = item.cache_expiration;
-              tradabilityShort = getShortDate(tradability);
+            if (item.tradable === 0 && item.marketable === 0) {
+              if (item.owner_descriptions[1]?.value) {
+                tradability = item.owner_descriptions[1].value;
+                tradabilityShort = getShortDate(tradability);
+              } else {
+                tradability = 'Not Tradable';
+                tradabilityShort = '';
+              }
             }
-            if (item.marketable === 0) {
-              tradability = 'Not Tradable';
-              tradabilityShort = '';
-            }
-
+            
             itemsPropertiesToReturn.push({
               name,
               market_hash_name: marketHashName,
