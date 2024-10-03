@@ -1016,6 +1016,14 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
             .toLowerCase()
             .replace(/ \(([^)]+)\)/g, '/$1')
             .replace(/\s+/g, '-')}`;
+      case 'charm':
+        return `cs2-items/charm/${
+          itemName
+            .replace(/\s*\|\s*/g, '-')
+            .toLowerCase()
+            .replace(/ \(([^)]+)\)/g, '/$1')
+            .replace(/\s+/g, '-')
+            .replace(/[^\w-]+/g, '')}`;
       default:
         if (itemName.includes('★') && !itemName.includes('|')) {
           return `cs2-items/skin/${
