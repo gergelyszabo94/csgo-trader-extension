@@ -945,6 +945,7 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
             .replace(/\s*\|\s*/g, '-')
             .toLowerCase()
             .replace(/\s+/g, '-')
+            .replace(/[^\w-]+/g, '')
         }/${condition
           .replace(' ', '-')
           .toLowerCase()}`;
