@@ -945,8 +945,9 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
             .replace(/\s*\|\s*/g, '-')
             .toLowerCase()
             .replace(/\s+/g, '-')
-        }${condition
-          .replace(' ', '-')}`;
+        }/${condition
+          .replace(' ', '-')
+          .toLowerCase()}`;
       case 'sticker':
         // Last 4 characters of string are a number -> tournament year -> use tournament-sticker
         if (/\d{4}/.test(itemName)) {
@@ -1033,7 +1034,8 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
               .toLowerCase()
               .replace(/\s+/g, '-')
           }/souvenir-${condition
-            .replace(' ', '-')}`;
+            .replace(' ', '-')
+            .toLowerCase()}`;
         }
         return `cs2-items/skin/${
           itemName
@@ -1043,10 +1045,12 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
             .replace(/\s*\|\s*/g, '-')
             .toLowerCase()
             .replace(/\s+/g, '-')
+            .replace(/[^\w-]+/g, '')
         }${dopplerType.toLowerCase().replace(' ', '-')
         }${itemName.includes('StatTrak') ? '/stattrak-' : '/'
         }${condition
-          .replace(' ', '-')}`;
+          .replace(' ', '-')
+          .toLowerCase()}`;
     }
   } catch (error) {
     console.error('An error occurred:', error.message);
