@@ -91,8 +91,12 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
                     } else price = { price: '', display: '' };
 
                     if (item.tradable === 0 && item.marketable === 0) {
-                      if (item.owner_descriptions[1]?.value) {
-                        tradability = item.owner_descriptions[1].value;
+                      if (item.owner_descriptions) {
+                        item.owner_descriptions.forEach((description) => {
+                          if (/\d/.test(description.value)) {
+                            tradability = description.value;
+                          }
+                        });
                         tradabilityShort = getShortDate(tradability);
                       } else {
                         tradability = 'Not Tradable';
@@ -243,7 +247,7 @@ const getUserCSGOInventoryAlternative = (steamID) => new Promise((resolve, rejec
                   } else price = { price: '', display: '' };
 
                   if (item.tradable === 0 && item.marketable === 0) {
-                    if (item.owner_descriptions[1]?.value) {
+                    if (item.owner_descriptions) {
                       tradability = 'Tradelocked';
                       tradabilityShort = 'L';
                     } else {
@@ -370,8 +374,12 @@ const getOtherInventory = (appID, steamID) => new Promise((resolve, reject) => {
             const owner = steamID;
 
             if (item.tradable === 0 && item.marketable === 0) {
-              if (item.owner_descriptions[1]?.value) {
-                tradability = item.owner_descriptions[1].value;
+              if (item.owner_descriptions) {
+                item.owner_descriptions.forEach((description) => {
+                  if (/\d/.test(description.value)) {
+                    tradability = description.value;
+                  }
+                });
                 tradabilityShort = getShortDate(tradability);
               } else {
                 tradability = 'Not Tradable';
