@@ -131,6 +131,18 @@ const itemTypes = {
     internal_name: 'CSGO_Tool_Patch',
     float: false,
   },
+  charm: {
+    key: 'charm',
+    name: 'Charm',
+    internal_name: 'CSGO_Tool_Keychain',
+    float: false,
+  },
+  equipment: { // zeus
+    key: 'equipment',
+    name: 'Equipment',
+    internal_name: 'CSGO_Type_Equipment',
+    float: true,
+  },
 };
 
 export default itemTypes;
