@@ -94,7 +94,12 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
                       if (item.owner_descriptions) {
                         item.owner_descriptions.forEach((description) => {
                           if (/\d/.test(description.value)) {
-                            tradability = description.value;
+                            try {
+                              tradability = description.value.split('Tradable/Marketable After ')[1].replace(/[()]/g, '');
+                            } catch (e) {
+                              console.log(e);
+                              tradability = description.value;
+                            }
                           }
                         });
                         tradabilityShort = getShortDate(tradability);
