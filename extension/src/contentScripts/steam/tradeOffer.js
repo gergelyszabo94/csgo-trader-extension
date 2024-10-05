@@ -8,8 +8,8 @@ import {
   getDopplerInfo, getActivePage, logExtensionPresence,
   updateLoggedInUserInfo, addPageControlEventListeners,
   addSearchListener, getPattern, getNameTag, removeLinkFilterFromLinks,
-  removeOfferFromActiveOffers, changePageTitle,
-  addFloatRankIndicator, refreshSteamAccessToken,
+  removeOfferFromActiveOffers, changePageTitle, getBuffLink,
+  addFloatRankIndicator, refreshSteamAccessToken, getPricempireLink,
 } from 'utils/utilsModular';
 import {
   getItemMarketLink, getItemByNameAndGame, closeTab, isDopplerInName,
@@ -33,12 +33,13 @@ import {
   acceptOffer, declineOffer, sendOffer, createTradeOfferJSON, listenToAcceptTrade,
 } from 'utils/tradeOffers';
 import steamApps from 'utils/static/steamApps';
-import buffIds from 'utils/static/buffIds.json';
 
 let showPaintSeeds = false;
 let showFloatRank = false;
 let floatDigitsToShow = 4;
 let showContrastingLook = true;
+let pricEmpireAction = false;
+let buffAction = false;
 let yourInventory = null;
 let theirInventory = null;
 const combinedInventories = [];
@@ -1088,9 +1089,7 @@ reloadPageOnExtensionUpdate();
 // initiates all logic that needs access to item info
 getInventories(true);
 repositionNameTagIcons();
-chrome.storage.local.get(['tradeOfferPricEmpireAction', 'tradeOfferBuffAction'], ({ tradeOfferPricEmpireAction, tradeOfferBuffAction }) => {
-  overrideHandleTradeActionMenu(buffIds, tradeOfferPricEmpireAction, tradeOfferBuffAction);
-});
+overrideHandleTradeActionMenu();
 
 const errorMSGEl = document.getElementById('error_msg');
 if (errorMSGEl === null) {
@@ -1113,14 +1112,18 @@ if (partnerName !== null) changePageTitle('trade_offer', partnerName);
 
 chrome.storage.local.get([
   'numberOfFloatDigitsToShow', 'showPaintSeedOnItems', 'showFloatRankOnItems', 'contrastingLook',
+  'tradeOfferPricEmpireAction', 'tradeOfferBuffAction',
 ], ({
   numberOfFloatDigitsToShow, showPaintSeedOnItems,
   showFloatRankOnItems, contrastingLook,
+  tradeOfferPricEmpireAction, tradeOfferBuffAction,
 }) => {
   floatDigitsToShow = numberOfFloatDigitsToShow;
   showPaintSeeds = showPaintSeedOnItems;
   showFloatRank = showFloatRankOnItems;
   showContrastingLook = contrastingLook;
+  pricEmpireAction = tradeOfferPricEmpireAction;
+  buffAction = tradeOfferBuffAction;
 });
 
 setInterval(() => {
@@ -1288,66 +1291,119 @@ if (offerMessageBox) {
 }
 
 // trade action popup mutation observer
-// to add inspect on server listener
-// const tradeActionPopup = document.getElementById('trade_action_popup');
-// if (tradeActionPopup) {
-//   const observer = new MutationObserver((mutationRecord) => {
-//     mutationRecord.forEach((mutation) => {
-//       if (mutation.addedNodes.length > 0) {
-//         const inspectOnServerButton = mutation.addedNodes[0].classList.contains('inspectOnServer')
-//           ? mutation.addedNodes[0]
-//           : null;
+// to add actions to the trade action popup
+const tradeActionPopup = document.getElementById('trade_action_popup');
+if (tradeActionPopup) {
+  const observer = new MutationObserver((mutationRecord) => {
+    mutationRecord.forEach((mutation) => {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+        const itemActions = tradeActionPopup.querySelector('#trade_action_popup_itemactions');
+        const itemAssetID = itemActions.getAttribute('data-itemassetid');
 
-//         if (inspectOnServerButton) {
-//           inspectOnServerButton.addEventListener('click', (event) => {
-//             const assetID = event.target.getAttribute('data-assetid');
-//             const actionItem = getItemByAssetID(combinedInventories, assetID);
-//             document.getElementById('inspectOnServerMenu').classList.remove('hidden');
+        if (tradeActionPopup.style.cssText.includes('display: block; opacity: 0.0')
+          && (tradeActionPopup.getAttribute('alreadyRun') !== itemAssetID
+          || itemActions.querySelector('#inspecInBrowser') === null)
+        ) {
+          tradeActionPopup.setAttribute('alreadyRun', itemAssetID);
+          const actionItem = getItemByAssetID(combinedInventories, itemAssetID);
+  
+          const inspectInBrowserActionEl = document.createElement('a');
+          inspectInBrowserActionEl.textContent = 'Inspect in Browser...';
+          inspectInBrowserActionEl.classList.add('popup_menu_item');
+          inspectInBrowserActionEl.id = 'inspecInBrowser';
+          inspectInBrowserActionEl.setAttribute('href', `https://swap.gg/screenshot?inspectLink=${actionItem.inspectLink}`);
+          inspectInBrowserActionEl.setAttribute('target', '_blank');
+          itemActions.appendChild(inspectInBrowserActionEl);
 
-//             if (actionItem.floatInfo) {
-//               const inspectGenCommandEl = document.getElementById('inspectGenCommand');
-//               const genCommand = generateInspectCommand(
-//                 actionItem.market_hash_name, actionItem.floatInfo.floatvalue,
-//                 actionItem.floatInfo.paintindex, actionItem.floatInfo.defindex,
-//                 actionItem.floatInfo.paintseed, actionItem.floatInfo.stickers,
-//               );
+          const inspectOnServerActionEl = document.createElement('a');
+          inspectOnServerActionEl.textContent = 'Inspect on Server...';
+          inspectOnServerActionEl.classList.add('popup_menu_item');
+          inspectOnServerActionEl.setAttribute('href', `https://www.cs2inspects.com/?apply=${actionItem.inspectLink}`);
+          inspectOnServerActionEl.setAttribute('target', '_blank');
+          itemActions.appendChild(inspectOnServerActionEl);
 
-//               inspectGenCommandEl.title = 'Click to copy !gen command';
+          if (buffAction) {
+            const buffActionEl = document.createElement('a');
+            buffActionEl.textContent = 'Lookup on BUFF';
+            buffActionEl.classList.add('popup_menu_item');
+            buffActionEl.setAttribute('href', getBuffLink(actionItem.market_hash_name));
+            buffActionEl.setAttribute('target', '_blank');
+            itemActions.appendChild(buffActionEl);
+          }
 
-//               if (genCommand.includes('undefined')) {
-//                 // defindex was not used/stored before the inspect on server feature was introduced
-//                 // and it might not exists in the data stored in the float cache
-//                 // if that is the case then we clear it from cache
-//                 removeFromFloatCache(actionItem.assetid);
-//                 inspectGenCommandEl.setAttribute('data-assetid', assetID);
+          if (pricEmpireAction) {
+            const pricEmpireActionEl = document.createElement('a');
+            pricEmpireActionEl.textContent = 'Lookup on Pricempire';
+            pricEmpireActionEl.classList.add('popup_menu_item');
+            pricEmpireActionEl.setAttribute('href', `https://pricempire.com/${getPricempireLink(actionItem.type.key, actionItem.name, (actionItem.dopplerInfo && actionItem.dopplerInfo.name) ? `-${actionItem.dopplerInfo.name}` : '', actionItem.exterior?.name.toLowerCase())}`);
+            pricEmpireActionEl.setAttribute('target', '_blank');
+            itemActions.appendChild(pricEmpireActionEl);
+          }
+        } else if (tradeActionPopup.style.cssText.includes('display: none; opacity: 1;')) {
+          tradeActionPopup.setAttribute('alreadyRun', 'false');
+        }
+      }
 
-//                 // ugly timeout to get around making removeFromFloatCache async
-//                 setTimeout(() => {
-//                   floatQueue.jobs.push({
-//                     type: 'offer',
-//                     assetID: actionItem.assetid,
-//                     inspectLink: actionItem.inspectLink,
-//                     callBackFunction: addFloatDataToPage,
-//                   });
+      // this is a leftover in case we have to restore inspect on server functionality
+      // to be locally generated instead of using cs2inspects
 
-//                   if (!floatQueue.active) workOnFloatQueue();
-//                 }, 1000);
-//               } else inspectGenCommandEl.textContent = genCommand;
+      // if (mutation.addedNodes.length > 0) {
+      // console.log(mutation.addedNodes);
+      // const inspectOnServerButton = mutation.addedNodes[0].classList.contains('inspectOnServer')
+      //   ? mutation.addedNodes[0]
+      //   : null;
 
-//               inspectGenCommandEl.setAttribute('genCommand', genCommand);
-//             }
-//           });
-//         }
-//       }
-//     });
-//   });
+      // if (inspectOnServerButton) {
+      //   inspectOnServerButton.addEventListener('click', (event) => {
+      //     const assetID = event.target.getAttribute('data-assetid');
+      //     const actionItem = getItemByAssetID(combinedInventories, assetID);
+      //     document.getElementById('inspectOnServerMenu').classList.remove('hidden');
 
-//   observer.observe(tradeActionPopup, {
-//     subtree: true,
-//     childList: true,
-//     attributes: false,
-//   });
-// }
+      //     if (actionItem.floatInfo) {
+      //       const inspectGenCommandEl = document.getElementById('inspectGenCommand');
+      //       const genCommand = generateInspectCommand(
+      //         actionItem.market_hash_name, actionItem.floatInfo.floatvalue,
+      //         actionItem.floatInfo.paintindex, actionItem.floatInfo.defindex,
+      //         actionItem.floatInfo.paintseed, actionItem.floatInfo.stickers,
+      //       );
+
+      //       inspectGenCommandEl.title = 'Click to copy !gen command';
+
+      //       if (genCommand.includes('undefined')) {
+      //         // defindex was not used/stored before the inspect on server feature was introduced
+      //         // and it might not exists in the data stored in the float cache
+      //         // if that is the case then we clear it from cache
+      //         removeFromFloatCache(actionItem.assetid);
+      //         inspectGenCommandEl.setAttribute('data-assetid', assetID);
+
+      //         // ugly timeout to get around making removeFromFloatCache async
+      //         setTimeout(() => {
+      //           floatQueue.jobs.push({
+      //             type: 'offer',
+      //             assetID: actionItem.assetid,
+      //             inspectLink: actionItem.inspectLink,
+      //             callBackFunction: addFloatDataToPage,
+      //           });
+
+      //           if (!floatQueue.active) workOnFloatQueue();
+      //         }, 1000);
+      //       } else inspectGenCommandEl.textContent = genCommand;
+
+      //       inspectGenCommandEl.setAttribute('genCommand', genCommand);
+      //     }
+      //   });
+      // }
+      // }
+    });
+  });
+
+  observer.observe(tradeActionPopup, {
+    // subtree: false,
+    // childList: false,
+    attributes: true,
+    attributeFilter: ['style'],
+  });
+}
 
 // trade summary, inspect on server
 /* <div id="inspectOnServerMenu" class="hidden">
