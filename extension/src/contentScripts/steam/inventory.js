@@ -1656,24 +1656,22 @@ const updateSelectedItemsSummary = () => {
       if (item.price) {
         selectedTotal += parseFloat((item.price.price * (pricePercentage / 100)).toFixed(2));
       }
-      if (item.marketable === 1) {
-        const listingRow = getListingRow(item.appid, item.contextid, item.market_hash_name);
-        if (item.commodity) multisellLink += `&items%5B%5D=${encodeURIComponent(item.market_hash_name)}`;
+      const listingRow = getListingRow(item.appid, item.contextid, item.market_hash_name);
+      if (item.commodity) multisellLink += `&items%5B%5D=${encodeURIComponent(item.market_hash_name)}`;
 
-        if (listingRow === null) {
-          addListingRow(item);
-          addToPriceQueueIfNeeded(item);
-        } else {
-          const previIDs = listingRow.getAttribute('data-ids');
-          if (!previIDs.includes(`${item.appid}_${item.contextid}_${item.assetid}`)) {
-            const dataIDs = previIDs.length === 0
-              ? `${item.appid}_${item.contextid}_${item.assetid}`
-              : `${previIDs},${item.appid}_${item.contextid}_${item.assetid}`;
+      if (listingRow === null) {
+        addListingRow(item);
+        addToPriceQueueIfNeeded(item);
+      } else {
+        const previIDs = listingRow.getAttribute('data-ids');
+        if (!previIDs.includes(`${item.appid}_${item.contextid}_${item.assetid}`)) {
+          const dataIDs = previIDs.length === 0
+            ? `${item.appid}_${item.contextid}_${item.assetid}`
+            : `${previIDs},${item.appid}_${item.contextid}_${item.assetid}`;
 
-            listingRow.setAttribute('data-ids', dataIDs);
-            listingRow.querySelector('.itemAmount')
-              .querySelector('input').value = (previIDs.split(',').length + 1).toString();
-          }
+          listingRow.setAttribute('data-ids', dataIDs);
+          listingRow.querySelector('.itemAmount')
+            .querySelector('input').value = (previIDs.split(',').length + 1).toString();
         }
       }
     }
