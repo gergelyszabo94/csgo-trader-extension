@@ -912,11 +912,6 @@ const getRemoteImageAsObjectURL = (imageURL) => new Promise((resolve, reject) =>
   });
 });
 
-// true when chrome or edge, false on ff
-const isChromium = () => {
-  return chrome.runtime.getURL('/index.html').includes('chrome-extension');
-};
-
 const getFloatDBLink = (item) => {
   if (item.floatInfo) {
     const category = item.name.includes('StatTrak™')
@@ -1114,6 +1109,6 @@ export {
   isSIHActive, addSearchListener, getSessionID, validateSteamAccessToken,
   getFloatAsFormattedString, getNameTag, repositionNameTagIcons,
   removeOfferFromActiveOffers, addUpdatedRibbon, getRemoteImageAsObjectURL,
-  isChromium, addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,
+  addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,
   getAppropriateFetchFunc, getFloatDBLink, getBuffLink, refreshSteamAccessToken, getPricempireLink,
 };

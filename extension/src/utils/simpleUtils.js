@@ -12,6 +12,11 @@ const getOfferLink = (offerID) => {
   return `https://steamcommunity.com/tradeoffer/${offerID}`;
 };
 
+// true when chrome or edge, false on ff
+const isChromium = () => {
+  return chrome.runtime.getURL('/index.html').includes('chrome-extension');
+};
+
 // Create the offscreen document if it doesn't already exist
 const createOffscreen = async (reasons, justification) => {
   if (await chrome.offscreen.hasDocument()) return;
@@ -23,13 +28,24 @@ const createOffscreen = async (reasons, justification) => {
 };
 
 // https://stackoverflow.com/questions/67437180/play-audio-from-background-script-in-chrome-extention-manifest-v3
-const playAudio = async (source, sourceType, volume) => {
+const playAudioChromium = async (source, sourceType, volume) => {
   const sourceURL = sourceType === 'local'
     ? chrome.runtime.getURL(source)
     : source;
   await createOffscreen([chrome.offscreen.Reason.AUDIO_PLAYBACK], 'to play notification sound in the background');
   await chrome.runtime.sendMessage({ playAudio: { sourceURL, volume } });
 };
+
+const playAudioFirefox = (source, sourceType, volume) => {
+  const sourceURL = sourceType === 'local'
+    ? chrome.runtime.getURL(source)
+    : source;
+  const audio = new Audio(sourceURL);
+  audio.volume = volume;
+  audio.play();
+};
+
+const playAudio = isChromium() ? playAudioChromium : playAudioFirefox;
 
 const getItemByNameAndGame = (inventory, appID, contextID, itemName) => {
   return inventory.find((item) => {
@@ -122,7 +138,7 @@ const reloadPageOnExtensionUpdate = () => {
 };
 
 export {
-  getItemMarketLink, getItemInventoryLink, getOfferLink, playAudio,
+  getItemMarketLink, getItemInventoryLink, getOfferLink, playAudio, isChromium,
   getItemByNameAndGame, closeTab, isDopplerInName, getFormattedPLPercentage,
   getCollection, generateInspectCommand, createOffscreen, reloadPageOnExtensionUpdate,
 };
