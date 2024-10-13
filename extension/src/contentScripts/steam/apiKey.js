@@ -22,7 +22,7 @@ chrome.storage.local.get('autoSetSteamAPIKey', ({ autoSetSteamAPIKey }) => {
               'afterend',
               DOMPurify.sanitize(
                 `<div class="apiKeyAdded" ">
-                        Added API key to CS2Trader Extension, if you don't like this happening you can go the options and turn Autoset off.
+                        Added API key to CS2Trader Extension, if you don't like this happening, you can go to the options and turn Autoset off.
                     </div>`,
               ),
             );
