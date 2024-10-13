@@ -1000,10 +1000,10 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
         return `cs2-items/music-kit/${
           itemName
             .replace('StatTrak™ ', '')
-            .replace(/[^\w-]+/g, '')
             .replace(/\s*\|\s*/g, '-')
             .replace(/\s+/g, '-')
             .toLowerCase()
+            .replace(/[^\w-]+/g, '')
         }${itemName.includes('StatTrak') ? '/stattrak' : ''}`;
       case 'graffiti':
         return `cs2-items/graffiti/${
