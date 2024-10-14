@@ -7,7 +7,7 @@ import itemTypes from 'utils/static/itemTypes';
 import patterns from 'utils/static/patterns';
 import { getPrice } from 'utils/pricing';
 import collectionsWithSouvenirs from 'utils/static/collectionsWithSouvenirs';
-import { injectScript, injectStyle } from 'utils/injection';
+import { injectScript } from 'utils/injection';
 import { getUserSteamID } from 'utils/steamID';
 import DOMPurify from 'dompurify';
 import { getIDsFromElement } from 'utils/itemsToElementsToItems';
@@ -771,14 +771,6 @@ const updateLoggedInUserName = () => {
   }
 };
 
-const repositionNameTagIcons = () => {
-  injectStyle(`
-    .slot_app_fraudwarning {
-        top: 19px !important;
-        left: 75px !important;
-    }`, 'nametagWarning');
-};
-
 const jumpToAnchor = (anchor) => {
   if (anchor !== '') {
     window.location = `${window.location.origin}${window.location.pathname}${anchor}`;
@@ -1107,7 +1099,7 @@ export {
   getDataFilledFloatTechnical, souvenirExists, removeLinkFilterFromLinks,
   getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent, setAccessTokenFirstTime,
   isSIHActive, addSearchListener, getSessionID, validateSteamAccessToken,
-  getFloatAsFormattedString, getNameTag, repositionNameTagIcons,
+  getFloatAsFormattedString, getNameTag,
   removeOfferFromActiveOffers, addUpdatedRibbon, getRemoteImageAsObjectURL,
   addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,
   getAppropriateFetchFunc, getFloatDBLink, getBuffLink, refreshSteamAccessToken, getPricempireLink,

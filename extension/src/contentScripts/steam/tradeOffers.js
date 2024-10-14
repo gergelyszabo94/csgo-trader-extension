@@ -4,7 +4,7 @@ import {
   addSSTandExtIndicators, addPriceIndicator, addFloatIndicator,
   removeOfferFromActiveOffers, removeLinkFilterFromLinks,
   logExtensionPresence, updateLoggedInUserInfo, refreshSteamAccessToken,
-  repositionNameTagIcons, jumpToAnchor, changePageTitle,
+  jumpToAnchor, changePageTitle,
   updateLoggedInUserName, addFadePercentage, getPattern, addPaintSeedIndicator,
 } from 'utils/utilsModular';
 import { prettyTimeAgo } from 'utils/dateTime';
@@ -533,7 +533,6 @@ const periodicallyUpdateRealTimeTotals = (offerEl) => {
 };
 
 logExtensionPresence();
-repositionNameTagIcons();
 overrideShowTradeOffer();
 updateLoggedInUserInfo();
 updateLoggedInUserName();

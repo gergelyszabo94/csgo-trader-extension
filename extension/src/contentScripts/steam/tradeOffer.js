@@ -4,7 +4,7 @@ import {
   getItemByAssetID, getAssetIDOfElement, addDopplerPhase,
   makeItemColorful, addSSTandExtIndicators, addPriceIndicator,
   addFloatIndicator, getExteriorFromTags, getQuality, addPaintSeedIndicator,
-  getType, getInspectLink, repositionNameTagIcons, addFadePercentage,
+  getType, getInspectLink, addFadePercentage,
   getDopplerInfo, getActivePage, logExtensionPresence,
   updateLoggedInUserInfo, addPageControlEventListeners,
   addSearchListener, getPattern, getNameTag, removeLinkFilterFromLinks,
@@ -1088,7 +1088,6 @@ reloadPageOnExtensionUpdate();
 
 // initiates all logic that needs access to item info
 getInventories(true);
-repositionNameTagIcons();
 overrideHandleTradeActionMenu();
 
 const errorMSGEl = document.getElementById('error_msg');

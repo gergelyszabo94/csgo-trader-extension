@@ -6,7 +6,7 @@ import {
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists, copyToClipboard,
   getFloatBarSkeleton, addUpdatedRibbon, updateLoggedInUserName,
-  logExtensionPresence, repositionNameTagIcons, refreshSteamAccessToken,
+  logExtensionPresence, refreshSteamAccessToken,
   updateLoggedInUserInfo, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, getFloatAsFormattedString,
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
@@ -2407,7 +2407,6 @@ if (defaultActiveInventoryAppID !== null) {
     });
   }
 
-  repositionNameTagIcons();
   addSearchListener('inventory', () => {
     addFloatIndicatorsToPage();
     addRealTimePricesToQueue();
