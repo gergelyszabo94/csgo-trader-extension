@@ -334,6 +334,7 @@ const getPattern = (name, paintSeed) => {
       else if (name.includes('MP7')) percentage = FadeCalculator.getFadePercentage('MP7', paintSeed).percentage;
       else if (name.includes('R8 Revolver')) percentage = FadeCalculator.getFadePercentage('R8 Revolver', paintSeed).percentage;
       else if (name.includes('UMP-45')) percentage = FadeCalculator.getFadePercentage('UMP-45', paintSeed).percentage;
+      else if (name.includes('M4A1-S')) percentage = FadeCalculator.getFadePercentage('M4A1-S', paintSeed).percentage;
       else return null;
     }
 
