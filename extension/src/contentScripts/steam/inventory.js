@@ -2287,8 +2287,16 @@ const hideOtherExtensionPrices = () => {
       });
     }
 
+    // csfloat
     document.querySelectorAll('csfloat-inventory-item-holder-metadata').forEach((csfloatElement) => {
       csfloatElement.style.display = 'none';
+    });
+
+    // market.csgo extension item styling
+    document.querySelectorAll('style').forEach((styleElement) => {
+      if (styleElement.textContent.includes('[id*="730_2"]:has(.inventory_page)')) {
+        styleElement.remove();
+      }
     });
   }
 
