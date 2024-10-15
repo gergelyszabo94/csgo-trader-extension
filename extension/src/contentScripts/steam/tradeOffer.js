@@ -1297,46 +1297,60 @@ if (tradeActionPopup) {
     mutationRecord.forEach((mutation) => {
       if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
         const itemActions = tradeActionPopup.querySelector('#trade_action_popup_itemactions');
-        const itemAssetID = itemActions.getAttribute('data-itemassetid');
+        const staticActions = tradeActionPopup.querySelector('#trade_action_popup_staticactions');
+        const itemAssetID = tradeActionPopup.getAttribute('data-itemassetid');
 
         if (tradeActionPopup.style.cssText.includes('display: block; opacity: 0.0')
-          && (tradeActionPopup.getAttribute('alreadyRun') !== itemAssetID
-          || itemActions.querySelector('#inspecInBrowser') === null)
+          && (tradeActionPopup.getAttribute('alreadyRun') !== itemAssetID)
         ) {
           tradeActionPopup.setAttribute('alreadyRun', itemAssetID);
           const actionItem = getItemByAssetID(combinedInventories, itemAssetID);
+
+          if (actionItem) {
+            if (actionItem.inspectLink && itemActions.querySelector('#inspecInBrowser') === null) {
+              const inspectInBrowserActionEl = document.createElement('a');
+              inspectInBrowserActionEl.textContent = 'Inspect in Browser...';
+              inspectInBrowserActionEl.classList.add('popup_menu_item');
+              inspectInBrowserActionEl.id = 'inspecInBrowser';
+              inspectInBrowserActionEl.setAttribute('href', `https://swap.gg/screenshot?inspectLink=${actionItem.inspectLink}`);
+              inspectInBrowserActionEl.setAttribute('target', '_blank');
+              itemActions.appendChild(inspectInBrowserActionEl);
   
-          const inspectInBrowserActionEl = document.createElement('a');
-          inspectInBrowserActionEl.textContent = 'Inspect in Browser...';
-          inspectInBrowserActionEl.classList.add('popup_menu_item');
-          inspectInBrowserActionEl.id = 'inspecInBrowser';
-          inspectInBrowserActionEl.setAttribute('href', `https://swap.gg/screenshot?inspectLink=${actionItem.inspectLink}`);
-          inspectInBrowserActionEl.setAttribute('target', '_blank');
-          itemActions.appendChild(inspectInBrowserActionEl);
+              const inspectOnServerActionEl = document.createElement('a');
+              inspectOnServerActionEl.textContent = 'Inspect on Server...';
+              inspectOnServerActionEl.classList.add('popup_menu_item');
+              inspectOnServerActionEl.setAttribute('href', `https://www.cs2inspects.com/?apply=${actionItem.inspectLink}`);
+              inspectOnServerActionEl.setAttribute('target', '_blank');
+              itemActions.appendChild(inspectOnServerActionEl);
+            }
 
-          const inspectOnServerActionEl = document.createElement('a');
-          inspectOnServerActionEl.textContent = 'Inspect on Server...';
-          inspectOnServerActionEl.classList.add('popup_menu_item');
-          inspectOnServerActionEl.setAttribute('href', `https://www.cs2inspects.com/?apply=${actionItem.inspectLink}`);
-          inspectOnServerActionEl.setAttribute('target', '_blank');
-          itemActions.appendChild(inspectOnServerActionEl);
-
-          if (buffAction) {
-            const buffActionEl = document.createElement('a');
-            buffActionEl.textContent = 'Lookup on BUFF';
-            buffActionEl.classList.add('popup_menu_item');
-            buffActionEl.setAttribute('href', getBuffLink(actionItem.market_hash_name));
-            buffActionEl.setAttribute('target', '_blank');
-            itemActions.appendChild(buffActionEl);
-          }
-
-          if (pricEmpireAction) {
-            const pricEmpireActionEl = document.createElement('a');
-            pricEmpireActionEl.textContent = 'Lookup on Pricempire';
-            pricEmpireActionEl.classList.add('popup_menu_item');
-            pricEmpireActionEl.setAttribute('href', `https://pricempire.com/${getPricempireLink(actionItem.type.key, actionItem.name, (actionItem.dopplerInfo && actionItem.dopplerInfo.name) ? `-${actionItem.dopplerInfo.name}` : '', actionItem.exterior?.name.toLowerCase())}`);
-            pricEmpireActionEl.setAttribute('target', '_blank');
-            itemActions.appendChild(pricEmpireActionEl);
+            if (buffAction) {
+              if (staticActions.querySelector('#buffAction') === null) {
+                const buffActionEl = document.createElement('a');
+                buffActionEl.textContent = 'Lookup on BUFF';
+                buffActionEl.id = 'buffAction';
+                buffActionEl.classList.add('popup_menu_item');
+                buffActionEl.setAttribute('href', getBuffLink(actionItem.market_hash_name));
+                buffActionEl.setAttribute('target', '_blank');
+                staticActions.appendChild(buffActionEl);
+              } else {
+                staticActions.querySelector('#buffAction').setAttribute('href', getBuffLink(actionItem.market_hash_name));
+              }
+            }
+    
+            if (pricEmpireAction) {
+              if (staticActions.querySelector('#pricEmpireAction') === null) {
+                const pricEmpireActionEl = document.createElement('a');
+                pricEmpireActionEl.textContent = 'Lookup on Pricempire';
+                pricEmpireActionEl.id = 'pricEmpireAction';
+                pricEmpireActionEl.classList.add('popup_menu_item');
+                pricEmpireActionEl.setAttribute('href', `https://pricempire.com/${getPricempireLink(actionItem.type.key, actionItem.name, (actionItem.dopplerInfo && actionItem.dopplerInfo.name) ? `-${actionItem.dopplerInfo.name}` : '', actionItem.exterior?.name.toLowerCase())}`);
+                pricEmpireActionEl.setAttribute('target', '_blank');
+                staticActions.appendChild(pricEmpireActionEl);
+              } else {
+                staticActions.querySelector('#pricEmpireAction').setAttribute('href', `https://pricempire.com/${getPricempireLink(actionItem.type.key, actionItem.name, (actionItem.dopplerInfo && actionItem.dopplerInfo.name) ? `-${actionItem.dopplerInfo.name}` : '', actionItem.exterior?.name.toLowerCase())}`);
+              }
+            }
           }
         } else if (tradeActionPopup.style.cssText.includes('display: none; opacity: 1;')) {
           tradeActionPopup.setAttribute('alreadyRun', 'false');

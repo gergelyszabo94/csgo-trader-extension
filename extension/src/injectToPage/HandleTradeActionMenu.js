@@ -37,11 +37,13 @@ function HandleTradeActionMenu( elActionMenuButton, item, user )
             {
                 $J('#trade_action_viewininventory').hide();
             }
+
+            var elActionMenu = $J('#trade_action_popup');
+            elActionMenu.attr( 'data-itemassetid', item.id ); // so we can get item details in the content script
         
             if ( bItemHasActions )
             {
                 var elItemActions = $J('#trade_action_popup_itemactions');
-                elItemActions.attr( 'data-itemassetid', item.id ); // so we can get item details in the content script
                 elItemActions.empty();
                 for ( var action = 0; action < item.actions.length; action++ )
                 {
