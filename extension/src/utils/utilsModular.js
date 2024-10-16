@@ -20,17 +20,34 @@ const { FadeCalculator } = require('csgo-fade-percentage-calculator');
 // "Sticker" in different languages
 // english, simplified chinese, traditional chinese,
 // japanese, korean, bulgarian, thai, czech, danish,
-// german, spanish, latin spanish, greek, italian,
+// german, spanish, latin spanish, greek, french, italian, indonesian,
 // hungarian, norwegian, polish, portuguese, brazil,
 // romanian, russian, finnish, swedish, turkish,
 // vietnamese, ukrainian
 const stickerNames = [
   'Sticker', '印花', '貼紙', 'ステッカー',
   '스티커', 'Αυτοκόλλητο', 'สติกเกอร์', 'Samolepka', 'Klistermærke',
-  'Aufkleber', 'Pegatina', 'Calcomanía', 'Αυτοκόλλητο', 'Adesivo',
-  'Matrica', 'Klistremerke', 'Naklejka', 'Autocolante', 'Adesivo',
+  'Aufkleber', 'Pegatina', 'Calcomanía', 'Αυτοκόλλητο', 'Sticker', 'Adesivo',
+  'Stiker', 'Matrica', 'Klistremerke', 'Naklejka', 'Autocolante', 'Adesivo',
   'Abțibild', 'Наклейка', 'Tarra', 'Klistermärke', 'Çıkartma',
   'Hình dán', 'Наліпка'];
+
+// "Charm" in different languages
+// english, simplified chinese, traditional chinese,
+// japanese, korean, bulgarian, thai, czech, danish,
+// german, spanish, latin spanish, greek, french, italian, indonesian,
+// hungarian, norwegian, polish, portuguese, brazil,
+// romanian, russian, finnish, swedish, turkish,
+// vietnamese, ukrainian
+const charmNames = [
+  'Charm', '挂件', '吊飾', 'チャーム', '참 장식',
+  'Джунджурия', 'พวงกุญแจ', 'Přívěsek', 'Vedhæng',
+  'Anhänger', 'Colgante', 'Colgante', 'Γούρι',
+  'Porte-bonheur', 'Ciondolo', 'Gantungan',
+  'Talizmán', 'Anheng', 'Przywieszka', 'Amuleto',
+  'Chaveiro', 'Breloc', 'Брелок', 'Riipus', 'Hänge',
+  'Süs', 'Móc treo', 'Брелок',
+];
 
 const chKnifeNames = [
   ['M9 Bayonet', 'M9_Bayonet'], // important to put it before normal bayo
@@ -416,15 +433,17 @@ const handleStickerNamesWithCommas = (names) => {
   return namesModified;
 };
 
+// also charms
 const getStickerOrPatchLink = (linkType, name, type) => {
   return linkType === 'search'
-    ? `https://steamcommunity.com/market/search?q=${name}&appid=730&category_730_Type[]=tag_CSGO_Tool_${type}`
+    ? `https://steamcommunity.com/market/search?q=${name}&appid=730&category_730_Type[]=tag_CSGO_Tool_${type === 'Charm' ? 'Keychain' : type}`
     : `https://steamcommunity.com/market/listings/730/${type}%20%7C%20${name}`;
 };
 
-// true sticker, false patch
+// true sticker, false patch or charm
 const isSticker = (description) => {
   let matchFound = false;
+
   stickerNames.forEach((name) => {
     if (description.includes(`title="${name}"`)) {
       matchFound = true;
@@ -433,7 +452,19 @@ const isSticker = (description) => {
   return matchFound;
 };
 
-// also pathces for agents
+// true charm, false patch or sticker
+const isCharm = (description) => {
+  let matchFound = false;
+
+  charmNames.forEach((name) => {
+    if (description.includes(`title="${name}"`)) {
+      matchFound = true;
+    }
+  });
+  return matchFound;
+};
+
+// also pathces for agents and charms
 const parseStickerInfo = (
   descriptions,
   linkType,
@@ -448,7 +479,11 @@ const parseStickerInfo = (
 
     descriptions.forEach((description) => {
       if (description.value.includes('sticker_info')) {
-        const type = isSticker(description.value) ? 'Sticker' : 'Patch';
+        const type = isSticker(description.value)
+          ? 'Sticker'
+          : isCharm(description.value)
+            ? 'Charm'
+            : 'Patch';
         let names = description.value.split('><br>')[1].split(': ')[1].split('</center>')[0].split(', ');
 
         names = handleStickerNamesWithCommas(names);
@@ -459,12 +494,13 @@ const parseStickerInfo = (
           iconURLs[index] = iconURL.split('><')[0];
         });
 
-        stickers = names.map((name, index) => ({
+        stickers = stickers.concat(...names.map((name, index) => ({
           name,
+          fullName: `${type} | ${name}`,
           price: linkType === 'search' ? null : getPrice(`${type} | ${name}`, null, prices, pricingProvider, pricingMode, exchangeRate, currency),
           iconURL: iconURLs[index],
           marketURL: getStickerOrPatchLink(linkType, name, type),
-        }));
+        })));
       }
     });
     return stickers;

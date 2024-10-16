@@ -733,19 +733,30 @@ const addRightSideElements = () => {
           // repositions stickers
           if (item.stickers !== undefined && item.stickers.length !== 0) {
             // removes the original stickers elements
-            const originalStickers = document.getElementById('sticker_info');
-            if (originalStickers !== null) originalStickers.outerHTML = '';
+            // since charms were added, it's now possible to have two "sticker_info" elements
+            // they even both have the same id, which means that only one can be selected by id
+            const originalStickerEls = document.querySelectorAll('div[name="sticker_info"]');
+
+            if (originalStickerEls.length > 0) {
+              originalStickerEls.forEach((stickerEl) => {
+                stickerEl.parentNode.remove();
+              });
+            }
 
             // sometimes it is added slowly so it does not get removed the first time..
             setTimeout(() => {
-              if (originalStickers !== null && originalStickers.parentNode !== null) originalStickers.outerHTML = '';
+              if (originalStickerEls.length > 0) {
+                originalStickerEls.forEach((stickerEl) => {
+                  if (stickerEl.parentNode !== null) stickerEl.parentNode.remove();
+                });
+              }
             }, 1000);
 
             // adds own sticker elements
             item.stickers.forEach((stickerInfo) => {
               document.querySelectorAll('.customStickers').forEach((customStickers) => {
                 customStickers.innerHTML += DOMPurify.sanitize(`
-                                    <div class="stickerSlot" data-tooltip="${stickerInfo.name} (${stickerInfo.price.display})">
+                                    <div class="stickerSlot" data-tooltip="${stickerInfo.fullName} (${stickerInfo.price.display})">
                                         <a href="${stickerInfo.marketURL}" target="_blank">
                                             <img src="${stickerInfo.iconURL}" class="stickerIcon">
                                         </a>
