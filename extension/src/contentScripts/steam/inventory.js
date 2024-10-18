@@ -1868,6 +1868,7 @@ const addFunctionBar = () => {
   if (document.getElementById('inventory_function_bar') === null) {
     const handPointer = chrome.runtime.getURL('images/hand-pointer-solid.svg');
     const table = chrome.runtime.getURL('images/table-solid.svg');
+    const fullSreen = chrome.runtime.getURL('images/expand-solid.svg');
 
     document.querySelector('.filter_ctn.inventory_filters').insertAdjacentHTML(
       'afterend',
@@ -1880,10 +1881,13 @@ const addFunctionBar = () => {
                 </div>
                     <div id="functionBarActions" class="functionBarRow">
                         <span id="selectMenu">
-                            <img id ="selectButton" class="clickable" src="${handPointer}" title="Start Selecting Items">
+                            <img id ="selectButton" class="clickable inventoryFunctionBarIcon" src="${handPointer}" title="Start Selecting Items">
                         </span>
                         <span id="generate_menu">
-                            <img id ="generate_list" class="clickable" src="${table}" title="Generate list of inventory items">
+                            <img id ="generate_list" class="clickable inventoryFunctionBarIcon" src="${table}" title="Generate list of inventory items">
+                        </span>
+                        <span id="screenshotView">
+                            <img id="screenshotViewButton" class="clickable inventoryFunctionBarIcon" src="${fullSreen}" title="View inventory in full screen for screenshots">
                         </span>
                         <span style="font-size: 0.9rem;">
                             Price:
@@ -2168,6 +2172,38 @@ const addFunctionBar = () => {
       sortItems(items, sortingSelect.options[sortingSelect.selectedIndex].value);
       addFloatIndicatorsToPage();
       addRealTimePricesToQueue();
+    });
+
+    document.getElementById('screenshotViewButton').addEventListener('click', () => {
+      const previousModal = document.getElementById('fullScreenInventoryModal');
+
+      if (previousModal) previousModal.remove();
+
+      const modalHTML = DOMPurify.sanitize(`
+                    <div id="fullScreenInventoryModal" class="modal_frame" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: block;">
+                        <div id="modalContentTitleBar" style="color: white; padding: 4px 2px 4px 8px; text-align: left; background-color: #304a66;>
+                          <span id="modalContentTitle">Full Screen Inventory View</span>
+                          <span id="modalContentDismiss" class="modalContentDismissImage clickable" style="position: absolute; top: 5px; right: -4px; width: 18px; height: 14px;">
+                            <img src="https://community.akamai.steamstatic.com/public/images/x9x9.gif" width="9" height="9" border="0" alt="Close">
+                          </span>
+                        </div>
+                        <div id="modalContentFrameContainer" style="margin-left: 5px; max-height: calc(100% - 40px); overflow: auto;">
+                        </div>
+                    </div>`);
+      document.querySelector('body').insertAdjacentHTML('beforeend', modalHTML);
+      document.getElementById('fullScreenInventoryModal').style.display = 'block';
+
+      document.getElementById('modalContentDismiss').addEventListener('click', () => {
+        document.getElementById('fullScreenInventoryModal').remove();
+      });
+
+      const modalContentEl = document.getElementById('modalContentFrameContainer');
+      const userCSInventoryEl = document.querySelector('[id^="inventory_"][id$="_730_2"]');
+
+      userCSInventoryEl.querySelectorAll('div.itemHolder').forEach((itemHolder) => {
+        const clonedElement = itemHolder.cloneNode(true);
+        modalContentEl.appendChild(clonedElement);
+      });
     });
 
     document.getElementById('generate_list').addEventListener('click', () => { document.getElementById('functionBarGenerateMenu').classList.toggle('hidden'); });

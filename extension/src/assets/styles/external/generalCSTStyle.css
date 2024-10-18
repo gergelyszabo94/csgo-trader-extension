@@ -553,12 +553,7 @@ progress {
     border: 1px dashed white !important;
 }
 
-#selectButton {
-    width: 20px;
-    height: 20px;
-}
-
-#generate_list {
+.inventoryFunctionBarIcon {
     width: 20px;
     height: 20px;
 }
