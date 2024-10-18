@@ -1,6 +1,5 @@
 import React from 'react';
 import ReleaseNote from '../ReleaseNote'
-import NewTabLink from '../../NewTabLink/NewTabLink';
 import ShowcaseImage from '../../ShowcaseImage/ShowcaseImage';
 
 const TwoDotTen = () => {
