@@ -1074,11 +1074,13 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
           itemName
             .replace('StatTrak™', '')
             .replace('★ ', '')
+            .replace('弐', '2')
             .trim()
             .replace(/\s*\|\s*/g, '-')
             .toLowerCase()
             .replace(/\s+/g, '-')
             .replace(/[^\w-]+/g, '')
+            .replace(/^-+|-+$/g, '')
         }${dopplerType.toLowerCase().replace(' ', '-')
         }${itemName.includes('StatTrak') ? '/stattrak-' : '/'
         }${condition
