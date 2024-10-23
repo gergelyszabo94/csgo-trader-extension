@@ -1013,7 +1013,6 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
             + `-${
               type[1].toLowerCase()}`;
         }
-        // This is for cases. Should work
         return `cs2-items/container/${
           itemName
             .replace(/\s+/g, '-')
@@ -1053,10 +1052,11 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
         if (itemName.includes('★') && !itemName.includes('|')) {
           return `cs2-items/skin/${
             itemName
+              .replace('StatTrak™ ', '')
               .replace('★ ', '')
               .replace(/\s+/g, '-')
               .toLowerCase()
-          }`;
+          }${itemName.includes('StatTrak') ? '/stattrak' : ''}`;
         }
         if (itemName.includes('Souvenir')) {
           return `cs2-items/skin/${
