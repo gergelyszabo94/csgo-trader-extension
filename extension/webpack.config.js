@@ -25,10 +25,6 @@ module.exports = (env, argv) => {
       "type": "module"
     };
     manifest.permissions = [...manifest.permissions, "offscreen"];
-    manifest.optional_host_permissions = [
-      "*://csgotraders.net/*",
-      "*://discord.com/*"
-    ];
 
     if (mode === 'development') {
       manifest.key = chromeExtKey;
@@ -45,14 +41,6 @@ module.exports = (env, argv) => {
     manifest.background = {
       "scripts": ["js/backgroundScripts/background.bundle.js"]
     };
-
-    // maybe fixed in the future, review later:
-    // https://bugzilla.mozilla.org/show_bug.cgi?id=1766026
-    manifest.optional_permissions = [
-      ...manifest.optional_permissions,
-      "*://csgotraders.net/*",
-      "*://discord.com/*"
-    ];
 
     // pretty print to JSON with two spaces
     return JSON.stringify(manifest, null, 2);
