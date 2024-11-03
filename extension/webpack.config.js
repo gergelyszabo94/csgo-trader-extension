@@ -14,6 +14,8 @@ module.exports = (env, argv) => {
   // requited for the chrome manifest.json so the development version gets the same id as the prod
   const chromeExtKey = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAycJXpmt94FIYH7+OVQswE8ZLWTqmNt3VePgk3IkOVP9QtEvXAcSNvtldqWCH3kFikAJzyeXdUM/puDOwZ4yM0KMgDbhfragLcB9j14VP2i3f3F98utOrRrl0eUAHFJ2fP2yCFbPqOiRZA9JK2jotpHhHib+lO2hLEtAbpnvMhD+TdIuPr33QEJcLkAfqCLZKrFGzqsOV+5NCkLQYfptA9v1KersX8FfFSDRmuzWipfo8EEwJDTcImau4v0YB+lZulHodxv5INt4Xp0Iq/lOgdm/6xUVdhZ3ISyjSvjLWVwstd1UMlLNxyBA9ibpc5UpkXDuPmkd77S2qVyMgsGtEPQIDAQAB';
 
+  const fireFoxId = '{988dd4f5-e8d5-49bf-a766-ff75b0e19fe2}';
+
   // chrome and edge are the same
   const modifyManifestToChrome = (buffer) => {
     // copy-webpack-plugin passes a buffer
@@ -40,6 +42,12 @@ module.exports = (env, argv) => {
 
     manifest.background = {
       "scripts": ["js/backgroundScripts/background.bundle.js"]
+    };
+
+    manifest.browser_specific_settings = {
+      "gecko": {
+        "id": fireFoxId,
+      }
     };
 
     // pretty print to JSON with two spaces
