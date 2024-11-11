@@ -1030,7 +1030,7 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
           itemName.toLowerCase()
             .replace(/\s*\|\s*/g, '-')
             .replace(/\s+/g, '-')
-            .replaceAll('\'', '')
+            .replace(/[^\w-]+/g, '')
         }`;
       case 'music_kit':
         return `cs2-items/music-kit/${
@@ -1056,6 +1056,12 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
             .replace(/ \(([^)]+)\)/g, '/$1')
             .replace(/\s+/g, '-')
             .replace(/[^\w-]+/g, '')}`;
+      case 'collectible':
+        if (!(itemName.includes('Service Medal') || itemName.includes('Coin'))) {
+          return `cs2-items/pin/${itemName.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '')}`;
+        }
+        // Should we return something else for service medals and coins?
+        return '';
       default:
         if (itemName.includes('★') && !itemName.includes('|')) {
           return `cs2-items/skin/${
@@ -1088,6 +1094,7 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
             .toLowerCase()
             .replace(/\s+/g, '-')
             .replace(/[^\w-]+/g, '')
+            .replace('--', '-')
             .replace(/^-+|-+$/g, '')
         }${dopplerType.toLowerCase().replace(' ', '-')
         }${itemName.includes('StatTrak') ? '/stattrak-' : '/'
