@@ -1024,6 +1024,7 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
         return `cs2-items/container/${
           itemName
             .replace(/\s+/g, '-')
+            .replace(/[^\w-]+/g, '')
             .toLowerCase()}`;
       case 'custom_player':
         return `cs2-items/agent/${
