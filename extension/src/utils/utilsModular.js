@@ -1025,6 +1025,8 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
           itemName
             .replace(/\s+/g, '-')
             .replace(/[^\w-]+/g, '')
+            // PriceEmpire uses csgo instead of cs:go now for cs:go weapon cases
+            .replace('CS:GO', 'CSGO')
             .toLowerCase()}`;
       case 'custom_player':
         return `cs2-items/agent/${
