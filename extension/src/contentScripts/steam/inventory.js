@@ -1016,8 +1016,8 @@ const addRightSideElements = () => {
                   }).catch((err) => {
                     console.log(err);
                     const errorMessage = err.status === 429
-                    ? 'Too many requests, try again later.' 
-                    : 'Could not get lowest listing price';
+                      ? 'Too many requests, try again later.'
+                      : 'Could not get lowest listing price';
                     document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
                       marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`<div class="listingError">${errorMessage}</div>`));
                     });
