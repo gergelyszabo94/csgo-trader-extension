@@ -453,7 +453,7 @@ const isSticker = (description) => {
   let matchFound = false;
 
   stickerNames.forEach((name) => {
-    if (description.includes(`title="${name}"`)) {
+    if (description.includes(`title="${name}`)) {
       matchFound = true;
     }
   });
@@ -465,7 +465,7 @@ const isCharm = (description) => {
   let matchFound = false;
 
   charmNames.forEach((name) => {
-    if (description.includes(`title="${name}"`)) {
+    if (description.includes(`title="${name}`)) {
       matchFound = true;
     }
   });
@@ -486,7 +486,7 @@ const parseStickerInfo = (
     let stickers = [];
 
     descriptions.forEach((description) => {
-      if (description.value.includes('sticker_info')) {
+      if (description.name === 'sticker_info' || description.name === 'keychain_info') {
         const type = isSticker(description.value)
           ? 'Sticker'
           : isCharm(description.value)
