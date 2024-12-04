@@ -64,6 +64,19 @@ const extractUsefulFloatInfo = (floatInfo) => {
     // eslint-disable-next-line camelcase
     origin_name, min, max, stickers, low_rank, high_rank,
   } = { ...floatInfo };
+
+  let stickersModified = null;
+  
+  if (stickers !== undefined) {
+    stickersModified = stickers.map((sticker) => {
+      return {
+        ...sticker,
+        name: sticker.market_hash_name.split('Sticker | ')[1],
+        stickerId: sticker.sticker_id,
+      };
+    });
+  }
+
   return {
     floatvalue,
     paintindex,
@@ -73,7 +86,7 @@ const extractUsefulFloatInfo = (floatInfo) => {
     origin_name,
     min,
     max,
-    stickers: stickers !== undefined ? stickers : null,
+    stickers: stickersModified,
     // eslint-disable-next-line camelcase
     low_rank: low_rank !== undefined ? low_rank : null,
     // eslint-disable-next-line camelcase
