@@ -1,7 +1,7 @@
 import { getFloatInfoFromCache } from 'utils/floatCaching';
 import { getPrice, getStickerPriceTotal } from 'utils/pricing';
 import itemTypes from 'utils/static/itemTypes';
-import { getPattern, parseStickerInfo } from 'utils/utilsModular';
+import { getPattern, parseStickerInfo, parseCharmInfo } from 'utils/utilsModular';
 
 const addPricesAndFloatsToInventory = (inventory) => new Promise((resolve) => {
   chrome.storage.local.get(
@@ -30,9 +30,15 @@ const addPricesAndFloatsToInventory = (inventory) => new Promise((resolve) => {
               }
               const stickers = parseStickerInfo(item.descriptions, 'direct', prices,
                 pricingProvider, pricingMode, exchangeRate, currency);
+              const charms = parseCharmInfo(item.descriptions, 'direct', prices,
+                pricingProvider, pricingMode, exchangeRate, currency);
               const stickerPrice = getStickerPriceTotal(stickers, currency);
+              const charmPrice = getStickerPriceTotal(charms, currency);
               item.stickers = stickers;
               item.stickerPrice = stickerPrice;
+              item.charms = charms;
+              item.charmPrice = charmPrice;
+              item.totalAddonprice = getStickerPriceTotal([...stickers, ...charms], currency);
             });
             resolve({
               items: inventory,

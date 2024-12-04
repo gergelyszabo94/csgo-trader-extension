@@ -47,6 +47,14 @@ const sortingModes = {
     key: 'sticker_price_desc',
     name: 'Sticker price (expensive to cheap)',
   },
+  charm_price_asc: {
+    key: 'charm_price_asc',
+    name: 'Charm price (cheap to expensive)',
+  },
+  charm_price_desc: {
+    key: 'charm_price_desc',
+    name: 'Charm price (expensive to cheap)',
+  },
 };
 
 const offersSortingModes = {

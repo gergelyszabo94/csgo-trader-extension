@@ -9,6 +9,7 @@ import {
   getPattern, getQuality,
   getType,
   parseStickerInfo,
+  parseCharmInfo,
 } from 'utils/utilsModular';
 import steamApps from 'utils/static/steamApps';
 import { getItemMarketLink, getCollection } from 'utils/simpleUtils';
@@ -72,6 +73,7 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
                     const icon = item.icon_url;
                     const dopplerInfo = (name.includes('Doppler') || name.includes('doppler')) ? getDopplerInfo(icon) : null;
                     const stickers = parseStickerInfo(item.descriptions, 'direct', prices, pricingProvider, pricingMode, exchangeRate, currency);
+                    const charms = parseCharmInfo(item.descriptions, 'direct', prices, pricingProvider, pricingMode, exchangeRate, currency);
                     const owner = steamID;
                     let price = null;
                     const type = getType(item.tags);
@@ -134,6 +136,9 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
                       starInName: name.includes('★'),
                       stickers,
                       stickerPrice: getStickerPriceTotal(stickers, currency),
+                      charms,
+                      charmPrice: getStickerPriceTotal(charms, currency),
+                      totalAddonPrice: getStickerPriceTotal([...stickers, ...charms], currency),
                       nametag: getNameTag(item),
                       duplicates: duplicates[marketHashName],
                       owner,
@@ -232,6 +237,7 @@ const getUserCSGOInventoryAlternative = (steamID) => new Promise((resolve, rejec
                   const icon = item.icon_url;
                   const dopplerInfo = (name.includes('Doppler') || name.includes('doppler')) ? getDopplerInfo(icon) : null;
                   const stickers = parseStickerInfo(item.descriptions, 'direct', prices, pricingProvider, pricingMode, exchangeRate, currency);
+                  const charms = parseCharmInfo(item.descriptions, 'direct', prices, pricingProvider, pricingMode, exchangeRate, currency);
                   const owner = steamID;
                   let price = null;
                   const type = getType(item.tags);
@@ -285,6 +291,9 @@ const getUserCSGOInventoryAlternative = (steamID) => new Promise((resolve, rejec
                     starInName: name.includes('★'),
                     stickers,
                     stickerPrice: getStickerPriceTotal(stickers, currency),
+                    charms,
+                    charmPrice: getStickerPriceTotal(charms, currency),
+                    totalAddonPrice: getStickerPriceTotal([...stickers, ...charms], currency),
                     nametag: getNameTag(item),
                     duplicates: duplicates[marketHashName],
                     owner,

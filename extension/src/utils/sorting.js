@@ -154,6 +154,26 @@ const doTheSorting = (items, itemElements, method, pages, type) => {
         : 0.0;
       return stickerPriceOfB - stickerPriceOfA;
     });
+  } else if (method === 'charm_price_asc') {
+    sortedElements = itemElements.sort((a, b) => {
+      const charmPriceOfA = getItemByAssetID(items, getAssetIDOfElement(a)).charmPrice !== null
+        ? parseFloat(getItemByAssetID(items, getAssetIDOfElement(a)).charmPrice.price)
+        : 0.0;
+      const charmPriceOfB = getItemByAssetID(items, getAssetIDOfElement(b)).charmPrice !== null
+        ? parseFloat(getItemByAssetID(items, getAssetIDOfElement(b)).charmPrice.price)
+        : 0.0;
+      return charmPriceOfA - charmPriceOfB;
+    });
+  } else if (method === 'charm_price_desc') {
+    sortedElements = itemElements.sort((a, b) => {
+      const charmPriceOfA = getItemByAssetID(items, getAssetIDOfElement(a)).charmPrice !== null
+        ? parseFloat(getItemByAssetID(items, getAssetIDOfElement(a)).charmPrice.price)
+        : 0.0;
+      const charmPriceOfB = getItemByAssetID(items, getAssetIDOfElement(b)).charmPrice !== null
+        ? parseFloat(getItemByAssetID(items, getAssetIDOfElement(b)).charmPrice.price)
+        : 0.0;
+      return charmPriceOfB - charmPriceOfA;
+    });
   }
 
   if (type === 'offer' || type === 'inventory') {

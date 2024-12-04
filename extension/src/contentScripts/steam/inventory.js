@@ -6,7 +6,7 @@ import {
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator,
   getDataFilledFloatTechnical, souvenirExists, copyToClipboard,
   getFloatBarSkeleton, addUpdatedRibbon, updateLoggedInUserName,
-  logExtensionPresence, refreshSteamAccessToken,
+  logExtensionPresence, refreshSteamAccessToken, parseCharmInfo,
   updateLoggedInUserInfo, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, getFloatAsFormattedString,
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
@@ -265,6 +265,7 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
             const icon = item.description.icon_url;
             const dopplerInfo = (name.includes('Doppler') || name.includes('doppler')) ? getDopplerInfo(icon) : null;
             const stickers = parseStickerInfo(item.description.descriptions, 'direct', prices, pricingProvider, pricingMode, exchangeRate, currency);
+            const charms = parseCharmInfo(item.description.descriptions, 'direct', prices, pricingProvider, pricingMode, exchangeRate, currency);
             let price = null;
             const type = getType(item.description.tags);
             let floatInfo = null;
@@ -321,6 +322,9 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
               starInName: name.includes('★'),
               stickers,
               stickerPrice: getStickerPriceTotal(stickers, currency),
+              charms,
+              charmPrice: getStickerPriceTotal(charms, currency),
+              totalAddonPrice: getStickerPriceTotal([...stickers, ...charms], currency),
               nametag: getNameTag(item),
               duplicates: duplicates[marketHashName],
               owner,
@@ -730,12 +734,12 @@ const addRightSideElements = () => {
             } else nametag.style.display = 'none';
           });
 
-          // repositions stickers
-          if (item.stickers !== undefined && item.stickers.length !== 0) {
-            // removes the original stickers elements
-            // since charms were added, it's now possible to have two "sticker_info" elements
+          // repositions stickers and charms
+          if ((item.stickers !== undefined && item.stickers.length !== 0)
+            || (item.charms !== undefined && item.charms.length !== 0)) {
+            // removes the original stickers and charms elements
             // they even both have the same id, which means that only one can be selected by id
-            const originalStickerEls = document.querySelectorAll('div[name="sticker_info"]');
+            const originalStickerEls = document.querySelectorAll('#sticker_info, #keychain_info');
 
             if (originalStickerEls.length > 0) {
               originalStickerEls.forEach((stickerEl) => {
@@ -753,7 +757,9 @@ const addRightSideElements = () => {
             }, 1000);
 
             // adds own sticker elements
-            item.stickers.forEach((stickerInfo) => {
+            const combinedAddons = [...item.stickers, ...item.charms];
+            
+            combinedAddons.forEach((stickerInfo) => {
               document.querySelectorAll('.customStickers').forEach((customStickers) => {
                 customStickers.innerHTML += DOMPurify.sanitize(`
                                     <div class="stickerSlot" data-tooltip="${stickerInfo.fullName} (${stickerInfo.price.display})">

@@ -39,15 +39,15 @@ const stickerNames = [
 // hungarian, norwegian, polish, portuguese, brazil,
 // romanian, russian, finnish, swedish, turkish,
 // vietnamese, ukrainian
-const charmNames = [
-  'Charm', '挂件', '吊飾', 'チャーム', '참 장식',
-  'Джунджурия', 'พวงกุญแจ', 'Přívěsek', 'Vedhæng',
-  'Anhänger', 'Colgante', 'Colgante', 'Γούρι',
-  'Porte-bonheur', 'Ciondolo', 'Gantungan',
-  'Talizmán', 'Anheng', 'Przywieszka', 'Amuleto',
-  'Chaveiro', 'Breloc', 'Брелок', 'Riipus', 'Hänge',
-  'Süs', 'Móc treo', 'Брелок',
-];
+// const charmNames = [
+//   'Charm', '挂件', '吊飾', 'チャーム', '참 장식',
+//   'Джунджурия', 'พวงกุญแจ', 'Přívěsek', 'Vedhæng',
+//   'Anhänger', 'Colgante', 'Colgante', 'Γούρι',
+//   'Porte-bonheur', 'Ciondolo', 'Gantungan',
+//   'Talizmán', 'Anheng', 'Przywieszka', 'Amuleto',
+//   'Chaveiro', 'Breloc', 'Брелок', 'Riipus', 'Hänge',
+//   'Süs', 'Móc treo', 'Брелок',
+// ];
 
 const chKnifeNames = [
   ['M9 Bayonet', 'M9_Bayonet'], // important to put it before normal bayo
@@ -460,19 +460,19 @@ const isSticker = (description) => {
   return matchFound;
 };
 
-// true charm, false patch or sticker
-const isCharm = (description) => {
-  let matchFound = false;
+// true charm, false patch or sticker, unused atm
+// const isCharm = (description) => {
+//   let matchFound = false;
 
-  charmNames.forEach((name) => {
-    if (description.includes(`title="${name}`)) {
-      matchFound = true;
-    }
-  });
-  return matchFound;
-};
+//   charmNames.forEach((name) => {
+//     if (description.includes(`title="${name}`)) {
+//       matchFound = true;
+//     }
+//   });
+//   return matchFound;
+// };
 
-// also pathces for agents and charms
+// also pathces for agents
 const parseStickerInfo = (
   descriptions,
   linkType,
@@ -486,12 +486,10 @@ const parseStickerInfo = (
     let stickers = [];
 
     descriptions.forEach((description) => {
-      if (description.name === 'sticker_info' || description.name === 'keychain_info') {
+      if (description.name === 'sticker_info') {
         const type = isSticker(description.value)
           ? 'Sticker'
-          : isCharm(description.value)
-            ? 'Charm'
-            : 'Patch';
+          : 'Patch';
         let names = description.value.split('><br>')[1].split(': ')[1].split('</center>')[0].split(', ');
 
         names = handleStickerNamesWithCommas(names);
@@ -512,6 +510,44 @@ const parseStickerInfo = (
       }
     });
     return stickers;
+  }
+  return null;
+};
+
+const parseCharmInfo = (
+  descriptions,
+  linkType,
+  prices,
+  pricingProvider,
+  pricingMode,
+  exchangeRate,
+  currency,
+) => {
+  if (descriptions !== undefined && linkType !== undefined) {
+    let charms = [];
+
+    descriptions.forEach((description) => {
+      if (description.name === 'keychain_info') {
+        let names = description.value.split('><br>')[1].split(': ')[1].split('</center>')[0].split(', ');
+
+        names = handleStickerNamesWithCommas(names);
+        const iconURLs = description.value.split('src="');
+
+        iconURLs.shift();
+        iconURLs.forEach((iconURL, index) => {
+          iconURLs[index] = iconURL.split('><')[0];
+        });
+
+        charms = charms.concat(...names.map((name, index) => ({
+          name,
+          fullName: `Charm | ${name}`,
+          price: linkType === 'search' ? null : getPrice(`Charm | ${name}`, null, prices, pricingProvider, pricingMode, exchangeRate, currency),
+          iconURL: iconURLs[index],
+          marketURL: getStickerOrPatchLink(linkType, name, 'Charm'),
+        })));
+      }
+    });
+    return charms;
   }
   return null;
 };
@@ -640,7 +676,7 @@ const addSSTandExtIndicators = (
   const stattrak = item.isStatrack ? 'ST' : '';
   const souvenir = item.isSouvenir ? 'S' : '';
   const exterior = item.exterior !== null ? item.exterior.localized_short : '';
-  const stickerPrice = item.stickerPrice !== null ? item.stickerPrice.display : '';
+  const addonPrice = item.totalAddonPrice ? item.totalAddonPrice.display : '';
   const showStickersClass = showStickerPrice ? '' : 'hidden';
   const showExteriorsClass = showExterior ? '' : 'hidden';
   const contrastingLookClass = showContrastingLook ? 'contrastingBackground' : '';
@@ -653,7 +689,7 @@ const addSSTandExtIndicators = (
                 <span class="stattrakOrange ${showExteriorsClass}">${stattrak}</span>
                 <span class="exteriorIndicator ${showExteriorsClass}">${exterior}</span>
                </div>
-               <div class="stickerPrice ${contrastingLookClass} ${showStickersClass}">${stickerPrice}</div>`,
+               <div class="stickerPrice ${contrastingLookClass} ${showStickersClass}">${addonPrice}</div>`,
     ),
   );
 };
@@ -1154,7 +1190,7 @@ export {
   getDataFilledFloatTechnical, souvenirExists, removeLinkFilterFromLinks,
   getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent, setAccessTokenFirstTime,
   isSIHActive, addSearchListener, getSessionID, validateSteamAccessToken,
-  getFloatAsFormattedString, getNameTag,
+  getFloatAsFormattedString, getNameTag, parseCharmInfo,
   removeOfferFromActiveOffers, addUpdatedRibbon, getRemoteImageAsObjectURL,
   addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,
   getAppropriateFetchFunc, getFloatDBLink, getBuffLink, refreshSteamAccessToken, getPricempireLink,

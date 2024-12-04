@@ -11,6 +11,7 @@ import {
   getPattern,
   logExtensionPresence,
   parseStickerInfo,
+  parseCharmInfo,
   souvenirExists,
   getFloatAsFormattedString,
   updateLoggedInUserInfo,
@@ -156,10 +157,12 @@ const getListings = () => {
 
     for (const asset of Object.values(assets)) {
       const stickers = parseStickerInfo(asset.descriptions, 'search');
+      const charms = parseCharmInfo(asset.descriptions, 'search');
 
       if (assetID === asset.id) {
         listing.asset = asset;
         listing.asset.stickers = stickers;
+        listing.asset.charms = charms;
       }
     }
   }
