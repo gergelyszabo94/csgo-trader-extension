@@ -41,6 +41,7 @@ import capsuleNamesWithNoCapsuleInName from 'utils/static/capsuleNamesWithNoCaps
 import { isDopplerInName, reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 import { overrideCreatePriceHistoryGraph } from 'utils/steamOverriding';
 import { listenToAcceptTrade } from 'utils/tradeOffers';
+import itemTypes from 'utils/static/itemTypes';
 
 const inBrowserInspectButtonPopupLink = `
     <a class="popup_menu_item" id="inbrowser_inspect" href="https://swap.gg/screenshot" target="_blank">
@@ -488,8 +489,9 @@ const addFloatBarSkeletons = () => {
         const listingsSection = document.getElementById('searchResultsRows');
 
         // so it does not throw any errors when it can't find it on commodity items
-        if (listingsSection !== null) {
+        if (listingsSection !== null && !fullName.includes(itemTypes.charm.name)) {
           const listingNameBlocks = listingsSection.querySelectorAll('.market_listing_item_name_block');
+
           if (listingNameBlocks !== null && itemWithInspectLink) {
             listingNameBlocks.forEach((listingNameBlock) => {
               if (listingNameBlock.getAttribute('data-floatBar-added') === null
