@@ -62,7 +62,7 @@ const extractUsefulFloatInfo = (floatInfo) => {
   const {
     floatvalue, paintindex, paintseed, defindex,
     // eslint-disable-next-line camelcase
-    origin_name, min, max, stickers, low_rank, high_rank,
+    origin_name, min, max, stickers, keychains, low_rank, high_rank,
   } = { ...floatInfo };
 
   let stickersModified = null;
@@ -77,6 +77,18 @@ const extractUsefulFloatInfo = (floatInfo) => {
     });
   }
 
+  let charmsModifeid = null;
+
+  if (keychains !== undefined) {
+    charmsModifeid = keychains.map((charm) => {
+      return {
+        ...charm,
+        name: charm.market_hash_name.split('Charm | ')[1],
+        stickerId: charm.sticker_id,
+      };
+    });
+  }
+
   return {
     floatvalue,
     paintindex,
@@ -87,6 +99,7 @@ const extractUsefulFloatInfo = (floatInfo) => {
     min,
     max,
     stickers: stickersModified,
+    charms: charmsModifeid,
     // eslint-disable-next-line camelcase
     low_rank: low_rank !== undefined ? low_rank : null,
     // eslint-disable-next-line camelcase

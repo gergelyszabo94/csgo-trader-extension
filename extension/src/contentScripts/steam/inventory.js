@@ -386,7 +386,7 @@ const setPatternInfo = (patternInfo) => {
 };
 
 // sticker wear to sticker icon tooltip
-const setStickerInfo = (stickers) => {
+const setStickerInfo = (stickers, charms) => {
   if (stickers !== null) {
     stickers.forEach((stickerInfo, index) => {
       const wear = stickerInfo.wear !== undefined
@@ -405,6 +405,19 @@ const setStickerInfo = (stickers) => {
           );
         }
       });
+    });
+  }
+
+  if (charms) {
+    const charm = charms[0];
+    document.querySelectorAll('.customStickers').forEach((customStickers) => {
+      const stickerSlots = customStickers.querySelectorAll('.stickerSlot');
+      const charmEl = stickerSlots[stickerSlots.length - 1];
+
+      if (charmEl !== undefined) {
+        const currentToolTipText = charmEl.getAttribute('data-tooltip');
+        charmEl.setAttribute('data-tooltip', `${currentToolTipText} - Pattern: #${charm.pattern}`);
+      }
     });
   }
 };
@@ -455,7 +468,7 @@ const setFloatDBLinkURL = (item) => {
 const updateFloatAndPatternElements = (item) => {
   setFloatBarWithData(item.floatInfo);
   setPatternInfo(item.patternInfo);
-  setStickerInfo(item.floatInfo.stickers);
+  setStickerInfo(item.floatInfo.stickers, item.floatInfo.charms);
   setFloatDBLinkURL(item);
 };
 
@@ -758,7 +771,7 @@ const addRightSideElements = () => {
 
             // adds own sticker elements
             const combinedAddons = [...item.stickers, ...item.charms];
-            
+
             combinedAddons.forEach((stickerInfo) => {
               document.querySelectorAll('.customStickers').forEach((customStickers) => {
                 customStickers.innerHTML += DOMPurify.sanitize(`
