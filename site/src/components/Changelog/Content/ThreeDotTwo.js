@@ -1,6 +1,5 @@
 import React from 'react'
 import ChangelogInstance from '../ChangelogInstance';
-import GithubIssueLink from '../GithubIssueLink';
 
 const ThreeDotTwo = () => {
   return (
