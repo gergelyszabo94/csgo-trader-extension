@@ -38,7 +38,7 @@ const addPricesAndFloatsToInventory = (inventory) => new Promise((resolve) => {
               item.stickerPrice = stickerPrice;
               item.charms = charms;
               item.charmPrice = charmPrice;
-              item.totalAddonprice = getStickerPriceTotal([...stickers, ...charms], currency);
+              item.totalAddonPrice = getStickerPriceTotal([...stickers, ...charms], currency);
             });
             resolve({
               items: inventory,
