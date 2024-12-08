@@ -410,15 +410,18 @@ const setStickerInfo = (stickers, charms) => {
 
   if (charms) {
     const charm = charms[0];
-    document.querySelectorAll('.customStickers').forEach((customStickers) => {
-      const stickerSlots = customStickers.querySelectorAll('.stickerSlot');
-      const charmEl = stickerSlots[stickerSlots.length - 1];
 
-      if (charmEl !== undefined) {
-        const currentToolTipText = charmEl.getAttribute('data-tooltip');
-        charmEl.setAttribute('data-tooltip', `${currentToolTipText} - Pattern: #${charm.pattern}`);
-      }
-    });
+    if (charm && charm.pattern) {
+      document.querySelectorAll('.customStickers').forEach((customStickers) => {
+        const stickerSlots = customStickers.querySelectorAll('.stickerSlot');
+        const charmEl = stickerSlots[stickerSlots.length - 1];
+
+        if (charmEl !== undefined) {
+          const currentToolTipText = charmEl.getAttribute('data-tooltip');
+          charmEl.setAttribute('data-tooltip', `${currentToolTipText} - Pattern: #${charm.pattern}`);
+        }
+      });
+    }
   }
 };
 
