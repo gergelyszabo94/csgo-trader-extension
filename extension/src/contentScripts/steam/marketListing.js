@@ -1321,10 +1321,10 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                     </a>
                   </div>
                   <div class="realMoneySite">
-                    <a href="https://www.haloskins.com/?channelCode=GeRy" target="_blank" class="realMoneySiteLink referralLink" data-site="haloskins">
-                        <img alt="Haloskins logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/haloskins.png')}" data-site="haloskins">
+                    <a href="https://csdeals.com/new/?ref=mwe3otc" target="_blank" class="realMoneySiteLink referralLink" data-site="csdeals">
+                        <img alt="CS.DEALS logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csdeals.png')}" data-site="csdeals">
                         <br>
-                        HaloSkins
+                        CS.DEALS
                     </a>
                   </div>
                 </div>
@@ -1340,7 +1340,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       <a href="https://gamerpay.gg/partner/okn9go3r" target="_blank" class="referralLink" data-site="gamerpay">GamerPay</a>,
                       <a href="https://waxpeer.com/r/gery" target="_blank" class="referralLink" data-site="waxpeer">Waxpeer</a>,
                       <a href="https://buff.market/r/U1093423730" target="_blank" class="referralLink" data-site="buffmarket">BUFF.MARKET</a>,
-                      <a href="https://www.haloskins.com/?channelCode=GeRy" target="_blank" class="referralLink" data-site="haloskins">HaloSkins</a>,
+                      <a href="https://csdeals.com/new/?ref=mwe3otc" target="_blank" class="referralLink" data-site="csdeals">CS.DEALS</a>,
                       <a href="bskn.co/?ref_alias=xcW4c_phcUc" target="_blank" class="referralLink" data-site="bitskins">Bitskins</a> and 
                       <a href="https://csfloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csfloat">
                       CSFloat
