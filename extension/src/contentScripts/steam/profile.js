@@ -120,9 +120,14 @@ if (document.querySelector('body').classList.contains('profile_page')) {
         <img style="width: 16px; height: 16px" src="${chrome.runtime.getURL('images/growth.png')}">
             &nbsp; Open CSGO-REP Profile
       </a>`;
+    const openCSFloatStall = `
+      <a class="popup_menu_item" href="https://csfloat.com/stall/${profileOwnerSteamID}">
+        <img style="width: 16px; height: 16px" src="${chrome.runtime.getURL('images/csfloat.png')}">
+            &nbsp; Open CSFloat Stall
+      </a>`;
     profileActionPopup.querySelector('.popup_body.popup_menu.shadow_content').insertAdjacentHTML(
       'beforeend',
-      copyPermalink + showOfferSummary + copyTradeLink + openCSGORepProfile,
+      copyPermalink + showOfferSummary + copyTradeLink + openCSGORepProfile + openCSFloatStall,
       // not sanitized because it breaks the images and it's static anyways
     );
 
