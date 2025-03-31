@@ -121,8 +121,8 @@ if (document.querySelector('body').classList.contains('profile_page')) {
             &nbsp; Open CSGO-REP Profile
       </a>`;
     const openCSFloatStall = `
-      <a class="popup_menu_item" href="https://csfloat.com/stall/${profileOwnerSteamID}">
-        <img style="width: 16px; height: 16px" src="${chrome.runtime.getURL('images/csfloat.png')}">
+      <a class="popup_menu_item" href="https://csfloat.com/stall/${profileOwnerSteamID}?ref=gerytrading">
+        <img style="width: 16px; height: 16px" src="${chrome.runtime.getURL('images/external_logos/csfloat-square.png')}">
             &nbsp; Open CSFloat Stall
       </a>`;
     profileActionPopup.querySelector('.popup_body.popup_menu.shadow_content').insertAdjacentHTML(
