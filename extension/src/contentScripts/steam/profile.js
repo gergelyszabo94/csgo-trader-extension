@@ -55,9 +55,7 @@ if (document.querySelector('body').classList.contains('profile_page')) {
           );
 
           document.querySelector('.no_header.profile_page').setAttribute('style', `background-image: url('${backgroundURL}')`);
-          const animatedBackground = document.querySelector(
-            '.no_header.profile_page.has_profile_background',
-          ).querySelector('video');
+          const animatedBackground = document.querySelector('.no_header.profile_page.has_profile_background video');
           if (animatedBackground !== null) animatedBackground.remove();
         }
       });
