@@ -118,8 +118,13 @@ const getItemInfoFromPage = (who) => {
   // and the items inside the offer
   let sideAppAndContextIDs = [];
   const activeInventoryIDs = getActiveInventoryIDs();
+
   if (activeInventoryIDs !== null && appInfo[activeInventoryIDs.appID] !== undefined) {
     sideAppAndContextIDs.push(activeInventoryIDs);
+  }
+  if (activeInventoryIDs && activeInventoryIDs.appID === steamApps.CSGO.appID
+    && activeInventoryIDs.contextID) {
+    activeInventoryIDs.contextID = '2';
   }
   const whose = who === 'You' ? 'your' : 'their';
   const side = document.getElementById(`trade_${whose}s`);
@@ -305,11 +310,9 @@ const addItemInfo = () => {
         });
       },
     );
-  } else { // in case the inventory is not loaded yet
-    setTimeout(() => {
-      addItemInfo();
-    }, 1000);
-  }
+  } else setTimeout(addItemInfo, 1000); // in case the inventory is not loaded yet
+
+  if (itemElements.length !== combinedInventories.length) setTimeout(addItemInfo, 1000);
 };
 
 const addInventoryTotals = (yourInventoryTotal, theirInventoryTotal) => {
@@ -509,7 +512,9 @@ const addFloatDataToPage = (job, floatInfo) => {
 
 const addFloatIndicatorsToPage = (type) => {
   chrome.storage.local.get('autoFloatOffer', ({ autoFloatOffer }) => {
-    if (autoFloatOffer && getActiveInventoryIDs().appID === steamApps.CSGO.appID) {
+    const activeInventoryIDs = getActiveInventoryIDs();
+    
+    if (autoFloatOffer && activeInventoryIDs && activeInventoryIDs.appID === steamApps.CSGO.appID) {
       let itemElements;
       if (type === 'page') {
         const page = getActivePage('offer', getActiveInventory);
