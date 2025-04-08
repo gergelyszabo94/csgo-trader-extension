@@ -262,58 +262,63 @@ const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
   }
 };
 
-const addItemInfo = () => {
-  removeSIHStuff();
+// const addItemInfo = () => {
+//   removeSIHStuff();
 
-  const itemElements = document.querySelectorAll('.item.app730.context2');
-  if (itemElements.length !== 0) {
-    chrome.storage.local.get(
-      ['colorfulItems', 'autoFloatOffer', 'showStickerPrice',
-        'activeOffers', 'itemInOtherOffers', 'showShortExteriorsOffers', 'currency'],
-      ({
-        colorfulItems, showStickerPrice, autoFloatOffer, currency,
-        activeOffers, itemInOtherOffers, showShortExteriorsOffers,
-      }) => {
-        itemElements.forEach((itemElement) => {
-          if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') {
-            // in case the inventory is not loaded yet it retires in a second
-            if (itemElement.id === undefined) {
-              setTimeout(() => {
-                addItemInfo();
-              }, 1000);
-              return false;
-            }
-            const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
-            addDopplerPhase(itemElement, item.dopplerInfo, showContrastingLook);
-            addFadePercentage(itemElement, item.patternInfo, showContrastingLook);
-            makeItemColorful(itemElement, item, colorfulItems);
-            addSSTandExtIndicators(
-              itemElement, item, showStickerPrice, showShortExteriorsOffers, showContrastingLook,
-            );
-            addPriceIndicator(itemElement, item.price, currency, showContrastingLook);
-            if (itemInOtherOffers) addInOtherTradeIndicator(itemElement, item, activeOffers.items);
-            if (autoFloatOffer) {
-              addFloatIndicator(
-                itemElement, item.floatInfo, floatDigitsToShow, showContrastingLook,
-              );
-            }
-            if (showPaintSeeds) {
-              addPaintSeedIndicator(itemElement, item.floatInfo, showContrastingLook);
-            }
-            if (showFloatRank) {
-              addFloatRankIndicator(itemElement, item.floatInfo, showContrastingLook);
-            }
+//   const itemElements = document.querySelectorAll('.item.app730.context2');
+//   if (itemElements.length !== 0) {
+//     chrome.storage.local.get(
+//       ['colorfulItems', 'autoFloatOffer', 'showStickerPrice',
+//         'activeOffers', 'itemInOtherOffers', 'showShortExteriorsOffers', 'currency'],
+//       ({
+//         colorfulItems, showStickerPrice, autoFloatOffer, currency,
+//         activeOffers, itemInOtherOffers, showShortExteriorsOffers,
+//       }) => {
+//         itemElements.forEach((itemElement) => {
+//           if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') {
+//             // in case the inventory is not loaded yet it retires in a second
+//             if (itemElement.id === undefined) {
+//               setTimeout(() => {
+//                 addItemInfo();
+//               }, 1000);
+//               return false;
+//             }
+//             const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
+//             addDopplerPhase(itemElement, item.dopplerInfo, showContrastingLook);
+//             addFadePercentage(itemElement, item.patternInfo, showContrastingLook);
+//             makeItemColorful(itemElement, item, colorfulItems);
+//             addSSTandExtIndicators(
+//               itemElement, item, showStickerPrice, showShortExteriorsOffers, showContrastingLook,
+//             );
+//             addPriceIndicator(itemElement, item.price, currency, showContrastingLook);
+//             if (itemInOtherOffers) addInOtherTradeIndicator(itemElement, item, activeOffers.items);
+//             if (autoFloatOffer) {
+//               addFloatIndicator(
+//                 itemElement, item.floatInfo, floatDigitsToShow, showContrastingLook,
+//               );
+//             }
+//             if (showPaintSeeds) {
+//               addPaintSeedIndicator(itemElement, item.floatInfo, showContrastingLook);
+//             }
+//             if (showFloatRank) {
+//               addFloatRankIndicator(itemElement, item.floatInfo, showContrastingLook);
+//             }
 
-            // marks the item "processed" to avoid additional unnecessary work later
-            itemElement.setAttribute('data-processed', 'true');
-          }
-        });
-      },
-    );
-  } else setTimeout(addItemInfo, 1000); // in case the inventory is not loaded yet
+//             // marks the item "processed" to avoid additional unnecessary work later
+//             itemElement.setAttribute('data-processed', 'true');
+//           }
+//         });
+//       },
+//     );
+//   } else setTimeout(addItemInfo, 1000); // in case the inventory is not loaded yet
 
-  if (itemElements.length !== combinedInventories.length) setTimeout(addItemInfo, 1000);
-};
+//   if (itemElements.length !== combinedInventories.length) {
+//     setTimeout(addItemInfo, 1000);
+//     setTimeout(() => {
+//       doInitSorting(true);
+//     }, 1000);
+//   }
+// };
 
 const addInventoryTotals = (yourInventoryTotal, theirInventoryTotal) => {
   chrome.storage.local.get(['currency'], ({ currency }) => {
@@ -694,6 +699,64 @@ const doInitSorting = (initial) => {
 
     singleClickControlClick();
   });
+};
+
+const addItemInfo = () => {
+  removeSIHStuff();
+
+  const itemElements = document.querySelectorAll('.item.app730.context2');
+  if (itemElements.length !== 0) {
+    chrome.storage.local.get(
+      ['colorfulItems', 'autoFloatOffer', 'showStickerPrice',
+        'activeOffers', 'itemInOtherOffers', 'showShortExteriorsOffers', 'currency'],
+      ({
+        colorfulItems, showStickerPrice, autoFloatOffer, currency,
+        activeOffers, itemInOtherOffers, showShortExteriorsOffers,
+      }) => {
+        itemElements.forEach((itemElement) => {
+          if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') {
+            // in case the inventory is not loaded yet it retires in a second
+            if (itemElement.id === undefined) {
+              setTimeout(() => {
+                addItemInfo();
+              }, 1000);
+              return false;
+            }
+            const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
+            addDopplerPhase(itemElement, item.dopplerInfo, showContrastingLook);
+            addFadePercentage(itemElement, item.patternInfo, showContrastingLook);
+            makeItemColorful(itemElement, item, colorfulItems);
+            addSSTandExtIndicators(
+              itemElement, item, showStickerPrice, showShortExteriorsOffers, showContrastingLook,
+            );
+            addPriceIndicator(itemElement, item.price, currency, showContrastingLook);
+            if (itemInOtherOffers) addInOtherTradeIndicator(itemElement, item, activeOffers.items);
+            if (autoFloatOffer) {
+              addFloatIndicator(
+                itemElement, item.floatInfo, floatDigitsToShow, showContrastingLook,
+              );
+            }
+            if (showPaintSeeds) {
+              addPaintSeedIndicator(itemElement, item.floatInfo, showContrastingLook);
+            }
+            if (showFloatRank) {
+              addFloatRankIndicator(itemElement, item.floatInfo, showContrastingLook);
+            }
+
+            // marks the item "processed" to avoid additional unnecessary work later
+            itemElement.setAttribute('data-processed', 'true');
+          }
+        });
+      },
+    );
+  } else setTimeout(addItemInfo, 1000); // in case the inventory is not loaded yet
+
+  if (itemElements.length !== combinedInventories.length) {
+    setTimeout(addItemInfo, 1000);
+    setTimeout(() => {
+      doInitSorting(true);
+    }, 1000);
+  }
 };
 
 const getInventories = (initial) => {
