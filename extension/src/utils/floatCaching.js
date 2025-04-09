@@ -12,6 +12,21 @@ const addToFloatCache = (assetID, floatInfo) => {
   }, () => {});
 };
 
+const batchAddToFloatCache = (floatData) => {
+  const storageSetObject = {};
+  
+  for (const [assetID, floatInfo] of Object.entries(floatData)) {
+    storageSetObject[`floatCache_${assetID}`] = {
+      floatInfo,
+      added: Date.now(),
+      lastUsed: Date.now(),
+      used: 0,
+    };
+  }
+
+  chrome.storage.local.set(storageSetObject, () => { });
+};
+
 const removeFromFloatCache = (assetID) => {
   chrome.storage.local.remove(`floatCache_${assetID}`, () => {});
 };
@@ -128,4 +143,5 @@ const trimFloatCache = () => {
 export {
   trimFloatCache, getFloatInfoFromCache, extractUsefulFloatInfo,
   addToFloatCache, updateFloatCache, removeFromFloatCache,
+  batchAddToFloatCache,
 };

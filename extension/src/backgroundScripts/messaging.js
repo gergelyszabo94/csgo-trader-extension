@@ -1,4 +1,4 @@
-import { extractUsefulFloatInfo, addToFloatCache } from 'utils/floatCaching';
+import { extractUsefulFloatInfo, addToFloatCache, batchAddToFloatCache } from 'utils/floatCaching';
 import {
   goToInternalPage, validateSteamAPIKey, validateSteamAccessToken,
   getAssetIDFromInspectLink,
@@ -20,16 +20,41 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         ? getUserCSGOInventory
         : getUserCSGOInventoryAlternative;
       inventoryLoadFunction(request.inventory).then(({ items, total }) => {
-        const inspectLinks = items.map((item) => item.inspectLink);
-        const pricempireRequest = new Request('https://api.csgotrader.app/v2/inspect', { method: 'PUT', body: JSON.stringify(inspectLinks) });
+        const trimmedItemProperties = [];
 
-        fetch(pricempireRequest)
+        items.forEach((item) => {
+          if (item.inspectLink !== undefined
+            && item.inspectLink !== null) {
+            trimmedItemProperties.push({
+              assetid: item.assetid,
+              classid: item.classid,
+              instanceid: item.instanceid,
+              inspectLink: item.inspectLink,
+              name: item.name,
+              market_name: item.market_hash_name,
+            });
+          }
+        });
+
+        const getFloatsRequest = new Request('https://api.csgotrader.app/getFloats', {
+          method: 'POST',
+          body: JSON.stringify({
+            items: trimmedItemProperties,
+            isOwn: true,
+            ownerID: steamIDOfUser,
+          }),
+        });
+
+        fetch(getFloatsRequest)
           .then((response) => {
             if (!response.ok) {
               console.log(`Error code: ${response.status} Status: ${response.statusText}`);
             } else return response.json();
           }).then((body) => {
-            if (!body.status) console.log(body);
+            if (body.status) {
+              console.log(body.floatData);
+              batchAddToFloatCache(body.floatData);
+            } else console.log(body);
           }).catch((err) => { console.log(err); });
         sendResponse({ items, total });
       }).catch(() => {
@@ -114,7 +139,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           else sendResponse('error');
         } else return response.json();
       }).then((body) => {
-        if (body.iteminfo !== undefined && body.iteminfo.floatvalue !== undefined) {
+        if (body && body.iteminfo !== undefined && body.iteminfo.floatvalue !== undefined) {
           const usefulFloatInfo = extractUsefulFloatInfo(body.iteminfo);
           addToFloatCache(assetID, usefulFloatInfo);
           if (usefulFloatInfo.floatvalue !== 0) sendResponse({ floatInfo: usefulFloatInfo });
