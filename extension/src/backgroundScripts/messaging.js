@@ -198,6 +198,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   } else if (request.closeTab !== undefined) {
     chrome.tabs.remove(sender.tab.id);
     return true; // async return to signal that it will return later
+  } else if (request.loadFloats !== undefined) {
+    loadFloatData(request.loadFloats.items, request.loadFloats.steamID, request.loadFloats.isOwn).then((itemsWithFloats) => {
+      batchAddToFloatCache(itemsWithFloats);
+      sendResponse({ loaded: true });
+    }).catch(() => {
+      sendResponse('error');
+    });
+    return true; // async return to signal that it will return later
   }
 });
 

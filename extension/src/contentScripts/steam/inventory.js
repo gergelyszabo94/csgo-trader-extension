@@ -2241,6 +2241,13 @@ const onFullCSGOInventoryLoad = () => {
   if (steamApps.CSGO.appID === getActiveInventoryAppID()) {
     if (!isOwnInventory()) {
       getCSGOInventoryDataFromPage().then((inv) => {
+        chrome.runtime.sendMessage({
+          loadFloats: {
+            items: inv,
+            steamID: inventoryOwnerID,
+            isOwn: false,
+          },
+        }, () => {});
         items = inv;
         addRightSideElements();
         addPerItemInfo(steamApps.CSGO.appID);
