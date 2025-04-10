@@ -1006,42 +1006,37 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
   try {
     switch (itemType) {
       case 'gloves':
-        return `cs2-items/glove/${
-          itemName
-            .replace('★ ', '')
-            .trim()
-            .replace(/\s*\|\s*/g, '-')
-            .toLowerCase()
-            .replace(/\s+/g, '-')
-            .replace(/[^\w-]+/g, '')
+        return `cs2-items/glove/${itemName
+          .replace('★ ', '')
+          .trim()
+          .replace(/\s*\|\s*/g, '-')
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^\w-]+/g, '')
         }/${condition
           .replace(' ', '-')
           .toLowerCase()}`;
       case 'sticker':
         // Last 4 characters of string are a number -> tournament year -> use tournament-sticker
         if (/\d{4}/.test(itemName)) {
-          return `cs2-items/tournament-sticker/sticker-${
-            itemName
-              .replace('Sticker | ', '')
-              .replace(/\s*\(\w+\)\s*\|\s*/g, '-')
-              .replace(/\s*\|\s*/g, '-')
-              .toLowerCase()
-              .replace(/\s+/g, '-')
-          }/${
-            (itemName.match(/\(\w+\)/) || [''])[0].replace(/[()]/g, '').toLowerCase()}`;
-        }
-        // Last 4 characters of string are not numbers -> not tournament year -> use sticker
-        return `cs2-items/sticker/sticker-${
-          itemName
+          return `cs2-items/tournament-sticker/sticker-${itemName
             .replace('Sticker | ', '')
-            .replace(/\s*\(\w+\)\s*/g, '-')
+            .replace(/\s*\(\w+\)\s*\|\s*/g, '-')
             .replace(/\s*\|\s*/g, '-')
-            .trim()
             .toLowerCase()
             .replace(/\s+/g, '-')
-            .replace(/-+$/, '')
-        }${
-          (itemName.match(/\(\w+\)/) ? `/${itemName.match(/\(\w+\)/)[0].replace(/[()]/g, '').toLowerCase()}` : '')
+          }/${(itemName.match(/\(\w+\)/) || [''])[0].replace(/[()]/g, '').toLowerCase()}`;
+        }
+        // Last 4 characters of string are not numbers -> not tournament year -> use sticker
+        return `cs2-items/sticker/sticker-${itemName
+          .replace('Sticker | ', '')
+          .replace(/\s*\(\w+\)\s*/g, '-')
+          .replace(/\s*\|\s*/g, '-')
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/-+$/, '')
+        }${(itemName.match(/\(\w+\)/) ? `/${itemName.match(/\(\w+\)/)[0].replace(/[()]/g, '').toLowerCase()}` : '')
         }`;
       case 'container':
         // this checks if there are 4 digits again -> year -> tournament
@@ -1054,45 +1049,39 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
             .replace(/(\d{4})-/, '$1/')
             // no (holo/foil) in itemName still needs to be handled
             .replace(/\(([^/]+)\/([^/]+)\)/, '$1$2')}`
-            + `-${
-              type[1].toLowerCase()}`;
+            + `-${type[1].toLowerCase()}`;
         }
-        return `cs2-items/container/${
-          itemName
-            .replace(/\s+/g, '-')
-            .replace(/[^\w-]+/g, '')
-            .toLowerCase()}`;
+        return `cs2-items/container/${itemName
+          .replace(/\s+/g, '-')
+          .replace(/[^\w-]+/g, '')
+          .toLowerCase()}`;
       case 'custom_player':
-        return `cs2-items/agent/${
-          itemName.toLowerCase()
-            .replace(/\s*\|\s*/g, '-')
-            .replace(/\s+/g, '-')
-            .replace(/[^\w-]+/g, '')
+        return `cs2-items/agent/${itemName.toLowerCase()
+          .replace(/\s*\|\s*/g, '-')
+          .replace(/\s+/g, '-')
+          .replace(/[^\w-]+/g, '')
         }`;
       case 'music_kit':
-        return `cs2-items/music-kit/${
-          itemName
-            .replace('StatTrak™ ', '')
-            .replace(/\s*\|\s*/g, '-')
-            .replace(/\s+/g, '-')
-            .toLowerCase()
-            .replace(/[^\w-]+/g, '')
+        return `cs2-items/music-kit/${itemName
+          .replace('StatTrak™ ', '')
+          .replace(/\s*\|\s*/g, '-')
+          .replace(/\s+/g, '-')
+          .toLowerCase()
+          .replace(/[^\w-]+/g, '')
         }${itemName.includes('StatTrak') ? '/stattrak' : ''}`;
       case 'graffiti':
-        return `cs2-items/graffiti/${
-          itemName
-            .replace(/\s*\|\s*/g, '-')
-            .toLowerCase()
-            .replace(/ \(([^)]+)\)/g, '/$1')
-            .replace(/\s+/g, '-')}`;
+        return `cs2-items/graffiti/${itemName
+          .replace(/\s*\|\s*/g, '-')
+          .toLowerCase()
+          .replace(/ \(([^)]+)\)/g, '/$1')
+          .replace(/\s+/g, '-')}`;
       case 'charm':
-        return `cs2-items/charm/${
-          itemName
-            .replace(/\s*\|\s*/g, '-')
-            .toLowerCase()
-            .replace(/ \(([^)]+)\)/g, '/$1')
-            .replace(/\s+/g, '-')
-            .replace(/[^\w-]+/g, '')}`;
+        return `cs2-items/charm/${itemName
+          .replace(/\s*\|\s*/g, '-')
+          .toLowerCase()
+          .replace(/ \(([^)]+)\)/g, '/$1')
+          .replace(/\s+/g, '-')
+          .replace(/[^\w-]+/g, '')}`;
       case 'collectible':
         if (!(itemName.includes('Service Medal') || itemName.includes('Coin'))) {
           return `cs2-items/pin/${itemName.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '')}`;
@@ -1101,38 +1090,35 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
         return '';
       default:
         if (itemName.includes('★') && !itemName.includes('|')) {
-          return `cs2-items/skin/${
-            itemName
-              .replace('StatTrak™ ', '')
-              .replace('★ ', '')
-              .replace(/\s+/g, '-')
-              .toLowerCase()
+          return `cs2-items/skin/${itemName
+            .replace('StatTrak™ ', '')
+            .replace('★ ', '')
+            .replace(/\s+/g, '-')
+            .toLowerCase()
           }${itemName.includes('StatTrak') ? '/stattrak' : ''}`;
         }
         if (itemName.includes('Souvenir')) {
-          return `cs2-items/skin/${
-            itemName
-              .replace('Souvenir', '')
-              .trim()
-              .replace(/\s*\|\s*/g, '-')
-              .toLowerCase()
-              .replace(/\s+/g, '-')
-          }/souvenir-${condition
-            .replace(' ', '-')
-            .toLowerCase()}`;
-        }
-        return `cs2-items/skin/${
-          itemName
-            .replace('StatTrak™', '')
-            .replace('★ ', '')
-            .replace('弐', '2')
+          return `cs2-items/skin/${itemName
+            .replace('Souvenir', '')
             .trim()
             .replace(/\s*\|\s*/g, '-')
             .toLowerCase()
             .replace(/\s+/g, '-')
-            .replace(/[^\w-]+/g, '')
-            .replace('--', '-')
-            .replace(/^-+|-+$/g, '')
+          }/souvenir-${condition
+            .replace(' ', '-')
+            .toLowerCase()}`;
+        }
+        return `cs2-items/skin/${itemName
+          .replace('StatTrak™', '')
+          .replace('★ ', '')
+          .replace('弐', '2')
+          .trim()
+          .replace(/\s*\|\s*/g, '-')
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^\w-]+/g, '')
+          .replace('--', '-')
+          .replace(/^-+|-+$/g, '')
         }${dopplerType.toLowerCase().replace(' ', '-')
         }${itemName.includes('StatTrak') ? '/stattrak-' : '/'
         }${condition
@@ -1166,6 +1152,52 @@ const refreshSteamAccessToken = () => {
   });
 };
 
+const loadFloatData = (items, ownerID, isOwn) => new Promise((resolve, reject) => {
+  const trimmedItemProperties = [];
+
+  items.forEach((item) => {
+    if (item.inspectLink !== undefined
+      && item.inspectLink !== null) {
+      trimmedItemProperties.push({
+        assetid: item.assetid,
+        classid: item.classid,
+        instanceid: item.instanceid,
+        inspectLink: item.inspectLink,
+        name: item.name,
+        market_name: item.market_hash_name,
+      });
+    }
+  });
+
+  const getFloatsRequest = new Request('https://api.csgotrader.app/getFloats', {
+    method: 'POST',
+    body: JSON.stringify({
+      items: trimmedItemProperties,
+      isOwn,
+      ownerID,
+    }),
+  });
+
+  fetch(getFloatsRequest)
+    .then((response) => {
+      if (!response.ok) {
+        const errorMessage = `Error code: ${response.status} Status: ${response.statusText}`;
+        console.log(errorMessage);
+        reject(errorMessage);
+      } else return response.json();
+    }).then((body) => {
+      if (body.status) {
+        resolve(body.floatData);
+      } else {
+        console.log(body);
+        reject(body);
+      }
+    }).catch((err) => {
+      console.log(err);
+      reject(err);
+    });
+});
+
 //  unused atm
 // const generateRandomString = (length) => {
 //   let text = '';
@@ -1193,5 +1225,6 @@ export {
   getFloatAsFormattedString, getNameTag, parseCharmInfo,
   removeOfferFromActiveOffers, addUpdatedRibbon, getRemoteImageAsObjectURL,
   addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,
-  getAppropriateFetchFunc, getFloatDBLink, getBuffLink, refreshSteamAccessToken, getPricempireLink,
+  getAppropriateFetchFunc, getFloatDBLink, getBuffLink, refreshSteamAccessToken,
+  getPricempireLink, loadFloatData,
 };
