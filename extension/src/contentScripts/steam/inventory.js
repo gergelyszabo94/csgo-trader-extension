@@ -2246,6 +2246,7 @@ const onFullCSGOInventoryLoad = () => {
             items: inv,
             steamID: inventoryOwnerID,
             isOwn: false,
+            type: 'inventory',
           },
         }, () => {});
         items = inv;

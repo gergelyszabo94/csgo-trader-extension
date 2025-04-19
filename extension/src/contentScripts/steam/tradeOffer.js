@@ -33,6 +33,7 @@ import {
   acceptOffer, declineOffer, sendOffer, createTradeOfferJSON, listenToAcceptTrade,
 } from 'utils/tradeOffers';
 import steamApps from 'utils/static/steamApps';
+import { getUserSteamID } from 'utils/steamID';
 
 let showPaintSeeds = false;
 let showFloatRank = false;
@@ -487,6 +488,12 @@ const sortItems = (method, type) => {
   }
 };
 
+// gets the other party's steam id in a trade offer
+const getTradePartnerSteamID = () => {
+  const tradePartnerSteamIDScript = 'document.querySelector(\'body\').setAttribute(\'tradePartnerSteamID\', g_ulTradePartnerSteamID);';
+  return injectScript(tradePartnerSteamIDScript, true, 'tradePartnerSteamID', 'tradePartnerSteamID');
+};
+
 const addFloatDataToPage = (job, floatInfo) => {
   // add float and pattern info to page variable
   const item = getItemByIDs(combinedInventories, steamApps.CSGO.appID, '2', job.assetID);
@@ -795,6 +802,24 @@ const getInventories = (initial) => {
         },
     };
 
+    chrome.runtime.sendMessage({
+      loadFloats: {
+        items: yourBuiltInventory[steamApps.CSGO.appID].items,
+        steamID: getUserSteamID(),
+        isOwn: true,
+        type: 'offer',
+      },
+    }, () => {});
+
+    chrome.runtime.sendMessage({
+      loadFloats: {
+        items: theirBuiltInventory[steamApps.CSGO.appID].items,
+        steamID: getTradePartnerSteamID(),
+        isOwn: false,
+        type: 'offer',
+      },
+    }, () => {});
+
     addPricesAndFloatsToInventory(
       yourBuiltInventory[steamApps.CSGO.appID].items,
     ).then(({ items, total }) => {
@@ -1050,12 +1075,6 @@ const addFunctionBars = () => {
 // const getOfferID = () => {
 //     return window.location.href.split('tradeoffer/')[1].split('/')[0];
 // };
-
-// gets the other party's steam id in a trade offer
-const getTradePartnerSteamID = () => {
-  const tradePartnerSteamIDScript = 'document.querySelector(\'body\').setAttribute(\'tradePartnerSteamID\', g_ulTradePartnerSteamID);';
-  return injectScript(tradePartnerSteamIDScript, true, 'tradePartnerSteamID', 'tradePartnerSteamID');
-};
 
 // add an info card to the top of the offer about offer history with the user (sent/received)
 const addPartnerOfferSummary = () => {

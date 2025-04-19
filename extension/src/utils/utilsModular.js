@@ -1152,7 +1152,7 @@ const refreshSteamAccessToken = () => {
   });
 };
 
-const loadFloatData = (items, ownerID, isOwn) => new Promise((resolve, reject) => {
+const loadFloatData = (items, ownerID, isOwn, type) => new Promise((resolve, reject) => {
   const trimmedItemProperties = [];
 
   items.forEach((item) => {
@@ -1175,6 +1175,7 @@ const loadFloatData = (items, ownerID, isOwn) => new Promise((resolve, reject) =
       items: trimmedItemProperties,
       isOwn,
       ownerID,
+      type,
     }),
   });
 

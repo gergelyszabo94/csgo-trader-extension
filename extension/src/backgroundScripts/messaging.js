@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         : getUserCSGOInventoryAlternative;
 
       inventoryLoadFunction(request.inventory).then(({ items, total }) => {
-        loadFloatData(items, request.inventory, steamIDOfUser === request.inventory).then((itemsWithFloats) => {
+        loadFloatData(items, request.inventory, steamIDOfUser === request.inventory, 'inventory').then((itemsWithFloats) => {
           batchAddToFloatCache(itemsWithFloats);
         });
         
@@ -199,7 +199,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     chrome.tabs.remove(sender.tab.id);
     return true; // async return to signal that it will return later
   } else if (request.loadFloats !== undefined) {
-    loadFloatData(request.loadFloats.items, request.loadFloats.steamID, request.loadFloats.isOwn).then((itemsWithFloats) => {
+    loadFloatData(
+      request.loadFloats.items,
+      request.loadFloats.steamID,
+      request.loadFloats.isOwn,
+      request.loadFloats.type,
+    ).then((itemsWithFloats) => {
       batchAddToFloatCache(itemsWithFloats);
       sendResponse({ loaded: true });
     }).catch(() => {
