@@ -2271,12 +2271,8 @@ const loadFullInventory = () => {
     // basically checking if first call
     if (document.querySelector('body').getAttribute('allItemsLoaded') === null) {
       const loadFullInventoryScript = `
-                g_ActiveInventory.LoadCompleteInventory().done(function () {
-                    for (let i = 0; i < g_ActiveInventory.m_cPages; i++) {
-                        g_ActiveInventory.m_rgPages[i].EnsurePageItemsCreated();
-                        g_ActiveInventory.PreloadPageImages(i);
-                    }
-                    document.querySelector('body').setAttribute('allItemsLoaded', true);
+                g_ActiveInventory.LoadMoreAssets(1000).done(function () {
+                  document.querySelector('body').setAttribute('allItemsLoaded', true);
                 });
                 `;
       if (injectScript(loadFullInventoryScript, true, 'loadFullInventory', 'allItemsLoaded') === null) {
