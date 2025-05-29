@@ -434,6 +434,10 @@ const handleStickerNamesWithCommas = (names) => {
       namesModified.push(`${name}, Champion) | Paris 2023`);
       nameWithCommaFound = true;
       i += 1;
+    } else if (names[i + 1] === 'Champion) | Shanghai 2024') {
+      namesModified.push(`${name}, Champion) | Shanghai 2024`);
+      nameWithCommaFound = true;
+      i += 1;
     } else namesModified.push(name);
   }
 
