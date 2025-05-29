@@ -1147,12 +1147,10 @@ const refreshSteamAccessToken = () => {
       // validate the token
       chrome.runtime.sendMessage({ accessTokenToValidate: token }, (response) => {
         if (response.valid) {
-          chrome.storage.local.set({ steamAcessToken: token, steamAcessTokenValid: true }, () => {
-            console.log('Steam access token updated');
-          });
+          chrome.storage.local.set({ steamAcessToken: token, steamAcessTokenValid: true }, () => {});
         } else console.log('Steam access token could not be validated');
       });
-    } else console.log('Access token not changed');
+    }
   });
 };
 
