@@ -2272,6 +2272,10 @@ const loadFullInventory = () => {
     if (document.querySelector('body').getAttribute('allItemsLoaded') === null) {
       const loadFullInventoryScript = `
                 g_ActiveInventory.LoadMoreAssets(1000).done(function () {
+                  for (let i = 0; i < g_ActiveInventory.m_cPages; i++) {
+                        g_ActiveInventory.m_rgPages[i].EnsurePageItemsCreated();
+                        g_ActiveInventory.PreloadPageImages(i);
+                    }
                   document.querySelector('body').setAttribute('allItemsLoaded', true);
                 });
                 `;
