@@ -213,7 +213,6 @@ const getItemInfoFromPage = (appID, contextID) => {
                   contextid: asset.contextid,
                   instanceid: asset.instanceid,
                   description: asset.description,
-                  ...asset.description,
                   appid: asset.appid.toString(),
               });
             }
@@ -316,7 +315,7 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
                 owner,
                 assetid: assetID,
               }, owner, assetID),
-              quality: getQuality(item.tags),
+              quality: getQuality(item.description.tags),
               isStatrack: name.includes('StatTrak™'),
               isSouvenir: name.includes('Souvenir'),
               starInName: name.includes('★'),
