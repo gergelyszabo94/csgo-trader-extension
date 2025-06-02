@@ -2266,23 +2266,32 @@ const onFullCSGOInventoryLoad = () => {
 // triggers steam's mechanism for loading complete inventories
 // by default only the first 3 pages (75 items) are loaded
 const loadFullInventory = () => {
-  if (!isSIHActive() || !isOwnInventory()) {
+  if (!isSIHActive()) {
     // basically checking if first call
     if (document.querySelector('body').getAttribute('allItemsLoaded') === null) {
+      const initPageElementsScript = `
+        for (let i = 0; i < g_ActiveInventory.m_cPages; i++) {
+          g_ActiveInventory.m_rgPages[i].EnsurePageItemsCreated();
+          g_ActiveInventory.PreloadPageImages(i);
+        }`;
       const loadFullInventoryScript = `
                 g_ActiveInventory.LoadMoreAssets(1000).done(function () {
-                  for (let i = 0; i < g_ActiveInventory.m_cPages; i++) {
-                        g_ActiveInventory.m_rgPages[i].EnsurePageItemsCreated();
-                        g_ActiveInventory.PreloadPageImages(i);
-                    }
+                  ${initPageElementsScript}
                   document.querySelector('body').setAttribute('allItemsLoaded', true);
                 });
                 `;
+                
       if (injectScript(loadFullInventoryScript, true, 'loadFullInventory', 'allItemsLoaded') === null) {
         setTimeout(() => {
           loadFullInventory();
         }, 2000);
       } else onFullCSGOInventoryLoad();
+
+      // in other people's inventories the pages don't get initialized by the first injection
+      // for some reason, this is a workaround
+      setTimeout(() => {
+        injectScript(initPageElementsScript, true, 'loadFullInventory', 'allItemsLoaded');
+      }, 100);
     } else onFullCSGOInventoryLoad();
   } else doInitSorting();
 };
@@ -2406,7 +2415,6 @@ const loadInventoryItems = (appID, contextID) => {
 };
 
 const defaultActiveInventoryAppID = getActiveInventoryAppID();
-
 logExtensionPresence();
 updateWalletCurrency();
 listenToAcceptTrade();
