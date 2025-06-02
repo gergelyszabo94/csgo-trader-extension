@@ -1278,55 +1278,64 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                   </div>
                 </div>
                 <div class="realMoneySites">
-                <div class="realMoneySite">
-                    <a href="https://bitskins.com/market/csgo?ref_alias=csgotrader" target="_blank" class="realMoneySiteLink referralLink" data-site="bitskins">
+                    <div class="realMoneySite">
+                      <a href="https://bitskins.com/market/csgo?ref_alias=csgotrader" target="_blank" class="realMoneySiteLink referralLink" data-site="bitskins">
                         <img alt="Bitskins logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/bitskins.png')}" data-site="bitskins">
                         <br>
                         Bitskins.com
-                    </a>
-                  </div>
-                 <div class="realMoneySite">
-                    <a href="https://dmarket.com/?ref=hJEDYLBTsV" target="_blank" class="realMoneySiteLink referralLink" data-site="dmarket">
-                        <img alt="Dmarket logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/dmarket.png')}" data-site="dmarket">
-                        <br>
-                        DMARKET
-                    </a>
-                  </div>
-                  <div class="realMoneySite">
-                    <a href="https://waxpeer.com/r/gery" target="_blank" class="realMoneySiteLink referralLink" data-site="waxpeer">
-                        <img alt="Waxpeer logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/waxpeer.png')}" data-site="waxpeer">
-                        <br>
-                        Waxpeer.com
-                    </a>
-                  </div>
-                  <div class="realMoneySite">
-                    <a href="https://skinbid.com/?ref=csgotrader" target="_blank" class="realMoneySiteLink referralLink" data-site="skinbid">
-                        <img alt="SkinBid logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinbid.png')}" data-site="skinbid">
-                        <br>
-                        SkinBid
-                    </a>
-                  </div>
-                  <div class="realMoneySite">
-                    <a href="https://skinvault.gg/en?aff=gery" target="_blank" class="realMoneySiteLink referralLink" data-site="skinvault">
-                        <img alt="SkinVault logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinvault.png')}" data-site="skinvault">
-                        <br>
-                        SkinVault
-                    </a>
-                  </div>
-                  <div class="realMoneySite">
-                    <a href="https://skinswap.com/r/gery" target="_blank" class="realMoneySiteLink referralLink" data-site="skinswap">
-                        <img alt="Skinswap logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinswap.png')}" data-site="skinswap">
-                        <br>
-                        SKINSWAP
-                    </a>
-                  </div>
-                  <div class="realMoneySite">
-                    <a href="https://csdeals.com/new/?ref=mwe3otc" target="_blank" class="realMoneySiteLink referralLink" data-site="csdeals">
-                        <img alt="CS.DEALS logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csdeals.png')}" data-site="csdeals">
-                        <br>
-                        CS.DEALS
-                    </a>
-                  </div>
+                      </a>
+                    </div>
+                    <div class="realMoneySite">
+                      <a href="https://dmarket.com/?ref=hJEDYLBTsV" target="_blank" class="realMoneySiteLink referralLink" data-site="dmarket">
+                          <img alt="Dmarket logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/dmarket.png')}" data-site="dmarket">
+                          <br>
+                          DMARKET
+                      </a>
+                    </div>
+                    <div class="realMoneySite">
+                      <a href="https://waxpeer.com/r/gery" target="_blank" class="realMoneySiteLink referralLink" data-site="waxpeer">
+                          <img alt="Waxpeer logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/waxpeer.png')}" data-site="waxpeer">
+                          <br>
+                          Waxpeer.com
+                      </a>
+                    </div>
+                    <div class="realMoneySite">
+                      <a href="https://skinbid.com/?ref=csgotrader" target="_blank" class="realMoneySiteLink referralLink" data-site="skinbid">
+                          <img alt="SkinBid logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinbid.png')}" data-site="skinbid">
+                          <br>
+                          SkinBid
+                      </a>
+                    </div>
+                  </div> 
+                  <div class="realMoneySites">
+                    <div class="realMoneySite">
+                      <a href="https://skinvault.gg/en?aff=gery" target="_blank" class="realMoneySiteLink referralLink" data-site="skinvault">
+                          <img alt="SkinVault logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinvault.png')}" data-site="skinvault">
+                          <br>
+                          SkinVault
+                      </a>
+                    </div>
+                    <div class="realMoneySite">
+                      <a href="https://skinswap.com/r/gery" target="_blank" class="realMoneySiteLink referralLink" data-site="skinswap">
+                          <img alt="Skinswap logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinswap.png')}" data-site="skinswap">
+                          <br>
+                          SKINSWAP
+                      </a>
+                    </div>
+                    <div class="realMoneySite">
+                      <a href="https://csdeals.com/new/?ref=mwe3otc" target="_blank" class="realMoneySiteLink referralLink" data-site="csdeals">
+                          <img alt="CS.DEALS logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csdeals.png')}" data-site="csdeals">
+                          <br>
+                          CS.DEALS
+                      </a>
+                    </div>
+                    <div class="realMoneySite">
+                      <a href="https://skin.place/buy-cs2-skins/?search=${weaponName}&utm_campaign=cs2trader" target="_blank" class="realMoneySiteLink referralLink" data-site="skinplace">
+                          <img alt="Skin.Place logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinplace.png')}" data-site="skinplace">
+                          <br>
+                          Skin.Place
+                      </a>
+                    </div>
                 </div>
                 
                 <div id="realMoneyExpand" class="clickable" title="Click to learn more about what this is">What is this?</div>
@@ -1341,6 +1350,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       <a href="https://waxpeer.com/r/gery" target="_blank" class="referralLink" data-site="waxpeer">Waxpeer</a>,
                       <a href="https://buff.market/r/U1093423730" target="_blank" class="referralLink" data-site="buffmarket">BUFF.MARKET</a>,
                       <a href="https://csdeals.com/new/?ref=mwe3otc" target="_blank" class="referralLink" data-site="csdeals">CS.DEALS</a>,
+                      <a href="https://p.skin.place/cs2trader" target="_blank" class="referralLink" data-site="skinplace">Skin.Place</a>,
                       <a href="bskn.co/?ref_alias=xcW4c_phcUc" target="_blank" class="referralLink" data-site="bitskins">Bitskins</a> and 
                       <a href="https://csfloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csfloat">
                       CSFloat
