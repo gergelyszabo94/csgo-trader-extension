@@ -41,6 +41,7 @@ let floatDigitsToShow = 4;
 let showContrastingLook = true;
 let pricEmpireAction = false;
 let buffAction = false;
+let floatAction = false;
 let yourInventory = null;
 let theirInventory = null;
 const combinedInventories = [];
@@ -1198,11 +1199,12 @@ if (partnerName !== null) changePageTitle('trade_offer', partnerName);
 
 chrome.storage.local.get([
   'numberOfFloatDigitsToShow', 'showPaintSeedOnItems', 'showFloatRankOnItems', 'contrastingLook',
-  'tradeOfferPricEmpireAction', 'tradeOfferBuffAction',
+  'tradeOfferPricEmpireAction', 'tradeOfferBuffAction', 'tradeOfferFloatAction',
 ], ({
   numberOfFloatDigitsToShow, showPaintSeedOnItems,
   showFloatRankOnItems, contrastingLook,
   tradeOfferPricEmpireAction, tradeOfferBuffAction,
+  tradeOfferFloatAction,
 }) => {
   floatDigitsToShow = numberOfFloatDigitsToShow;
   showPaintSeeds = showPaintSeedOnItems;
@@ -1210,6 +1212,7 @@ chrome.storage.local.get([
   showContrastingLook = contrastingLook;
   pricEmpireAction = tradeOfferPricEmpireAction;
   buffAction = tradeOfferBuffAction;
+  floatAction = tradeOfferFloatAction;
 });
 
 setInterval(() => {
@@ -1436,6 +1439,22 @@ if (tradeActionPopup) {
                 staticActions.appendChild(pricEmpireActionEl);
               } else {
                 staticActions.querySelector('#pricEmpireAction').setAttribute('href', `https://pricempire.com/${getPricempireLink(actionItem.type.key, actionItem.name, (actionItem.dopplerInfo && actionItem.dopplerInfo.name) ? `-${actionItem.dopplerInfo.name}` : '', actionItem.exterior?.name.toLowerCase())}`);
+              }
+            }
+
+            if (floatAction) {
+              const floatMarketSearchLink = `https://csfloat.com/search?sort_by=lowest_price&type=buy_now&market_hash_name=${actionItem.market_hash_name}&ref=gerytrading`;
+
+              if (staticActions.querySelector('#floatAction') === null) {
+                const floatActionEl = document.createElement('a');
+                floatActionEl.textContent = 'Lookup on CSFloat';
+                floatActionEl.id = 'floatAction';
+                floatActionEl.classList.add('popup_menu_item');
+                floatActionEl.setAttribute('href', floatMarketSearchLink);
+                floatActionEl.setAttribute('target', '_blank');
+                staticActions.appendChild(floatActionEl);
+              } else {
+                staticActions.querySelector('#floatAction').setAttribute('href', floatMarketSearchLink);
               }
             }
           }

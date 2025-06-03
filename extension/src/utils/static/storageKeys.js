@@ -291,6 +291,7 @@ const storageKeys = {
   marketEnhanceStickers: true,
   tradeOfferPricEmpireAction: true,
   tradeOfferBuffAction: true,
+  tradeOfferFloatAction: true,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'clientID',
