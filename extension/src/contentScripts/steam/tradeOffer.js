@@ -45,6 +45,15 @@ let floatAction = false;
 let yourInventory = null;
 let theirInventory = null;
 const combinedInventories = [];
+const userSteamID = getUserSteamID();
+
+// gets the other party's steam id in a trade offer
+const getTradePartnerSteamID = () => {
+  const tradePartnerSteamIDScript = 'document.querySelector(\'body\').setAttribute(\'tradePartnerSteamID\', g_ulTradePartnerSteamID);';
+  return injectScript(tradePartnerSteamIDScript, true, 'tradePartnerSteamID', 'tradePartnerSteamID');
+};
+
+const partnerSteamID = getTradePartnerSteamID();
 
 const getOfferIDScript = "document.querySelector('body').setAttribute('offerID', g_strTradePartnerInventoryLoadURL.split('tradeoffer/')[1].split('/partner')[0])";
 const offerID = injectScript(getOfferIDScript, true, 'getOfferID', 'offerID');
@@ -489,12 +498,6 @@ const sortItems = (method, type) => {
   }
 };
 
-// gets the other party's steam id in a trade offer
-const getTradePartnerSteamID = () => {
-  const tradePartnerSteamIDScript = 'document.querySelector(\'body\').setAttribute(\'tradePartnerSteamID\', g_ulTradePartnerSteamID);';
-  return injectScript(tradePartnerSteamIDScript, true, 'tradePartnerSteamID', 'tradePartnerSteamID');
-};
-
 const addFloatDataToPage = (job, floatInfo) => {
   // add float and pattern info to page variable
   const item = getItemByIDs(combinedInventories, steamApps.CSGO.appID, '2', job.assetID);
@@ -526,7 +529,7 @@ const addFloatDataToPage = (job, floatInfo) => {
 const addFloatIndicatorsToPage = (type) => {
   chrome.storage.local.get('autoFloatOffer', ({ autoFloatOffer }) => {
     const activeInventoryIDs = getActiveInventoryIDs();
-    
+
     if (autoFloatOffer && activeInventoryIDs && activeInventoryIDs.appID === steamApps.CSGO.appID) {
       let itemElements;
       if (type === 'page') {
@@ -709,10 +712,10 @@ const doInitSorting = (initial) => {
   });
 };
 
-const addItemInfo = () => {
+const addPerItemInfo = (inventoryOwnerID) => {
   removeSIHStuff();
 
-  const itemElements = document.querySelectorAll('.item.app730.context2');
+  const itemElements = document.querySelectorAll(`[id^="inventory_${inventoryOwnerID}_730_"] .item.app730.context2`);
   if (itemElements.length !== 0) {
     chrome.storage.local.get(
       ['colorfulItems', 'autoFloatOffer', 'showStickerPrice',
@@ -726,7 +729,7 @@ const addItemInfo = () => {
             // in case the inventory is not loaded yet it retires in a second
             if (itemElement.id === undefined) {
               setTimeout(() => {
-                addItemInfo();
+                addPerItemInfo(inventoryOwnerID);
               }, 1000);
               return false;
             }
@@ -757,11 +760,21 @@ const addItemInfo = () => {
         });
       },
     );
-  } else setTimeout(addItemInfo, 1000); // in case the inventory is not loaded yet
+  } else {
+    const activeInventory = getActiveInventory();
+    if (activeInventory === null || activeInventory.id.includes(`inventory_${inventoryOwnerID}_730_`)) {
+      setTimeout(() => {
+        addPerItemInfo(inventoryOwnerID);
+      }, 1000);
+    } // in case the inventory is not loaded yet
+  }
+  const itemsOfthisUser = combinedInventories.filter((item) => {
+    return item.owner === inventoryOwnerID && item.appid === steamApps.CSGO.appID && item.contextid === '2';
+  });
 
-  if (itemElements.length !== combinedInventories.length) {
-    setTimeout(addItemInfo, 1000);
+  if (itemElements.length !== itemsOfthisUser.length) {
     setTimeout(() => {
+      addPerItemInfo();
       doInitSorting(true);
     }, 1000);
   }
@@ -806,20 +819,20 @@ const getInventories = (initial) => {
     chrome.runtime.sendMessage({
       loadFloats: {
         items: yourBuiltInventory[steamApps.CSGO.appID].items,
-        steamID: getUserSteamID(),
+        steamID: userSteamID,
         isOwn: true,
         type: 'offer',
       },
-    }, () => {});
+    }, () => { });
 
     chrome.runtime.sendMessage({
       loadFloats: {
         items: theirBuiltInventory[steamApps.CSGO.appID].items,
-        steamID: getTradePartnerSteamID(),
+        steamID: partnerSteamID,
         isOwn: false,
         type: 'offer',
       },
-    }, () => {});
+    }, () => { });
 
     addPricesAndFloatsToInventory(
       yourBuiltInventory[steamApps.CSGO.appID].items,
@@ -854,7 +867,8 @@ const getInventories = (initial) => {
           });
         }
 
-        addItemInfo();
+        addPerItemInfo(userSteamID);
+        addPerItemInfo(partnerSteamID);
         doInitSorting(initial);
         if (initial) {
           addInventoryTotals(total, theirInventoryRes.total);
@@ -1079,8 +1093,8 @@ const addFunctionBars = () => {
 
 // add an info card to the top of the offer about offer history with the user (sent/received)
 const addPartnerOfferSummary = () => {
-  chrome.storage.local.get(['tradeHistoryOffers', `offerHistory_${getTradePartnerSteamID()}`, 'apiKeyValid'], (result) => {
-    let offerHistory = result[`offerHistory_${getTradePartnerSteamID()}`];
+  chrome.storage.local.get(['tradeHistoryOffers', `offerHistory_${partnerSteamID}`, 'apiKeyValid'], (result) => {
+    let offerHistory = result[`offerHistory_${partnerSteamID}`];
     const headline = document.querySelector('.trade_partner_headline');
 
     if (result.tradeHistoryOffers) {
@@ -1123,7 +1137,6 @@ const addPartnerOfferSummary = () => {
 // adds an info card if there is an incoming friend request
 // from the trade partner
 const addFriendRequestInfo = () => {
-  const partnerSteamID = getTradePartnerSteamID();
   chrome.storage.local.get(['friendRequests'], ({ friendRequests }) => {
     // checks if there is an incoming friend request from this user
     const friendRequestFromPartner = friendRequests.inviters.filter((inviter) => {
@@ -1231,7 +1244,8 @@ setInterval(() => {
 
 document.querySelectorAll('.inventory_user_tab').forEach((inventoryTab) => {
   inventoryTab.addEventListener('click', () => {
-    addItemInfo();
+    addPerItemInfo(userSteamID);
+    addPerItemInfo(partnerSteamID);
     if (!inventoryTab.classList.contains('sorted')) {
       const sortingSelect = document.getElementById('offer_sorting_mode');
       sortItems(sortingSelect.options[sortingSelect.selectedIndex].value, 'offer');
@@ -1244,7 +1258,10 @@ const inventorySelector = document.getElementById('appselect');
 if (inventorySelector !== null) {
   document.getElementById('appselect').addEventListener('click', () => {
     setTimeout(() => {
-      if (getActiveInventoryIDs().appID === steamApps.CSGO.appID) addItemInfo();
+      if (getActiveInventoryIDs().appID === steamApps.CSGO.appID) {
+        addPerItemInfo(userSteamID);
+        addPerItemInfo(partnerSteamID);
+      }
     }, 2000);
   });
 }
@@ -1405,7 +1422,7 @@ if (tradeActionPopup) {
               inspectInBrowserActionEl.setAttribute('href', `https://swap.gg/screenshot?inspectLink=${actionItem.inspectLink}`);
               inspectInBrowserActionEl.setAttribute('target', '_blank');
               itemActions.appendChild(inspectInBrowserActionEl);
-  
+
               const inspectOnServerActionEl = document.createElement('a');
               inspectOnServerActionEl.textContent = 'Inspect on Server...';
               inspectOnServerActionEl.classList.add('popup_menu_item');
@@ -1427,7 +1444,7 @@ if (tradeActionPopup) {
                 staticActions.querySelector('#buffAction').setAttribute('href', getBuffLink(actionItem.market_hash_name));
               }
             }
-    
+
             if (pricEmpireAction) {
               if (staticActions.querySelector('#pricEmpireAction') === null) {
                 const pricEmpireActionEl = document.createElement('a');
