@@ -714,9 +714,26 @@ const doInitSorting = (initial) => {
 
 const addPerItemInfo = (inventoryOwnerID) => {
   removeSIHStuff();
+  const whose = inventoryOwnerID === userSteamID ? 'your' : 'their';
 
-  const itemElements = document.querySelectorAll(`[id^="inventory_${inventoryOwnerID}_730_"] .item.app730.context2`);
-  if (itemElements.length !== 0) {
+  const inventoryElements = document.querySelectorAll(`[id^="inventory_${inventoryOwnerID}_730_"] .item.app730.context2`);
+  const tradeElements = document.querySelectorAll(`#${whose}_slots .item.app730.context2`);
+  const allItemElements = [...inventoryElements, ...tradeElements];
+
+  const seenAssetIds = new Set();
+
+  const itemsOfthisUser = combinedInventories.filter((item) => {
+    if (item.owner === inventoryOwnerID
+      && item.appid === steamApps.CSGO.appID
+      && item.contextid === '2'
+      && !seenAssetIds.has(item.assetid)) {
+      seenAssetIds.add(item.assetid);
+      return true;
+    }
+    // return item.owner === inventoryOwnerID && item.appid === steamApps.CSGO.appID && item.contextid === '2';
+  });
+
+  if (allItemElements.length !== 0) {
     chrome.storage.local.get(
       ['colorfulItems', 'autoFloatOffer', 'showStickerPrice',
         'activeOffers', 'itemInOtherOffers', 'showShortExteriorsOffers', 'currency'],
@@ -724,7 +741,7 @@ const addPerItemInfo = (inventoryOwnerID) => {
         colorfulItems, showStickerPrice, autoFloatOffer, currency,
         activeOffers, itemInOtherOffers, showShortExteriorsOffers,
       }) => {
-        itemElements.forEach((itemElement) => {
+        allItemElements.forEach((itemElement) => {
           if (itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false') {
             // in case the inventory is not loaded yet it retires in a second
             if (itemElement.id === undefined) {
@@ -760,19 +777,21 @@ const addPerItemInfo = (inventoryOwnerID) => {
         });
       },
     );
-  } else {
-    const activeInventory = getActiveInventory();
-    if (activeInventory === null || activeInventory.id.includes(`inventory_${inventoryOwnerID}_730_`)) {
-      setTimeout(() => {
-        addPerItemInfo(inventoryOwnerID);
-      }, 1000);
-    } // in case the inventory is not loaded yet
   }
-  const itemsOfthisUser = combinedInventories.filter((item) => {
-    return item.owner === inventoryOwnerID && item.appid === steamApps.CSGO.appID && item.contextid === '2';
-  });
 
-  if (itemElements.length !== itemsOfthisUser.length) {
+  const activeInventory = getActiveInventory();
+
+  if (activeInventory === null
+    || (activeInventory.id.includes(`inventory_${inventoryOwnerID}_730_`) && inventoryElements.length < (itemsOfthisUser.length - tradeElements.length))) {
+    setTimeout(() => {
+      addPerItemInfo(inventoryOwnerID);
+      doInitSorting(true);
+    }, 1000);
+  } // in case the inventory is not loaded yet
+
+  if (tradeElements.length > itemsOfthisUser.length
+    || inventoryElements.length > itemsOfthisUser.length
+  ) {
     setTimeout(() => {
       addPerItemInfo();
       doInitSorting(true);
