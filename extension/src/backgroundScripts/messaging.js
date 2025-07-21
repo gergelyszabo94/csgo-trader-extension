@@ -20,7 +20,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         ? getUserCSGOInventory
         : getUserCSGOInventoryAlternative;
 
-      inventoryLoadFunction(request.inventory).then(({ items, total }) => {
+      inventoryLoadFunction(request.inventory, request.contextID).then(({ items, total }) => {
         loadFloatData(items, request.inventory, steamIDOfUser === request.inventory, 'inventory').then((itemsWithFloats) => {
           batchAddToFloatCache(itemsWithFloats);
         });

@@ -134,6 +134,12 @@ const inventory = () => {
         type="flipSwitchStorage"
         description="Show links to all exteriors on the selected item"
       />
+      <Row
+        name="Resize and reposition Trade Protected icon"
+        id="resizeAndRepositionProtectedIcon"
+        type="flipSwitchStorage"
+        description="Resize and reposition the Trade Protected icon on inventory items"
+      />
     </Category>
   );
 };

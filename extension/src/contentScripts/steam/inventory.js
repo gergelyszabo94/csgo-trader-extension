@@ -1298,16 +1298,17 @@ const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
 
 // adds everything that is per item, like trade lock, exterior, doppler phases, border colors
 const addPerItemInfo = (appID) => {
-  const itemElements = document.querySelectorAll(`.item.app${appID}.context2`);
+  const itemElements = document.querySelectorAll(`.item.app${appID}.context2, .item.app${appID}.context16`);
   if (itemElements.length !== 0) {
     chrome.storage.local.get([
       'colorfulItems', 'autoFloatInventory', 'showStickerPrice', 'activeOffers', 'currency',
       'itemInOffersInventory', 'showShortExteriorsInventory', 'showTradeLockIndicatorInInventories',
+      'resizeAndRepositionProtectedIcon',
     ],
     ({
       colorfulItems, showStickerPrice, autoFloatInventory,
       activeOffers, itemInOffersInventory, showShortExteriorsInventory,
-      showTradeLockIndicatorInInventories, currency,
+      showTradeLockIndicatorInInventories, currency, resizeAndRepositionProtectedIcon,
     }) => {
       itemElements.forEach((itemElement) => {
         if (itemElement.getAttribute('data-processed') === null
@@ -1358,6 +1359,16 @@ const addPerItemInfo = (appID) => {
             }
             if (showFloatRank) {
               addFloatRankIndicator(itemElement, item.floatInfo, showContrastingLook);
+            }
+
+            if (resizeAndRepositionProtectedIcon) {
+              // resizes and repositions the protected icon
+              const protectedIcon = itemElement.querySelector('div.provisional_item_badge');
+              if (protectedIcon) {
+                protectedIcon.style['background-size'] = '20px';
+                protectedIcon.style.left = '4px';
+                protectedIcon.style.bottom = '59px';
+              }
             }
           }
 
@@ -1752,18 +1763,24 @@ const listenSelectClicks = (event) => {
 const sortItems = (inventoryItems, method) => {
   const activeAppID = getActiveInventoryAppID();
   if (activeAppID === steamApps.CSGO.appID) {
-    const itemElements = document.querySelectorAll('.item.app730.context2');
-    const inventoryPages = document.getElementById(`inventory_${inventoryOwnerID}_730_2`).querySelectorAll('.inventory_page');
-    doTheSorting(inventoryItems, Array.from(itemElements), method, Array.from(inventoryPages), 'inventory');
+    const itemElements = document.querySelectorAll('.item.app730.context2, .item.app730.context16');
+    let inventoryPages = [];
+    const context2Pages = document.getElementById(`inventory_${inventoryOwnerID}_730_2`)?.querySelectorAll('.inventory_page');
+    if (context2Pages && context2Pages.length > 0) inventoryPages = inventoryPages.concat(...context2Pages);
+    const context16Pages = document.getElementById(`inventory_${inventoryOwnerID}_730_16`)?.querySelectorAll('.inventory_page');
+    if (context16Pages && context16Pages.length > 0) inventoryPages = inventoryPages.concat(...context16Pages);
+    const context0Pages = document.getElementById(`inventory_${inventoryOwnerID}_730_0`)?.querySelectorAll('.inventory_page');
+    if (context0Pages && context0Pages.length > 0) inventoryPages = inventoryPages.concat(...context0Pages);
+    doTheSorting(inventoryItems, Array.from(itemElements), method, inventoryPages, 'inventory');
     addPerItemInfo(activeAppID);
   }
 };
 
 const doInitSorting = () => {
-  chrome.storage.local.get('inventorySortingMode', (result) => {
-    sortItems(items, result.inventorySortingMode);
-    document.querySelector(`#sortingMethod [value="${result.inventorySortingMode}"]`).selected = true;
-    document.querySelector(`#generate_sort [value="${result.inventorySortingMode}"]`).selected = true;
+  chrome.storage.local.get('inventorySortingMode', ({ inventorySortingMode }) => {
+    sortItems(items, inventorySortingMode);
+    document.querySelector(`#sortingMethod [value="${inventorySortingMode}"]`).selected = true;
+    document.querySelector(`#generate_sort [value="${inventorySortingMode}"]`).selected = true;
     addFloatIndicatorsToPage();
     addRealTimePricesToQueue();
   });
@@ -2247,7 +2264,7 @@ const onFullCSGOInventoryLoad = () => {
             isOwn: false,
             type: 'inventory',
           },
-        }, () => {});
+        }, () => { });
         items = inv;
         addRightSideElements();
         addPerItemInfo(steamApps.CSGO.appID);
@@ -2280,7 +2297,7 @@ const loadFullInventory = () => {
                   document.querySelector('body').setAttribute('allItemsLoaded', true);
                 });
                 `;
-                
+
       if (injectScript(loadFullInventoryScript, true, 'loadFullInventory', 'allItemsLoaded') === null) {
         setTimeout(() => {
           loadFullInventory();
@@ -2297,14 +2314,14 @@ const loadFullInventory = () => {
 };
 
 // sends a message to the "back end" to request inventory contents
-const requestInventory = (appID) => {
+const requestInventory = (appID, contextID) => {
   if (appID === steamApps.CSGO.appID) {
     // only use this for loading for own inventory
     // since the other endpoint does not provide any more details now
     // this avoids an additional request
     // hopefully fewer restricitions by steam
     if (isOwnInventory()) {
-      chrome.runtime.sendMessage({ inventory: inventoryOwnerID }, (response) => {
+      chrome.runtime.sendMessage({ inventory: inventoryOwnerID, contextID }, (response) => {
         if (response !== 'error') {
           items = items.concat(response.items);
           inventoryTotal = response.total;
@@ -2444,9 +2461,11 @@ if (defaultActiveInventoryAppID !== null) {
       tab.addEventListener('click', () => {
         const appID = getActiveInventoryAppID();
         const contextID = getDefaultContextID(appID);
-        if (appID === steamApps.CSGO.appID || appID === steamApps.DOTA2.appID
-          || appID === steamApps.TF2.appID) {
-          requestInventory(appID);
+        if (appID === steamApps.CSGO.appID) {
+          requestInventory(appID, '2');
+          requestInventory(appID, '16');
+        } else if (appID === steamApps.DOTA2.appID || appID === steamApps.TF2.appID) {
+          requestInventory(appID, '2');
         } else {
           loadInventoryItems(appID, contextID);
         }
@@ -2652,8 +2671,10 @@ if (defaultActiveInventoryAppID !== null) {
     }
   });
 
-  if (defaultActiveInventoryAppID === steamApps.CSGO.appID
-    || defaultActiveInventoryAppID === steamApps.DOTA2.appID
+  if (defaultActiveInventoryAppID === steamApps.CSGO.appID) {
+    requestInventory(defaultActiveInventoryAppID, '2');
+    requestInventory(defaultActiveInventoryAppID, '16');
+  } else if (defaultActiveInventoryAppID === steamApps.DOTA2.appID
     || defaultActiveInventoryAppID === steamApps.TF2.appID) {
     requestInventory(defaultActiveInventoryAppID);
   } else {

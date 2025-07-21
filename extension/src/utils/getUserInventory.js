@@ -14,13 +14,13 @@ import {
 import steamApps from 'utils/static/steamApps';
 import { getItemMarketLink, getCollection } from 'utils/simpleUtils';
 
-const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
+const getUserCSGOInventory = (steamID, contextID) => new Promise((resolve, reject) => {
   chrome.storage.local.get(
     ['itemPricing', 'prices', 'currency', 'exchangeRate', 'pricingProvider', 'pricingMode'],
     ({
       itemPricing, prices, currency, exchangeRate, pricingProvider, pricingMode,
     }) => {
-      const getRequest = new Request(`https://steamcommunity.com/profiles/${steamID}/inventory/json/${steamApps.CSGO.appID}/2/?l=english`);
+      const getRequest = new Request(`https://steamcommunity.com/profiles/${steamID}/inventory/json/${steamApps.CSGO.appID}/${contextID}/?l=english`);
       fetch(getRequest).then((response) => {
         if (!response.ok) {
           reject(response.statusText);
@@ -97,7 +97,13 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
                         item.owner_descriptions.forEach((description) => {
                           if (/\d/.test(description.value)) {
                             try {
-                              tradability = description.value.split('Tradable/Marketable After ')[1].replace(/[()]/g, '');
+                              if (description.value.includes(('transferred until'))) {
+                                tradability = description.value.split('transferred until ')[1].replace(/[()]/g, '');
+                              } else {
+                                // leftover from trade lock
+                                // should soon be removed when trade lock is phased out
+                                tradability = description.value.split('Tradable/Marketable After ')[1].replace(/[()]/g, '');
+                              }
                             } catch (e) {
                               console.log(e);
                               tradability = description.value;
@@ -110,14 +116,14 @@ const getUserCSGOInventory = (steamID) => new Promise((resolve, reject) => {
                         tradabilityShort = '';
                       }
                     }
-                    
+
                     itemsPropertiesToReturn.push({
                       name,
                       market_hash_name: marketHashName,
                       name_color: item.name_color,
                       marketlink: getItemMarketLink(steamApps.CSGO.appID, marketHashName),
                       appid: item.appid,
-                      contextid: '2',
+                      contextid: contextID,
                       classid: item.classid,
                       instanceid: item.instanceid,
                       assetid: assetID,
@@ -400,7 +406,7 @@ const getOtherInventory = (appID, steamID) => new Promise((resolve, reject) => {
                 tradabilityShort = '';
               }
             }
-            
+
             itemsPropertiesToReturn.push({
               name,
               market_hash_name: marketHashName,

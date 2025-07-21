@@ -292,6 +292,7 @@ const storageKeys = {
   tradeOfferPricEmpireAction: true,
   tradeOfferBuffAction: true,
   tradeOfferFloatAction: true,
+  resizeAndRepositionProtectedIcon: true,
 };
 
 const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'clientID',
