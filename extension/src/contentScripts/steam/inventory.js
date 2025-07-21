@@ -2324,7 +2324,7 @@ const requestInventory = (appID, contextID) => {
       chrome.runtime.sendMessage({ inventory: inventoryOwnerID, contextID }, (response) => {
         if (response !== 'error') {
           items = items.concat(response.items);
-          inventoryTotal = response.total;
+          inventoryTotal += response.total;
           addRightSideElements();
           addPerItemInfo(appID);
           setInventoryTotal();
