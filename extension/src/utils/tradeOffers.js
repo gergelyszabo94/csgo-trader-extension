@@ -154,6 +154,36 @@ const declineOffer = (offerID) => {
   });
 };
 
+const cancelOffer = (offerID) => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }) => {
+      const myHeaders = new Headers();
+      myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+
+      const request = new Request(`https://steamcommunity.com/tradeoffer/${offerID}/cancel/`,
+        {
+          method: 'POST',
+          headers: myHeaders,
+          body: `sessionid=${steamSessionID}`,
+        });
+
+      fetch(request).then((response) => {
+        if (!response.ok) {
+          console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+          reject({ status: response.status, statusText: response.statusText });
+        } else return response.json();
+      }).then((body) => {
+        if (body.tradeofferid === offerID) {
+          resolve(body);
+        } else reject(body);
+      }).catch((err) => {
+        console.log(err);
+        reject(err);
+      });
+    });
+  });
+};
+
 const sendOffer = (partnerID, tradeOfferJSON, token, message) => {
   return new Promise((resolve, reject) => {
     chrome.storage.local.get(['steamSessionID'], ({ steamSessionID }) => {
@@ -737,5 +767,5 @@ const removeOldOfferEvents = () => {
 export {
   acceptOffer, declineOffer, updateActiveOffers, extractItemsFromOffers, sendOffer,
   matchItemsAndAddDetails, updateTrades, removeOldOfferEvents, acceptTradeInBackground,
-  createTradeOfferJSON, listenToAcceptTrade,
+  createTradeOfferJSON, listenToAcceptTrade, cancelOffer,
 };

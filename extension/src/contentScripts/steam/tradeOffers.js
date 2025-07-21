@@ -18,7 +18,9 @@ import { offersSortingModes } from 'utils/static/sortingModes';
 import { injectStyle } from 'utils/injection';
 import { getProperStyleSteamIDFromOfferStyle } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
-import { acceptOffer, declineOffer, listenToAcceptTrade } from 'utils/tradeOffers';
+import {
+  acceptOffer, declineOffer, cancelOffer, listenToAcceptTrade,
+} from 'utils/tradeOffers';
 import DOMPurify from 'dompurify';
 import steamApps from 'utils/static/steamApps';
 import { getIDsFromElement } from 'utils/itemsToElementsToItems';
@@ -834,6 +836,81 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
                      Check what you are missing in the <a href="https://csgotrader.app/release-notes#1.20" target="_blank">Release Notes</a>`,
             { ADD_ATTR: ['target'] },
           );
+        }
+      },
+    );
+  } else {
+    const fatalError = document.querySelector('div.profile_fatalerror');
+
+    if (fatalError !== null) {
+      fatalError.insertAdjacentHTML(
+        'afterend',
+        DOMPurify.sanitize(`
+        <div class="alternativeOffers">
+          <b>CS2Trader Extension:</b> Steam is having problems with loading trade offers.<br>
+          Links to your offers:
+          <div class="alternativeOffersLinks">
+        </div>
+        `));
+    }
+
+    const activeOffersLinksEl = document.querySelector('div.alternativeOffersLinks');
+
+    getOffersFromAPI('active').then(
+      ({ offers }) => {
+        console.log(offers);
+        if (offers.trade_offers_received.length > 0) {
+          activeOffersLinksEl.appendChild(document.createElement('br'));
+          const span = document.createElement('span');
+          span.textContent = 'Received offers: ';
+          activeOffersLinksEl.appendChild(span);
+          const receivedOffersList = document.createElement('ul');
+
+          offers.trade_offers_received.forEach((offer) => {
+            const listItem = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = `https://steamcommunity.com/tradeoffer/${offer.tradeofferid}`;
+            link.target = '_blank';
+            const message = offer.message !== '' ? ` - Message from sender: ${offer.message}` : '';
+            link.textContent = `Open Trade Offer ${offer.tradeofferid} ${offer.PLPercentageFormatted}${message}`;
+            listItem.appendChild(link);
+            receivedOffersList.appendChild(listItem);
+          });
+
+          activeOffersLinksEl.appendChild(receivedOffersList);
+          activeOffersLinksEl.appendChild(document.createElement('br'));
+        }
+
+        if (offers.trade_offers_sent.length > 0) {
+          const span = document.createElement('span');
+          span.textContent = 'Sent offers: ';
+          activeOffersLinksEl.appendChild(span);
+          const sentOffersList = document.createElement('ul');
+
+          offers.trade_offers_sent.forEach((offer) => {
+            const listItem = document.createElement('li');
+            const offerLine = document.createElement('span');
+            const message = offer.message !== '' ? ` - Message: ${offer.message}` : '';
+            offerLine.textContent = `Trade Offer ${offer.tradeofferid} ${offer.PLPercentageFormatted}${message}`;
+            const cancelButton = document.createElement('span');
+            cancelButton.classList.add('whiteLink');
+            cancelButton.textContent = ' Cancel offer with one click';
+            listItem.appendChild(offerLine);
+            listItem.appendChild(cancelButton);
+
+            cancelButton.addEventListener('click', () => {
+              cancelOffer(offer.tradeofferid).then(() => {
+                cancelButton.innerText = 'Offer Cancelled';
+                cancelButton.classList.add('cancelled');
+              }).catch((err) => {
+                console.log(err);
+                cancelButton.innerText = 'Could not cancel offer';
+              });
+            });
+            sentOffersList.appendChild(listItem);
+          });
+
+          activeOffersLinksEl.appendChild(sentOffersList);
         }
       },
     );
