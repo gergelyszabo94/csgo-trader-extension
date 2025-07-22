@@ -857,8 +857,7 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
     const activeOffersLinksEl = document.querySelector('div.alternativeOffersLinks');
 
     getOffersFromAPI('active').then(
-      ({ offers }) => {
-        console.log(offers);
+      ({ offers, itemsWithAllInfo }) => {
         if (offers.trade_offers_received.length > 0) {
           activeOffersLinksEl.appendChild(document.createElement('br'));
           const span = document.createElement('span');
@@ -889,14 +888,55 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
 
           offers.trade_offers_sent.forEach((offer) => {
             const listItem = document.createElement('li');
+            listItem.style.marginBottom = '10px';
             const offerLine = document.createElement('span');
             const message = offer.message !== '' ? ` - Message: ${offer.message}` : '';
             offerLine.textContent = `Trade Offer ${offer.tradeofferid} ${offer.PLPercentageFormatted}${message}`;
+            const partnerID = getProperStyleSteamIDFromOfferStyle(offer.accountid_other);
+            const partnerLink = document.createElement('a');
+            partnerLink.href = `https://steamcommunity.com/profiles/${partnerID}`;
+            partnerLink.textContent = `Partner Profile ${partnerID}`;
+            partnerLink.target = '_blank';
+            const sentItems = document.createElement('div');
+            sentItems.textContent = 'Sent Items: ';
+            const sentItemsList = document.createElement('ul');
+
+            if (offer.items_to_give) {
+              offer.items_to_give.forEach((item) => {
+                const itemElement = document.createElement('li');
+                const foundDetailedItem = itemsWithAllInfo.find((detailedItem) => detailedItem.assetid === item.assetid);
+                itemElement.textContent = `${foundDetailedItem.market_hash_name} AssetID: ${item.assetid}`;
+                sentItemsList.appendChild(itemElement);
+              });
+            }
+
+            sentItems.appendChild(sentItemsList);
+
+            const receivedItems = document.createElement('div');
+            receivedItems.textContent = 'Received Items: ';
+            const receivedItemsList = document.createElement('ul');
+
+            if (offer.items_to_receive) {
+              offer.items_to_receive.forEach((item) => {
+                const itemElement = document.createElement('li');
+                const foundDetailedItem = itemsWithAllInfo.find((detailedItem) => detailedItem.assetid === item.assetid);
+                itemElement.textContent = `${foundDetailedItem.market_hash_name} AssetID: ${item.assetid}`;
+                receivedItemsList.appendChild(itemElement);
+              });
+            }
+
+            receivedItems.appendChild(receivedItemsList);
+
             const cancelButton = document.createElement('span');
             cancelButton.classList.add('whiteLink');
             cancelButton.textContent = ' Cancel offer with one click';
             listItem.appendChild(offerLine);
+            listItem.appendChild(document.createElement('br'));
+            listItem.appendChild(partnerLink);
+            listItem.appendChild(document.createElement('br'));
             listItem.appendChild(cancelButton);
+            if (offer.items_to_give) listItem.appendChild(sentItems);
+            if (offer.items_to_receive) listItem.appendChild(receivedItems);
 
             cancelButton.addEventListener('click', () => {
               cancelOffer(offer.tradeofferid).then(() => {
