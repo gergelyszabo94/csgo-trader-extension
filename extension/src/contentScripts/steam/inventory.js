@@ -1322,8 +1322,9 @@ const addPerItemInfo = (appID) => {
           }
           const IDs = getIDsFromElement(itemElement, 'inventory');
           const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
+          if (!item) return false;
 
-          if (showTradeLockIndicatorInInventories && item) {
+          if (showTradeLockIndicatorInInventories) {
             // adds tradability indicator
             if (item.tradability !== 'Tradable' && item.tradability !== 'Not Tradable') {
               const contrastingLookClass = showContrastingLook ? 'contrastingBackground' : '';
