@@ -118,18 +118,40 @@ const doTheSorting = (items, itemElements, method, pages, type) => {
     });
   } else if (method === 'default') {
     sortedElements = itemElements.sort((a, b) => {
-      const positionOfA = parseInt(getItemByAssetID(items, getAssetIDOfElement(a)).position);
-      const positionOfB = parseInt(getItemByAssetID(items, getAssetIDOfElement(b)).position);
+      const itemA = getItemByAssetID(items, getAssetIDOfElement(a));
+      const itemB = getItemByAssetID(items, getAssetIDOfElement(b));
+      const positionOfA = parseInt(itemA.position);
+      const contextIDOfA = itemA.contextid;
+      const positionOfB = parseInt(itemB.position);
+      const contextIDOfB = itemB.contextid;
 
+      // First, sort by contextid: 16 before 2
+      if (contextIDOfA !== contextIDOfB) {
+        if (contextIDOfA === '16') return -1;
+        if (contextIDOfB === '16') return 1;
+      }
+
+      // If contextid is the same, sort by position
       if (positionOfA > positionOfB) return 1;
       if (positionOfA < positionOfB) return -1;
       return 0;
     });
   } else if (method === 'reverse') {
     sortedElements = itemElements.sort((a, b) => {
-      const positionOfA = parseInt(getItemByAssetID(items, getAssetIDOfElement(a)).position);
-      const positionOfB = parseInt(getItemByAssetID(items, getAssetIDOfElement(b)).position);
+      const itemA = getItemByAssetID(items, getAssetIDOfElement(a));
+      const itemB = getItemByAssetID(items, getAssetIDOfElement(b));
+      const positionOfA = parseInt(itemA.position);
+      const contextIDOfA = itemA.contextid;
+      const positionOfB = parseInt(itemB.position);
+      const contextIDOfB = itemB.contextid;
 
+      // First, sort by contextid: 2 before 16
+      if (contextIDOfA !== contextIDOfB) {
+        if (contextIDOfA === '2') return -1;
+        if (contextIDOfB === '2') return 1;
+      }
+
+      // If contextid is the same, sort by position (descending)
       if (positionOfA > positionOfB) return -1;
       if (positionOfA < positionOfB) return 1;
       return 0;
