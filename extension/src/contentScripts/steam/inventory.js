@@ -1206,7 +1206,7 @@ const addFloatIndicatorsToPage = () => {
     if (autoFloatInventory) {
       const page = getActivePage('inventory');
       if (page !== null) {
-        page.querySelectorAll('.item.app730.context2').forEach((itemElement) => {
+        page.querySelectorAll('.item.app730.context2, .item.app730.context16').forEach((itemElement) => {
           const assetID = getAssetIDOfElement(itemElement);
           const item = getItemByAssetID(items, assetID);
 
@@ -1412,7 +1412,7 @@ const setInventoryTotal = () => {
 };
 
 const unselectAllItems = () => {
-  document.querySelectorAll('.item.app730.context2').forEach((item) => {
+  document.querySelectorAll('.item.app730.context2, .item.app730.context16').forEach((item) => {
     item.classList.remove('cstSelected');
   });
 };
@@ -1791,7 +1791,7 @@ const generateItemsList = () => {
   const generateSorting = document.getElementById('generate_sort');
   const sortingMode = generateSorting.options[generateSorting.selectedIndex].value;
   const sortedItems = doTheSorting(items,
-    Array.from(document.querySelectorAll('.item.app730.context2')),
+    Array.from(document.querySelectorAll('.item.app730.context2, .item.app730.context16')),
     sortingMode, null, 'simple_sort');
   let copyText = '';
 
@@ -2361,7 +2361,7 @@ const requestInventory = (appID, contextID) => {
 };
 
 const updateTradabilityIndicators = () => {
-  const itemElements = document.querySelectorAll('.item.app730.context2');
+  const itemElements = document.querySelectorAll('.item.app730.context2, .item.app730.context16');
   if (itemElements.length !== 0) {
     itemElements.forEach((itemElement) => {
       const IDs = getIDsFromElement(itemElement, 'inventory');
@@ -2619,7 +2619,7 @@ if (defaultActiveInventoryAppID !== null) {
           let activeItemIndex = -1;
 
           if (activePage !== null) {
-            activePage.querySelectorAll('.item.app730.context2').forEach((itemElement, index) => {
+            activePage.querySelectorAll('.item.app730.context2, .item.app730.context16').forEach((itemElement, index) => {
               if (itemElement.classList.contains('activeInfo')) {
                 activePageActiveItem = itemElement;
                 activeItemIndex = index;
