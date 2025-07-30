@@ -2240,7 +2240,8 @@ const addFunctionBar = () => {
       });
 
       const modalContentEl = document.getElementById('modalContentFrameContainer');
-      const userCSInventoryEl = document.querySelector('[id^="inventory_"][id$="_730_2"]');
+      const userCSInventoryEl = Array.from(document.getElementById('inventories').children)
+        .find((el) => el.style.display === 'block' || el.style.display === '');
 
       userCSInventoryEl.querySelectorAll('div.itemHolder').forEach((itemHolder) => {
         const clonedElement = itemHolder.cloneNode(true);
