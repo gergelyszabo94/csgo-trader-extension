@@ -1230,6 +1230,13 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                         BUFF.MARKET
                     </a>
                   </div>
+                  <div class="realMoneySite">
+                    <a href="https://itrade.gg/trade/csgo?search=${fullName}&ref=gery" target="_blank" class="realMoneySiteLink referralLink" data-site="itradegg">
+                        <img alt="iTrade.gg logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/itradegg.png')}" data-site="itradegg">
+                        <br>
+                        iTrade.gg
+                    </a>
+                  </div>
                 </div>
                 <div class="realMoneySites">
                  <div class="realMoneySite">
@@ -1346,6 +1353,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       <a href="https://dmarket.com/?ref=hJEDYLBTsV" target="_blank" class="referralLink" data-site="dmarket">DMARKET</a>,
                       <a href="https://skinbid.com/?ref=csgotrader" target="_blank" class="referralLink" data-site="skinbid">SkinBid</a>,
                       <a href="https://skinvault.gg/en?aff=gery" target="_blank" class="referralLink" data-site="skinvault">SkinVault</a>,
+                      <a href="https://itrade.gg/trade/csgo?search=${fullName}&ref=gery" target="_blank" class="referralLink" data-site="itradegg">ITRADE.GG</a>,
                       <a href="https://gamerpay.gg/partner/okn9go3r" target="_blank" class="referralLink" data-site="gamerpay">GamerPay</a>,
                       <a href="https://waxpeer.com/r/gery" target="_blank" class="referralLink" data-site="waxpeer">Waxpeer</a>,
                       <a href="https://buff.market/r/U1093423730" target="_blank" class="referralLink" data-site="buffmarket">BUFF.MARKET</a>,
