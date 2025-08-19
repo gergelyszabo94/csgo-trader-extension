@@ -408,20 +408,6 @@ const pricingProviders = {
       },
     },
   },
-  csgoexo: {
-    name: 'csgoexo',
-    long: 'CSGOEXO.COM',
-    short: 'EX',
-    url: 'https://csgoexo.com/',
-    description: 'CSGOEXO.COM is an automated trade bot site',
-    pricing_modes: {
-      csgoexo: {
-        description: 'CSGOEXO.COM.gg price',
-        name: 'csgoexo',
-        long: 'CSGOEXO.COM price (by pricempire.com)',
-      },
-    },
-  },
   buff163: {
     name: 'buff163',
     long: 'BUFF163',
@@ -438,20 +424,6 @@ const pricingProviders = {
         description: 'BUFF Highest order price',
         name: 'highest_order',
         long: 'BUFF Highest order (by pricempire.com)',
-      },
-    },
-  },
-  skinwallet: {
-    name: 'skinwallet',
-    long: 'Skinwallet.com',
-    short: 'SW',
-    url: 'https://www.skinwallet.com/',
-    description: 'SkinWallet is a market place and instant cash-for-skin service',
-    pricing_modes: {
-      skinwallet: {
-        description: 'Skinwallet.com price',
-        name: 'skinwallet',
-        long: 'Skinwallet.com price',
       },
     },
   },
