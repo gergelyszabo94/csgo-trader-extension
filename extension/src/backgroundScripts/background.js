@@ -63,9 +63,6 @@ chrome.runtime.onInstalled.addListener((details) => {
         // so the site bot list gets updated
         if (result[storageKey] === undefined || storageKey === 'legitSiteBotGroup') {
           chrome.storage.local.set({ [storageKey]: storageValue }, () => { });
-        } else if (storageKey === 'friendRequestEvalRules') { // removes existing steamrep rules since it's discontinued
-          const rulesWithoutSteamrep = result[storageKey].filter((rule) => rule.condition.type !== 'streamrep_banned');
-          chrome.storage.local.set({ [storageKey]: rulesWithoutSteamrep }, () => { });
         }
       }
     });
