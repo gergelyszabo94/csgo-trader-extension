@@ -532,8 +532,8 @@ const parseCharmInfo = (
 
     descriptions.forEach((description) => {
       if (description.name === 'keychain_info') {
-        let names = description.value.split('><br>')[1].split(': ')[1].split('</center>')[0].split(', ');
-
+        let names = description.value.split('><br>')[1]?.split('</center>')[0]?.split(', ') || [];
+        names = names.map((name) => name.replace('Charm: ', 'Charm | '));
         names = handleStickerNamesWithCommas(names);
         const iconURLs = description.value.split('src="');
 
@@ -542,13 +542,15 @@ const parseCharmInfo = (
           iconURLs[index] = iconURL.split('><')[0];
         });
 
-        charms = charms.concat(...names.map((name, index) => ({
-          name,
-          fullName: `Charm | ${name}`,
-          price: linkType === 'search' ? null : getPrice(`Charm | ${name}`, null, prices, pricingProvider, pricingMode, exchangeRate, currency),
-          iconURL: iconURLs[index],
-          marketURL: getStickerOrPatchLink(linkType, name, 'Charm'),
-        })));
+        charms = charms.concat(...names.map((name, index) => {
+          return {
+            name: name.split(' | ')[1],
+            fullName: name,
+            price: linkType === 'search' ? null : getPrice(name, null, prices, pricingProvider, pricingMode, exchangeRate, currency),
+            iconURL: iconURLs[index],
+            marketURL: getStickerOrPatchLink(linkType, name.split('Charm | ')[1], name.split(' | ')[0]),
+          };
+        }));
       }
     });
     return charms;
