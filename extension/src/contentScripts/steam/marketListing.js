@@ -1343,13 +1343,13 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                           Skin.Place
                       </a>
                     </div>
-                    <!--<div class="realMoneySite">
-                      <a href="https://white.market/item?appId=730&nameHash=${fullName}&ref={REFERRAL_CODE}" target="_blank" class="realMoneySiteLink referralLink" data-site="whitemarket">
+                    <div class="realMoneySite">
+                      <a href="https://white.market/item?appId=730&nameHash=${fullName}&ref=53cecef4a02f6fc1" target="_blank" class="realMoneySiteLink referralLink" data-site="whitemarket">
                           <img alt="White.Market logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/whitemarket.png')}" data-site="whitemarket">
                           <br>
                           White.Market
                       </a>
-                    </div>-->
+                    </div>
                 </div>
                 
                 <div id="realMoneyExpand" class="clickable" title="Click to learn more about what this is">What is this?</div>
@@ -1366,7 +1366,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       <a href="https://buff.market/r/U1093423730" target="_blank" class="referralLink" data-site="buffmarket">BUFF.MARKET</a>,
                       <a href="https://csdeals.com/new/?ref=mwe3otc" target="_blank" class="referralLink" data-site="csdeals">CS.DEALS</a>,
                       <a href="https://p.skin.place/cs2trader" target="_blank" class="referralLink" data-site="skinplace">Skin.Place</a>,
-                      <!--<a href="https://white.market/item?appId=730&nameHash=${fullName}&ref={REFERRAL_CODE}" target="_blank" class="referralLink" data-site="whitemarket">White.Market</a>,-->
+                      <a href="https://white.market/item?appId=730&nameHash=${fullName}&ref=53cecef4a02f6fc1" target="_blank" class="referralLink" data-site="whitemarket">White.Market</a>,
                       <a href="bskn.co/?ref_alias=xcW4c_phcUc" target="_blank" class="referralLink" data-site="bitskins">Bitskins</a> and 
                       <a href="https://csfloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csfloat">
                       CSFloat

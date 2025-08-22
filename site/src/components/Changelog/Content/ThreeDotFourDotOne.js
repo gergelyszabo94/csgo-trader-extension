@@ -11,7 +11,7 @@ const ThreeDotFourDotOne = () => {
         Fixed lots of bugs introduced in the previous version
       </li>
       <li>
-        Added iTrade.gg affiliate link
+        Added iTrade.gg and White.Market affiliate links
       </li>
       <li>
         Removed csgoexo and skinwallet as pricing providers
