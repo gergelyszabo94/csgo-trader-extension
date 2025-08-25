@@ -285,6 +285,7 @@ const storageKeys = {
     'tradeitggbots',
     'SkinwalletBotsOfficial',
     'skinswapbots',
+    'iTradeGGBots',
   ],
   moveWithArrowKeysInventory: true,
   showAllExteriorsInventory: false,
