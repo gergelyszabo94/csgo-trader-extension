@@ -178,7 +178,7 @@ const addStickers = () => {
     if (!isCommodityItem && listings.length === undefined) {
       const showStickerHolder = !csgoFloatExtPresent()
         ? ''
-        : 'hidden';
+        : 'doHide';
       document.getElementById('searchResultsRows').querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
         (listingRow) => {
           if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
@@ -269,7 +269,7 @@ const populateFloatInfo = (listingID, floatInfo) => {
       const showTechnicalBtn = nameBlock.querySelector('.showTechnical');
       if (showTechnicalBtn) {
         showTechnicalBtn.addEventListener('click', (event) => {
-          event.target.parentNode.querySelector('.floatTechnical').classList.toggle('hidden');
+          event.target.parentNode.querySelector('.floatTechnical').classList.toggle('doHide');
         });
       }
     }
@@ -292,7 +292,7 @@ const populateFloatInfo = (listingID, floatInfo) => {
             listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
             listingElement.querySelector('.floatDropTarget').innerText = getFloatAsFormattedString(floatInfo.floatvalue, numberOfFloatDigitsToShow);
 
-            if (marketAlwaysShowFloatTechnical) floatTechnical.classList.remove('hidden');
+            if (marketAlwaysShowFloatTechnical) floatTechnical.classList.remove('doHide');
           }
         }
       } else if (floatInfo) {
@@ -1284,7 +1284,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                 </div>
                 
                 <div id="realMoneyExpand" class="clickable" title="Click to learn more about what this is">What is this?</div>
-                <div id="realMoneyMoreInfo" class="hidden">
+                <div id="realMoneyMoreInfo" class="doHide">
                     <div style="margin: 10px 0 10px 0">
                       <a href="https://skinport.com/market/730?r=gery" target="_blank" class="referralLink" data-site="skinport">Skinport</a>,
                       <a href="https://skinbaron.com/partner/gery" target="_blank" class="referralLink" data-site="skinbaron">Skinbaron</a>,
@@ -1332,7 +1332,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
       );
 
       document.getElementById('realMoneyExpand').addEventListener('click', () => {
-        document.getElementById('realMoneyMoreInfo').classList.remove('hidden');
+        document.getElementById('realMoneyMoreInfo').classList.remove('doHide');
       });
     }
   }
