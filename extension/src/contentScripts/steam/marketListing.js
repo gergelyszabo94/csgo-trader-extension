@@ -259,32 +259,31 @@ const populateFloatInfo = (listingID, floatInfo) => {
   const listingElement = getElementByListingID(listingID);
 
   // if for example the user has changed page and the listing is not there anymore
-  if (listingElement !== null) {
-    // Ensure float bar skeleton is present before populating
-    const nameBlock = listingElement.querySelector('.market_listing_item_name_block');
-    if (nameBlock && !nameBlock.querySelector('.floatBarMarket')) {
-      nameBlock.insertAdjacentHTML('beforeend', DOMPurify.sanitize(getFloatBarSkeleton('market')));
-      nameBlock.setAttribute('data-floatBar-added', 'true');
-      // Add show technical toggle logic if needed
-      const showTechnicalBtn = nameBlock.querySelector('.showTechnical');
-      if (showTechnicalBtn) {
-        showTechnicalBtn.addEventListener('click', (event) => {
-          event.target.parentNode.querySelector('.floatTechnical').classList.toggle('doHide');
-        });
-      }
-    }
-
+  if (listingElement !== null && floatInfo) {
     chrome.storage.local.get([
       'marketShowFloatValuesOnly', 'marketAlwaysShowFloatTechnical', 'numberOfFloatDigitsToShow',
     ],
     ({ marketShowFloatValuesOnly, marketAlwaysShowFloatTechnical, numberOfFloatDigitsToShow }) => {
       if (!marketShowFloatValuesOnly) {
+        // Ensure float bar skeleton is present before populating
+        const nameBlock = listingElement.querySelector('.market_listing_item_name_block');
+        if (nameBlock && !nameBlock.querySelector('.floatBarMarket')) {
+          nameBlock.insertAdjacentHTML('beforeend', DOMPurify.sanitize(getFloatBarSkeleton('market')));
+          nameBlock.setAttribute('data-floatBar-added', 'true');
+          // Add show technical toggle logic if needed
+          const showTechnicalBtn = nameBlock.querySelector('.showTechnical');
+          if (showTechnicalBtn) {
+            showTechnicalBtn.addEventListener('click', (event) => {
+              event.target.parentNode.querySelector('.floatTechnical').classList.toggle('doHide');
+            });
+          }
+        }
         const floatTechnical = listingElement.querySelector('.floatTechnical');
         if (floatTechnical !== null) {
-          if (floatInfo === undefined || floatInfo.floatvalue === 0) {
+          if (floatInfo.floatvalue === 0) {
             // agents don't have float values yet they sometimes return float info, weird
             listingElement.querySelector('.floatBarMarket').remove();
-          } else if (floatInfo) {
+          } else {
             floatTechnical.innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo), { ADD_ATTR: ['target'] });
             const position = (parseFloat(
               getFloatAsFormattedString(floatInfo.floatvalue, 2),
@@ -295,7 +294,7 @@ const populateFloatInfo = (listingID, floatInfo) => {
             if (marketAlwaysShowFloatTechnical) floatTechnical.classList.remove('doHide');
           }
         }
-      } else if (floatInfo) {
+      } else {
         const itemImageDiv = listingElement.querySelector('.market_listing_item_img_container');
         if (itemImageDiv !== null) {
           itemImageDiv.querySelector('img').insertAdjacentHTML(
@@ -309,11 +308,9 @@ const populateFloatInfo = (listingID, floatInfo) => {
         }
       }
 
-      if (floatInfo) {
-        listingElement.setAttribute('data-float', floatInfo.floatvalue);
-        listingElement.setAttribute('data-paintindex', floatInfo.paintindex);
-        listingElement.setAttribute('data-paintseed', floatInfo.paintseed);
-      }
+      listingElement.setAttribute('data-float', floatInfo.floatvalue);
+      listingElement.setAttribute('data-paintindex', floatInfo.paintindex);
+      listingElement.setAttribute('data-paintseed', floatInfo.paintseed);
     });
   }
 };
@@ -1349,7 +1346,7 @@ chrome.storage.local.get(['numberOfListings', 'marketEnhanceStickers'], ({ numbe
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       if (mutation.target.id === 'searchResultsRows'
-      && mutation.addedNodes.length > 0) {
+        && mutation.addedNodes.length > 0) {
         // to avoid executing this lots of times
         // at least a second has to pass since the last one
         if (Date.now() > observerLastTriggered + 1000) {
