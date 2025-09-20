@@ -260,6 +260,11 @@ progress {
     display: none;
 }
 
+/* the hidden class name is overwritten on some pages */
+.doHide {
+    display: none;
+}
+
 .progress {
     display: -webkit-box;
     display: -ms-flexbox;

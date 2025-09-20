@@ -41,7 +41,6 @@ import capsuleNamesWithNoCapsuleInName from 'utils/static/capsuleNamesWithNoCaps
 import { isDopplerInName, reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 import { overrideCreatePriceHistoryGraph } from 'utils/steamOverriding';
 import { listenToAcceptTrade } from 'utils/tradeOffers';
-import itemTypes from 'utils/static/itemTypes';
 
 const dopplerPhase = '<div class="dopplerPhaseMarket"><span></span></div>';
 
@@ -67,12 +66,6 @@ else {
   weaponName = fullName.split('(')[0].split('★ ')[1];
   if (weaponName === undefined) weaponName = fullName.split('(')[0];
 }
-
-let itemWithInspectLink = false;
-// adds the in-browser inspect button to the top of the page
-const actions = document.getElementById('largeiteminfo_item_actions');
-// sometimes the page does not load correctly, for example when Steam shows:
-// "There was an error getting listings for this item. Please try again later."
 
 let stOrSv = stattrakPretty;
 let stOrSvClass = 'stattrakOrange';
@@ -185,7 +178,7 @@ const addStickers = () => {
     if (!isCommodityItem && listings.length === undefined) {
       const showStickerHolder = !csgoFloatExtPresent()
         ? ''
-        : 'hidden';
+        : 'doHide';
       document.getElementById('searchResultsRows').querySelectorAll('.market_listing_row.market_recent_listing_row').forEach(
         (listingRow) => {
           if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows' && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
@@ -266,18 +259,31 @@ const populateFloatInfo = (listingID, floatInfo) => {
   const listingElement = getElementByListingID(listingID);
 
   // if for example the user has changed page and the listing is not there anymore
-  if (listingElement !== null) {
+  if (listingElement !== null && floatInfo) {
     chrome.storage.local.get([
       'marketShowFloatValuesOnly', 'marketAlwaysShowFloatTechnical', 'numberOfFloatDigitsToShow',
     ],
     ({ marketShowFloatValuesOnly, marketAlwaysShowFloatTechnical, numberOfFloatDigitsToShow }) => {
       if (!marketShowFloatValuesOnly) {
+        // Ensure float bar skeleton is present before populating
+        const nameBlock = listingElement.querySelector('.market_listing_item_name_block');
+        if (nameBlock && !nameBlock.querySelector('.floatBarMarket')) {
+          nameBlock.insertAdjacentHTML('beforeend', DOMPurify.sanitize(getFloatBarSkeleton('market')));
+          nameBlock.setAttribute('data-floatBar-added', 'true');
+          // Add show technical toggle logic if needed
+          const showTechnicalBtn = nameBlock.querySelector('.showTechnical');
+          if (showTechnicalBtn) {
+            showTechnicalBtn.addEventListener('click', (event) => {
+              event.target.parentNode.querySelector('.floatTechnical').classList.toggle('doHide');
+            });
+          }
+        }
         const floatTechnical = listingElement.querySelector('.floatTechnical');
         if (floatTechnical !== null) {
-          if (floatInfo === undefined || floatInfo.floatvalue === 0) {
+          if (floatInfo.floatvalue === 0) {
             // agents don't have float values yet they sometimes return float info, weird
             listingElement.querySelector('.floatBarMarket').remove();
-          } else if (floatInfo) {
+          } else {
             floatTechnical.innerHTML = DOMPurify.sanitize(getDataFilledFloatTechnical(floatInfo), { ADD_ATTR: ['target'] });
             const position = (parseFloat(
               getFloatAsFormattedString(floatInfo.floatvalue, 2),
@@ -285,10 +291,10 @@ const populateFloatInfo = (listingID, floatInfo) => {
             listingElement.querySelector('.floatToolTip').setAttribute('style', `left: ${position}%`);
             listingElement.querySelector('.floatDropTarget').innerText = getFloatAsFormattedString(floatInfo.floatvalue, numberOfFloatDigitsToShow);
 
-            if (marketAlwaysShowFloatTechnical) floatTechnical.classList.remove('hidden');
+            if (marketAlwaysShowFloatTechnical) floatTechnical.classList.remove('doHide');
           }
         }
-      } else if (floatInfo) {
+      } else {
         const itemImageDiv = listingElement.querySelector('.market_listing_item_img_container');
         if (itemImageDiv !== null) {
           itemImageDiv.querySelector('img').insertAdjacentHTML(
@@ -302,11 +308,9 @@ const populateFloatInfo = (listingID, floatInfo) => {
         }
       }
 
-      if (floatInfo) {
-        listingElement.setAttribute('data-float', floatInfo.floatvalue);
-        listingElement.setAttribute('data-paintindex', floatInfo.paintindex);
-        listingElement.setAttribute('data-paintseed', floatInfo.paintseed);
-      }
+      listingElement.setAttribute('data-float', floatInfo.floatvalue);
+      listingElement.setAttribute('data-paintindex', floatInfo.paintindex);
+      listingElement.setAttribute('data-paintseed', floatInfo.paintseed);
     });
   }
 };
@@ -456,83 +460,37 @@ const addFloatDataToPage = (job, floatInfo) => {
   }
 };
 
-const hideFloatBar = (listingID) => {
-  const listingElement = getElementByListingID(listingID);
-
-  if (listingElement !== null) {
-    listingElement.querySelector('.floatBar').classList.add('hidden');
-  }
-};
-
 const dealWithNewFloatData = (job, floatInfo) => {
-  if (floatInfo !== 'nofloat') addFloatDataToPage(job, floatInfo);
-  else hideFloatBar();
+  if (floatInfo !== 'nofloat') {
+    addFloatDataToPage(job, floatInfo);
+  }
 };
 
 const addListingsToFloatQueue = () => {
   if (appID === steamApps.CSGO.appID && !isCommodityItem) {
     chrome.storage.local.get(['autoFloatMarket'], ({ autoFloatMarket }) => {
       if (autoFloatMarket && !csgoFloatExtPresent()) {
-        if (itemWithInspectLink) {
-          const listings = getListings();
-          for (const listing of Object.values(listings)) {
-            const listingRow = getElementByListingID(listing.listingid);
-            if (listingRow.getAttribute('data-float') === null) {
-              listingRow.setAttribute('data-float', '1.0');
-              const assetID = listing.asset.id;
+        const listings = getListings();
+        for (const listing of Object.values(listings)) {
+          const listingRow = getElementByListingID(listing.listingid);
+          if (listingRow.getAttribute('data-float') === null) {
+            listingRow.setAttribute('data-float', '1.0');
+            const assetID = listing.asset.id;
 
-              const price = listing.converted_price + listing.converted_fee;
+            const price = listing.converted_price + listing.converted_fee;
 
-              floatQueue.jobs.push({
-                type: 'market',
-                assetID,
-                inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
-                listingID: listing.listingid,
-                price,
-                currencyid: listing.currencyid,
-                callBackFunction: dealWithNewFloatData,
-              });
-            }
-          }
-          if (!floatQueue.active) workOnFloatQueue();
-        }
-      }
-    });
-  }
-};
-
-const addFloatBarSkeletons = () => {
-  if (appID === steamApps.CSGO.appID) {
-    chrome.storage.local.get(['autoFloatMarket', 'marketShowFloatValuesOnly'], ({ autoFloatMarket, marketShowFloatValuesOnly }) => {
-      if (autoFloatMarket && !csgoFloatExtPresent() && !marketShowFloatValuesOnly) {
-        const listingsSection = document.getElementById('searchResultsRows');
-
-        // so it does not throw any errors when it can't find it on commodity items
-        if (listingsSection !== null && !fullName.includes(itemTypes.charm.name)) {
-          const listingNameBlocks = listingsSection.querySelectorAll('.market_listing_item_name_block');
-
-          if (listingNameBlocks !== null && itemWithInspectLink) {
-            listingNameBlocks.forEach((listingNameBlock) => {
-              if (listingNameBlock.getAttribute('data-floatBar-added') === null
-                || listingNameBlock.getAttribute('data-floatBar-added') === false) {
-                listingNameBlock.insertAdjacentHTML('beforeend', DOMPurify.sanitize(getFloatBarSkeleton('market')));
-                listingNameBlock.setAttribute('data-floatBar-added', 'true');
-
-                // adds "show technical" hide and show logic
-                listingNameBlock.querySelector('.showTechnical').addEventListener(
-                  'click',
-                  (event) => {
-                    event.target.parentNode.querySelector('.floatTechnical').classList.toggle('hidden');
-                  },
-                );
-              }
+            floatQueue.jobs.push({
+              type: 'market',
+              assetID,
+              inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
+              listingID: listing.listingid,
+              price,
+              currencyid: listing.currencyid,
+              callBackFunction: dealWithNewFloatData,
             });
-          } else {
-            setTimeout(() => {
-              addFloatBarSkeletons();
-            }, 2000);
           }
         }
+        if (!floatQueue.active) workOnFloatQueue();
       }
     });
   }
@@ -853,7 +811,6 @@ const getContextIDFromPage = () => {
 
 const addPerListingStuff = (marketEnhanceStickers) => {
   addPhasesIndicator();
-  addFloatBarSkeletons();
   if (marketEnhanceStickers) addStickers();
   addListingsToFloatQueue();
   addPricesInOtherCurrencies();
@@ -879,35 +836,6 @@ reloadPageOnExtensionUpdate();
 const descriptor = document.getElementById('largeiteminfo_item_descriptors');
 
 if (appID === steamApps.CSGO.appID) {
-  if (actions !== null) {
-    const originalInspectButton = actions.querySelector('.btn_small.btn_grey_white_innerfade');
-    // some items don't have inspect buttons (like cases)
-    if (originalInspectButton !== null) {
-      itemWithInspectLink = true;
-      const inspectLink = originalInspectButton.getAttribute('href');
-      const customInspectButtons = `
-    <a class="btn_small btn_grey_white_innerfade" id="inbrowser_inspect_button" href="https://swap.gg/screenshot?inspectLink=${inspectLink}" target="_blank">
-        <span>
-            ${chrome.i18n.getMessage('inspect_in_browser')}
-        </span>
-    </a>
-    <a class="btn_small btn_grey_white_innerfade" id="on_server_inspect_button" href="https://www.cs2inspects.com/?apply=${inspectLink}" target="_blank">
-        <span>
-            Inspect On Server
-        </span>
-    </a>`;
-
-      const itemActions = document.getElementById('largeiteminfo_item_actions');
-
-      if (itemActions) {
-        itemActions.insertAdjacentHTML(
-          'beforeend',
-          DOMPurify.sanitize(customInspectButtons, { ADD_ATTR: ['target'] }),
-        );
-      }
-    }
-  }
-
   if (descriptor !== null) {
     descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
       `<div class="descriptor">
@@ -1353,7 +1281,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                 </div>
                 
                 <div id="realMoneyExpand" class="clickable" title="Click to learn more about what this is">What is this?</div>
-                <div id="realMoneyMoreInfo" class="hidden">
+                <div id="realMoneyMoreInfo" class="doHide">
                     <div style="margin: 10px 0 10px 0">
                       <a href="https://skinport.com/market/730?r=gery" target="_blank" class="referralLink" data-site="skinport">Skinport</a>,
                       <a href="https://skinbaron.com/partner/gery" target="_blank" class="referralLink" data-site="skinbaron">Skinbaron</a>,
@@ -1401,7 +1329,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
       );
 
       document.getElementById('realMoneyExpand').addEventListener('click', () => {
-        document.getElementById('realMoneyMoreInfo').classList.remove('hidden');
+        document.getElementById('realMoneyMoreInfo').classList.remove('doHide');
       });
     }
   }
@@ -1418,7 +1346,7 @@ chrome.storage.local.get(['numberOfListings', 'marketEnhanceStickers'], ({ numbe
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       if (mutation.target.id === 'searchResultsRows'
-      && mutation.addedNodes.length > 0) {
+        && mutation.addedNodes.length > 0) {
         // to avoid executing this lots of times
         // at least a second has to pass since the last one
         if (Date.now() > observerLastTriggered + 1000) {

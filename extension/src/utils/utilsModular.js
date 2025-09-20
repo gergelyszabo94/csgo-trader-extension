@@ -796,7 +796,7 @@ const getFloatBarSkeleton = (type) => {
         <div class="progress-bar floatBarBS" title="${exteriors.battle_scarred.localized_name}"></div>
      </div>
      <div class="showTechnical clickable" title="Show Float Technical Information">Show Technical</div>
-     <div class="floatTechnical hidden"></div>
+     <div class="floatTechnical doHide"></div>
     </div>`;
 };
 
@@ -909,7 +909,7 @@ const addUpdatedRibbon = () => {
       );
       document.getElementById('closeUpdatedRibbon').addEventListener('click', () => {
         chrome.storage.local.set({ showUpdatedRibbon: false }, () => {
-          document.getElementById('extensionUpdatedRibbon').classList.add('hidden');
+          document.getElementById('extensionUpdatedRibbon').classList.add('doHide');
         });
       });
     }
