@@ -1817,7 +1817,7 @@ const generateItemsList = () => {
   const namesAlreadyInList = [];
 
   let csvContent = 'data:text/csv;charset=utf-8,';
-  const headers = `Name,Exterior${showPrice ? ',Price' : ''}${showFloat && includeDupes ? ',Float value' : ''}${showStickerPrice ? ',Sticker Price' : ''}${showTradability ? ',Tradability' : ''}${includeDupes ? '' : ',Duplicates'}\n`;
+  const headers = `Name,Exterior${showPrice ? ',Price' : ''}${showFloat && includeDupes ? ',Float value' : ''}${showStickerPrice ? ',Sticker Price' : ''}${showTradability ? ',Tradability' : ''}${includeDupes ? '' : ',Duplicates'}${includeItemLinks ? ',Link' : ''}\n`;
   csvContent += headers;
 
   sortedItems.forEach((itemElement) => {
@@ -1877,7 +1877,7 @@ const generateItemsList = () => {
         : '';
     const duplicateCSV = (!includeDupes && item.duplicates.num !== 1) ? `,x${item.duplicates.num}` : '';
     const line = `${includeDupes ? customName : item.name} ${delimiter} ${exterior}${price}${float}${stickerPrice}${tradability} ${duplicate} ${itemInventoryLink}\n`;
-    const lineCSV = `"${includeDupes ? customName : item.name}",${exterior}${priceCSV}${floatCSV}${stickerPriceCSV}${tradabilityCSV}${duplicateCSV}\n`;
+    const lineCSV = `"${includeDupes ? customName : item.name}",${exterior}${priceCSV}${floatCSV}${stickerPriceCSV}${tradabilityCSV}${duplicateCSV}${itemInventoryLink}\n`;
 
     if (lineCount < limit) {
       if (includeDupes || (!includeDupes && !namesAlreadyInList.includes(item.market_hash_name))) {
