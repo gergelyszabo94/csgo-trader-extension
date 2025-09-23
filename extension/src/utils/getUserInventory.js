@@ -100,8 +100,6 @@ const getUserCSGOInventory = (steamID, contextID) => new Promise((resolve, rejec
                               if (description.value.includes(('transferred until'))) {
                                 tradability = description.value.split('transferred until ')[1].replace(/[()]/g, '');
                               } else {
-                                // leftover from trade lock
-                                // should soon be removed when trade lock is phased out
                                 tradability = description.value.split('Tradable/Marketable After ')[1].replace(/[()]/g, '');
                               }
                             } catch (e) {
