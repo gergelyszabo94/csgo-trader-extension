@@ -49,6 +49,7 @@ import { getFloatInfoFromCache } from '../../utils/floatCaching';
 let pricePercentage = 100; // can be changed, for easier discount calculation
 let items = [];
 let inventoryTotal = 0.0;
+const inventoryTotalsAdded = []; // context ids that have been added to the total
 let floatDigitsToShow = 4;
 let showPaintSeeds = false;
 let showFloatRank = false;
@@ -2325,8 +2326,12 @@ const requestInventory = (appID, contextID) => {
     if (isOwnInventory()) {
       chrome.runtime.sendMessage({ inventory: inventoryOwnerID, contextID }, (response) => {
         if (response !== 'error') {
+          if (!inventoryTotalsAdded.includes(contextID)) {
+            inventoryTotal += response.total;
+            inventoryTotalsAdded.push(contextID);
+          }
+
           items = items.concat(response.items);
-          inventoryTotal += response.total;
           addRightSideElements();
           addPerItemInfo(appID);
           setInventoryTotal();
