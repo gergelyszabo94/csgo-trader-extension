@@ -81,6 +81,14 @@ const tradable = '<span class="tradable">Tradable</span>';
 const notTradable = '<span class="not_tradable">Not Tradable</span>';
 const tradeLocked = '<span class="not_tradable">Tradelocked</span>';
 
+const updateDuplicateCounts = () => {
+  items.forEach((item) => {
+    const duplicates = items.filter((i) => i.market_hash_name === item.market_hash_name);
+    item.duplicates.num = duplicates.length;
+    item.duplicates.instances = duplicates.map((it) => it.assetid);
+  });
+};
+
 const getInventoryOwnerID = () => {
   const inventoryOwnerIDScript = 'document.querySelector(\'body\').setAttribute(\'inventoryOwnerID\', UserYou.GetSteamId());';
   return injectScript(inventoryOwnerIDScript, true, 'inventoryOwnerID', 'inventoryOwnerID');
@@ -2269,6 +2277,7 @@ const onFullCSGOInventoryLoad = () => {
           },
         }, () => { });
         items = inv;
+        updateDuplicateCounts();
         addRightSideElements();
         addPerItemInfo(steamApps.CSGO.appID);
         setInventoryTotal();
@@ -2332,6 +2341,7 @@ const requestInventory = (appID, contextID) => {
           }
 
           items = items.concat(response.items);
+          updateDuplicateCounts();
           addRightSideElements();
           addPerItemInfo(appID);
           setInventoryTotal();
