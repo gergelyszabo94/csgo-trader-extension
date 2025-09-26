@@ -46,6 +46,7 @@ import steamApps from 'utils/static/steamApps';
 import { listenToAcceptTrade } from 'utils/tradeOffers';
 import { getFloatInfoFromCache } from '../../utils/floatCaching';
 
+const inventoryPageSize = 25;
 let pricePercentage = 100; // can be changed, for easier discount calculation
 let items = [];
 let inventoryTotal = 0.0;
@@ -1920,6 +1921,7 @@ const addFunctionBar = () => {
     const handPointer = chrome.runtime.getURL('images/hand-pointer-solid.svg');
     const table = chrome.runtime.getURL('images/table-solid.svg');
     const fullSreen = chrome.runtime.getURL('images/expand-solid.svg');
+    const groupItems = chrome.runtime.getURL('images/layer-group-solid-full.svg');
 
     document.querySelector('.filter_ctn.inventory_filters').insertAdjacentHTML(
       'afterend',
@@ -1939,6 +1941,9 @@ const addFunctionBar = () => {
                         </span>
                         <span id="screenshotView">
                             <img id="screenshotViewButton" class="clickable inventoryFunctionBarIcon" src="${fullSreen}" title="View inventory in full screen for screenshots">
+                        </span>
+                        <span id="groupItems">
+                            <img id="groupItemsButton" class="clickable inventoryFunctionBarIcon" src="${groupItems}" title="Group identical commodity items">
                         </span>
                         <span style="font-size: 0.9rem;">
                             Price:
@@ -2256,6 +2261,115 @@ const addFunctionBar = () => {
         const clonedElement = itemHolder.cloneNode(true);
         modalContentEl.appendChild(clonedElement);
       });
+    });
+
+    let doGrouping = false;
+    const groupedHidden = new Set();
+    const originalPageMap = new Map(); // holder => {page, index}
+
+    document.getElementById('groupItemsButton').addEventListener('click', () => {
+      doGrouping = !doGrouping;
+
+      const inventories = document.getElementById('inventories');
+      if (!inventories) return;
+
+      const inventoryPages = Array.from(inventories.querySelectorAll('.inventory_page'));
+      const allItemHolders = Array.from(inventories.querySelectorAll('.itemHolder'));
+
+      if (doGrouping) {
+        groupedHidden.clear();
+        originalPageMap.clear();
+
+        // Track original page and index for each holder
+        allItemHolders.forEach((holder) => {
+          const parentPage = holder.closest('.inventory_page');
+          if (parentPage) {
+            const index = Array.from(parentPage.children).indexOf(holder);
+            originalPageMap.set(holder, { page: parentPage, index });
+          }
+        });
+
+        // Hide duplicate commodity items except the first instance, collect visible holders
+        const visibleItemHolders = [];
+        allItemHolders.forEach((holder) => {
+          const itemElement = holder.querySelector('.item.app730');
+          if (!itemElement) return;
+
+          const IDs = getIDsFromElement(itemElement, 'inventory');
+          const item = getItemByIDs(items, IDs.appID, IDs.contextID, IDs.assetID);
+
+          if (item && item.commodity && item.duplicates.num > 1) {
+            if (item.duplicates.instances[0] === item.assetid) {
+              holder.style.display = '';
+              visibleItemHolders.push(holder);
+              // Add duplicate count indicator
+              const contrastingLookClass = showContrastingLook ? 'contrastingBackground' : '';
+              if (!itemElement.querySelector('.commodityDuplicateInfo')) {
+                itemElement.insertAdjacentHTML(
+                  'beforeend', DOMPurify.sanitize(
+                    `<div class="commodityDuplicateInfo">
+                  <span class="commodityDuplicateIndicator ${contrastingLookClass}">x${item.duplicates.num}</span>
+                </div>`,
+                  ),
+                );
+              }
+            } else {
+              holder.style.display = 'none';
+              groupedHidden.add(holder);
+            }
+          } else {
+            holder.style.display = '';
+            visibleItemHolders.push(holder);
+          }
+        });
+
+        // Globally fill pages with visible items
+        let visibleIndex = 0;
+        inventoryPages.forEach((page) => {
+          // Remove all visible itemHolders from this page
+          Array.from(page.querySelectorAll('.itemHolder')).forEach((holder) => {
+            if (holder.style.display !== 'none') page.removeChild(holder);
+          });
+
+          // Fill page with up to inventoryPageSize visible items
+          let filled = 0;
+          while (filled < inventoryPageSize && visibleIndex < visibleItemHolders.length) {
+            page.appendChild(visibleItemHolders[visibleIndex]);
+            filled += 1;
+            visibleIndex += 1;
+          }
+          // Invisible items remain in their original page and position
+        });
+      } else {
+        // Restore all itemHolders to their original page and position
+        // 1. Group holders by original page
+        const holdersByPage = new Map();
+        allItemHolders.forEach((holder) => {
+          // Remove duplicate indicator if present
+          const itemElement = holder.querySelector('.item.app730');
+          if (itemElement) {
+            const duplicateInfo = itemElement.querySelector('.commodityDuplicateInfo');
+            if (duplicateInfo) duplicateInfo.remove();
+          }
+          holder.style.display = '';
+          const original = originalPageMap.get(holder);
+          if (original) {
+            if (!holdersByPage.has(original.page)) holdersByPage.set(original.page, []);
+            holdersByPage.get(original.page).push({ holder, index: original.index });
+          }
+        });
+
+        // 2. For each page, sort holders by original index and re-append in order
+        holdersByPage.forEach((holders, page) => {
+          holders.sort((a, b) => a.index - b.index);
+          holders.forEach(({ holder }) => {
+            page.appendChild(holder);
+          });
+        });
+
+        groupedHidden.clear();
+        originalPageMap.clear();
+      }
     });
 
     document.getElementById('generate_list').addEventListener('click', () => { document.getElementById('functionBarGenerateMenu').classList.toggle('hidden'); });

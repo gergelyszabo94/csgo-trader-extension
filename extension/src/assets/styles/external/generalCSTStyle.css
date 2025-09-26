@@ -459,7 +459,7 @@ progress {
     white-space: pre-wrap; /* not sure what this is but it works to not let the text overflow */
 }
 
-.exteriorSTInfo {
+.exteriorSTInfo, .commodityDuplicateInfo {
     position: absolute;
     top: 2px;
     right: 2px;
@@ -500,7 +500,7 @@ progress {
   margin-left: 50px;
 }
 
-.exteriorIndicator {
+.exteriorIndicator, .commodityDuplicateIndicator {
     color: var(--steam-note-blue);
     font-family: var(--steam-old-font);
 }
