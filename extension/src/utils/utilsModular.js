@@ -1031,6 +1031,7 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
             .replace(/\s*\|\s*/g, '-')
             .toLowerCase()
             .replace(/\s+/g, '-')
+            .replace(/-+/g, '-') // Add this line to replace multiple hyphens with single hyphen
           }/${(itemName.match(/\(\w+\)/) || [''])[0].replace(/[()]/g, '').toLowerCase()}`;
         }
         // Last 4 characters of string are not numbers -> not tournament year -> use sticker
