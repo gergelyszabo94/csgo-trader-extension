@@ -664,7 +664,7 @@ const addFadePercentage = (item, patternInfo, showContrastingLook) => {
     if (showContrastingLook) fadeDiv.classList.add('contrastingBackground');
     fadeDiv.innerText = patternInfo.short;
 
-    item.appendChild(fadeDiv);
+    if (item) item.appendChild(fadeDiv);
   }
 };
 
