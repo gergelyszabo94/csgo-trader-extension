@@ -717,6 +717,11 @@ if (activePage === 'incoming_offers') {
 }
 
 if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
+  // move the trade protection banner so it does not overlap with the partner offer summary
+  document.querySelectorAll('div.tradeoffer_items_ctn.active > div.tradeoffer_items_banner').forEach((banner) => {
+    banner.style.margin = '10px 0px 0px 0px';
+  });
+
   // adds the "load realtime price" action to offers
   document.querySelectorAll('.tradeoffer').forEach((offerElement) => {
     if (isOfferActive(offerElement)) {
