@@ -340,7 +340,7 @@ progress {
 
 .floatBar {
     position: relative;
-    top: -35px;
+    top: -60px;
 }
 
 .floatBarMarket {
@@ -527,6 +527,12 @@ progress {
     right: 5px;
 }
 
+.stickerSlot {
+    display: inline;
+    margin-right: -10px;
+    margin-left: -5px;
+}
+
 .stickerIcon {
     width: 64px;
     height: 48px;
@@ -589,6 +595,10 @@ progress {
     margin-bottom: 10px;
 }
 
+.upperModule {
+    margin-bottom: -65px;
+}
+
 .nametag {
     color: var(--steam-nametag-red);
     font-size: 1.2rem;
@@ -600,8 +610,8 @@ progress {
 .duplicate {
     color: yellow;
     position: absolute;
-    left: 25px;
-    top: 150px;
+    left: 280px;
+    top: 140px;
     font-size: 2.5em;
     font-weight: bold;
     -webkit-text-stroke-width: 1px;
@@ -612,14 +622,14 @@ progress {
     color: white;
     position: absolute;
     left: 25px;
-    top: 100px;
+    top: 80px;
     font-weight: bold;
 }
 
 .patternInfo {
     position: relative;
-    left: 0;
-    bottom: 15px;
+    left: 65px;
+    bottom: 70px;
     font-size: 1.5em;
     color: white;
 }

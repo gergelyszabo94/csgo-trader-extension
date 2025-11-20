@@ -67,8 +67,8 @@ const upperModule = `
     <div class="descriptor customStickers"></div>
     <div class="duplicate"></div>
     <div class="copyButtons"></div>
-    ${floatBar}
     <div class="patternInfo"></div>
+    ${floatBar}
 </div>
 `;
 
@@ -668,8 +668,12 @@ const addRightSideElements = () => {
     });
 
     // adds float bar, sticker info, nametag
-    document.querySelectorAll('.item_desc_icon').forEach((icon) => {
-      icon.insertAdjacentHTML('afterend', DOMPurify.sanitize(upperModule));
+    document.querySelectorAll('.inventory_page_right [role="separator"][aria-orientation="horizontal"]').forEach((separator) => {
+      separator.classList.add('doHide');
+      document.querySelectorAll('.inventory_page_right [src$="protected_items_badge2.png"]').forEach((protectedBadge) => {
+        protectedBadge.parentNode.parentNode.remove();
+      });
+      separator.insertAdjacentHTML('afterend', DOMPurify.sanitize(upperModule));
     });
 
     if (activeInventoryAppID !== steamApps.CSGO.appID) {
@@ -726,7 +730,7 @@ const addRightSideElements = () => {
         document.querySelectorAll('.showTechnical').forEach((showTechnical) => {
           showTechnical.addEventListener('click', () => {
             document.querySelectorAll('.floatTechnical').forEach((floatTechnical) => {
-              floatTechnical.classList.toggle('hidden');
+              floatTechnical.classList.toggle('doHide');
             });
           });
         });
