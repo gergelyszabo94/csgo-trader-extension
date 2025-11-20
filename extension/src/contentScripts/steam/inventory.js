@@ -686,10 +686,9 @@ const addRightSideElements = () => {
       || activeInventoryAppID === steamApps.TF2.appID
     ) {
       // adds the lower module that includes tradability, countdown  and bookmarking
-      document.querySelectorAll('#iteminfo1_item_actions, #iteminfo0_item_actions')
-        .forEach((action) => {
-          action.insertAdjacentHTML('afterend', DOMPurify.sanitize(lowerModule));
-        });
+      document.querySelectorAll('.inventory_page_right [href^="steam://rungame"]').forEach((inspectButton) => {
+        inspectButton.parentNode.insertAdjacentHTML('afterend', DOMPurify.sanitize(lowerModule));
+      });
 
       // i think dompurify removes the connect link when inserted above
       // this adds the href afterwards
