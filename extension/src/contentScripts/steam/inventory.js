@@ -63,7 +63,6 @@ let countDownID = '';
 const floatBar = getFloatBarSkeleton('inventory');
 const upperModule = `
 <div class="upperModule">
-    <div class="nametag"></div>
     <div class="descriptor customStickers"></div>
     <div class="duplicate"></div>
     <div class="copyButtons"></div>
@@ -667,7 +666,7 @@ const addRightSideElements = () => {
       element.removeEventListener('click');
     });
 
-    // adds float bar, sticker info, nametag
+    // adds float bar, sticker info
     document.querySelectorAll('.inventory_page_right [role="separator"][aria-orientation="horizontal"]').forEach((separator) => {
       separator.classList.add('doHide');
       document.querySelectorAll('.inventory_page_right [src$="protected_items_badge2.png"]').forEach((protectedBadge) => {
@@ -753,16 +752,6 @@ const addRightSideElements = () => {
         || activeInventoryAppID === steamApps.DOTA2.appID
         || activeInventoryAppID === steamApps.TF2.appID) {
         if (activeInventoryAppID === steamApps.CSGO.appID) {
-          // adds the nametag text to nametags
-          document.querySelectorAll('.nametag').forEach((nametag) => {
-            if (item.nametag !== undefined) {
-              nametag.innerText = item.nametag;
-              document.querySelectorAll('.fraud_warning').forEach((fraudWarning) => {
-                fraudWarning.outerHTML = '';
-              });
-            } else nametag.style.display = 'none';
-          });
-
           // repositions stickers and charms
           if ((item.stickers !== undefined && item.stickers.length !== 0)
             || (item.charms !== undefined && item.charms.length !== 0)) {
