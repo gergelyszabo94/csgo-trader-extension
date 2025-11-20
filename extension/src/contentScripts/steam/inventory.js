@@ -1109,50 +1109,34 @@ const addRightSideElements = () => {
         }
 
         if (activeInventoryAppID === steamApps.CSGO.appID) {
-          if (showPriceEmpireLinkInInventory) {
-            const priceEmpireLink = `
-        <div class="descriptor pricEmpireLink">
+          const buffLink = `
+        <div class="buffLink" style="margin-top: -20px;">
+            <a href="${getBuffLink(item.market_hash_name)}" target="_blank" style="color: yellow;">
+                Lookup item on Buff
+              </a>
+        </div>
+      `;
+          const floatDBLink = getFloatDBLink(item);
+          const floatDBLinkEL = `
+              <div class="floatDBLink" style="margin-top: -10px;">
+                  <a href="${floatDBLink}" target="_blank" style="color: yellow;">
+                      Lookup in FloatDB
+                    </a>
+              </div>
+            `;
+          const priceEmpireLink = `
+        <div class="pricEmpireLink" style="margin-top: -10px;">
             <a href="https://pricempire.com/${getPricempireLink(item.type.key, item.name, (item.dopplerInfo && item.dopplerInfo.name) ? `-${item.dopplerInfo.name}` : '', item.exterior?.name.toLowerCase())}?utm_source=csgotrader.app&r=76561198036030455" target="_blank" style="color: yellow;">
                 Check prices on PRICEMPIRE.COM
               </a>
         </div>
       `;
 
-            document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
-              .forEach((descriptor) => {
-                descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(priceEmpireLink, { ADD_ATTR: ['target'] }));
-              });
-          }
-
-          if (showBuffLookupInInventory) {
-            const buffLink = `
-        <div class="descriptor buffLink">
-            <a href="${getBuffLink(item.market_hash_name)}" target="_blank" style="color: yellow;">
-                Lookup item on Buff
-              </a>
-        </div>
-      `;
-
-            document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
-              .forEach((descriptor) => {
-                descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(buffLink, { ADD_ATTR: ['target'] }));
-              });
-          }
-          if (showFloatDBLookupInInventory) {
-            const floatDBLink = getFloatDBLink(item);
-            const floatDBLinkEL = `
-              <div class="descriptor floatDBLink">
-                  <a href="${floatDBLink}" target="_blank" style="color: yellow;">
-                      Lookup in FloatDB
-                    </a>
-              </div>
-            `;
-
-            document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
-              .forEach((descriptor) => {
-                descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(floatDBLinkEL, { ADD_ATTR: ['target'] }));
-              });
-          }
+          document.querySelectorAll('.inventory_page_right [href^="steam://rungame"]').forEach((inspectButton) => {
+            if (showBuffLookupInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(buffLink, { ADD_ATTR: ['target'] }));
+            if (showFloatDBLookupInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(floatDBLinkEL, { ADD_ATTR: ['target'] }));
+            if (showPriceEmpireLinkInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(priceEmpireLink, { ADD_ATTR: ['target'] }));
+          });
         }
 
         if (inventoryShowCopyButtons) {
