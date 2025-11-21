@@ -653,7 +653,7 @@ const addStartingAtPrice = (appID, marketHashName) => {
   );
 };
 
-const addRightSideElements = () => {
+const addRightSideElements = (reRun) => {
   const activeIDs = getIDsOfActiveItem();
   if (activeIDs !== null) {
     // cleans up previously added elements
@@ -667,7 +667,11 @@ const addRightSideElements = () => {
     });
 
     // adds float bar, sticker info
-    document.querySelectorAll('.inventory_page_right [role="separator"][aria-orientation="horizontal"]').forEach((separator) => {
+    const separators = document.querySelectorAll('.inventory_page_right [role="separator"][aria-orientation="horizontal"]');
+    if (separators.length === 1 && !reRun) {
+      setTimeout(() => addRightSideElements(true), 300);
+    }
+    separators.forEach((separator) => {
       separator.classList.add('doHide');
       document.querySelectorAll('.inventory_page_right [src$="protected_items_badge2.png"]').forEach((protectedBadge) => {
         protectedBadge.parentNode.parentNode.remove();
