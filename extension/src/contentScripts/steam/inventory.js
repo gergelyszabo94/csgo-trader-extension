@@ -135,7 +135,7 @@ const goToPreviousInventoryPage = () => {
 
 const cleanUpElements = () => {
   document.querySelectorAll(
-    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .multiSellLink, .floatDBLink',
+    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .multiSellLink, .floatDBLink, .inbrowserInspectLink',
   ).forEach((element) => {
     element.remove();
   });
@@ -689,9 +689,27 @@ const addRightSideElements = (reRun) => {
       || activeInventoryAppID === steamApps.DOTA2.appID
       || activeInventoryAppID === steamApps.TF2.appID
     ) {
-      // adds the lower module that includes tradability, countdown  and bookmarking
+      // adds the lower module that includes tradability, countdown  and bookmarking, inspect buttons
       document.querySelectorAll('.inventory_page_right [href^="steam://rungame"]').forEach((inspectButton) => {
         inspectButton.parentNode.insertAdjacentHTML('afterend', DOMPurify.sanitize(lowerModule));
+
+        if (item && item.inspectLink) {
+          const inspectOnserverLink = inspectButton.cloneNode(true);
+          inspectOnserverLink.href = `https://www.cs2inspects.com/?apply=${item.inspectLink}`;
+          inspectOnserverLink.textContent = 'Inspect on Server...';
+          inspectOnserverLink.setAttribute('target', '_blank');
+          inspectOnserverLink.classList.add('inspectOnServer');
+
+          inspectButton.insertAdjacentElement('afterend', inspectOnserverLink);
+
+          const inspectInBrowserLink = inspectButton.cloneNode(true);
+          inspectInBrowserLink.href = `https://swap.gg/screenshot?inspectLink=${item.inspectLink}`;
+          inspectInBrowserLink.textContent = 'Inspect in Browser...';
+          inspectInBrowserLink.setAttribute('target', '_blank');
+          inspectInBrowserLink.classList.add('inbrowserInspectLink');
+
+          inspectButton.insertAdjacentElement('afterend', inspectInBrowserLink);
+        }
       });
 
       // i think dompurify removes the connect link when inserted above
@@ -709,15 +727,6 @@ const addRightSideElements = (reRun) => {
       document.querySelectorAll('.lowerModule').forEach((module) => {
         module.addEventListener('click', (event) => {
           addBookmark(event.target);
-        });
-      });
-
-      document.querySelectorAll('.onServer').forEach((onServerInspectButton) => {
-        onServerInspectButton.addEventListener('click', () => {
-          document.querySelectorAll('.inspectOnServer').forEach((inspectOnServerDiv) => {
-            inspectOnServerDiv.classList.remove('hidden');
-          });
-          onServerInspectButton.removeEventListener('click', this);
         });
       });
 
