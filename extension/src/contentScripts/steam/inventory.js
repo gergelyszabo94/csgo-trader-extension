@@ -21,7 +21,6 @@ import {
 import { getShortDate, dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
   stattrak, starChar, souvenir, stattrakPretty, genericMarketLink,
-  inspectServerConnectLink,
 } from 'utils/static/simpleStrings';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import {
@@ -712,18 +711,6 @@ const addRightSideElements = (reRun) => {
         }
       });
 
-      // i think dompurify removes the connect link when inserted above
-      // this adds the href afterwards
-      document.querySelectorAll('.connectToInspectServer').forEach((connectLinkEl) => {
-        connectLinkEl.setAttribute('href', inspectServerConnectLink);
-      });
-
-      document.querySelectorAll('.inspectGenCommand').forEach((copyGenCommandEl) => {
-        copyGenCommandEl.addEventListener('click', () => {
-          copyToClipboard(copyGenCommandEl.getAttribute('genCommand'));
-        });
-      });
-
       document.querySelectorAll('.lowerModule').forEach((module) => {
         module.addEventListener('click', (event) => {
           addBookmark(event.target);
@@ -731,10 +718,12 @@ const addRightSideElements = (reRun) => {
       });
 
       if (activeInventoryAppID === steamApps.CSGO.appID) {
-        // hides "tags" and "tradable after" in one's own inventory
-        document.querySelectorAll('#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors')
+        // hides "tags"
+        // it's going to be interesting if these generated class names change at some point..
+        // we will see, it's not a very important element, so good for testing purposes
+        document.querySelectorAll('div.Cgo8G5L7D0oP0OHVGcq_D._3JCkAyd9cnB90tRcDLPp4W._38cfDT7owcq-7PHlx-Bx2j._3nHL7awgK1Qei1XivGvHMK > span._1maNP9UvDekHzld1kwwQnw.f6hU22EA7Z8peFWZVBJU')
           .forEach((tagsElement) => {
-            if (!tagsElement.classList.contains('hidden')) tagsElement.classList.add('hidden');
+            if (!tagsElement.classList.contains('doHide')) tagsElement.classList.add('doHide');
           });
 
         // listens to click on "show technical"
@@ -744,13 +733,6 @@ const addRightSideElements = (reRun) => {
               floatTechnical.classList.toggle('doHide');
             });
           });
-        });
-
-        // allows the float pointer's text to go outside the boundaries of the item
-        // they would not be visible otherwise on high-float items
-        // also removes background from the right side of the page
-        document.querySelectorAll('.item_desc_content').forEach((itemDescContent) => {
-          itemDescContent.setAttribute('style', 'overflow: visible; background-image: url()');
         });
       }
     } else {
@@ -804,31 +786,25 @@ const addRightSideElements = (reRun) => {
 
           // adds csgoskins link to collection
           if (item.collection) {
-            document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
-              .forEach((descriptors) => {
-                descriptors.querySelectorAll('.descriptor').forEach((descriptor) => {
-                  if (descriptor.style.color === 'rgb(157, 161, 169)') {
-                    const collectionName = descriptor.textContent;
-                    const parsedCollection = collectionName
-                      .toString()
-                      .toLowerCase()
-                      .replace(/\s+/g, '-')
-                      .replace(/[^\w-]+/g, '')
-                      .replace(/--+/g, '-')
-                      .replace(/^-+/, '')
-                      .replace(/-+$/, '');
-                    descriptor.innerHTML = '';
-                    descriptor.insertAdjacentHTML(
-                      'afterbegin',
-                      DOMPurify.sanitize(
-                        `<a href="https://pricempire.com/cs2-skin-search/skin-collections/${parsedCollection}?utm_source=csgotrader.app" target="_blank">
-                        ${collectionName}
-                      </a>`,
-                        { ADD_ATTR: ['target'] },
-                      ),
-                    );
-                  }
-                });
+            document.querySelectorAll('div[style="--text-color: var(--color-text-body-description); --white-space: pre-wrap; color: rgb(157, 161, 169);"] > span[style="display: contents;"')
+              .forEach((collectionEl) => {
+                const collectionName = collectionEl.textContent;
+                const parsedCollection = collectionName
+                  .toString()
+                  .toLowerCase()
+                  .replace(/\s+/g, '-')
+                  .replace(/[^\w-]+/g, '')
+                  .replace(/--+/g, '-')
+                  .replace(/^-+/, '')
+                  .replace(/-+$/, '');
+                collectionEl.innerHTML = '';
+                collectionEl.insertAdjacentHTML(
+                  'afterbegin',
+                  DOMPurify.sanitize(
+                    `<a href="https://pricempire.com/cs2-skin-search/skin-collections/${parsedCollection}?utm_source=csgotrader.app" target="_blank">${collectionName}</a>`,
+                    { ADD_ATTR: ['target'] },
+                  ),
+                );
               });
           }
 
