@@ -55,6 +55,7 @@ let showPaintSeeds = false;
 let showFloatRank = false;
 let showContrastingLook = true;
 let showDuplicates = true;
+let showAllExteriorsMenu = false;
 // variables for the countdown recursive logic
 let countingDown = false;
 let countDownID = '';
@@ -688,6 +689,55 @@ const addRightSideElements = (reRun) => {
       || activeInventoryAppID === steamApps.DOTA2.appID
       || activeInventoryAppID === steamApps.TF2.appID
     ) {
+      if (item && showAllExteriorsMenu) {
+        // it takes the visible item and checks if the collection includes souvenirs
+        let textOfDescriptors = '';
+        document.querySelectorAll('div[data-featuretarget="iteminfo"][style]:not([style*="display: none"])').forEach((itemInfo) => {
+          textOfDescriptors = itemInfo.textContent;
+        });
+
+        const thereSouvenirForThisItem = souvenirExists(textOfDescriptors);
+
+        let weaponName = '';
+        const star = item.starInName ? starChar : '';
+
+        if (item.isStatrack) weaponName = item.market_hash_name.split(`${stattrakPretty} `)[1].split('(')[0];
+        else if (item.isSouvenir) weaponName = item.market_hash_name.split('Souvenir ')[1].split('(')[0];
+        else {
+          weaponName = item.market_hash_name.split('(')[0].split('★ ')[1];
+          if (weaponName === undefined) weaponName = item.market_hash_name.split('(')[0];
+        }
+
+        let stOrSv = stattrakPretty;
+        let stOrSvClass = 'stattrakOrange';
+        let linkMidPart = star + stattrak;
+        if (item.isSouvenir || thereSouvenirForThisItem) {
+          stOrSvClass = 'souvenirYellow';
+          stOrSv = souvenir;
+          linkMidPart = souvenir;
+        }
+
+        const otherExteriors = `
+                    <div class="descriptor otherExteriors">
+                        <span>${chrome.i18n.getMessage('links_to_other_exteriors')}:</span>
+                        <ul>
+                            <li><a href="${`${genericMarketLink + star + weaponName}%28Factory%20New%29`}" target="_blank">${exteriors.factory_new.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Factory%20New%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.factory_new.localized_name}</span></a></li>
+                            <li><a href="${`${genericMarketLink + star + weaponName}%28Minimal%20Wear%29`}"" target="_blank">${exteriors.minimal_wear.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Minimal%20Wear%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.minimal_wear.localized_name}</span></a></li>
+                            <li><a href="${`${genericMarketLink + star + weaponName}%28Field-Tested%29`}"" target="_blank">${exteriors.field_tested.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Field-Tested%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.field_tested.localized_name}</span></a></li>
+                            <li><a href="${`${genericMarketLink + star + weaponName}%28Well-Worn%29`}"" target="_blank">${exteriors.well_worn.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Well-Worn%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.well_worn.localized_name}</span></a></li>
+                            <li><a href="${`${genericMarketLink + star + weaponName}%28Battle-Scarred%29`}"" target="_blank">${exteriors.battle_scarred.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Battle-Scarred%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.battle_scarred.localized_name}</span></a></li>
+                        </ul>
+                        <span>${chrome.i18n.getMessage('not_every_available')}</span>
+                    </div>
+                    `;
+
+        if (item.exterior !== undefined) {
+          document.querySelectorAll('.inventory_page_right [href^="steam://rungame"]').forEach((inspectButton) => {
+            inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(otherExteriors, { ADD_ATTR: ['target'] }));
+          });
+        }
+      }
+
       // adds the lower module that includes tradability, countdown  and bookmarking, inspect buttons
       document.querySelectorAll('.inventory_page_right [href^="steam://rungame"]').forEach((inspectButton) => {
         inspectButton.parentNode.insertAdjacentHTML('afterend', DOMPurify.sanitize(lowerModule));
@@ -837,59 +887,6 @@ const addRightSideElements = (reRun) => {
               addFloatRankIndicator(itemElement, item.floatInfo, showContrastingLook);
             }
           }
-
-          // it takes the visible descriptors and checks if the collection includes souvenirs
-          let textOfDescriptors = '';
-          document.querySelectorAll('.descriptor').forEach((descriptor) => {
-            if (descriptor.parentNode.classList.contains('item_desc_descriptors')
-              && descriptor.parentNode.parentNode.parentNode.parentNode.style.display !== 'none') {
-              textOfDescriptors += descriptor.innerText;
-            }
-          });
-
-          const thereSouvenirForThisItem = souvenirExists(textOfDescriptors);
-
-          let weaponName = '';
-          const star = item.starInName ? starChar : '';
-
-          if (item.isStatrack) weaponName = item.market_hash_name.split(`${stattrakPretty} `)[1].split('(')[0];
-          else if (item.isSouvenir) weaponName = item.market_hash_name.split('Souvenir ')[1].split('(')[0];
-          else {
-            weaponName = item.market_hash_name.split('(')[0].split('★ ')[1];
-            if (weaponName === undefined) weaponName = item.market_hash_name.split('(')[0];
-          }
-
-          let stOrSv = stattrakPretty;
-          let stOrSvClass = 'stattrakOrange';
-          let linkMidPart = star + stattrak;
-          if (item.isSouvenir || thereSouvenirForThisItem) {
-            stOrSvClass = 'souvenirYellow';
-            stOrSv = souvenir;
-            linkMidPart = souvenir;
-          }
-
-          chrome.storage.local.get(['showAllExteriorsInventory'], ({ showAllExteriorsInventory }) => {
-            const otherExteriors = `
-                    <div class="descriptor otherExteriors">
-                        <span>${chrome.i18n.getMessage('links_to_other_exteriors')}:</span>
-                        <ul>
-                            <li><a href="${`${genericMarketLink + star + weaponName}%28Factory%20New%29`}" target="_blank">${exteriors.factory_new.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Factory%20New%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.factory_new.localized_name}</span></a></li>
-                            <li><a href="${`${genericMarketLink + star + weaponName}%28Minimal%20Wear%29`}"" target="_blank">${exteriors.minimal_wear.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Minimal%20Wear%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.minimal_wear.localized_name}</span></a></li>
-                            <li><a href="${`${genericMarketLink + star + weaponName}%28Field-Tested%29`}"" target="_blank">${exteriors.field_tested.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Field-Tested%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.field_tested.localized_name}</span></a></li>
-                            <li><a href="${`${genericMarketLink + star + weaponName}%28Well-Worn%29`}"" target="_blank">${exteriors.well_worn.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Well-Worn%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.well_worn.localized_name}</span></a></li>
-                            <li><a href="${`${genericMarketLink + star + weaponName}%28Battle-Scarred%29`}"" target="_blank">${exteriors.battle_scarred.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Battle-Scarred%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.battle_scarred.localized_name}</span></a></li>
-                        </ul>
-                        <span>${chrome.i18n.getMessage('not_every_available')}</span>
-                    </div>
-                    `;
-
-            if (item.exterior !== undefined && showAllExteriorsInventory) {
-              document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
-                .forEach((descriptor) => {
-                  descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(otherExteriors, { ADD_ATTR: ['target'] }));
-                });
-            }
-          });
         }
 
         // sets the tradability info
@@ -2539,15 +2536,18 @@ if (defaultActiveInventoryAppID !== null) {
   chrome.storage.local.get([
     'numberOfFloatDigitsToShow', 'inventoryShowDuplicateCount',
     'showPaintSeedOnItems', 'showFloatRankOnItems', 'contrastingLook',
+    'showAllExteriorsInventory',
   ], ({
     numberOfFloatDigitsToShow, inventoryShowDuplicateCount,
     showPaintSeedOnItems, showFloatRankOnItems, contrastingLook,
+    showAllExteriorsInventory,
   }) => {
     floatDigitsToShow = numberOfFloatDigitsToShow;
     showPaintSeeds = showPaintSeedOnItems;
     showFloatRank = showFloatRankOnItems;
     showContrastingLook = contrastingLook;
     showDuplicates = inventoryShowDuplicateCount;
+    showAllExteriorsMenu = showAllExteriorsInventory;
   });
 
   // listens to manual inventory tab/game changes
