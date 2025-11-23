@@ -13,6 +13,14 @@ const collectionsWithSouvenirs = [
   'The Overpass Collection',
   'The Safehouse Collection',
   'The Train Collection',
+  'The 2021 Dust 2 Collection',
+  'The 2021 Mirage Collection',
+  'The 2021 Nuke Collection',
+  'The 2021 Overpass Collection',
+  'The 2021 Vertigo Collection',
+  'The Ancient Collection',
+  'The Apollo Collection',
+  'The Anubis Collection',
 ];
 
 export default collectionsWithSouvenirs;
