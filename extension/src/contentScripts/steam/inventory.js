@@ -24,7 +24,7 @@ import {
 } from 'utils/static/simpleStrings';
 import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import {
-  getPriceOverview, getPriceAfterFees, userPriceToProperPrice,
+  getPriceAfterFees, userPriceToProperPrice,
   centsToSteamFormattedPrice, prettyPrintPrice, addRealTimePriceToPage,
   priceQueue, workOnPriceQueue, getSteamWalletCurrency, initPriceQueue,
   updateWalletCurrency, getHighestBuyOrder, getLowestListingPrice,
@@ -621,38 +621,6 @@ const onListingPricesLoaded = () => {
   if (onLoadBox && onLoadBox.checked) startMassSelling();
 };
 
-// adds market info in other inventories
-const addStartingAtPrice = (appID, marketHashName) => {
-  getPriceOverview(appID, marketHashName).then(
-    (priceOverview) => {
-      // removes previous leftover elements
-      document.querySelectorAll('.startingAtVolume')
-        .forEach((previousElement) => previousElement.remove());
-
-      // adds new elements
-      document.querySelectorAll('.item_owner_actions')
-        .forEach((marketActions) => {
-          marketActions.style.display = 'block';
-          const startingAt = priceOverview.lowest_price === undefined ? 'Unknown' : priceOverview.lowest_price;
-          const volume = priceOverview.volume === undefined ? 'Unknown amount' : priceOverview.volume;
-
-          marketActions.insertAdjacentHTML('afterbegin',
-            DOMPurify.sanitize(`<div class="startingAtVolume">
-                     <div style="height: 24px;">
-                        <a href="${getItemMarketLink(appID, marketHashName)}">
-                            View in Community Market
-                        </a>
-                     </div>
-                     <div style="min-height: 3em; margin-left: 1em;">
-                        Starting at: ${startingAt}<br>Volume: ${volume} sold in the last 24 hours<br>
-                     </div>
-                   </div>
-                `));
-        });
-    }, (error) => { console.log(error); },
-  );
-};
-
 const addRightSideElements = (reRun) => {
   const activeIDs = getIDsOfActiveItem();
   if (activeIDs !== null) {
@@ -940,9 +908,7 @@ const addRightSideElements = (reRun) => {
 
       changeName(name, item.name_color, item.appid, item.market_hash_name, item.dopplerInfo);
 
-      // adds "starting at" and sales volume to everyone's inventory
-      if (!isOwnInventory()) addStartingAtPrice(item.appid, item.market_hash_name);
-      else if (item.marketable) { // adds quick and instant sell buttons
+      if (isOwnInventory() && item.marketable) { // adds quick and instant sell buttons
         chrome.storage.local.get(['inventoryInstantQuickButtons', 'safeInstantQuickSell'], ({ inventoryInstantQuickButtons, safeInstantQuickSell }) => {
           if (inventoryInstantQuickButtons) {
             document.querySelectorAll('.item_market_actions').forEach((marketActions) => {
