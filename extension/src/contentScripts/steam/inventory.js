@@ -1021,38 +1021,33 @@ const addRightSideElements = (reRun) => {
         showPriceEmpireLinkInInventory, showBuffLookupInInventory, inventoryShowCopyButtons,
         showFloatDBLookupInInventory,
       }) => {
-        if (itemInOffersInventory) {
-          const inOffers = activeOffers.items.filter((offerItem) => {
-            return offerItem.assetid === item.assetid;
-          });
+        const inOffers = activeOffers.items.filter((offerItem) => {
+          return offerItem.assetid === item.assetid;
+        });
 
-          if (inOffers.length !== 0) {
-            const offerLinks = inOffers.map((offerItem, index) => {
-              const offerLink = offerItem.offerOrigin === 'sent'
-                ? `https://steamcommunity.com/profiles/${offerItem.owner}/tradeoffers/sent#tradeofferid_${offerItem.inOffer}`
-                : `https://steamcommunity.com/tradeoffer/${offerItem.inOffer}/`;
+        let inTradesInfoModule = null;
 
-              const afterLinkChars = index === inOffers.length - 1
-                ? '' // if it's the last one
-                : ', ';
+        if (inOffers.length !== 0) {
+          const offerLinks = inOffers.map((offerItem, index) => {
+            const offerLink = offerItem.offerOrigin === 'sent'
+              ? `https://steamcommunity.com/profiles/${offerItem.owner}/tradeoffers/sent#tradeofferid_${offerItem.inOffer}`
+              : `https://steamcommunity.com/tradeoffer/${offerItem.inOffer}/`;
 
-              return `<a href="${offerLink}" target="_blank">
+            const afterLinkChars = index === inOffers.length - 1
+              ? '' // if it's the last one
+              : ', ';
+
+            return `<a href="${offerLink}" target="_blank">
               ${offerItem.inOffer}${afterLinkChars}
             </a>`;
-            });
+          });
 
-            const listString = `<div>${offerLinks.join('')}</div>`;
-            const inTradesInfoModule = `
-      <div class="descriptor inTradesInfoModule">
+          const listString = `<div>${offerLinks.join('')}</div>`;
+          inTradesInfoModule = `
+      <div class="inTradesInfoModule" style="margin-bottom: 20px;">
           In offer${inOffers.length > 1 ? 's' : ''}:
           ${listString}
       </div>`;
-
-            document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
-              .forEach((descriptor) => {
-                descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(inTradesInfoModule, { ADD_ATTR: ['target'] }));
-              });
-          }
         }
 
         if (activeInventoryAppID === steamApps.CSGO.appID) {
@@ -1080,6 +1075,7 @@ const addRightSideElements = (reRun) => {
       `;
 
           document.querySelectorAll('.inventory_page_right [href^="steam://rungame"]').forEach((inspectButton) => {
+            if (itemInOffersInventory && inTradesInfoModule) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(inTradesInfoModule, { ADD_ATTR: ['target'] }));
             if (showBuffLookupInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(buffLink, { ADD_ATTR: ['target'] }));
             if (showFloatDBLookupInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(floatDBLinkEL, { ADD_ATTR: ['target'] }));
             if (showPriceEmpireLinkInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(priceEmpireLink, { ADD_ATTR: ['target'] }));
@@ -2548,9 +2544,9 @@ if (defaultActiveInventoryAppID !== null) {
 
         if (getActiveInventoryAppID() !== steamApps.CSGO.appID) {
           // unhides "tags" in non-csgo inventories
-          document.querySelectorAll('#iteminfo1_item_tags, #iteminfo0_item_tags, #iteminfo1_item_owner_descriptors, #iteminfo0_item_owner_descriptors')
+          document.querySelectorAll('div.Cgo8G5L7D0oP0OHVGcq_D._3JCkAyd9cnB90tRcDLPp4W._38cfDT7owcq-7PHlx-Bx2j._3nHL7awgK1Qei1XivGvHMK > span._1maNP9UvDekHzld1kwwQnw.f6hU22EA7Z8peFWZVBJU')
             .forEach((tagsElement) => {
-              tagsElement.classList.remove('hidden');
+              if (!tagsElement.classList.contains('doHide')) tagsElement.classList.add('doHide');
             });
         }
       }
