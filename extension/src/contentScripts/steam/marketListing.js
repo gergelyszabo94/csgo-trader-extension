@@ -1241,6 +1241,13 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                           SkinBid
                       </a>
                     </div>
+                    <div class="realMoneySite">
+                      <a href="https://skinflow.gg/buy?search=${weaponName}&referral=GERYTRADING" target="_blank" class="realMoneySiteLink referralLink" data-site="skinflow">
+                          <img alt="SkinFlow logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinflow.png')}" data-site="skinflow">
+                          <br>
+                          SkinFlow
+                      </a>
+                    </div>
                   </div> 
                   <div class="realMoneySites">
                     <div class="realMoneySite">
@@ -1295,6 +1302,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       <a href="https://csdeals.com/new/?ref=mwe3otc" target="_blank" class="referralLink" data-site="csdeals">CS.DEALS</a>,
                       <a href="https://p.skin.place/cs2trader" target="_blank" class="referralLink" data-site="skinplace">Skin.Place</a>,
                       <a href="https://white.market/item?appId=730&nameHash=${encodeURIComponent(fullName)}&ref=53cecef4a02f6fc1" target="_blank" class="referralLink" data-site="whitemarket">White.Market</a>,
+                      <a href="https://skinflow.gg/buy?search=${weaponName}&referral=GERYTRADING" target="_blank" class="referralLink" data-site="skinflow">SkinFlow.gg</a>,
                       <a href="bskn.co/?ref_alias=xcW4c_phcUc" target="_blank" class="referralLink" data-site="bitskins">Bitskins</a> and 
                       <a href="https://csfloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csfloat">
                       CSFloat
