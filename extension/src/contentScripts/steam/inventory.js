@@ -11,7 +11,7 @@ import {
   addSearchListener, getPattern, removeFromArray, getFloatAsFormattedString,
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
   parseStickerInfo, getInspectLink, getExteriorFromTags, getDopplerInfo,
-  getType, getQuality, getNameTag, getBuffLink, getPricempireLink,
+  getType, getQuality, getBuffLink, getPricempireLink,
 }
   from 'utils/utilsModular';
 import {
@@ -230,6 +230,7 @@ const getItemInfoFromPage = (appID, contextID) => {
                   instanceid: asset.instanceid,
                   description: asset.description,
                   appid: asset.appid.toString(),
+                  properties: inventory.m_rgAssetProperties[asset.assetid],
               });
             }
         }
@@ -283,7 +284,18 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
             const charms = parseCharmInfo(item.description.descriptions, 'direct', prices, pricingProvider, pricingMode, exchangeRate, currency);
             let price = null;
             const type = getType(item.description.tags);
+            let nametag = null;
             let floatInfo = null;
+
+            if (item.properties) {
+              floatInfo = {};
+              item.properties.forEach((property) => {
+                if (property.propertyid === 1 && property.int_value) floatInfo.paintseed = parseInt(property.int_value);
+                if (property.propertyid === 2 && property.float_value) floatInfo.floatvalue = parseFloat(property.float_value);
+                if (property.propertyid === 3 && property.int_value) floatInfo.template = parseInt(property.int_value);
+                if (property.propertyid === 5 && property.string_value) nametag = property.string_value;
+              });
+            }
 
             if (floatCache[assetID] !== undefined
               && floatCache[assetID] !== null && itemTypes[type.key].float) {
@@ -340,7 +352,7 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
               charms,
               charmPrice: getStickerPriceTotal(charms, currency),
               totalAddonPrice: getStickerPriceTotal([...stickers, ...charms], currency),
-              nametag: getNameTag(item),
+              nametag,
               duplicates: duplicates[marketHashName],
               owner,
               price,
@@ -382,25 +394,31 @@ const changeName = (name, appID, marketHashName, dopplerInfo) => {
 };
 
 const setFloatBarWithData = (floatInfo) => {
-  const floatTechnicalElement = getDataFilledFloatTechnical(floatInfo);
+  if (floatInfo.floatvalue) {
+    const floatTechnicalElement = getDataFilledFloatTechnical(floatInfo);
 
-  document.querySelectorAll('.floatTechnical').forEach((floatTechnical) => {
-    floatTechnical.innerHTML = DOMPurify.sanitize(floatTechnicalElement, { ADD_ATTR: ['target'] });
-  });
+    document.querySelectorAll('.floatTechnical').forEach((floatTechnical) => {
+      floatTechnical.innerHTML = DOMPurify.sanitize(floatTechnicalElement, { ADD_ATTR: ['target'] });
+    });
 
-  const position = (parseFloat(getFloatAsFormattedString(floatInfo.floatvalue, 2)) * 100) - 2;
+    const position = (parseFloat(getFloatAsFormattedString(floatInfo.floatvalue, 2)) * 100) - 2;
 
-  document.querySelectorAll('.floatToolTip').forEach((floatToolTip) => {
-    floatToolTip.setAttribute('style', `left: ${position}%`);
-  });
-  document.querySelectorAll('.floatDropTarget').forEach((floatDropTarget) => {
-    floatDropTarget.innerText = getFloatAsFormattedString(floatInfo.floatvalue, floatDigitsToShow);
-  });
+    document.querySelectorAll('.floatToolTip').forEach((floatToolTip) => {
+      floatToolTip.setAttribute('style', `left: ${position}%`);
+    });
+    document.querySelectorAll('.floatDropTarget').forEach((floatDropTarget) => {
+      floatDropTarget.innerText = getFloatAsFormattedString(floatInfo.floatvalue, floatDigitsToShow);
+    });
+  } else {
+    document.querySelectorAll('.floatBar').forEach((floatBarElement) => {
+      floatBarElement.classList.add('doHide');
+    });
+  }
 };
 
 const setPatternInfo = (patternInfo) => {
   document.querySelectorAll('.patternInfo').forEach((patternInfoElement) => {
-    if (patternInfo !== null) {
+    if (patternInfo) {
       if (patternInfo.type === 'fade') patternInfoElement.classList.add('fadeGradient');
       else if (patternInfo.type === 'marble_fade') patternInfoElement.classList.add('marbleFadeGradient');
       else if (patternInfo.type === 'case_hardened') patternInfoElement.classList.add('caseHardenedGradient');
@@ -411,7 +429,7 @@ const setPatternInfo = (patternInfo) => {
 
 // sticker wear to sticker icon tooltip
 const setStickerInfo = (stickers, charms) => {
-  if (stickers !== null) {
+  if (stickers) {
     stickers.forEach((stickerInfo, index) => {
       const wear = stickerInfo.wear !== undefined
         ? Math.trunc(Math.abs(1 - stickerInfo.wear) * 100)
