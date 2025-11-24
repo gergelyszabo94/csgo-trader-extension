@@ -56,6 +56,8 @@ let showFloatRank = false;
 let showContrastingLook = true;
 let showDuplicates = true;
 let showAllExteriorsMenu = false;
+let addInstantSellButton = false;
+let safeInstantAndQuickSellFlag = true;
 // variables for the countdown recursive logic
 let countingDown = false;
 let countDownID = '';
@@ -87,6 +89,11 @@ const updateDuplicateCounts = () => {
     item.duplicates.num = duplicates.length;
     item.duplicates.instances = duplicates.map((it) => it.assetid);
   });
+};
+
+const showListingError = (errorEl, message) => {
+  errorEl.innerText = message;
+  errorEl.classList.remove('doHide');
 };
 
 const getInventoryOwnerID = () => {
@@ -908,100 +915,86 @@ const addRightSideElements = (reRun) => {
 
       changeName(name, item.name_color, item.appid, item.market_hash_name, item.dopplerInfo);
 
-      if (isOwnInventory() && item.marketable) { // adds quick and instant sell buttons
-        chrome.storage.local.get(['inventoryInstantQuickButtons', 'safeInstantQuickSell'], ({ inventoryInstantQuickButtons, safeInstantQuickSell }) => {
-          if (inventoryInstantQuickButtons) {
-            document.querySelectorAll('.item_market_actions').forEach((marketActions) => {
-              marketActions.insertAdjacentHTML(
-                'beforeend',
-                DOMPurify.sanitize(
-                  `<a class="marketActionInstantSell item_market_action_button item_market_action_button_green">
-                           <span class="item_market_action_button_edge item_market_action_button_left"></span>
-                           <span class="item_market_action_button_contents" title="List the item on the market to be bought by the highest buy order">Instant Sell</span>
-                           <span class="item_market_action_button_edge item_market_action_button_right"></span>
-                      </a>
-                      <a class="marketActionQuickSell item_market_action_button item_market_action_button_green">
-                           <span class="item_market_action_button_edge item_market_action_button_left"></span>
-                           <span class="item_market_action_button_contents" title="List the item to be the cheapest on the market">Quick Sell</span>
-                           <span class="item_market_action_button_edge item_market_action_button_right"></span>
-                      </a>`,
-                ),
-              );
+      if (isOwnInventory() && item.marketable) {
+        if (addInstantSellButton) {
+          document.querySelectorAll('div[data-featuretarget="iteminfo"][style]:not([style*="display: none"]) button[data-accent-color="green"]').forEach((originalSellButton) => {
+            const instantSellButton = originalSellButton.cloneNode(true);
+            instantSellButton.classList.add('marketActionInstantSell');
+            instantSellButton.innerText = 'Instant Sell';
+            instantSellButton.setAttribute('title', 'List the item on the market to be bought by the highest buy order');
 
-              marketActions.querySelectorAll('.marketActionInstantSell').forEach((instantSellButton) => {
-                instantSellButton.addEventListener('click', () => {
-                  if (safeInstantQuickSell && !window.confirm('Are you sure you want to Instant Sell this item?')) return; // eslint-disable-line no-alert
+            const quickSellButton = originalSellButton.cloneNode(true);
+            quickSellButton.classList.add('marketActionQuickSell');
+            quickSellButton.innerText = 'Quick Sell';
+            quickSellButton.style['margin-left'] = '5px';
+            quickSellButton.setAttribute('title', 'List the item to be the cheapest on the market');
 
-                  getHighestBuyOrder(
+            originalSellButton.insertAdjacentElement('afterend', instantSellButton);
+            originalSellButton.insertAdjacentElement('afterend', quickSellButton);
+
+            const listingErrorDiv = document.createElement('div');
+            listingErrorDiv.classList.add('listingError', 'doHide');
+            originalSellButton.parentNode.insertAdjacentElement('afterend', listingErrorDiv);
+
+            instantSellButton.addEventListener('click', () => {
+              if (safeInstantAndQuickSellFlag && !window.confirm('Are you sure you want to Instant Sell this item?')) return; // eslint-disable-line no-alert
+
+              getHighestBuyOrder(
+                item.appid,
+                item.market_hash_name,
+              ).then((highestOrderPrice) => {
+                if (highestOrderPrice !== null) {
+                  listItem(
                     item.appid,
-                    item.market_hash_name,
-                  ).then((highestOrderPrice) => {
-                    if (highestOrderPrice !== null) {
-                      listItem(
-                        item.appid,
-                        item.contextid,
-                        1,
-                        item.assetid,
-                        getPriceAfterFees(highestOrderPrice),
-                      ).then(() => {
-                        instantSellButton.querySelector('.item_market_action_button_contents').innerText = 'Listing created!';
-                      }).catch((err) => {
-                        console.log(err);
-                        document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
-                          marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`<div class="listingError">${err.message}</div>`));
-                        });
-                      });
-                    } else {
-                      document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
-                        marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize('<div class="listingError">No buy orders to sell to.</div>'));
-                      });
-                    }
+                    item.contextid,
+                    1,
+                    item.assetid,
+                    getPriceAfterFees(highestOrderPrice),
+                  ).then(() => {
+                    instantSellButton.innerText = 'Listing created!';
                   }).catch((err) => {
                     console.log(err);
-                    document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
-                      marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`<div class="listingError">${err}</div>`));
-                    });
+                    showListingError(listingErrorDiv, err.message);
                   });
-                });
-              });
-
-              marketActions.querySelectorAll('.marketActionQuickSell').forEach((quickSellButton) => {
-                quickSellButton.addEventListener('click', () => {
-                  if (safeInstantQuickSell && !window.confirm('Are you sure you want to Quick Sell this item?')) return; // eslint-disable-line no-alert
-
-                  getLowestListingPrice(
-                    item.appid,
-                    item.market_hash_name,
-                  ).then((lowestListingPrice) => {
-                    const newPrice = lowestListingPrice > 3 ? lowestListingPrice - 1 : 3;
-                    listItem(
-                      item.appid,
-                      item.contextid,
-                      1,
-                      item.assetid,
-                      getPriceAfterFees(newPrice),
-                    ).then(() => {
-                      quickSellButton.querySelector('.item_market_action_button_contents').innerText = 'Listing created!';
-                    }).catch((err) => {
-                      console.log(err);
-                      document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
-                        marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`<div class="listingError">${err.message}</div>`));
-                      });
-                    });
-                  }).catch((err) => {
-                    console.log(err);
-                    const errorMessage = err.status === 429
-                      ? 'Too many requests, try again later.'
-                      : 'Could not get lowest listing price';
-                    document.querySelectorAll('#iteminfo1_market_content, #iteminfo0_market_content').forEach((marketContent) => {
-                      marketContent.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`<div class="listingError">${errorMessage}</div>`));
-                    });
-                  });
-                });
+                } else {
+                  showListingError(listingErrorDiv, 'No buy orders to sell to.');
+                }
+              }).catch((err) => {
+                console.log(err);
+                showListingError(listingErrorDiv, err.message);
               });
             });
-          }
-        });
+
+            quickSellButton.addEventListener('click', () => {
+              if (safeInstantAndQuickSellFlag && !window.confirm('Are you sure you want to Quick Sell this item?')) return; // eslint-disable-line no-alert
+
+              getLowestListingPrice(
+                item.appid,
+                item.market_hash_name,
+              ).then((lowestListingPrice) => {
+                const newPrice = lowestListingPrice > 3 ? lowestListingPrice - 1 : 3;
+                listItem(
+                  item.appid,
+                  item.contextid,
+                  1,
+                  item.assetid,
+                  getPriceAfterFees(newPrice),
+                ).then(() => {
+                  quickSellButton.innerText = 'Listing created!';
+                }).catch((err) => {
+                  console.log(err);
+                  showListingError(listingErrorDiv, err.message);
+                });
+              }).catch((err) => {
+                console.log(err);
+                const errorMessage = err.status === 429
+                  ? 'Too many requests, try again later.'
+                  : 'Could not get lowest listing price';
+                showListingError(listingErrorDiv, errorMessage);
+              });
+            });
+          });
+        }
 
         if (item.commodity) {
           const multiSellLink = `
@@ -2502,11 +2495,13 @@ if (defaultActiveInventoryAppID !== null) {
   chrome.storage.local.get([
     'numberOfFloatDigitsToShow', 'inventoryShowDuplicateCount',
     'showPaintSeedOnItems', 'showFloatRankOnItems', 'contrastingLook',
-    'showAllExteriorsInventory',
+    'showAllExteriorsInventory', 'inventoryInstantQuickButtons',
+    'safeInstantQuickSell',
   ], ({
     numberOfFloatDigitsToShow, inventoryShowDuplicateCount,
     showPaintSeedOnItems, showFloatRankOnItems, contrastingLook,
-    showAllExteriorsInventory,
+    showAllExteriorsInventory, inventoryInstantQuickButtons,
+    safeInstantQuickSell,
   }) => {
     floatDigitsToShow = numberOfFloatDigitsToShow;
     showPaintSeeds = showPaintSeedOnItems;
@@ -2514,6 +2509,8 @@ if (defaultActiveInventoryAppID !== null) {
     showContrastingLook = contrastingLook;
     showDuplicates = inventoryShowDuplicateCount;
     showAllExteriorsMenu = showAllExteriorsInventory;
+    addInstantSellButton = inventoryInstantQuickButtons;
+    safeInstantAndQuickSellFlag = safeInstantQuickSell;
   });
 
   // listens to manual inventory tab/game changes
