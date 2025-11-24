@@ -702,11 +702,16 @@ const addSSTandExtIndicators = (
 
 const addFloatIndicator = (itemElement, floatInfo, digitsToShow, showContrastingLook) => {
   if (floatInfo !== null && itemElement !== null && floatInfo !== undefined
+    && ((floatInfo.floatvalue !== null && floatInfo.floatvalue !== undefined)
+    || (floatInfo.template !== null && floatInfo.template !== undefined))
     && itemElement.querySelector('div.floatIndicator') === null) {
     const contrastingLookClass = showContrastingLook ? 'contrastingBackground' : '';
+    const valueString = floatInfo.template !== null && floatInfo.template !== undefined
+      ? `#${floatInfo.template}`
+      : getFloatAsFormattedString(floatInfo.floatvalue, digitsToShow);
     itemElement.insertAdjacentHTML(
       'beforeend',
-      DOMPurify.sanitize(`<div class="floatIndicator ${contrastingLookClass}">${getFloatAsFormattedString(floatInfo.floatvalue, digitsToShow)}</div>`),
+      DOMPurify.sanitize(`<div class="floatIndicator ${contrastingLookClass}">${valueString}</div>`),
     );
   }
 };
