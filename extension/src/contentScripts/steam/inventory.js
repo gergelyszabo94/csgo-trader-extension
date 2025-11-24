@@ -142,7 +142,7 @@ const goToPreviousInventoryPage = () => {
 
 const cleanUpElements = () => {
   document.querySelectorAll(
-    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .custom_name,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .multiSellLink, .floatDBLink, .inbrowserInspectLink',
+    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .customName,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .multiSellLink, .floatDBLink, .inbrowserInspectLink',
   ).forEach((element) => {
     element.remove();
   });
@@ -360,15 +360,24 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
 
 // it hides the original item name element and replaces it with one
 // that is a link to it's market page and adds the doppler phase to the name
-const changeName = (name, color, appID, marketHashName, dopplerInfo) => {
+const changeName = (name, appID, marketHashName, dopplerInfo) => {
   const marketLink = getItemMarketLink(appID, marketHashName);
-  const newNameElement = (dopplerInfo !== null && dopplerInfo !== undefined)
-    ? `<a class="hover_item_name custom_name" style="color: #${color}" href="${marketLink}" target="_blank">${name} (${dopplerInfo.name})</a>`
-    : `<a class="hover_item_name custom_name" style="color: #${color}" href="${marketLink}" target="_blank">${name}</a>`;
+  const customName = (dopplerInfo !== null && dopplerInfo !== undefined)
+    ? `${name} (${dopplerInfo.name})`
+    : name;
 
-  document.querySelector('.inventory_page_right').querySelectorAll('.hover_item_name').forEach((nameElement) => {
-    nameElement.insertAdjacentHTML('afterend', DOMPurify.sanitize(newNameElement, { ADD_ATTR: ['target'] }));
-    nameElement.classList.add('hidden');
+  document.querySelectorAll('div[data-featuretarget="iteminfo"][style]:not([style*="display: none"]) h1 > span').forEach((nameElement) => {
+    const newNameElement = document.createElement('a');
+    newNameElement.classList = nameElement.classList;
+    newNameElement.classList.add('customName');
+    newNameElement.style.cssText = nameElement.style.cssText;
+    newNameElement.href = marketLink;
+    newNameElement.target = '_blank';
+    newNameElement.innerText = customName;
+    // it might by copied from the original element so we clean it up
+    newNameElement.classList.remove('doHide');
+    nameElement.classList.add('doHide');
+    nameElement.insertAdjacentElement('afterend', newNameElement);
   });
 };
 
@@ -913,7 +922,7 @@ const addRightSideElements = (reRun) => {
         item.assetid,
       ).description.name;
 
-      changeName(name, item.name_color, item.appid, item.market_hash_name, item.dopplerInfo);
+      changeName(name, item.appid, item.market_hash_name, item.dopplerInfo);
 
       if (isOwnInventory() && item.marketable) {
         document.querySelectorAll('div[data-featuretarget="iteminfo"][style]:not([style*="display: none"]) button[data-accent-color="green"]').forEach((originalSellButton) => {
@@ -1118,8 +1127,8 @@ const addRightSideElements = (reRun) => {
     } else {
       // show the original names if the name can't be changed
       // because it can't be retrieved from the page
-      document.querySelectorAll('.hover_item_name').forEach((name) => {
-        name.classList.remove('hidden');
+      document.querySelectorAll('div[data-featuretarget="iteminfo"][style]:not([style*="display: none"]) h1 > span').forEach((nameElement) => {
+        nameElement.classList.remove('doHide');
       });
     }
   } else console.log('Could not get IDs of active item');
