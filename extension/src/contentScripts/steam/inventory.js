@@ -916,8 +916,8 @@ const addRightSideElements = (reRun) => {
       changeName(name, item.name_color, item.appid, item.market_hash_name, item.dopplerInfo);
 
       if (isOwnInventory() && item.marketable) {
-        if (addInstantSellButton) {
-          document.querySelectorAll('div[data-featuretarget="iteminfo"][style]:not([style*="display: none"]) button[data-accent-color="green"]').forEach((originalSellButton) => {
+        document.querySelectorAll('div[data-featuretarget="iteminfo"][style]:not([style*="display: none"]) button[data-accent-color="green"]').forEach((originalSellButton) => {
+          if (addInstantSellButton) {
             const instantSellButton = originalSellButton.cloneNode(true);
             instantSellButton.classList.add('marketActionInstantSell');
             instantSellButton.innerText = 'Instant Sell';
@@ -993,23 +993,16 @@ const addRightSideElements = (reRun) => {
                 showListingError(listingErrorDiv, errorMessage);
               });
             });
-          });
-        }
-
-        if (item.commodity) {
-          const multiSellLink = `
-                <div class="descriptor multiSellLink">
-                    <a href="https://steamcommunity.com/market/multisell?appid=${item.appid}&contextid=${item.contextid}&items%5B%5D=${encodeURIComponent(item.market_hash_name)}&qty%5B%5D=250" target="_blank">
-                        Open multisell page.
-                      </a>
-                </div>
-              `;
-
-          document.querySelectorAll('#iteminfo1_item_descriptors, #iteminfo0_item_descriptors')
-            .forEach((descriptor) => {
-              descriptor.insertAdjacentHTML('afterend', DOMPurify.sanitize(multiSellLink, { ADD_ATTR: ['target'] }));
-            });
-        }
+          }
+          if (item.commodity) {
+            const multiSellLink = document.createElement('a');
+            multiSellLink.classList.add('multiSellLink');
+            multiSellLink.href = `https://steamcommunity.com/market/multisell?appid=${item.appid}&contextid=${item.contextid}&items%5B%5D=${encodeURIComponent(item.market_hash_name)}&qty%5B%5D=250`;
+            multiSellLink.target = '_blank';
+            multiSellLink.innerText = 'Open multisell page.';
+            originalSellButton.parentNode.insertAdjacentElement('beforebegin', multiSellLink);
+          }
+        });
       }
 
       // adds the in-offer module
