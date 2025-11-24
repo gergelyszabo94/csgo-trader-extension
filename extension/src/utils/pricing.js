@@ -429,7 +429,8 @@ const updatePrices = () => {
         } else if (provider === pricingProviders.csmoney.name
           || provider === pricingProviders.csgotrader.name
           || provider === pricingProviders.cstrade.name
-          || provider === pricingProviders.csfloat.name) {
+          || provider === pricingProviders.csfloat.name
+          || provider === pricingProviders.lisskins.name) {
           for (const key of keys) {
             if (pricesJSON[key].doppler !== undefined) {
               prices[key] = {
@@ -481,7 +482,8 @@ const getPrice = (marketHashName, dopplerInfo, prices, provider, mode, exchangeR
     // csgotrader, csmoney and buff have doppler phase prices so they are handled differently
     if ((provider === pricingProviders.csgotrader.name || provider === pricingProviders.csmoney.name
       || provider === pricingProviders.buff163.name || provider === pricingProviders.cstrade.name
-      || provider === pricingProviders.csfloat.name)) { // other providers have no doppler info
+      || provider === pricingProviders.csfloat.name
+      || provider === pricingProviders.lisskins.name)) { // other providers have no doppler info
       if (dopplerInfo !== null) {
         // when there is price for the specific doppler phase take that
         if (prices[marketHashName].doppler !== undefined && prices[marketHashName].doppler

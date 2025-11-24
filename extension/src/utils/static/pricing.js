@@ -469,6 +469,20 @@ const pricingProviders = {
       },
     },
   },
+  lisskins: {
+    name: 'lisskins',
+    long: 'Lis-skins.com',
+    short: 'LSK',
+    url: 'https://lis-skins.com/',
+    description: 'Lis-skins is a peer to peer skin marketplace',
+    pricing_modes: {
+      liskins: {
+        description: 'Lis-skins market price',
+        name: 'liskins',
+        long: 'Lis-skins price',
+      },
+    },
+  },
 };
 
 const realTimePricingModes = {
