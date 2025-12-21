@@ -1235,13 +1235,6 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       </a>
                     </div>
                     <div class="realMoneySite">
-                      <a href="https://skinbid.com/?ref=csgotrader" target="_blank" class="realMoneySiteLink referralLink" data-site="skinbid">
-                          <img alt="SkinBid logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinbid.png')}" data-site="skinbid">
-                          <br>
-                          SkinBid
-                      </a>
-                    </div>
-                    <div class="realMoneySite">
                       <a href="https://skinflow.gg/buy?search=${weaponName}&referral=GERYTRADING" target="_blank" class="realMoneySiteLink referralLink" data-site="skinflow">
                           <img alt="SkinFlow logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinflow.png')}" data-site="skinflow">
                           <br>
@@ -1293,7 +1286,6 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       <a href="https://skinport.com/market/730?r=gery" target="_blank" class="referralLink" data-site="skinport">Skinport</a>,
                       <a href="https://skinbaron.com/partner/gery" target="_blank" class="referralLink" data-site="skinbaron">Skinbaron</a>,
                       <a href="https://dmarket.com/?ref=hJEDYLBTsV" target="_blank" class="referralLink" data-site="dmarket">DMARKET</a>,
-                      <a href="https://skinbid.com/?ref=csgotrader" target="_blank" class="referralLink" data-site="skinbid">SkinBid</a>,
                       <a href="https://skinvault.gg/en?aff=gery" target="_blank" class="referralLink" data-site="skinvault">SkinVault</a>,
                       <a href="https://itrade.gg/trade/csgo?search=${fullName}&ref=gery" target="_blank" class="referralLink" data-site="itradegg">ITRADE.GG</a>,
                       <a href="https://gamerpay.gg/partner/okn9go3r" target="_blank" class="referralLink" data-site="gamerpay">GamerPay</a>,
