@@ -49,7 +49,7 @@ const inventoryPageSize = 25;
 let pricePercentage = 100; // can be changed, for easier discount calculation
 let items = [];
 let inventoryTotal = 0.0;
-const inventoryTotalsAdded = []; // context ids that have been added to the total
+const alreadyLoadedContexts = []; // context ids that have been added to the total
 let floatDigitsToShow = 4;
 let showPaintSeeds = false;
 let showFloatRank = false;
@@ -2386,12 +2386,12 @@ const requestInventory = (appID, contextID) => {
     if (isOwnInventory()) {
       chrome.runtime.sendMessage({ inventory: inventoryOwnerID, contextID }, (response) => {
         if (response !== 'error') {
-          if (!inventoryTotalsAdded.includes(contextID)) {
+          if (!alreadyLoadedContexts.includes(contextID)) {
+            items = items.concat(response.items);
             inventoryTotal += response.total;
-            inventoryTotalsAdded.push(contextID);
+            alreadyLoadedContexts.push(contextID);
           }
 
-          items = items.concat(response.items);
           updateDuplicateCounts();
           addRightSideElements();
           addPerItemInfo(appID);
