@@ -43,11 +43,6 @@ import { overrideCreatePriceHistoryGraph } from 'utils/steamOverriding';
 import { listenToAcceptTrade } from 'utils/tradeOffers';
 
 const dopplerPhase = '<div class="dopplerPhaseMarket"><span></span></div>';
-
-// it takes the visible descriptors and checks if the collection includes souvenirs
-let textOfDescriptors = '';
-document.querySelectorAll('.descriptor').forEach((descriptor) => { textOfDescriptors += descriptor.innerText; });
-const thereSouvenirForThisItem = souvenirExists(textOfDescriptors);
 const isCommodityItem = document.querySelector('.market_commodity_order_block') !== null;
 
 let weaponName = '';
@@ -65,15 +60,6 @@ else if (isSouvenir) weaponName = fullName.split('Souvenir ')[1].split('(')[0];
 else {
   weaponName = fullName.split('(')[0].split('★ ')[1];
   if (weaponName === undefined) weaponName = fullName.split('(')[0];
-}
-
-let stOrSv = stattrakPretty;
-let stOrSvClass = 'stattrakOrange';
-let linkMidPart = star + stattrak;
-if (isSouvenir || thereSouvenirForThisItem) {
-  stOrSvClass = 'souvenirYellow';
-  stOrSv = souvenir;
-  linkMidPart = souvenir;
 }
 
 const getElementByListingID = (listingID) => {
@@ -95,6 +81,20 @@ const getListingIDFromElement = (listingElement) => {
 // const getListingIDByInspectLink = (inspectLink) => {
 //   return inspectLink.split('M')[1].split('A')[0];
 // };
+
+// this used to be easy as Steam had clear ids and classes
+// not they are generated and are client side rendered so we have to wait for this elemen to show up
+const getDescriptor = () => {
+  return Array.from(document.querySelectorAll('div[style]')).filter((div) => {
+    const style = div.getAttribute('style');
+    return style.includes('--min-width: 0')
+      && style.includes('--flex-basis: 0%')
+      && style.includes('--flex-grow: 1')
+      && style.includes('--flex-shrink: 1')
+      && style.includes('--direction: column')
+      && style.includes('--gap-y: var(--spacing-2)');
+  })[0];
+};
 
 const addPhasesIndicator = () => {
   if (isDopplerInName(fullName)) {
@@ -793,7 +793,8 @@ const showAllOrders = (type) => {
               </table>`,
     );
 
-    document.getElementById('market_commodity_buyreqeusts_table').remove();
+    const toRemoveId = type === 'buy' ? 'market_commodity_buyreqeusts_table' : 'market_commodity_forsale_table';
+    document.getElementById(toRemoveId).remove();
   });
 };
 
@@ -818,25 +819,18 @@ const addPerListingStuff = (marketEnhanceStickers) => {
   highlightSeen();
 };
 
-floatQueue.cleanupFunction = () => {
-  sortListings(document.getElementById('sortSelect').value);
-};
+const addDescriptorDependentElements = (descriptor) => {
+  if (appID === steamApps.CSGO.appID) {
+    const thereSouvenirForThisItem = souvenirExists(descriptor.innerText);
+    let stOrSv = stattrakPretty;
+    let stOrSvClass = 'stattrakOrange';
+    let linkMidPart = star + stattrak;
+    if (isSouvenir || thereSouvenirForThisItem) {
+      stOrSvClass = 'souvenirYellow';
+      stOrSv = souvenir;
+      linkMidPart = souvenir;
+    }
 
-logExtensionPresence();
-refreshSteamAccessToken();
-updateWalletCurrency();
-updateLoggedInUserInfo();
-updateLoggedInUserName();
-addUpdatedRibbon();
-changePageTitle('market_listing', fullName);
-overrideCreatePriceHistoryGraph();
-listenToAcceptTrade();
-reloadPageOnExtensionUpdate();
-
-const descriptor = document.getElementById('largeiteminfo_item_descriptors');
-
-if (appID === steamApps.CSGO.appID) {
-  if (descriptor !== null) {
     descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
       `<div class="descriptor">
           <a href="${getBuffLink(fullName)}">Lookup item on Buff</a>
@@ -861,17 +855,40 @@ if (appID === steamApps.CSGO.appID) {
       ));
     }
   }
-}
 
-if (isCommodityItem) {
-  const contextID = getContextIDFromPage();
-  descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
-    `<div class="descriptor multiSell">
+  if (isCommodityItem) {
+    const contextID = getContextIDFromPage();
+    descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
+      `<div class="descriptor multiSell">
                 <a href="https://steamcommunity.com/market/multisell?appid=${appID}&contextid=${contextID}&items%5B%5D=${encodeURIComponent(fullName)}&qty%5B%5D=250">Open multi-sell page.</a>
             </div>`,
-    { ADD_ATTR: ['target'] },
-  ));
-}
+      { ADD_ATTR: ['target'] },
+    ));
+  }
+};
+
+floatQueue.cleanupFunction = () => {
+  sortListings(document.getElementById('sortSelect').value);
+};
+
+logExtensionPresence();
+refreshSteamAccessToken();
+updateWalletCurrency();
+updateLoggedInUserInfo();
+updateLoggedInUserName();
+addUpdatedRibbon();
+changePageTitle('market_listing', fullName);
+overrideCreatePriceHistoryGraph();
+listenToAcceptTrade();
+reloadPageOnExtensionUpdate();
+
+const descriptorInterval = setInterval(() => {
+  const descriptor = getDescriptor();
+  if (descriptor) {
+    clearInterval(descriptorInterval);
+    addDescriptorDependentElements(descriptor);
+  }
+}, 200);
 
 // adds sorting menu to market pages with individual listings
 const searchBar = document.querySelector('.market_listing_filter_contents');
@@ -1116,7 +1133,8 @@ chrome.storage.local.get(['reloadListingOnError'], ({ reloadListingOnError }) =>
     // so check if the item image is's there too
     if (tableMessage !== null && largeItemImage === null) {
       setTimeout(() => {
-        window.location.reload();
+        // buggy right now, wait for an error page to fix it...
+        // window.location.reload();
       }, 5000);
     }
   }
