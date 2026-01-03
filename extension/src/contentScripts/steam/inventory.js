@@ -1804,9 +1804,11 @@ const generateItemsList = () => {
         ? ','
         : '';
     const exterior = (item.exterior !== undefined && item.exterior !== null) ? item.exterior[exteriorType] : '';
+    const exteriorCSV = (item.exterior !== undefined && item.exterior !== null) ? item.exterior[exteriorType] : ',';
     const tradableAt = new Date(item.tradability).toString().split('GMT')[0];
     const inventoryLink = `https://steamcommunity.com/profiles/${item.owner}/inventory/#${item.appid}_${item.contextid}_${item.assetid}`;
     const itemInventoryLink = includeItemLinks ? `${delimiter} ${inventoryLink}` : '';
+    const itemInventoryLinkCSV = includeItemLinks ? `,${inventoryLink.replace('#', '(hashmark here)')}` : '';
     const tradability = (showTradability && tradableAt !== 'Invalid Date')
       ? `${delimiter} ${tradableAt}`
       : showTradability
@@ -1824,7 +1826,7 @@ const generateItemsList = () => {
         : '';
     const duplicateCSV = (!includeDupes && item.duplicates.num !== 1) ? `,x${item.duplicates.num}` : '';
     const line = `${includeDupes ? customName : item.name} ${delimiter} ${exterior}${price}${float}${stickerPrice}${tradability} ${duplicate} ${itemInventoryLink}\n`;
-    const lineCSV = `"${includeDupes ? customName : item.name}",${exterior}${priceCSV}${floatCSV}${stickerPriceCSV}${tradabilityCSV}${duplicateCSV}${itemInventoryLink}\n`;
+    const lineCSV = `"${includeDupes ? customName : item.name}",${exteriorCSV}${priceCSV}${floatCSV}${stickerPriceCSV}${tradabilityCSV}${duplicateCSV}${itemInventoryLinkCSV}\n`;
 
     if (lineCount < limit) {
       if (includeDupes || (!includeDupes && !namesAlreadyInList.includes(item.market_hash_name))) {
