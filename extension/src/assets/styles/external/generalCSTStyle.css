@@ -676,6 +676,11 @@ progress {
     margin-top: 5px;
 }
 
+.charmPatternMarket {
+    color: white;
+    margin-top: 4px;
+}
+
 .originalPrice {
     font-size: 0.7rem;
 }
