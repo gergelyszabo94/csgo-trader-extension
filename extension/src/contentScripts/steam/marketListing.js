@@ -54,6 +54,8 @@ const isSouvenir = /Souvenir/.test(fullName);
 const knifeNames = ['Knife', 'Bayonet', 'Karambit', 'M9 Bayonet'];
 const isVanillaKnife = !fullName.includes('(') && knifeNames.includes('Knife');
 
+const isCharm = fullName.startsWith('Charm |');
+
 if (fullName.includes('★')) star = starChar;
 if (isStattrak) weaponName = fullName.split('StatTrak™ ')[1].split('(')[0];
 else if (isSouvenir) weaponName = fullName.split('Souvenir ')[1].split('(')[0];
@@ -148,6 +150,14 @@ const getListings = () => {
         listing.asset = asset;
         listing.asset.stickers = stickers;
         listing.asset.charms = charms;
+
+        // Extract charm pattern from asset_properties
+        if (isCharm && Array.isArray(asset.asset_properties)) {
+          const patternProp = asset.asset_properties.find((p) => p.propertyid === 3);
+          if (patternProp) {
+            listing.asset.charmPattern = parseInt(patternProp.int_value);
+          }
+        }
       }
     }
   }
@@ -810,10 +820,36 @@ const getContextIDFromPage = () => {
   return contextID;
 };
 
+const addCharmPatterns = () => {
+  const listings = getListings();
+  // Check it's an object not empty array
+  if (listings.length === undefined) {
+    document.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((listingRow) => {
+      if (listingRow.parentNode.id !== 'tabContentsMyActiveMarketListingsRows'
+        && listingRow.parentNode.parentNode.id !== 'tabContentsMyListings') {
+        const listingID = getListingIDFromElement(listingRow);
+        const pattern = listings[listingID]?.asset?.charmPattern;
+
+        if (pattern !== undefined && listingRow.querySelector('.charmPatternMarket') === null) {
+          const nameBlock = listingRow.querySelector('.market_listing_item_name_block');
+          nameBlock.insertAdjacentHTML(
+            'beforeend',
+            DOMPurify.sanitize(`<div class="charmPatternMarket">Charm Template: ${pattern}</div>`),
+          );
+        }
+      }
+    });
+  }
+};
+
 const addPerListingStuff = (marketEnhanceStickers) => {
   addPhasesIndicator();
   if (marketEnhanceStickers) addStickers();
-  addListingsToFloatQueue();
+  if (isCharm) {
+    addCharmPatterns();
+  } else {
+    addListingsToFloatQueue();
+  }
   addPricesInOtherCurrencies();
   addInstantBuyButtons();
   highlightSeen();
