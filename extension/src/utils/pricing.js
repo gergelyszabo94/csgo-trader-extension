@@ -522,11 +522,8 @@ const prettyPrintPrice = (currency, price) => {
 };
 
 const getPriceAfterFees = (priceBeforeFees) => {
-  // TODO get the publisher fee dynamically
   const priceAfterFeesScript = `
-        document.querySelector('body').setAttribute(
-          'priceAfterFees',
-          ${DOMPurify.sanitize(priceBeforeFees)} - CalculateFeeAmount( ${DOMPurify.sanitize(priceBeforeFees)}, g_rgWalletInfo['wallet_publisher_fee_percent_default'] ).fees);`;
+        document.querySelector('body').setAttribute('priceAfterFees', GetItemPriceFromTotal(${DOMPurify.sanitize(priceBeforeFees)}, g_rgWalletInfo));`;
   return parseInt(injectScript(priceAfterFeesScript, true, 'priceAfterFeesScript', 'priceAfterFees'));
 };
 
