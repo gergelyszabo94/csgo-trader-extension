@@ -390,6 +390,7 @@ const changeName = (name, appID, marketHashName, dopplerInfo) => {
     newNameElement.classList.remove('doHide');
     nameElement.classList.add('doHide');
     nameElement.insertAdjacentElement('afterend', newNameElement);
+    nameElement.parentNode.style['z-index'] = '10';
   });
 };
 
