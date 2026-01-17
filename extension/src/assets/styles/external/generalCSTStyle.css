@@ -733,8 +733,13 @@ progress {
 /* Add this attribute to the element that needs a tooltip */
 [data-tooltip] {
     position: relative;
-    z-index: 2;
+    z-index: 1000;
     cursor: pointer;
+}
+
+/* When hovering, ensure this element and its tooltip are on top */
+[data-tooltip]:hover {
+    z-index: 9998;
 }
 
 /* Hide the tooltip content by default */
@@ -764,6 +769,7 @@ progress {
     text-align: center;
     font-size: 14px;
     line-height: 1.2;
+    z-index: 9999;
 }
 
 /* Triangle hack to make tooltip look like a speech bubble */
@@ -780,12 +786,14 @@ progress {
     content: " ";
     font-size: 0;
     line-height: 0;
+    z-index: 9999;
 }
 /* Show tooltip content on hover */
 [data-tooltip]:hover:before,
 [data-tooltip]:hover:after {
     visibility: visible;
     opacity: 1;
+    z-index: 9999;
 }
 
 
