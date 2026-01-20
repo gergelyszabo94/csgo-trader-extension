@@ -263,8 +263,21 @@ const getUserCSGOInventoryAlternative = (steamID) => new Promise((resolve, rejec
 
                   if (item.tradable === 0 && item.marketable === 0) {
                     if (item.owner_descriptions) {
-                      tradability = 'Tradelocked';
-                      tradabilityShort = 'L';
+                      item.owner_descriptions.forEach((description) => {
+                        if (/\d/.test(description.value)) {
+                          try {
+                            if (description.value.includes(('transferred until'))) {
+                              tradability = description.value.split('transferred until ')[1].replace(/[()]/g, '');
+                            } else {
+                              tradability = description.value.split('Tradable/Marketable After ')[1].replace(/[()]/g, '');
+                            }
+                          } catch (e) {
+                            console.log(e);
+                            tradability = description.value;
+                          }
+                        }
+                      });
+                      tradabilityShort = getShortDate(tradability);
                     } else {
                       tradability = 'Not Tradable';
                       tradabilityShort = '';
