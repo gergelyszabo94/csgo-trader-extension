@@ -179,13 +179,13 @@ const getUserCSGOInventory = (steamID, contextID) => new Promise((resolve, rejec
 
 // it's used to load other people's inventories by Steam now
 // unused atm
-const getUserCSGOInventoryAlternative = (steamID) => new Promise((resolve, reject) => {
+const getUserCSGOInventoryAlternative = (steamID, contextID) => new Promise((resolve, reject) => {
   chrome.storage.local.get(
     ['itemPricing', 'prices', 'currency', 'exchangeRate', 'pricingProvider', 'pricingMode'],
     ({
       itemPricing, prices, currency, exchangeRate, pricingProvider, pricingMode,
     }) => {
-      const getRequest = new Request(`https://steamcommunity.com/inventory/${steamID}/730/2/?l=english&count=2000`);
+      const getRequest = new Request(`https://steamcommunity.com/inventory/${steamID}/730/${contextID}/?l=english&count=2000`);
       fetch(getRequest).then((response) => {
         if (!response.ok) {
           reject(response.statusText);
@@ -290,7 +290,7 @@ const getUserCSGOInventoryAlternative = (steamID) => new Promise((resolve, rejec
                     name_color: item.name_color,
                     marketlink: getItemMarketLink(steamApps.CSGO.appID, marketHashName),
                     appid: item.appid.toString(),
-                    contextid: '2',
+                    contextid: contextID,
                     classid: item.classid,
                     instanceid: item.instanceid,
                     assetid: assetID,
