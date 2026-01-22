@@ -1209,6 +1209,11 @@ const loadFloatData = (items, ownerID, isOwn, type) => new Promise((resolve, rej
     });
 });
 
+const getSteamDisplayLanguageFromPage = () => {
+  const steamDisplayLanguageScript = 'document.querySelector(\'body\').setAttribute(\'steamDisplayLanguage\', g_strLanguage);';
+  return injectScript(steamDisplayLanguageScript, true, 'steamDisplayLanguage', 'steamDisplayLanguage');
+};
+
 //  unused atm
 // const generateRandomString = (length) => {
 //   let text = '';
@@ -1237,5 +1242,5 @@ export {
   removeOfferFromActiveOffers, addUpdatedRibbon, getRemoteImageAsObjectURL,
   addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,
   getAppropriateFetchFunc, getFloatDBLink, getBuffLink, refreshSteamAccessToken,
-  getPricempireLink, loadFloatData,
+  getPricempireLink, loadFloatData, getSteamDisplayLanguageFromPage,
 };

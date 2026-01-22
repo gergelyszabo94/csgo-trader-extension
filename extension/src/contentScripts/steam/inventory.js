@@ -11,7 +11,7 @@ import {
   addSearchListener, getPattern, removeFromArray, getFloatAsFormattedString,
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
   parseStickerInfo, getInspectLink, getExteriorFromTags, getDopplerInfo,
-  getType, getQuality, getBuffLink, getPricempireLink,
+  getType, getQuality, getBuffLink, getPricempireLink, getSteamDisplayLanguageFromPage,
 }
   from 'utils/utilsModular';
 import {
@@ -244,9 +244,19 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
     ({
       itemPricing, prices, currency, exchangeRate, pricingProvider, pricingMode,
     }) => {
-      const itemsFromPage = getItemInfoFromPage(steamApps.CSGO.appID, '2').sort((a, b) => {
+      const itemsFromPage = [];
+      const context2ItemsFromPage = getItemInfoFromPage(steamApps.CSGO.appID, '2').sort((a, b) => {
         return parseInt(b.assetid) - parseInt(a.assetid);
       });
+      itemsFromPage.push(...context2ItemsFromPage);
+
+      // context 16 is for trade protected items and is only visible on own inventory
+      if (isOwnInventory()) {
+        const context16ItemsFromPage = getItemInfoFromPage(steamApps.CSGO.appID, '16').sort((a, b) => {
+          return parseInt(b.assetid) - parseInt(a.assetid);
+        });
+        itemsFromPage.push(...context16ItemsFromPage);
+      }
       const itemsPropertiesToReturn = [];
       const duplicates = {};
       const owner = inventoryOwnerID;
@@ -311,13 +321,28 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
               inventoryTotal += parseFloat(price.price);
             } else price = { price: '', display: '' };
 
-            if (item.description.tradable === 0) {
-              tradability = 'Tradelocked';
-              tradabilityShort = 'L';
-            }
-            if (item.description.marketable === 0) {
-              tradability = 'Not Tradable';
-              tradabilityShort = '';
+            // english only since it would be a ton of work to parse the localized strings
+            if (item.description.tradable === 0 && item.description.marketable === 0) {
+              if (item.description.owner_descriptions) {
+                item.description.owner_descriptions.forEach((description) => {
+                  if (/\d/.test(description.value)) {
+                    try {
+                      if (description.value.includes(('transferred until'))) {
+                        tradability = description.value.split('transferred until ')[1].replace(/[()]/g, '');
+                      } else if (description.value.includes('Tradable/Marketable After')) {
+                        tradability = description.value.split('Tradable/Marketable After ')[1].replace(/[()]/g, '');
+                      }
+                    } catch (e) {
+                      console.log(e);
+                      tradability = description.value;
+                    }
+                  }
+                });
+                tradabilityShort = getShortDate(tradability);
+              } else {
+                tradability = 'Not Tradable';
+                tradabilityShort = '';
+              }
             }
 
             itemsPropertiesToReturn.push({
@@ -327,7 +352,7 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
               name_color: item.description.name_color,
               marketlink: getItemMarketLink(steamApps.CSGO.appID, marketHashName),
               appid: item.appid.toString(),
-              contextid: '2',
+              contextid: item.contextid,
               classid: item.classid,
               instanceid: item.instanceid,
               assetid: assetID,
@@ -2320,63 +2345,63 @@ const addFunctionBar = () => {
 
 const onFullCSGOInventoryLoad = () => {
   if (steamApps.CSGO.appID === getActiveInventoryAppID()) {
-    if (!isOwnInventory()) {
-      getCSGOInventoryDataFromPage().then((inv) => {
-        chrome.runtime.sendMessage({
-          loadFloats: {
-            items: inv,
-            steamID: inventoryOwnerID,
-            isOwn: false,
-            type: 'inventory',
-          },
-        }, () => { });
-        items = inv;
-        updateDuplicateCounts();
-        addRightSideElements();
-        addPerItemInfo(steamApps.CSGO.appID);
-        setInventoryTotal();
-        addFunctionBar();
-        addPageControlEventListeners('inventory', () => {
-          addFloatIndicatorsToPage();
-          addRealTimePricesToQueue();
-        });
-        doInitSorting();
-      }).catch((err) => { console.log(err); });
-    } else doInitSorting();
+    getCSGOInventoryDataFromPage().then((inv) => {
+      chrome.runtime.sendMessage({
+        loadFloats: {
+          items: inv,
+          steamID: inventoryOwnerID,
+          isOwn: isOwnInventory(),
+          type: 'inventory',
+        },
+      }, () => { });
+      // this check if neccessary because items might have been added by
+      // the backend request before this runs
+      const existingAssetIds = new Set(items.map((item) => item.assetid));
+      const newItems = inv.filter((item) => !existingAssetIds.has(item.assetid));
+      items = items.concat(newItems);
+      updateDuplicateCounts();
+      addRightSideElements();
+      addPerItemInfo(steamApps.CSGO.appID);
+      setInventoryTotal();
+      addFunctionBar();
+      addPageControlEventListeners('inventory', () => {
+        addFloatIndicatorsToPage();
+        addRealTimePricesToQueue();
+      });
+      doInitSorting();
+    }).catch((err) => { console.log(err); });
   }
 };
 
 // triggers steam's mechanism for loading complete inventories
 // by default only the first 3 pages (75 items) are loaded
 const loadFullInventory = () => {
-  if (!isSIHActive()) {
-    // basically checking if first call
-    if (document.querySelector('body').getAttribute('allItemsLoaded') === null) {
-      const initPageElementsScript = `
+  // basically checking if first call
+  if (document.querySelector('body').getAttribute('allItemsLoaded') === null) {
+    const initPageElementsScript = `
         for (let i = 0; i < g_ActiveInventory.m_cPages; i++) {
           g_ActiveInventory.m_rgPages[i].EnsurePageItemsCreated();
           g_ActiveInventory.PreloadPageImages(i);
         }`;
-      const loadFullInventoryScript = `
+    const loadFullInventoryScript = `
                 g_ActiveInventory.LoadMoreAssets(1000).done(function () {
                   ${initPageElementsScript}
                   document.querySelector('body').setAttribute('allItemsLoaded', true);
                 });
                 `;
 
-      if (injectScript(loadFullInventoryScript, true, 'loadFullInventory', 'allItemsLoaded') === null) {
-        setTimeout(() => {
-          loadFullInventory();
-        }, 2000);
-      } else onFullCSGOInventoryLoad();
-
-      // in other people's inventories the pages don't get initialized by the first injection
-      // for some reason, this is a workaround
+    if (injectScript(loadFullInventoryScript, true, 'loadFullInventory', 'allItemsLoaded') === null) {
       setTimeout(() => {
-        injectScript(initPageElementsScript, true, 'loadFullInventory', 'allItemsLoaded');
-      }, 100);
+        loadFullInventory();
+      }, 2000);
     } else onFullCSGOInventoryLoad();
-  } else doInitSorting();
+
+    // in other people's inventories the pages don't get initialized by the first injection
+    // for some reason, this is a workaround
+    setTimeout(() => {
+      injectScript(initPageElementsScript, true, 'loadFullInventory', 'allItemsLoaded');
+    }, 100);
+  } else onFullCSGOInventoryLoad();
 };
 
 // sends a message to the "back end" to request inventory contents
@@ -2386,25 +2411,19 @@ const requestInventory = (appID, contextID) => {
     // since the other endpoint does not provide any more details now
     // this avoids an additional request
     // hopefully fewer restricitions by steam
-    if (isOwnInventory()) {
+    // a separate network request is made for the trade protected inventory
+    // when the tradability info can't be parsed from the page (non-english)
+    if (isOwnInventory() && contextID === '16' && getSteamDisplayLanguageFromPage() !== 'english') {
       chrome.runtime.sendMessage({ inventory: inventoryOwnerID, contextID }, (response) => {
         if (response !== 'error') {
           if (!alreadyLoadedContexts.includes(contextID)) {
-            items = items.concat(response.items);
-            inventoryTotal += response.total;
+            // replace the already added ones to include the tradability info
+            const responseAssetIds = new Set(response.items.map((item) => item.assetid));
+            const existingItemsToKeep = items.filter((item) => !responseAssetIds.has(item.assetid));
+            items = existingItemsToKeep.concat(response.items);
             alreadyLoadedContexts.push(contextID);
           }
-
-          updateDuplicateCounts();
-          addRightSideElements();
           addPerItemInfo(appID);
-          setInventoryTotal();
-          addFunctionBar();
-          loadFullInventory();
-          addPageControlEventListeners('inventory', () => {
-            addFloatIndicatorsToPage();
-            addRealTimePricesToQueue();
-          });
         }
       });
     } else loadFullInventory();
