@@ -627,43 +627,48 @@ if (activePage === 'incoming_offers') {
   });
 
   // adds "accept trade" action to offers
-  document.querySelectorAll('.tradeoffer').forEach((offerElement) => {
-    if (isOfferActive(offerElement)) {
-      const offerID = getOfferIDFromElement(offerElement);
-      const partnerID = getProperStyleSteamIDFromOfferStyle(offerElement.querySelector('.playerAvatar').getAttribute('data-miniprofile'));
-      offerElement.querySelector('.tradeoffer_footer_actions').insertAdjacentHTML(
-        'afterbegin',
-        `<span id="accept_${offerID}" class="whiteLink">Accept Trade</span> | `,
-      );
+  // make this optional
+  chrome.storage.local.get('showAcceptOfferButtonInTradeOffers', ({ showAcceptOfferButtonInTradeOffers }) => {
+    if (showAcceptOfferButtonInTradeOffers) {
+      document.querySelectorAll('.tradeoffer').forEach((offerElement) => {
+        if (isOfferActive(offerElement)) {
+          const offerID = getOfferIDFromElement(offerElement);
+          const partnerID = getProperStyleSteamIDFromOfferStyle(offerElement.querySelector('.playerAvatar').getAttribute('data-miniprofile'));
+          offerElement.querySelector('.tradeoffer_footer_actions').insertAdjacentHTML(
+            'afterbegin',
+            `<span id="accept_${offerID}" class="whiteLink">Accept Trade</span> | `,
+          );
 
-      const acceptButton = document.getElementById(`accept_${offerID}`);
+          const acceptButton = document.getElementById(`accept_${offerID}`);
 
-      acceptButton.addEventListener('click', () => {
-        let message = '';
-        const offerContent = offerElement.querySelector('.tradeoffer_items_ctn');
-        const middleElement = offerContent.querySelector('.tradeoffer_items_rule');
+          acceptButton.addEventListener('click', () => {
+            let message = '';
+            const offerContent = offerElement.querySelector('.tradeoffer_items_ctn');
+            const middleElement = offerContent.querySelector('.tradeoffer_items_rule');
 
-        acceptOffer(offerID, partnerID).then((res) => {
-          if (res.needs_email_confirmation || res.needs_mobile_confirmation) message = 'Accepted - Awaiting Confirmation';
-          else {
-            message = 'Trade Accepted';
-            if (middleElement) middleElement.classList.add('accepted');
-          }
-          offerElement.querySelector('.tradeoffer_footer').style.display = 'none';
-        }).catch((err) => {
-          console.log(err);
-          message = 'Could not accept trade offer, most likely Steam is having problems.';
-        }).finally(() => {
-          offerContent.classList.remove('active');
-          offerContent.classList.add('inactive');
+            acceptOffer(offerID, partnerID).then((res) => {
+              if (res.needs_email_confirmation || res.needs_mobile_confirmation) message = 'Accepted - Awaiting Confirmation';
+              else {
+                message = 'Trade Accepted';
+                if (middleElement) middleElement.classList.add('accepted');
+              }
+              offerElement.querySelector('.tradeoffer_footer').style.display = 'none';
+            }).catch((err) => {
+              console.log(err);
+              message = 'Could not accept trade offer, most likely Steam is having problems.';
+            }).finally(() => {
+              offerContent.classList.remove('active');
+              offerContent.classList.add('inactive');
 
-          if (middleElement) {
-            middleElement.classList.remove('tradeoffer_items_rule');
-            middleElement.classList.add('tradeoffer_items_banner');
-            middleElement.style.height = '';
-            middleElement.innerText = message;
-          }
-        });
+              if (middleElement) {
+                middleElement.classList.remove('tradeoffer_items_rule');
+                middleElement.classList.add('tradeoffer_items_banner');
+                middleElement.style.height = '';
+                middleElement.innerText = message;
+              }
+            });
+          });
+        }
       });
     }
   });

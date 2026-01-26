@@ -160,6 +160,12 @@ const tradeOffer = () => {
         type="flipSwitchStorage"
         description="Show CSFloat lookup action in trade offers"
       />
+      <Row
+        name="Accept offer button"
+        id="showAcceptOfferButtonInTradeOffers"
+        type="flipSwitchStorage"
+        description="Show accept offer button on the incoming trade offers page"
+      />
     </Category>
   );
 };
