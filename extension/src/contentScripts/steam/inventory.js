@@ -217,23 +217,25 @@ const countDown = (dateToCountDownTo) => {
 
 const getItemInfoFromPage = (appID, contextID) => {
   const getItemsScript = `
-        inventory = UserYou.getInventory(${appID},${contextID});
         trimmedAssets = [];
-                
-        for (const asset of Object.values(inventory.m_rgAssets)) {
-            if (asset.hasOwnProperty('appid')) {
-              trimmedAssets.push({
-                  amount: asset.amount,
-                  assetid: asset.assetid,
-                  classid: asset.classid,
-                  contextid: asset.contextid,
-                  instanceid: asset.instanceid,
-                  description: asset.description,
-                  appid: asset.appid.toString(),
-                  properties: inventory.m_rgAssetProperties[asset.assetid],
-              });
-            }
-        }
+        try {
+          inventory = UserYou.getInventory(${appID},${contextID});
+                  
+          for (const asset of Object.values(inventory.m_rgAssets)) {
+              if (asset.hasOwnProperty('appid')) {
+                trimmedAssets.push({
+                    amount: asset.amount,
+                    assetid: asset.assetid,
+                    classid: asset.classid,
+                    contextid: asset.contextid,
+                    instanceid: asset.instanceid,
+                    description: asset.description,
+                    appid: asset.appid.toString(),
+                    properties: inventory.m_rgAssetProperties[asset.assetid],
+                });
+              }
+          }
+        } catch(e) {}
         document.querySelector('body').setAttribute('inventoryInfo', JSON.stringify(trimmedAssets));`;
   return JSON.parse(injectScript(getItemsScript, true, 'getInventory', 'inventoryInfo'));
 };
