@@ -1003,7 +1003,9 @@ const getFloatDBLink = (item) => {
       : item.name.includes('Souvenir')
         ? 3
         : 1;
-    return `https://csfloat.com/db?name=${item.name}&defIndex=${item.floatInfo.defindex}&paintIndex=${item.floatInfo.paintindex}&paintSeed=${item.floatInfo.paintseed}&category=${category}&min=${item.floatInfo.floatvalue - 0.00000000000000001}&max=${item.floatInfo.floatvalue + 0.00000000000000001}`;
+    const defIndexString = item.floatInfo.defindex ? `&defIndex=${item.floatInfo.defindex}` : '';
+    const paintIndexString = item.floatInfo.paintindex ? `&paintIndex=${item.floatInfo.paintindex}` : '';
+    return `https://csfloat.com/db?name=${item.name}${defIndexString}${paintIndexString}&paintSeed=${item.floatInfo.paintseed}&category=${category}&min=${item.floatInfo.floatvalue - 0.00000000000000001}&max=${item.floatInfo.floatvalue + 0.00000000000000001}`;
   } return 'https://csfloat.com/db';
 };
 
