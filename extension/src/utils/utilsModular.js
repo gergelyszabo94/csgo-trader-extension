@@ -533,7 +533,7 @@ const parseCharmInfo = (
     descriptions.forEach((description) => {
       if (description.name === 'keychain_info') {
         let names = description.value.split('><br>')[1]?.split('</center>')[0]?.split(', ') || [];
-        names = names.map((name) => name.replace('Charm: ', 'Charm | '));
+        names = names.map((name) => name.replace('Charm: ', 'Charm | ').replace('Sticker Slab: ', 'Sticker Slab | '));
         names = handleStickerNamesWithCommas(names);
         const iconURLs = description.value.split('src="');
 
