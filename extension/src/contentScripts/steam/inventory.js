@@ -10,7 +10,7 @@ import {
   updateLoggedInUserInfo, isSIHActive, getActivePage,
   addSearchListener, getPattern, removeFromArray, getFloatAsFormattedString,
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
-  parseStickerInfo, getInspectLink, getExteriorFromTags, getDopplerInfo,
+  parseStickerInfo, getExteriorFromTags, getDopplerInfo,
   getType, getQuality, getBuffLink, getPricempireLink, getSteamDisplayLanguageFromPage,
 }
   from 'utils/utilsModular';
@@ -35,7 +35,6 @@ import { getItemByIDs, getIDsFromElement, findElementByIDs } from 'utils/itemsTo
 import { listItem } from 'utils/market';
 import { sortingModes } from 'utils/static/sortingModes';
 import doTheSorting from 'utils/sorting';
-import { overridePopulateActions } from 'utils/steamOverriding';
 import itemTypes from 'utils/static/itemTypes';
 import exteriors from 'utils/static/exteriors';
 import { injectScript } from 'utils/injection';
@@ -298,6 +297,7 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
             const type = getType(item.description.tags);
             let nametag = null;
             let floatInfo = null;
+            let inspectLink = null;
 
             if (item.properties) {
               floatInfo = {};
@@ -306,6 +306,7 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
                 if (property.propertyid === 2 && property.float_value) floatInfo.floatvalue = parseFloat(property.float_value);
                 if (property.propertyid === 3 && property.int_value) floatInfo.template = parseInt(property.int_value);
                 if (property.propertyid === 5 && property.string_value) nametag = property.string_value;
+                if (property.propertyid === 6 && property.string_value) inspectLink = `steam://run/730//+csgo_econ_action_preview%20${property.string_value}`;
               });
             }
 
@@ -365,11 +366,7 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
               iconURL: icon,
               dopplerInfo,
               exterior: getExteriorFromTags(item.description.tags),
-              inspectLink: getInspectLink({
-                actions: item.description.actions,
-                owner,
-                assetid: assetID,
-              }, owner, assetID),
+              inspectLink,
               quality: getQuality(item.description.tags),
               isStatrack: name.includes('StatTrak™'),
               isSouvenir: name.includes('Souvenir'),
@@ -2624,7 +2621,6 @@ if (defaultActiveInventoryAppID !== null) {
     addFloatIndicatorsToPage();
     addRealTimePricesToQueue();
   });
-  overridePopulateActions();
   updateLoggedInUserInfo();
   updateLoggedInUserName();
   addUpdatedRibbon();

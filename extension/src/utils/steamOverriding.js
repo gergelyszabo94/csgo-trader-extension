@@ -12,11 +12,6 @@ const overrideHandleTradeActionMenu = () => {
   injectScriptAsFile('HandleTradeActionMenu', 'HandleTradeActionMenuScript');
 };
 
-// adds In-browser inspect as action in inventory
-const overridePopulateActions = () => {
-  injectScriptAsFile('PopulateActions', 'PopulateActionsScript');
-};
-
 // loads more market history items
 const overrideLoadMarketHistory = () => {
   chrome.storage.local.get('marketHistoryEventsToShow', ({ marketHistoryEventsToShow }) => {
@@ -32,6 +27,6 @@ const overrideCreatePriceHistoryGraph = () => {
 };
 
 export {
-  overrideShowTradeOffer, overridePopulateActions, overrideCreatePriceHistoryGraph,
+  overrideShowTradeOffer, overrideCreatePriceHistoryGraph,
   overrideHandleTradeActionMenu, overrideLoadMarketHistory,
 };
