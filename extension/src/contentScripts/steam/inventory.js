@@ -762,14 +762,14 @@ const addRightSideElements = (reRun) => {
                     `;
 
         if (item.exterior !== undefined) {
-          document.querySelectorAll('.inventory_page_right [href^="steam://rungame"]').forEach((inspectButton) => {
+          document.querySelectorAll('.inventory_page_right [href^="steam://run/730"]').forEach((inspectButton) => {
             inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(otherExteriors, { ADD_ATTR: ['target'] }));
           });
         }
       }
 
       // adds the lower module that includes tradability, countdown  and bookmarking, inspect buttons
-      document.querySelectorAll('.inventory_page_right [href^="steam://rungame"]').forEach((inspectButton) => {
+      document.querySelectorAll('.inventory_page_right [href^="steam://run/730"]').forEach((inspectButton) => {
         inspectButton.parentNode.insertAdjacentHTML('afterend', DOMPurify.sanitize(lowerModule));
 
         if (item && item.inspectLink) {
@@ -1120,7 +1120,7 @@ const addRightSideElements = (reRun) => {
         </div>
       `;
 
-          document.querySelectorAll('.inventory_page_right [href^="steam://rungame"]').forEach((inspectButton) => {
+          document.querySelectorAll('.inventory_page_right [href^="steam://run/730"]').forEach((inspectButton) => {
             if (itemInOffersInventory && inTradesInfoModule) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(inTradesInfoModule, { ADD_ATTR: ['target'] }));
             if (showBuffLookupInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(buffLink, { ADD_ATTR: ['target'] }));
             if (showFloatDBLookupInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(floatDBLinkEL, { ADD_ATTR: ['target'] }));
