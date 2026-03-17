@@ -38,15 +38,30 @@ const addChatPresets = () => {
           entryForm.insertAdjacentElement('afterend', presetMessageSelect);
           presetMessageSelect.addEventListener('change', () => {
             const messageArea = chatEntryDiv.querySelector('textarea');
-            const submitButton = chatEntryDiv.querySelector('button[type=submit]');
 
-            if (messageArea && submitButton) {
+            if (messageArea) {
               messageArea.value = messagePresets[presetMessageSelect.selectedIndex + -1];
+              messageArea.focus();
+              
+              // Dispatch input event to update the UI
               messageArea.dispatchEvent(new Event('input', {
                 bubbles: true,
                 cancelable: true,
               }));
-              submitButton.click();
+              
+              // Simulate Enter key press instead of clicking submit button
+              const enterKeyEvent = new KeyboardEvent('keydown', {
+                key: 'Enter',
+                code: 'Enter',
+                keyCode: 13,
+                which: 13,
+                bubbles: true,
+                cancelable: true,
+              });
+              messageArea.dispatchEvent(enterKeyEvent);
+              
+              // Reset select to placeholder
+              presetMessageSelect.selectedIndex = 0;
             }
           });
         }
