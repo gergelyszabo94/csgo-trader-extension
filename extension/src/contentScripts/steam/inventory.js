@@ -42,7 +42,7 @@ import { getUserSteamID } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
 import steamApps from 'utils/static/steamApps';
 import { listenToAcceptTrade } from 'utils/tradeOffers';
-import { getFloatInfoFromCache } from '../../utils/floatCaching';
+import { getFloatInfoFromCache, batchAddToFloatCache } from '../../utils/floatCaching';
 
 const inventoryPageSize = 25;
 let pricePercentage = 100; // can be changed, for easier discount calculation
@@ -282,6 +282,7 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
 
       getFloatInfoFromCache(floatCacheAssetIDs).then(
         (floatCache) => {
+          const newFloatDataFromPage = {};
           inventoryTotal = 0;
           itemsFromPage.forEach((item, index) => {
             const assetID = item.assetid;
@@ -310,9 +311,12 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
               });
             }
 
-            if (floatCache[assetID] !== undefined
-              && floatCache[assetID] !== null && itemTypes[type.key].float) {
-              floatInfo = floatCache[assetID];
+            if (itemTypes[type.key].float) {
+              if (floatCache[assetID]) {
+                floatInfo = floatCache[assetID];
+              } else if (floatInfo) {
+                newFloatDataFromPage[assetID] = floatInfo;
+              }
             }
             const patternInfo = (floatInfo !== null)
               ? getPattern(marketHashName, floatInfo.paintseed)
@@ -387,6 +391,7 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
               position: index,
             });
           });
+          batchAddToFloatCache(newFloatDataFromPage);
           resolve(itemsPropertiesToReturn);
         },
       );
