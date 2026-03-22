@@ -325,6 +325,7 @@ const populateFloatInfo = (listingID, floatInfo) => {
   }
 };
 
+// TODO: call this when we have the data
 // sticker wear to sticker icon tooltip
 const setStickerInfo = (listingID, stickers) => {
   if (stickers !== null) {
@@ -385,121 +386,51 @@ const addPatterns = (listingID, floatInfo) => {
   if (patternInfo !== null) {
     const listingElement = getElementByListingID(listingID);
 
-    if (listingElement !== null) {
+    if (listingElement !== null && !listingElement.getAttribute('data-pattern-added')) {
       const patternClass = patternInfo.type === 'marble_fade' ? 'marbleFadeGradient' : 'fadeGradient';
       listingElement.querySelector('.market_listing_item_name').insertAdjacentHTML(
         'afterend',
         DOMPurify.sanitize(`<span class="${patternClass}"> ${patternInfo.value}</span>`),
       );
+      listingElement.setAttribute('data-pattern-added', 'true');
     }
   }
 };
 
-const addFloatDataToPage = (job, floatInfo) => {
-  populateFloatInfo(job.listingID, floatInfo);
-
-  if (floatInfo !== undefined) {
-    setStickerInfo(job.listingID, floatInfo.stickers);
-    addPatterns(job.listingID, floatInfo);
-
-    // const genCommand = generateInspectCommand(
-    //   fullName, floatInfo.floatvalue, floatInfo.paintindex,
-    //   floatInfo.defindex, floatInfo.paintseed, floatInfo.stickers,
-    // );
-
-    // if (job.type === 'market') {
-    //   const originalInspectButton = actions.querySelector('.btn_small.btn_grey_white_innerfade');
-
-    //   if (originalInspectButton && job.inspectLink === originalInspectButton.getAttribute('href')) {
-    //     const inspectGenCommandEl = document.querySelector('.inspectGenCommand');
-    //     inspectGenCommandEl.title = 'Click to copy !gen command';
-
-    //     if (genCommand.includes('undefined')) {
-    //       // defindex was not used/stored before the inspect on server feature was introduced
-    //       // and it might not exists in the data stored in the float cache
-    //       // if that is the case then we clear it from cache
-    //       removeFromFloatCache(job.assetID);
-
-    //       // ugly timeout to get around making removeFromFloatCache async
-    //       setTimeout(() => {
-    //         floatQueue.jobs.push({
-    //           type: 'market',
-    //           assetID: job.assetID,
-    //           inspectLink: job.inspectLink,
-    //           // they call each other and one of them has to be defined first
-    //           // eslint-disable-next-line no-use-before-define
-    //           callBackFunction: dealWithNewFloatData,
-    //         });
-
-    //         if (!floatQueue.active) workOnFloatQueue();
-    //       }, 1000);
-    //     } else inspectGenCommandEl.textContent = genCommand;
-    //     inspectGenCommandEl.setAttribute('genCommand', genCommand);
-    //   }
-    // }
-    // else if (job.type === 'market_per_listing_gencommand') {
-    //   const listingRow = getElementByListingID(job.listingID);
-
-    //   if (listingRow) {
-    //     const inspectGenCommandEl = listingRow.querySelector('.inspectGenCommandListing');
-    //     inspectGenCommandEl.title = 'Click to copy !gen command';
-
-    //     if (genCommand.includes('undefined')) {
-    //       // defindex was not used/stored before the inspect on server feature was introduced
-    //       // and it might not exists in the data stored in the float cache
-    //       // if that is the case then we clear it from cache
-    //       removeFromFloatCache(job.assetID);
-
-    //       // ugly timeout to get around making removeFromFloatCache async
-    //       setTimeout(() => {
-    //         floatQueue.jobs.push({
-    //           type: 'market_per_listing_gencommand',
-    //           assetID: job.assetID,
-    //           inspectLink: job.inspectLink,
-    //           // they call each other and one of them has to be defined first
-    //           // eslint-disable-next-line no-use-before-define
-    //           callBackFunction: dealWithNewFloatData,
-    //         });
-
-    //         if (!floatQueue.active) workOnFloatQueue();
-    //       }, 1000);
-    //     } else inspectGenCommandEl.textContent = genCommand;
-    //     inspectGenCommandEl.setAttribute('genCommand', genCommand);
-    //   }
-    // }
-  }
-};
-
-const dealWithNewFloatData = (job, floatInfo) => {
-  if (floatInfo !== 'nofloat') {
-    addFloatDataToPage(job, floatInfo);
-  }
-};
-
-const addListingsToFloatQueue = () => {
+const addFloatData = () => {
   if (appID === steamApps.CSGO.appID && !isCommodityItem) {
     chrome.storage.local.get(['autoFloatMarket'], ({ autoFloatMarket }) => {
-      if (autoFloatMarket && !csgoFloatExtPresent()) {
+      if (autoFloatMarket) {
         const listings = getListings();
+        const listingDataToPassInFloatRequest = [];
+
         for (const listing of Object.values(listings)) {
-          const listingRow = getElementByListingID(listing.listingid);
-          if (listingRow.getAttribute('data-float') === null) {
-            listingRow.setAttribute('data-float', '1.0');
-            const assetID = listing.asset.id;
-
-            const price = listing.converted_price + listing.converted_fee;
-
-            floatQueue.jobs.push({
-              type: 'market',
-              assetID,
-              inspectLink: listing.asset.actions[0].link.replace('%assetid%', assetID),
-              listingID: listing.listingid,
-              price,
-              currencyid: listing.currencyid,
-              callBackFunction: dealWithNewFloatData,
+          const floatInfo = listing.asset.asset_properties ? {} : null;
+          if (listing.asset.asset_properties) {
+            listing.asset.asset_properties.forEach((property) => {
+              if (property.propertyid === 1 && property.int_value) floatInfo.paintseed = parseInt(property.int_value);
+              if (property.propertyid === 2 && property.float_value) floatInfo.floatvalue = parseFloat(property.float_value);
+              if (property.propertyid === 3 && property.int_value) floatInfo.template = parseInt(property.int_value);
+              if (property.propertyid === 5 && property.string_value) floatInfo.nametag = property.string_value;
+              if (property.propertyid === 6 && property.string_value) floatInfo.hex = property.string_value;
             });
+
+            // TODO: make request and use the resuling data
+            listingDataToPassInFloatRequest.push({
+              listingid: listing.listingid,
+              pricelist: listing.price,
+              pricefee: listing.fee,
+              currencyid: listing.currencyid,
+              classid: listing.asset.classid,
+              instanceid: listing.asset.instanceid,
+              hex: floatInfo.hex,
+            });
+
+            populateFloatInfo(listing.listingid, floatInfo);
+            addPatterns(listing.listingid, floatInfo);
           }
         }
+        console.log(listingDataToPassInFloatRequest);
         if (!floatQueue.active) workOnFloatQueue();
       }
     });
@@ -848,7 +779,7 @@ const addPerListingStuff = (marketEnhanceStickers) => {
   if (isCharm) {
     addCharmPatterns();
   } else {
-    addListingsToFloatQueue();
+    addFloatData();
   }
   addPricesInOtherCurrencies();
   addInstantBuyButtons();
