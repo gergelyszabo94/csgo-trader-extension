@@ -135,10 +135,10 @@ const inventory = () => {
         description="Show links to all exteriors on the selected item"
       />
       <Row
-        name="Resize and reposition Trade Protected icon"
+        name="Resize and reposition Trade Protected and On Market icons"
         id="resizeAndRepositionProtectedIcon"
         type="flipSwitchStorage"
-        description="Resize and reposition the Trade Protected icon on inventory items"
+        description="Resize and reposition the Trade Protected and On Market icons on inventory items"
       />
     </Category>
   );

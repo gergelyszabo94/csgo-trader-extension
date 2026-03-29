@@ -1347,6 +1347,13 @@ const addPerItemInfo = (appID) => {
                 protectedIcon.style.left = '4px';
                 protectedIcon.style.bottom = '59px';
               }
+
+              const onMarketIcon = itemElement.querySelector('div.listed_item_badge');
+              if (onMarketIcon) {
+                onMarketIcon.style['background-size'] = '20px';
+                onMarketIcon.style.left = '4px';
+                onMarketIcon.style.bottom = '59px';
+              }
             }
           }
 
