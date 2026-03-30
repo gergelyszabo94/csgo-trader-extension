@@ -1426,7 +1426,7 @@ if (tradeActionPopup) {
         const staticActions = tradeActionPopup.querySelector('#trade_action_popup_staticactions');
         const itemAssetID = tradeActionPopup.getAttribute('data-itemassetid');
 
-        if (tradeActionPopup.style.cssText.includes('display: block; opacity: 0.0')
+        if (tradeActionPopup.style.cssText.includes('display: block; opacity: 0.')
           && (tradeActionPopup.getAttribute('alreadyRun') !== itemAssetID)
         ) {
           tradeActionPopup.setAttribute('alreadyRun', itemAssetID);
