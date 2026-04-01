@@ -787,53 +787,64 @@ const addPerListingStuff = (marketEnhanceStickers) => {
 };
 
 const addDescriptorDependentElements = (descriptor) => {
-  if (appID === steamApps.CSGO.appID) {
-    const thereSouvenirForThisItem = souvenirExists(descriptor.innerText);
-    let stOrSv = stattrakPretty;
-    let stOrSvClass = 'stattrakOrange';
-    let linkMidPart = star + stattrak;
-    if (isSouvenir || thereSouvenirForThisItem) {
-      stOrSvClass = 'souvenirYellow';
-      stOrSv = souvenir;
-      linkMidPart = souvenir;
+  chrome.storage.local.get([
+    'showBuffLookupInMarket',
+    'showOtherExteriorsLinks',
+    'showMultiSellLink',
+  ], (result) => {
+    const showBuffLookupInMarket = result.showBuffLookupInMarket ?? true;
+    const showOtherExteriorsLinks = result.showOtherExteriorsLinks ?? true;
+    const showMultiSellLink = result.showMultiSellLink ?? true;
+
+    if (appID === steamApps.CSGO.appID) {
+      const thereSouvenirForThisItem = souvenirExists(descriptor.innerText);
+      let stOrSv = stattrakPretty;
+      let stOrSvClass = 'stattrakOrange';
+      let linkMidPart = star + stattrak;
+      if (isSouvenir || thereSouvenirForThisItem) {
+        stOrSvClass = 'souvenirYellow';
+        stOrSv = souvenir;
+        linkMidPart = souvenir;
+      }
+
+      if (showBuffLookupInMarket) {
+        descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
+          `<div class="descriptor">
+              <a href="${getBuffLink(fullName)}">Lookup item on Buff</a>
+           </div>`,
+          { ADD_ATTR: ['target'] },
+        ));
+      }
+      
+      if (showOtherExteriorsLinks && fullName.split('(')[1] !== undefined) {
+        descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
+          `<div class="descriptor otherExteriors">
+                  <span>${chrome.i18n.getMessage('links_to_other_exteriors')}:</span>
+                  <ul>
+                      <li><a href="${`${genericMarketLink + star + weaponName}%28Factory%20New%29`}" target="_blank">${exteriors.factory_new.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Factory%20New%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.factory_new.localized_name}</span></a></li>
+                      <li><a href="${`${genericMarketLink + star + weaponName}%28Minimal%20Wear%29`}"" target="_blank">${exteriors.minimal_wear.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Minimal%20Wear%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.minimal_wear.localized_name}</span></a></li>
+                      <li><a href="${`${genericMarketLink + star + weaponName}%28Field-Tested%29`}"" target="_blank">${exteriors.field_tested.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Field-Tested%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.field_tested.localized_name}</span></a></li>
+                      <li><a href="${`${genericMarketLink + star + weaponName}%28Well-Worn%29`}"" target="_blank">${exteriors.well_worn.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Well-Worn%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.well_worn.localized_name}</span></a></li>
+                      <li><a href="${`${genericMarketLink + star + weaponName}%28Battle-Scarred%29`}"" target="_blank">${exteriors.battle_scarred.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Battle-Scarred%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.battle_scarred.localized_name}</span></a></li>
+                  </ul>
+                  <span>${chrome.i18n.getMessage('not_every_available')}</span>
+              </div>`,
+          { ADD_ATTR: ['target'] },
+        ));
+      }
     }
-
-    descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
-      `<div class="descriptor">
-          <a href="${getBuffLink(fullName)}">Lookup item on Buff</a>
-       </div>`,
-      { ADD_ATTR: ['target'] },
-    ));
-
-    if (fullName.split('(')[1] !== undefined) {
+    
+    if (showMultiSellLink && isCommodityItem) {
+      const contextID = getContextIDFromPage();
       descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
-        `<div class="descriptor otherExteriors">
-                <span>${chrome.i18n.getMessage('links_to_other_exteriors')}:</span>
-                <ul>
-                    <li><a href="${`${genericMarketLink + star + weaponName}%28Factory%20New%29`}" target="_blank">${exteriors.factory_new.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Factory%20New%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.factory_new.localized_name}</span></a></li>
-                    <li><a href="${`${genericMarketLink + star + weaponName}%28Minimal%20Wear%29`}"" target="_blank">${exteriors.minimal_wear.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Minimal%20Wear%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.minimal_wear.localized_name}</span></a></li>
-                    <li><a href="${`${genericMarketLink + star + weaponName}%28Field-Tested%29`}"" target="_blank">${exteriors.field_tested.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Field-Tested%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.field_tested.localized_name}</span></a></li>
-                    <li><a href="${`${genericMarketLink + star + weaponName}%28Well-Worn%29`}"" target="_blank">${exteriors.well_worn.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Well-Worn%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.well_worn.localized_name}</span></a></li>
-                    <li><a href="${`${genericMarketLink + star + weaponName}%28Battle-Scarred%29`}"" target="_blank">${exteriors.battle_scarred.localized_name}</a> - <a href="${genericMarketLink + linkMidPart + weaponName}%28Battle-Scarred%29" target="_blank"><span class="${stOrSvClass} exteriorsLink">${stOrSv} ${exteriors.battle_scarred.localized_name}</span></a></li>
-                </ul>
-                <span>${chrome.i18n.getMessage('not_every_available')}</span>
-            </div>`,
+        `<div class="descriptor multiSell">
+                  <a href="https://steamcommunity.com/market/multisell?appid=${appID}&contextid=${contextID}&items%5B%5D=${encodeURIComponent(fullName)}&qty%5B%5D=250">Open multi-sell page.</a>
+              </div>`,
         { ADD_ATTR: ['target'] },
       ));
     }
-  }
-
-  if (isCommodityItem) {
-    const contextID = getContextIDFromPage();
-    descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
-      `<div class="descriptor multiSell">
-                <a href="https://steamcommunity.com/market/multisell?appid=${appID}&contextid=${contextID}&items%5B%5D=${encodeURIComponent(fullName)}&qty%5B%5D=250">Open multi-sell page.</a>
-            </div>`,
-      { ADD_ATTR: ['target'] },
-    ));
-  }
+  });
 };
-
 floatQueue.cleanupFunction = () => {
   sortListings(document.getElementById('sortSelect').value);
 };

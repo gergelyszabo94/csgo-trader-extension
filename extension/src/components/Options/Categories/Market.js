@@ -157,6 +157,18 @@ const market = () => {
         type="flipSwitchStorage"
         description="Show nametags, stickers, sticker wear and sticker value below the on market listings"
       />
+      <Row
+        name="Show other exteriors links"
+        id="showOtherExteriorsLinks"
+        type="flipSwitchStorage"
+        description="Show links to other wear conditions (Factory New, Minimal Wear, etc.) on market listings"
+      />
+      <Row
+        name="Show multi-sell link"
+        id="showMultiSellLink"
+        type="flipSwitchStorage"
+        description="Show a link to the Steam multi-sell page for commodity items"
+      />
     </Category>
   );
 };
