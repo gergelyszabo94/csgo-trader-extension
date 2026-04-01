@@ -290,6 +290,8 @@ const storageKeys = {
   moveWithArrowKeysInventory: true,
   showAllExteriorsInventory: false,
   marketEnhanceStickers: true,
+  showOtherExteriorsLinks: true,
+  showMultiSellLink: true,
   tradeOfferPricEmpireAction: true,
   tradeOfferBuffAction: true,
   tradeOfferFloatAction: true,
