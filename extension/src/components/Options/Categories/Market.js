@@ -164,10 +164,16 @@ const market = () => {
         description="Show links to other wear conditions (Factory New, Minimal Wear, etc.) on market listings"
       />
       <Row
-        name="Show multi-sell link"
+        name="Show multi-sell link "
         id="showMultiSellLink"
         type="flipSwitchStorage"
         description="Show a link to the Steam multi-sell page for commodity items"
+      />
+      <Row
+        name="Show Buff lookup link"
+        id="showBuffLookupInMarket"
+        type="flipSwitchStorage"
+        description="Show a Buff lookup link on market listings"
       />
     </Category>
   );
