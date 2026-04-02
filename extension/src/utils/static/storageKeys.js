@@ -292,6 +292,7 @@ const storageKeys = {
   marketEnhanceStickers: true,
   showOtherExteriorsLinks: true,
   showMultiSellLink: true,
+  showBuffLookupInMarket: true,
   tradeOfferPricEmpireAction: true,
   tradeOfferBuffAction: true,
   tradeOfferFloatAction: true,
