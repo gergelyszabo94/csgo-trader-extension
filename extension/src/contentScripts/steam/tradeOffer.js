@@ -186,7 +186,8 @@ const getItemInfoFromPage = (who) => {
                         type: asset.type,
                         owner: steamID,
                         fraudwarnings: asset.fraudwarnings,
-                        tags: asset.tags
+                        tags: asset.tags,
+                        asset_properties: asset.asset_properties
                     });
                 }
              }
@@ -228,6 +229,21 @@ const buildInventoryStructure = (inventory) => {
   });
 
   inventory.forEach((item) => {
+    let floatInfo = null;
+    let inspectLink = null;
+    let nametag = null;
+
+    if (item.asset_properties) {
+      floatInfo = {};
+      item.asset_properties.forEach((property) => {
+        if (property.propertyid === 1 && property.int_value) floatInfo.paintseed = parseInt(property.int_value);
+        if (property.propertyid === 2 && property.float_value) floatInfo.floatvalue = parseFloat(property.float_value);
+        if (property.propertyid === 3 && property.int_value) floatInfo.template = parseInt(property.int_value);
+        if (property.propertyid === 5 && property.string_value) nametag = property.string_value;
+        if (property.propertyid === 6 && property.string_value) inspectLink = `steam://run/730//+csgo_econ_action_preview%20${property.string_value}`;
+      });
+    }
+
     inventoryArrayToReturn.push({
       name: item.name,
       market_hash_name: item.market_hash_name,
@@ -243,16 +259,16 @@ const buildInventoryStructure = (inventory) => {
       dopplerInfo: isDopplerInName(item.name) ? getDopplerInfo(item.icon) : null,
       exterior: getExteriorFromTags(item.tags),
       iconURL: item.icon,
-      inspectLink: getInspectLink(item),
+      inspectLink,
       quality: getQuality(item.tags),
       isStatrack: item.name.includes('StatTrak™'),
       isSouvenir: item.name.includes('Souvenir'),
       starInName: item.name.includes('★'),
-      nametag: getNameTag(item),
+      nametag,
       duplicates: duplicates[item.market_hash_name],
       owner: item.owner,
       type: getType(item.tags),
-      floatInfo: null,
+      floatInfo,
       patternInfo: null,
       descriptions: item.descriptions,
     });
