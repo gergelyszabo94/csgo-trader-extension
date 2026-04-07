@@ -4,10 +4,10 @@ import {
   getItemByAssetID, getAssetIDOfElement, addDopplerPhase,
   makeItemColorful, addSSTandExtIndicators, addPriceIndicator,
   addFloatIndicator, getExteriorFromTags, getQuality, addPaintSeedIndicator,
-  getType, getInspectLink, addFadePercentage,
+  getType, addFadePercentage,
   getDopplerInfo, getActivePage, logExtensionPresence,
   updateLoggedInUserInfo, addPageControlEventListeners,
-  addSearchListener, getPattern, getNameTag, removeLinkFilterFromLinks,
+  addSearchListener, getPattern, removeLinkFilterFromLinks,
   removeOfferFromActiveOffers, changePageTitle, getBuffLink,
   addFloatRankIndicator, refreshSteamAccessToken, getPricempireLink,
 } from 'utils/utilsModular';
