@@ -23,7 +23,7 @@ const addPricesAndFloatsToInventory = (inventory) => new Promise((resolve) => {
                   pricingProvider, pricingMode, exchangeRate, currency);
                 total += parseFloat(item.price.price);
               }
-              if (floatCache[item.assetid] !== undefined && floatCache[item.assetid] !== null
+              if (((floatCache[item.assetid] !== undefined && floatCache[item.assetid] !== null) || item.floatInfo)
                 && itemTypes[item.type.key].float) {
                 item.floatInfo = floatCache[item.assetid];
                 item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
