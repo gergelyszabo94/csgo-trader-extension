@@ -300,6 +300,7 @@ const getType = (tags) => {
 };
 
 const getPattern = (name, paintSeed) => {
+  if (!paintSeed) return null;
   if (name.includes(' Marble Fade ')) {
     let pattern = null;
     if (name.includes('Karambit')) pattern = patterns.marble_fades.karambit[paintSeed];

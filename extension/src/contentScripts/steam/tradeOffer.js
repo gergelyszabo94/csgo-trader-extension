@@ -518,7 +518,7 @@ const addFloatDataToPage = (job, floatInfo) => {
   // add float and pattern info to page variable
   const item = getItemByIDs(combinedInventories, steamApps.CSGO.appID, '2', job.assetID);
   item.floatInfo = floatInfo;
-  item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
+  item.patternInfo = getPattern(item.market_hash_name, item.floatInfo?.paintseed);
 
   const itemElement = findElementByIDs(steamApps.CSGO.appID, '2', job.assetID, 'offer');
 
