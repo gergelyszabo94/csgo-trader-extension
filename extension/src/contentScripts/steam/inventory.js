@@ -2354,8 +2354,17 @@ const addFunctionBar = () => {
   } else setTimeout(() => { setInventoryTotal(); }, 1000);
 };
 
+// Flag to ensure onFullCSGOInventoryLoad only runs once
+let hasCSGOInventoryLoaded = false;
+
 const onFullCSGOInventoryLoad = () => {
+  // Prevent multiple executions
+  if (hasCSGOInventoryLoaded) {
+    return;
+  }
+  
   if (steamApps.CSGO.appID === getActiveInventoryAppID()) {
+    hasCSGOInventoryLoaded = true;
     getCSGOInventoryDataFromPage().then((inv) => {
       chrome.runtime.sendMessage({
         loadFloats: {
