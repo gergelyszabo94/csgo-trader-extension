@@ -7,7 +7,7 @@ import {
   getType, addFadePercentage,
   getDopplerInfo, getActivePage, logExtensionPresence,
   updateLoggedInUserInfo, addPageControlEventListeners,
-  addSearchListener, getPattern, removeLinkFilterFromLinks,
+  addSearchListener, removeLinkFilterFromLinks,
   removeOfferFromActiveOffers, changePageTitle, getBuffLink,
   addFloatRankIndicator, refreshSteamAccessToken, getPricempireLink,
 } from 'utils/utilsModular';
@@ -24,7 +24,6 @@ import { getItemByIDs, getIDsFromElement, findElementByIDs } from 'utils/itemsTo
 import doTheSorting from 'utils/sorting';
 import { sortingModes } from 'utils/static/sortingModes';
 import itemTypes from 'utils/static/itemTypes';
-import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import { overrideHandleTradeActionMenu } from 'utils/steamOverriding';
 import { injectScript, injectStyle } from 'utils/injection';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
@@ -514,34 +513,6 @@ const sortItems = (method, type) => {
   }
 };
 
-const addFloatDataToPage = (job, floatInfo) => {
-  // add float and pattern info to page variable
-  const item = getItemByIDs(combinedInventories, steamApps.CSGO.appID, '2', job.assetID);
-  item.floatInfo = floatInfo;
-  item.patternInfo = getPattern(item.market_hash_name, item.floatInfo?.paintseed);
-
-  const itemElement = findElementByIDs(steamApps.CSGO.appID, '2', job.assetID, 'offer');
-
-  addFloatIndicator(itemElement, floatInfo, floatDigitsToShow, showContrastingLook);
-  addFadePercentage(itemElement, item.patternInfo, showContrastingLook);
-  if (showPaintSeeds) addPaintSeedIndicator(itemElement, floatInfo, showContrastingLook);
-  if (showFloatRank) addFloatRankIndicator(itemElement, floatInfo, showContrastingLook);
-
-  // const inspectGenCommandEl = document.getElementById('inspectGenCommand');
-  // if (inspectGenCommandEl) {
-  //   const assetIDOfItemWaitingForFloatData = inspectGenCommandEl.getAttribute('data-assetid');
-  //   if (job.assetID === assetIDOfItemWaitingForFloatData) {
-  //     const actionItem = getItemByAssetID(combinedInventories, assetIDOfItemWaitingForFloatData);
-
-  //     inspectGenCommandEl.textContent = generateInspectCommand(
-  //       actionItem.market_hash_name, actionItem.floatInfo.floatvalue,
-  //       actionItem.floatInfo.paintindex, actionItem.floatInfo.defindex,
-  //       actionItem.floatInfo.paintseed, actionItem.floatInfo.stickers,
-  //     );
-  //   }
-  // }
-};
-
 const addFloatIndicatorsToPage = (type) => {
   chrome.storage.local.get('autoFloatOffer', ({ autoFloatOffer }) => {
     const activeInventoryIDs = getActiveInventoryIDs();
@@ -568,25 +539,15 @@ const addFloatIndicatorsToPage = (type) => {
       itemElements.forEach((itemElement) => {
         const item = getItemByAssetID(combinedInventories, getAssetIDOfElement(itemElement));
         if (item && item.inspectLink !== null) {
-          if (item.floatInfo === null && itemTypes[item.type.key].float) {
-            floatQueue.jobs.push({
-              type: 'offer',
-              assetID: item.assetid,
-              inspectLink: item.inspectLink,
-              callBackFunction: addFloatDataToPage,
-            });
-          } else {
-            addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow, showContrastingLook);
-            if (showPaintSeeds) {
-              addPaintSeedIndicator(itemElement, item.floatInfo, showContrastingLook);
-            }
-            if (showFloatRank) {
-              addFloatRankIndicator(itemElement, item.floatInfo, showContrastingLook);
-            }
+          addFloatIndicator(itemElement, item.floatInfo, floatDigitsToShow, showContrastingLook);
+          if (showPaintSeeds) {
+            addPaintSeedIndicator(itemElement, item.floatInfo, showContrastingLook);
+          }
+          if (showFloatRank) {
+            addFloatRankIndicator(itemElement, item.floatInfo, showContrastingLook);
           }
         }
       });
-      if (!floatQueue.active) workOnFloatQueue();
     }
   });
 };
