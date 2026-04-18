@@ -204,9 +204,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       request.loadFloats.steamID,
       request.loadFloats.isOwn,
       request.loadFloats.type,
+      request.loadFloats.name,
     ).then((itemsWithFloats) => {
       batchAddToFloatCache(itemsWithFloats);
-      sendResponse({ loaded: true });
+      sendResponse(itemsWithFloats);
     }).catch(() => {
       sendResponse('error');
     });

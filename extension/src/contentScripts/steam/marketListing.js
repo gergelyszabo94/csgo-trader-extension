@@ -23,7 +23,6 @@ import { listingsSortingModes } from 'utils/static/sortingModes';
 import {
   buyListing, createOrder, loadItemOrderHistogram, removeListing,
 } from 'utils/market';
-import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import exteriors from 'utils/static/exteriors';
 import {
   getHighestBuyOrder,
@@ -397,7 +396,15 @@ const addPatterns = (listingID, floatInfo) => {
   }
 };
 
+let lastAddFloatDataExecution = 0;
+
 const addFloatData = () => {
+  const now = Date.now();
+  if (now - lastAddFloatDataExecution < 1000) {
+    return; // Don't run if called within the last second
+  }
+  lastAddFloatDataExecution = now;
+
   if (appID === steamApps.CSGO.appID && !isCommodityItem) {
     chrome.storage.local.get(['autoFloatMarket'], ({ autoFloatMarket }) => {
       if (autoFloatMarket) {
@@ -415,12 +422,12 @@ const addFloatData = () => {
               if (property.propertyid === 6 && property.string_value) floatInfo.hex = property.string_value;
             });
 
-            // TODO: make request and use the resuling data
             listingDataToPassInFloatRequest.push({
               listingid: listing.listingid,
               pricelist: listing.price,
               pricefee: listing.fee,
               currencyid: listing.currencyid,
+              assetid: listing.asset.id,
               classid: listing.asset.classid,
               instanceid: listing.asset.instanceid,
               hex: floatInfo.hex,
@@ -430,8 +437,25 @@ const addFloatData = () => {
             addPatterns(listing.listingid, floatInfo);
           }
         }
-        console.log(listingDataToPassInFloatRequest);
-        if (!floatQueue.active) workOnFloatQueue();
+
+        chrome.runtime.sendMessage({
+          loadFloats: {
+            items: listingDataToPassInFloatRequest,
+            steamID: 'market',
+            isOwn: false,
+            type: 'market',
+            name: fullName,
+          },
+        }, (floatData) => {
+          for (const listing of Object.values(listings)) {
+            const floatInfo = floatData[listing.asset.id];
+
+            if (floatInfo) {
+              setStickerInfo(listing.listingid, floatInfo.stickers);
+              populateFloatInfo(listing.listingid, floatInfo);
+            }
+          }
+        });
       }
     });
   }
@@ -815,7 +839,7 @@ const addDescriptorDependentElements = (descriptor) => {
           { ADD_ATTR: ['target'] },
         ));
       }
-      
+
       if (showOtherExteriorsLinks && fullName.split('(')[1] !== undefined) {
         descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
           `<div class="descriptor otherExteriors">
@@ -833,7 +857,7 @@ const addDescriptorDependentElements = (descriptor) => {
         ));
       }
     }
-    
+
     if (showMultiSellLink && isCommodityItem) {
       const contextID = getContextIDFromPage();
       descriptor.insertAdjacentHTML('beforeend', DOMPurify.sanitize(
@@ -844,9 +868,6 @@ const addDescriptorDependentElements = (descriptor) => {
       ));
     }
   });
-};
-floatQueue.cleanupFunction = () => {
-  sortListings(document.getElementById('sortSelect').value);
 };
 
 logExtensionPresence();

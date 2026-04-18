@@ -1163,22 +1163,30 @@ const refreshSteamAccessToken = () => {
   });
 };
 
-const loadFloatData = (items, ownerID, isOwn, type) => new Promise((resolve, reject) => {
-  const trimmedItemProperties = [];
+const loadFloatData = (items, ownerID, isOwn, type, name) => new Promise((resolve, reject) => {
+  let trimmedItemProperties = items;
 
-  items.forEach((item) => {
-    if (item.inspectLink !== undefined
-      && item.inspectLink !== null) {
-      trimmedItemProperties.push({
-        assetid: item.assetid,
-        classid: item.classid,
-        instanceid: item.instanceid,
-        inspectLink: item.inspectLink,
-        name: item.name,
-        market_name: item.market_hash_name,
-      });
-    }
-  });
+  // market listings have different data that is already trimmed to what we need
+  // the rest we work on
+  if (type !== 'market') {
+    trimmedItemProperties = [];
+    const seenAssetIds = new Set();
+    items.forEach((item) => {
+      if (item.inspectLink !== undefined
+        && item.inspectLink !== null
+        && !seenAssetIds.has(item.assetid)) {
+        seenAssetIds.add(item.assetid);
+        trimmedItemProperties.push({
+          assetid: item.assetid,
+          classid: item.classid,
+          instanceid: item.instanceid,
+          inspectLink: item.inspectLink,
+          name: item.name,
+          market_name: item.market_hash_name,
+        });
+      }
+    });
+  }
 
   const getFloatsRequest = new Request('https://api.csgotrader.app/getFloats', {
     method: 'POST',
@@ -1187,6 +1195,7 @@ const loadFloatData = (items, ownerID, isOwn, type) => new Promise((resolve, rej
       isOwn,
       ownerID,
       type,
+      name,
     }),
   });
 
