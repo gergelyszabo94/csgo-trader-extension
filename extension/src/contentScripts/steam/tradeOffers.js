@@ -5,10 +5,10 @@ import {
   removeOfferFromActiveOffers, removeLinkFilterFromLinks,
   logExtensionPresence, updateLoggedInUserInfo, refreshSteamAccessToken,
   jumpToAnchor, changePageTitle,
-  updateLoggedInUserName, addFadePercentage, getPattern, addPaintSeedIndicator,
+  updateLoggedInUserName, addFadePercentage, addPaintSeedIndicator, // getPattern
 } from 'utils/utilsModular';
 import { prettyTimeAgo } from 'utils/dateTime';
-import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
+// import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import itemTypes from 'utils/static/itemTypes';
 import {
   addRealTimePriceToPage, prettyPrintPrice, priceQueue, workOnPriceQueue,
@@ -45,19 +45,19 @@ const getOfferIDFromElement = (element) => {
   return element.id.split('tradeofferid_')[1];
 };
 
-const selectItemElementByIDs = (classid, instanceid) => {
-  return document.querySelector(`[data-economy-item="classinfo/730/${classid}/${instanceid}"`);
-};
+// const selectItemElementByIDs = (classid, instanceid) => {
+//   return document.querySelector(`[data-economy-item="classinfo/730/${classid}/${instanceid}"`);
+// };
 
-const addFloatDataToPage = (job, floatInfo) => {
-  const itemElement = selectItemElementByIDs(job.classid, job.instanceid);
-  addFloatIndicator(itemElement, floatInfo, floatDigitsToShow, showContrastingLook);
-  if (showPaintSeeds) addPaintSeedIndicator(itemElement, floatInfo, showContrastingLook);
-  if (showFloatRank) addFloatRankIndicator(itemElement, floatInfo, showContrastingLook);
-  addFadePercentage(
-    itemElement, getPattern(job.marketName, floatInfo.paintseed), showContrastingLook,
-  );
-};
+// const addFloatDataToPage = (job, floatInfo) => {
+//   const itemElement = selectItemElementByIDs(job.classid, job.instanceid);
+//   addFloatIndicator(itemElement, floatInfo, floatDigitsToShow, showContrastingLook);
+//   if (showPaintSeeds) addPaintSeedIndicator(itemElement, floatInfo, showContrastingLook);
+//   if (showFloatRank) addFloatRankIndicator(itemElement, floatInfo, showContrastingLook);
+//   addFadePercentage(
+//     itemElement, getPattern(job.marketName, floatInfo.paintseed), showContrastingLook,
+//   );
+// };
 
 const getLimitedIDsFromElement = (element) => {
   const splitString = element.getAttribute('data-economy-item').split('/');
@@ -189,16 +189,16 @@ const addItemInfo = (items) => {
 
             if (autoFloatOffer && item.inspectLink !== null) {
               if (item.floatInfo === null && itemTypes[item.type.key].float) {
-                floatQueue.jobs.push({
-                  type: 'offersPage',
-                  assetID: item.assetid,
-                  classid: item.classid,
-                  instanceid: item.instanceid,
-                  inspectLink: item.inspectLink,
-                  marketName: item.market_hash_name,
-                  callBackFunction: addFloatDataToPage,
-                });
-                if (!floatQueue.active) workOnFloatQueue();
+                // floatQueue.jobs.push({
+                //   type: 'offersPage',
+                //   assetID: item.assetid,
+                //   classid: item.classid,
+                //   instanceid: item.instanceid,
+                //   inspectLink: item.inspectLink,
+                //   marketName: item.market_hash_name,
+                //   callBackFunction: addFloatDataToPage,
+                // });
+                // if (!floatQueue.active) workOnFloatQueue();
               } else {
                 addFloatIndicator(
                   itemElement, item.floatInfo, floatDigitsToShow, showContrastingLook,

@@ -8,7 +8,7 @@ import {
   getFloatBarSkeleton, addUpdatedRibbon, updateLoggedInUserName,
   logExtensionPresence, refreshSteamAccessToken, parseCharmInfo,
   updateLoggedInUserInfo, isSIHActive, getActivePage,
-  addSearchListener, getPattern, removeFromArray, getFloatAsFormattedString,
+  addSearchListener, getPattern, getFloatAsFormattedString, // removeFromArray
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
   parseStickerInfo, getExteriorFromTags, getDopplerInfo,
   getType, getQuality, getBuffLink, getPricempireLink, getSteamDisplayLanguageFromPage,
@@ -22,7 +22,7 @@ import { getShortDate, dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
   stattrak, starChar, souvenir, stattrakPretty, genericMarketLink,
 } from 'utils/static/simpleStrings';
-import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
+// import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import {
   getPriceAfterFees, userPriceToProperPrice,
   centsToSteamFormattedPrice, prettyPrintPrice, addRealTimePriceToPage,
@@ -101,9 +101,9 @@ const getInventoryOwnerID = () => {
 };
 
 // gets the asset id of the item that is currently selected
-const getAssetIDofActive = () => {
-  return getAssetIDOfElement(document.querySelector('.activeInfo'));
-};
+// const getAssetIDofActive = () => {
+//   return getAssetIDOfElement(document.querySelector('.activeInfo'));
+// };
 
 const getIDsOfActiveItem = () => {
   return getIDsFromElement(document.querySelector('.activeInfo'), 'inventory');
@@ -554,39 +554,39 @@ const hideFloatBars = () => {
 };
 
 // also adds pattern
-const addFloatDataToPage = (job, activeFloatQueue, floatInfo) => {
-  if (floatInfo !== null && floatInfo !== undefined) {
-    const itemElement = findElementByIDs(steamApps.CSGO.appID, '2', job.assetID, 'inventory');
+// const addFloatDataToPage = (job, activeFloatQueue, floatInfo) => {
+//   if (floatInfo !== null && floatInfo !== undefined) {
+//     const itemElement = findElementByIDs(steamApps.CSGO.appID, '2', job.assetID, 'inventory');
 
-    // add float and pattern info to page variable
-    const item = getItemByAssetID(items, job.assetID);
-    item.floatInfo = floatInfo;
-    item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
+//     // add float and pattern info to page variable
+//     const item = getItemByAssetID(items, job.assetID);
+//     item.floatInfo = floatInfo;
+//     item.patternInfo = getPattern(item.market_hash_name, item.floatInfo.paintseed);
 
-    addFloatIndicator(itemElement, floatInfo, floatDigitsToShow, showContrastingLook);
-    addFadePercentage(itemElement, item.patternInfo, showContrastingLook);
-    if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo, showContrastingLook);
-    if (showFloatRank) addFloatRankIndicator(itemElement, item.floatInfo, showContrastingLook);
+//     addFloatIndicator(itemElement, floatInfo, floatDigitsToShow, showContrastingLook);
+//     addFadePercentage(itemElement, item.patternInfo, showContrastingLook);
+//     if (showPaintSeeds) addPaintSeedIndicator(itemElement, item.floatInfo, showContrastingLook);
+//     if (showFloatRank) addFloatRankIndicator(itemElement, item.floatInfo, showContrastingLook);
 
-    if (job.type === 'inventory_floatbar') {
-      if (getAssetIDofActive() === job.assetID) updateFloatAndPatternElements(item);
-    } else {
-      // check if there is a floatbar job for the same item and remove it
-      activeFloatQueue.jobs.find((floatJob, index) => {
-        if (floatJob.type === 'inventory_floatbar' && job.assetID === floatJob.assetID) {
-          updateFloatAndPatternElements(item);
-          activeFloatQueue.jobs = removeFromArray(activeFloatQueue.jobs, index);
-        }
-        return null;
-      });
-    }
-  }
-};
+//     if (job.type === 'inventory_floatbar') {
+//       if (getAssetIDofActive() === job.assetID) updateFloatAndPatternElements(item);
+//     } else {
+//       // check if there is a floatbar job for the same item and remove it
+//       activeFloatQueue.jobs.find((floatJob, index) => {
+//         if (floatJob.type === 'inventory_floatbar' && job.assetID === floatJob.assetID) {
+//           updateFloatAndPatternElements(item);
+//           activeFloatQueue.jobs = removeFromArray(activeFloatQueue.jobs, index);
+//         }
+//         return null;
+//       });
+//     }
+//   }
+// };
 
-const dealWithNewFloatData = (job, floatInfo, activeFloatQueue) => {
-  if (floatInfo !== 'nofloat') addFloatDataToPage(job, activeFloatQueue, floatInfo);
-  else if (job.type === 'inventory_floatbar') hideFloatBars();
-};
+// const dealWithNewFloatData = (job, floatInfo, activeFloatQueue) => {
+//   if (floatInfo !== 'nofloat') addFloatDataToPage(job, activeFloatQueue, floatInfo);
+//   else if (job.type === 'inventory_floatbar') hideFloatBars();
+// };
 
 const sellNext = () => {
   if (document.getElementById('stopSale').getAttribute('data-stopped') === 'false') {
@@ -900,13 +900,13 @@ const addRightSideElements = (reRun) => {
           }
           if (item.floatInfo === null || item.floatInfo === undefined) {
             if (item.inspectLink !== null && item.type && itemTypes[item.type.key].float) {
-              floatQueue.jobs.push({
-                type: 'inventory_floatbar',
-                assetID: item.assetid,
-                inspectLink: item.inspectLink,
-                callBackFunction: dealWithNewFloatData,
-              });
-              if (!floatQueue.active) workOnFloatQueue();
+              // floatQueue.jobs.push({
+              //   type: 'inventory_floatbar',
+              //   assetID: item.assetid,
+              //   inspectLink: item.inspectLink,
+              //   callBackFunction: dealWithNewFloatData,
+              // });
+              // if (!floatQueue.active) workOnFloatQueue();
             } else hideFloatBars();
           } else {
             updateFloatAndPatternElements(item);
@@ -1189,12 +1189,12 @@ const addFloatIndicatorsToPage = () => {
 
           if (item.inspectLink !== null && itemTypes[item.type.key].float) {
             if (item.floatInfo === null) {
-              floatQueue.jobs.push({
-                type: 'inventory',
-                assetID,
-                inspectLink: item.inspectLink,
-                callBackFunction: dealWithNewFloatData,
-              });
+              // floatQueue.jobs.push({
+              //   type: 'inventory',
+              //   assetID,
+              //   inspectLink: item.inspectLink,
+              //   callBackFunction: dealWithNewFloatData,
+              // });
             } else {
               addFloatIndicator(
                 itemElement, item.floatInfo, floatDigitsToShow, showContrastingLook,
@@ -1208,7 +1208,7 @@ const addFloatIndicatorsToPage = () => {
             }
           }
         });
-        if (!floatQueue.active) workOnFloatQueue();
+        // if (!floatQueue.active) workOnFloatQueue();
       }
     }
   });
