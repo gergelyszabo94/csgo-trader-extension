@@ -2400,8 +2400,11 @@ const loadFullInventory = () => {
   if (document.querySelector('body').getAttribute('allItemsLoaded') === null) {
     const initPageElementsScript = `
         for (let i = 0; i < g_ActiveInventory.m_cPages; i++) {
-          g_ActiveInventory.m_rgPages[i].EnsurePageItemsCreated();
-          g_ActiveInventory.PreloadPageImages(i);
+          const page = g_ActiveInventory.m_rgPages[i];
+          if (page.m_$Page) {
+            g_ActiveInventory.m_rgPages[i].EnsurePageItemsCreated();
+            g_ActiveInventory.PreloadPageImages(i);
+          }
         }`;
     const loadFullInventoryScript = `
                 g_ActiveInventory.LoadMoreAssets(1000).done(function () {
