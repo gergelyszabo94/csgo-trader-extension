@@ -1169,7 +1169,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                     </a>
                   </div>
                   <div class="realMoneySite">
-                    <a href="https://buff.market/r/U1093423730" target="_blank" class="realMoneySiteLink referralLink" data-site="buffmarket">
+                    <a href="https://buff.market/home?ref=U1093423730" target="_blank" class="realMoneySiteLink referralLink" data-site="buffmarket">
                         <img alt="Buff Market logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/buffmarket.png')}" data-site="buffmarket">
                         <br>
                         BUFF.MARKET
@@ -1196,13 +1196,6 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                         <img alt="Skinbaron logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinbaron.png')}" data-site="skinbaron">
                         <br>
                         Skinbaron.com
-                    </a>
-                  </div>
-                  <div class="realMoneySite">
-                    <a href="https://gamerpay.gg/partner/okn9go3r" target="_blank" class="realMoneySiteLink referralLink" data-site="gamerpay">
-                        <img alt="GamerPay logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/gamerpay.png')}" data-site="gamerpay">
-                        <br>
-                        GamerPay.gg
                     </a>
                   </div>
                 </div>
@@ -1305,9 +1298,8 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       <a href="https://dmarket.com/?ref=hJEDYLBTsV" target="_blank" class="referralLink" data-site="dmarket">DMARKET</a>,
                       <a href="https://skinvault.gg/en?aff=gery" target="_blank" class="referralLink" data-site="skinvault">SkinVault</a>,
                       <a href="https://itrade.gg/trade/csgo?search=${fullName}&ref=gery" target="_blank" class="referralLink" data-site="itradegg">ITRADE.GG</a>,
-                      <a href="https://gamerpay.gg/partner/okn9go3r" target="_blank" class="referralLink" data-site="gamerpay">GamerPay</a>,
                       <a href="https://waxpeer.com/r/gery" target="_blank" class="referralLink" data-site="waxpeer">Waxpeer</a>,
-                      <a href="https://buff.market/r/U1093423730" target="_blank" class="referralLink" data-site="buffmarket">BUFF.MARKET</a>,
+                      <a href="https://buff.market/home?ref=U1093423730" target="_blank" class="referralLink" data-site="buffmarket">BUFF.MARKET</a>,
                       <a href="https://csdeals.com/new/?ref=mwe3otc" target="_blank" class="referralLink" data-site="csdeals">CS.DEALS</a>,
                       <a href="https://p.skin.place/cs2trader" target="_blank" class="referralLink" data-site="skinplace">Skin.Place</a>,
                       <a href="https://white.market/item?appId=730&nameHash=${encodeURIComponent(fullName)}&ref=53cecef4a02f6fc1" target="_blank" class="referralLink" data-site="whitemarket">White.Market</a>,
@@ -1327,8 +1319,7 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       <a href="https://csfloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csfloat">
                       this one and find your desired items on CSFloat's peer to peer market
                       </a>,
-                      <a href="https://buff.market/r/U1093423730" target="_blank" class="referralLink" data-site="buffmarket">this one for BUFF.MARKET</a>,
-                      <a href="https://gamerpay.gg/partner/okn9go3r" target="_blank" class="referralLink" data-site="gamerpay"> this one for GamerPay.gg</a>
+                      <a href="https://buff.market/home?ref=U1093423730" target="_blank" class="referralLink" data-site="buffmarket">this one for BUFF.MARKET</a>,
                       or
                       <a href="https://skinbaron.com/partner/gery" target="_blank" class="referralLink" data-site="skinbaron">this one for Skinbaron</a>
                       You can also buy items for real money on
