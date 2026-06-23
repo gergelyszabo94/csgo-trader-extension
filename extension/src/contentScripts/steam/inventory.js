@@ -231,6 +231,24 @@ const getVisibleItemInfoText = () => {
   return textOfDescriptors;
 };
 
+const addOrUpdatePerItemDate = (itemElement, item) => {
+  if (!itemElement || item.tradability === 'Tradable' || item.tradability === 'Not Tradable') return;
+
+  const itemDateElement = itemElement.querySelector('.perItemDate');
+  if (itemDateElement) {
+    itemDateElement.innerText = item.tradabilityShort;
+    itemDateElement.classList.add('not_tradable');
+    itemDateElement.classList.remove('tradable');
+    return;
+  }
+
+  const contrastingLookClass = showContrastingLook ? 'contrastingBackground' : '';
+  itemElement.insertAdjacentHTML(
+    'beforeend',
+    DOMPurify.sanitize(`<div class="perItemDate ${contrastingLookClass} not_tradable">${item.tradabilityShort}</div>`),
+  );
+};
+
 const syncActiveItemTradabilityFromPage = (item) => {
   if (!item || item.tradability !== 'Not Tradable') return;
 
@@ -240,13 +258,12 @@ const syncActiveItemTradabilityFromPage = (item) => {
   item.tradability = tradeDate;
   item.tradabilityShort = getShortDate(tradeDate);
 
-  const itemElement = findElementByIDs(item.appid, item.contextid, item.assetid, 'inventory');
-  const itemDateElement = itemElement ? itemElement.querySelector('.perItemDate') : null;
-  if (itemDateElement) {
-    itemDateElement.innerText = item.tradabilityShort;
-    itemDateElement.classList.add('not_tradable');
-    itemDateElement.classList.remove('tradable');
-  }
+  chrome.storage.local.get(['showTradeLockIndicatorInInventories'], ({ showTradeLockIndicatorInInventories }) => {
+    if (!showTradeLockIndicatorInInventories) return;
+
+    const itemElement = findElementByIDs(item.appid, item.contextid, item.assetid, 'inventory');
+    addOrUpdatePerItemDate(itemElement, item);
+  });
 };
 
 const getItemInfoFromPage = (appID, contextID) => {
@@ -1320,13 +1337,7 @@ const addPerItemInfo = (appID) => {
 
           if (showTradeLockIndicatorInInventories) {
             // adds tradability indicator
-            if (item.tradability !== 'Tradable' && item.tradability !== 'Not Tradable') {
-              const contrastingLookClass = showContrastingLook ? 'contrastingBackground' : '';
-              itemElement.insertAdjacentHTML(
-                'beforeend',
-                DOMPurify.sanitize(`<div class="perItemDate ${contrastingLookClass} not_tradable">${item.tradabilityShort}</div>`),
-              );
-            }
+            addOrUpdatePerItemDate(itemElement, item);
           }
 
           if (appID === steamApps.CSGO.appID) {
