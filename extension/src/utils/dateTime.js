@@ -39,22 +39,26 @@ const getDescriptionValue = (description) => {
   return '';
 };
 
-const getTradeDateFromDescription = (description) => {
-  const text = getDescriptionValue(description)
+const getTradeDateFromText = (text) => {
+  const cleanText = String(text || '')
     .replace(/<[^>]*>/g, ' ')
     .replace(/&nbsp;|&#160;/gi, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 
-  if (!/\d/.test(text)) return null;
+  if (!/\d/.test(cleanText)) return null;
 
-  const tradeDateMatch = text.match(tradeDateRegex);
+  const tradeDateMatch = cleanText.match(tradeDateRegex);
   if (!tradeDateMatch) return null;
 
   const tradeDate = tradeDateMatch[1].replace(/[()]/g, '').replace(/\s+/g, ' ').trim();
   if (Number.isNaN(new Date(tradeDate).getTime())) return null;
 
   return tradeDate;
+};
+
+const getTradeDateFromDescription = (description) => {
+  return getTradeDateFromText(getDescriptionValue(description));
 };
 
 const getTradeDateFromDescriptions = (descriptions) => {
@@ -118,5 +122,5 @@ const getTradabilityInfo = (tradable, ownerDescriptions, descriptions) => {
 };
 
 export {
-  dateToISODisplay, prettyTimeAgo, getShortDate, getTradabilityInfo,
+  dateToISODisplay, prettyTimeAgo, getShortDate, getTradabilityInfo, getTradeDateFromText,
 };

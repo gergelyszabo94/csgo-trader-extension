@@ -19,7 +19,7 @@ import {
   reloadPageOnExtensionUpdate,
 } from 'utils/simpleUtils';
 import {
-  getShortDate, dateToISODisplay, prettyTimeAgo, getTradabilityInfo,
+  getShortDate, dateToISODisplay, prettyTimeAgo, getTradabilityInfo, getTradeDateFromText,
 } from 'utils/dateTime';
 import {
   stattrak, starChar, souvenir, stattrakPretty, genericMarketLink,
@@ -213,6 +213,39 @@ const countDown = (dateToCountDownTo) => {
     clearInterval(countDownID);
     countingDown = false;
     countDown(dateToCountDownTo);
+  }
+};
+
+const getVisibleItemInfoText = () => {
+  let textOfDescriptors = '';
+  document.querySelectorAll('.inventory_page_right div[data-featuretarget="iteminfo"]:not([style*="display: none"])').forEach((itemInfo) => {
+    textOfDescriptors = itemInfo.textContent;
+  });
+
+  if (textOfDescriptors) return textOfDescriptors;
+
+  document.querySelectorAll('div[data-featuretarget="iteminfo"][style]:not([style*="display: none"])').forEach((itemInfo) => {
+    textOfDescriptors = itemInfo.textContent;
+  });
+
+  return textOfDescriptors;
+};
+
+const syncActiveItemTradabilityFromPage = (item) => {
+  if (!item || item.tradability !== 'Not Tradable') return;
+
+  const tradeDate = getTradeDateFromText(getVisibleItemInfoText());
+  if (!tradeDate) return;
+
+  item.tradability = tradeDate;
+  item.tradabilityShort = getShortDate(tradeDate);
+
+  const itemElement = findElementByIDs(item.appid, item.contextid, item.assetid, 'inventory');
+  const itemDateElement = itemElement ? itemElement.querySelector('.perItemDate') : null;
+  if (itemDateElement) {
+    itemDateElement.innerText = item.tradabilityShort;
+    itemDateElement.classList.add('not_tradable');
+    itemDateElement.classList.remove('tradable');
   }
 };
 
@@ -709,11 +742,7 @@ const addRightSideElements = (reRun) => {
     ) {
       if (item && showAllExteriorsMenu) {
         // it takes the visible item and checks if the collection includes souvenirs
-        let textOfDescriptors = '';
-        document.querySelectorAll('div[data-featuretarget="iteminfo"][style]:not([style*="display: none"])').forEach((itemInfo) => {
-          textOfDescriptors = itemInfo.textContent;
-        });
-
+        const textOfDescriptors = getVisibleItemInfoText();
         const thereSouvenirForThisItem = souvenirExists(textOfDescriptors);
 
         let weaponName = '';
@@ -813,6 +842,8 @@ const addRightSideElements = (reRun) => {
       if (activeInventoryAppID === steamApps.CSGO.appID
         || activeInventoryAppID === steamApps.DOTA2.appID
         || activeInventoryAppID === steamApps.TF2.appID) {
+        syncActiveItemTradabilityFromPage(item);
+
         if (activeInventoryAppID === steamApps.CSGO.appID) {
           // repositions stickers and charms
           if ((item.stickers !== undefined && item.stickers.length !== 0)
