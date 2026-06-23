@@ -57,10 +57,10 @@ const getTradeDateFromDescription = (description) => {
   return tradeDate;
 };
 
-const getTradeDateFromDescriptions = (ownerDescriptions) => {
-  if (!ownerDescriptions) return null;
+const getTradeDateFromDescriptions = (descriptions) => {
+  if (!descriptions) return null;
 
-  for (const description of ownerDescriptions) {
+  for (const description of descriptions) {
     const tradeDate = getTradeDateFromDescription(description);
     if (tradeDate) return tradeDate;
   }
@@ -94,7 +94,7 @@ const getShortDate = (tradabibilityDate) => {
   return `${days}d`;
 };
 
-const getTradabilityInfo = (tradable, ownerDescriptions) => {
+const getTradabilityInfo = (tradable, ownerDescriptions, descriptions) => {
   if (tradable !== 0) {
     return {
       tradability: 'Tradable',
@@ -102,7 +102,8 @@ const getTradabilityInfo = (tradable, ownerDescriptions) => {
     };
   }
 
-  const tradeDate = getTradeDateFromDescriptions(ownerDescriptions);
+  const tradeDate = getTradeDateFromDescriptions(ownerDescriptions)
+    || getTradeDateFromDescriptions(descriptions);
   if (tradeDate) {
     return {
       tradability: tradeDate,

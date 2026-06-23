@@ -330,7 +330,11 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
               inventoryTotal += parseFloat(price.price);
             } else price = { price: '', display: '' };
 
-            const tradabilityInfo = getTradabilityInfo(item.description.tradable, item.description.owner_descriptions);
+            const tradabilityInfo = getTradabilityInfo(
+              item.description.tradable,
+              item.description.owner_descriptions,
+              item.description.descriptions,
+            );
             tradability = tradabilityInfo.tradability;
             tradabilityShort = tradabilityInfo.tradabilityShort;
 

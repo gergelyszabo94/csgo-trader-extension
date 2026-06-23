@@ -92,7 +92,11 @@ const getUserCSGOInventory = (steamID, contextID) => new Promise((resolve, rejec
                       inventoryTotal += parseFloat(price.price);
                     } else price = { price: '', display: '' };
 
-                    const tradabilityInfo = getTradabilityInfo(item.tradable, item.owner_descriptions);
+                    const tradabilityInfo = getTradabilityInfo(
+                      item.tradable,
+                      item.owner_descriptions,
+                      item.descriptions,
+                    );
                     tradability = tradabilityInfo.tradability;
                     tradabilityShort = tradabilityInfo.tradabilityShort;
 
@@ -242,7 +246,11 @@ const getUserCSGOInventoryAlternative = (steamID, contextID) => new Promise((res
                     inventoryTotal += parseFloat(price.price);
                   } else price = { price: '', display: '' };
 
-                  const tradabilityInfo = getTradabilityInfo(item.tradable, item.owner_descriptions);
+                  const tradabilityInfo = getTradabilityInfo(
+                    item.tradable,
+                    item.owner_descriptions,
+                    item.descriptions,
+                  );
                   tradability = tradabilityInfo.tradability;
                   tradabilityShort = tradabilityInfo.tradabilityShort;
 
@@ -366,7 +374,11 @@ const getOtherInventory = (appID, steamID) => new Promise((resolve, reject) => {
             const icon = item.icon_url;
             const owner = steamID;
 
-            const tradabilityInfo = getTradabilityInfo(item.tradable, item.owner_descriptions);
+            const tradabilityInfo = getTradabilityInfo(
+              item.tradable,
+              item.owner_descriptions,
+              item.descriptions,
+            );
             tradability = tradabilityInfo.tradability;
             tradabilityShort = tradabilityInfo.tradabilityShort;
 
