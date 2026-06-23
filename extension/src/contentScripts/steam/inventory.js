@@ -334,10 +334,12 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
                 item.description.owner_descriptions.forEach((description) => {
                   if (/\d/.test(description.value)) {
                     try {
-                      if (description.value.includes(('transferred until'))) {
-                        tradability = description.value.split('transferred until ')[1].replace(/[()]/g, '');
-                      } else if (description.value.includes('Tradable/Marketable After')) {
-                        tradability = description.value.split('Tradable/Marketable After ')[1].replace(/[()]/g, '');
+                      if (description.value.includes(('transferred until'))) { // trade protected format
+                        if (description.value.includes('[date]')) {
+                          tradability = new Date(parseInt(description.value.split('transferred until [date]')[1].split('[/date]')[0]) * 1000).toString();
+                        } else tradability = description.value.split('transferred until ')[1].replace(/[()]/g, ''); // old format, remove later?
+                      } else if (description.value.includes('[date]')) { // community market purchased format
+                        tradability = new Date(parseInt(description.value.split('[date]')[1].split('[/date]')[0]) * 1000).toString();
                       }
                     } catch (e) {
                       console.log(e);
@@ -2362,7 +2364,7 @@ const onFullCSGOInventoryLoad = () => {
   if (hasCSGOInventoryLoaded) {
     return;
   }
-  
+
   if (steamApps.CSGO.appID === getActiveInventoryAppID()) {
     hasCSGOInventoryLoaded = true;
     getCSGOInventoryDataFromPage().then((inv) => {
@@ -2436,6 +2438,8 @@ const requestInventory = (appID, contextID) => {
     // hopefully fewer restricitions by steam
     // a separate network request is made for the trade protected inventory
     // when the tradability info can't be parsed from the page (non-english)
+    // rethink this since the tradability text has changed
+    // parsing it might be easy in other languages too
     if (isOwnInventory() && contextID === '16' && getSteamDisplayLanguageFromPage() !== 'english') {
       chrome.runtime.sendMessage({ inventory: inventoryOwnerID, contextID }, (response) => {
         if (response !== 'error') {

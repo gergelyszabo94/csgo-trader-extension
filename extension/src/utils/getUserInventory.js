@@ -1,7 +1,7 @@
 import { getFloatInfoFromCache } from 'utils/floatCaching';
 import itemTypes from 'utils/static/itemTypes';
 import { getPrice, getStickerPriceTotal } from 'utils/pricing';
-import { getShortDate } from 'utils/dateTime';
+import { getShortDate, parseSteamTradabilityDate } from 'utils/dateTime';
 import {
   getDopplerInfo,
   getExteriorFromTags,
@@ -98,7 +98,7 @@ const getUserCSGOInventory = (steamID, contextID) => new Promise((resolve, rejec
                           if (/\d/.test(description.value)) {
                             try {
                               if (description.value.includes(('transferred until'))) {
-                                tradability = description.value.split('transferred until ')[1].replace(/[()]/g, '');
+                                tradability = parseSteamTradabilityDate(description.value.split('transferred until ')[1].replace(/[()]/g, ''));
                               } else {
                                 tradability = description.value.split('Tradable/Marketable After ')[1].replace(/[()]/g, '');
                               }
