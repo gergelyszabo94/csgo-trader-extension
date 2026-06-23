@@ -1,7 +1,7 @@
 import { getFloatInfoFromCache } from 'utils/floatCaching';
 import itemTypes from 'utils/static/itemTypes';
 import { getPrice, getStickerPriceTotal } from 'utils/pricing';
-import { getShortDate } from 'utils/dateTime';
+import { getTradabilityInfo } from 'utils/dateTime';
 import {
   getDopplerInfo,
   getExteriorFromTags,
@@ -92,28 +92,9 @@ const getUserCSGOInventory = (steamID, contextID) => new Promise((resolve, rejec
                       inventoryTotal += parseFloat(price.price);
                     } else price = { price: '', display: '' };
 
-                    if (item.tradable === 0 && item.marketable === 0) {
-                      if (item.owner_descriptions) {
-                        item.owner_descriptions.forEach((description) => {
-                          if (/\d/.test(description.value)) {
-                            try {
-                              if (description.value.includes(('transferred until'))) {
-                                tradability = description.value.split('transferred until ')[1].replace(/[()]/g, '');
-                              } else {
-                                tradability = description.value.split('Tradable/Marketable After ')[1].replace(/[()]/g, '');
-                              }
-                            } catch (e) {
-                              console.log(e);
-                              tradability = description.value;
-                            }
-                          }
-                        });
-                        tradabilityShort = getShortDate(tradability);
-                      } else {
-                        tradability = 'Not Tradable';
-                        tradabilityShort = '';
-                      }
-                    }
+                    const tradabilityInfo = getTradabilityInfo(item.tradable, item.owner_descriptions);
+                    tradability = tradabilityInfo.tradability;
+                    tradabilityShort = tradabilityInfo.tradabilityShort;
 
                     itemsPropertiesToReturn.push({
                       name,
@@ -261,28 +242,9 @@ const getUserCSGOInventoryAlternative = (steamID, contextID) => new Promise((res
                     inventoryTotal += parseFloat(price.price);
                   } else price = { price: '', display: '' };
 
-                  if (item.tradable === 0 && item.marketable === 0) {
-                    if (item.owner_descriptions) {
-                      item.owner_descriptions.forEach((description) => {
-                        if (/\d/.test(description.value)) {
-                          try {
-                            if (description.value.includes(('transferred until'))) {
-                              tradability = description.value.split('transferred until ')[1].replace(/[()]/g, '');
-                            } else {
-                              tradability = description.value.split('Tradable/Marketable After ')[1].replace(/[()]/g, '');
-                            }
-                          } catch (e) {
-                            console.log(e);
-                            tradability = description.value;
-                          }
-                        }
-                      });
-                      tradabilityShort = getShortDate(tradability);
-                    } else {
-                      tradability = 'Not Tradable';
-                      tradabilityShort = '';
-                    }
-                  }
+                  const tradabilityInfo = getTradabilityInfo(item.tradable, item.owner_descriptions);
+                  tradability = tradabilityInfo.tradability;
+                  tradabilityShort = tradabilityInfo.tradabilityShort;
 
                   itemsPropertiesToReturn.push({
                     name,
@@ -404,19 +366,9 @@ const getOtherInventory = (appID, steamID) => new Promise((resolve, reject) => {
             const icon = item.icon_url;
             const owner = steamID;
 
-            if (item.tradable === 0 && item.marketable === 0) {
-              if (item.owner_descriptions) {
-                item.owner_descriptions.forEach((description) => {
-                  if (/\d/.test(description.value)) {
-                    tradability = description.value;
-                  }
-                });
-                tradabilityShort = getShortDate(tradability);
-              } else {
-                tradability = 'Not Tradable';
-                tradabilityShort = '';
-              }
-            }
+            const tradabilityInfo = getTradabilityInfo(item.tradable, item.owner_descriptions);
+            tradability = tradabilityInfo.tradability;
+            tradabilityShort = tradabilityInfo.tradabilityShort;
 
             itemsPropertiesToReturn.push({
               name,

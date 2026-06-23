@@ -18,7 +18,9 @@ import {
   getItemMarketLink, isDopplerInName, getCollection,
   reloadPageOnExtensionUpdate,
 } from 'utils/simpleUtils';
-import { getShortDate, dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
+import {
+  getShortDate, dateToISODisplay, prettyTimeAgo, getTradabilityInfo,
+} from 'utils/dateTime';
 import {
   stattrak, starChar, souvenir, stattrakPretty, genericMarketLink,
 } from 'utils/static/simpleStrings';
@@ -328,29 +330,9 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
               inventoryTotal += parseFloat(price.price);
             } else price = { price: '', display: '' };
 
-            // english only since it would be a ton of work to parse the localized strings
-            if (item.description.tradable === 0 && item.description.marketable === 0) {
-              if (item.description.owner_descriptions) {
-                item.description.owner_descriptions.forEach((description) => {
-                  if (/\d/.test(description.value)) {
-                    try {
-                      if (description.value.includes(('transferred until'))) {
-                        tradability = description.value.split('transferred until ')[1].replace(/[()]/g, '');
-                      } else if (description.value.includes('Tradable/Marketable After')) {
-                        tradability = description.value.split('Tradable/Marketable After ')[1].replace(/[()]/g, '');
-                      }
-                    } catch (e) {
-                      console.log(e);
-                      tradability = description.value;
-                    }
-                  }
-                });
-                tradabilityShort = getShortDate(tradability);
-              } else {
-                tradability = 'Not Tradable';
-                tradabilityShort = '';
-              }
-            }
+            const tradabilityInfo = getTradabilityInfo(item.description.tradable, item.description.owner_descriptions);
+            tradability = tradabilityInfo.tradability;
+            tradabilityShort = tradabilityInfo.tradabilityShort;
 
             itemsPropertiesToReturn.push({
               description: item.description,

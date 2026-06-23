@@ -25,10 +25,56 @@ const prettyTimeAgo = (unixTimestamp) => {
   return prettyString;
 };
 
+const tradeDateRegex = new RegExp([
+  String.raw`(?:Tradable(?:/Marketable)? After|transferred until)\s*:?\s*(`,
+  String.raw`\d{1,2}/\d{1,2}/\d{4},?\s+\d{1,2}:\d{2}:\d{2}\s*(?:AM|PM)?`,
+  '|',
+  String.raw`[A-Za-z]{3,9}\s+\d{1,2},\s+\d{4},?\s*(?:\(?\d{1,2}:\d{2}:\d{2}\)?\s*(?:AM|PM)?\s*(?:GMT)?)?`,
+  ')',
+].join(''), 'i');
+
+const getDescriptionValue = (description) => {
+  if (typeof description === 'string') return description;
+  if (description && description.value) return description.value;
+  return '';
+};
+
+const getTradeDateFromDescription = (description) => {
+  const text = getDescriptionValue(description)
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;|&#160;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!/\d/.test(text)) return null;
+
+  const tradeDateMatch = text.match(tradeDateRegex);
+  if (!tradeDateMatch) return null;
+
+  const tradeDate = tradeDateMatch[1].replace(/[()]/g, '').replace(/\s+/g, ' ').trim();
+  if (Number.isNaN(new Date(tradeDate).getTime())) return null;
+
+  return tradeDate;
+};
+
+const getTradeDateFromDescriptions = (ownerDescriptions) => {
+  if (!ownerDescriptions) return null;
+
+  for (const description of ownerDescriptions) {
+    const tradeDate = getTradeDateFromDescription(description);
+    if (tradeDate) return tradeDate;
+  }
+
+  return null;
+};
+
 const getShortDate = (tradabibilityDate) => {
   if (tradabibilityDate === 'Tradable' || tradabibilityDate === '') return 'T';
+  if (!tradabibilityDate) return '';
   const now = new Date().getTime();
-  const distance = new Date(tradabibilityDate) - now;
+  const tradabilityTime = new Date(tradabibilityDate).getTime();
+  if (Number.isNaN(tradabilityTime)) return '';
+  const distance = tradabilityTime - now;
   if (distance <= 0) return 'T';
 
   const days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -48,4 +94,28 @@ const getShortDate = (tradabibilityDate) => {
   return `${days}d`;
 };
 
-export { dateToISODisplay, prettyTimeAgo, getShortDate };
+const getTradabilityInfo = (tradable, ownerDescriptions) => {
+  if (tradable !== 0) {
+    return {
+      tradability: 'Tradable',
+      tradabilityShort: 'T',
+    };
+  }
+
+  const tradeDate = getTradeDateFromDescriptions(ownerDescriptions);
+  if (tradeDate) {
+    return {
+      tradability: tradeDate,
+      tradabilityShort: getShortDate(tradeDate),
+    };
+  }
+
+  return {
+    tradability: 'Not Tradable',
+    tradabilityShort: '',
+  };
+};
+
+export {
+  dateToISODisplay, prettyTimeAgo, getShortDate, getTradabilityInfo,
+};
