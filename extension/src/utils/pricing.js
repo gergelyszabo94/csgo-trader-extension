@@ -7,7 +7,6 @@ import {
 
 import DOMPurify from 'dompurify';
 import { findElementByIDs } from 'utils/itemsToElementsToItems';
-import { getItemMarketLink } from 'utils/simpleUtils';
 import { injectScript } from 'utils/injection';
 import { storageKeys } from 'utils/static/storageKeys';
 
@@ -19,6 +18,41 @@ const priceQueue = {
   lastJobSuccessful: true,
   localCache: {},
   cleanupFunction: () => { }, // optional function that is executed when all jobs are done
+};
+
+// gpt generated, be sceptical
+const toMinorUnits = (input, fractionDigits = 2) => {
+  if (input == null) return NaN;
+
+  let s = String(input).trim();
+
+  // Detect negative values: "-2,48€" or "(2,48€)"
+  const negative = /^-/.test(s) || /^\(.*\)$/.test(s);
+
+  // Keep only digits + common separators/signs, drop currency symbols/letters
+  s = s.replace(/[^\d.,'’\s-]/g, '');
+  s = s.replace(/['’\s]/g, ''); // remove grouping separators like space/apostrophe
+  s = s.replace(/^-/, '').replace(/^\(|\)$/g, '');
+
+  // Find decimal separator as the last '.' or ',' that is followed by 1..fractionDigits digits
+  const decMatch = s.match(new RegExp(`([.,])(\\d{1,${fractionDigits}})$`));
+  let intPart; let
+    fracPart;
+
+  if (decMatch) {
+    const idx = decMatch.index;
+    intPart = s.slice(0, idx).replace(/[^\d]/g, '');
+    fracPart = decMatch[2];
+  } else {
+    intPart = s.replace(/[^\d]/g, '');
+    fracPart = '';
+  }
+
+  if (!intPart) intPart = '0';
+  fracPart = (fracPart + '0'.repeat(fractionDigits)).slice(0, fractionDigits);
+
+  const minor = Number(intPart) * 10 ** fractionDigits + Number(fracPart || 0);
+  return negative ? -minor : minor;
 };
 
 // tested and works in inventories, offers and market pages
@@ -70,29 +104,24 @@ const getHighestBuyOrder = (appID, marketHashName) => {
   });
 };
 
-const getPriceOverview = (appID, marketHashName) => {
+const getPriceOverview = (appID, marketHashName, currencyID) => {
   return new Promise((resolve, reject) => {
-    const walletInfo = getSteamWalletInfo();
+    const request = new Request(`https://steamcommunity.com/market/priceoverview/?appid=${appID}&country=US&currency=${currencyID}&market_hash_name=${marketHashName}`);
 
-    if (walletInfo) {
-      const currencyID = walletInfo.wallet_currency;
-      const request = new Request(`https://steamcommunity.com/market/priceoverview/?appid=${appID}&country=US&currency=${currencyID}&market_hash_name=${marketHashName}`);
-
-      fetch(request).then((response) => {
-        if (!response.ok) {
-          console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-          reject({ status: response.status, statusText: response.statusText });
-        }
-        return response.json();
-      }).then((priceOverviewJSON) => {
-        if (priceOverviewJSON === null) reject('success:false');
-        else if (priceOverviewJSON.success === true) resolve(priceOverviewJSON);
-        else reject('success:false');
-      }).catch((err) => {
-        console.log(err);
-        reject(err);
-      });
-    } else reject('unable to parse steam wallet info');
+    fetch(request).then((response) => {
+      if (!response.ok) {
+        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+        reject({ status: response.status, statusText: response.statusText });
+      }
+      return response.json();
+    }).then((priceOverviewJSON) => {
+      if (priceOverviewJSON === null) reject('success:false');
+      else if (priceOverviewJSON.success === true) resolve(priceOverviewJSON);
+      else reject('success:false');
+    }).catch((err) => {
+      console.log(err);
+      reject(err);
+    });
   });
 };
 
@@ -107,33 +136,11 @@ const getLowestListingPrice = (appID, marketHashName) => {
           if (short === currency) currencyID = code;
         }
       }
-      const request = new Request(
-        `${getItemMarketLink(appID, marketHashName)}/render/?query=&start=0&count=10&country=US&language=english&currency=${currencyID}`,
-      );
 
-      fetch(request).then((response) => {
-        if (!response.ok) {
-          console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-          reject({ status: response.status, statusText: response.statusText });
-        }
-        return response.json();
-      }).then((listingsJSONData) => {
-        if (listingsJSONData === null) reject('success:false');
-        else if (listingsJSONData.success === true) {
-          if (listingsJSONData.listinginfo) {
-            const listingInfo = Object.values(listingsJSONData.listinginfo);
-            if (listingInfo.length !== 0) {
-              for (const listing of listingInfo) {
-                if (listing.converted_price !== undefined && listing.converted_fee !== undefined) {
-                  resolve(listing.converted_price + listing.converted_fee);
-                  return;
-                }
-              }
-              reject('no_prices_on_listings');
-            } else reject('empty_listings_array'); // no listings at all on the market
-          } else reject('no listing data');
-          resolve(listingsJSONData);
-        } else reject('success:false');
+      getPriceOverview(appID, marketHashName, currencyID).then((response) => {
+        if (response.lowest_price) {
+          resolve(toMinorUnits(response.lowest_price));
+        } else reject('no_lowest_price');
       }).catch((err) => {
         console.log(err);
         reject(err);
