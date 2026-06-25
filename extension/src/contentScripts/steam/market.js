@@ -10,7 +10,7 @@ import {
 } from 'utils/market';
 import {
   steamFormattedPriceToCents, centsToSteamFormattedPrice, priceQueue,
-  workOnPriceQueue, initPriceQueue, updateWalletCurrency, getHighestBuyOrder,
+  workOnPriceQueue, initPriceQueue, updateWalletCurrency, getOrderBook,
 } from 'utils/pricing';
 import { injectStyle } from 'utils/injection';
 import { overrideLoadMarketHistory } from 'utils/steamOverriding';
@@ -456,8 +456,8 @@ if (orders) {
                   const marketLink = orderRow.querySelector('.market_listing_item_name_link').getAttribute('href');
                   const appID = marketLink.split('market/listings/')[1].split('/')[0];
                   const marketName = marketLink.split('market/listings/')[1].split('/')[1];
-                  getHighestBuyOrder(appID, marketName).then((highestOrder) => {
-                    const highestInt = parseInt(highestOrder);
+                  getOrderBook(appID, marketName).then(({ highestBuyOrder }) => {
+                    const highestInt = parseInt(highestBuyOrder);
                     const newOrderPrice = outBidType === 'highest'
                       ? highestInt + 1
                       : highestInt >= 100

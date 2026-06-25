@@ -25,7 +25,7 @@ import {
 } from 'utils/market';
 import exteriors from 'utils/static/exteriors';
 import {
-  getHighestBuyOrder,
+  getOrderBook,
   getPrice,
   getStickerPriceTotal,
   steamFormattedPriceToCents,
@@ -958,11 +958,11 @@ if (buyOrderInfoEl !== null) {
   }
 
   document.getElementById('place_highest_order').addEventListener('click', () => {
-    getHighestBuyOrder(appID, fullName).then((highestOrder) => {
+    getOrderBook(appID, fullName).then(({ highestBuyOrder }) => {
       createOrder(
         appID,
         fullName,
-        parseInt(highestOrder) + 1,
+        parseInt(highestBuyOrder) + 1,
         1,
         getBuyerKYCFromPage(),
       ).then(() => {

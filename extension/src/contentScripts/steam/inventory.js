@@ -27,7 +27,7 @@ import {
   getPriceAfterFees, userPriceToProperPrice,
   centsToSteamFormattedPrice, prettyPrintPrice, addRealTimePriceToPage,
   priceQueue, workOnPriceQueue, getSteamWalletCurrency, initPriceQueue,
-  updateWalletCurrency, getHighestBuyOrder, getLowestListingPrice,
+  updateWalletCurrency, getOrderBook,
   getPrice, getStickerPriceTotal,
 }
   from 'utils/pricing';
@@ -998,17 +998,17 @@ const addRightSideElements = (reRun) => {
             instantSellButton.addEventListener('click', () => {
               if (safeInstantAndQuickSellFlag && !window.confirm('Are you sure you want to Instant Sell this item?')) return; // eslint-disable-line no-alert
 
-              getHighestBuyOrder(
+              getOrderBook(
                 item.appid,
                 item.market_hash_name,
-              ).then((highestOrderPrice) => {
-                if (highestOrderPrice !== null) {
+              ).then(({ highestBuyOrder }) => {
+                if (highestBuyOrder !== null) {
                   listItem(
                     item.appid,
                     item.contextid,
                     1,
                     item.assetid,
-                    getPriceAfterFees(highestOrderPrice),
+                    getPriceAfterFees(highestBuyOrder),
                   ).then(() => {
                     instantSellButton.innerText = 'Listing created!';
                   }).catch((err) => {
@@ -1027,10 +1027,10 @@ const addRightSideElements = (reRun) => {
             quickSellButton.addEventListener('click', () => {
               if (safeInstantAndQuickSellFlag && !window.confirm('Are you sure you want to Quick Sell this item?')) return; // eslint-disable-line no-alert
 
-              getLowestListingPrice(
+              getOrderBook(
                 item.appid,
                 item.market_hash_name,
-              ).then((lowestListingPrice) => {
+              ).then(({ lowestListingPrice }) => {
                 const newPrice = lowestListingPrice > 3 ? lowestListingPrice - 1 : 3;
                 listItem(
                   item.appid,
