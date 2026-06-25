@@ -183,6 +183,37 @@ const getMarketHistory = (start, count) => {
   });
 };
 
+const getMarketHistoryNoRender = (start, count) => {
+  return new Promise((resolve, reject) => {
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+
+    const request = new Request(`https://steamcommunity.com/market/myhistory?norender=1&start=${start}&count=${count}`,
+      {
+        method: 'GET',
+        headers: myHeaders,
+        credentials: 'include',
+      });
+
+    const fetchFunction = getAppropriateFetchFunc();
+
+    fetchFunction(request).then((response) => {
+      if (!response.ok) {
+        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
+        reject({ status: response.status, statusText: response.statusText });
+      }
+      return response.json();
+    }).then((historyJSON) => {
+      if (historyJSON === null) reject('success:false');
+      else if (historyJSON.success === true) resolve(historyJSON);
+      else reject('success:false');
+    }).catch((err) => {
+      console.log(err);
+      reject(err);
+    });
+  });
+};
+
 const loadItemOrderHistogram = (nameID) => {
   return new Promise((resolve, reject) => {
     const myHeaders = new Headers();
@@ -218,5 +249,5 @@ const loadItemOrderHistogram = (nameID) => {
 
 export {
   removeListing, cancelOrder, getMarketHistory, listItem,
-  buyListing, createOrder, loadItemOrderHistogram,
+  buyListing, createOrder, loadItemOrderHistogram, getMarketHistoryNoRender,
 };

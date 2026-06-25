@@ -6,7 +6,7 @@ import {
 } from 'utils/utilsModular';
 import { getItemMarketLink, reloadPageOnExtensionUpdate } from 'utils/simpleUtils';
 import {
-  removeListing, getMarketHistory, cancelOrder, createOrder,
+  removeListing, getMarketHistory, getMarketHistoryNoRender, cancelOrder, createOrder,
 } from 'utils/market';
 import {
   steamFormattedPriceToCents, centsToSteamFormattedPrice, priceQueue,
@@ -26,6 +26,7 @@ const marketHistoryExport = {
 };
 
 let autoLoadPrices = false;
+let marketHistoryBuyerRequestID = 0;
 
 const getWalletAmount = () => {
   return steamFormattedPriceToCents(document.getElementById('header_wallet_balance').innerText);
@@ -109,6 +110,103 @@ const addHistoryStartingAtPriceInfoToPage = (rowID, lowestPrice) => {
              </div>`));
     }
   }
+};
+
+const addBuyerInfoToHistoryRow = (historyRow, buyerSteamID) => {
+  const historyType = getHistoryType(historyRow);
+
+  if (historyType !== 'sale' || !buyerSteamID) {
+    return;
+  }
+
+  const partnerElement = historyRow.querySelector('.market_listing_whoactedwith');
+  if (partnerElement === null || partnerElement.querySelector('.cstBuyerInfo') !== null) {
+    return;
+  }
+
+  partnerElement.insertAdjacentHTML(
+    'beforeend',
+    DOMPurify.sanitize(
+      `<div class="cstBuyerInfo">Buyer: <a href="https://steamcommunity.com/profiles/${buyerSteamID}" target="_blank" rel="noopener noreferrer">${buyerSteamID}</a></div>`,
+      { ADD_ATTR: ['target', 'rel'] },
+    ),
+  );
+};
+
+const getBuyerSteamIDFromEvent = (event, purchases) => {
+  if (!event || !event.listingid || !event.purchaseid) {
+    return null;
+  }
+
+  const purchaseKey = `${event.listingid}_${event.purchaseid}`;
+  const purchaseInfo = purchases && purchases[purchaseKey]
+    ? purchases[purchaseKey]
+    : null;
+
+  if (purchaseInfo && purchaseInfo.steamid_purchaser) {
+    return purchaseInfo.steamid_purchaser;
+  }
+
+  return event.steamid_actor || null;
+};
+
+const getCurrentHistoryPageNumber = () => {
+  const pageRoot = document.getElementById('tabContentsMyMarketHistory');
+  if (pageRoot === null) return 1;
+
+  const candidateSelectors = [
+    '.market_paging_pagelink.active',
+    '.market_paging_pagelink.market_paging_pagelink_active',
+    '.market_paging .active',
+    '.paging_pagelink.active',
+    '.paging_pagelink.current',
+    '.pagebtn.active',
+  ];
+
+  for (let i = 0; i < candidateSelectors.length; i += 1) {
+    const activePageEl = pageRoot.querySelector(candidateSelectors[i]);
+    if (activePageEl !== null) {
+      const parsed = parseInt(activePageEl.textContent.trim());
+      if (!Number.isNaN(parsed) && parsed > 0) {
+        return parsed;
+      }
+    }
+  }
+
+  return 1;
+};
+
+const loadAndApplyBuyerInfoToCurrentHistoryRows = () => {
+  const historyRows = Array.from(
+    document.querySelectorAll('#tabContentsMyMarketHistory .market_listing_row.market_recent_listing_row'),
+  );
+  if (historyRows.length === 0) {
+    return;
+  }
+
+  chrome.storage.local.get(['marketHistoryEventsToShow'], ({ marketHistoryEventsToShow }) => {
+    const pageSize = parseInt(marketHistoryEventsToShow) || historyRows.length;
+    const currentPage = getCurrentHistoryPageNumber();
+    const start = Math.max(0, (currentPage - 1) * pageSize);
+    const requestID = marketHistoryBuyerRequestID + 1;
+    marketHistoryBuyerRequestID = requestID;
+
+    getMarketHistoryNoRender(start, pageSize).then((historyData) => {
+      if (requestID !== marketHistoryBuyerRequestID) {
+        return;
+      }
+
+      historyRows.forEach((historyRow, index) => {
+        const event = historyData.events && historyData.events[index]
+          ? historyData.events[index]
+          : null;
+        const buyerSteamID = getBuyerSteamIDFromEvent(event, historyData.purchases);
+        addBuyerInfoToHistoryRow(historyRow, buyerSteamID);
+      });
+    }).catch((error) => {
+      console.log(error);
+    });
+  });
 };
 
 const addListingStartingAtPricesAndTotal = (sellListings) => {
@@ -628,6 +726,8 @@ if (marketHistoryTab !== null) {
             const historyType = getHistoryType(historyRow);
             historyRow.classList.add(historyType);
           });
+
+        loadAndApplyBuyerInfoToCurrentHistoryRows();
 
         if (!priceQueue.active) workOnPriceQueue();
       }
