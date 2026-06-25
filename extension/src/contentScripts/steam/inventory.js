@@ -1601,73 +1601,97 @@ const addMidPrice = (marketHashName, midPrice, appID, assetID, contextID) => {
   }
 };
 
-const addToPriceQueueIfNeeded = (item) => {
+const addMassSellOrderBookPrices = (job, orderBook) => {
+  const {
+    market_hash_name: marketHashName,
+    appID,
+    assetID,
+    contextID,
+    loadLowestListingPrice,
+    loadInstantSellPrice,
+    loadMidPrice,
+  } = job;
+
+  const listingRow = getListingRow(appID, contextID, marketHashName);
+  if (listingRow === null) return;
+
+  if (loadLowestListingPrice) {
+    const lowestListingPrice = orderBook.lowestListingPrice;
+    if (lowestListingPrice !== null && lowestListingPrice !== undefined) {
+      addStartingAtAndQuickSellPrice(marketHashName, lowestListingPrice, appID, assetID, contextID);
+    } else {
+      const startingAtElement = listingRow.querySelector('.itemStartingAt');
+      const quickSellElement = listingRow.querySelector('.itemQuickSell');
+      startingAtElement.innerText = 'No price';
+      quickSellElement.innerText = 'No price';
+      startingAtElement.setAttribute('data-price-set', true.toString());
+      quickSellElement.setAttribute('data-price-set', true.toString());
+      startingAtElement.setAttribute('data-price-in-cents', '0');
+      quickSellElement.setAttribute('data-price-in-cents', '0');
+      startingAtElement.setAttribute('data-listing-price', '0');
+      quickSellElement.setAttribute('data-listing-price', '0');
+    }
+    listingRow.querySelector('.itemStartingAt').setAttribute('data-price-in-progress', false.toString());
+  }
+
+  if (loadInstantSellPrice) {
+    addInstantSellPrice(marketHashName, orderBook.highestBuyOrder, appID, assetID, contextID);
+  }
+
+  if (loadMidPrice) {
+    addMidPrice(marketHashName, orderBook.midPrice, appID, assetID, contextID);
+  }
+};
+
+const queueMassSellPricesForItem = (item) => {
   const listingRow = getListingRow(item.appid, item.contextid, item.market_hash_name);
+  if (listingRow === null) return;
   const startingAtElement = listingRow.querySelector('.itemStartingAt');
   const instantElement = listingRow.querySelector('.itemInstantSell');
   const midPriceElement = listingRow.querySelector('.itemMidPrice');
   const quickPriceElement = listingRow.querySelector('.itemQuickSell');
 
-  const priceLoadingCheckBoxes = document.querySelector('.priceLoadingCheckboxes');
+  const shouldLoadStartingAt = startingAtElement.getAttribute('data-price-set') !== 'true'
+    && startingAtElement.getAttribute('data-price-in-progress') !== 'true';
 
-  const loadLowestListingPrice = priceLoadingCheckBoxes.querySelector('#lowestListingCheckBox').checked;
-  const loadMidPrice = priceLoadingCheckBoxes.querySelector('#midPriceCheckBox').checked;
-  const loadInstantSellPrice = priceLoadingCheckBoxes.querySelector('#instantSellCheckBox').checked;
+  const shouldLoadInstantSell = instantElement.getAttribute('data-price-set') !== 'true'
+    && instantElement.getAttribute('data-price-in-progress') !== 'true';
 
-  // check if price is already set or in progress
-  if (loadLowestListingPrice && startingAtElement.getAttribute('data-price-set') !== true
-    && startingAtElement.getAttribute('data-price-in-progress') !== true) {
+  const shouldLoadMidPrice = midPriceElement.getAttribute('data-price-set') !== 'true'
+    && midPriceElement.getAttribute('data-price-in-progress') !== 'true';
+
+  if (!shouldLoadStartingAt && !shouldLoadInstantSell && !shouldLoadMidPrice) return;
+
+  if (shouldLoadStartingAt) {
     startingAtElement.setAttribute('data-price-in-progress', true.toString());
     startingAtElement.innerText = 'Loading...';
     quickPriceElement.innerText = 'Loading...';
-
-    priceQueue.jobs.push({
-      type: 'inventory_mass_sell_starting_at',
-      appID: item.appid,
-      contextID: item.contextid,
-      assetID: item.assetid,
-      market_hash_name: item.market_hash_name,
-      retries: 0,
-      callBackFunction: addStartingAtAndQuickSellPrice,
-    });
-    workOnPriceQueue();
+    quickPriceElement.setAttribute('data-price-in-progress', true.toString());
   }
 
-  // check if price is already set or in progress
-  if (loadInstantSellPrice && instantElement.getAttribute('data-price-set') !== true
-    && instantElement.getAttribute('data-price-in-progress') !== true) {
+  if (shouldLoadInstantSell) {
     instantElement.setAttribute('data-price-in-progress', true.toString());
     instantElement.innerText = 'Loading...';
-
-    priceQueue.jobs.push({
-      type: 'inventory_mass_sell_instant_sell',
-      appID: item.appid,
-      contextID: item.contextid,
-      assetID: item.assetid,
-      market_hash_name: item.market_hash_name,
-      retries: 0,
-      callBackFunction: addInstantSellPrice,
-    });
-    workOnPriceQueue();
   }
 
-  // check if price is already set or in progress
-  if (loadMidPrice && midPriceElement.getAttribute('data-price-set') !== true
-    && midPriceElement.getAttribute('data-price-in-progress') !== true) {
+  if (shouldLoadMidPrice) {
     midPriceElement.setAttribute('data-price-in-progress', true.toString());
     midPriceElement.innerText = 'Loading...';
-
-    priceQueue.jobs.push({
-      type: 'inventory_mass_sell_mid_price',
-      appID: item.appid,
-      contextID: item.contextid,
-      assetID: item.assetid,
-      market_hash_name: item.market_hash_name,
-      retries: 0,
-      callBackFunction: addMidPrice,
-    });
-    workOnPriceQueue();
   }
+
+  priceQueue.jobs.push({
+    type: 'inventory_mass_sell_all_prices',
+    appID: item.appid,
+    contextID: item.contextid,
+    assetID: item.assetid,
+    market_hash_name: item.market_hash_name,
+    retries: 0,
+    loadLowestListingPrice: shouldLoadStartingAt,
+    loadInstantSellPrice: shouldLoadInstantSell,
+    loadMidPrice: shouldLoadMidPrice,
+    callBackFunction: addMassSellOrderBookPrices,
+  });
+  workOnPriceQueue();
 };
 
 const updateSelectedItemsSummary = () => {
@@ -1694,7 +1718,6 @@ const updateSelectedItemsSummary = () => {
 
       if (listingRow === null) {
         addListingRow(item);
-        addToPriceQueueIfNeeded(item);
       } else {
         const previIDs = listingRow.getAttribute('data-ids');
         if (!previIDs.includes(`${item.appid}_${item.contextid}_${item.assetid}`)) {
@@ -2011,14 +2034,14 @@ const addFunctionBar = () => {
                                 <div class="cell" title="Price specified by you">Your price</div>
                               </div>
                               <div class="rowGroup"></div>
-                              <div class="priceLoadingCheckboxes row">
-                                <div class="cell" title="Tick the boxes where you want prices loaded">Load prices for:</div>
+                              <div class="row">
+                                <div class="cell" style="text-align: left;"><span id="loadMassListingPrices" class="clickable underline">Load Prices</span></div>
                                 <div class="cell"></div>
                                 <div class="cell"></div>
-                                <div class="cell"><input type="checkbox" id="lowestListingCheckBox"/></div>
-                                <div class="cell">Based on startint at</div>
-                                <div class="cell"><input type="checkbox" id="midPriceCheckBox"/></div>
-                                <div class="cell"><input type="checkbox" id="instantSellCheckBox"/></div>
+                                <div class="cell"></div>
+                                <div class="cell"></div>
+                                <div class="cell"></div>
+                                <div class="cell"></div>
                                 <div class="cell"></div>
                               </div>
                           </div>
@@ -2096,35 +2119,16 @@ const addFunctionBar = () => {
         startMassSelling();
       });
 
-    document.querySelectorAll('#lowestListingCheckBox, #midPriceCheckBox, #instantSellCheckBox').forEach((checkBox) => {
-      checkBox.addEventListener('change', (event) => {
-        if (event.target.checked) {
-          for (const listingRow of document.getElementById('listingTable').querySelector('.rowGroup').querySelectorAll('.row')) {
-            const ID = listingRow.getAttribute('data-ids').split(',')[0];
+    document.getElementById('loadMassListingPrices').addEventListener('click', () => {
+      for (const listingRow of document.getElementById('listingTable').querySelector('.rowGroup').querySelectorAll('.row')) {
+        const ID = listingRow.getAttribute('data-ids').split(',')[0];
+        const appid = ID.split('_')[0];
+        const contextid = ID.split('_')[1];
+        const assetid = ID.split('_')[2];
+        const item = getItemByIDs(items, appid, contextid, assetid);
 
-            addToPriceQueueIfNeeded({
-              market_hash_name: listingRow.getAttribute('data-item-name').split('_')[2],
-              appid: ID.split('_')[0],
-              contextid: ID.split('_')[1],
-              assetid: ID.split('_')[2],
-            });
-          }
-        } else {
-          let type = '';
-
-          if (event.target.id === 'lowestListingCheckBox') {
-            type = 'inventory_mass_sell_starting_at';
-          } else if (event.target.id === 'midPriceCheckBox') {
-            type = 'inventory_mass_sell_mid_price';
-          } else if (event.target.id === 'instantSellCheckBox') {
-            type = 'inventory_mass_sell_instant_sell';
-          }
-
-          priceQueue.jobs = priceQueue.jobs.filter((job) => {
-            return job.type !== type;
-          });
-        }
-      });
+        if (item) queueMassSellPricesForItem(item);
+      }
     });
 
     document.getElementById('stopSale').setAttribute('data-stopped', 'true');

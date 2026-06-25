@@ -155,15 +155,13 @@ const priceQueueCacheHit = () => {
 
 const isBidPriceJob = (type) => {
   return type === 'my_buy_order'
-    || type === 'inventory_mass_sell_instant_sell'
     || type === `offer_${realTimePricingModes.bid_price.key}`
     || type === `offers_${realTimePricingModes.bid_price.key}`
     || type === `inventory_${realTimePricingModes.bid_price.key}`;
 };
 
 const isAskPriceJob = (type) => {
-  return type === 'inventory_mass_sell_starting_at'
-    || type === `offer_${realTimePricingModes.ask_price.key}`
+  return type === `offer_${realTimePricingModes.ask_price.key}`
     || type === `offers_${realTimePricingModes.ask_price.key}`
     || type === `inventory_${realTimePricingModes.ask_price.key}`
     || type === 'my_listing'
@@ -173,13 +171,15 @@ const isAskPriceJob = (type) => {
 const isMidPriceJob = (type) => {
   return type === `offer_${realTimePricingModes.mid_price.key}`
     || type === `offers_${realTimePricingModes.mid_price.key}`
-    || type === `inventory_${realTimePricingModes.mid_price.key}`
-    || type === 'inventory_mass_sell_mid_price';
+    || type === `inventory_${realTimePricingModes.mid_price.key}`;
 };
+
+const isOrderBookPayloadJob = (type) => type === 'inventory_mass_sell_all_prices';
 
 const getPriceQueueCacheKey = (job) => job.appID + job.market_hash_name + job.type;
 
 const getOrderBookPriceForJob = (jobType, orderBook) => {
+  if (isOrderBookPayloadJob(jobType)) return orderBook;
   if (isBidPriceJob(jobType)) return orderBook.highestBuyOrder;
   if (isAskPriceJob(jobType)) return orderBook.lowestListingPrice;
   if (isMidPriceJob(jobType)) return orderBook.midPrice;
@@ -187,7 +187,9 @@ const getOrderBookPriceForJob = (jobType, orderBook) => {
 };
 
 const callPriceQueueCallback = (job, price) => {
-  if (job.type === 'my_buy_order') {
+  if (isOrderBookPayloadJob(job.type)) {
+    job.callBackFunction(job, price);
+  } else if (job.type === 'my_buy_order') {
     job.callBackFunction(job, price);
   } else if (job.type === 'my_listing') {
     job.callBackFunction(job.listingID, price);
@@ -207,6 +209,7 @@ const callPriceQueueCallback = (job, price) => {
 };
 
 const getQueuePriceMissingError = (jobType) => {
+  if (isOrderBookPayloadJob(jobType)) return 'no_order_book_data';
   if (isBidPriceJob(jobType)) return 'highestBuyOrder is undefined';
   if (isAskPriceJob(jobType)) return 'lowest_price is undefined';
   if (isMidPriceJob(jobType)) return 'highest_order_undef_or_null';
@@ -227,7 +230,8 @@ const workOnPriceQueue = () => {
           if (job.retries < 5) { // limits the number of retries to avoid infinite loop
             const supportedType = isBidPriceJob(job.type)
               || isAskPriceJob(job.type)
-              || isMidPriceJob(job.type);
+              || isMidPriceJob(job.type)
+              || isOrderBookPayloadJob(job.type);
 
             if (!supportedType) {
               priceQueueFailure('unsupported_job_type', job);
