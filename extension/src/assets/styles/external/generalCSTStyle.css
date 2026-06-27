@@ -226,6 +226,8 @@ progress {
 
 .realMoneySiteLink {
     font-size: 1.1rem;
+    color: white;
+    text-decoration: none
 }
 
 .realMoneyMarketTitle {

@@ -42,25 +42,39 @@ import { overrideCreatePriceHistoryGraph } from 'utils/steamOverriding';
 import { listenToAcceptTrade } from 'utils/tradeOffers';
 
 const dopplerPhase = '<div class="dopplerPhaseMarket"><span></span></div>';
-const isCommodityItem = document.querySelector('.market_commodity_order_block') !== null;
-
-let weaponName = '';
-const appID = decodeURIComponent(window.location.pathname).split('/listings/')[1].split('/')[0];
-const fullName = decodeURIComponent(window.location.pathname).split('/listings/')[1].split('/')[1];
-let star = '';
-const isStattrak = /StatTrak™/.test(fullName);
-const isSouvenir = /Souvenir/.test(fullName);
+const isNewMarketDesign = document.querySelector('.market_listing_table_header') === null;
 const knifeNames = ['Knife', 'Bayonet', 'Karambit', 'M9 Bayonet'];
-const isVanillaKnife = !fullName.includes('(') && knifeNames.includes('Knife');
+let isCommodityItem = false;
+let appID = '730'; // temp
+let weaponName = '';
+let fullName = '';
+let star = '';
+let isStattrak = false;
+let isSouvenir = false;
+let isVanillaKnife = false;
+let isCharm = false;
 
-const isCharm = fullName.startsWith('Charm |');
+if (!isNewMarketDesign) {
+  isCommodityItem = document.querySelector('.market_commodity_order_block') !== null;
+  appID = decodeURIComponent(window.location.pathname).split('/listings/')[1].split('/')[0];
+  fullName = decodeURIComponent(window.location.pathname).split('/listings/')[1].split('/')[1];
+  isStattrak = /StatTrak™/.test(fullName);
+  isSouvenir = /Souvenir/.test(fullName);
+  isVanillaKnife = !fullName.includes('(') && knifeNames.includes('Knife');
+  isCharm = fullName.startsWith('Charm |');
 
-if (fullName.includes('★')) star = starChar;
-if (isStattrak) weaponName = fullName.split('StatTrak™ ')[1].split('(')[0];
-else if (isSouvenir) weaponName = fullName.split('Souvenir ')[1].split('(')[0];
-else {
-  weaponName = fullName.split('(')[0].split('★ ')[1];
-  if (weaponName === undefined) weaponName = fullName.split('(')[0];
+  if (fullName.includes('★')) star = starChar;
+  if (isStattrak) weaponName = fullName.split('StatTrak™ ')[1].split('(')[0];
+  else if (isSouvenir) weaponName = fullName.split('Souvenir ')[1].split('(')[0];
+  else {
+    weaponName = fullName.split('(')[0].split('★ ')[1];
+    if (weaponName === undefined) weaponName = fullName.split('(')[0];
+  }
+} else {
+  const nameElement = document.querySelector('span a[href^="https://steamcommunity.com/market/listings/730/"]');
+  if (nameElement) {
+    fullName = nameElement.textContent; // not market hash name like it used to be
+  }
 }
 
 const getElementByListingID = (listingID) => {
@@ -871,66 +885,67 @@ const addDescriptorDependentElements = (descriptor) => {
 };
 
 logExtensionPresence();
-refreshSteamAccessToken();
-updateWalletCurrency();
-updateLoggedInUserInfo();
-updateLoggedInUserName();
 addUpdatedRibbon();
-changePageTitle('market_listing', fullName);
-overrideCreatePriceHistoryGraph();
-listenToAcceptTrade();
 reloadPageOnExtensionUpdate();
 
-const descriptorInterval = setInterval(() => {
-  const descriptor = getDescriptor();
-  if (descriptor) {
-    clearInterval(descriptorInterval);
-    addDescriptorDependentElements(descriptor);
-  }
-}, 200);
+if (!isNewMarketDesign) {
+  changePageTitle('market_listing', fullName);
+  overrideCreatePriceHistoryGraph();
+  listenToAcceptTrade();
+  refreshSteamAccessToken();
+  updateWalletCurrency();
+  updateLoggedInUserInfo();
+  updateLoggedInUserName();
+  const descriptorInterval = setInterval(() => {
+    const descriptor = getDescriptor();
+    if (descriptor) {
+      clearInterval(descriptorInterval);
+      addDescriptorDependentElements(descriptor);
+    }
+  }, 200);
 
-// adds sorting menu to market pages with individual listings
-const searchBar = document.querySelector('.market_listing_filter_contents');
-if (searchBar !== null) {
-  searchBar.insertAdjacentHTML('beforeend',
-    DOMPurify.sanitize(
-      `<div class="market_sorting">
+  // adds sorting menu to market pages with individual listings
+  const searchBar = document.querySelector('.market_listing_filter_contents');
+  if (searchBar !== null) {
+    searchBar.insertAdjacentHTML('beforeend',
+      DOMPurify.sanitize(
+        `<div class="market_sorting">
              <span class="market_listing_filter_searchhint">Sort on page by:</span>
              <select id="sortSelect">
               
              </select>
            </div>`,
-    ));
+      ));
 
-  const sortingSelect = document.getElementById('sortSelect');
-  for (const mode of Object.values(listingsSortingModes)) {
-    const option = document.createElement('option');
-    option.value = mode.key;
-    option.innerText = mode.name;
-    sortingSelect.insertAdjacentElement('beforeend', option);
+    const sortingSelect = document.getElementById('sortSelect');
+    for (const mode of Object.values(listingsSortingModes)) {
+      const option = document.createElement('option');
+      option.value = mode.key;
+      option.innerText = mode.name;
+      sortingSelect.insertAdjacentElement('beforeend', option);
+    }
+
+    chrome.storage.local.get('marketListingsDefaultSorting', ({ marketListingsDefaultSorting }) => {
+      sortingSelect.value = marketListingsDefaultSorting;
+      sortListings(marketListingsDefaultSorting);
+      sortingSelect.addEventListener(
+        'change',
+        () => {
+          sortListings(sortingSelect.value);
+        },
+      );
+    });
   }
 
-  chrome.storage.local.get('marketListingsDefaultSorting', ({ marketListingsDefaultSorting }) => {
-    sortingSelect.value = marketListingsDefaultSorting;
-    sortListings(marketListingsDefaultSorting);
-    sortingSelect.addEventListener(
-      'change',
-      () => {
-        sortListings(sortingSelect.value);
-      },
-    );
-  });
-}
+  // adds custom buy order buttons/inputs
+  const buyOrderInfoEl = isCommodityItem === true
+    ? document.getElementById('market_activity_section')
+    : document.getElementById('market_buyorder_info');
 
-// adds custom buy order buttons/inputs
-const buyOrderInfoEl = isCommodityItem === true
-  ? document.getElementById('market_activity_section')
-  : document.getElementById('market_buyorder_info');
-
-if (buyOrderInfoEl !== null) {
-  buyOrderInfoEl.firstElementChild.insertAdjacentHTML(
-    'beforeend',
-    DOMPurify.sanitize(`
+  if (buyOrderInfoEl !== null) {
+    buyOrderInfoEl.firstElementChild.insertAdjacentHTML(
+      'beforeend',
+      DOMPurify.sanitize(`
         <div style="float: right; padding-right: 10px; color: white">
             <a id="place_highest_order" class="btn_green_white_innerfade btn_medium market_noncommodity_buyorder_button" style="margin-right: 5px">
             <span>Place highest order</span>
@@ -944,26 +959,48 @@ if (buyOrderInfoEl !== null) {
             <input type="number" value="1" id="quick_order_qt" style="width: 30px; margin-right: 5px"/>
         </div>
     `),
-  );
+    );
 
-  // repositions expandable details so it does not overlap with the custom buttons
-  if (!isCommodityItem) {
-    document.getElementById('market_buyorder_info_details').style['margin-top'] = '45px';
-  } else {
-    const recentActivityEl = document.getElementById('market_activity_block');
-    if (recentActivityEl !== null) {
-      recentActivityEl.style.overflow = 'visible';
-      recentActivityEl.style['margin-top'] = '20px';
+    // repositions expandable details so it does not overlap with the custom buttons
+    if (!isCommodityItem) {
+      document.getElementById('market_buyorder_info_details').style['margin-top'] = '45px';
+    } else {
+      const recentActivityEl = document.getElementById('market_activity_block');
+      if (recentActivityEl !== null) {
+        recentActivityEl.style.overflow = 'visible';
+        recentActivityEl.style['margin-top'] = '20px';
+      }
     }
-  }
 
-  document.getElementById('place_highest_order').addEventListener('click', () => {
-    getOrderBook(appID, fullName).then(({ highestBuyOrder }) => {
+    document.getElementById('place_highest_order').addEventListener('click', () => {
+      getOrderBook(appID, fullName).then(({ highestBuyOrder }) => {
+        createOrder(
+          appID,
+          fullName,
+          parseInt(highestBuyOrder) + 1,
+          1,
+          getBuyerKYCFromPage(),
+        ).then(() => {
+          window.location.reload();
+        }).catch((err) => {
+          console.log(err);
+          buyOrderInfoEl.insertAdjacentHTML(
+            'beforeend',
+            `<div class="marketListingBuyOrderError">${err}</div>`,
+          );
+        });
+      });
+    });
+
+    document.getElementById('quick_place_order').addEventListener('click', () => {
+      const quantity = parseInt(document.getElementById('quick_order_qt').value);
+      const pricePerItem = parseInt(steamFormattedPriceToCents(document.getElementById('quick_order_price').value));
+
       createOrder(
         appID,
         fullName,
-        parseInt(highestBuyOrder) + 1,
-        1,
+        pricePerItem,
+        quantity,
         getBuyerKYCFromPage(),
       ).then(() => {
         window.location.reload();
@@ -975,134 +1012,112 @@ if (buyOrderInfoEl !== null) {
         );
       });
     });
-  });
+  }
 
-  document.getElementById('quick_place_order').addEventListener('click', () => {
-    const quantity = parseInt(document.getElementById('quick_order_qt').value);
-    const pricePerItem = parseInt(steamFormattedPriceToCents(document.getElementById('quick_order_price').value));
+  // remove all listings button when there are listings
+  const myACtiveListingsEl = document.getElementById('tabContentsMyActiveMarketListingsRows');
+  if (myACtiveListingsEl) {
+    const removeColumnHeader = document.querySelector('span.market_listing_right_cell.market_listing_edit_buttons.placeholder');
+    removeColumnHeader.classList.add('clickable');
+    removeColumnHeader.textContent = 'REMOVE ALL';
 
-    createOrder(
-      appID,
-      fullName,
-      pricePerItem,
-      quantity,
-      getBuyerKYCFromPage(),
-    ).then(() => {
-      window.location.reload();
-    }).catch((err) => {
-      console.log(err);
-      buyOrderInfoEl.insertAdjacentHTML(
-        'beforeend',
-        `<div class="marketListingBuyOrderError">${err}</div>`,
-      );
+    removeColumnHeader.addEventListener('click', () => {
+      const listingIDsToRemove = [];
+
+      myACtiveListingsEl.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((activeListingRow) => {
+        listingIDsToRemove.push(getMyListingIDFromElement(activeListingRow));
+      });
+
+      const removeListingsInterval = setInterval(() => {
+        if (listingIDsToRemove.length > 0) {
+          const listingToRemove = listingIDsToRemove.pop();
+
+          removeListing(listingToRemove).then(
+            () => {
+              getElementByMyListingID(listingToRemove).remove();
+            },
+          );
+        } else clearInterval(removeListingsInterval);
+      }, 1000);
     });
-  });
-}
+  }
 
-// remove all listings button when there are listings
-const myACtiveListingsEl = document.getElementById('tabContentsMyActiveMarketListingsRows');
-if (myACtiveListingsEl) {
-  const removeColumnHeader = document.querySelector('span.market_listing_right_cell.market_listing_edit_buttons.placeholder');
-  removeColumnHeader.classList.add('clickable');
-  removeColumnHeader.textContent = 'REMOVE ALL';
+  // show all orders
+  const buyOrdersDiv = document.getElementById('market_commodity_buyreqeusts_table');
 
-  removeColumnHeader.addEventListener('click', () => {
-    const listingIDsToRemove = [];
+  const buyOrderShowAll = isCommodityItem
+    ? '<div id="show_more_buy" class="btn_grey_black btn_medium"><span>Show All</span></div>'
+    : '<div style="text-align: center;"><div id="show_more_buy" class="btn_grey_black btn_medium"><span>Show All</span></div></div>';
+  if (buyOrdersDiv) buyOrdersDiv.insertAdjacentHTML('afterend', buyOrderShowAll);
 
-    myACtiveListingsEl.querySelectorAll('.market_listing_row.market_recent_listing_row').forEach((activeListingRow) => {
-      listingIDsToRemove.push(getMyListingIDFromElement(activeListingRow));
+  const showMoreBuy = document.getElementById('show_more_buy');
+
+  if (showMoreBuy) {
+    showMoreBuy.addEventListener('click', () => {
+      showAllOrders('buy');
+    });
+  }
+
+  // only commodity items have sell orders
+  if (isCommodityItem) {
+    const sellOrdersDiv = document.getElementById('market_commodity_forsale_table');
+    sellOrdersDiv.insertAdjacentHTML('afterend', '<div id="show_more_sell" class="btn_grey_black btn_medium"><span>Show All</span></div>');
+
+    document.getElementById('show_more_sell').addEventListener('click', () => {
+      showAllOrders('sell');
     });
 
-    const removeListingsInterval = setInterval(() => {
-      if (listingIDsToRemove.length > 0) {
-        const listingToRemove = listingIDsToRemove.pop();
+    // makes container items into market search links
+    if (fullName.includes('Case') || fullName.includes('Capsule') || capsuleNamesWithNoCapsuleInName.includes(fullName)) {
+      const descriptors = document.getElementById('largeiteminfo_item_descriptors');
+      if (descriptors !== null) {
+        const qualityRBGS = [
+          'rgb(75, 105, 255)',
+          'rgb(136, 71, 255)',
+          'rgb(211, 44, 230)',
+          'rgb(235, 75, 75)',
+        ];
 
-        removeListing(listingToRemove).then(
-          () => {
-            getElementByMyListingID(listingToRemove).remove();
-          },
-        );
-      } else clearInterval(removeListingsInterval);
-    }, 1000);
-  });
-}
-
-// show all orders
-const buyOrdersDiv = document.getElementById('market_commodity_buyreqeusts_table');
-
-const buyOrderShowAll = isCommodityItem
-  ? '<div id="show_more_buy" class="btn_grey_black btn_medium"><span>Show All</span></div>'
-  : '<div style="text-align: center;"><div id="show_more_buy" class="btn_grey_black btn_medium"><span>Show All</span></div></div>';
-if (buyOrdersDiv) buyOrdersDiv.insertAdjacentHTML('afterend', buyOrderShowAll);
-
-const showMoreBuy = document.getElementById('show_more_buy');
-
-if (showMoreBuy) {
-  showMoreBuy.addEventListener('click', () => {
-    showAllOrders('buy');
-  });
-}
-
-// only commodity items have sell orders
-if (isCommodityItem) {
-  const sellOrdersDiv = document.getElementById('market_commodity_forsale_table');
-  sellOrdersDiv.insertAdjacentHTML('afterend', '<div id="show_more_sell" class="btn_grey_black btn_medium"><span>Show All</span></div>');
-
-  document.getElementById('show_more_sell').addEventListener('click', () => {
-    showAllOrders('sell');
-  });
-
-  // makes container items into market search links
-  if (fullName.includes('Case') || fullName.includes('Capsule') || capsuleNamesWithNoCapsuleInName.includes(fullName)) {
-    const descriptors = document.getElementById('largeiteminfo_item_descriptors');
-    if (descriptors !== null) {
-      const qualityRBGS = [
-        'rgb(75, 105, 255)',
-        'rgb(136, 71, 255)',
-        'rgb(211, 44, 230)',
-        'rgb(235, 75, 75)',
-      ];
-
-      descriptors.querySelectorAll('.descriptor').forEach((descriptorEl) => {
-        if (descriptorEl.style !== '' && qualityRBGS.includes(descriptorEl.style.color)) {
-          const itemName = descriptorEl.innerText;
-          descriptorEl.innerHTML = DOMPurify.sanitize(
-            `<a href="https://steamcommunity.com/market/search?q=${itemName}&appid=730" style="color: ${descriptorEl.style.color}">
+        descriptors.querySelectorAll('.descriptor').forEach((descriptorEl) => {
+          if (descriptorEl.style !== '' && qualityRBGS.includes(descriptorEl.style.color)) {
+            const itemName = descriptorEl.innerText;
+            descriptorEl.innerHTML = DOMPurify.sanitize(
+              `<a href="https://steamcommunity.com/market/search?q=${itemName}&appid=730" style="color: ${descriptorEl.style.color}">
                     ${itemName}
                   </a>`,
-          );
-        }
-      });
-    }
-  } else if (fullName.includes('Sticker')) {
-    const descriptors = document.getElementById('largeiteminfo_item_descriptors');
-    if (descriptors !== null) {
-      descriptors.insertAdjacentHTML(
-        'beforeend',
-        DOMPurify.sanitize(
-          `<a href="https://steamcommunity.com/market/search?q=${fullName.split('Sticker | ')[1]}&appid=730">
+            );
+          }
+        });
+      }
+    } else if (fullName.includes('Sticker')) {
+      const descriptors = document.getElementById('largeiteminfo_item_descriptors');
+      if (descriptors !== null) {
+        descriptors.insertAdjacentHTML(
+          'beforeend',
+          DOMPurify.sanitize(
+            `<a href="https://steamcommunity.com/market/search?q=${fullName.split('Sticker | ')[1]}&appid=730">
                     Look up similar stickers
                 </a>`,
-        ),
-      );
+          ),
+        );
+      }
     }
-  }
-} else {
-  // adds "buy and sell orders" chart to non-commodity items
-  chrome.storage.local.get(
-    ['marketShowBuySellNonCommodity', 'marketShowRecentActivityNonCommodity'],
-    ({ marketShowBuySellNonCommodity, marketShowRecentActivityNonCommodity }) => {
-      const listingItemInfoEl = document.querySelector('.market_listing_iteminfo');
-      const myListingsEl = document.getElementById('myListings');
-      if (listingItemInfoEl !== null && myListingsEl !== null) {
-        if (marketShowBuySellNonCommodity) {
-          listingItemInfoEl.insertAdjacentHTML('beforeend', '<div id="orders_histogram" style="margin-top:20px"></div>');
-        }
+  } else {
+    // adds "buy and sell orders" chart to non-commodity items
+    chrome.storage.local.get(
+      ['marketShowBuySellNonCommodity', 'marketShowRecentActivityNonCommodity'],
+      ({ marketShowBuySellNonCommodity, marketShowRecentActivityNonCommodity }) => {
+        const listingItemInfoEl = document.querySelector('.market_listing_iteminfo');
+        const myListingsEl = document.getElementById('myListings');
+        if (listingItemInfoEl !== null && myListingsEl !== null) {
+          if (marketShowBuySellNonCommodity) {
+            listingItemInfoEl.insertAdjacentHTML('beforeend', '<div id="orders_histogram" style="margin-top:20px"></div>');
+          }
 
-        if (marketShowRecentActivityNonCommodity) {
-          myListingsEl.insertAdjacentHTML(
-            'beforebegin',
-            `
+          if (marketShowRecentActivityNonCommodity) {
+            myListingsEl.insertAdjacentHTML(
+              'beforebegin',
+              `
                 <hr>
                 <div id="market_activity_section">
                     <h3 class="market_activity_header">Recent activity</h3>
@@ -1110,48 +1125,99 @@ if (isCommodityItem) {
                         <div id="market_activity_waiting_text">Waiting for new activity...</div>
                     </div>
                 </div>`,
-          );
-        }
+            );
+          }
 
-        if (marketShowBuySellNonCommodity || marketShowRecentActivityNonCommodity) {
-          const startTickerScript = `ItemActivityTicker.Start(${getNameID()});`;
-          injectScript(startTickerScript, false, 'startTicker', false);
+          if (marketShowBuySellNonCommodity || marketShowRecentActivityNonCommodity) {
+            const startTickerScript = `ItemActivityTicker.Start(${getNameID()});`;
+            injectScript(startTickerScript, false, 'startTicker', false);
+          }
+        }
+      },
+    );
+  }
+
+  // reload page on failure
+  chrome.storage.local.get(['reloadListingOnError'], ({ reloadListingOnError }) => {
+    if (reloadListingOnError) {
+      const tableMessage = document.querySelector('.market_listing_table_message');
+      const largeItemImage = document.querySelector('.market_listing_largeimage');
+      // the table message includes an error message when the page failed to load
+      // it should not be there otherwise, but for some reason it's not reliable
+      // so check if the item image is's there too
+      if (tableMessage !== null && largeItemImage === null) {
+        setTimeout(() => {
+          // buggy right now, wait for an error page to fix it...
+          // window.location.reload();
+        }, 5000);
+      }
+    }
+  });
+
+  chrome.storage.local.get(['numberOfListings', 'marketEnhanceStickers'], ({ numberOfListings, marketEnhanceStickers }) => {
+    const numberOfListingsInt = parseInt(numberOfListings);
+    // eslint-disable-next-line no-restricted-globals
+    if (!isNaN(numberOfListingsInt) && numberOfListingsInt !== 10) {
+      injectScriptAsFile('MarketPageSizeGoToPage', 'MarketPageSizeGoToPageScript', { numberOfListingsInt });
+    } else addPerListingStuff(marketEnhanceStickers);
+
+    let observerLastTriggered = Date.now() - 1001;
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.target.id === 'searchResultsRows'
+          && mutation.addedNodes.length > 0) {
+          // to avoid executing this lots of times
+          // at least a second has to pass since the last one
+          if (Date.now() > observerLastTriggered + 1000) {
+            addPerListingStuff(marketEnhanceStickers);
+          }
+          observerLastTriggered = Date.now();
         }
       }
-    },
-  );
+    });
+
+    const searchResultsRows = document.getElementById('searchResultsRows');
+    if (searchResultsRows !== null) {
+      observer.observe(searchResultsRows, {
+        subtree: false,
+        attributes: false,
+        childList: true,
+      });
+    }
+
+    // the csgofloat extension breaks seen listings highlighting,
+    // this is a workaround to fix it with more retries
+    if (csgoFloatExtPresent()) {
+      let counter = 0;
+
+      const overwriteFloatExtensionInterval = setInterval(() => {
+        if (counter < 10) {
+          counter += 1;
+          highlightSeen();
+        } else clearInterval(overwriteFloatExtensionInterval);
+      }, 2000);
+    }
+  });
 }
 
-// reload page on failure
-chrome.storage.local.get(['reloadListingOnError'], ({ reloadListingOnError }) => {
-  if (reloadListingOnError) {
-    const tableMessage = document.querySelector('.market_listing_table_message');
-    const largeItemImage = document.querySelector('.market_listing_largeimage');
-    // the table message includes an error message when the page failed to load
-    // it should not be there otherwise, but for some reason it's not reliable
-    // so check if the item image is's there too
-    if (tableMessage !== null && largeItemImage === null) {
-      setTimeout(() => {
-        // buggy right now, wait for an error page to fix it...
-        // window.location.reload();
-      }, 5000);
-    }
-  }
-});
+// I guess it takes time for the required elements to load, so wait a bit before adding the links
+setTimeout(() => {
+  chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }) => {
+    if (showRealMoneySiteLinks
+      && (appID === steamApps.CSGO.appID || appID === steamApps.DOTA2.appID
+        || appID === steamApps.TF2.appID || appID === steamApps.RUST.appID
+        || appID === steamApps.Z1.appID)) {
+      const elementToInsertTo = isNewMarketDesign
+        ? document.querySelector('img[src="https://cdn.fastly.steamstatic.com/steamcommunity/public/images/apps/730/8dbc71957312bbd3baea65848b545be9eae2a355.jpg"]').parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode
+        : isCommodityItem // old market design
+          ? document.querySelector('.market_commodity_order_block')
+          : document.getElementById('largeiteminfo_warning');
+      const placeMent = isNewMarketDesign ? 'afterend' : 'beforebegin';
 
-chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }) => {
-  if (showRealMoneySiteLinks
-    && (appID === steamApps.CSGO.appID || appID === steamApps.DOTA2.appID
-      || appID === steamApps.TF2.appID || appID === steamApps.RUST.appID
-      || appID === steamApps.Z1.appID)) {
-    const elementToInsertTo = isCommodityItem
-      ? document.querySelector('.market_commodity_order_block')
-      : document.getElementById('largeiteminfo_warning');
-
-    if (elementToInsertTo !== null) {
-      elementToInsertTo.insertAdjacentHTML(
-        'beforebegin',
-        `<div>
+      if (elementToInsertTo !== null) {
+        elementToInsertTo.insertAdjacentHTML(
+          placeMent,
+          `<div>
                 <span class="realMoneyMarketTitle">You can save money (20-35%) by buying this item on one of these trusted markets for "real money":</span>
                 <div class="realMoneySites">
                   <div class="realMoneySite">
@@ -1223,13 +1289,6 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                   </div>
                 </div>
                 <div class="realMoneySites">
-                    <div class="realMoneySite">
-                      <a href="https://bitskins.com/market/csgo?ref_alias=csgotrader" target="_blank" class="realMoneySiteLink referralLink" data-site="bitskins">
-                        <img alt="Bitskins logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/bitskins.png')}" data-site="bitskins">
-                        <br>
-                        Bitskins.com
-                      </a>
-                    </div>
                     <div class="realMoneySite">
                       <a href="https://dmarket.com/?ref=hJEDYLBTsV" target="_blank" class="realMoneySiteLink referralLink" data-site="dmarket">
                           <img alt="Dmarket logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/dmarket.png')}" data-site="dmarket">
@@ -1304,7 +1363,6 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       <a href="https://p.skin.place/cs2trader" target="_blank" class="referralLink" data-site="skinplace">Skin.Place</a>,
                       <a href="https://white.market/item?appId=730&nameHash=${encodeURIComponent(fullName)}&ref=53cecef4a02f6fc1" target="_blank" class="referralLink" data-site="whitemarket">White.Market</a>,
                       <a href="https://skinflow.gg/buy?search=${weaponName}&referral=GERYTRADING" target="_blank" class="referralLink" data-site="skinflow">SkinFlow.gg</a>,
-                      <a href="bskn.co/?ref_alias=xcW4c_phcUc" target="_blank" class="referralLink" data-site="bitskins">Bitskins</a> and 
                       <a href="https://csfloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csfloat">
                       CSFloat
                       </a>
@@ -1312,9 +1370,6 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                       You can save money by buying items there instead of the market. <br>
                       <a href="https://skinport.com/market/${appID}?search=${fullName}&r=gery" target="_blank" class="referralLink" data-site="skinport">
                           Follow this link to check listings for his item on Skinport.com
-                      </a>,
-                      <a href="https://bitskins.com/market/csgo?ref_alias=csgotrader" target="_blank" class="referralLink" data-site="bitskins">
-                          this one for Bitskins.com
                       </a>,
                       <a href="https://csfloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csfloat">
                       this one and find your desired items on CSFloat's peer to peer market
@@ -1334,56 +1389,12 @@ chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }
                     </div>
                 </div>
             </div>`,
-      );
+        );
 
-      document.getElementById('realMoneyExpand').addEventListener('click', () => {
-        document.getElementById('realMoneyMoreInfo').classList.remove('doHide');
-      });
-    }
-  }
-});
-
-chrome.storage.local.get(['numberOfListings', 'marketEnhanceStickers'], ({ numberOfListings, marketEnhanceStickers }) => {
-  const numberOfListingsInt = parseInt(numberOfListings);
-  // eslint-disable-next-line no-restricted-globals
-  if (!isNaN(numberOfListingsInt) && numberOfListingsInt !== 10) {
-    injectScriptAsFile('MarketPageSizeGoToPage', 'MarketPageSizeGoToPageScript', { numberOfListingsInt });
-  } else addPerListingStuff(marketEnhanceStickers);
-
-  let observerLastTriggered = Date.now() - 1001;
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      if (mutation.target.id === 'searchResultsRows'
-        && mutation.addedNodes.length > 0) {
-        // to avoid executing this lots of times
-        // at least a second has to pass since the last one
-        if (Date.now() > observerLastTriggered + 1000) {
-          addPerListingStuff(marketEnhanceStickers);
-        }
-        observerLastTriggered = Date.now();
+        document.getElementById('realMoneyExpand').addEventListener('click', () => {
+          document.getElementById('realMoneyMoreInfo').classList.remove('doHide');
+        });
       }
     }
   });
-
-  const searchResultsRows = document.getElementById('searchResultsRows');
-  if (searchResultsRows !== null) {
-    observer.observe(searchResultsRows, {
-      subtree: false,
-      attributes: false,
-      childList: true,
-    });
-  }
-
-  // the csgofloat extension breaks seen listings highlighting,
-  // this is a workaround to fix it with more retries
-  if (csgoFloatExtPresent()) {
-    let counter = 0;
-
-    const overwriteFloatExtensionInterval = setInterval(() => {
-      if (counter < 10) {
-        counter += 1;
-        highlightSeen();
-      } else clearInterval(overwriteFloatExtensionInterval);
-    }, 2000);
-  }
-});
+}, 500);
