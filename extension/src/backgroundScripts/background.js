@@ -63,6 +63,11 @@ chrome.runtime.onInstalled.addListener((details) => {
         // so the site bot list gets updated
         if (result[storageKey] === undefined || storageKey === 'legitSiteBotGroup') {
           chrome.storage.local.set({ [storageKey]: storageValue }, () => { });
+        } else if (storageKey === 'pricingProvider' && storageValue === 'bitskins') { // after 3.6.1, it can be removed later
+          chrome.storage.local.set({
+            [storageKey]: 'csgotrader',
+            pricingMode: 'csgotrader',
+          }, () => { });
         }
       }
     });
