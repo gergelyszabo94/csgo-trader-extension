@@ -41,6 +41,7 @@ let showContrastingLook = true;
 let pricEmpireAction = false;
 let buffAction = false;
 let floatAction = false;
+let hideOtherExtensions = true;
 let yourInventory = null;
 let theirInventory = null;
 const combinedInventories = [];
@@ -208,6 +209,24 @@ const removeSIHStuff = () => {
   document.querySelectorAll('.des-tag, .p-price, .price-tag, .item-info, .sih_item_sticker').forEach((element) => {
     element.remove();
   });
+};
+
+// the market csgo extension replaces the whole page content
+// this removes that and restores the original
+const restoreSteamTradeOfferContent = () => {
+  const responsiveContent = document.getElementById('responsive_page_template_content');
+  if (responsiveContent === null) return;
+
+  responsiveContent.querySelectorAll('.pagecontent.font-inter').forEach((injectedContent) => {
+    if (injectedContent.id !== 'mainContent') injectedContent.remove();
+  });
+
+  const mainContent = document.getElementById('mainContent');
+  if (mainContent !== null) {
+    mainContent.classList.remove('ma-hidden');
+    if (mainContent.hasAttribute('hidden')) mainContent.removeAttribute('hidden');
+    if (mainContent.style.display === 'none') mainContent.style.removeProperty('display');
+  }
 };
 
 const buildInventoryStructure = (inventory) => {
@@ -1182,6 +1201,20 @@ removeLinkFilterFromLinks();
 initPriceQueue();
 listenToAcceptTrade();
 reloadPageOnExtensionUpdate();
+restoreSteamTradeOfferContent();
+
+// waiting for the market.csgo extension manipulation to then restore
+const responsiveContent = document.getElementById('responsive_page_template_content');
+if (responsiveContent !== null) {
+  const restoreContentObserver = new MutationObserver(() => {
+    restoreSteamTradeOfferContent();
+  });
+
+  restoreContentObserver.observe(responsiveContent, {
+    childList: true,
+    subtree: true,
+  });
+}
 
 // initiates all logic that needs access to item info
 getInventories(true);
@@ -1208,12 +1241,12 @@ if (partnerName !== null) changePageTitle('trade_offer', partnerName);
 
 chrome.storage.local.get([
   'numberOfFloatDigitsToShow', 'showPaintSeedOnItems', 'showFloatRankOnItems', 'contrastingLook',
-  'tradeOfferPricEmpireAction', 'tradeOfferBuffAction', 'tradeOfferFloatAction',
+  'tradeOfferPricEmpireAction', 'tradeOfferBuffAction', 'tradeOfferFloatAction', 'hideOtherExtensionsPrices',
 ], ({
   numberOfFloatDigitsToShow, showPaintSeedOnItems,
   showFloatRankOnItems, contrastingLook,
   tradeOfferPricEmpireAction, tradeOfferBuffAction,
-  tradeOfferFloatAction,
+  tradeOfferFloatAction, hideOtherExtensionsPrices,
 }) => {
   floatDigitsToShow = numberOfFloatDigitsToShow;
   showPaintSeeds = showPaintSeedOnItems;
@@ -1222,20 +1255,19 @@ chrome.storage.local.get([
   pricEmpireAction = tradeOfferPricEmpireAction;
   buffAction = tradeOfferBuffAction;
   floatAction = tradeOfferFloatAction;
+  hideOtherExtensions = hideOtherExtensionsPrices;
 });
 
 setInterval(() => {
-  chrome.storage.local.get('hideOtherExtensionPrices', (result) => {
-    if (result.hideOtherExtensionPrices && !document.hidden) {
-      removeSIHStuff();
-      const waxPeerControls = document.querySelector('.left-side-nav');
-      if (waxPeerControls) waxPeerControls.remove();
+  if (hideOtherExtensions && !document.hidden) {
+    removeSIHStuff();
+    const waxPeerControls = document.querySelector('.left-side-nav');
+    if (waxPeerControls) waxPeerControls.remove();
 
-      document.querySelectorAll('csfloat-trade-item-holder-metadata').forEach((csfloatElement) => {
-        csfloatElement.style.display = 'none';
-      });
-    }
-  });
+    document.querySelectorAll('csfloat-trade-item-holder-metadata').forEach((csfloatElement) => {
+      csfloatElement.style.display = 'none';
+    });
+  }
 }, 2000);
 
 document.querySelectorAll('.inventory_user_tab').forEach((inventoryTab) => {
@@ -1298,14 +1330,14 @@ chrome.storage.local.get('tradeOfferHeaderToLeft', (result) => {
   }
 });
 
-chrome.storage.local.get(['clickChangeOfferAutomatically', 'hideOtherExtensionPrices'], ({
-  clickChangeOfferAutomatically, hideOtherExtensionPrices,
+chrome.storage.local.get(['clickChangeOfferAutomatically'], ({
+  clickChangeOfferAutomatically,
 }) => {
   if (clickChangeOfferAutomatically) {
     const changeOfferButton = document.querySelector('.readystate.modify_trade_offer');
     if (changeOfferButton) changeOfferButton.click();
   }
-  if (hideOtherExtensionPrices) {
+  if (hideOtherExtensions) {
     const waxPeerControls = document.querySelector('.left-side-nav');
     if (waxPeerControls) waxPeerControls.remove();
   }
