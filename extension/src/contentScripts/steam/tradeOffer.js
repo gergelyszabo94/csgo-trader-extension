@@ -214,19 +214,16 @@ const removeSIHStuff = () => {
 // the market csgo extension replaces the whole page content
 // this removes that and restores the original
 const restoreSteamTradeOfferContent = () => {
+  const mainContent = document.getElementById('mainContent');
+  if (mainContent !== null) {
+    mainContent.classList.remove('ma-hidden');
+  }
   const responsiveContent = document.getElementById('responsive_page_template_content');
   if (responsiveContent === null) return;
 
   responsiveContent.querySelectorAll('.pagecontent.font-inter').forEach((injectedContent) => {
     if (injectedContent.id !== 'mainContent') injectedContent.remove();
   });
-
-  const mainContent = document.getElementById('mainContent');
-  if (mainContent !== null) {
-    mainContent.classList.remove('ma-hidden');
-    if (mainContent.hasAttribute('hidden')) mainContent.removeAttribute('hidden');
-    if (mainContent.style.display === 'none') mainContent.style.removeProperty('display');
-  }
 };
 
 const buildInventoryStructure = (inventory) => {
@@ -1196,7 +1193,6 @@ const sendQueryParamOffer = (urlParams, whose, items, message) => {
 };
 
 logExtensionPresence();
-refreshSteamAccessToken();
 removeLinkFilterFromLinks();
 initPriceQueue();
 listenToAcceptTrade();
@@ -1223,9 +1219,14 @@ overrideHandleTradeActionMenu();
 const errorMSGEl = document.getElementById('error_msg');
 if (errorMSGEl === null) {
   updateWalletCurrency();
+  refreshSteamAccessToken();
 } else if (errorMSGEl.innerText.includes('An error was encountered while processing your request:')) { // english only
   setTimeout(() => {
     window.location.reload();
+  }, 2000);
+} else {
+  setTimeout(() => {
+    restoreSteamTradeOfferContent();
   }, 2000);
 }
 
