@@ -78,8 +78,8 @@ const getOrderBook = (appID, marketHashName) => {
       return response.json();
     }).then((orderBookJSON) => {
       if (orderBookJSON === null) return;
-      if (orderBookJSON.success) {
-        const orderBookData = orderBookJSON.data;
+      if (orderBookJSON?.data?.success) {
+        const orderBookData = orderBookJSON.data.data;
         if (orderBookData) {
           const highestBuyOrder = orderBookData.amtMaxBuyOrder;
           const lowestListingPrice = orderBookData.amtMinSellOrder;
