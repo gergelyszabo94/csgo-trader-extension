@@ -556,11 +556,12 @@ if (orders) {
                   const marketName = marketLink.split('market/listings/')[1].split('/')[1];
                   getOrderBook(appID, marketName).then(({ highestBuyOrder }) => {
                     const highestInt = parseInt(highestBuyOrder);
+                    const outBidPercentageFloat = parseFloat(outBidPercentage);
                     const newOrderPrice = outBidType === 'highest'
                       ? highestInt + 1
                       : highestInt >= 100
-                        ? Math.floor(highestInt * (1 + (outBidPercentage / 100)))
-                        : highestInt + outBidPercentage;
+                        ? Math.floor(highestInt * (1 + (outBidPercentageFloat / 100)))
+                        : highestInt + outBidPercentageFloat;
                     createOrder(appID, marketName, newOrderPrice, quantity).then(() => {
                       const priceEl = orderRow.querySelector('.highestOrderPrice');
                       if (priceEl) {
