@@ -786,9 +786,10 @@ const addRightSideElements = (reRun) => {
           inspectButton.insertAdjacentElement('afterend', inspectOnserverLink);
 
           const inspectInBrowserLink = inspectButton.cloneNode(true);
-          inspectInBrowserLink.href = `https://swap.gg/screenshot?inspectLink=${item.inspectLink}`;
-          inspectInBrowserLink.textContent = 'Inspect in Browser...';
+          inspectInBrowserLink.href = `https://3dview.cs2inspects.com/?inspectlink=${item.inspectLink}`;
+          inspectInBrowserLink.textContent = '3D Inspect in Browser...';
           inspectInBrowserLink.setAttribute('target', '_blank');
+          inspectInBrowserLink.setAttribute('rel', 'noopener noreferrer');
           inspectInBrowserLink.classList.add('inbrowserInspectLink');
 
           inspectButton.insertAdjacentElement('afterend', inspectInBrowserLink);

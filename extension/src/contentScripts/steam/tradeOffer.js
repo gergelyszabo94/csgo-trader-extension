@@ -1445,11 +1445,12 @@ if (tradeActionPopup) {
           if (actionItem) {
             if (actionItem.inspectLink && itemActions.querySelector('#inspecInBrowser') === null) {
               const inspectInBrowserActionEl = document.createElement('a');
-              inspectInBrowserActionEl.textContent = 'Inspect in Browser...';
+              inspectInBrowserActionEl.textContent = '3D Inspect in Browser...';
               inspectInBrowserActionEl.classList.add('popup_menu_item');
-              inspectInBrowserActionEl.id = 'inspecInBrowser';
-              inspectInBrowserActionEl.setAttribute('href', `https://swap.gg/screenshot?inspectLink=${actionItem.inspectLink}`);
+              inspectInBrowserActionEl.id = 'inspectInBrowser';
+              inspectInBrowserActionEl.setAttribute('href', `https://3dview.cs2inspects.com/?inspectlink=${actionItem.inspectLink}`);
               inspectInBrowserActionEl.setAttribute('target', '_blank');
+              inspectInBrowserActionEl.setAttribute('rel', 'noopener noreferrer');
               itemActions.appendChild(inspectInBrowserActionEl);
 
               const inspectOnServerActionEl = document.createElement('a');

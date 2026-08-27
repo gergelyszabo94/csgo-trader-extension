@@ -258,8 +258,8 @@ const addStickers = () => {
                   'afterend',
                   DOMPurify.sanitize(
                     `<div class="market_listing_row_action" id="inspectInBrowser" style="line-height: 50px; text-align: left">
-                      <a href="https://swap.gg/screenshot?inspectLink=${inspectLink}" target="_blank">
-                        Inspect in Browser...
+                      <a href="https://3dview.cs2inspects.com/?inspectlink=${inspectLink}" target="_blank" rel="noopener noreferrer">
+                        3D Inspect in Browser...
                       </a>
                     </div>
                     <div class="market_listing_row_action" id="inspectOnServer" style="line-height: 30px; text-align: left">
