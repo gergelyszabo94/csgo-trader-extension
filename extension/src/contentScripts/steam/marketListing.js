@@ -18,6 +18,7 @@ import {
   updateLoggedInUserName,
   getBuffLink,
   refreshSteamAccessToken,
+  openBrowserInspectModal,
 } from 'utils/utilsModular';
 import { listingsSortingModes } from 'utils/static/sortingModes';
 import {
@@ -269,6 +270,31 @@ const addStickers = () => {
                     </div>`,
                     { ADD_ATTR: ['target'] },
                   ));
+
+                const inspectInBrowserLink = listingRow.querySelector('#inspectInBrowser a');
+                inspectInBrowserLink.addEventListener('click', (event) => {
+                  event.preventDefault();
+                  const inspectableListings = Array.from(
+                    document.querySelectorAll('.market_listing_row.market_recent_listing_row'),
+                  ).map((marketListingRow) => {
+                    const listingInspectLink = marketListingRow.querySelector(
+                      'div.market_listing_row_action a[href^="steam://run/730"]',
+                    )?.getAttribute('href');
+                    const imageSource = marketListingRow.querySelector(
+                      '.market_listing_item_img_container img',
+                    )?.getAttribute('src');
+
+                    return {
+                      inspectLink: listingInspectLink,
+                      iconURL: imageSource?.split('/economy/image/')[1]?.split('/')[0],
+                      market_hash_name: marketListingRow.querySelector(
+                        '.market_listing_item_name',
+                      )?.textContent.trim() || fullName,
+                    };
+                  }).filter((listing) => listing.inspectLink);
+
+                  openBrowserInspectModal(inspectLink, inspectableListings);
+                });
               }
             }
           }
