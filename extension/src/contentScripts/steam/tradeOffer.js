@@ -10,6 +10,7 @@ import {
   addSearchListener, removeLinkFilterFromLinks,
   removeOfferFromActiveOffers, changePageTitle, getBuffLink,
   addFloatRankIndicator, refreshSteamAccessToken, getPricempireLink,
+  openBrowserInspectModal,
 } from 'utils/utilsModular';
 import {
   getItemMarketLink, getItemByNameAndGame, closeTab, isDopplerInName,
@@ -1449,8 +1450,10 @@ if (tradeActionPopup) {
               inspectInBrowserActionEl.classList.add('popup_menu_item');
               inspectInBrowserActionEl.id = 'inspectInBrowser';
               inspectInBrowserActionEl.setAttribute('href', `https://3dview.cs2inspects.com/?inspectlink=${actionItem.inspectLink}`);
-              inspectInBrowserActionEl.setAttribute('target', '_blank');
-              inspectInBrowserActionEl.setAttribute('rel', 'noopener noreferrer');
+              inspectInBrowserActionEl.addEventListener('click', (event) => {
+                event.preventDefault();
+                openBrowserInspectModal(actionItem.inspectLink, combinedInventories, floatDigitsToShow);
+              });
               itemActions.appendChild(inspectInBrowserActionEl);
 
               const inspectOnServerActionEl = document.createElement('a');
