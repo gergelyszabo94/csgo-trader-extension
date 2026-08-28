@@ -12,6 +12,7 @@ import {
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
   parseStickerInfo, getExteriorFromTags, getDopplerInfo,
   getType, getQuality, getBuffLink, getPricempireLink, getSteamDisplayLanguageFromPage,
+  openBrowserInspectModal,
 }
   from 'utils/utilsModular';
 import {
@@ -113,99 +114,6 @@ const getDefaultContextID = (appID) => {
   // 2 is the default context for standard games
   // 6 is the community context for steam
   return appID === steamApps.STEAM.appID ? '6' : '2';
-};
-
-const openBrowserInspectModal = (inspectLink) => {
-  document.getElementById('browserInspectModal')?.remove();
-
-  const modal = document.createElement('div');
-  modal.id = 'browserInspectModal';
-  modal.setAttribute('role', 'dialog');
-  modal.setAttribute('aria-modal', 'true');
-  modal.style.cssText = 'position:fixed;inset:7vh 6vw;z-index:10000;display:flex;flex-direction:column;overflow:hidden;background:#15191f;border:1px solid rgba(255,255,255,.2);border-radius:6px;box-shadow:0 18px 50px rgba(0,0,0,.55),0 0 0 100vmax rgba(0,0,0,.7);';
-
-  const closeButton = document.createElement('button');
-  closeButton.type = 'button';
-  closeButton.textContent = 'X';
-  closeButton.setAttribute('aria-label', 'Close 3D inspect');
-  closeButton.title = 'Close';
-  closeButton.style.cssText = 'align-self:flex-end;flex:0 0 20px;width:28px;margin:0;background:#252c35;border:0;border-left:1px solid rgba(255,255,255,.12);color:#c7d5e0;cursor:pointer;font-size:14px;font-weight:600;line-height:20px;text-align:center;transition:background .15s ease,color .15s ease;';
-  closeButton.addEventListener('mouseenter', () => {
-    closeButton.style.background = '#c84646';
-    closeButton.style.color = '#fff';
-  });
-  closeButton.addEventListener('mouseleave', () => {
-    closeButton.style.background = '#252c35';
-    closeButton.style.color = '#c7d5e0';
-  });
-  closeButton.addEventListener('click', () => modal.remove());
-
-  const modalContent = document.createElement('div');
-  modalContent.style.cssText = 'display:flex;flex:1;min-height:0;';
-
-  const inventoryList = document.createElement('div');
-  inventoryList.style.cssText = 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:6px;flex:0 0 360px;overflow-y:auto;padding:8px;background:#1c222b;border-right:1px solid rgba(255,255,255,.12);';
-
-  const createInspectIframe = (itemInspectLink) => {
-    const inspectIframe = document.createElement('iframe');
-    inspectIframe.src = `https://3dview.cs2inspects.com/?inspectlink=${itemInspectLink}`;
-    inspectIframe.title = 'CS2 3D inspect';
-    inspectIframe.width = '100%';
-    inspectIframe.height = '100%';
-    inspectIframe.style.cssText = 'flex:1;min-height:0;border:0;background:#0d1014;';
-    inspectIframe.allow = 'fullscreen; clipboard-write';
-    return inspectIframe;
-  };
-
-  let iframe = createInspectIframe(inspectLink);
-
-  const selectItem = (inventoryItem, itemButton) => {
-    const previousIframe = iframe;
-    iframe = createInspectIframe(inventoryItem.inspectLink);
-    previousIframe.replaceWith(iframe);
-    inventoryList.querySelectorAll('.browserInspectItem').forEach((button) => {
-      button.style.background = '#252c35';
-      button.style.borderColor = 'transparent';
-    });
-    itemButton.style.background = '#33475b';
-    itemButton.style.borderColor = '#67c1f5';
-  };
-
-  items.filter((inventoryItem) => inventoryItem.inspectLink).forEach((inventoryItem) => {
-    const itemButton = document.createElement('button');
-    itemButton.type = 'button';
-    itemButton.classList.add('browserInspectItem');
-    itemButton.style.cssText = 'display:flex;align-items:center;min-width:0;min-height:52px;padding:5px;background:#252c35;border:1px solid transparent;border-radius:3px;color:#d6d7d8;cursor:pointer;text-align:left;';
-
-    const icon = document.createElement('img');
-    icon.src = `https://steamcommunity.com/economy/image/${inventoryItem.iconURL}/64x64`;
-    icon.alt = '';
-    icon.style.cssText = 'width:40px;height:40px;object-fit:contain;margin-right:8px;';
-
-    const itemDetails = document.createElement('span');
-    itemDetails.style.cssText = 'display:flex;flex:1;min-width:0;flex-direction:column;gap:3px;';
-
-    const itemName = document.createElement('span');
-    itemName.textContent = inventoryItem.market_hash_name;
-    itemName.style.cssText = 'overflow:hidden;font-size:12px;line-height:14px;text-overflow:ellipsis;white-space:nowrap;';
-
-    const floatValue = document.createElement('span');
-    floatValue.textContent = inventoryItem.floatInfo?.floatvalue !== undefined
-      ? `Float ${getFloatAsFormattedString(inventoryItem.floatInfo.floatvalue, floatDigitsToShow)}`
-      : 'Float unavailable';
-    floatValue.style.cssText = 'color:#8f98a0;font-size:11px;line-height:12px;';
-
-    itemDetails.append(itemName, floatValue);
-    itemButton.append(icon, itemDetails);
-    itemButton.addEventListener('click', () => selectItem(inventoryItem, itemButton));
-    inventoryList.appendChild(itemButton);
-
-    if (inventoryItem.inspectLink === inspectLink) selectItem(inventoryItem, itemButton);
-  });
-
-  modalContent.append(inventoryList, iframe);
-  modal.append(closeButton, modalContent);
-  document.body.appendChild(modal);
 };
 
 const inventoryOwnerID = getInventoryOwnerID();
@@ -884,7 +792,7 @@ const addRightSideElements = (reRun) => {
           inspectInBrowserLink.classList.add('inbrowserInspectLink');
           inspectInBrowserLink.addEventListener('click', (event) => {
             event.preventDefault();
-            openBrowserInspectModal(item.inspectLink);
+            openBrowserInspectModal(item.inspectLink, items, floatDigitsToShow);
           });
 
           inspectButton.insertAdjacentElement('afterend', inspectInBrowserLink);
