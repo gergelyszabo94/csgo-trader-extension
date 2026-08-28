@@ -140,15 +140,71 @@ const openBrowserInspectModal = (inspectLink) => {
   });
   closeButton.addEventListener('click', () => modal.remove());
 
-  const iframe = document.createElement('iframe');
-  iframe.src = `https://3dview.cs2inspects.com/?inspectlink=${inspectLink}`;
-  iframe.title = 'CS2 3D inspect';
-  iframe.width = '100%';
-  iframe.height = '100%';
-  iframe.style.cssText = 'flex:1;min-height:0;border:0;background:#0d1014;';
-  iframe.allow = 'fullscreen; clipboard-write';
+  const modalContent = document.createElement('div');
+  modalContent.style.cssText = 'display:flex;flex:1;min-height:0;';
 
-  modal.append(closeButton, iframe);
+  const inventoryList = document.createElement('div');
+  inventoryList.style.cssText = 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:6px;flex:0 0 360px;overflow-y:auto;padding:8px;background:#1c222b;border-right:1px solid rgba(255,255,255,.12);';
+
+  const createInspectIframe = (itemInspectLink) => {
+    const inspectIframe = document.createElement('iframe');
+    inspectIframe.src = `https://3dview.cs2inspects.com/?inspectlink=${itemInspectLink}`;
+    inspectIframe.title = 'CS2 3D inspect';
+    inspectIframe.width = '100%';
+    inspectIframe.height = '100%';
+    inspectIframe.style.cssText = 'flex:1;min-height:0;border:0;background:#0d1014;';
+    inspectIframe.allow = 'fullscreen; clipboard-write';
+    return inspectIframe;
+  };
+
+  let iframe = createInspectIframe(inspectLink);
+
+  const selectItem = (inventoryItem, itemButton) => {
+    const previousIframe = iframe;
+    iframe = createInspectIframe(inventoryItem.inspectLink);
+    previousIframe.replaceWith(iframe);
+    inventoryList.querySelectorAll('.browserInspectItem').forEach((button) => {
+      button.style.background = '#252c35';
+      button.style.borderColor = 'transparent';
+    });
+    itemButton.style.background = '#33475b';
+    itemButton.style.borderColor = '#67c1f5';
+  };
+
+  items.filter((inventoryItem) => inventoryItem.inspectLink).forEach((inventoryItem) => {
+    const itemButton = document.createElement('button');
+    itemButton.type = 'button';
+    itemButton.classList.add('browserInspectItem');
+    itemButton.style.cssText = 'display:flex;align-items:center;min-width:0;min-height:52px;padding:5px;background:#252c35;border:1px solid transparent;border-radius:3px;color:#d6d7d8;cursor:pointer;text-align:left;';
+
+    const icon = document.createElement('img');
+    icon.src = `https://steamcommunity.com/economy/image/${inventoryItem.iconURL}/64x64`;
+    icon.alt = '';
+    icon.style.cssText = 'width:40px;height:40px;object-fit:contain;margin-right:8px;';
+
+    const itemDetails = document.createElement('span');
+    itemDetails.style.cssText = 'display:flex;flex:1;min-width:0;flex-direction:column;gap:3px;';
+
+    const itemName = document.createElement('span');
+    itemName.textContent = inventoryItem.market_hash_name;
+    itemName.style.cssText = 'overflow:hidden;font-size:12px;line-height:14px;text-overflow:ellipsis;white-space:nowrap;';
+
+    const floatValue = document.createElement('span');
+    floatValue.textContent = inventoryItem.floatInfo?.floatvalue !== undefined
+      ? `Float ${getFloatAsFormattedString(inventoryItem.floatInfo.floatvalue, floatDigitsToShow)}`
+      : 'Float unavailable';
+    floatValue.style.cssText = 'color:#8f98a0;font-size:11px;line-height:12px;';
+
+    itemDetails.append(itemName, floatValue);
+    itemButton.append(icon, itemDetails);
+    itemButton.addEventListener('click', () => selectItem(inventoryItem, itemButton));
+    inventoryList.appendChild(itemButton);
+
+    if (inventoryItem.inspectLink === inspectLink) selectItem(inventoryItem, itemButton);
+  });
+
+  modalContent.append(inventoryList, iframe);
+  modal.append(closeButton, modalContent);
   document.body.appendChild(modal);
 };
 
