@@ -115,6 +115,43 @@ const getDefaultContextID = (appID) => {
   return appID === steamApps.STEAM.appID ? '6' : '2';
 };
 
+const openBrowserInspectModal = (inspectLink) => {
+  document.getElementById('browserInspectModal')?.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'browserInspectModal';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.style.cssText = 'position:fixed;inset:7vh 6vw;z-index:10000;display:flex;flex-direction:column;overflow:hidden;background:#15191f;border:1px solid rgba(255,255,255,.2);border-radius:6px;box-shadow:0 18px 50px rgba(0,0,0,.55),0 0 0 100vmax rgba(0,0,0,.7);';
+
+  const closeButton = document.createElement('button');
+  closeButton.type = 'button';
+  closeButton.textContent = 'X';
+  closeButton.setAttribute('aria-label', 'Close 3D inspect');
+  closeButton.title = 'Close';
+  closeButton.style.cssText = 'align-self:flex-end;flex:0 0 20px;width:28px;margin:0;background:#252c35;border:0;border-left:1px solid rgba(255,255,255,.12);color:#c7d5e0;cursor:pointer;font-size:14px;font-weight:600;line-height:20px;text-align:center;transition:background .15s ease,color .15s ease;';
+  closeButton.addEventListener('mouseenter', () => {
+    closeButton.style.background = '#c84646';
+    closeButton.style.color = '#fff';
+  });
+  closeButton.addEventListener('mouseleave', () => {
+    closeButton.style.background = '#252c35';
+    closeButton.style.color = '#c7d5e0';
+  });
+  closeButton.addEventListener('click', () => modal.remove());
+
+  const iframe = document.createElement('iframe');
+  iframe.src = `https://3dview.cs2inspects.com/?inspectlink=${inspectLink}`;
+  iframe.title = 'CS2 3D inspect';
+  iframe.width = '100%';
+  iframe.height = '100%';
+  iframe.style.cssText = 'flex:1;min-height:0;border:0;background:#0d1014;';
+  iframe.allow = 'fullscreen; clipboard-write';
+
+  modal.append(closeButton, iframe);
+  document.body.appendChild(modal);
+};
+
 const inventoryOwnerID = getInventoryOwnerID();
 const loggedInUserID = getUserSteamID();
 
@@ -788,9 +825,11 @@ const addRightSideElements = (reRun) => {
           const inspectInBrowserLink = inspectButton.cloneNode(true);
           inspectInBrowserLink.href = `https://3dview.cs2inspects.com/?inspectlink=${item.inspectLink}`;
           inspectInBrowserLink.textContent = '3D Inspect in Browser...';
-          inspectInBrowserLink.setAttribute('target', '_blank');
-          inspectInBrowserLink.setAttribute('rel', 'noopener noreferrer');
           inspectInBrowserLink.classList.add('inbrowserInspectLink');
+          inspectInBrowserLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            openBrowserInspectModal(item.inspectLink);
+          });
 
           inspectButton.insertAdjacentElement('afterend', inspectInBrowserLink);
         }
