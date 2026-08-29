@@ -601,6 +601,38 @@ progress {
     margin-bottom: -65px;
 }
 
+.inbrowserInspectImageLink {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 1;
+    min-width: 0 !important;
+    padding: 2px 7px !important;
+    color: #e9f8fb !important;
+    background: rgba(21, 93, 113, 0.84) !important;
+    border: 1px solid rgba(172, 233, 242, 0.7) !important;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.45);
+    font-size: 14px !important;
+    font-weight: bold;
+    text-shadow: none !important;
+    transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.inbrowserInspectImageIcon {
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    margin-right: 4px;
+    filter: invert(1);
+    vertical-align: -1px;
+}
+
+.inbrowserInspectImageLink:hover {
+    color: #ffffff !important;
+    background: rgba(31, 126, 148, 0.96) !important;
+    border-color: rgba(220, 251, 255, 0.95) !important;
+}
+
 .nametag {
     color: var(--steam-nametag-red);
     font-size: 1.2rem;

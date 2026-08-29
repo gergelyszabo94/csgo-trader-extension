@@ -142,7 +142,7 @@ const goToPreviousInventoryPage = () => {
 
 const cleanUpElements = () => {
   document.querySelectorAll(
-    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .customName,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .multiSellLink, .floatDBLink, .inbrowserInspectLink',
+    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .customName,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .multiSellLink, .floatDBLink, .inbrowserInspectLink, .inbrowserInspectImageLink',
   ).forEach((element) => {
     element.remove();
   });
@@ -796,6 +796,26 @@ const addRightSideElements = (reRun) => {
           });
 
           inspectButton.insertAdjacentElement('afterend', inspectInBrowserLink);
+
+          const itemImageContainer = inspectButton.closest('div[data-featuretarget="iteminfo"]')
+            ?.querySelector('img[alt]')?.parentElement;
+          if (itemImageContainer) {
+            const inspectInBrowserImageLink = inspectInBrowserLink.cloneNode(true);
+            inspectInBrowserImageLink.textContent = '3D Inspect';
+            inspectInBrowserImageLink.setAttribute('aria-label', '3D Inspect');
+            inspectInBrowserImageLink.setAttribute('title', '3D Inspect via CS2Inspects.com');
+            inspectInBrowserImageLink.classList.add('inbrowserInspectImageLink');
+            const magnifyingGlass = document.createElement('img');
+            magnifyingGlass.classList.add('inbrowserInspectImageIcon');
+            magnifyingGlass.src = chrome.runtime.getURL('images/magnifying-glass.svg');
+            magnifyingGlass.alt = '';
+            inspectInBrowserImageLink.prepend(magnifyingGlass);
+            inspectInBrowserImageLink.addEventListener('click', (event) => {
+              event.preventDefault();
+              openBrowserInspectModal(item.inspectLink, items, floatDigitsToShow);
+            });
+            itemImageContainer.append(inspectInBrowserImageLink);
+          }
         }
       });
 
