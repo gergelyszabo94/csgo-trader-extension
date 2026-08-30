@@ -5,10 +5,9 @@ import {
   removeOfferFromActiveOffers, removeLinkFilterFromLinks,
   logExtensionPresence, updateLoggedInUserInfo, refreshSteamAccessToken,
   jumpToAnchor, changePageTitle,
-  updateLoggedInUserName, addFadePercentage, addPaintSeedIndicator, // getPattern
+  updateLoggedInUserName, addFadePercentage, addPaintSeedIndicator, getPattern,
 } from 'utils/utilsModular';
 import { prettyTimeAgo } from 'utils/dateTime';
-// import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
 import itemTypes from 'utils/static/itemTypes';
 import {
   addRealTimePriceToPage, prettyPrintPrice, priceQueue, workOnPriceQueue,
@@ -29,6 +28,7 @@ let showPaintSeeds = false;
 let showFloatRank = false;
 let floatDigitsToShow = 4;
 let showContrastingLook = true;
+const tradeOffersNoFloatDataStorageKey = 'tradeOffersNoFloatDataByAssetID';
 let activePage = 'incoming_offers';
 if (window.location.href.includes('/tradeoffers/?history=1')) activePage = 'incoming_offers_history';
 else if (window.location.href.includes('/tradeoffers/sent/?history=1')) activePage = 'sent_offers_history';
@@ -47,16 +47,6 @@ const getOfferIDFromElement = (element) => {
 
 // const selectItemElementByIDs = (classid, instanceid) => {
 //   return document.querySelector(`[data-economy-item="classinfo/730/${classid}/${instanceid}"`);
-// };
-
-// const addFloatDataToPage = (job, floatInfo) => {
-//   const itemElement = selectItemElementByIDs(job.classid, job.instanceid);
-//   addFloatIndicator(itemElement, floatInfo, floatDigitsToShow, showContrastingLook);
-//   if (showPaintSeeds) addPaintSeedIndicator(itemElement, floatInfo, showContrastingLook);
-//   if (showFloatRank) addFloatRankIndicator(itemElement, floatInfo, showContrastingLook);
-//   addFadePercentage(
-//     itemElement, getPattern(job.marketName, floatInfo.paintseed), showContrastingLook,
-//   );
 // };
 
 const getLimitedIDsFromElement = (element) => {
@@ -141,8 +131,53 @@ const findItem = (items, IDs, side, position) => {
   return items.filter((item) => item.classid === IDs.classid)[0];
 };
 
+const enrichItemsWithFloatData = (items) => {
+  return new Promise((resolve) => {
+    const itemsNeedingFloatData = items.filter((item) => {
+      return item.floatInfo === null || item.floatInfo === undefined;
+    });
+
+    if (itemsNeedingFloatData.length === 0) {
+      resolve(items);
+      return;
+    }
+
+    chrome.runtime.sendMessage({
+      loadCachedFloatDataByIDs: itemsNeedingFloatData,
+    }, (cachedResponse) => {
+      const cachedFloatData = (!cachedResponse || cachedResponse === 'error')
+        ? {}
+        : cachedResponse;
+
+      const itemsWithFloats = items.map((item) => {
+        const floatInfo = cachedFloatData[`${item.assetid}`];
+        if (floatInfo !== undefined && floatInfo !== null) {
+          item.floatInfo = floatInfo;
+          item.patternInfo = getPattern(item.market_hash_name, floatInfo.paintseed);
+        }
+        return item;
+      });
+
+      resolve(itemsWithFloats);
+    });
+  });
+};
+
+const addFloatIndicatorsToItem = (itemElement, item) => {
+  addFloatIndicator(
+    itemElement, item.floatInfo, floatDigitsToShow, showContrastingLook,
+  );
+  if (showPaintSeeds) {
+    addPaintSeedIndicator(itemElement, item.floatInfo, showContrastingLook);
+  }
+  if (showFloatRank) {
+    addFloatRankIndicator(itemElement, item.floatInfo, showContrastingLook);
+  }
+  addFadePercentage(itemElement, item.patternInfo, showContrastingLook);
+};
+
 const addItemInfo = (items) => {
-  let activeItemElements = [];
+  const activeItemElements = [];
   document.querySelectorAll('.tradeoffer').forEach((offerElement) => {
     if (isOfferActive(offerElement)) {
       const primary = offerElement.querySelector('.tradeoffer_items.primary');
@@ -159,17 +194,22 @@ const addItemInfo = (items) => {
       });
 
       const activeItemElementsInOffer = yourSideItems.concat(theirSideItems);
-      activeItemElements = activeItemElements.concat(activeItemElementsInOffer);
+      activeItemElements.push(...activeItemElementsInOffer);
     }
   });
 
   chrome.storage.local.get([
     'colorfulItems', 'autoFloatOffer', 'showStickerPrice', 'activeOffers',
-    'itemInOtherOffers', 'showShortExteriorsOffers', 'currency'],
+    'itemInOtherOffers', 'showShortExteriorsOffers', 'currency', tradeOffersNoFloatDataStorageKey],
   ({
     colorfulItems, showStickerPrice, autoFloatOffer, currency,
     activeOffers, itemInOtherOffers, showShortExteriorsOffers,
+    [tradeOffersNoFloatDataStorageKey]: noFloatDataByAssetIDFromStorage,
   }) => {
+    const itemsMissingFloatData = [];
+    const noFloatDataByAssetID = { ...(noFloatDataByAssetIDFromStorage || {}) };
+    let noFloatDataCacheChanged = false;
+
     activeItemElements.forEach(({ itemElement, side, position }) => {
       if ((itemElement.getAttribute('data-processed') === null || itemElement.getAttribute('data-processed') === 'false')) {
         const item = findItem(items, getLimitedIDsFromElement(itemElement), side, position);
@@ -188,28 +228,16 @@ const addItemInfo = (items) => {
             }
 
             if (autoFloatOffer && item.inspectLink !== null) {
-              if (item.floatInfo === null && itemTypes[item.type.key].float) {
-                // floatQueue.jobs.push({
-                //   type: 'offersPage',
-                //   assetID: item.assetid,
-                //   classid: item.classid,
-                //   instanceid: item.instanceid,
-                //   inspectLink: item.inspectLink,
-                //   marketName: item.market_hash_name,
-                //   callBackFunction: addFloatDataToPage,
-                // });
-                // if (!floatQueue.active) workOnFloatQueue();
-              } else {
-                addFloatIndicator(
-                  itemElement, item.floatInfo, floatDigitsToShow, showContrastingLook,
-                );
-                if (showPaintSeeds) {
-                  addPaintSeedIndicator(itemElement, item.floatInfo, showContrastingLook);
+              if (item.floatInfo !== null && item.floatInfo !== undefined && itemTypes[item.type.key].float) {
+                addFloatIndicatorsToItem(itemElement, item);
+                if (noFloatDataByAssetID[item.assetid] !== undefined) {
+                  delete noFloatDataByAssetID[item.assetid];
+                  noFloatDataCacheChanged = true;
                 }
-                if (showFloatRank) {
-                  addFloatRankIndicator(itemElement, item.floatInfo, showContrastingLook);
+              } else if (itemTypes[item.type.key].float) {
+                if (noFloatDataByAssetID[item.assetid] === undefined) {
+                  itemsMissingFloatData.push(item);
                 }
-                addFadePercentage(itemElement, item.patternInfo, showContrastingLook);
               }
             }
           }
@@ -222,6 +250,40 @@ const addItemInfo = (items) => {
 
         // marks the item "processed" to avoid additional unnecessary work later
         itemElement.setAttribute('data-processed', 'true');
+      }
+    });
+
+    enrichItemsWithFloatData(itemsMissingFloatData).then((itemsWithFloatData) => {
+      const itemsWithoutFloatData = [];
+
+      itemsMissingFloatData.forEach((item) => {
+        const updatedItem = itemsWithFloatData.find((candidate) => {
+          return candidate.assetid === item.assetid;
+        });
+        if (updatedItem !== undefined && updatedItem.floatInfo !== null && updatedItem.floatInfo !== undefined) {
+          if (noFloatDataByAssetID[updatedItem.assetid] !== undefined) {
+            delete noFloatDataByAssetID[updatedItem.assetid];
+            noFloatDataCacheChanged = true;
+          }
+
+          const itemElement = document.getElementById(`item${updatedItem.appid}_${updatedItem.contextid}_${updatedItem.assetid}`);
+          if (itemElement !== null) {
+            addFloatIndicatorsToItem(itemElement, updatedItem);
+          }
+        } else {
+          itemsWithoutFloatData.push(item.assetid);
+        }
+      });
+
+      itemsWithoutFloatData.forEach((assetID) => {
+        noFloatDataByAssetID[assetID] = Date.now();
+      });
+      if (itemsWithoutFloatData.length > 0) noFloatDataCacheChanged = true;
+
+      if (noFloatDataCacheChanged) {
+        chrome.storage.local.set({
+          [tradeOffersNoFloatDataStorageKey]: noFloatDataByAssetID,
+        }, () => { });
       }
     });
   });

@@ -1,7 +1,7 @@
 import { extractUsefulFloatInfo, addToFloatCache, batchAddToFloatCache } from 'utils/floatCaching';
 import {
   goToInternalPage, validateSteamAPIKey, validateSteamAccessToken,
-  getAssetIDFromInspectLink, loadFloatData,
+  getAssetIDFromInspectLink, loadFloatData, loadCachedFloatDataByIDs,
 } from 'utils/utilsModular';
 import { getItemMarketLink } from 'utils/simpleUtils';
 import { getPlayerSummaries } from 'utils/ISteamUser';
@@ -205,6 +205,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       request.loadFloats.isOwn,
       request.loadFloats.type,
       request.loadFloats.name,
+    ).then((itemsWithFloats) => {
+      batchAddToFloatCache(itemsWithFloats);
+      sendResponse(itemsWithFloats);
+    }).catch(() => {
+      sendResponse('error');
+    });
+    return true; // async return to signal that it will return later
+  } else if (request.loadCachedFloatDataByIDs !== undefined) {
+    loadCachedFloatDataByIDs(
+      request.loadCachedFloatDataByIDs,
     ).then((itemsWithFloats) => {
       batchAddToFloatCache(itemsWithFloats);
       sendResponse(itemsWithFloats);

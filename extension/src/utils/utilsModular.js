@@ -1312,6 +1312,56 @@ const loadFloatData = (items, ownerID, isOwn, type, name) => new Promise((resolv
     });
 });
 
+const loadCachedFloatDataByIDs = (items) => new Promise((resolve, reject) => {
+  const hiarchicStructure = [];
+  const ownerToGroup = new Map();
+
+  items.forEach((item) => {
+    if (item.owner === undefined || item.owner === null || item.assetid === undefined || item.assetid === null) return;
+
+    const steamid = `${item.owner}`;
+    const assetid = `${item.assetid}`;
+    const existingGroup = ownerToGroup.get(steamid);
+
+    if (existingGroup !== undefined) {
+      if (!existingGroup.assetids.includes(assetid)) existingGroup.assetids.push(assetid);
+      return;
+    }
+
+    const newGroup = {
+      steamid,
+      assetids: [assetid],
+    };
+
+    ownerToGroup.set(steamid, newGroup);
+    hiarchicStructure.push(newGroup);
+  });
+
+  const getFloatsRequest = new Request('https://api.csgotrader.app/getCachedFloatDataByIDs', {
+    method: 'POST',
+    body: JSON.stringify(hiarchicStructure),
+  });
+
+  fetch(getFloatsRequest)
+    .then((response) => {
+      if (!response.ok) {
+        const errorMessage = `Error code: ${response.status} Status: ${response.statusText}`;
+        console.log(errorMessage);
+        reject(errorMessage);
+      } else return response.json();
+    }).then((body) => {
+      if (body.status) {
+        resolve(body.floatData);
+      } else {
+        console.log(body);
+        reject(body);
+      }
+    }).catch((err) => {
+      console.log(err);
+      reject(err);
+    });
+});
+
 const getSteamDisplayLanguageFromPage = () => {
   const steamDisplayLanguageScript = 'document.querySelector(\'body\').setAttribute(\'steamDisplayLanguage\', g_strLanguage);';
   return injectScript(steamDisplayLanguageScript, true, 'steamDisplayLanguage', 'steamDisplayLanguage');
@@ -1341,7 +1391,7 @@ export {
   getDataFilledFloatTechnical, souvenirExists, removeLinkFilterFromLinks,
   getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent, setAccessTokenFirstTime,
   isSIHActive, addSearchListener, getSessionID, validateSteamAccessToken,
-  getFloatAsFormattedString, getNameTag, parseCharmInfo,
+  getFloatAsFormattedString, getNameTag, parseCharmInfo, loadCachedFloatDataByIDs,
   removeOfferFromActiveOffers, addUpdatedRibbon, getRemoteImageAsObjectURL,
   addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,
   getAppropriateFetchFunc, getFloatDBLink, getBuffLink, refreshSteamAccessToken,

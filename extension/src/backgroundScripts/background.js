@@ -14,6 +14,29 @@ import {
 import { updateTrades, removeOldOfferEvents } from 'utils/tradeOffers';
 import './messaging';
 
+const tradeOffersNoFloatDataStorageKey = 'tradeOffersNoFloatDataByAssetID';
+const tradeOffersNoFloatDataTtlMs = 24 * 60 * 60 * 1000;
+
+const cleanupTradeOffersNoFloatData = () => {
+  chrome.storage.local.get([tradeOffersNoFloatDataStorageKey], (result) => {
+    const noFloatDataByAssetID = result[tradeOffersNoFloatDataStorageKey] || {};
+    const now = Date.now();
+    const cleanedNoFloatDataByAssetID = {};
+
+    Object.entries(noFloatDataByAssetID).forEach(([assetID, timestamp]) => {
+      if (typeof timestamp === 'number' && now - timestamp < tradeOffersNoFloatDataTtlMs) {
+        cleanedNoFloatDataByAssetID[assetID] = timestamp;
+      }
+    });
+
+    if (Object.keys(cleanedNoFloatDataByAssetID).length !== Object.keys(noFloatDataByAssetID).length) {
+      chrome.storage.local.set({
+        [tradeOffersNoFloatDataStorageKey]: cleanedNoFloatDataByAssetID,
+      }, () => { });
+    }
+  });
+};
+
 // handles install and update events
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
@@ -187,6 +210,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     });
   } else if (alarm.name === 'dailyScheduledTasks') {
     trimFloatCache();
+    cleanupTradeOffersNoFloatData();
     removeOldFriendRequestEvents();
     removeOldOfferEvents();
     updateExchangeRates();
