@@ -1104,7 +1104,7 @@ const getFloatDBLink = (item) => {
 const getBuffLink = (marketHashName) => {
   const buffId = buffIds[marketHashName];
   if (buffId) return `https://buff.163.com/goods/${buffId}`;
-  return `https://api.pricempire.com/v1/redirectBuff/${marketHashName}`;
+  return `https://buff.163.com/market/csgo#game=csgo&page_num=1&search=${marketHashName}&tab=selling`;
 };
 
 const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
