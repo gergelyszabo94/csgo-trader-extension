@@ -121,8 +121,17 @@ const openBrowserInspectModal = (inspectLink, inventoryItems = [], floatDigitsTo
   const modalContent = document.createElement('div');
   modalContent.style.cssText = 'display:flex;flex:1;min-height:0;';
 
+  const inventoryPanel = document.createElement('div');
+  inventoryPanel.style.cssText = 'display:flex;flex-direction:column;flex:0 0 360px;min-height:0;background:#1c222b;border-right:1px solid rgba(255,255,255,.12);';
+
+  const searchInput = document.createElement('input');
+  searchInput.type = 'text';
+  searchInput.placeholder = 'Search inventory...';
+  searchInput.setAttribute('aria-label', 'Search inventory items');
+  searchInput.style.cssText = 'flex:0 0 auto;margin:8px;padding:6px 8px;background:#252c35;border:1px solid rgba(255,255,255,.12);border-radius:3px;color:#d6d7d8;font-size:12px;';
+
   const inventoryList = document.createElement('div');
-  inventoryList.style.cssText = 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:6px;flex:0 0 360px;overflow-y:auto;padding:8px;background:#1c222b;border-right:1px solid rgba(255,255,255,.12);';
+  inventoryList.style.cssText = 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:6px;flex:1;min-height:0;overflow-y:auto;padding:8px;';
 
   const createInspectIframe = (itemInspectLink) => {
     const inspectIframe = document.createElement('iframe');
@@ -153,6 +162,7 @@ const openBrowserInspectModal = (inspectLink, inventoryItems = [], floatDigitsTo
     const itemButton = document.createElement('button');
     itemButton.type = 'button';
     itemButton.classList.add('browserInspectItem');
+    itemButton.dataset.searchName = inventoryItem.market_hash_name.toLowerCase();
     itemButton.style.cssText = 'display:flex;align-items:center;min-width:0;min-height:52px;padding:5px;background:#252c35;border:1px solid transparent;border-radius:3px;color:#d6d7d8;cursor:pointer;text-align:left;';
 
     const icon = document.createElement('img');
@@ -181,7 +191,15 @@ const openBrowserInspectModal = (inspectLink, inventoryItems = [], floatDigitsTo
     if (inventoryItem.inspectLink === inspectLink) selectItem(inventoryItem, itemButton);
   });
 
-  modalContent.append(inventoryList, iframe);
+  searchInput.addEventListener('input', () => {
+    const searchTerm = searchInput.value.trim().toLowerCase();
+    inventoryList.querySelectorAll('.browserInspectItem').forEach((button) => {
+      button.style.display = button.dataset.searchName.includes(searchTerm) ? 'flex' : 'none';
+    });
+  });
+
+  inventoryPanel.append(searchInput, inventoryList);
+  modalContent.append(inventoryPanel, iframe);
   modal.append(closeButton, modalContent);
   document.body.appendChild(modal);
 };
