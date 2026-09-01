@@ -427,7 +427,7 @@ const pricingProviders = {
     long: 'CSFloat.com',
     short: 'CSFL',
     url: 'https://csfloat.com/',
-    description: 'CSFloat Database amd p2p market',
+    description: 'CSFloat Database and p2p market',
     pricing_modes: {
       csfloat: {
         description: 'CSFloat market price',
@@ -436,17 +436,22 @@ const pricingProviders = {
       },
     },
   },
-  youpin: {
-    name: 'youpin',
+  youpin898: {
+    name: 'youpin898',
     long: 'YOUPIN898',
     short: 'YP',
     url: 'https://youpin898.com/',
-    description: 'New, emerging, china focused Buff alternative',
+    description: 'China focused p2p marketplace',
     pricing_modes: {
-      youpin: {
-        description: 'YOUPIN898 market price',
-        name: 'youpin',
-        long: 'YOUPIN898 price',
+      starting_at: {
+        description: 'YOUPIN898 Starting at (lowest listing) price',
+        name: 'starting_at',
+        long: 'YOUPIN898 Starting at (by cs2.sh)',
+      },
+      highest_order: {
+        description: 'YOUPIN898 Highest order price',
+        name: 'highest_order',
+        long: 'YOUPIN898 Highest order (by cs2.sh)',
       },
     },
   },

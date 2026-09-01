@@ -314,8 +314,7 @@ const updatePrices = () => {
         } else if (provider === pricingProviders.lootfarm.name
           || provider === pricingProviders.csgotm.name
           || provider === pricingProviders.csgoempire.name
-          || provider === pricingProviders.swapgg.name
-          || provider === pricingProviders.youpin.name) {
+          || provider === pricingProviders.swapgg.name) {
           for (const key of keys) {
             prices[key] = { price: pricesJSON[key] };
           }
@@ -332,7 +331,8 @@ const updatePrices = () => {
               };
             } else prices[key] = { price: pricesJSON[key].price };
           }
-        } else if (provider === pricingProviders.buff163.name) {
+        } else if (provider === pricingProviders.buff163.name
+          || provider === pricingProviders.youpin898.name) {
           for (const key of keys) {
             if (pricesJSON[key][mode] !== undefined) {
               if (pricesJSON[key][mode].doppler !== undefined) {
