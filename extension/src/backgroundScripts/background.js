@@ -86,15 +86,34 @@ chrome.runtime.onInstalled.addListener((details) => {
         // so the site bot list gets updated
         if (result[storageKey] === undefined || storageKey === 'legitSiteBotGroup') {
           chrome.storage.local.set({ [storageKey]: storageValue }, () => { });
-        } else if (storageKey === 'pricingProvider' && result[storageKey] === 'youpin') { // after 3.7, it can be removed later
-          chrome.storage.local.set({
-            [storageKey]: 'youpin898',
-            pricingMode: 'starting_at',
-          }, () => {
-            setTimeout(() => {
-              updatePrices();
-            }, 10000);
-          });
+        } else if (storageKey === 'pricingProvider') { // after 3.7, it can be removed later
+          if (result[storageKey] === 'youpin') {
+            chrome.storage.local.set({
+              [storageKey]: 'youpin898',
+              pricingMode: 'starting_at',
+            }, () => {
+              setTimeout(() => {
+                updatePrices();
+              }, 10000);
+            });
+          } else if (result[storageKey] === 'csfloat') {
+            chrome.storage.local.set({
+              pricingMode: 'starting_at',
+            }, () => {
+              setTimeout(() => {
+                updatePrices();
+              }, 10000);
+            });
+          } else if (result[storageKey] === 'bitskins') {
+            chrome.storage.local.set({
+              [storageKey]: 'csgotrader',
+              pricingMode: 'csgotrader',
+            }, () => {
+              setTimeout(() => {
+                updatePrices();
+              }, 10000);
+            });
+          }
         }
       }
     });

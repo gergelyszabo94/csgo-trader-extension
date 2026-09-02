@@ -429,10 +429,15 @@ const pricingProviders = {
     url: 'https://csfloat.com/',
     description: 'CSFloat Database and p2p market',
     pricing_modes: {
-      csfloat: {
-        description: 'CSFloat market price',
-        name: 'csfloat',
-        long: 'CSFloat price',
+      starting_at: {
+        description: 'CSFloat Starting at (lowest listing) price',
+        name: 'starting_at',
+        long: 'CSFloat Starting at (by cs2.sh)',
+      },
+      highest_order: {
+        description: 'CSFloat Highest order price',
+        name: 'highest_order',
+        long: 'CSFloat Highest order (by cs2.sh)',
       },
     },
   },

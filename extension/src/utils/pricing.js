@@ -321,7 +321,6 @@ const updatePrices = () => {
         } else if (provider === pricingProviders.csmoney.name
           || provider === pricingProviders.csgotrader.name
           || provider === pricingProviders.cstrade.name
-          || provider === pricingProviders.csfloat.name
           || provider === pricingProviders.lisskins.name) {
           for (const key of keys) {
             if (pricesJSON[key].doppler !== undefined) {
@@ -332,7 +331,8 @@ const updatePrices = () => {
             } else prices[key] = { price: pricesJSON[key].price };
           }
         } else if (provider === pricingProviders.buff163.name
-          || provider === pricingProviders.youpin898.name) {
+          || provider === pricingProviders.youpin898.name
+          || provider === pricingProviders.csfloat.name) {
           for (const key of keys) {
             if (pricesJSON[key][mode] !== undefined) {
               if (pricesJSON[key][mode].doppler !== undefined) {
