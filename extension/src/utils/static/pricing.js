@@ -310,7 +310,7 @@ const pricingProviders = {
       csmoney: {
         description: 'CS.MONEY price',
         name: 'csmoney',
-        long: 'CS.MONEY Price',
+        long: 'CS.MONEY Price (by pricempire.com)',
       },
     },
   },
@@ -324,7 +324,7 @@ const pricingProviders = {
       csgotm: {
         description: 'CSGO.TM price',
         name: 'csgotm',
-        long: 'CSGO.TM Price',
+        long: 'CSGO.TM Price (by pricempire.com)',
       },
     },
   },
@@ -338,7 +338,7 @@ const pricingProviders = {
       lootfarm: {
         description: 'LOOT.FARM price',
         name: 'lootfarm',
-        long: 'LOOT.FARM Price',
+        long: 'LOOT.FARM Price (by pricempire.com)',
       },
     },
   },
@@ -352,12 +352,12 @@ const pricingProviders = {
       suggested_price: {
         description: 'Skinport suggested price',
         name: 'suggested_price',
-        long: 'Skinport suggested price',
+        long: 'Skinport suggested price (by pricempire.com)',
       },
       starting_at: {
         description: 'Skinport starting at price',
         name: 'starting_at',
-        long: 'Skinport starting at',
+        long: 'Skinport starting at (by pricempire.com)',
       },
     },
   },
@@ -418,7 +418,7 @@ const pricingProviders = {
       cstrade: {
         description: 'CS.TRADE price',
         name: 'cstrade',
-        long: 'CS.TRADE price',
+        long: 'CS.TRADE price (by pricempire.com)',
       },
     },
   },
@@ -470,7 +470,26 @@ const pricingProviders = {
       liskins: {
         description: 'Lis-skins market price',
         name: 'liskins',
-        long: 'Lis-skins price',
+        long: 'Lis-skins price (by pricempire.com)',
+      },
+    },
+  },
+  c5game: {
+    name: 'c5game',
+    long: 'C5GAME',
+    short: 'C5G',
+    url: 'https://www.c5game.com/',
+    description: 'Chinese p2p marketplace and skin rental platform',
+    pricing_modes: {
+      starting_at: {
+        description: 'C5GAME Starting at (lowest listing) price',
+        name: 'starting_at',
+        long: 'C5GAME Starting at (by cs2.sh)',
+      },
+      highest_order: {
+        description: 'C5GAME Highest order price',
+        name: 'highest_order',
+        long: 'C5GAME Highest order (by cs2.sh)',
       },
     },
   },

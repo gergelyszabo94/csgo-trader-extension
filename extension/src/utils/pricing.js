@@ -332,7 +332,8 @@ const updatePrices = () => {
           }
         } else if (provider === pricingProviders.buff163.name
           || provider === pricingProviders.youpin898.name
-          || provider === pricingProviders.csfloat.name) {
+          || provider === pricingProviders.csfloat.name
+          || provider === pricingProviders.c5game.name) {
           for (const key of keys) {
             if (pricesJSON[key][mode] !== undefined) {
               if (pricesJSON[key][mode].doppler !== undefined) {
