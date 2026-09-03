@@ -11,7 +11,7 @@ import {
   addSearchListener, getPattern, getFloatAsFormattedString, // removeFromArray
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
   parseStickerInfo, getExteriorFromTags, getDopplerInfo,
-  getType, getQuality, getBuffLink, getPricempireLink, getSteamDisplayLanguageFromPage,
+  getType, getQuality, getBuffLink, getLookupLink, getSteamDisplayLanguageFromPage,
   openBrowserInspectModal,
 }
   from 'utils/utilsModular';
@@ -23,7 +23,7 @@ import { getShortDate, dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
   stattrak, starChar, souvenir, stattrakPretty, genericMarketLink,
 } from 'utils/static/simpleStrings';
-// import floatQueue, { workOnFloatQueue } from 'utils/floatQueueing';
+import { pricingProviders } from 'utils/static/pricing';
 import {
   getPriceAfterFees, userPriceToProperPrice,
   centsToSteamFormattedPrice, prettyPrintPrice, addRealTimePriceToPage,
@@ -1090,10 +1090,10 @@ const addRightSideElements = (reRun) => {
 
       // adds the in-offer module
       chrome.storage.local.get(['activeOffers', 'itemInOffersInventory', 'showPriceEmpireLinkInInventory',
-        'showBuffLookupInInventory', 'inventoryShowCopyButtons', 'showFloatDBLookupInInventory'], ({
+        'showBuffLookupInInventory', 'inventoryShowCopyButtons', 'showFloatDBLookupInInventory', 'pricingProvider'], ({
         activeOffers, itemInOffersInventory,
         showPriceEmpireLinkInInventory, showBuffLookupInInventory, inventoryShowCopyButtons,
-        showFloatDBLookupInInventory,
+        showFloatDBLookupInInventory, pricingProvider,
       }) => {
         const inOffers = activeOffers.items.filter((offerItem) => {
           return offerItem.assetid === item.assetid;
@@ -1142,8 +1142,8 @@ const addRightSideElements = (reRun) => {
             `;
           const priceEmpireLink = `
         <div class="pricEmpireLink" style="margin-top: -10px;">
-            <a href="https://pricempire.com/${getPricempireLink(item.type.key, item.name, (item.dopplerInfo && item.dopplerInfo.name) ? `-${item.dopplerInfo.name}` : '', item.exterior?.name.toLowerCase())}?utm_source=csgotrader.app&r=76561198036030455" target="_blank" style="color: yellow;">
-                Check prices on PRICEMPIRE.COM
+            <a href="${getLookupLink(pricingProvider, item.type.key, item.name, (item.dopplerInfo && item.dopplerInfo.name) ? `-${item.dopplerInfo.name}` : '', item.exterior?.name.toLowerCase(), item.market_hash_name)}" target="_blank" style="color: yellow;">
+                Check prices on ${pricingProviders[pricingProvider].source === 'cs2.sh' ? 'CS2.SH' : 'PRICEMPIRE.COM'}
               </a>
         </div>
       `;

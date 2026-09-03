@@ -1,5 +1,5 @@
 import exteriors from 'utils/static/exteriors';
-import { currencies } from 'utils/static/pricing';
+import { currencies, pricingProviders } from 'utils/static/pricing';
 import { dopplerPhases, iconToPhaseMapping } from 'utils/static/dopplerPhases';
 import rarities from 'utils/static/rarities';
 import qualities from 'utils/static/qualities';
@@ -1255,6 +1255,14 @@ const getPricempireLink = (itemType, itemName, dopplerType, condition) => {
   return '';
 };
 
+// depending on the pricing provider, this function generates a lookup link for the given market hash name.
+// use the platform that sources the pricing data selected by the user.
+const getLookupLink = (pricingProvider, itemType, itemName, dopplerType, condition, marketHashName) => {
+  return pricingProviders[pricingProvider].source === 'cs2.sh'
+    ? `https://cs2.sh/item/${encodeURIComponent(marketHashName)}`
+    : `https://pricempire.com/${getPricempireLink(itemType, itemName, dopplerType, condition)}?utm_source=csgotrader.app&r=76561198036030455`;
+};
+
 // runs in content scripts when steam pages are loaded
 const refreshSteamAccessToken = () => {
   chrome.storage.local.get(['steamAcessToken', 'steamAcessTokenValid'], ({ steamAcessToken, steamAcessTokenValid }) => {
@@ -1413,6 +1421,6 @@ export {
   removeOfferFromActiveOffers, addUpdatedRibbon, getRemoteImageAsObjectURL,
   addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,
   getAppropriateFetchFunc, getFloatDBLink, getBuffLink, refreshSteamAccessToken,
-  getPricempireLink, loadFloatData, getSteamDisplayLanguageFromPage,
+  getLookupLink, loadFloatData, getSteamDisplayLanguageFromPage,
   openBrowserInspectModal,
 };

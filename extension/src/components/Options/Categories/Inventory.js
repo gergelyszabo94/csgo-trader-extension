@@ -93,10 +93,10 @@ const inventory = () => {
         description="Show copy item id/name/link buttons on active items in inventories."
       />
       <Row
-        name="Show pricempire.com links in inventories"
+        name="Show pricempire.com / CS2.SH links in inventories"
         id="showPriceEmpireLinkInInventory"
         type="flipSwitchStorage"
-        description="Show pricempire.com links in inventories"
+        description="Show pricempire.com / CS2.SH links in inventories depending on the pricing mode used"
       />
       <Row
         name="Show lookup on buff link"

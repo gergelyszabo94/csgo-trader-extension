@@ -9,9 +9,10 @@ import {
   updateLoggedInUserInfo, addPageControlEventListeners,
   addSearchListener, removeLinkFilterFromLinks,
   removeOfferFromActiveOffers, changePageTitle, getBuffLink,
-  addFloatRankIndicator, refreshSteamAccessToken, getPricempireLink,
+  addFloatRankIndicator, refreshSteamAccessToken, getLookupLink,
   openBrowserInspectModal,
 } from 'utils/utilsModular';
+import { pricingProviders } from 'utils/static/pricing';
 import {
   getItemMarketLink, getItemByNameAndGame, closeTab, isDopplerInName,
   getFormattedPLPercentage, reloadPageOnExtensionUpdate,
@@ -40,6 +41,7 @@ let showFloatRank = false;
 let floatDigitsToShow = 4;
 let showContrastingLook = true;
 let pricEmpireAction = false;
+let pricingProviderUsed = null;
 let buffAction = false;
 let floatAction = false;
 let hideOtherExtensions = true;
@@ -1244,17 +1246,20 @@ if (partnerName !== null) changePageTitle('trade_offer', partnerName);
 chrome.storage.local.get([
   'numberOfFloatDigitsToShow', 'showPaintSeedOnItems', 'showFloatRankOnItems', 'contrastingLook',
   'tradeOfferPricEmpireAction', 'tradeOfferBuffAction', 'tradeOfferFloatAction', 'hideOtherExtensionsPrices',
+  'pricingProvider',
 ], ({
   numberOfFloatDigitsToShow, showPaintSeedOnItems,
   showFloatRankOnItems, contrastingLook,
   tradeOfferPricEmpireAction, tradeOfferBuffAction,
   tradeOfferFloatAction, hideOtherExtensionsPrices,
+  pricingProvider,
 }) => {
   floatDigitsToShow = numberOfFloatDigitsToShow;
   showPaintSeeds = showPaintSeedOnItems;
   showFloatRank = showFloatRankOnItems;
   showContrastingLook = contrastingLook;
   pricEmpireAction = tradeOfferPricEmpireAction;
+  pricingProviderUsed = pricingProvider;
   buffAction = tradeOfferBuffAction;
   floatAction = tradeOfferFloatAction;
   hideOtherExtensions = hideOtherExtensionsPrices;
@@ -1479,16 +1484,19 @@ if (tradeActionPopup) {
             }
 
             if (pricEmpireAction) {
+              const lookupLink = getLookupLink(pricingProviderUsed, actionItem.type.key, actionItem.name, (actionItem.dopplerInfo && actionItem.dopplerInfo.name) ? `-${actionItem.dopplerInfo.name}` : '', actionItem.exterior?.name.toLowerCase(), actionItem.market_hash_name);
+              const lookupText = `Lookup on ${pricingProviders[pricingProviderUsed].source === 'cs2.sh' ? 'CS2.SH' : 'PRICEMPIRE.COM'}`;
+
               if (staticActions.querySelector('#pricEmpireAction') === null) {
                 const pricEmpireActionEl = document.createElement('a');
-                pricEmpireActionEl.textContent = 'Lookup on Pricempire';
+                pricEmpireActionEl.textContent = lookupText;
                 pricEmpireActionEl.id = 'pricEmpireAction';
                 pricEmpireActionEl.classList.add('popup_menu_item');
-                pricEmpireActionEl.setAttribute('href', `https://pricempire.com/${getPricempireLink(actionItem.type.key, actionItem.name, (actionItem.dopplerInfo && actionItem.dopplerInfo.name) ? `-${actionItem.dopplerInfo.name}` : '', actionItem.exterior?.name.toLowerCase())}`);
+                pricEmpireActionEl.setAttribute('href', lookupLink);
                 pricEmpireActionEl.setAttribute('target', '_blank');
                 staticActions.appendChild(pricEmpireActionEl);
               } else {
-                staticActions.querySelector('#pricEmpireAction').setAttribute('href', `https://pricempire.com/${getPricempireLink(actionItem.type.key, actionItem.name, (actionItem.dopplerInfo && actionItem.dopplerInfo.name) ? `-${actionItem.dopplerInfo.name}` : '', actionItem.exterior?.name.toLowerCase())}`);
+                staticActions.querySelector('#pricEmpireAction').setAttribute('href', lookupLink);
               }
             }
 
