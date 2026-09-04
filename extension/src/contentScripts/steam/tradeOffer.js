@@ -4,7 +4,7 @@ import {
   getItemByAssetID, getAssetIDOfElement, addDopplerPhase,
   makeItemColorful, addSSTandExtIndicators, addPriceIndicator,
   addFloatIndicator, getExteriorFromTags, getQuality, addPaintSeedIndicator,
-  getType, addFadePercentage,
+  getType, addFadePercentage, getYoupinLink,
   getDopplerInfo, getActivePage, logExtensionPresence,
   updateLoggedInUserInfo, addPageControlEventListeners,
   addSearchListener, removeLinkFilterFromLinks,
@@ -43,6 +43,7 @@ let showContrastingLook = true;
 let pricEmpireAction = false;
 let pricingProviderUsed = null;
 let buffAction = false;
+let youpinAction = false;
 let floatAction = false;
 let hideOtherExtensions = true;
 let yourInventory = null;
@@ -1246,12 +1247,13 @@ if (partnerName !== null) changePageTitle('trade_offer', partnerName);
 chrome.storage.local.get([
   'numberOfFloatDigitsToShow', 'showPaintSeedOnItems', 'showFloatRankOnItems', 'contrastingLook',
   'tradeOfferPricEmpireAction', 'tradeOfferBuffAction', 'tradeOfferFloatAction', 'hideOtherExtensionsPrices',
-  'pricingProvider',
+  'pricingProvider', 'tradeOfferYoupinAction',
 ], ({
   numberOfFloatDigitsToShow, showPaintSeedOnItems,
   showFloatRankOnItems, contrastingLook,
   tradeOfferPricEmpireAction, tradeOfferBuffAction,
   tradeOfferFloatAction, hideOtherExtensionsPrices,
+  tradeOfferYoupinAction,
   pricingProvider,
 }) => {
   floatDigitsToShow = numberOfFloatDigitsToShow;
@@ -1262,6 +1264,7 @@ chrome.storage.local.get([
   pricingProviderUsed = pricingProvider;
   buffAction = tradeOfferBuffAction;
   floatAction = tradeOfferFloatAction;
+  youpinAction = tradeOfferYoupinAction;
   hideOtherExtensions = hideOtherExtensionsPrices;
 });
 
@@ -1480,6 +1483,20 @@ if (tradeActionPopup) {
                 staticActions.appendChild(buffActionEl);
               } else {
                 staticActions.querySelector('#buffAction').setAttribute('href', getBuffLink(actionItem.market_hash_name));
+              }
+            }
+
+            if (youpinAction) {
+              if (staticActions.querySelector('#youpinAction') === null) {
+                const youpinActionEl = document.createElement('a');
+                youpinActionEl.textContent = 'Lookup on Youpin';
+                youpinActionEl.id = 'youpinAction';
+                youpinActionEl.classList.add('popup_menu_item');
+                youpinActionEl.setAttribute('href', getYoupinLink(actionItem.market_hash_name));
+                youpinActionEl.setAttribute('target', '_blank');
+                staticActions.appendChild(youpinActionEl);
+              } else {
+                staticActions.querySelector('#youpinAction').setAttribute('href', getYoupinLink(actionItem.market_hash_name));
               }
             }
 

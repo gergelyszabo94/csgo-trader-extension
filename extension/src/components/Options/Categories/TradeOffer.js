@@ -155,6 +155,12 @@ const tradeOffer = () => {
         description="Show Buff lookup action in trade offers"
       />
       <Row
+        name="Youpin lookup"
+        id="tradeOfferYoupinAction"
+        type="flipSwitchStorage"
+        description="Show Youpin lookup action in trade offers"
+      />
+      <Row
         name="CSFloat lookup"
         id="tradeOfferFloatAction"
         type="flipSwitchStorage"
