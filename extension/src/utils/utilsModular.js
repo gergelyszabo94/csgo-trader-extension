@@ -13,6 +13,7 @@ import DOMPurify from 'dompurify';
 import { getIDsFromElement } from 'utils/itemsToElementsToItems';
 import { createOffscreen } from 'utils/simpleUtils';
 import buffIds from 'utils/static/buffIds.json';
+import youpinIds from 'utils/static/youpinIds.json';
 import bluePercentage from 'utils/static/bluepercent.json';
 
 const { FadeCalculator } = require('csgo-fade-percentage-calculator');
@@ -1263,6 +1264,11 @@ const getLookupLink = (pricingProvider, itemType, itemName, dopplerType, conditi
     : `https://pricempire.com/${getPricempireLink(itemType, itemName, dopplerType, condition)}?utm_source=csgotrader.app&r=76561198036030455`;
 };
 
+const getYoupinLink = (marketHashName) => {
+  const youPinID = youpinIds[marketHashName];
+  return `https://youpin898.com/market/goods-list?templateId=${youPinID}&gameId=730`;
+};
+
 // runs in content scripts when steam pages are loaded
 const refreshSteamAccessToken = () => {
   chrome.storage.local.get(['steamAcessToken', 'steamAcessTokenValid'], ({ steamAcessToken, steamAcessTokenValid }) => {
@@ -1422,5 +1428,5 @@ export {
   addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,
   getAppropriateFetchFunc, getFloatDBLink, getBuffLink, refreshSteamAccessToken,
   getLookupLink, loadFloatData, getSteamDisplayLanguageFromPage,
-  openBrowserInspectModal,
+  openBrowserInspectModal, getYoupinLink,
 };

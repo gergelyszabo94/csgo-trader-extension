@@ -248,6 +248,7 @@ const storageKeys = {
   discordNotificationHook: '',
   allowDiscordNotification: false,
   showBuffLookupInInventory: false,
+  showYoupinLookupInInventory: false,
   removeAnimatedProfileBackgrounds: false,
   inventoryShowCopyButtons: true,
   outBidPercentage: 1,

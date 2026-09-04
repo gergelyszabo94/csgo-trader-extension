@@ -12,7 +12,7 @@ import {
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
   parseStickerInfo, getExteriorFromTags, getDopplerInfo,
   getType, getQuality, getBuffLink, getLookupLink, getSteamDisplayLanguageFromPage,
-  openBrowserInspectModal,
+  openBrowserInspectModal, getYoupinLink,
 }
   from 'utils/utilsModular';
 import {
@@ -142,7 +142,7 @@ const goToPreviousInventoryPage = () => {
 
 const cleanUpElements = () => {
   document.querySelectorAll(
-    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .customName,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .multiSellLink, .floatDBLink, .inbrowserInspectLink, .inbrowserInspectImageLink',
+    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .customName,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .multiSellLink, .floatDBLink, .inbrowserInspectLink, .inbrowserInspectImageLink, .youpinLink',
   ).forEach((element) => {
     element.remove();
   });
@@ -1090,10 +1090,12 @@ const addRightSideElements = (reRun) => {
 
       // adds the in-offer module
       chrome.storage.local.get(['activeOffers', 'itemInOffersInventory', 'showPriceEmpireLinkInInventory',
-        'showBuffLookupInInventory', 'inventoryShowCopyButtons', 'showFloatDBLookupInInventory', 'pricingProvider'], ({
+        'showBuffLookupInInventory', 'inventoryShowCopyButtons', 'showFloatDBLookupInInventory', 'pricingProvider',
+        'showYoupinLookupInInventory',
+      ], ({
         activeOffers, itemInOffersInventory,
         showPriceEmpireLinkInInventory, showBuffLookupInInventory, inventoryShowCopyButtons,
-        showFloatDBLookupInInventory, pricingProvider,
+        showFloatDBLookupInInventory, pricingProvider, showYoupinLookupInInventory,
       }) => {
         const inOffers = activeOffers.items.filter((offerItem) => {
           return offerItem.assetid === item.assetid;
@@ -1132,6 +1134,13 @@ const addRightSideElements = (reRun) => {
               </a>
         </div>
       `;
+          const youpinLink = `
+        <div class="youpinLink" style="margin-top: -10px;">
+            <a href="${getYoupinLink(item.market_hash_name)}" target="_blank" style="color: yellow;">
+                Lookup on Youpin
+              </a>
+        </div>
+      `;
           const floatDBLink = getFloatDBLink(item);
           const floatDBLinkEL = `
               <div class="floatDBLink" style="margin-top: -10px;">
@@ -1153,6 +1162,7 @@ const addRightSideElements = (reRun) => {
             if (showBuffLookupInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(buffLink, { ADD_ATTR: ['target'] }));
             if (showFloatDBLookupInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(floatDBLinkEL, { ADD_ATTR: ['target'] }));
             if (showPriceEmpireLinkInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(priceEmpireLink, { ADD_ATTR: ['target'] }));
+            if (showYoupinLookupInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(youpinLink, { ADD_ATTR: ['target'] }));
           });
         }
 

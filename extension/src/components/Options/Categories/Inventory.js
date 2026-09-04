@@ -99,10 +99,16 @@ const inventory = () => {
         description="Show pricempire.com / CS2.SH links in inventories depending on the pricing mode used"
       />
       <Row
-        name="Show lookup on buff link"
+        name="Show lookup on Buff link"
         id="showBuffLookupInInventory"
         type="flipSwitchStorage"
         description="Show lookup on buff link in inventories"
+      />
+      <Row
+        name="Show lookup on Youpin link"
+        id="showYoupinLookupInInventory"
+        type="flipSwitchStorage"
+        description="Show lookup on Youpin link in inventories"
       />
       <Row
         name="Show lookup on Float DB link"
