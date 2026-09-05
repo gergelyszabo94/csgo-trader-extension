@@ -55,28 +55,47 @@ let isSouvenir = false;
 let isVanillaKnife = false;
 let isCharm = false;
 
-if (!isNewMarketDesign) {
-  isCommodityItem = document.querySelector('.market_commodity_order_block') !== null;
-  appID = decodeURIComponent(window.location.pathname).split('/listings/')[1].split('/')[0];
-  fullName = decodeURIComponent(window.location.pathname).split('/listings/')[1].split('/')[1];
-  isStattrak = /StatTrak™/.test(fullName);
-  isSouvenir = /Souvenir/.test(fullName);
-  isVanillaKnife = !fullName.includes('(') && knifeNames.includes('Knife');
-  isCharm = fullName.startsWith('Charm |');
+const extractItemInfo = () => {
+  const pathParts = decodeURIComponent(window.location.pathname).split('/listings/');
+  if (pathParts[1]) {
+    const segments = pathParts[1].split('/');
+    if (segments[0]) appID = segments[0];
+    if (segments[1] && !fullName) fullName = segments[1];
+  }
 
-  if (fullName.includes('★')) star = starChar;
-  if (isStattrak) weaponName = fullName.split('StatTrak™ ')[1].split('(')[0];
-  else if (isSouvenir) weaponName = fullName.split('Souvenir ')[1].split('(')[0];
-  else {
-    weaponName = fullName.split('(')[0].split('★ ')[1];
-    if (weaponName === undefined) weaponName = fullName.split('(')[0];
+  if (!isNewMarketDesign) {
+    isCommodityItem = document.querySelector('.market_commodity_order_block') !== null;
+  } else if (!fullName) {
+    const h2Title = document.querySelector('h2');
+    if (h2Title && h2Title.textContent.trim()) {
+      fullName = h2Title.textContent.trim();
+    } else {
+      const breadcrumbListing = document.querySelector('a[href*="/market/listings/"]');
+      if (breadcrumbListing && breadcrumbListing.textContent.trim()) {
+        fullName = breadcrumbListing.textContent.trim();
+      }
+    }
   }
-} else {
-  const nameElement = document.querySelector('span a[href^="https://steamcommunity.com/market/listings/730/"]');
-  if (nameElement) {
-    fullName = nameElement.textContent; // not market hash name like it used to be
+
+  if (fullName) {
+    isStattrak = /StatTrak™/.test(fullName);
+    isSouvenir = /Souvenir/.test(fullName);
+    isVanillaKnife = !fullName.includes('(') && knifeNames.some((k) => fullName.includes(k));
+    isCharm = fullName.startsWith('Charm |');
+
+    if (fullName.includes('★')) star = starChar;
+    if (isStattrak) {
+      weaponName = fullName.split('StatTrak™ ')[1]?.split('(')[0]?.trim() || '';
+    } else if (isSouvenir) {
+      weaponName = fullName.split('Souvenir ')[1]?.split('(')[0]?.trim() || '';
+    } else {
+      const starSplit = fullName.split('(')[0]?.split('★ ');
+      weaponName = (starSplit && starSplit.length > 1 ? starSplit[1] : fullName.split('(')[0])?.trim() || '';
+    }
   }
-}
+};
+
+extractItemInfo();
 
 const getElementByListingID = (listingID) => {
   return document.getElementById(`listing_${listingID}`);
@@ -1226,201 +1245,331 @@ if (!isNewMarketDesign) {
   });
 }
 
-// I guess it takes time for the required elements to load, so wait a bit before adding the links
-setTimeout(() => {
-  chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }) => {
-    if (showRealMoneySiteLinks
-      && (appID === steamApps.CSGO.appID || appID === steamApps.DOTA2.appID
-        || appID === steamApps.TF2.appID || appID === steamApps.RUST.appID
-        || appID === steamApps.Z1.appID)) {
-      const elementToInsertTo = isNewMarketDesign
-        ? document.querySelector('img[src="https://cdn.fastly.steamstatic.com/steamcommunity/public/images/apps/730/8dbc71957312bbd3baea65848b545be9eae2a355.jpg"]').parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode
-        : isCommodityItem // old market design
-          ? document.querySelector('.market_commodity_order_block')
-          : document.getElementById('largeiteminfo_warning');
-      const placeMent = isNewMarketDesign ? 'afterend' : 'beforebegin';
+const getNewMarketItemCard = () => {
+  // Strategy 1: Find via economy image
+  const economyImg = document.querySelector('img[src*="/economy/image/"]')
+    || document.querySelector('div[style*="--img-url"]');
+  if (economyImg) {
+    let current = economyImg.parentElement;
+    let bestCandidate = null;
+    while (current && current !== document.body && current !== document.documentElement) {
+      const hasHeading = current.querySelector('h2');
+      const hasCategoryLinks = current.querySelector('a[href*="category_"]');
+      const hasAppSearch = current.querySelector('a[href*="/market/search?appid="]');
 
-      if (elementToInsertTo !== null) {
-        elementToInsertTo.insertAdjacentHTML(
-          placeMent,
-          `<div>
-                <span class="realMoneyMarketTitle">You can save money (20-35%) by buying this item on one of these trusted markets for "real money":</span>
-                <div class="realMoneySites">
-                  <div class="realMoneySite">
-                    <a href="https://skinport.com/market/${appID}?search=${fullName}&r=gery" target="_blank" class="realMoneySiteLink referralLink" data-site="Skinport">
-                    <img alt="Skinport logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinport.png')}" data-site="skinport">
-                      <br>
-                      Skinport.com
-                    </a>
-                  </div>
-                  <div class="realMoneySite">
-                    <a href="https://csfloat.com/search?market_hash_name=${fullName}&ref=gerytrading" target="_blank" class="realMoneySiteLink referralLink" data-site="csfloat">
-                        <img alt="CSFloat logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csgofloat.png')}" data-site="csfloat">
-                        <br>
-                        CSFloat Market
-                    </a>
-                  </div>
-                  <div class="realMoneySite">
-                    <a href="https://buff.market/home?ref=U1093423730" target="_blank" class="realMoneySiteLink referralLink" data-site="buffmarket">
-                        <img alt="Buff Market logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/buffmarket.png')}" data-site="buffmarket">
-                        <br>
-                        BUFF.MARKET
-                    </a>
-                  </div>
-                  <div class="realMoneySite">
-                    <a href="https://itrade.gg/trade/csgo?search=${fullName}&ref=gery" target="_blank" class="realMoneySiteLink referralLink" data-site="itradegg">
-                        <img alt="iTrade.gg logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/itradegg.png')}" data-site="itradegg">
-                        <br>
-                        iTrade.gg
-                    </a>
-                  </div>
-                </div>
-                <div class="realMoneySites">
-                 <div class="realMoneySite">
-                    <a href="https://cs.money/csgo/trade/?utm_source=mediabuy&utm_medium=cstrade&utm_campaign=cstrd0920&utm_content=link&search=${weaponName}${isVanillaKnife ? ' vanilla' : ''}&sort=price&order=asc&isStatTrak=${isStattrak}&isSouvenir=${isSouvenir}" target="_blank" class="realMoneySiteLink referralLink" data-site="csmoney">
-                        <img alt="Csmoney logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csmoney.png')}" data-site="csmoney">
-                        <br>
-                        CS.MONEY
-                    </a>
-                  </div>
-                  <div class="realMoneySite">
-                    <a href="https://skinbaron.com/partner/gery" target="_blank" class="realMoneySiteLink referralLink" data-site="skinbaron">
-                        <img alt="Skinbaron logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinbaron.png')}" data-site="skinbaron">
-                        <br>
-                        Skinbaron.com
-                    </a>
-                  </div>
-                </div>
-                <div class="realMoneySites">
-                  <div class="realMoneySite">
-                    <a href="https://tradeit.gg/?aff=gery" target="_blank" class="realMoneySiteLink referralLink" data-site="tradeit">
-                        <img alt="Tradeit logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/tradeit.png')}" data-site="tradeit">
-                        <br>
-                        TRADEIT.GG
-                    </a>
-                  </div>
-                  <div class="realMoneySite">
-                    <a href="https://cs.trade/trade/ref/CSGOTRADERAPP" target="_blank" class="realMoneySiteLink referralLink" data-site="cstrade">
-                        <img alt="CS.TRADE logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/cstrade.png')}" data-site="cstrade">
-                        <br>
-                        CS.TRADE
-                    </a>
-                  </div>
-                  <div class="realMoneySite">
-                    <a href="https://cs.money/market/buy/?utm_source=mediabuy&utm_medium=cstrade&utm_campaign=market&utm_content=link&search=${weaponName}${isVanillaKnife ? ' vanilla' : ''}&isStatTrak=${isStattrak}&isSouvenir=${isSouvenir}&sort=price&order=asc" target="_blank" class="realMoneySiteLink referralLink" data-site="csmoney">
-                        <img alt="Csmoney P2P logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csmoneyp2p.png')}" data-site="csmoney">
-                        <br>
-                        CS.MONEY P2P
-                    </a>
-                  </div>
-                </div>
-                <div class="realMoneySites">
-                    <div class="realMoneySite">
-                      <a href="https://dmarket.com/?ref=hJEDYLBTsV" target="_blank" class="realMoneySiteLink referralLink" data-site="dmarket">
-                          <img alt="Dmarket logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/dmarket.png')}" data-site="dmarket">
-                          <br>
-                          DMARKET
-                      </a>
-                    </div>
-                    <div class="realMoneySite">
-                      <a href="https://waxpeer.com/r/gery" target="_blank" class="realMoneySiteLink referralLink" data-site="waxpeer">
-                          <img alt="Waxpeer logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/waxpeer.png')}" data-site="waxpeer">
-                          <br>
-                          Waxpeer.com
-                      </a>
-                    </div>
-                    <div class="realMoneySite">
-                      <a href="https://skinflow.gg/buy?search=${weaponName}&referral=GERYTRADING" target="_blank" class="realMoneySiteLink referralLink" data-site="skinflow">
-                          <img alt="SkinFlow logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinflow.png')}" data-site="skinflow">
-                          <br>
-                          SkinFlow
-                      </a>
-                    </div>
-                  </div> 
-                  <div class="realMoneySites">
-                    <div class="realMoneySite">
-                      <a href="https://skinvault.gg/en?aff=gery" target="_blank" class="realMoneySiteLink referralLink" data-site="skinvault">
-                          <img alt="SkinVault logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinvault.png')}" data-site="skinvault">
-                          <br>
-                          SkinVault
-                      </a>
-                    </div>
-                    <div class="realMoneySite">
-                      <a href="https://skinswap.com/r/gery" target="_blank" class="realMoneySiteLink referralLink" data-site="skinswap">
-                          <img alt="Skinswap logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinswap.png')}" data-site="skinswap">
-                          <br>
-                          SKINSWAP
-                      </a>
-                    </div>
-                    <div class="realMoneySite">
-                      <a href="https://csdeals.com/new/?ref=mwe3otc" target="_blank" class="realMoneySiteLink referralLink" data-site="csdeals">
-                          <img alt="CS.DEALS logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csdeals.png')}" data-site="csdeals">
-                          <br>
-                          CS.DEALS
-                      </a>
-                    </div>
-                    <div class="realMoneySite">
-                      <a href="https://skin.place/buy-cs2-skins/?search=${weaponName}&utm_campaign=cs2trader" target="_blank" class="realMoneySiteLink referralLink" data-site="skinplace">
-                          <img alt="Skin.Place logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinplace.png')}" data-site="skinplace">
-                          <br>
-                          Skin.Place
-                      </a>
-                    </div>
-                    <div class="realMoneySite">
-                      <a href="https://white.market/item?appId=730&nameHash=${encodeURIComponent(fullName)}&ref=53cecef4a02f6fc1" target="_blank" class="realMoneySiteLink referralLink" data-site="whitemarket">
-                          <img alt="White.Market logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/whitemarket.png')}" data-site="whitemarket">
-                          <br>
-                          White.Market
-                      </a>
-                    </div>
-                </div>
-                
-                <div id="realMoneyExpand" class="clickable" title="Click to learn more about what this is">What is this?</div>
-                <div id="realMoneyMoreInfo" class="doHide">
-                    <div style="margin: 10px 0 10px 0">
-                      <a href="https://skinport.com/market/730?r=gery" target="_blank" class="referralLink" data-site="skinport">Skinport</a>,
-                      <a href="https://skinbaron.com/partner/gery" target="_blank" class="referralLink" data-site="skinbaron">Skinbaron</a>,
-                      <a href="https://dmarket.com/?ref=hJEDYLBTsV" target="_blank" class="referralLink" data-site="dmarket">DMARKET</a>,
-                      <a href="https://skinvault.gg/en?aff=gery" target="_blank" class="referralLink" data-site="skinvault">SkinVault</a>,
-                      <a href="https://itrade.gg/trade/csgo?search=${fullName}&ref=gery" target="_blank" class="referralLink" data-site="itradegg">ITRADE.GG</a>,
-                      <a href="https://waxpeer.com/r/gery" target="_blank" class="referralLink" data-site="waxpeer">Waxpeer</a>,
-                      <a href="https://buff.market/home?ref=U1093423730" target="_blank" class="referralLink" data-site="buffmarket">BUFF.MARKET</a>,
-                      <a href="https://csdeals.com/new/?ref=mwe3otc" target="_blank" class="referralLink" data-site="csdeals">CS.DEALS</a>,
-                      <a href="https://p.skin.place/cs2trader" target="_blank" class="referralLink" data-site="skinplace">Skin.Place</a>,
-                      <a href="https://white.market/item?appId=730&nameHash=${encodeURIComponent(fullName)}&ref=53cecef4a02f6fc1" target="_blank" class="referralLink" data-site="whitemarket">White.Market</a>,
-                      <a href="https://skinflow.gg/buy?search=${weaponName}&referral=GERYTRADING" target="_blank" class="referralLink" data-site="skinflow">SkinFlow.gg</a>,
-                      <a href="https://csfloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csfloat">
-                      CSFloat
-                      </a>
-                      are real money marketplaces where you can buy and sell skins. <br>
-                      You can save money by buying items there instead of the market. <br>
-                      <a href="https://skinport.com/market/${appID}?search=${fullName}&r=gery" target="_blank" class="referralLink" data-site="skinport">
-                          Follow this link to check listings for his item on Skinport.com
-                      </a>,
-                      <a href="https://csfloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csfloat">
-                      this one and find your desired items on CSFloat's peer to peer market
-                      </a>,
-                      <a href="https://buff.market/home?ref=U1093423730" target="_blank" class="referralLink" data-site="buffmarket">this one for BUFF.MARKET</a>,
-                      or
-                      <a href="https://skinbaron.com/partner/gery" target="_blank" class="referralLink" data-site="skinbaron">this one for Skinbaron</a>
-                      You can also buy items for real money on
-                      <a href="https://cs.money/csgo/trade/?utm_source=mediabuy&utm_medium=cstrade&utm_campaign=cstrd0920&utm_content=link&search=${weaponName}${isVanillaKnife ? ' vanilla' : ''}&sort=price&order=asc&isStatTrak=${isStattrak}&isSouvenir=${isSouvenir}&sort=price&order=asc" target="_blank" class="referralLink" data-site="csmoney">Csmoney</a>
-                      and
-                      <a href="https://tradeit.gg/?aff=gery" target="_blank" class="referralLink" data-site="tradeit">TRADEIT.GG</a>
-                      as well as trade for them with your items.
-                    </div>
-                    <div>
-                      This message was added by the CS2 Trader extension. using the above link to purchase something helps the development of the extension.
-                      If you don't wish to see this message in the future you can go the options and turn the feature off.
-                    </div>
-                </div>
-            </div>`,
-        );
-
-        document.getElementById('realMoneyExpand').addEventListener('click', () => {
-          document.getElementById('realMoneyMoreInfo').classList.remove('doHide');
-        });
+      if (hasHeading || hasCategoryLinks || hasAppSearch) {
+        bestCandidate = current;
+        const parent = current.parentElement;
+        if (parent && parent.querySelector('a[href="https://steamcommunity.com/market/"], a[href$="/market/"]')
+          && !current.querySelector('a[href="https://steamcommunity.com/market/"], a[href$="/market/"]')) {
+          return current;
+        }
       }
+      current = current.parentElement;
+    }
+    if (bestCandidate) return bestCandidate;
+  }
+
+  // Strategy 2: Find via category filter links (Type, Weapon, Exterior, etc.)
+  const categoryLink = document.querySelector('a[href*="category_"]');
+  if (categoryLink) {
+    let current = categoryLink.parentElement;
+    while (current && current !== document.body && current !== document.documentElement) {
+      if (current.querySelector('img[src*="/economy/image/"]') || current.querySelector('h2')) {
+        return current;
+      }
+      current = current.parentElement;
+    }
+  }
+
+  // Strategy 3: Find via h2 item title
+  const h2 = document.querySelector('h2');
+  if (h2) {
+    let current = h2.parentElement;
+    while (current && current !== document.body && current !== document.documentElement) {
+      if (current.querySelector('img[src*="/economy/image/"]') || current.querySelector('a[href*="category_"]')) {
+        return current;
+      }
+      current = current.parentElement;
+    }
+  }
+
+  // Strategy 4: Find via breadcrumbs sibling
+  const breadcrumbHome = document.querySelector('a[href="https://steamcommunity.com/market/"], a[href$="/market/"]');
+  if (breadcrumbHome) {
+    let current = breadcrumbHome.parentElement;
+    while (current && current !== document.body && current !== document.documentElement) {
+      if (current.nextElementSibling && (current.nextElementSibling.querySelector('img') || current.nextElementSibling.querySelector('h2'))) {
+        return current.nextElementSibling;
+      }
+      current = current.parentElement;
+    }
+  }
+
+  return null;
+};
+
+const getRealMoneyInsertionTarget = () => {
+  if (isNewMarketDesign) {
+    const card = getNewMarketItemCard();
+    if (card) {
+      return { element: card, placement: 'afterend' };
+    }
+  } else if (isCommodityItem) {
+    const commodityBlock = document.querySelector('.market_commodity_order_block');
+    if (commodityBlock) {
+      return { element: commodityBlock, placement: 'afterend' };
+    }
+  } else {
+    const warningBlock = document.getElementById('largeiteminfo_warning');
+    if (warningBlock) {
+      return { element: warningBlock, placement: 'beforebegin' };
+    }
+    const largeItemInfo = document.getElementById('largeiteminfo');
+    if (largeItemInfo) {
+      return { element: largeItemInfo, placement: 'afterend' };
+    }
+  }
+  return null;
+};
+
+let isRealMoneyMoreInfoExpanded = false;
+
+const insertRealMoneyLinks = (target) => {
+  target.element.insertAdjacentHTML(
+    target.placement,
+    `<div id="realMoneySiteLinksContainer">
+          <span class="realMoneyMarketTitle">You can save money (20-35%) by buying this item on one of these trusted markets for "real money":</span>
+          <div class="realMoneySites">
+            <div class="realMoneySite">
+              <a href="https://skinport.com/market/${appID}?search=${fullName}&r=gery" target="_blank" class="realMoneySiteLink referralLink" data-site="Skinport">
+              <img alt="Skinport logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinport.png')}" data-site="skinport">
+                <br>
+                Skinport.com
+              </a>
+            </div>
+            <div class="realMoneySite">
+              <a href="https://csfloat.com/search?market_hash_name=${fullName}&ref=gerytrading" target="_blank" class="realMoneySiteLink referralLink" data-site="csfloat">
+                  <img alt="CSFloat logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csgofloat.png')}" data-site="csfloat">
+                  <br>
+                  CSFloat Market
+              </a>
+            </div>
+            <div class="realMoneySite">
+              <a href="https://buff.market/home?ref=U1093423730" target="_blank" class="realMoneySiteLink referralLink" data-site="buffmarket">
+                  <img alt="Buff Market logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/buffmarket.png')}" data-site="buffmarket">
+                  <br>
+                  BUFF.MARKET
+              </a>
+            </div>
+            <div class="realMoneySite">
+              <a href="https://itrade.gg/trade/csgo?search=${fullName}&ref=gery" target="_blank" class="realMoneySiteLink referralLink" data-site="itradegg">
+                  <img alt="iTrade.gg logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/itradegg.png')}" data-site="itradegg">
+                  <br>
+                  iTrade.gg
+              </a>
+            </div>
+          </div>
+          <div class="realMoneySites">
+           <div class="realMoneySite">
+              <a href="https://cs.money/csgo/trade/?utm_source=mediabuy&utm_medium=cstrade&utm_campaign=cstrd0920&utm_content=link&search=${weaponName}${isVanillaKnife ? ' vanilla' : ''}&sort=price&order=asc&isStatTrak=${isStattrak}&isSouvenir=${isSouvenir}" target="_blank" class="realMoneySiteLink referralLink" data-site="csmoney">
+                  <img alt="Csmoney logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csmoney.png')}" data-site="csmoney">
+                  <br>
+                  CS.MONEY
+              </a>
+            </div>
+            <div class="realMoneySite">
+              <a href="https://skinbaron.com/partner/gery" target="_blank" class="realMoneySiteLink referralLink" data-site="skinbaron">
+                  <img alt="Skinbaron logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinbaron.png')}" data-site="skinbaron">
+                  <br>
+                  Skinbaron.com
+              </a>
+            </div>
+          </div>
+          <div class="realMoneySites">
+            <div class="realMoneySite">
+              <a href="https://tradeit.gg/?aff=gery" target="_blank" class="realMoneySiteLink referralLink" data-site="tradeit">
+                  <img alt="Tradeit logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/tradeit.png')}" data-site="tradeit">
+                  <br>
+                  TRADEIT.GG
+              </a>
+            </div>
+            <div class="realMoneySite">
+              <a href="https://cs.trade/trade/ref/CSGOTRADERAPP" target="_blank" class="realMoneySiteLink referralLink" data-site="cstrade">
+                  <img alt="CS.TRADE logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/cstrade.png')}" data-site="cstrade">
+                  <br>
+                  CS.TRADE
+              </a>
+            </div>
+            <div class="realMoneySite">
+              <a href="https://cs.money/market/buy/?utm_source=mediabuy&utm_medium=cstrade&utm_campaign=market&utm_content=link&search=${weaponName}${isVanillaKnife ? ' vanilla' : ''}&isStatTrak=${isStattrak}&isSouvenir=${isSouvenir}&sort=price&order=asc" target="_blank" class="realMoneySiteLink referralLink" data-site="csmoney">
+                  <img alt="Csmoney P2P logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csmoneyp2p.png')}" data-site="csmoney">
+                  <br>
+                  CS.MONEY P2P
+              </a>
+            </div>
+          </div>
+          <div class="realMoneySites">
+              <div class="realMoneySite">
+                <a href="https://dmarket.com/?ref=hJEDYLBTsV" target="_blank" class="realMoneySiteLink referralLink" data-site="dmarket">
+                    <img alt="Dmarket logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/dmarket.png')}" data-site="dmarket">
+                    <br>
+                    DMARKET
+                </a>
+              </div>
+              <div class="realMoneySite">
+                <a href="https://waxpeer.com/r/gery" target="_blank" class="realMoneySiteLink referralLink" data-site="waxpeer">
+                    <img alt="Waxpeer logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/waxpeer.png')}" data-site="waxpeer">
+                    <br>
+                    Waxpeer.com
+                </a>
+              </div>
+              <div class="realMoneySite">
+                <a href="https://skinflow.gg/buy?search=${weaponName}&referral=GERYTRADING" target="_blank" class="realMoneySiteLink referralLink" data-site="skinflow">
+                    <img alt="SkinFlow logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinflow.png')}" data-site="skinflow">
+                    <br>
+                    SkinFlow
+                </a>
+              </div>
+            </div> 
+            <div class="realMoneySites">
+              <div class="realMoneySite">
+                <a href="https://skinvault.gg/en?aff=gery" target="_blank" class="realMoneySiteLink referralLink" data-site="skinvault">
+                    <img alt="SkinVault logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinvault.png')}" data-site="skinvault">
+                    <br>
+                    SkinVault
+                </a>
+              </div>
+              <div class="realMoneySite">
+                <a href="https://skinswap.com/r/gery" target="_blank" class="realMoneySiteLink referralLink" data-site="skinswap">
+                    <img alt="Skinswap logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinswap.png')}" data-site="skinswap">
+                    <br>
+                    SKINSWAP
+                </a>
+              </div>
+              <div class="realMoneySite">
+                <a href="https://csdeals.com/new/?ref=mwe3otc" target="_blank" class="realMoneySiteLink referralLink" data-site="csdeals">
+                    <img alt="CS.DEALS logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csdeals.png')}" data-site="csdeals">
+                    <br>
+                    CS.DEALS
+                </a>
+              </div>
+              <div class="realMoneySite">
+                <a href="https://skin.place/buy-cs2-skins/?search=${weaponName}&utm_campaign=cs2trader" target="_blank" class="realMoneySiteLink referralLink" data-site="skinplace">
+                    <img alt="Skin.Place logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinplace.png')}" data-site="skinplace">
+                    <br>
+                    Skin.Place
+                </a>
+              </div>
+              <div class="realMoneySite">
+                <a href="https://white.market/item?appId=730&nameHash=${encodeURIComponent(fullName)}&ref=53cecef4a02f6fc1" target="_blank" class="realMoneySiteLink referralLink" data-site="whitemarket">
+                    <img alt="White.Market logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/whitemarket.png')}" data-site="whitemarket">
+                    <br>
+                    White.Market
+                </a>
+              </div>
+          </div>
+          
+          <div id="realMoneyExpand" class="clickable" title="Click to learn more about what this is">What is this?</div>
+          <div id="realMoneyMoreInfo" class="${isRealMoneyMoreInfoExpanded ? '' : 'doHide'}">
+              <div style="margin: 10px 0 10px 0">
+                <a href="https://skinport.com/market/730?r=gery" target="_blank" class="referralLink" data-site="skinport">Skinport</a>,
+                <a href="https://skinbaron.com/partner/gery" target="_blank" class="referralLink" data-site="skinbaron">Skinbaron</a>,
+                <a href="https://dmarket.com/?ref=hJEDYLBTsV" target="_blank" class="referralLink" data-site="dmarket">DMARKET</a>,
+                <a href="https://skinvault.gg/en?aff=gery" target="_blank" class="referralLink" data-site="skinvault">SkinVault</a>,
+                <a href="https://itrade.gg/trade/csgo?search=${fullName}&ref=gery" target="_blank" class="referralLink" data-site="itradegg">ITRADE.GG</a>,
+                <a href="https://waxpeer.com/r/gery" target="_blank" class="referralLink" data-site="waxpeer">Waxpeer</a>,
+                <a href="https://buff.market/home?ref=U1093423730" target="_blank" class="referralLink" data-site="buffmarket">BUFF.MARKET</a>,
+                <a href="https://csdeals.com/new/?ref=mwe3otc" target="_blank" class="referralLink" data-site="csdeals">CS.DEALS</a>,
+                <a href="https://p.skin.place/cs2trader" target="_blank" class="referralLink" data-site="skinplace">Skin.Place</a>,
+                <a href="https://white.market/item?appId=730&nameHash=${encodeURIComponent(fullName)}&ref=53cecef4a02f6fc1" target="_blank" class="referralLink" data-site="whitemarket">White.Market</a>,
+                <a href="https://skinflow.gg/buy?search=${weaponName}&referral=GERYTRADING" target="_blank" class="referralLink" data-site="skinflow">SkinFlow.gg</a>,
+                <a href="https://csfloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csfloat">
+                CSFloat
+                </a>
+                are real money marketplaces where you can buy and sell skins. <br>
+                You can save money by buying items there instead of the market. <br>
+                <a href="https://skinport.com/market/${appID}?search=${fullName}&r=gery" target="_blank" class="referralLink" data-site="skinport">
+                    Follow this link to check listings for his item on Skinport.com
+                </a>,
+                <a href="https://csfloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csfloat">
+                this one and find your desired items on CSFloat's peer to peer market
+                </a>,
+                <a href="https://buff.market/home?ref=U1093423730" target="_blank" class="referralLink" data-site="buffmarket">this one for BUFF.MARKET</a>,
+                or
+                <a href="https://skinbaron.com/partner/gery" target="_blank" class="referralLink" data-site="skinbaron">this one for Skinbaron</a>
+                You can also buy items for real money on
+                <a href="https://cs.money/csgo/trade/?utm_source=mediabuy&utm_medium=cstrade&utm_campaign=cstrd0920&utm_content=link&search=${weaponName}${isVanillaKnife ? ' vanilla' : ''}&sort=price&order=asc&isStatTrak=${isStattrak}&isSouvenir=${isSouvenir}&sort=price&order=asc" target="_blank" class="referralLink" data-site="csmoney">Csmoney</a>
+                and
+                <a href="https://tradeit.gg/?aff=gery" target="_blank" class="referralLink" data-site="tradeit">TRADEIT.GG</a>
+                as well as trade for them with your items.
+              </div>
+              <div>
+                This message was added by the CS2 Trader extension. using the above link to purchase something helps the development of the extension.
+                If you don't wish to see this message in the future you can go the options and turn the feature off.
+              </div>
+          </div>
+      </div>`,
+  );
+
+  const expandBtn = document.getElementById('realMoneyExpand');
+  if (expandBtn) {
+    expandBtn.addEventListener('click', () => {
+      isRealMoneyMoreInfoExpanded = true;
+      const moreInfo = document.getElementById('realMoneyMoreInfo');
+      if (moreInfo) {
+        moreInfo.classList.remove('doHide');
+      }
+    });
+  }
+};
+
+const addRealMoneySiteLinks = () => {
+  chrome.storage.local.get(['showRealMoneySiteLinks'], ({ showRealMoneySiteLinks }) => {
+    if (!showRealMoneySiteLinks) return;
+
+    let isInserting = false;
+
+    const tryAdd = () => {
+      if (isInserting) return true;
+      const existing = document.getElementById('realMoneySiteLinksContainer');
+      if (existing && existing.isConnected) {
+        return true;
+      }
+
+      extractItemInfo();
+
+      if (appID === steamApps.CSGO.appID || appID === steamApps.DOTA2.appID
+        || appID === steamApps.TF2.appID || appID === steamApps.RUST.appID
+        || appID === steamApps.Z1.appID) {
+        const target = getRealMoneyInsertionTarget();
+        if (target && target.element && target.element.isConnected) {
+          isInserting = true;
+          try {
+            insertRealMoneyLinks(target);
+          } finally {
+            isInserting = false;
+          }
+          return true;
+        }
+      }
+      return false;
+    };
+
+    tryAdd();
+
+    const targetNode = document.body || document.documentElement;
+    if (targetNode) {
+      const observer = new MutationObserver(() => {
+        tryAdd();
+      });
+
+      observer.observe(targetNode, {
+        childList: true,
+        subtree: true,
+      });
     }
   });
-}, 500);
+};
+
+addRealMoneySiteLinks();
