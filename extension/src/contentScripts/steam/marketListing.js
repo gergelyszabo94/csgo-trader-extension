@@ -1590,14 +1590,23 @@ const addInspectButtonToItemModal = () => {
     inGameInspectLink.insertAdjacentHTML(
       'afterend',
       DOMPurify.sanitize(
-        `<a href="#" class="modalInspectInBrowser ${inGameInspectLink.className}" data-accent-color="${accentColor}">3D Inspect in Browser...</a>`,
+        `<a href="#" class="modalInspectInBrowser ${inGameInspectLink.className}" data-accent-color="${accentColor}">3D Inspect in Browser...</a>
+         <a href="#" class="modalInspectOnServer ${inGameInspectLink.className}" data-accent-color="${accentColor}">Inspect on Server...</a>`,
       ),
     );
 
+    const inspectInBrowserLink = inGameInspectLink.nextElementSibling;
+    const inspectOnServerLink = inspectInBrowserLink.nextElementSibling;
+
     // reads the href live at click-time in case Steam updated it in place for a different item
-    inGameInspectLink.nextElementSibling.addEventListener('click', (event) => {
+    inspectInBrowserLink.addEventListener('click', (event) => {
       event.preventDefault();
       openBrowserInspectModal(inGameInspectLink.getAttribute('href'));
+    });
+
+    inspectOnServerLink.addEventListener('click', (event) => {
+      event.preventDefault();
+      window.open(`https://www.cs2inspects.com/?apply=${inGameInspectLink.getAttribute('href')}`, '_blank', 'noopener,noreferrer');
     });
   });
 };
