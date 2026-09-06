@@ -97,11 +97,20 @@ const getFloatAsFormattedString = (float, decimals) => {
 const openBrowserInspectModal = (inspectLink, inventoryItems = [], floatDigitsToShow = 4) => {
   document.getElementById('browserInspectModal')?.remove();
 
-  const modal = document.createElement('div');
+  // a native <dialog> renders in the browser's top layer, which always paints above
+  // regular positioned/z-indexed content, so it can't end up behind Steam's own item modal
+  const modal = document.createElement('dialog');
   modal.id = 'browserInspectModal';
-  modal.setAttribute('role', 'dialog');
-  modal.setAttribute('aria-modal', 'true');
-  modal.style.cssText = 'position:fixed;inset:7vh 6vw;z-index:10000;display:flex;flex-direction:column;overflow:hidden;background:#15191f;border:1px solid rgba(255,255,255,.2);border-radius:6px;box-shadow:0 18px 50px rgba(0,0,0,.55),0 0 0 100vmax rgba(0,0,0,.7);';
+  // dialog's UA stylesheet defaults width/height to fit-content, which must be overridden for inset to size it
+  modal.style.cssText = 'position:fixed;inset:7vh 6vw;width:88vw;height:86vh;margin:0;padding:0;max-width:none;max-height:none;display:flex;flex-direction:column;overflow:hidden;background:#15191f;border:1px solid rgba(255,255,255,.2);border-radius:6px;box-shadow:0 18px 50px rgba(0,0,0,.55);';
+
+  // dialog's own ::backdrop is transparent by default, this dims the page behind it
+  if (document.getElementById('browserInspectModalStyle') === null) {
+    const backdropStyle = document.createElement('style');
+    backdropStyle.id = 'browserInspectModalStyle';
+    backdropStyle.textContent = '#browserInspectModal::backdrop { background: rgba(0,0,0,.7); }';
+    document.head.appendChild(backdropStyle);
+  }
 
   const closeButton = document.createElement('button');
   closeButton.type = 'button';
@@ -117,7 +126,7 @@ const openBrowserInspectModal = (inspectLink, inventoryItems = [], floatDigitsTo
     closeButton.style.background = '#252c35';
     closeButton.style.color = '#c7d5e0';
   });
-  closeButton.addEventListener('click', () => modal.remove());
+  closeButton.addEventListener('click', () => modal.close());
 
   const modalContent = document.createElement('div');
   modalContent.style.cssText = 'display:flex;flex:1;min-height:0;';
@@ -202,7 +211,9 @@ const openBrowserInspectModal = (inspectLink, inventoryItems = [], floatDigitsTo
   inventoryPanel.append(searchInput, inventoryList);
   modalContent.append(inventoryPanel, iframe);
   modal.append(closeButton, modalContent);
+  modal.addEventListener('close', () => modal.remove());
   document.body.appendChild(modal);
+  modal.showModal();
 };
 
 const logExtensionPresence = () => {

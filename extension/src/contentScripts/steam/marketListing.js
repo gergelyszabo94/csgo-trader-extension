@@ -1573,3 +1573,46 @@ const addRealMoneySiteLinks = () => {
 };
 
 addRealMoneySiteLinks();
+
+// on the new market design, clicked items open in an image-preview modal;
+// the in-game inspect link is identified by its steam:// protocol href, not by any generated class/text
+const addInspectButtonToItemModal = () => {
+  if (appID !== steamApps.CSGO.appID) return;
+
+  // Steam can swap which item a modal shows without recreating the link element,
+  // so every matching link on the page has to be (re)checked, not just the first one
+  document.querySelectorAll('a[href^="steam://run/730"]').forEach((inGameInspectLink) => {
+    if (inGameInspectLink.nextElementSibling?.classList.contains('modalInspectInBrowser')) return;
+
+    // the gray "dull" look comes from this attribute, not from any class, so it must be copied over too
+    const accentColor = inGameInspectLink.getAttribute('data-accent-color') || 'dull';
+
+    inGameInspectLink.insertAdjacentHTML(
+      'afterend',
+      DOMPurify.sanitize(
+        `<a href="#" class="modalInspectInBrowser ${inGameInspectLink.className}" data-accent-color="${accentColor}">3D Inspect in Browser...</a>`,
+      ),
+    );
+
+    // reads the href live at click-time in case Steam updated it in place for a different item
+    inGameInspectLink.nextElementSibling.addEventListener('click', (event) => {
+      event.preventDefault();
+      openBrowserInspectModal(inGameInspectLink.getAttribute('href'));
+    });
+  });
+};
+
+if (isNewMarketDesign) {
+  const targetNode = document.body || document.documentElement;
+  if (targetNode) {
+    addInspectButtonToItemModal();
+    const modalObserver = new MutationObserver(() => {
+      addInspectButtonToItemModal();
+    });
+
+    modalObserver.observe(targetNode, {
+      childList: true,
+      subtree: true,
+    });
+  }
+}
