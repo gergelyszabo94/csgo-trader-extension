@@ -601,6 +601,13 @@ progress {
     margin-bottom: -65px;
 }
 
+/* when there is no float bar, don't pull the following content up over the item image */
+.upperModule:has(.floatBar.hidden),
+.upperModule:has(.floatBar.doHide),
+.upperModule:not(:has(.floatBar)) {
+    margin-bottom: 0;
+}
+
 .inbrowserInspectImageLink {
     position: absolute;
     top: 8px;
