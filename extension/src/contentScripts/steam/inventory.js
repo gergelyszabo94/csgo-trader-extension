@@ -690,6 +690,7 @@ const onListingPricesLoaded = () => {
 
 const addRightSideElements = (reRun) => {
   const activeIDs = getIDsOfActiveItem();
+  if (activeIDs.appID === steamApps.STEAM.appID) return;
   if (activeIDs !== null) {
     // cleans up previously added elements
     cleanUpElements();
@@ -1311,6 +1312,7 @@ const addInOtherTradeIndicator = (itemElement, item, activeOfferItems) => {
 
 // adds everything that is per item, like trade lock, exterior, doppler phases, border colors
 const addPerItemInfo = (appID) => {
+  if (appID === steamApps.STEAM.appID) return;
   const itemElements = document.querySelectorAll(`.item.app${appID}.context2, .item.app${appID}.context16`);
   if (itemElements.length !== 0) {
     chrome.storage.local.get([
