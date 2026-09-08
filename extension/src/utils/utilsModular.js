@@ -128,6 +128,9 @@ const openBrowserInspectModal = (inspectLink, inventoryItems = [], floatDigitsTo
   });
   closeButton.addEventListener('click', () => modal.close());
 
+  const modalTopBar = document.createElement('div');
+  modalTopBar.style.cssText = 'display:flex;flex:0 0 20px;justify-content:flex-end;background:#15191f;';
+
   const modalContent = document.createElement('div');
   modalContent.style.cssText = 'display:flex;flex:1;min-height:0;';
 
@@ -210,7 +213,11 @@ const openBrowserInspectModal = (inspectLink, inventoryItems = [], floatDigitsTo
 
   inventoryPanel.append(searchInput, inventoryList);
   modalContent.append(inventoryPanel, iframe);
-  modal.append(closeButton, modalContent);
+  modalTopBar.append(closeButton);
+  modal.append(modalTopBar, modalContent);
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) modal.close();
+  });
   modal.addEventListener('close', () => modal.remove());
   document.body.appendChild(modal);
   modal.showModal();
