@@ -374,10 +374,7 @@ const getPrice = (marketHashName, dopplerInfo, prices, provider, mode, exchangeR
     && prices[marketHashName] !== null && prices[marketHashName].price !== undefined
     && prices[marketHashName].price !== 'null') {
     // csgotrader, csmoney and buff have doppler phase prices so they are handled differently
-    if ((provider === pricingProviders.csgotrader.name || provider === pricingProviders.csmoney.name
-      || provider === pricingProviders.buff163.name || provider === pricingProviders.cstrade.name
-      || provider === pricingProviders.csfloat.name
-      || provider === pricingProviders.lisskins.name)) { // other providers have no doppler info
+    if (pricingProviders[provider] && pricingProviders[provider].hasDopplerPhases) { // other providers have no doppler info
       if (dopplerInfo !== null) {
         // when there is price for the specific doppler phase take that
         if (prices[marketHashName].doppler !== undefined && prices[marketHashName].doppler

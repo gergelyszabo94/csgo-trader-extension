@@ -269,6 +269,7 @@ const pricingProviders = {
     url: 'http://csgotrader.app/prices/',
     description: 'The extension\'s own pricing, aims to be accurate and to provide some kind of price for every item.',
     source: 'other',
+    hasDopplerPhases: true,
     pricing_modes: {
       csgotrader: {
         description: 'CS2 Trader price',
@@ -283,6 +284,7 @@ const pricingProviders = {
     short: 'SM',
     url: 'https://steamcommunity.com/market/',
     source: 'other',
+    hasDopplerPhases: false,
     description: 'Steam Community Market sales history.',
     pricing_modes: {
       last_24h: {
@@ -308,6 +310,7 @@ const pricingProviders = {
     short: 'CM',
     url: 'https://cs.money/',
     source: 'pricempire',
+    hasDopplerPhases: true,
     description: "CS.MONEY is a tradebot site that has it's own pricing. They also have different prices for each doppler phase.",
     pricing_modes: {
       csmoney: {
@@ -323,6 +326,7 @@ const pricingProviders = {
     short: 'CT',
     url: 'https://market.csgo.com/',
     source: 'pricempire',
+    hasDopplerPhases: false,
     description: "CSGO.TM or market.csgo.com is a Russian site for real money sales. They also provide pricing, but prices are missing for many items so I don't recommend using it.",
     pricing_modes: {
       csgotm: {
@@ -338,6 +342,7 @@ const pricingProviders = {
     short: 'LF',
     url: 'https://loot.farm/',
     source: 'pricempire',
+    hasDopplerPhases: false,
     description: 'LOOT.FARM is a tradebot site with public pricing, they tend to overvalue everything in general, so their prices differ from the others.',
     pricing_modes: {
       lootfarm: {
@@ -353,6 +358,7 @@ const pricingProviders = {
     short: 'SC',
     url: 'https://skinport.com/?r=gery',
     source: 'pricempire',
+    hasDopplerPhases: false,
     description: 'Skinport is a real money skin marketplace offering good prices and premium service',
     pricing_modes: {
       suggested_price: {
@@ -373,6 +379,7 @@ const pricingProviders = {
     short: 'EM',
     url: 'https://csgoempire.com/',
     source: 'pricempire',
+    hasDopplerPhases: false,
     description: 'CSGOEmpire is a popular gambling site',
     pricing_modes: {
       csgoempire: {
@@ -388,6 +395,7 @@ const pricingProviders = {
     short: 'SW',
     url: 'https://swap.gg/',
     source: 'pricempire',
+    hasDopplerPhases: false,
     description: 'swap.gg is an automated trade bot site',
     pricing_modes: {
       swapgg: {
@@ -403,6 +411,7 @@ const pricingProviders = {
     short: 'BF',
     url: 'https://buff.163.com/',
     source: 'pricempire',
+    hasDopplerPhases: true,
     description: 'BUFF is a Chinese peer to peer skin marketplace',
     pricing_modes: {
       starting_at: {
@@ -423,6 +432,7 @@ const pricingProviders = {
     short: 'CSTR',
     url: 'https://cs.trade/',
     source: 'pricempire',
+    hasDopplerPhases: true,
     description: 'CS.TRADE is a trade is a less-known trade bot site',
     pricing_modes: {
       cstrade: {
@@ -438,6 +448,7 @@ const pricingProviders = {
     short: 'CSFL',
     url: 'https://csfloat.com/',
     source: 'cs2.sh',
+    hasDopplerPhases: true,
     description: 'CSFloat Database and p2p market',
     pricing_modes: {
       starting_at: {
@@ -458,6 +469,7 @@ const pricingProviders = {
     short: 'YP',
     url: 'https://youpin898.com/',
     source: 'cs2.sh',
+    hasDopplerPhases: true,
     description: 'China focused p2p marketplace',
     pricing_modes: {
       starting_at: {
@@ -478,6 +490,7 @@ const pricingProviders = {
     short: 'LSK',
     url: 'https://lis-skins.com/',
     source: 'pricempire',
+    hasDopplerPhases: true,
     description: 'Lis-skins is a peer to peer skin marketplace',
     pricing_modes: {
       liskins: {
@@ -493,6 +506,7 @@ const pricingProviders = {
     short: 'C5G',
     url: 'https://www.c5game.com/',
     source: 'cs2.sh',
+    hasDopplerPhases: true,
     description: 'Chinese p2p marketplace and skin rental platform',
     pricing_modes: {
       starting_at: {
