@@ -12,7 +12,7 @@ import {
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
   parseStickerInfo, getExteriorFromTags, getDopplerInfo,
   getType, getQuality, getBuffLink, getLookupLink, getSteamDisplayLanguageFromPage,
-  openBrowserInspectModal, getYoupinLink,
+  openBrowserInspectModal, getYoupinLink, getInspectLinkFromMarketActions,
 }
   from 'utils/utilsModular';
 import {
@@ -310,7 +310,7 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
                 if (property.propertyid === 5 && property.string_value) nametag = property.string_value;
                 if (property.propertyid === 6 && property.string_value) inspectLink = `steam://run/730//+csgo_econ_action_preview%20${property.string_value}`;
               });
-            }
+            } else inspectLink = getInspectLinkFromMarketActions(item.description.market_actions);
 
             if (itemTypes[type.key].float) {
               if (floatCache[assetID]) {

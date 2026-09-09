@@ -389,6 +389,14 @@ const getInspectLink = (item, owner, assetID) => {
   } catch (error) { return null; }
 };
 
+// items like stickers/patches/graffiti don't have properties/asset_properties,
+// but expose a ready-to-use inspect link under market_actions
+const getInspectLinkFromMarketActions = (marketActions) => {
+  if (!marketActions || marketActions.length === 0) return null;
+  const { link } = marketActions[0];
+  return /^steam:\/\/run\/730\/\/\+csgo_econ_action_preview%20[0-9A-F]+$/.test(link) ? link : null;
+};
+
 const getDopplerInfo = (icon) => {
   return iconToPhaseMapping[icon] !== undefined ? iconToPhaseMapping[icon] : dopplerPhases.unk;
 };
@@ -1440,6 +1448,7 @@ export {
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator, updateLoggedInUserName,
   getDataFilledFloatTechnical, souvenirExists, removeLinkFilterFromLinks,
   getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent, setAccessTokenFirstTime,
+  getInspectLinkFromMarketActions,
   isSIHActive, addSearchListener, getSessionID, validateSteamAccessToken,
   getFloatAsFormattedString, getNameTag, parseCharmInfo, loadCachedFloatDataByIDs,
   removeOfferFromActiveOffers, addUpdatedRibbon, getRemoteImageAsObjectURL,

@@ -10,7 +10,7 @@ import {
   addSearchListener, removeLinkFilterFromLinks,
   removeOfferFromActiveOffers, changePageTitle, getBuffLink,
   addFloatRankIndicator, refreshSteamAccessToken, getLookupLink,
-  openBrowserInspectModal,
+  openBrowserInspectModal, getInspectLinkFromMarketActions,
 } from 'utils/utilsModular';
 import { pricingProviders } from 'utils/static/pricing';
 import {
@@ -261,7 +261,7 @@ const buildInventoryStructure = (inventory) => {
         if (property.propertyid === 5 && property.string_value) nametag = property.string_value;
         if (property.propertyid === 6 && property.string_value) inspectLink = `steam://run/730//+csgo_econ_action_preview%20${property.string_value}`;
       });
-    }
+    } else inspectLink = getInspectLinkFromMarketActions(item.market_actions);
 
     inventoryArrayToReturn.push({
       name: item.name,
