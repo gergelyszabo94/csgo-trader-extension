@@ -459,10 +459,12 @@ const setPatternInfo = (patternInfo) => {
   });
 };
 
-const addAccessoryPrices = (item) => {
+const addAccessoryPrices = (item, retriesLeft = 10) => {
   if (!item) return;
   const combinedAddons = [...(item.stickers || []), ...(item.charms || [])];
   if (combinedAddons.length === 0) return;
+
+  let foundAnyAccessoryElement = false;
 
   document.querySelectorAll('div[data-featuretarget="iteminfo"][style]:not([style*="display: none"])').forEach((itemInfo) => {
     itemInfo.querySelectorAll('.customAccessoryPrice, .customTotalAccessoryPrice').forEach((el) => el.remove());
@@ -479,6 +481,8 @@ const addAccessoryPrices = (item) => {
       const hasSpan = link.querySelector('span') !== null;
       return hasImg && hasSpan;
     });
+
+    if (accessoryLinks.length > 0) foundAnyAccessoryElement = true;
 
     if (accessoryLinks.length > 0 && item.totalAddonPrice && item.totalAddonPrice.display) {
       const parentContainer = accessoryLinks[0].parentElement;
@@ -513,6 +517,11 @@ const addAccessoryPrices = (item) => {
       }
     });
   });
+
+  // accessory elements are sometimes rendered after this runs, so retry until they show up
+  if (!foundAnyAccessoryElement && retriesLeft > 0) {
+    setTimeout(() => addAccessoryPrices(item, retriesLeft - 1), 300);
+  }
 };
 
 const setFloatDBLinkURL = (item) => {
@@ -834,9 +843,8 @@ const addRightSideElements = (reRun) => {
         || activeInventoryAppID === steamApps.DOTA2.appID
         || activeInventoryAppID === steamApps.TF2.appID) {
         if (activeInventoryAppID === steamApps.CSGO.appID) {
-          // adds prices to native accessories
+          // adds prices to native accessories, retries internally since they can render with a delay
           addAccessoryPrices(item);
-          setTimeout(() => addAccessoryPrices(item), 300);
 
           // adds csgoskins link to collection
           if (item.collection) {
