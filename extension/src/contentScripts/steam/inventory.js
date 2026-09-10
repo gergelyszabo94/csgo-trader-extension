@@ -65,7 +65,6 @@ let countDownID = '';
 const floatBar = getFloatBarSkeleton('inventory');
 const upperModule = `
 <div class="upperModule">
-    <div class="descriptor customStickers"></div>
     <div class="duplicate"></div>
     <div class="copyButtons"></div>
     <div class="patternInfo"></div>
@@ -142,7 +141,7 @@ const goToPreviousInventoryPage = () => {
 
 const cleanUpElements = () => {
   document.querySelectorAll(
-    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .customName,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .multiSellLink, .floatDBLink, .inbrowserInspectLink, .inbrowserInspectImageLink, .youpinLink',
+    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .customName,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .multiSellLink, .floatDBLink, .inbrowserInspectLink, .inbrowserInspectImageLink, .youpinLink, .customAccessoryPrice, .customTotalAccessoryPrice',
   ).forEach((element) => {
     element.remove();
   });
@@ -460,80 +459,61 @@ const setPatternInfo = (patternInfo) => {
   });
 };
 
-// sticker wear to sticker icon tooltip
-const setStickerInfo = (stickers, charms) => {
-  if (stickers) {
-    stickers.forEach((stickerInfo, index) => {
-      const wear = stickerInfo.wear !== undefined
-        ? Math.trunc(Math.abs(1 - stickerInfo.wear) * 100)
-        : 100;
+const addAccessoryPrices = (item) => {
+  if (!item) return;
+  const combinedAddons = [...(item.stickers || []), ...(item.charms || [])];
+  if (combinedAddons.length === 0) return;
 
-      document.querySelectorAll('.customStickers').forEach((customStickers) => {
-        const currentSticker = customStickers.querySelectorAll('.stickerSlot')[index];
+  document.querySelectorAll('div[data-featuretarget="iteminfo"][style]:not([style*="display: none"])').forEach((itemInfo) => {
+    itemInfo.querySelectorAll('.customAccessoryPrice, .customTotalAccessoryPrice').forEach((el) => el.remove());
 
-        if (currentSticker !== undefined) {
-          const currentToolTipText = currentSticker.getAttribute('data-tooltip');
-          currentSticker.setAttribute('data-tooltip', `${currentToolTipText} - Condition: ${wear}%`);
-          currentSticker.querySelector('img').setAttribute(
-            'style',
-            `opacity: ${(wear > 10) ? wear / 100 : (wear / 100) + 0.1}`,
-          );
-        }
-      });
+    const accessoryLinks = Array.from(itemInfo.querySelectorAll('a')).filter((link) => {
+      if (link.classList.contains('customName')
+        || link.classList.contains('inbrowserInspectLink')
+        || link.classList.contains('inspectOnServer')
+        || link.classList.contains('lowerModule')
+        || link.closest('.upperModule, .lowerModule, .otherExteriors, .buffLink, .youpinLink, .floatDBLink, .pricEmpireLink, h1')) {
+        return false;
+      }
+      const hasImg = link.querySelector('img') !== null;
+      const hasSpan = link.querySelector('span') !== null;
+      return hasImg && hasSpan;
     });
-  }
 
-  if (charms) {
-    const charm = charms[0];
-
-    if (charm && charm.pattern) {
-      document.querySelectorAll('.customStickers').forEach((customStickers) => {
-        const stickerSlots = customStickers.querySelectorAll('.stickerSlot');
-        const charmEl = stickerSlots[stickerSlots.length - 1];
-
-        if (charmEl !== undefined) {
-          const currentToolTipText = charmEl.getAttribute('data-tooltip');
-          charmEl.setAttribute('data-tooltip', `${currentToolTipText} - Pattern: #${charm.pattern}`);
+    if (accessoryLinks.length > 0 && item.totalAddonPrice && item.totalAddonPrice.display) {
+      const parentContainer = accessoryLinks[0].parentElement;
+      if (parentContainer) {
+        const headerEl = parentContainer.firstElementChild;
+        if (headerEl && headerEl !== accessoryLinks[0] && !headerEl.querySelector('.customTotalAccessoryPrice')) {
+          const totalElement = document.createElement('span');
+          totalElement.classList.add('customTotalAccessoryPrice');
+          totalElement.textContent = ` (${item.totalAddonPrice.display})`;
+          headerEl.appendChild(totalElement);
         }
-      });
+      }
     }
-  }
+
+    accessoryLinks.forEach((accessoryLink, index) => {
+      let addon = combinedAddons[index];
+      const nameSpan = accessoryLink.querySelector('span');
+      if (nameSpan) {
+        const spanText = nameSpan.textContent.trim();
+        if (!addon || (!spanText.includes(addon.name) && !addon.fullName.includes(spanText))) {
+          addon = combinedAddons.find((a) => spanText.includes(a.name) || a.fullName.includes(spanText)) || addon;
+        }
+
+        if (addon && addon.price && addon.price.display && addon.price.display.trim() !== '') {
+          if (!nameSpan.querySelector('.customAccessoryPrice')) {
+            const priceElement = document.createElement('span');
+            priceElement.classList.add('customAccessoryPrice');
+            priceElement.textContent = ` (${addon.price.display})`;
+            nameSpan.appendChild(priceElement);
+          }
+        }
+      }
+    });
+  });
 };
-
-// not used right now, inspecton server is a link now
-// const setGenInspectInfo = (item) => {
-//   const genCommand = generateInspectCommand(
-//     item.market_hash_name, item.floatInfo.floatvalue, item.floatInfo.paintindex,
-//     item.floatInfo.defindex, item.floatInfo.paintseed, item.floatInfo.stickers,
-//   );
-
-//   document.querySelectorAll('.inspectOnServer').forEach((inspectOnServerDiv) => {
-//     const inspectGenCommandEl = inspectOnServerDiv.querySelector('.inspectGenCommand');
-//     inspectGenCommandEl.title = 'Click to copy !gen command';
-
-//     if (genCommand.includes('undefined')) {
-//       // defindex was not used/stored before the inspect on server feature was introduced
-//       // and it might not exists in the data stored in the float cache
-//       // if that is the case then we clear it from cache
-//       removeFromFloatCache(item.assetid);
-
-//       // ugly timeout to get around making removeFromFloatCache async
-//       setTimeout(() => {
-//         floatQueue.jobs.push({
-//           type: 'inventory_floatbar',
-//           assetID: item.assetid,
-//           inspectLink: item.inspectLink,
-//           // they call each other and one of them has to be defined first
-//           // eslint-disable-next-line no-use-before-define
-//           callBackFunction: dealWithNewFloatData,
-//         });
-
-//         if (!floatQueue.active) workOnFloatQueue();
-//       }, 1000);
-//     } else inspectGenCommandEl.textContent = genCommand;
-//     inspectGenCommandEl.setAttribute('genCommand', genCommand);
-//   });
-// };
 
 const setFloatDBLinkURL = (item) => {
   const floatDBLookupURL = getFloatDBLink(item);
@@ -546,7 +526,6 @@ const setFloatDBLinkURL = (item) => {
 const updateFloatAndPatternElements = (item) => {
   setFloatBarWithData(item.floatInfo);
   setPatternInfo(item.patternInfo);
-  setStickerInfo(item.floatInfo.stickers, item.floatInfo.charms);
   setFloatDBLinkURL(item);
 };
 
@@ -855,43 +834,9 @@ const addRightSideElements = (reRun) => {
         || activeInventoryAppID === steamApps.DOTA2.appID
         || activeInventoryAppID === steamApps.TF2.appID) {
         if (activeInventoryAppID === steamApps.CSGO.appID) {
-          // repositions stickers and charms
-          if ((item.stickers !== undefined && item.stickers.length !== 0)
-            || (item.charms !== undefined && item.charms.length !== 0)) {
-            // removes the original stickers and charms elements
-            // they even both have the same id, which means that only one can be selected by id
-            const originalStickerEls = document.querySelectorAll('#sticker_info, #keychain_info');
-
-            if (originalStickerEls.length > 0) {
-              originalStickerEls.forEach((stickerEl) => {
-                stickerEl.parentNode.remove();
-              });
-            }
-
-            // sometimes it is added slowly so it does not get removed the first time..
-            setTimeout(() => {
-              if (originalStickerEls.length > 0) {
-                originalStickerEls.forEach((stickerEl) => {
-                  if (stickerEl.parentNode !== null) stickerEl.parentNode.remove();
-                });
-              }
-            }, 1000);
-
-            // adds own sticker elements
-            const combinedAddons = [...item.stickers, ...item.charms];
-
-            combinedAddons.forEach((stickerInfo) => {
-              document.querySelectorAll('.customStickers').forEach((customStickers) => {
-                customStickers.innerHTML += DOMPurify.sanitize(`
-                                    <div class="stickerSlot" data-tooltip="${stickerInfo.fullName} (${stickerInfo.price.display})">
-                                        <a href="${stickerInfo.marketURL}" target="_blank">
-                                            <img src="${stickerInfo.iconURL}" class="stickerIcon">
-                                        </a>
-                                    </div>
-                                    `, { ADD_ATTR: ['target'] });
-              });
-            });
-          }
+          // adds prices to native accessories
+          addAccessoryPrices(item);
+          setTimeout(() => addAccessoryPrices(item), 300);
 
           // adds csgoskins link to collection
           if (item.collection) {
@@ -1129,14 +1074,14 @@ const addRightSideElements = (reRun) => {
 
         if (activeInventoryAppID === steamApps.CSGO.appID) {
           const buffLink = `
-        <div class="buffLink" style="margin-top: -20px;">
+        <div class="buffLink">
             <a href="${getBuffLink(item.market_hash_name)}" target="_blank" style="color: yellow;">
                 Lookup item on Buff
               </a>
         </div>
       `;
           const youpinLink = `
-        <div class="youpinLink" style="margin-top: -10px;">
+        <div class="youpinLink">
             <a href="${getYoupinLink(item.market_hash_name)}" target="_blank" style="color: yellow;">
                 Lookup on Youpin
               </a>
@@ -1144,14 +1089,14 @@ const addRightSideElements = (reRun) => {
       `;
           const floatDBLink = getFloatDBLink(item);
           const floatDBLinkEL = `
-              <div class="floatDBLink" style="margin-top: -10px;">
+              <div class="floatDBLink">
                   <a href="${floatDBLink}" target="_blank" style="color: yellow;">
                       Lookup in FloatDB
                     </a>
               </div>
             `;
           const priceEmpireLink = `
-        <div class="pricEmpireLink" style="margin-top: -10px;">
+        <div class="pricEmpireLink">
             <a href="${getLookupLink(pricingProvider, item.type.key, item.name, (item.dopplerInfo && item.dopplerInfo.name) ? `-${item.dopplerInfo.name}` : '', item.exterior?.name.toLowerCase(), item.market_hash_name)}" target="_blank" style="color: yellow;">
                 Check prices on ${pricingProviders[pricingProvider].source === 'cs2.sh' ? 'CS2.SH' : 'PRICEMPIRE.COM'}
               </a>
