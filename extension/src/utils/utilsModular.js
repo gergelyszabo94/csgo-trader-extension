@@ -171,11 +171,64 @@ const openBrowserInspectModal = (inspectLink, inventoryItems = [], floatDigitsTo
     itemButton.style.borderColor = '#67c1f5';
   };
 
+  const getItemSearchTerms = (inventoryItem) => {
+    const searchParts = [];
+
+    if (inventoryItem.market_hash_name) searchParts.push(inventoryItem.market_hash_name);
+
+    const nametag = inventoryItem.nametag || inventoryItem.nameTag || inventoryItem.floatInfo?.nametag;
+    if (nametag) searchParts.push(nametag);
+
+    const accessories = [
+      ...(inventoryItem.stickers || []),
+      ...(inventoryItem.charms || []),
+      ...(inventoryItem.patches || []),
+      ...(inventoryItem.keychains || []),
+      ...(inventoryItem.floatInfo?.stickers || []),
+      ...(inventoryItem.floatInfo?.keychains || []),
+    ];
+
+    accessories.forEach((acc) => {
+      if (typeof acc === 'string') {
+        searchParts.push(acc);
+      } else if (acc && typeof acc === 'object') {
+        if (acc.fullName) searchParts.push(acc.fullName);
+        if (acc.name) searchParts.push(acc.name);
+      }
+    });
+
+    const descArrays = [
+      inventoryItem.descriptions,
+      inventoryItem.owner_descriptions,
+      inventoryItem.description?.descriptions,
+      inventoryItem.description?.owner_descriptions,
+    ];
+
+    descArrays.forEach((descArray) => {
+      if (Array.isArray(descArray)) {
+        descArray.forEach((desc) => {
+          if (typeof desc === 'string') {
+            searchParts.push(desc.replace(/<[^>]*>/g, ' '));
+          } else if (desc && typeof desc === 'object') {
+            if (desc.value) searchParts.push(desc.value.replace(/<[^>]*>/g, ' '));
+            if (desc.name) searchParts.push(desc.name.replace(/<[^>]*>/g, ' '));
+          }
+        });
+      }
+    });
+
+    if (typeof inventoryItem.description === 'string') {
+      searchParts.push(inventoryItem.description.replace(/<[^>]*>/g, ' '));
+    }
+
+    return searchParts.join(' ').toLowerCase();
+  };
+
   inventoryItems.filter((inventoryItem) => inventoryItem.inspectLink).forEach((inventoryItem) => {
     const itemButton = document.createElement('button');
     itemButton.type = 'button';
     itemButton.classList.add('browserInspectItem');
-    itemButton.dataset.searchName = inventoryItem.market_hash_name.toLowerCase();
+    itemButton.dataset.searchName = getItemSearchTerms(inventoryItem);
     itemButton.style.cssText = 'display:flex;align-items:center;min-width:0;min-height:52px;padding:5px;background:#252c35;border:1px solid transparent;border-radius:3px;color:#d6d7d8;cursor:pointer;text-align:left;';
 
     const icon = document.createElement('img');
