@@ -143,10 +143,10 @@ const tradeOffer = () => {
         description="Steam trade links are buggy when opened from Steam pages, this feature fixes that."
       />
       <Row
-        name="Pricempire lookup"
+        name="Pricempire.com / CS2.SH links in trade offer item actions"
         id="tradeOfferPricEmpireAction"
         type="flipSwitchStorage"
-        description="Show Pricempire lookup action in trade offers"
+        description="Show pricempire.com / CS2.SH links in trade offers depending on the pricing mode used"
       />
       <Row
         name="Buff lookup"
