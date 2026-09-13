@@ -304,6 +304,27 @@ const pricingProviders = {
       },
     },
   },
+  composite: {
+    name: 'composite',
+    long: 'Composite',
+    short: 'CMP',
+    url: 'https://cs2.sh/',
+    source: 'cs2.sh',
+    hasDopplerPhases: true,
+    description: 'Composite price for popular cash marketplaces',
+    pricing_modes: {
+      starting_at: {
+        description: 'Composite Starting at (lowest listing) price',
+        name: 'starting_at',
+        long: 'Composite Starting at (by cs2.sh)',
+      },
+      highest_order: {
+        description: 'Composite Highest order price',
+        name: 'highest_order',
+        long: 'Composite Highest order (by cs2.sh)',
+      },
+    },
+  },
   csmoney: {
     name: 'csmoney',
     long: 'CS.MONEY',

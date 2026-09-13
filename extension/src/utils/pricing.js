@@ -333,7 +333,8 @@ const updatePrices = () => {
         } else if (provider === pricingProviders.buff163.name
           || provider === pricingProviders.youpin898.name
           || provider === pricingProviders.csfloat.name
-          || provider === pricingProviders.c5game.name) {
+          || provider === pricingProviders.c5game.name
+          || provider === pricingProviders.composite.name) {
           for (const key of keys) {
             if (pricesJSON[key][mode] !== undefined) {
               if (pricesJSON[key][mode].doppler !== undefined) {
@@ -373,7 +374,6 @@ const getPrice = (marketHashName, dopplerInfo, prices, provider, mode, exchangeR
   if (prices[marketHashName] !== undefined && prices[marketHashName] !== 'null'
     && prices[marketHashName] !== null && prices[marketHashName].price !== undefined
     && prices[marketHashName].price !== 'null') {
-    // csgotrader, csmoney and buff have doppler phase prices so they are handled differently
     if (pricingProviders[provider] && pricingProviders[provider].hasDopplerPhases) { // other providers have no doppler info
       if (dopplerInfo !== null) {
         // when there is price for the specific doppler phase take that
