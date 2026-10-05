@@ -1025,6 +1025,9 @@ const addSearchListener = (type, addFloatIndicatorsFunction) => {
 };
 
 const getSessionID = () => {
+  // inline injection is blocked by the CSP of the new market design, the cookie is readable from the content script
+  const cookieMatch = document.cookie.match(/(?:^|;\s*)sessionid=([^;]+)/);
+  if (cookieMatch) return cookieMatch[1];
   const getSessionIDScript = 'document.querySelector(\'body\').setAttribute(\'sessionid\', g_sessionID);';
   return injectScript(getSessionIDScript, true, 'getSessionID', 'sessionid');
 };

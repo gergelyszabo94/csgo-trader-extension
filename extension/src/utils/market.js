@@ -1,31 +1,57 @@
 import { getSessionID, getAppropriateFetchFunc } from 'utils/utilsModular';
 import { getSteamWalletInfo } from 'utils/pricing';
 
-const buyListing = (listing, buyerKYC) => {
+const CONFIRMATION_POLL_INTERVAL_MS = 1000;
+const CONFIRMATION_TIMEOUT_MS = 2 * 60 * 1000;
+
+// Steam answers 406 + need_confirmation until the purchase is approved in the mobile app;
+// the same request is then repeated with the confirmation id until it returns success
+const buyListing = (listing, buyerKYC, onConfirmationNeeded) => {
   return new Promise((resolve, reject) => {
-    const myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-
-    const currencyID = listing.converted_currencyid - 2000;
-    const request = new Request(`https://steamcommunity.com/market/buylisting/${listing.listingid}`,
-      {
-        method: 'POST',
-        headers: myHeaders,
-        body: `sessionid=${getSessionID()}&currency=${currencyID}&fee=${listing.converted_fee}&subtotal=${listing.converted_price}&total=${listing.converted_fee + listing.converted_price}&quantity=1&first_name=${buyerKYC.first_name}&last_name=${buyerKYC.last_name}&billing_address=${buyerKYC.billing_address}&billing_address_two=${buyerKYC.billing_address_two}&billing_country=${buyerKYC.billing_country}&billing_city=${buyerKYC.billing_city}&billing_state=${buyerKYC.billing_state}&billing_postal_code=${buyerKYC.billing_postal_code}&save_my_address=1`,
-        credentials: 'include',
-      });
-
     const fetchFunction = getAppropriateFetchFunc();
+    const sessionID = getSessionID();
+    let confirmationID = null;
+    let pollingStartedAt = null;
 
-    fetchFunction(request).then((response) => {
-      if (!response.ok) {
-        console.log(`Error code: ${response.status} Status: ${response.statusText}`);
-        reject({ status: response.status, statusText: response.statusText });
-      } else resolve('success');
-    }).catch((err) => {
-      console.log(err);
-      reject(err);
-    });
+    const attempt = () => {
+      const myHeaders = new Headers();
+      myHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+
+      const currencyID = listing.converted_currencyid - 2000;
+      const confirmationParam = confirmationID !== null ? `&confirmation=${confirmationID}` : '';
+      const request = new Request(`https://steamcommunity.com/market/buylisting/${listing.listingid}`,
+        {
+          method: 'POST',
+          headers: myHeaders,
+          body: `sessionid=${sessionID}&currency=${currencyID}&fee=${listing.converted_fee}&subtotal=${listing.converted_price}&total=${listing.converted_fee + listing.converted_price}&quantity=1&first_name=${buyerKYC.first_name}&last_name=${buyerKYC.last_name}&billing_address=${buyerKYC.billing_address}&billing_address_two=${buyerKYC.billing_address_two}&billing_country=${buyerKYC.billing_country}&billing_city=${buyerKYC.billing_city}&billing_state=${buyerKYC.billing_state}&billing_postal_code=${buyerKYC.billing_postal_code}&save_my_address=1${confirmationParam}`,
+          credentials: 'include',
+        });
+
+      fetchFunction(request).then(async (response) => {
+        const body = await response.json().catch(() => null);
+
+        if (body && body.need_confirmation) {
+          if (confirmationID === null) {
+            confirmationID = body.confirmation.confirmation_id;
+            pollingStartedAt = Date.now();
+            if (onConfirmationNeeded) onConfirmationNeeded();
+          }
+          if (Date.now() - pollingStartedAt > CONFIRMATION_TIMEOUT_MS) {
+            reject({ status: response.status, statusText: 'Confirmation timed out' });
+          } else setTimeout(attempt, CONFIRMATION_POLL_INTERVAL_MS);
+        } else if (response.ok && (body === null || (body.success ?? body.wallet_info?.success) === 1)) {
+          resolve('success');
+        } else {
+          console.log(`Error code: ${response.status} Status: ${response.statusText}`, body);
+          reject({ status: response.status, statusText: response.statusText, body });
+        }
+      }).catch((err) => {
+        console.log(err);
+        reject(err);
+      });
+    };
+
+    attempt();
   });
 };
 

@@ -1587,6 +1587,10 @@ const addInspectButtonToItemModal = () => {
     // the gray "dull" look comes from this attribute, not from any class, so it must be copied over too
     const accentColor = inGameInspectLink.getAttribute('data-accent-color') || 'dull';
 
+    // the added links make the row wrap, and Steam's row has no gap between the inspect links and the buy buttons
+    const actionsRow = inGameInspectLink.parentElement?.parentElement;
+    if (actionsRow) actionsRow.style.gap = 'var(--spacing-2)';
+
     inGameInspectLink.insertAdjacentHTML(
       'afterend',
       DOMPurify.sanitize(
@@ -1611,12 +1615,93 @@ const addInspectButtonToItemModal = () => {
   });
 };
 
+// the new design has no g_rgListingInfo; listing data only exists in React props, so a page-context
+// file script (inline scripts are blocked by Steam's CSP) copies it to a data attribute and fires an event
+const tagBuyButtonsWithListingData = () => {
+  injectScriptAsFile('TagListingData', 'tagListingData');
+};
+
+const getBuyerKYCFromBillingInfo = () => {
+  return fetch('https://steamcommunity.com/market/userbillinginfo', { credentials: 'include' })
+    .then((response) => {
+      if (!response.ok) throw new Error(`userbillinginfo failed: ${response.status}`);
+      return response.json();
+    })
+    .then(({ billing_address: billing }) => ({
+      first_name: encodeURIComponent(billing.firstname || ''),
+      last_name: encodeURIComponent(billing.lastname || ''),
+      billing_address: encodeURIComponent(billing.address1 || ''),
+      billing_address_two: encodeURIComponent(billing.address2 || ''),
+      billing_country: encodeURIComponent(billing.countrycode || ''),
+      billing_city: encodeURIComponent(billing.city || ''),
+      billing_state: encodeURIComponent(billing.state || ''),
+      billing_postal_code: encodeURIComponent(billing.postcode || ''),
+    }));
+};
+
+const addInstantBuyButtonsToTaggedListings = () => {
+  chrome.storage.local.get('marketListingsInstantBuy', ({ marketListingsInstantBuy }) => {
+    if (!marketListingsInstantBuy) return;
+
+    document.querySelectorAll('[data-elevation] button[data-accent-color="green"]:not([data-instant-buy-added])').forEach((buyButton) => {
+      const listingData = buyButton.getAttribute('data-instant-buy-listing');
+      if (!listingData) return;
+      buyButton.setAttribute('data-instant-buy-added', 'true');
+
+      const instantBuyButton = buyButton.cloneNode(false);
+      instantBuyButton.classList.add('instantBuy');
+      instantBuyButton.textContent = 'Instant Buy';
+      instantBuyButton.title = 'Buy this item with one click (no purchase dialog)';
+      buyButton.insertAdjacentElement('afterend', instantBuyButton);
+
+      let purchasing = false;
+      instantBuyButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        if (purchasing) return;
+        purchasing = true;
+        instantBuyButton.style.opacity = '0.6';
+        // React may have reused this card for another listing, so the data is re-read right before buying
+        buyButton.removeAttribute('data-instant-buy-listing');
+        document.addEventListener('csgoTraderListingsTagged', () => {
+          const freshData = buyButton.getAttribute('data-instant-buy-listing');
+          if (!freshData) {
+            purchasing = false;
+            instantBuyButton.style.opacity = '';
+            return;
+          }
+          getBuyerKYCFromBillingInfo().then((buyerKYC) => buyListing(JSON.parse(freshData), buyerKYC, () => {
+            instantBuyButton.textContent = 'Confirm on mobile';
+          })).then(() => {
+            instantBuyButton.textContent = 'Purchased';
+          }).catch((err) => {
+            console.log(err);
+            instantBuyButton.textContent = 'Error purchasing!';
+            instantBuyButton.style.color = 'red';
+          });
+        }, { once: true });
+        tagBuyButtonsWithListingData();
+      });
+    });
+  });
+};
+
+document.addEventListener('csgoTraderListingsTagged', addInstantBuyButtonsToTaggedListings);
+
+const addInstantBuyButtonsNewDesign = () => {
+  if (document.querySelector('button[data-accent-color="green"]:not([data-instant-buy-listing])') !== null) {
+    tagBuyButtonsWithListingData();
+  }
+};
+
 if (isNewMarketDesign) {
   const targetNode = document.body || document.documentElement;
   if (targetNode) {
     addInspectButtonToItemModal();
+    addInstantBuyButtonsNewDesign();
     const modalObserver = new MutationObserver(() => {
       addInspectButtonToItemModal();
+      addInstantBuyButtonsNewDesign();
     });
 
     modalObserver.observe(targetNode, {
