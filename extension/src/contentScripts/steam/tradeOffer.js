@@ -35,6 +35,7 @@ import {
 } from 'utils/tradeOffers';
 import steamApps from 'utils/static/steamApps';
 import { getUserSteamID } from 'utils/steamID';
+import initAccessoryPricePreview from 'utils/accessoryPricePreview';
 
 let showPaintSeeds = false;
 let showFloatRank = false;
@@ -50,6 +51,10 @@ let yourInventory = null;
 let theirInventory = null;
 const combinedInventories = [];
 const userSteamID = getUserSteamID();
+
+const refreshAccessoryPricePreview = initAccessoryPricePreview(
+  (assetID) => getItemByAssetID(combinedInventories, assetID),
+);
 
 // gets the other party's steam id in a trade offer
 const getTradePartnerSteamID = () => {
@@ -882,6 +887,8 @@ const getInventories = (initial) => {
             combinedInventories.push(item);
           });
         }
+
+        refreshAccessoryPricePreview();
 
         addPerItemInfo(userSteamID);
         addPerItemInfo(partnerSteamID);

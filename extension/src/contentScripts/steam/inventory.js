@@ -43,6 +43,7 @@ import { getUserSteamID } from 'utils/steamID';
 import { inOtherOfferIndicator } from 'utils/static/miscElements';
 import steamApps from 'utils/static/steamApps';
 import { listenToAcceptTrade } from 'utils/tradeOffers';
+import addAccessoryPricesToItemInfo from 'utils/accessoryPrices';
 import { getFloatInfoFromCache, batchAddToFloatCache } from '../../utils/floatCaching';
 
 const inventoryPageSize = 25;
@@ -461,61 +462,10 @@ const setPatternInfo = (patternInfo) => {
 
 const addAccessoryPrices = (item, retriesLeft = 10) => {
   if (!item) return;
-  const combinedAddons = [...(item.stickers || []), ...(item.charms || [])];
-  if (combinedAddons.length === 0) return;
-
   let foundAnyAccessoryElement = false;
 
   document.querySelectorAll('div[data-featuretarget="iteminfo"][style]:not([style*="display: none"])').forEach((itemInfo) => {
-    itemInfo.querySelectorAll('.customAccessoryPrice, .customTotalAccessoryPrice').forEach((el) => el.remove());
-
-    const accessoryLinks = Array.from(itemInfo.querySelectorAll('a')).filter((link) => {
-      if (link.classList.contains('customName')
-        || link.classList.contains('inbrowserInspectLink')
-        || link.classList.contains('inspectOnServer')
-        || link.classList.contains('lowerModule')
-        || link.closest('.upperModule, .lowerModule, .otherExteriors, .buffLink, .youpinLink, .floatDBLink, .pricEmpireLink, h1')) {
-        return false;
-      }
-      const hasImg = link.querySelector('img') !== null;
-      const hasSpan = link.querySelector('span') !== null;
-      return hasImg && hasSpan;
-    });
-
-    if (accessoryLinks.length > 0) foundAnyAccessoryElement = true;
-
-    if (accessoryLinks.length > 0 && item.totalAddonPrice && item.totalAddonPrice.display) {
-      const parentContainer = accessoryLinks[0].parentElement;
-      if (parentContainer) {
-        const headerEl = parentContainer.firstElementChild;
-        if (headerEl && headerEl !== accessoryLinks[0] && !headerEl.querySelector('.customTotalAccessoryPrice')) {
-          const totalElement = document.createElement('span');
-          totalElement.classList.add('customTotalAccessoryPrice');
-          totalElement.textContent = ` (${item.totalAddonPrice.display})`;
-          headerEl.appendChild(totalElement);
-        }
-      }
-    }
-
-    accessoryLinks.forEach((accessoryLink, index) => {
-      let addon = combinedAddons[index];
-      const nameSpan = accessoryLink.querySelector('span');
-      if (nameSpan) {
-        const spanText = nameSpan.textContent.trim();
-        if (!addon || (!spanText.includes(addon.name) && !addon.fullName.includes(spanText))) {
-          addon = combinedAddons.find((a) => spanText.includes(a.name) || a.fullName.includes(spanText)) || addon;
-        }
-
-        if (addon && addon.price && addon.price.display && addon.price.display.trim() !== '') {
-          if (!nameSpan.querySelector('.customAccessoryPrice')) {
-            const priceElement = document.createElement('span');
-            priceElement.classList.add('customAccessoryPrice');
-            priceElement.textContent = ` (${addon.price.display})`;
-            nameSpan.appendChild(priceElement);
-          }
-        }
-      }
-    });
+    if (addAccessoryPricesToItemInfo(itemInfo, item)) foundAnyAccessoryElement = true;
   });
 
   // accessory elements are sometimes rendered after this runs, so retry until they show up
