@@ -10,6 +10,18 @@ import { updateExchangeRates } from 'utils/pricing';
 import { getTradeOffers } from 'utils/IEconService';
 import { updateTrades } from 'utils/tradeOffers';
 
+// serializes custom price writes so concurrent tabs don't overwrite each other's changes
+let customPriceQueue = Promise.resolve();
+const queueCustomPriceUpdate = (update) => {
+  customPriceQueue = customPriceQueue.then(() => new Promise((resolve) => {
+    chrome.storage.local.get('customItemPrices', ({ customItemPrices }) => {
+      const updated = update({ ...(customItemPrices || {}) });
+      chrome.storage.local.set({ customItemPrices: updated }, () => resolve());
+    });
+  })).catch(() => {});
+  return customPriceQueue;
+};
+
 // content scripts can't make cross domain requests because of security
 // most of the messaging required is to work around this limitation
 // and make the request from background script context
@@ -31,6 +43,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       });
     });
     return true; // async return to signal that it will return later
+  }
+  if (request.customPrice !== undefined) {
+    const {
+      action, assetID, usdPrice, marketHashName, name,
+    } = request.customPrice;
+    queueCustomPriceUpdate((prices) => {
+      if (action === 'set') {
+        if (typeof usdPrice === 'number' && Number.isFinite(usdPrice) && usdPrice >= 0) {
+          prices[assetID] = {
+            usdPrice, marketHashName, name, updatedAt: Date.now(),
+          };
+        }
+      } else if (action === 'remove') delete prices[assetID];
+      else if (action === 'clear') return {};
+      return prices;
+    }).then(() => sendResponse({ success: true }));
+    return true;
   }
   if (request.badgetext !== undefined) {
     chrome.action.setBadgeText({ text: request.badgetext });

@@ -3,6 +3,7 @@ import React from 'react';
 import { currencies, pricingProviders, realTimePricingModes } from 'utils/static/pricing';
 import Category from '../Category/Category';
 import Row from '../Row';
+import CustomPrices from './CustomPrices';
 
 const pricing = () => {
   const transformCurrencies = () => {
@@ -109,6 +110,7 @@ const pricing = () => {
                      It's in milliseconds, the default value is 15000, which is 15 seconds.
                      If you set it too low then the extension will keep retrying too often and you risk getting a temporary ip ban from Steam."
       />
+      <CustomPrices />
     </Category>
   );
 };

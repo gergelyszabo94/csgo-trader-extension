@@ -1,13 +1,13 @@
 import { getFloatInfoFromCache } from 'utils/floatCaching';
-import { getPrice, getStickerPriceTotal } from 'utils/pricing';
+import { getPrice, getStickerPriceTotal, getCustomPrice } from 'utils/pricing';
 import itemTypes from 'utils/static/itemTypes';
 import { getPattern, parseStickerInfo, parseCharmInfo } from 'utils/utilsModular';
 
 const addPricesAndFloatsToInventory = (inventory) => new Promise((resolve) => {
   chrome.storage.local.get(
-    ['prices', 'exchangeRate', 'currency', 'itemPricing', 'pricingProvider', 'pricingMode'],
+    ['prices', 'exchangeRate', 'currency', 'itemPricing', 'pricingProvider', 'pricingMode', 'customItemPrices'],
     ({
-      prices, exchangeRate, currency, itemPricing, pricingProvider, pricingMode,
+      prices, exchangeRate, currency, itemPricing, pricingProvider, pricingMode, customItemPrices,
     }) => {
       if (itemPricing) {
         let total = 0.0;
@@ -17,7 +17,11 @@ const addPricesAndFloatsToInventory = (inventory) => new Promise((resolve) => {
         getFloatInfoFromCache(floatCacheAssetIDs).then(
           (floatCache) => {
             inventory.forEach((item) => {
-              if (prices[item.market_hash_name] !== undefined
+              const customPrice = getCustomPrice(item.assetid, customItemPrices, exchangeRate, currency);
+              if (customPrice) {
+                item.price = customPrice;
+                total += parseFloat(customPrice.price);
+              } else if (prices[item.market_hash_name] !== undefined
                 && prices[item.market_hash_name] !== 'null') {
                 item.price = getPrice(item.market_hash_name, item.dopplerInfo, prices,
                   pricingProvider, pricingMode, exchangeRate, currency);

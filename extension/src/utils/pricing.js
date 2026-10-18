@@ -395,6 +395,31 @@ const getPrice = (marketHashName, dopplerInfo, prices, provider, mode, exchangeR
   };
 };
 
+// custom prices are stored in USD so they follow the user's currency/exchange rate
+const getCustomPrice = (assetID, customItemPrices, exchangeRate, currency) => {
+  const custom = customItemPrices ? customItemPrices[assetID] : undefined;
+  if (custom === undefined || typeof custom.usdPrice !== 'number') return null;
+  const price = (custom.usdPrice * exchangeRate).toFixed(2);
+  return { price, display: currencies[currency].sign + price, custom: true };
+};
+
+// all writes go through the background script so concurrent tabs can't overwrite each other
+const setCustomPrice = (assetID, usdPrice, marketHashName, name) => new Promise((resolve) => {
+  chrome.runtime.sendMessage({
+    customPrice: {
+      action: 'set', assetID, usdPrice, marketHashName, name,
+    },
+  }, () => resolve());
+});
+
+const removeCustomPrice = (assetID) => new Promise((resolve) => {
+  chrome.runtime.sendMessage({ customPrice: { action: 'remove', assetID } }, () => resolve());
+});
+
+const clearCustomPrices = () => new Promise((resolve) => {
+  chrome.runtime.sendMessage({ customPrice: { action: 'clear' } }, () => resolve());
+});
+
 const getStickerPriceTotal = (stickers, currency) => {
   let total = 0.0;
   if (stickers !== null) {
@@ -527,4 +552,5 @@ export {
   getSteamWalletCurrency, getSteamWalletInfo,
   addRealTimePriceIndicator, initPriceQueue,
   addRealTimePriceToPage, updateWalletCurrency, getOrderBook,
+  getCustomPrice, setCustomPrice, removeCustomPrice, clearCustomPrices,
 };

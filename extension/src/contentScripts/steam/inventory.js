@@ -23,13 +23,13 @@ import { getShortDate, dateToISODisplay, prettyTimeAgo } from 'utils/dateTime';
 import {
   stattrak, starChar, souvenir, stattrakPretty, genericMarketLink,
 } from 'utils/static/simpleStrings';
-import { pricingProviders } from 'utils/static/pricing';
+import { pricingProviders, currencies } from 'utils/static/pricing';
 import {
   getPriceAfterFees, userPriceToProperPrice,
   centsToSteamFormattedPrice, prettyPrintPrice, addRealTimePriceToPage,
   priceQueue, workOnPriceQueue, getSteamWalletCurrency, initPriceQueue,
   updateWalletCurrency, getOrderBook,
-  getPrice, getStickerPriceTotal,
+  getPrice, getStickerPriceTotal, getCustomPrice, setCustomPrice, removeCustomPrice,
 }
   from 'utils/pricing';
 import { getItemByIDs, getIDsFromElement, findElementByIDs } from 'utils/itemsToElementsToItems';
@@ -142,7 +142,7 @@ const goToPreviousInventoryPage = () => {
 
 const cleanUpElements = () => {
   document.querySelectorAll(
-    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .customName,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .inspectOnServer, .multiSellLink, .floatDBLink, .inbrowserInspectLink, .inbrowserInspectImageLink, .youpinLink, .customAccessoryPrice, .customTotalAccessoryPrice',
+    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .customName,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .customPriceModule, .inspectOnServer, .multiSellLink, .floatDBLink, .inbrowserInspectLink, .inbrowserInspectImageLink, .youpinLink, .customAccessoryPrice, .customTotalAccessoryPrice',
   ).forEach((element) => {
     element.remove();
   });
@@ -242,9 +242,9 @@ const getItemInfoFromPage = (appID, contextID) => {
 
 const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
   chrome.storage.local.get(
-    ['itemPricing', 'prices', 'currency', 'exchangeRate', 'pricingProvider', 'pricingMode'],
+    ['itemPricing', 'prices', 'currency', 'exchangeRate', 'pricingProvider', 'pricingMode', 'customItemPrices'],
     ({
-      itemPricing, prices, currency, exchangeRate, pricingProvider, pricingMode,
+      itemPricing, prices, currency, exchangeRate, pricingProvider, pricingMode, customItemPrices,
     }) => {
       const itemsFromPage = [];
       const context2ItemsFromPage = getItemInfoFromPage(steamApps.CSGO.appID, '2').sort((a, b) => {
@@ -324,8 +324,9 @@ const getCSGOInventoryDataFromPage = () => new Promise((resolve) => {
               : null;
 
             if (itemPricing) {
-              price = getPrice(marketHashName, dopplerInfo, prices,
-                pricingProvider, pricingMode, exchangeRate, currency);
+              price = (isOwnInventory() && getCustomPrice(assetID, customItemPrices, exchangeRate, currency))
+                || getPrice(marketHashName, dopplerInfo, prices,
+                  pricingProvider, pricingMode, exchangeRate, currency);
               inventoryTotal += parseFloat(price.price);
             } else price = { price: '', display: '' };
 
@@ -1067,6 +1068,12 @@ const addRightSideElements = (reRun) => {
             if (showFloatDBLookupInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(floatDBLinkEL, { ADD_ATTR: ['target'] }));
             if (showPriceEmpireLinkInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(priceEmpireLink, { ADD_ATTR: ['target'] }));
             if (showYoupinLookupInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(youpinLink, { ADD_ATTR: ['target'] }));
+            if (isOwnInventory()) {
+              // eslint-disable-next-line no-use-before-define
+              createCustomPriceModule(item).then((module) => {
+                inspectButton.parentNode.insertAdjacentElement('beforebegin', module);
+              });
+            }
           });
         }
 
@@ -1335,6 +1342,100 @@ const setInventoryTotal = () => {
     );
   });
 };
+
+// recalculates the prices of own items after a custom price change (also triggered from other tabs)
+const refreshCustomPrices = () => {
+  chrome.storage.local.get(
+    ['customItemPrices', 'prices', 'exchangeRate', 'currency', 'pricingProvider', 'pricingMode', 'itemPricing'],
+    ({
+      customItemPrices, prices, exchangeRate, currency, pricingProvider, pricingMode, itemPricing,
+    }) => {
+      if (!itemPricing || !isOwnInventory()) return;
+      let total = 0.0;
+      items.forEach((item) => {
+        if (item.appid !== steamApps.CSGO.appID) return;
+        const newPrice = getCustomPrice(item.assetid, customItemPrices, exchangeRate, currency)
+          || getPrice(item.market_hash_name, item.dopplerInfo, prices,
+            pricingProvider, pricingMode, exchangeRate, currency);
+        if (item.price && item.price.price === newPrice.price) {
+          total += parseFloat(item.price.price);
+          return;
+        }
+        item.price = newPrice;
+        total += parseFloat(newPrice.price);
+        const itemElement = findElementByIDs(item.appid, item.contextid, item.assetid, 'inventory');
+        const indicator = itemElement ? itemElement.querySelector('.priceIndicator') : null;
+        if (indicator) {
+          indicator.remove();
+          addPriceIndicator(itemElement, item.price, currency, showContrastingLook, pricePercentage);
+        }
+      });
+      inventoryTotal = total;
+      if (document.getElementById('inventoryTotalValue')) setInventoryTotal();
+    },
+  );
+};
+
+const createCustomPriceModule = (item) => new Promise((resolve) => {
+  chrome.storage.local.get(['customItemPrices', 'exchangeRate', 'currency'], ({ customItemPrices, exchangeRate, currency }) => {
+    const sign = currencies[currency].sign;
+    const custom = getCustomPrice(item.assetid, customItemPrices, exchangeRate, currency);
+    const module = document.createElement('div');
+    module.classList.add('customPriceModule');
+    module.style.marginBottom = '10px';
+
+    const hint = 'Override the price of this exact item with your own value (in your selected currency). Only you see it, and it is used in inventory totals and trade offers.';
+    module.setAttribute('title', hint);
+
+    const label = document.createElement('div');
+    label.innerText = custom ? `Custom price: ${custom.display}` : 'Custom price: not set';
+    module.appendChild(label);
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = `Price (${sign})`;
+    input.style.width = '80px';
+    input.style.marginRight = '5px';
+    input.title = hint;
+    if (custom) input.value = custom.price;
+    module.appendChild(input);
+
+    const saveButton = document.createElement('a');
+    saveButton.classList.add('btn_small', 'btn_grey_white_innerfade');
+    saveButton.style.marginRight = '5px';
+    saveButton.innerHTML = '<span>Set price</span>';
+    saveButton.title = hint;
+    saveButton.addEventListener('click', () => {
+      const value = parseFloat(input.value.replace(',', '.'));
+      if (!Number.isFinite(value) || value < 0 || !exchangeRate) {
+        label.innerText = 'Enter a valid price';
+        return;
+      }
+      setCustomPrice(item.assetid, value / exchangeRate, item.market_hash_name, item.name)
+        .then(() => {
+          label.innerText = `Custom price: ${sign}${value.toFixed(2)}`;
+        });
+    });
+    module.appendChild(saveButton);
+
+    const resetButton = document.createElement('a');
+    resetButton.classList.add('btn_small', 'btn_grey_white_innerfade');
+    resetButton.innerHTML = '<span>Reset</span>';
+    resetButton.addEventListener('click', () => {
+      removeCustomPrice(item.assetid).then(() => {
+        label.innerText = 'Custom price: not set';
+        input.value = '';
+      });
+    });
+    module.appendChild(resetButton);
+
+    resolve(module);
+  });
+});
+
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === 'local' && changes.customItemPrices) refreshCustomPrices();
+});
 
 const unselectAllItems = () => {
   document.querySelectorAll('.item.app730.context2, .item.app730.context16').forEach((item) => {

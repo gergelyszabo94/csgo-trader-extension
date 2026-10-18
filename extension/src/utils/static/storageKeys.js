@@ -14,6 +14,7 @@ const storageKeys = {
   reoccuringMessage: 'I don\'t have other accounts. If someone adds you with my name and picture they are scammers.',
   nsfwFilter: false,
   bookmarks: [],
+  customItemPrices: {},
   steamAPIKey: '',
   apiKeyValid: false,
   steamAcessToken: '',
@@ -300,7 +301,7 @@ const storageKeys = {
   showAcceptOfferButtonInTradeOffers: true,
 };
 
-const nonSettingStorageKeys = ['bookmarks', 'prices', 'exchangeRates', 'clientID',
+const nonSettingStorageKeys = ['bookmarks', 'customItemPrices', 'prices', 'exchangeRates', 'clientID',
   'tradeHistoryLastUpdate', 'activeOffers', 'showUpdatedRibbon', 'steamSessionID', 'groupInvites',
   'friendRequests', 'friendRequestLogs', 'friendRequestEvalRules', 'floatQueueActivity',
   'priceQueueActivity', 'userSteamWalletCurrency', 'tradeOffersEventLogs', 'numberOfNewItems', 'numberOfComments',

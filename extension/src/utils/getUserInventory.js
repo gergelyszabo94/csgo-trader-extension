@@ -1,6 +1,6 @@
 import { getFloatInfoFromCache } from 'utils/floatCaching';
 import itemTypes from 'utils/static/itemTypes';
-import { getPrice, getStickerPriceTotal } from 'utils/pricing';
+import { getPrice, getStickerPriceTotal, getCustomPrice } from 'utils/pricing';
 import { getShortDate, parseSteamTradabilityDate } from 'utils/dateTime';
 import {
   getDopplerInfo,
@@ -16,9 +16,9 @@ import { getItemMarketLink, getCollection } from 'utils/simpleUtils';
 
 const getUserCSGOInventory = (steamID, contextID) => new Promise((resolve, reject) => {
   chrome.storage.local.get(
-    ['itemPricing', 'prices', 'currency', 'exchangeRate', 'pricingProvider', 'pricingMode'],
+    ['itemPricing', 'prices', 'currency', 'exchangeRate', 'pricingProvider', 'pricingMode', 'customItemPrices'],
     ({
-      itemPricing, prices, currency, exchangeRate, pricingProvider, pricingMode,
+      itemPricing, prices, currency, exchangeRate, pricingProvider, pricingMode, customItemPrices,
     }) => {
       const getRequest = new Request(`https://steamcommunity.com/profiles/${steamID}/inventory/json/${steamApps.CSGO.appID}/${contextID}/?l=english`);
       fetch(getRequest).then((response) => {
@@ -87,8 +87,9 @@ const getUserCSGOInventory = (steamID, contextID) => new Promise((resolve, rejec
                       : null;
 
                     if (itemPricing) {
-                      price = getPrice(marketHashName, dopplerInfo, prices,
-                        pricingProvider, pricingMode, exchangeRate, currency);
+                      price = getCustomPrice(assetID, customItemPrices, exchangeRate, currency)
+                        || getPrice(marketHashName, dopplerInfo, prices,
+                          pricingProvider, pricingMode, exchangeRate, currency);
                       inventoryTotal += parseFloat(price.price);
                     } else price = { price: '', display: '' };
 
