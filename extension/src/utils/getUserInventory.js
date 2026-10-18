@@ -423,7 +423,7 @@ const getOtherInventory = (appID, steamID) => new Promise((resolve, reject) => {
               market_hash_name: marketHashName,
               name_color: item.name_color,
               marketlink: getItemMarketLink(appID, marketHashName),
-              appid: item.appid,
+              appid: item.appid.toString(),
               contextid: '2',
               commodity: item.commodity,
               classid: item.classid,
