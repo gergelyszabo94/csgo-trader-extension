@@ -6,7 +6,7 @@ let messagePresets = [];
 let chatDialogObserverSet = false;
 
 const removeHeader = () => {
-  const header = document.querySelector('.main_SteamPageHeader_3NLSM');
+  const header = document.querySelector('a[href="https://store.steampowered.com/"]')?.parentElement;
   if (header !== null) header.remove();
 };
 
