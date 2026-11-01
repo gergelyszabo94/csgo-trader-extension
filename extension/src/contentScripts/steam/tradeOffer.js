@@ -499,6 +499,32 @@ const addPLInfo = () => {
   }
 };
 
+// price edits live only in the in-memory inventories, so they reset when the page is closed
+const EDIT_PRICE_INFO = 'This only changes the price on this page and in the trade totals. It resets when you close or reload the page. It\'s useful when you want to calculate overpay on items or adjust the price on rare items.';
+
+const editItemPrice = (item) => {
+  chrome.storage.local.get(['currency'], ({ currency }) => {
+    const currentPrice = item.price && item.price.price !== undefined ? item.price.price : '';
+    // eslint-disable-next-line no-alert
+    const input = window.prompt(`New price for ${item.market_hash_name}:\n\n${EDIT_PRICE_INFO}`, currentPrice);
+    if (input === null) return;
+    const newPrice = parseFloat(input.replace(',', '.'));
+    if (Number.isNaN(newPrice) || newPrice < 0) return;
+
+    item.price = { price: newPrice, display: prettyPrintPrice(currency, newPrice) };
+
+    document.querySelectorAll(`.item[id$="_${item.assetid}"]`).forEach((itemElement) => {
+      const indicator = itemElement.querySelector('.priceIndicator');
+      if (indicator) indicator.textContent = item.price.display;
+      else addPriceIndicator(itemElement, item.price, currency, showContrastingLook);
+    });
+
+    addInTradeTotals('your');
+    addInTradeTotals('their');
+    addPLInfo();
+  });
+};
+
 const periodicallyUpdateTotals = () => {
   setInterval(() => {
     if (!document.hidden) {
@@ -1478,6 +1504,20 @@ if (tradeActionPopup) {
               inspectOnServerActionEl.setAttribute('target', '_blank');
               itemActions.appendChild(inspectOnServerActionEl);
             }
+
+            const existingEditPriceEl = itemActions.querySelector('#editPriceAction');
+            if (existingEditPriceEl) existingEditPriceEl.remove();
+            const editPriceActionEl = document.createElement('a');
+            editPriceActionEl.textContent = 'Edit price...';
+            editPriceActionEl.classList.add('popup_menu_item');
+            editPriceActionEl.id = 'editPriceAction';
+            editPriceActionEl.setAttribute('href', '#');
+            editPriceActionEl.setAttribute('title', EDIT_PRICE_INFO);
+            editPriceActionEl.addEventListener('click', (event) => {
+              event.preventDefault();
+              editItemPrice(actionItem);
+            });
+            itemActions.appendChild(editPriceActionEl);
 
             if (buffAction) {
               if (staticActions.querySelector('#buffAction') === null) {
