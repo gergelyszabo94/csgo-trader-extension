@@ -111,6 +111,12 @@ const inventory = () => {
         description="Show lookup on Youpin link in inventories"
       />
       <Row
+        name="Show lookup on CSFloat market"
+        id="showCSFloatMarketLookupInInventory"
+        type="flipSwitchStorage"
+        description="Show lookup on CSFloat market in inventories"
+      />
+      <Row
         name="Show lookup on Float DB link"
         id="showFloatDBLookupInInventory"
         type="flipSwitchStorage"

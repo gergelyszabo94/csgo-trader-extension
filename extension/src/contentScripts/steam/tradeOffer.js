@@ -4,7 +4,7 @@ import {
   getItemByAssetID, getAssetIDOfElement, addDopplerPhase,
   makeItemColorful, addSSTandExtIndicators, addPriceIndicator,
   addFloatIndicator, getExteriorFromTags, getQuality, addPaintSeedIndicator,
-  getType, addFadePercentage, getYoupinLink,
+  getType, addFadePercentage, getYoupinLink, getCSFloatMarketLink,
   getDopplerInfo, getActivePage, logExtensionPresence,
   updateLoggedInUserInfo, addPageControlEventListeners,
   addSearchListener, removeLinkFilterFromLinks,
@@ -1565,7 +1565,7 @@ if (tradeActionPopup) {
             }
 
             if (floatAction) {
-              const floatMarketSearchLink = `https://csfloat.com/search?sort_by=lowest_price&type=buy_now&market_hash_name=${actionItem.market_hash_name}&ref=gerytrading`;
+              const floatMarketSearchLink = getCSFloatMarketLink(actionItem.market_hash_name);
 
               if (staticActions.querySelector('#floatAction') === null) {
                 const floatActionEl = document.createElement('a');

@@ -1351,6 +1351,8 @@ const getYoupinLink = (marketHashName) => {
   return `https://youpin898.com/market/goods-list?templateId=${youPinID}&gameId=730`;
 };
 
+const getCSFloatMarketLink = (marketHashName) => `https://csfloat.com/search?market_hash_name=${encodeURIComponent(marketHashName)}&ref=gerytrading`;
+
 // runs in content scripts when steam pages are loaded
 const refreshSteamAccessToken = () => {
   chrome.storage.local.get(['steamAcessToken', 'steamAcessTokenValid'], ({ steamAcessToken, steamAcessTokenValid }) => {
@@ -1511,5 +1513,5 @@ export {
   addFadePercentage, addPaintSeedIndicator, addFloatRankIndicator,
   getAppropriateFetchFunc, getFloatDBLink, getBuffLink, refreshSteamAccessToken,
   getLookupLink, loadFloatData, getSteamDisplayLanguageFromPage,
-  openBrowserInspectModal, getYoupinLink,
+  openBrowserInspectModal, getYoupinLink, getCSFloatMarketLink,
 };

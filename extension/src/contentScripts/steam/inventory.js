@@ -12,7 +12,7 @@ import {
   addPaintSeedIndicator, addFloatRankIndicator, getFloatDBLink,
   parseStickerInfo, getExteriorFromTags, getDopplerInfo,
   getType, getQuality, getBuffLink, getLookupLink, getSteamDisplayLanguageFromPage,
-  openBrowserInspectModal, getYoupinLink, getInspectLinkFromMarketActions,
+  openBrowserInspectModal, getYoupinLink, getCSFloatMarketLink, getInspectLinkFromMarketActions,
 }
   from 'utils/utilsModular';
 import {
@@ -142,7 +142,7 @@ const goToPreviousInventoryPage = () => {
 
 const cleanUpElements = () => {
   document.querySelectorAll(
-    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .customName,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .customPriceModule, .inspectOnServer, .multiSellLink, .floatDBLink, .inbrowserInspectLink, .inbrowserInspectImageLink, .youpinLink, .customAccessoryPrice, .customTotalAccessoryPrice',
+    '.upperModule, .lowerModule, .inTradesInfoModule, .otherExteriors, .customName,.startingAtVolume,.marketActionInstantSell, .marketActionQuickSell, .listingError, .pricEmpireLink, .buffLink, .customPriceModule, .inspectOnServer, .multiSellLink, .floatDBLink, .inbrowserInspectLink, .inbrowserInspectImageLink, .youpinLink, .csfloatMarketLink, .customAccessoryPrice, .customTotalAccessoryPrice',
   ).forEach((element) => {
     element.remove();
   });
@@ -996,11 +996,11 @@ const addRightSideElements = (reRun) => {
       // adds the in-offer module
       chrome.storage.local.get(['activeOffers', 'itemInOffersInventory', 'showPriceEmpireLinkInInventory',
         'showBuffLookupInInventory', 'inventoryShowCopyButtons', 'showFloatDBLookupInInventory', 'pricingProvider',
-        'showYoupinLookupInInventory',
+        'showYoupinLookupInInventory', 'showCSFloatMarketLookupInInventory',
       ], ({
         activeOffers, itemInOffersInventory,
         showPriceEmpireLinkInInventory, showBuffLookupInInventory, inventoryShowCopyButtons,
-        showFloatDBLookupInInventory, pricingProvider, showYoupinLookupInInventory,
+        showFloatDBLookupInInventory, pricingProvider, showYoupinLookupInInventory, showCSFloatMarketLookupInInventory,
       }) => {
         const inOffers = activeOffers.items.filter((offerItem) => {
           return offerItem.assetid === item.assetid;
@@ -1046,6 +1046,13 @@ const addRightSideElements = (reRun) => {
               </a>
         </div>
       `;
+          const csfloatMarketLink = `
+        <div class="csfloatMarketLink">
+            <a href="${getCSFloatMarketLink(item.market_hash_name)}" target="_blank" style="color: yellow;">
+                Lookup on CSFloat
+              </a>
+        </div>
+      `;
           const floatDBLink = getFloatDBLink(item);
           const floatDBLinkEL = `
               <div class="floatDBLink">
@@ -1068,6 +1075,7 @@ const addRightSideElements = (reRun) => {
             if (showFloatDBLookupInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(floatDBLinkEL, { ADD_ATTR: ['target'] }));
             if (showPriceEmpireLinkInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(priceEmpireLink, { ADD_ATTR: ['target'] }));
             if (showYoupinLookupInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(youpinLink, { ADD_ATTR: ['target'] }));
+            if (showCSFloatMarketLookupInInventory) inspectButton.parentNode.insertAdjacentHTML('beforebegin', DOMPurify.sanitize(csfloatMarketLink, { ADD_ATTR: ['target'] }));
             if (isOwnInventory()) {
               // eslint-disable-next-line no-use-before-define
               createCustomPriceModule(item).then((module) => {
