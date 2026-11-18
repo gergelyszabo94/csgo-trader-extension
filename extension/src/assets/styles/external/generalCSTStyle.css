@@ -608,36 +608,75 @@ progress {
     margin-bottom: 0;
 }
 
-.inbrowserInspectImageLink {
+.cs2i-btn {
+    --cs2i-accent: #FBAC18;
+    --cs2i-ink: #1a0d00;
+    --cs2i-glow: rgba(251, 172, 24, 0.45);
+
     position: absolute;
-    top: 8px;
-    left: 8px;
-    z-index: 1;
-    min-width: 0 !important;
-    padding: 2px 7px !important;
-    color: #e9f8fb !important;
-    background: rgba(21, 93, 113, 0.84) !important;
-    border: 1px solid rgba(172, 233, 242, 0.7) !important;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.45);
-    font-size: 14px !important;
-    font-weight: bold;
-    text-shadow: none !important;
-    transition: background-color 120ms ease, border-color 120ms ease;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    height: 36px;
+    padding: 0 12px 0 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--cs2i-accent);
+    color: var(--cs2i-ink);
+    border: none;
+    border-radius: 8px;
+    font-family: "Barlow", "Segoe UI", Helvetica, Arial, sans-serif;
+    cursor: pointer;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, .35), 0 4px 14px var(--cs2i-glow);
+    transition: transform .12s ease, filter .12s ease;
+    -webkit-font-smoothing: antialiased;
 }
 
-.inbrowserInspectImageIcon {
-    display: inline-block;
-    width: 13px;
-    height: 13px;
-    margin-right: 4px;
-    filter: invert(1);
-    vertical-align: -1px;
+.cs2i-btn:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
 }
 
-.inbrowserInspectImageLink:hover {
-    color: #ffffff !important;
-    background: rgba(31, 126, 148, 0.96) !important;
-    border-color: rgba(220, 251, 255, 0.95) !important;
+.cs2i-btn:active {
+    filter: brightness(.95);
+    transform: translateY(1px);
+}
+
+.cs2i-btn:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+.cs2i-btn__icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: var(--cs2i-ink);
+    color: var(--cs2i-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cs2i-btn__text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1;
+}
+
+.cs2i-btn__title {
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.cs2i-btn__sub {
+    font-size: 10px;
+    font-weight: 600;
+    opacity: .75;
+    margin-top: 2px;
 }
 
 .nametag {

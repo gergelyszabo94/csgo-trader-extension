@@ -740,21 +740,47 @@ const addRightSideElements = (reRun) => {
           const itemImageContainer = inspectButton.closest('div[data-featuretarget="iteminfo"]')
             ?.querySelector('img[alt]')?.parentElement;
           if (itemImageContainer) {
-            const inspectInBrowserImageLink = inspectInBrowserLink.cloneNode(true);
-            inspectInBrowserImageLink.textContent = '3D Inspect';
-            inspectInBrowserImageLink.setAttribute('aria-label', '3D Inspect');
-            inspectInBrowserImageLink.setAttribute('title', '3D Inspect via CS2Inspects.com');
-            inspectInBrowserImageLink.classList.add('inbrowserInspectImageLink');
-            const magnifyingGlass = document.createElement('img');
-            magnifyingGlass.classList.add('inbrowserInspectImageIcon');
-            magnifyingGlass.src = chrome.runtime.getURL('images/magnifying-glass.svg');
-            magnifyingGlass.alt = '';
-            inspectInBrowserImageLink.prepend(magnifyingGlass);
-            inspectInBrowserImageLink.addEventListener('click', (event) => {
-              event.preventDefault();
+            const inspectInBrowserButton = document.createElement('button');
+            inspectInBrowserButton.type = 'button';
+            inspectInBrowserButton.classList.add('cs2i-btn', 'inbrowserInspectImageLink');
+            inspectInBrowserButton.setAttribute('aria-label', '3D Inspect by CS2Inspects');
+            inspectInBrowserButton.setAttribute('title', '3D Inspect via CS2Inspects.com');
+
+            const inspectButtonIcon = document.createElement('span');
+            inspectButtonIcon.classList.add('cs2i-btn__icon');
+            const magnifyingGlass = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            magnifyingGlass.setAttribute('width', '18');
+            magnifyingGlass.setAttribute('height', '18');
+            magnifyingGlass.setAttribute('viewBox', '0 0 24 24');
+            magnifyingGlass.setAttribute('fill', 'none');
+            magnifyingGlass.setAttribute('stroke', 'currentColor');
+            magnifyingGlass.setAttribute('stroke-width', '3');
+            magnifyingGlass.setAttribute('stroke-linecap', 'round');
+            magnifyingGlass.setAttribute('aria-hidden', 'true');
+            const magnifyingGlassLens = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            magnifyingGlassLens.setAttribute('cx', '10');
+            magnifyingGlassLens.setAttribute('cy', '10');
+            magnifyingGlassLens.setAttribute('r', '6.5');
+            const magnifyingGlassHandle = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            magnifyingGlassHandle.setAttribute('d', 'M15 15l6 6');
+            magnifyingGlass.append(magnifyingGlassLens, magnifyingGlassHandle);
+            inspectButtonIcon.append(magnifyingGlass);
+
+            const inspectButtonText = document.createElement('span');
+            inspectButtonText.classList.add('cs2i-btn__text');
+            const inspectButtonTitle = document.createElement('span');
+            inspectButtonTitle.classList.add('cs2i-btn__title');
+            inspectButtonTitle.textContent = '3D Inspect';
+            const inspectButtonAttribution = document.createElement('span');
+            inspectButtonAttribution.classList.add('cs2i-btn__sub');
+            inspectButtonAttribution.textContent = 'by CS2Inspects';
+            inspectButtonText.append(inspectButtonTitle, inspectButtonAttribution);
+            inspectInBrowserButton.append(inspectButtonIcon, inspectButtonText);
+
+            inspectInBrowserButton.addEventListener('click', () => {
               openBrowserInspectModal(item.inspectLink, items, floatDigitsToShow);
             });
-            itemImageContainer.append(inspectInBrowserImageLink);
+            itemImageContainer.append(inspectInBrowserButton);
           }
         }
       });
