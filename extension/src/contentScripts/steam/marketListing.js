@@ -55,13 +55,15 @@ let isSouvenir = false;
 let isVanillaKnife = false;
 let isCharm = false;
 
-const extractItemInfo = () => {
+const extractItemInfo = (marketHashName) => {
   const pathParts = decodeURIComponent(window.location.pathname).split('/listings/');
   if (pathParts[1]) {
     const segments = pathParts[1].split('/');
     if (segments[0]) appID = segments[0];
-    if (segments[1] && !fullName) fullName = segments[1];
+    if (segments[1] && !isNewMarketDesign && !fullName) fullName = segments[1];
   }
+
+  if (marketHashName) fullName = marketHashName;
 
   if (!isNewMarketDesign) {
     isCommodityItem = document.querySelector('.market_commodity_order_block') !== null;
@@ -83,7 +85,7 @@ const extractItemInfo = () => {
     isVanillaKnife = !fullName.includes('(') && knifeNames.some((k) => fullName.includes(k));
     isCharm = fullName.startsWith('Charm |');
 
-    if (fullName.includes('★')) star = starChar;
+    star = fullName.includes('★') ? starChar : '';
     if (isStattrak) {
       weaponName = fullName.split('StatTrak™ ')[1]?.split('(')[0]?.trim() || '';
     } else if (isSouvenir) {
@@ -1336,20 +1338,21 @@ const getRealMoneyInsertionTarget = () => {
 let isRealMoneyMoreInfoExpanded = false;
 
 const insertRealMoneyLinks = (target) => {
+  const encodedFullName = encodeURIComponent(fullName);
   target.element.insertAdjacentHTML(
     target.placement,
     `<div id="realMoneySiteLinksContainer">
           <span class="realMoneyMarketTitle">You can save money (20-35%) by buying this item on one of these trusted markets for "real money":</span>
           <div class="realMoneySites">
             <div class="realMoneySite">
-              <a href="https://skinport.com/market/${appID}?search=${fullName}&r=gery" target="_blank" class="realMoneySiteLink referralLink" data-site="Skinport">
+              <a href="https://skinport.com/market/${appID}?search=${encodedFullName}&r=gery" target="_blank" class="realMoneySiteLink referralLink" data-site="Skinport">
               <img alt="Skinport logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/skinport.png')}" data-site="skinport">
                 <br>
                 Skinport.com
               </a>
             </div>
             <div class="realMoneySite">
-              <a href="https://csfloat.com/search?market_hash_name=${fullName}&ref=gerytrading" target="_blank" class="realMoneySiteLink referralLink" data-site="csfloat">
+              <a href="https://csfloat.com/search?market_hash_name=${encodedFullName}&ref=gerytrading" target="_blank" class="realMoneySiteLink referralLink" data-site="csfloat">
                   <img alt="CSFloat logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/csgofloat.png')}" data-site="csfloat">
                   <br>
                   CSFloat Market
@@ -1363,7 +1366,7 @@ const insertRealMoneyLinks = (target) => {
               </a>
             </div>
             <div class="realMoneySite">
-              <a href="https://itrade.gg/trade/csgo?search=${fullName}&ref=gery" target="_blank" class="realMoneySiteLink referralLink" data-site="itradegg">
+              <a href="https://itrade.gg/trade/csgo?search=${encodedFullName}&ref=gery" target="_blank" class="realMoneySiteLink referralLink" data-site="itradegg">
                   <img alt="iTrade.gg logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/itradegg.png')}" data-site="itradegg">
                   <br>
                   iTrade.gg
@@ -1462,7 +1465,7 @@ const insertRealMoneyLinks = (target) => {
                 </a>
               </div>
               <div class="realMoneySite">
-                <a href="https://white.market/item?appId=730&nameHash=${encodeURIComponent(fullName)}&ref=53cecef4a02f6fc1" target="_blank" class="realMoneySiteLink referralLink" data-site="whitemarket">
+                <a href="https://white.market/item?appId=730&nameHash=${encodedFullName}&ref=53cecef4a02f6fc1" target="_blank" class="realMoneySiteLink referralLink" data-site="whitemarket">
                     <img alt="White.Market logo" style="height: 50px" src="${chrome.runtime.getURL('images/external_logos/whitemarket.png')}" data-site="whitemarket">
                     <br>
                     White.Market
@@ -1477,19 +1480,19 @@ const insertRealMoneyLinks = (target) => {
                 <a href="https://skinbaron.com/partner/gery" target="_blank" class="referralLink" data-site="skinbaron">Skinbaron</a>,
                 <a href="https://dmarket.com/?ref=hJEDYLBTsV" target="_blank" class="referralLink" data-site="dmarket">DMARKET</a>,
                 <a href="https://skinvault.gg/en?aff=gery" target="_blank" class="referralLink" data-site="skinvault">SkinVault</a>,
-                <a href="https://itrade.gg/trade/csgo?search=${fullName}&ref=gery" target="_blank" class="referralLink" data-site="itradegg">ITRADE.GG</a>,
+                <a href="https://itrade.gg/trade/csgo?search=${encodedFullName}&ref=gery" target="_blank" class="referralLink" data-site="itradegg">ITRADE.GG</a>,
                 <a href="https://waxpeer.com/r/gery" target="_blank" class="referralLink" data-site="waxpeer">Waxpeer</a>,
                 <a href="https://buff.market/home?ref=U1093423730" target="_blank" class="referralLink" data-site="buffmarket">BUFF.MARKET</a>,
                 <a href="https://csdeals.com/new/?ref=mwe3otc" target="_blank" class="referralLink" data-site="csdeals">CS.DEALS</a>,
                 <a href="https://p.skin.place/cs2trader" target="_blank" class="referralLink" data-site="skinplace">Skin.Place</a>,
-                <a href="https://white.market/item?appId=730&nameHash=${encodeURIComponent(fullName)}&ref=53cecef4a02f6fc1" target="_blank" class="referralLink" data-site="whitemarket">White.Market</a>,
+                <a href="https://white.market/item?appId=730&nameHash=${encodedFullName}&ref=53cecef4a02f6fc1" target="_blank" class="referralLink" data-site="whitemarket">White.Market</a>,
                 <a href="https://skinflow.gg/buy?search=${weaponName}&referral=GERYTRADING" target="_blank" class="referralLink" data-site="skinflow">SkinFlow.gg</a>,
                 <a href="https://csfloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csfloat">
                 CSFloat
                 </a>
                 are real money marketplaces where you can buy and sell skins. <br>
                 You can save money by buying items there instead of the market. <br>
-                <a href="https://skinport.com/market/${appID}?search=${fullName}&r=gery" target="_blank" class="referralLink" data-site="skinport">
+                <a href="https://skinport.com/market/${appID}?search=${encodedFullName}&r=gery" target="_blank" class="referralLink" data-site="skinport">
                     Follow this link to check listings for his item on Skinport.com
                 </a>,
                 <a href="https://csfloat.com?ref=gerytrading" target="_blank" class="referralLink" data-site="csfloat">
@@ -1529,15 +1532,38 @@ const addRealMoneySiteLinks = () => {
     if (!showRealMoneySiteLinks) return;
 
     let isInserting = false;
+    let insertedFullName = '';
+    let hasResolvedMarketHashName = !isNewMarketDesign;
+    let buckets = [];
+    let unmatchedListingName = '';
 
     const tryAdd = () => {
       if (isInserting) return true;
       const existing = document.getElementById('realMoneySiteLinksContainer');
-      if (existing && existing.isConnected) {
-        return true;
+      if (existing && existing.isConnected && hasResolvedMarketHashName) return true;
+
+      let marketHashName;
+      if (!hasResolvedMarketHashName) {
+        const firstListing = document.querySelector('[style*="--grid-rows:subgrid"]');
+        const listingName = firstListing?.querySelector(
+          '[style*="--text-color:var(--color-text-body-title)"]',
+        )?.textContent.trim();
+        // Bucket IDs are market hash names; listing titles are localized.
+        const bucket = listingName
+          ? buckets.find((item) => item.localized_name === listingName)
+          : buckets.length === 1 ? buckets[0] : null;
+        if (listingName && buckets.length && !bucket && listingName !== unmatchedListingName) {
+          console.warn('CS2 Trader: No market bucket matched the first listing:', listingName);
+          unmatchedListingName = listingName;
+        } else if (bucket) {
+          unmatchedListingName = '';
+        }
+        marketHashName = bucket?.bucket_id;
+        if (marketHashName) hasResolvedMarketHashName = true;
       }
 
-      extractItemInfo();
+      extractItemInfo(marketHashName);
+      if (existing && existing.isConnected && insertedFullName === fullName) return true;
 
       if (appID === steamApps.CSGO.appID || appID === steamApps.DOTA2.appID
         || appID === steamApps.TF2.appID || appID === steamApps.RUST.appID
@@ -1546,7 +1572,9 @@ const addRealMoneySiteLinks = () => {
         if (target && target.element && target.element.isConnected) {
           isInserting = true;
           try {
+            if (existing) existing.remove();
             insertRealMoneyLinks(target);
+            insertedFullName = fullName;
           } finally {
             isInserting = false;
           }
@@ -1568,6 +1596,17 @@ const addRealMoneySiteLinks = () => {
         childList: true,
         subtree: true,
       });
+    }
+
+    if (isNewMarketDesign) {
+      document.addEventListener('csgoTraderMarketBucketsLoaded', () => {
+        const bucketsJSON = document.body.getAttribute('data-csgo-trader-market-buckets');
+        document.body.removeAttribute('data-csgo-trader-market-buckets');
+        if (bucketsJSON) buckets = JSON.parse(bucketsJSON);
+        if (!buckets.length) console.warn('CS2 Trader: Steam market item buckets are unavailable.');
+        tryAdd();
+      }, { once: true });
+      injectScriptAsFile('GetMarketBuckets', 'getMarketBuckets');
     }
   });
 };
