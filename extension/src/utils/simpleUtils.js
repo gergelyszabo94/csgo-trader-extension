@@ -18,13 +18,19 @@ const isChromium = () => {
 };
 
 // Create the offscreen document if it doesn't already exist
+let creatingOffscreen;
 const createOffscreen = async (reasons, justification) => {
-  if (await chrome.offscreen.hasDocument()) return;
-  await chrome.offscreen.createDocument({
-    url: '/offScreen/offscreen.html',
-    reasons,
-    justification,
-  });
+  if (!creatingOffscreen) {
+    creatingOffscreen = (async () => {
+      if (await chrome.offscreen.hasDocument()) return;
+      await chrome.offscreen.createDocument({
+        url: '/offScreen/offscreen.html',
+        reasons,
+        justification,
+      });
+    })().finally(() => { creatingOffscreen = null; });
+  }
+  await creatingOffscreen;
 };
 
 // https://stackoverflow.com/questions/67437180/play-audio-from-background-script-in-chrome-extention-manifest-v3
