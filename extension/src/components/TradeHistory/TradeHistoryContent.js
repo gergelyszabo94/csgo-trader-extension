@@ -19,6 +19,7 @@ const TradeHistoryContent = () => {
 
   const updateTrades = (next) => {
     setTrades(null);
+    setError(null);
     getTradeHistory(historySize, next ? lastTradeTime : startTime, next ? lastTradeID : 0)
       .then((tradesResponse) => {
         const noEmptyTrades = [];
@@ -34,7 +35,9 @@ const TradeHistoryContent = () => {
       })
       .catch((err) => {
         console.log(err);
-        setError('Could not load your offer history, Steam might be down or you don\'t have your API key set.');
+        setError(err === 'access_token_invalid'
+          ? 'Could not load trade history. Sign in to Steam Community and try again.'
+          : 'Could not load your trade history. Please try again later.');
       });
   };
 

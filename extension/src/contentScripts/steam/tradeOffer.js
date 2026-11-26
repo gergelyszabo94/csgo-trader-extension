@@ -891,7 +891,7 @@ const getInventories = (initial) => {
           items,
         },
       };
-      addPricesAndFloatsToInventory(
+      return addPricesAndFloatsToInventory(
         theirBuiltInventory[steamApps.CSGO.appID].items,
       ).then((theirInventoryRes) => {
         const theirInventoryWithPrices = {
@@ -927,6 +927,8 @@ const getInventories = (initial) => {
           periodicallyUpdateTotals();
         }
       });
+    }).catch((error) => {
+      console.log('Could not add prices and float data to trade inventories:', error);
     });
   } else if (document.getElementById('error_msg') === null) {
     setTimeout(() => {

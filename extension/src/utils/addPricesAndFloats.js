@@ -3,7 +3,7 @@ import { getPrice, getStickerPriceTotal, getCustomPrice } from 'utils/pricing';
 import itemTypes from 'utils/static/itemTypes';
 import { getPattern, parseStickerInfo, parseCharmInfo } from 'utils/utilsModular';
 
-const addPricesAndFloatsToInventory = (inventory) => new Promise((resolve) => {
+const addPricesAndFloatsToInventory = (inventory) => new Promise((resolve, reject) => {
   chrome.storage.local.get(
     ['prices', 'exchangeRate', 'currency', 'itemPricing', 'pricingProvider', 'pricingMode', 'customItemPrices'],
     ({
@@ -49,7 +49,7 @@ const addPricesAndFloatsToInventory = (inventory) => new Promise((resolve) => {
               total,
             });
           },
-        );
+        ).catch(reject);
       } else {
         resolve({
           items: inventory,

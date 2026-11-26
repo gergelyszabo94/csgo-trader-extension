@@ -74,13 +74,17 @@ const CSVExport = () => {
         tradesResponse.trades.length === 0 || exportEndTimeUnix <= lastProcessedTradeTime)) {
         loadNextChunk(lastProcessedTradeTime, lastProcessedTradeID);
       } else finishExport();
-    }).catch(() => {
-      setStatusMessage('Steam did not return any trades for that period.');
+    }).catch((error) => {
+      console.log('Could not export trade history:', error);
+      setStatusMessage(error === 'access_token_invalid'
+        ? 'Sign in to Steam Community and try again.'
+        : 'Could not export trade history. Please try again later.');
     });
   };
 
   const startExport = () => {
     requestCount = 0;
+    setShowDownload(false);
     setStatusMessage('Exporting in progress');
     loadNextChunk(exportStartTimeUnix);
   };

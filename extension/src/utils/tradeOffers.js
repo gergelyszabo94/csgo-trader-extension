@@ -445,7 +445,7 @@ const matchItemsWithDescriptions = (items) => {
 };
 
 const matchItemsAndAddDetails = (offers, userID) => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let allItemsInOffer = extractItemsFromOffers(offers.trade_offers_sent, 'sent', userID);
     allItemsInOffer = allItemsInOffer.concat(
       extractItemsFromOffers(offers.trade_offers_received, 'received', userID),
@@ -468,7 +468,7 @@ const matchItemsAndAddDetails = (offers, userID) => {
 
     addPricesAndFloatsToInventory(matchedItems).then(({ items }) => {
       resolve(items);
-    });
+    }).catch(reject);
   });
 };
 
@@ -727,7 +727,7 @@ const updateTrades = () => {
 
         logTradeOfferEvents(newOfferEvents);
 
-        matchItemsAndAddDetails(offersData, steamIDOfUser).then((items) => {
+        return matchItemsAndAddDetails(offersData, steamIDOfUser).then((items) => {
           offersData.trade_offers_received = addOfferTotals(
             offersData.trade_offers_received, items,
           );
