@@ -1727,6 +1727,58 @@ const addInstantBuyButtonsToTaggedListings = () => {
 
 document.addEventListener('csgoTraderListingsTagged', addInstantBuyButtonsToTaggedListings);
 
+const seenColor = '#4e1d4e';
+
+// the new design has no listing ids on the rows, so the listing id is read from the tagged buy button
+const highlightSeenNewDesign = () => {
+  // fullName changes while the page loads, the url segment is stable
+  const pageItemID = decodeURIComponent(window.location.pathname.split('/').filter(Boolean).pop());
+  const seenStorageKey = `seen_listings_${appID}_${pageItemID}`;
+  const findRow = (el) => {
+    let node = el.parentElement;
+    while (node && node !== document.body) {
+      if ((node.getAttribute('style') || '').includes('subgrid')) return node;
+      node = node.parentElement;
+    }
+    return null;
+  };
+  chrome.storage.local.get(['highlightSeenListings', seenStorageKey], (result) => {
+    if (!result.highlightSeenListings) return;
+    const highlighted = result[seenStorageKey] !== undefined ? result[seenStorageKey] : {};
+    const firstTimeSeenListings = [];
+
+    document.querySelectorAll('button[data-accent-color="green"][data-instant-buy-listing]').forEach((buyButton) => {
+      const listingData = buyButton.getAttribute('data-instant-buy-listing');
+      const row = findRow(buyButton);
+      if (!listingData || !row) return;
+
+      const { listingid: listingID } = JSON.parse(listingData);
+      // React can reuse a row for a different listing, so the row remembers which one it was processed for
+      if (row.getAttribute('data-highlightseen') === listingID && row.style.backgroundColor) return;
+      row.style.removeProperty('background-color');
+
+      if (highlighted[listingID] !== undefined) {
+        if (Date.now() > highlighted[listingID] + 60000) {
+          row.style.setProperty('background-color', seenColor);
+          row.setAttribute('data-highlightseen', listingID);
+        }
+      } else {
+        row.setAttribute('data-highlightseen', listingID);
+        firstTimeSeenListings.push(listingID);
+      }
+    });
+
+    if (firstTimeSeenListings.length > 0) {
+      firstTimeSeenListings.forEach((listingID) => {
+        highlighted[listingID] = Date.now();
+      });
+      chrome.storage.local.set({ [seenStorageKey]: highlighted }, () => { });
+    }
+  });
+};
+
+document.addEventListener('csgoTraderListingsTagged', highlightSeenNewDesign);
+
 const addInstantBuyButtonsNewDesign = () => {
   if (document.querySelector('button[data-accent-color="green"]:not([data-instant-buy-listing])') !== null) {
     tagBuyButtonsWithListingData();
