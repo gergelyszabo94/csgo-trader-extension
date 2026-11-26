@@ -293,9 +293,22 @@ const addItemInfo = (items) => {
 const getOffersFromAPI = (type) => {
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage({ getTradeOffers: type }, (response) => {
-      if (response.apiKeyValid === false) reject('apiKeyInvalid');
-      else if (!(response.offers === undefined || response === 'error')) {
-        resolve({ offers: response.offers, itemsWithAllInfo: response.items });
+      if (chrome.runtime.lastError) {
+        console.log('Could not request trade offers:', chrome.runtime.lastError.message);
+        reject('steamError');
+      } else if (!response || response === 'error') reject('steamError');
+      else if (response.apiKeyValid === false) reject('apiKeyInvalid');
+      else if (response.accessTokenValid === false) reject('accessTokenInvalid');
+      else if (response.offers && typeof response.offers === 'object'
+        && (response.offers.trade_offers_received === undefined || Array.isArray(response.offers.trade_offers_received))
+        && (response.offers.trade_offers_sent === undefined || Array.isArray(response.offers.trade_offers_sent))
+        && (type === 'historical' || Array.isArray(response.items))) {
+        const offers = {
+          ...response.offers,
+          trade_offers_received: response.offers.trade_offers_received || [],
+          trade_offers_sent: response.offers.trade_offers_sent || [],
+        };
+        resolve({ offers, itemsWithAllInfo: response.items });
       } else reject('steamError');
     });
   });
@@ -547,9 +560,7 @@ const updateOfferHistoryData = () => {
         );
       });
     }, (error) => {
-      if (error === 'apiKeyInvalid') {
-        console.log('API key invalid');
-      }
+      console.log('Could not update trade offer history:', error);
     },
   );
 };
@@ -603,7 +614,7 @@ updateLoggedInUserName();
 addUpdatedRibbon();
 removeLinkFilterFromLinks();
 listenToAcceptTrade();
-refreshSteamAccessToken();
+const steamAccessTokenRefresh = refreshSteamAccessToken();
 reloadPageOnExtensionUpdate();
 
 chrome.storage.local.get([
@@ -852,7 +863,7 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
 
   const tradeOffersList = document.querySelector('.profile_leftcol');
   if (tradeOffersList !== null && document.querySelector('.profile_fatalerror') === null) {
-    updateOfferHistoryData();
+    steamAccessTokenRefresh.then(updateOfferHistoryData);
 
     tradeOffersList.insertAdjacentHTML(
       'afterbegin',
@@ -879,7 +890,7 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
       sortOffers(sortingSelect.options[sortingSelect.selectedIndex].value);
     });
 
-    getOffersFromAPI('active').then(
+    steamAccessTokenRefresh.then(() => getOffersFromAPI('active')).then(
       ({ offers, itemsWithAllInfo }) => {
         addItemInfo(itemsWithAllInfo);
 
@@ -908,6 +919,11 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
                      Check what you are missing in the <a href="https://csgotrader.app/release-notes#1.20" target="_blank">Release Notes</a>`,
             { ADD_ATTR: ['target'] },
           );
+        } else {
+          console.log('Could not load trade offer details:', error);
+          const summary = document.getElementById('tradeoffers_summary');
+          if (error === 'accessTokenInvalid') summary.textContent = 'CS2Trader Extension: Could not access your Steam trade offers. Sign in to Steam Community, then reload this page.';
+          else summary.textContent = 'CS2Trader Extension: Could not load trade offer details. Please try reloading this page.';
         }
       },
     );
@@ -928,103 +944,110 @@ if (activePage === 'incoming_offers' || activePage === 'sent_offers') {
 
     const activeOffersLinksEl = document.querySelector('div.alternativeOffersLinks');
 
-    getOffersFromAPI('active').then(
-      ({ offers, itemsWithAllInfo }) => {
-        if (offers.trade_offers_received.length > 0) {
-          activeOffersLinksEl.appendChild(document.createElement('br'));
-          const span = document.createElement('span');
-          span.textContent = 'Received offers: ';
-          activeOffersLinksEl.appendChild(span);
-          const receivedOffersList = document.createElement('ul');
+    if (activeOffersLinksEl !== null) {
+      steamAccessTokenRefresh.then(() => getOffersFromAPI('active')).then(
+        ({ offers, itemsWithAllInfo }) => {
+          if (offers.trade_offers_received.length > 0) {
+            activeOffersLinksEl.appendChild(document.createElement('br'));
+            const span = document.createElement('span');
+            span.textContent = 'Received offers: ';
+            activeOffersLinksEl.appendChild(span);
+            const receivedOffersList = document.createElement('ul');
 
-          offers.trade_offers_received.forEach((offer) => {
-            const listItem = document.createElement('li');
-            const link = document.createElement('a');
-            link.href = `https://steamcommunity.com/tradeoffer/${offer.tradeofferid}`;
-            link.target = '_blank';
-            const message = offer.message !== '' ? ` - Message from sender: ${offer.message}` : '';
-            link.textContent = `Open Trade Offer ${offer.tradeofferid} ${offer.PLPercentageFormatted}${message}`;
-            listItem.appendChild(link);
-            receivedOffersList.appendChild(listItem);
-          });
-
-          activeOffersLinksEl.appendChild(receivedOffersList);
-          activeOffersLinksEl.appendChild(document.createElement('br'));
-        }
-
-        if (offers.trade_offers_sent.length > 0) {
-          const span = document.createElement('span');
-          span.textContent = 'Sent offers: ';
-          activeOffersLinksEl.appendChild(span);
-          const sentOffersList = document.createElement('ul');
-
-          offers.trade_offers_sent.forEach((offer) => {
-            const listItem = document.createElement('li');
-            listItem.style.marginBottom = '10px';
-            const offerLine = document.createElement('span');
-            const message = offer.message !== '' ? ` - Message: ${offer.message}` : '';
-            offerLine.textContent = `Trade Offer ${offer.tradeofferid} ${offer.PLPercentageFormatted}${message}`;
-            const partnerID = getProperStyleSteamIDFromOfferStyle(offer.accountid_other);
-            const partnerLink = document.createElement('a');
-            partnerLink.href = `https://steamcommunity.com/profiles/${partnerID}`;
-            partnerLink.textContent = `Partner Profile ${partnerID}`;
-            partnerLink.target = '_blank';
-            const sentItems = document.createElement('div');
-            sentItems.textContent = 'Sent Items: ';
-            const sentItemsList = document.createElement('ul');
-
-            if (offer.items_to_give) {
-              offer.items_to_give.forEach((item) => {
-                const itemElement = document.createElement('li');
-                const foundDetailedItem = itemsWithAllInfo.find((detailedItem) => detailedItem.assetid === item.assetid);
-                itemElement.textContent = `${foundDetailedItem.market_hash_name} AssetID: ${item.assetid}`;
-                sentItemsList.appendChild(itemElement);
-              });
-            }
-
-            sentItems.appendChild(sentItemsList);
-
-            const receivedItems = document.createElement('div');
-            receivedItems.textContent = 'Received Items: ';
-            const receivedItemsList = document.createElement('ul');
-
-            if (offer.items_to_receive) {
-              offer.items_to_receive.forEach((item) => {
-                const itemElement = document.createElement('li');
-                const foundDetailedItem = itemsWithAllInfo.find((detailedItem) => detailedItem.assetid === item.assetid);
-                itemElement.textContent = `${foundDetailedItem.market_hash_name} AssetID: ${item.assetid}`;
-                receivedItemsList.appendChild(itemElement);
-              });
-            }
-
-            receivedItems.appendChild(receivedItemsList);
-
-            const cancelButton = document.createElement('span');
-            cancelButton.classList.add('whiteLink');
-            cancelButton.textContent = ' Cancel offer with one click';
-            listItem.appendChild(offerLine);
-            listItem.appendChild(document.createElement('br'));
-            listItem.appendChild(partnerLink);
-            listItem.appendChild(document.createElement('br'));
-            listItem.appendChild(cancelButton);
-            if (offer.items_to_give) listItem.appendChild(sentItems);
-            if (offer.items_to_receive) listItem.appendChild(receivedItems);
-
-            cancelButton.addEventListener('click', () => {
-              cancelOffer(offer.tradeofferid).then(() => {
-                cancelButton.innerText = 'Offer Cancelled';
-                cancelButton.classList.add('cancelled');
-              }).catch((err) => {
-                console.log(err);
-                cancelButton.innerText = 'Could not cancel offer';
-              });
+            offers.trade_offers_received.forEach((offer) => {
+              const listItem = document.createElement('li');
+              const link = document.createElement('a');
+              link.href = `https://steamcommunity.com/tradeoffer/${offer.tradeofferid}`;
+              link.target = '_blank';
+              const message = offer.message !== '' ? ` - Message from sender: ${offer.message}` : '';
+              link.textContent = `Open Trade Offer ${offer.tradeofferid} ${offer.PLPercentageFormatted}${message}`;
+              listItem.appendChild(link);
+              receivedOffersList.appendChild(listItem);
             });
-            sentOffersList.appendChild(listItem);
-          });
 
-          activeOffersLinksEl.appendChild(sentOffersList);
-        }
-      },
-    );
+            activeOffersLinksEl.appendChild(receivedOffersList);
+            activeOffersLinksEl.appendChild(document.createElement('br'));
+          }
+
+          if (offers.trade_offers_sent.length > 0) {
+            const span = document.createElement('span');
+            span.textContent = 'Sent offers: ';
+            activeOffersLinksEl.appendChild(span);
+            const sentOffersList = document.createElement('ul');
+
+            offers.trade_offers_sent.forEach((offer) => {
+              const listItem = document.createElement('li');
+              listItem.style.marginBottom = '10px';
+              const offerLine = document.createElement('span');
+              const message = offer.message !== '' ? ` - Message: ${offer.message}` : '';
+              offerLine.textContent = `Trade Offer ${offer.tradeofferid} ${offer.PLPercentageFormatted}${message}`;
+              const partnerID = getProperStyleSteamIDFromOfferStyle(offer.accountid_other);
+              const partnerLink = document.createElement('a');
+              partnerLink.href = `https://steamcommunity.com/profiles/${partnerID}`;
+              partnerLink.textContent = `Partner Profile ${partnerID}`;
+              partnerLink.target = '_blank';
+              const sentItems = document.createElement('div');
+              sentItems.textContent = 'Sent Items: ';
+              const sentItemsList = document.createElement('ul');
+
+              if (offer.items_to_give) {
+                offer.items_to_give.forEach((item) => {
+                  const itemElement = document.createElement('li');
+                  const foundDetailedItem = itemsWithAllInfo.find((detailedItem) => detailedItem.assetid === item.assetid);
+                  itemElement.textContent = `${foundDetailedItem.market_hash_name} AssetID: ${item.assetid}`;
+                  sentItemsList.appendChild(itemElement);
+                });
+              }
+
+              sentItems.appendChild(sentItemsList);
+
+              const receivedItems = document.createElement('div');
+              receivedItems.textContent = 'Received Items: ';
+              const receivedItemsList = document.createElement('ul');
+
+              if (offer.items_to_receive) {
+                offer.items_to_receive.forEach((item) => {
+                  const itemElement = document.createElement('li');
+                  const foundDetailedItem = itemsWithAllInfo.find((detailedItem) => detailedItem.assetid === item.assetid);
+                  itemElement.textContent = `${foundDetailedItem.market_hash_name} AssetID: ${item.assetid}`;
+                  receivedItemsList.appendChild(itemElement);
+                });
+              }
+
+              receivedItems.appendChild(receivedItemsList);
+
+              const cancelButton = document.createElement('span');
+              cancelButton.classList.add('whiteLink');
+              cancelButton.textContent = ' Cancel offer with one click';
+              listItem.appendChild(offerLine);
+              listItem.appendChild(document.createElement('br'));
+              listItem.appendChild(partnerLink);
+              listItem.appendChild(document.createElement('br'));
+              listItem.appendChild(cancelButton);
+              if (offer.items_to_give) listItem.appendChild(sentItems);
+              if (offer.items_to_receive) listItem.appendChild(receivedItems);
+
+              cancelButton.addEventListener('click', () => {
+                cancelOffer(offer.tradeofferid).then(() => {
+                  cancelButton.innerText = 'Offer Cancelled';
+                  cancelButton.classList.add('cancelled');
+                }).catch((err) => {
+                  console.log(err);
+                  cancelButton.innerText = 'Could not cancel offer';
+                });
+              });
+              sentOffersList.appendChild(listItem);
+            });
+
+            activeOffersLinksEl.appendChild(sentOffersList);
+          }
+        }, (error) => {
+          console.log('Could not load alternative trade offer links:', error);
+          activeOffersLinksEl.textContent = error === 'accessTokenInvalid'
+            ? 'Could not load trade offers. Sign in to Steam Community, then reload this page.'
+            : 'Could not load trade offers. Please try reloading this page.';
+        },
+      );
+    }
   }
 }

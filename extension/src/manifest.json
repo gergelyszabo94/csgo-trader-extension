@@ -11,7 +11,8 @@
     "storage",
     "notifications",
     "alarms",
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "cookies"
   ],
   "optional_permissions": [
     "tabs"

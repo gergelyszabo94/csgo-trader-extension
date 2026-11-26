@@ -156,6 +156,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }).catch((e) => {
         console.log(e);
         if (e === 'api_key_invalid') sendResponse({ apiKeyValid: false });
+        else if (e === 'access_token_invalid') sendResponse({ accessTokenValid: false });
         else sendResponse('error');
       });
     } else {
@@ -164,6 +165,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }).catch((e) => {
         console.log(e);
         if (e === 'api_key_invalid') sendResponse({ apiKeyValid: false });
+        else if (e === 'access_token_invalid') sendResponse({ accessTokenValid: false });
         else sendResponse('error');
       });
     }

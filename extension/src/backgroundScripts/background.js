@@ -14,6 +14,16 @@ import {
 import { updateTrades, removeOldOfferEvents } from 'utils/tradeOffers';
 import './messaging';
 
+if (chrome.cookies?.onChanged) {
+  chrome.cookies.onChanged.addListener(({ cookie }) => {
+    if (cookie.name === 'steamLoginSecure' && cookie.domain.replace(/^\./, '') === 'steamcommunity.com') {
+      chrome.storage.local.set({ steamAcessTokenValid: false }, () => {
+        if (chrome.runtime.lastError) console.log('Could not invalidate Steam access token:', chrome.runtime.lastError.message);
+      });
+    }
+  });
+}
+
 const tradeOffersNoFloatDataStorageKey = 'tradeOffersNoFloatDataByAssetID';
 const tradeOffersNoFloatDataTtlMs = 24 * 60 * 60 * 1000;
 

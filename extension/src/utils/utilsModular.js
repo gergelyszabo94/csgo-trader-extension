@@ -369,21 +369,89 @@ const validateSteamAccessToken = (accessToken) => new Promise((resolve, reject) 
   });
 });
 
-const setAccessTokenFirstTime = async () => {
-  await createOffscreen([chrome.offscreen.Reason.DOM_PARSER], 'dom parsing');
-  chrome.runtime.sendMessage({ scrapeAccessToken: 'scrapeAccessToken' }, (accessToken) => {
-    if (accessToken !== null) {
-      validateSteamAccessToken(accessToken).then(
-        (accessTokenValid) => {
-          if (accessTokenValid) {
-            chrome.storage.local.set({ steamAcessToken: accessToken, steamAcessTokenValid: true }, () => { });
-          }
-        },
-      ).catch((err) => {
-        console.log(err);
-      });
-    } else console.log('Was not able to scrape access token, probably not logged in?');
+const getSteamTokenPayload = (accessToken) => {
+  const tokenPayload = accessToken.split('.')[1];
+  if (!tokenPayload) throw new Error('Steam returned an invalid access token');
+  try {
+    return JSON.parse(atob(tokenPayload.replace(/-/g, '+').replace(/_/g, '/')));
+  } catch (error) {
+    throw new Error('Steam returned an invalid access token');
+  }
+};
+
+const isSteamAccessTokenExpiring = (accessToken) => {
+  try {
+    const { exp } = getSteamTokenPayload(accessToken);
+    return !Number.isFinite(exp) || (exp * 1000) <= Date.now() + (5 * 60 * 1000);
+  } catch (error) {
+    console.log('Could not read Steam access token expiry:', error);
+    return true;
+  }
+};
+
+const saveSteamAccessToken = async (accessToken) => {
+  const url = `https://api.steampowered.com/IEconService/GetTradeOffers/v1/?get_received_offers=1&active_only=1&get_descriptions=0&access_token=${encodeURIComponent(accessToken)}`;
+  const response = await fetch(new Request(url));
+  if (!response.ok) throw new Error(`Steam trade token validation failed: ${response.status}`);
+  let body;
+  try {
+    body = await response.json();
+  } catch (error) {
+    throw new Error('Steam returned an invalid trade token validation response');
+  }
+  if (!body.response) throw new Error('Steam returned no trade response during token validation');
+  await new Promise((resolve, reject) => {
+    chrome.storage.local.set({
+      steamAcessToken: accessToken, steamAcessTokenValid: true, steamAcessTokenSource: 'community-cookie',
+    }, () => {
+      if (chrome.runtime.lastError) reject(new Error(chrome.runtime.lastError.message));
+      else resolve();
+    });
   });
+  return accessToken;
+};
+
+const obtainSteamCookieAccessToken = async () => {
+  if (!chrome.cookies) throw new Error('Steam Community cookies permission is unavailable');
+  const response = await fetch('https://steamcommunity.com/', {
+    credentials: 'include',
+    headers: { Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
+    cache: 'no-store',
+  });
+  if (!response.ok) throw new Error(`Steam Community session refresh failed: ${response.status}`);
+  const cookie = await new Promise((resolve, reject) => {
+    chrome.cookies.get({ url: 'https://steamcommunity.com/', name: 'steamLoginSecure' }, (result) => {
+      if (chrome.runtime.lastError) reject(new Error(chrome.runtime.lastError.message));
+      else resolve(result);
+    });
+  });
+  if (!cookie?.value) throw new Error('Steam Community login cookie was not found; sign in to Steam Community');
+
+  let value;
+  try {
+    value = decodeURIComponent(cookie.value);
+  } catch (error) {
+    throw new Error('Steam Community returned an invalid login cookie');
+  }
+  const parts = value.split('||');
+  if (parts.length !== 2 || !/^\d+$/.test(parts[0]) || !parts[1]) {
+    throw new Error('Steam Community returned an invalid login cookie');
+  }
+  if (getSteamTokenPayload(parts[1]).sub !== parts[0]) {
+    throw new Error('Steam Community login cookie account does not match its access token');
+  }
+  return saveSteamAccessToken(parts[1]);
+};
+
+let accessTokenRequest;
+const setAccessTokenFirstTime = () => {
+  if (!accessTokenRequest) {
+    accessTokenRequest = obtainSteamCookieAccessToken().catch((error) => {
+      console.log('Could not obtain Steam Community cookie token:', error);
+      return null;
+    }).finally(() => { accessTokenRequest = null; });
+  }
+  return accessTokenRequest;
 };
 
 const arrayFromArrayOrNotArray = (arrayOrNotArray) => {
@@ -1354,23 +1422,36 @@ const getYoupinLink = (marketHashName) => {
 const getCSFloatMarketLink = (marketHashName) => `https://csfloat.com/search?market_hash_name=${encodeURIComponent(marketHashName)}&ref=gerytrading`;
 
 // runs in content scripts when steam pages are loaded
-const refreshSteamAccessToken = () => {
+const refreshSteamAccessToken = () => new Promise((resolve) => {
   chrome.storage.local.get(['steamAcessToken', 'steamAcessTokenValid'], ({ steamAcessToken, steamAcessTokenValid }) => {
     const token = document.getElementById('application_config')
       ?.getAttribute('data-loyalty_webapi_token')
       ?.replace('"', '')
       .replace('"', '');
 
-    if (!steamAcessTokenValid || (steamAcessTokenValid && steamAcessToken !== token)) {
+    if (!token) {
+      resolve();
+    } else if (!steamAcessTokenValid || steamAcessToken !== token) {
       // validate the token
       chrome.runtime.sendMessage({ accessTokenToValidate: token }, (response) => {
-        if (response.valid) {
-          chrome.storage.local.set({ steamAcessToken: token, steamAcessTokenValid: true }, () => {});
-        } else console.log('Steam access token could not be validated');
+        if (chrome.runtime.lastError) {
+          console.log('Steam access token validation failed:', chrome.runtime.lastError.message);
+          resolve();
+        } else if (response && response.valid) {
+          chrome.storage.local.set({
+            steamAcessToken: token, steamAcessTokenValid: true, steamAcessTokenSource: 'page',
+          }, () => {
+            if (chrome.runtime.lastError) console.log('Could not save Steam access token:', chrome.runtime.lastError.message);
+            resolve();
+          });
+        } else {
+          console.log('Steam access token could not be validated');
+          resolve();
+        }
       });
-    }
+    } else resolve();
   });
-};
+});
 
 const loadFloatData = (items, ownerID, isOwn, type, name) => new Promise((resolve, reject) => {
   let trimmedItemProperties = items;
@@ -1505,7 +1586,7 @@ export {
   getAssetIDOfElement, addDopplerPhase, getActivePage, makeItemColorful,
   addSSTandExtIndicators, addFloatIndicator, addPriceIndicator, updateLoggedInUserName,
   getDataFilledFloatTechnical, souvenirExists, removeLinkFilterFromLinks,
-  getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent, setAccessTokenFirstTime,
+  getFloatBarSkeleton, getInspectLink, csgoFloatExtPresent, setAccessTokenFirstTime, isSteamAccessTokenExpiring,
   getInspectLinkFromMarketActions,
   isSIHActive, addSearchListener, getSessionID, validateSteamAccessToken,
   getFloatAsFormattedString, getNameTag, parseCharmInfo, loadCachedFloatDataByIDs,
