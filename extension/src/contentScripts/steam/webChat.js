@@ -7,7 +7,7 @@ let chatDialogObserverSet = false;
 
 const removeHeader = () => {
   const header = document.querySelector('a[href="https://store.steampowered.com/"]')?.parentElement;
-  if (header !== null) header.remove();
+  if (header) header.remove();
 };
 
 const addChatPresets = () => {
